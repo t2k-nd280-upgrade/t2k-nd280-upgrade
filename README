@@ -1,0 +1,31 @@
+First of all make sure that ND280 Software is installed and the environment is loaded (source Run_At_Start_T2K.sh)
+
+1.) To build the code do:
+
+cd build
+cmake ../src/
+make
+
+2.) Additional building options can be added by passing extra -D command line arguments to CMake.
+    The available options are listed below:
+
+ * _USE_CPP11 : Set to "ON" to enable c++11 support.
+
+ * _MY_ND280MC_INCLUDE_DIR : Full path to the include files of a stand-alone (customized) version of the nd280mc package.
+
+ * _MY_ND280MC_LIBRARY_DIR : Full path to the library file of a stand-alone (customized) version of the nd280mc package.
+
+ * _MY_OAEVENT_INCLUDE_DIR : Full path to the include files of a stand-alone (customized) version of the oaEvent package.
+
+ * _MY_OAEVENT_LIBRARY_DIR : Full path to the library file of a stand-alone (customized) version of the oaEvent package.
+
+ * _MY_INGRIDUTILS_INCLUDE_DIR : Full path to the include files of a stand-alone (customized) version of the ingridUtils package.
+
+ * _MY_INGRIDUTILS_LIBRARY_DIR : Full path to the library file of a stand-alone (customized) version of the ingridUtils package.
+
+ example:
+
+cmake -D_MY_ND280MC_INCLUDE_DIR=/home/yordan/T2K/work/nd280mc-up/src/ \
+      -D_MY_ND280MC_LIBRARY_DIR=/home/yordan/T2K/work/nd280mc-up/lib/ \
+      -D_USE_CPP11=ON \
+      ../src/

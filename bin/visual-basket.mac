@@ -1,0 +1,99 @@
+############################################################
+# Draw the active components of the detector.
+#
+
+## Get the default values for the MC.
+/t2k/control baseline 1.0
+
+## move the magnet to the split position to make pretty pictures.
+# /t2k/OA/Magnet/leftSplit 1.0 meter
+# /t2k/OA/Magnet/rightSplit 2.5 meter
+
+## The next lines are used to draw specific objects.
+#/t2k/OA/Magnet/LeftClam/visibleDaughters true
+#/t2k/OA/Magnet/LeftClam/BrlECal/visible true
+#/t2k/OA/Magnet/LeftClam/P0DECal/visible true
+
+## Draw the basket.
+#/t2k/OA/Magnet/Basket/Beam/visible true
+
+## Draw the P0D and it's supports.
+#/t2k/OA/Magnet/Basket/P0D/USECal/visible true
+#/t2k/OA/Magnet/Basket/P0D/USTarget/visible true
+#/t2k/OA/Magnet/Basket/P0D/CTarget/visible true
+#/t2k/OA/Magnet/Basket/P0D/CECal/visible true
+##
+/t2k/OA/Magnet/Basket/P0D/USECal/visibleDaughters true
+/t2k/OA/Magnet/Basket/P0D/USTarget/visibleDaughters true
+/t2k/OA/Magnet/Basket/P0D/CTarget/visibleDaughters true
+/t2k/OA/Magnet/Basket/P0D/CECal/visibleDaughters true
+
+## Draw the active parts of the tracker.
+/t2k/OA/Magnet/Basket/TrackerNew/visibleDaughters true
+##
+#/t2k/OA/Magnet/Basket/TrackerNew/FGD1/visible true
+/t2k/OA/Magnet/Basket/TrackerNew/FGD1/visibleDaughters true
+/t2k/OA/Magnet/Basket/TrackerNew/FGD1/EndPlate/visible false
+##
+#/t2k/OA/Magnet/Basket/TrackerNew/FGD2/visible true
+/t2k/OA/Magnet/Basket/TrackerNew/FGD2/visibleDaughters true
+/t2k/OA/Magnet/Basket/TrackerNew/FGD2/EndPlate/visible false
+##
+/t2k/OA/Magnet/Basket/TrackerNew/TPC1/visible true
+#/t2k/OA/Magnet/Basket/TrackerNew/TPC1/showOuterVolume true
+#
+/t2k/OA/Magnet/Basket/TrackerNew/TPC2/visible true
+#/t2k/OA/Magnet/Basket/TrackerNew/TPC2/showOuterVolume true
+##
+/t2k/OA/Magnet/Basket/TrackerNew/TPC3/visible true
+#/t2k/OA/Magnet/Basket/TrackerNew/TPC3/showOuterVolume true
+## Draw the downstream ecal
+/t2k/OA/Magnet/Basket/DsECal/visibleDaughters true
+
+## Update the geometry so that the MC geometry is self consistent.
+/t2k/update
+
+############################################################
+# Create a scene handler for a specific graphics system
+# (Edit the next line(s) to choose another graphic system)
+############################################################
+# /vis/open OGLSXm
+# /vis/open DAWNFILE
+/vis/open VRML1FILE
+# /vis/open VRML2FILE
+
+############################################################
+# Set the camera
+############################################################
+
+/vis/viewer/reset
+
+## Set the camera to look at the upstream end of the ND280 detector.
+/vis/viewer/set/viewpointThetaPhi 115 160
+
+## Move the lights with the camera so that the shadows are reasonable.
+/vis/viewer/set/lightsMove with-camera
+
+## Culled objects should not be drawn.
+#/vis/viewer/set/culling invisible true
+
+############################################################
+# Create the first particle source.  This source will be used to
+# specify the position of the vertex.  The any of the GPS
+# direction and energy commands can be used.
+############################################################
+/gps/particle mu+
+/gps/energy 600 MeV
+
+############################################################
+# draw the scene
+############################################################
+/vis/drawVolume 
+/vis/scene/add/trajectories
+
+############################################################
+# Make sure the drawing goes to the output.
+############################################################
+/vis/viewer/flush
+#/run/beamOn 1
+
