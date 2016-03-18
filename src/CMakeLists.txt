@@ -28,9 +28,11 @@ if    (ROOT_FOUND)
   LINK_DIRECTORIES   (${ROOT_LIBRARY_DIR})
 endif (ROOT_FOUND)
 
+
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/ND280Upgrade/include) ### include GEANT4 example
+
 message(STATUS "C flags      : " ${CMAKE_C_FLAGS})
 message(STATUS "CXX flags    : " ${CMAKE_CXX_FLAGS})
 message(STATUS "Linker flags : " ${CMAKE_EXE_LINKER_FLAGS}\n)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/app)
-
