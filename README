@@ -1,8 +1,12 @@
-First of all make sure that ND280 Software is installed and the environment is loaded (source Run_At_Start_T2K.sh)
+First of all make sure that ND280 Software is installed and the environment is loaded (source Run_At_Start_T2K.sh and nd280upgrade.sh)
+
+go to t2k-nd280-upgrade-master and do:
+
+source nd280upgrade.sh $PWD
 
 1.) To build the code do:
 
-cd build
+cd $ND280UPGRADEPATH/build
 cmake ../src/
 make
 
@@ -29,3 +33,36 @@ cmake -D_MY_ND280MC_INCLUDE_DIR=/home/yordan/T2K/work/nd280mc-up/src/ \
       -D_MY_ND280MC_LIBRARY_DIR=/home/yordan/T2K/work/nd280mc-up/lib/ \
       -D_USE_CPP11=ON \
       ../src/
+
+
+3.) To run the code do:
+
+cd $ND280UPGRADEPATH/bin
+./ND280Upgrade.exe ../src/app/ND280Upgrade/vis.mac (or any other input file)
+
+
+/////////////
+
+In order to add packages to be compiled you need to:
+
+1)
+
+open  $ND280UPGRADEPATH/src/CMakeLists.txt and add (or replace)
+
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/PATH_TO_INCLUDE) ### header files
+
+open  $ND280UPGRADEPATH/src/app/CMakeLists.txt and add (or replace)
+
+AUX_SOURCE_DIRECTORY(ND280Upgrade/src sourcefile) ###
+
+ADD_EXECUTABLE(ND280Upgrade.exe          ND280Upgrade/Main.cc ${sourcefile}) ###
+
+TARGET_LINK_LIBRARIES(ND280Upgrade.exe   ${ROOT_LIBRARIES}
+                                         ${GEANT4_LIBRARIES}
+                                         ${INGRIDUTILS_LIBRARIES}
+                                         ${OAEVENT_LIBRARIES}
+                                         ${ND280MC_LIBRARIES}
+                                         )
+
+
+ 
