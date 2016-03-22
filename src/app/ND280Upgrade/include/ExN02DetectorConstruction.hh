@@ -77,7 +77,13 @@ public:
   void setChamberMaterial(G4String);
   void SetMagField(G4double);
   void SetMaxStep (G4double);     
-     
+  
+  void DefineMaterials();
+  
+protected:
+  
+  G4Material* FindMaterial(G4String m);
+
 private:
 
   G4Box*             solidWorld;    // pointer to the solid envelope 
@@ -92,16 +98,19 @@ private:
   G4LogicalVolume*   logicTracker;  // pointer to the logical Tracker
   G4VPhysicalVolume* physiTracker;  // pointer to the physical Tracker
      
-  G4Box*             solidChamber1;  // pointer to the solid Chamber
-  G4LogicalVolume*   logicChamber1;  // pointer to the logical Chamber
-  G4VPhysicalVolume* physiChamber1;  // pointer to the physical Chamber
+  G4Box*             solidChamberUp;  // pointer to the solid Chamber
+  G4LogicalVolume*   logicChamberUp;  // pointer to the logical Chamber
+  G4VPhysicalVolume* physiChamberUp;  // pointer to the physical Chamber
      
-  G4Box*             solidChamber2;  // pointer to the solid Chamber
-  G4LogicalVolume*   logicChamber2;  // pointer to the logical Chamber
-  G4VPhysicalVolume* physiChamber2;  // pointer to the physical Chamber
+  G4Box*             solidChamberDown;  // pointer to the solid Chamber
+  G4LogicalVolume*   logicChamberDown;  // pointer to the logical Chamber
+  G4VPhysicalVolume* physiChamberDown;  // pointer to the physical Chamber
 
-  G4Material*         TargetMater;  // pointer to the target  material
-  G4Material*         ChamberMater; // pointer to the chamber material
+  G4Material* WorldMater;  // pointer to the target  material
+  G4Material* TrackerMater;  // pointer to the target  material
+  G4Material* TargetMater;  // pointer to the target  material
+  G4Material* ChamberMater; // pointer to the chamber material                  
+  G4Material* fDefaultMaterial;   /// The default material.       
 
   //G4VPVParameterisation* chamberParam; // pointer to chamber parameterisation
   //G4PVReplica* chamberParam; // pointer to chamber replica

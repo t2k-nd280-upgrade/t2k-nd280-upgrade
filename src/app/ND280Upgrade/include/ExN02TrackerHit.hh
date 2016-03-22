@@ -62,15 +62,25 @@ public:
   void SetChamberNb   (G4int chamb)      { chamberNb = chamb; };  
   void SetEdep        (G4double de)      { edep = de; };
   void SetPos         (G4ThreeVector xyz){ pos = xyz; };  
-  void SetMom         (G4ThreeVector xyz){ mom = xyz; }; // new
-  void SetDetName     (G4String name)    { chamberName = name; };
+  void SetMom         (G4ThreeVector xyz){ mom = xyz; }; 
+  void SetNameDet     (G4String name)    { namedet = name; };
+  void SetCharge      (G4int mycharge)   { charge = mycharge; };
+  void SetTrackPDG    (G4int pdg)        { trackpdg = pdg; };
+  void SetTrackName   (G4String name)    { trackname = name; };
+  void SetTrackLength (G4double length ) { tracklength = length; };
+  void SetNSteps      (G4int num)        { nsteps = num; };
   
   G4int GetTrackID()       { return trackID; };
   G4int GetChamberNb()     { return chamberNb; };
   G4double GetEdep()       { return edep; };      
   G4ThreeVector GetPos()   { return pos; };
-  G4ThreeVector GetMom()   { return mom; }; // new
-  G4String GetChamberName(){ return chamberName; }; 
+  G4ThreeVector GetMom()   { return mom; }; 
+  G4String GetNameDet()    { return namedet; }; 
+  G4int GetCharge()        { return charge; }; 
+  G4int GetTrackPDG()      { return trackpdg; }; 
+  G4String GetTrackName()  { return trackname; }; 
+  G4double GetTrackLength(){ return tracklength; }; 
+  G4int GetNSteps()        { return nsteps; }; 
   
 private:
   
@@ -78,8 +88,13 @@ private:
   G4int         chamberNb;
   G4double      edep;
   G4ThreeVector pos;
-  G4String      chamberName;
-  G4ThreeVector mom; // new
+  G4String      namedet;
+  G4int         charge;
+  G4ThreeVector mom; 
+  G4int         trackpdg;
+  G4String      trackname;  
+  G4double      tracklength;
+  G4int         nsteps;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

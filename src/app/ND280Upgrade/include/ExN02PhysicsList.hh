@@ -35,6 +35,13 @@
 
 #include "G4VUserPhysicsList.hh"
 #include "globals.hh"
+#include "G4ParallelWorldScoringProcess.hh"
+
+//
+// NOT AVAILABLE IN THIS GEANT4 VERSION
+//
+//#include "DataCards.hh"
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -44,26 +51,43 @@ class ExN02PhysicsList: public G4VUserPhysicsList
     ExN02PhysicsList();
    ~ExN02PhysicsList();
 
+  bool IsDefined(G4int pid);
+  
+  virtual void SetCuts();
+  void loadDataCards();
+
   protected:
     // Construct particle and physics
     void ConstructParticle();
     void ConstructProcess();
  
-    void SetCuts();
-
-   
-  protected:
-    // these methods Construct particles 
     void ConstructBosons();
     void ConstructLeptons();
     void ConstructMesons();
     void ConstructBaryons();
+    void ConstructIons();
+    void ConstructShortLived();
 
+    void ConstructEM();
+    void ConstructEM(std::string emlist);
+    void ConstructHad(std::string hadlist);
+
+    void AddTransportation();
+    void AddVirtualScoringProcess();
+  
   protected:
   // these methods Construct physics processes and register them
     void ConstructGeneral();
-    void ConstructEM();
     void AddStepMax();
+
+    G4int VerboseLevel;
+    G4int OpVerbLevel;
+  
+    //
+    // NOT AVAILABLE IN THIS GEANT4 VERSION
+    //
+    //DataCards*			cards_;
+    //G4bool      		cardsLoaded_;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

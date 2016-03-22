@@ -43,17 +43,18 @@ class G4HCofThisEvent;
 
 class ExN02TrackerSD : public G4VSensitiveDetector
 {
-  public:
-      ExN02TrackerSD(G4String);
-     ~ExN02TrackerSD();
-
-      void Initialize(G4HCofThisEvent*);
-      G4bool ProcessHits(G4Step*, G4TouchableHistory*);
-      void EndOfEvent(G4HCofThisEvent*);
-
-  private:
-      ExN02TrackerHitsCollection* trackerCollection;
-
+public:
+  ExN02TrackerSD(G4String);
+  ~ExN02TrackerSD();
+  
+  void Initialize(G4HCofThisEvent*);
+  G4bool ProcessHits(G4Step*, G4TouchableHistory*);
+  void EndOfEvent(G4HCofThisEvent*);
+  
+private:
+  ExN02TrackerHitsCollection* trackerCollection;
+  
+  G4int NSteps_;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
