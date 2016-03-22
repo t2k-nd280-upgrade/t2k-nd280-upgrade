@@ -111,8 +111,8 @@ void ExN02TrackerHit::Draw()
 void ExN02TrackerHit::Print()
 {
   G4int prec = G4cout.precision(5);
-  
-  if(namedet=="Target" || namedet=="TPC Up"){
+
+  if(namedet=="Target" || namedet=="TPC up"){
     G4cout << "  trackID: " << trackID 
 	   << "  track length: " << G4BestUnit(tracklength,"Length") 
 	   << "  energy deposit: " << G4BestUnit(edep,"Energy")

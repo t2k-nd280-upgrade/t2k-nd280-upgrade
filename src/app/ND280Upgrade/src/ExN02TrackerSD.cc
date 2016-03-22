@@ -60,45 +60,65 @@ void ExN02TrackerSD::Initialize(G4HCofThisEvent* HCE)
   if(HCID<0)
   { HCID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]); }
   HCE->AddHitsCollection( HCID, trackerCollection ); 
+  
+  NSteps_ = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 {
+  
+  //if(NSteps_==0){
+
   G4double edep = aStep->GetTotalEnergyDeposit();
-
+  
   if(edep==0.) return false;
-
   
   // The geometry is stored in the PreStepPoint()
+  
+  G4StepPoint* prestep  = aStep->GetPreStepPoint();
+  G4StepPoint* poststep = aStep->GetPostStepPoint();
+  G4Track* track        = aStep->GetTrack();
 
-  // new
-  // G4StepPoint* point1 = aStep->GetPreStepPoint();
-  // G4StepPoint* point2 = aStep->GetPostStepPoint();
-  // G4TouchableHandle touch1 = point1->GetTouchableHandle();
-  // G4VPhysicalVolume* volume = touch1->GetVolume();
-  // G4String name = volume->GetName();
-  //G4cout << name << G4endl;
-  //exit(1);  
-  G4ThreeVector mom = aStep->GetTrack()->GetMomentum();
-  //
+  if (prestep->GetStepStatus() == fGeomBoundary)  return false;
+  if (poststep->GetStepStatus() == fGeomBoundary) return false;  
 
+  G4String namedet     = prestep->GetTouchableHandle()->GetVolume()->GetName();
+  
+  G4ThreeVector pos    = poststep->GetPosition();
 
+  G4ThreeVector mom    = track->GetMomentum();
+  G4double charge      = track->GetDefinition()->GetPDGCharge();
+  G4int trackid        = track->GetTrackID();
+  G4int trackpdg       = track->GetDefinition()->GetPDGEncoding();
+  G4String trackname   = track->GetDefinition()->GetParticleName();
+  G4double tracklength = track->GetTrackLength();
   
   ExN02TrackerHit* newHit = new ExN02TrackerHit();
-  newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
-  newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
-                                               ->GetCopyNumber());
-  newHit->SetEdep     (edep);
-  newHit->SetMom      (mom); // new
+  //newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
+  //->GetCopyNumber());
+    
+  newHit->SetTrackID    (trackid);
+  newHit->SetEdep       (edep);
+  newHit->SetMom        (mom); 
+  newHit->SetPos        (pos);
+  newHit->SetNameDet    (namedet);
+  newHit->SetCharge     (charge);
+  newHit->SetTrackName  (trackname);
+  newHit->SetTrackPDG   (trackpdg);
+  newHit->SetTrackLength(tracklength);
+  newHit->SetNSteps     (NSteps_);
 
-  newHit->SetPos      (aStep->GetPostStepPoint()->GetPosition());
   trackerCollection->insert( newHit );
   
   newHit->Print();
   //newHit->Draw();
-
+  
+  //}
+  
+  NSteps_++;
+  
   return true;
 }
 
@@ -106,12 +126,13 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 
 void ExN02TrackerSD::EndOfEvent(G4HCofThisEvent*)
 {
+
   if (verboseLevel>0) { 
-     G4int NbHits = trackerCollection->entries();
-     G4cout << "\n-------->Hits Collection: in this event they are " << NbHits 
-            << " hits in the tracker chambers: " << G4endl;
-     for (G4int i=0;i<NbHits;i++) (*trackerCollection)[i]->Print();
-    } 
+    G4int NbHits = trackerCollection->entries();
+    G4cout << "\n-------->Hits Collection: in this event they are " << NbHits 
+	   << " hits in the tracker chambers: " << G4endl;
+    for (G4int i=0;i<NbHits;i++) (*trackerCollection)[i]->Print();
+  } 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
