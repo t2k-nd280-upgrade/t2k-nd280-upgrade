@@ -1,0 +1,5 @@
+
+Fraction of Primary particles in TPC Up: 0.979
+Fraction of Primary particles in TPC Down: 0
+Fraction of Primary particles in Target: 1
+

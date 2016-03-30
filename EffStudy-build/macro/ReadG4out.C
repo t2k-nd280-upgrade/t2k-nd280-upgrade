@@ -1,11 +1,32 @@
 
 void ReadG4out
 (
- const char *tag = "PiMinus_125MeV_Targ20cm",
- const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_PiMinus_125MeV_Targ20cm.root",
-
+ // // Pi Minus
+ // const char *tag = "PiMinus_125MeV_Targ20cm",
+ // const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_PiMinus_125MeV_Targ20cm.root",
  // const char *tag = "PiMinus_125MeV_Targ30cm",
  // const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_PiMinus_125MeV_Targ30cm.root",
+ // const char *tag = "PiMinus_125MeV_Targ40cm",
+ // const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_PiMinus_125MeV_Targ40cm.root",
+
+ // // Pi0
+ // const char *tag = "Pi0_125MeV_Targ30cm",
+ // const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_Pi0_125MeV_Targ30cm.root",
+
+ // Proton
+ // const char *tag = "Prot_50MeV_Targ30cm",
+ // const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_Prot_50MeV_Targ30cm.root",
+ // const char *tag = "Prot_50MeV_Targ10cm",
+ // const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_Prot_50MeV_Targ10cm.root",
+
+ const char *tag = "Prot_50MeV_Targ5cm",
+ const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_Prot_50MeV_Targ5cm.root",
+ 
+ // const char *tag = "Prot_50MeV_Targ4cm",
+ // const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_Prot_50MeV_Targ4cm.root",
+
+ //const char *tag = "Prot_50MeV_Targ3cm",
+ //const char *filename = "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/G4FILES/PLOTS/EffStudy_Prot_50MeV_Targ3cm.root",
 
  )
 {
@@ -35,9 +56,14 @@ void ReadG4out
   double EabsTPCdown=0.;
 
   treein->SetBranchAddress("PDGPrim",&PDGPrim);
-  treein->SetBranchAddress("PDGFirstTPCup",&PDGFirstTPCup);
-  treein->SetBranchAddress("PDGFirstTPCdown",&PDGFirstTPCdown);
-  treein->SetBranchAddress("PDGFirstTarget",&PDGFirstTarget);
+  //treein->SetBranchAddress("PDGFirstTPCup",&PDGFirstTPCup);
+  //treein->SetBranchAddress("PDGFirstTPCdown",&PDGFirstTPCdown);
+  //treein->SetBranchAddress("PDGFirstTarget",&PDGFirstTarget);
+
+  treein->SetBranchAddress("PDGPrimTPCup",&PDGFirstTPCup);
+  treein->SetBranchAddress("PDGPrimTPCdown",&PDGFirstTPCdown);
+  treein->SetBranchAddress("PDGPrimTarget",&PDGFirstTarget);
+
   treein->SetBranchAddress("EabsTarget",&EabsTarget);
   treein->SetBranchAddress("EabsTPCup",&EabsTPCup);
   treein->SetBranchAddress("EabsTPCdown",&EabsTPCdown);
@@ -52,10 +78,11 @@ void ReadG4out
     hEabsTPCdown->Fill(EabsTPCdown);
     hEabsTarget->Fill(EabsTarget);
  
-    if(PDGPrim==PDGFirstTPCup) NTotPrimInTPCup++;
+    //cout << PDGPrim << " - " << PDGFirstTarget << endl;
+    if(PDGPrim==PDGFirstTPCup)   NTotPrimInTPCup++;
     if(PDGPrim==PDGFirstTPCdown) NTotPrimInTPCdown++;
-    if(PDGPrim==PDGFirstTarget) NTotPrimInTarget++;
-    
+    if(PDGPrim==PDGFirstTarget)  NTotPrimInTarget++;
+   
   }
   
   // Draw histograms
@@ -102,9 +129,9 @@ void ReadG4out
 
   stringstream streamer;
   streamer << endl;
-  streamer << "Fraction of Primary particles in TPC Up: "   << FracPrimInTPCup << endl;
-  streamer << "Fraction of Primary particles in TPC Down: " << FracPrimInTPCdown / Nentries << endl;
-  streamer << "Fraction of Primary particles in Target: "   << FracPrimInTarget  / Nentries << endl;
+  streamer << "Fraction of Primary particles in TPC Up: "   << FracPrimInTPCup   << endl;
+  streamer << "Fraction of Primary particles in TPC Down: " << FracPrimInTPCdown << endl;
+  streamer << "Fraction of Primary particles in Target: "   << FracPrimInTarget  << endl;
   streamer << endl;
   cout << streamer.str() << endl;
   
