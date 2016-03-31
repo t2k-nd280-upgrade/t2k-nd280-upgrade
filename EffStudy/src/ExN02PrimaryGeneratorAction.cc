@@ -53,14 +53,17 @@ ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
   // default particle kinematic
   //
 
-  G4String particlename = "proton"; //"proton"; //"pi-" //"pi+"                        
-  G4double particleenergy = 0.3 * GeV; // GeV 
+  G4String particlename = "pi-"; //"pi-" //"pi+"                        
+  G4double particleenergy = 125 * MeV; // GeV 
+  
+  //G4String particlename = "proton";                        
+  //G4double particleenergy = 50. * MeV; // GeV 
 
   G4ParticleDefinition* particleDefinition 
     = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
   fParticleGun->SetParticleDefinition(particleDefinition);
   
-  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.)); // Along Y
+  //fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.)); // Along Y
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,1.,0.)); // Along Z
 
   fParticleGun->SetParticleEnergy(particleenergy);
@@ -85,6 +88,8 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // from G4LogicalVolumeStore
   //
   G4double worldZHalfLength = 0;
+  G4double targetYHalfLength = 0;
+
   G4LogicalVolume* worlLV
     = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
   G4Box* worldBox = 0;
@@ -99,16 +104,36 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     msg << "The gun will be place in the center.";
     G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
       "MyCode0002", JustWarning, msg);
+    exit(1);
+  } 
+
+  G4LogicalVolume* targetLV
+    = G4LogicalVolumeStore::GetInstance()->GetVolume("Target");
+  G4Box* targetBox = 0;
+  if ( targetLV) targetBox = dynamic_cast< G4Box*>(targetLV->GetSolid()); 
+  if ( targetBox ) {
+    targetYHalfLength = targetBox->GetYHalfLength();  
+  }
+  else  {
+    G4ExceptionDescription msg;
+    msg << "Target volume of box not found." << G4endl;
+    msg << "Perhaps you have changed geometry." << G4endl;
+    msg << "The gun will be place in the center.";
+    G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
+      "MyCode0002", JustWarning, msg);
+    exit(1);
   } 
   
   // Set gun position
+  
+  G4double positionZ = 0.; //-1. * worldZHalfLength;
+  //G4double positionY = -2. * targetYHalfLength;
+  G4double positionY = 0.;  
 
-  //G4double position = -0.5*(myDetector->GetWorldFullLength()); // before the target (along Z)                                                                 
-  //G4double position = 0.; // center XYZ  
-  G4double position = -0.5 * worldZHalfLength;
 
-  fParticleGun->SetParticlePosition(G4ThreeVector(0.*cm, 0.*cm, position));
-
+  //fParticleGun->SetParticlePosition(G4ThreeVector(0.*cm, positionY, positionZ));
+  fParticleGun->SetParticlePosition(G4ThreeVector(0.*cm, positionY, positionZ));
+  
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }
 

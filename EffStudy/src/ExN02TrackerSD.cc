@@ -131,7 +131,7 @@ void ExN02TrackerSD::EndOfEvent(G4HCofThisEvent*)
     G4int NbHits = trackerCollection->entries();
     G4cout << "\n-------->Hits Collection: in this event they are " << NbHits 
 	   << " hits in the tracker chambers: " << G4endl;
-    for (G4int i=0;i<NbHits;i++) (*trackerCollection)[i]->Print();
+    //for (G4int i=0;i<NbHits;i++) (*trackerCollection)[i]->Print();
   } 
 }
 

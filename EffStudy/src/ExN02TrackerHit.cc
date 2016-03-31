@@ -112,19 +112,19 @@ void ExN02TrackerHit::Print()
 {
   G4int prec = G4cout.precision(5);
   
-  if(namedet=="Target" || namedet=="TPC Up"){
-    G4cout << "  trackID: " << trackID 
-	   << "  track length: " << G4BestUnit(tracklength,"Length") 
-	   << "  energy deposit: " << G4BestUnit(edep,"Energy")
-      //<< "  position: " << G4BestUnit(pos,"Length") 
-      //<< "  momentum: " << G4BestUnit(mom,"Energy")
-      //<< "  charge: " << G4BestUnit(charge,"Electric charge")
-      //<< "  pdg: " << trackpdg 
-	   << "  name: " << trackname
-      //<< "  # of steps: " << nsteps
-	   << "  detector: " << namedet 
-	   << G4endl;
-  }
+  //if(namedet=="Target" || namedet=="TPC Up"){
+  G4cout << "  trackID: " << trackID 
+	 << "  track length: " << G4BestUnit(tracklength,"Length") 
+	 << "  energy deposit: " << G4BestUnit(edep,"Energy")
+    //<< "  position: " << G4BestUnit(pos,"Length") 
+    //<< "  momentum: " << G4BestUnit(mom,"Energy")
+    //<< "  charge: " << G4BestUnit(charge,"Electric charge")
+    //<< "  pdg: " << trackpdg 
+	 << "  name: " << trackname
+    //<< "  # of steps: " << nsteps
+	 << "  detector: " << namedet 
+	 << G4endl;
+  //}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

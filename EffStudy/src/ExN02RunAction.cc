@@ -86,9 +86,9 @@ ExN02RunAction::ExN02RunAction()
   analysisManager->CreateNtupleDColumn("PrimInTPCUp");
   analysisManager->CreateNtupleDColumn("PrimInTPCDown");
   analysisManager->CreateNtupleDColumn("PrimInTarg");
-  analysisManager->CreateNtupleDColumn("PDGFirstTPCup");
-  analysisManager->CreateNtupleDColumn("PDGFirstTPCdown");
-  analysisManager->CreateNtupleDColumn("PDGFirstTarget");
+  analysisManager->CreateNtupleDColumn("PDGPrimTPCup");
+  analysisManager->CreateNtupleDColumn("PDGPrimTPCdown");
+  analysisManager->CreateNtupleDColumn("PDGPrimTarget");
   analysisManager->CreateNtupleDColumn("PDGPrim");
   analysisManager->FinishNtuple();
 }
