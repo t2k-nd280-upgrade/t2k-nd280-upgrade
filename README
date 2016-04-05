@@ -1,0 +1,72 @@
+First of all make sure that ND280 Software is installed and the environment is loaded (source Run_At_Start_T2K.sh and nd280upgrade.sh)
+
+go to t2k-nd280-upgrade-master and do:
+
+0.) Set the environment
+
+source T2KND280Up.sh $PWD
+
+1.) To build the code do:
+
+cd $ND280UPGRADEPATH/build
+cmake ../src/
+make -jN (N = # of cores)
+
+2.) Additional building options can be added by passing extra -D command line arguments to CMake.
+    The available options are listed below:
+
+ * _USE_CPP11 : Set to "ON" to enable c++11 support.
+ * _MY_ND280MC_INCLUDE_DIR : Full path to the include files of a stand-alone (customized) version of the nd280mc package.
+ * _MY_ND280MC_LIBRARY_DIR : Full path to the library file of a stand-alone (customized) version of the nd280mc package.
+ * _MY_OAEVENT_INCLUDE_DIR : Full path to the include files of a stand-alone (customized) version of the oaEvent package.
+ * _MY_OAEVENT_LIBRARY_DIR : Full path to the library file of a stand-alone (customized) version of the oaEvent package.
+ * _MY_INGRIDUTILS_INCLUDE_DIR : Full path to the include files of a stand-alone (customized) version of the ingridUtils package.
+ * _MY_INGRIDUTILS_LIBRARY_DIR : Full path to the library file of a stand-alone (customized) version of the ingridUtils package.
+
+ example:
+
+cmake -D_MY_ND280MC_INCLUDE_DIR=/home/yordan/T2K/work/nd280mc-up/src/ \
+      -D_MY_ND280MC_LIBRARY_DIR=/home/yordan/T2K/work/nd280mc-up/lib/ \
+      -D_USE_CPP11=ON \
+      ../src/
+
+
+3.) To run the code do:
+
+cd $T2KND280UP/bin 
+./EffStudy.exe $T2KND280UP_SRC/vis.mac (or any other input file)
+
+The following output files are produced:
+
+- EffStudy.root: root file containing the GEANT4 output tree
+- g4_*.wrl: VRML files with event display
+- geometry.root: root file containing the detector geometry
+
+
+4.) Add packages
+
+In order to add packages to be compiled you need to:
+
+### open $T2KND280UP/src/CMakeLists.txt and add (or replace)
+
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/PATH_TO_INCLUDE) ### header files
+
+### open  $T2KND280UP/src/app/CMakeLists.txt and add (or replace)
+
+AUX_SOURCE_DIRECTORY(EffStudy/src sourcefile) ###
+
+ADD_EXECUTABLE(EffStudy.exe          EffStudy/Main.cc ${sourcefile}) ###
+
+TARGET_LINK_LIBRARIES(EffStudy.exe   ${ROOT_LIBRARIES}
+				     ...           )
+
+
+5.) Installation
+
+In order to get this framework working the following software need to be installed in the following order:
+
+- Xerces-C++: needed to store the geometry in GDML format. Installed xerces-c-3.1.3 with default configuration options
+ 
+- GEANT4: the cmake must be configured with the following options: USE_GDML=ON, INSTALL_DATA=ON, XERESC_ROOT_DIR=/path/to/install (contains lib, bin and include directories). For this framework the version geant4.10.01.p03 is recommended.
+
+- VGML: before installing it GEANT4 environment must be set. The source of T2KND280Up.sh as in 0.) is enough. 
