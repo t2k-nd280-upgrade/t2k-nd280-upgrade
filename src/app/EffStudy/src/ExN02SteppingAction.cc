@@ -83,7 +83,6 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   }
 
   G4String namedet = prestep->GetTouchableHandle()->GetVolume()->GetName();        
-    
   fEventAction->AddAbsTot(edep,stepLength);    
   if(namedet=="TPC Up")
     fEventAction->AddAbsTPCup(edep,stepLength);
@@ -92,35 +91,8 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   else if(namedet=="Target") 
     fEventAction->AddAbsTarget(edep,stepLength);
 
-  // Get info on primary particle
-
-  G4double trkmass = track->GetDefinition()->GetPDGMass();
-  G4double trkEkinVtx = track->GetVertexKineticEnergy();
-  G4double trkEtotVtx = trkEkinVtx + trkmass;;
-  
-  G4int trackid = track->GetTrackID();
-  G4int pdg = track->GetDefinition()->GetPDGEncoding();
-  //G4int pdg_prim = -999;
-
-  if(trackid==1){  
-    fEventAction->PDGPrim(pdg);
-    fEventAction->EvtxPrim(trkEtotVtx);    
-    fEventAction->ReachDetectPrim(namedet);
-  } // if primary particle
-
-  
-  // Look for first steps in each volume with same PDG as primary
-
-  //if(prestep->GetStepStatus() == fGeomBoundary){ // Get first step in volume
-  if     (namedet=="TPC Up")   fEventAction->PDGPrimTPCup(pdg); 
-  else if(namedet=="TPC Down") fEventAction->PDGPrimTPCdown(pdg); 
-  else if(namedet=="Target")   fEventAction->PDGPrimTarget(pdg); 
-  //}
-  
-  //G4cout << "pdg = " << pdg << " - pdg_prim = " << pdg_prim << G4endl;
-  //exit(1);
-  //}
-    
+  // Get track info    
+  fEventAction->SetTrack(track); 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......      

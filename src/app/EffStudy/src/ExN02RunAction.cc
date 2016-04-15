@@ -31,6 +31,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "ExN02RunAction.hh"
+#include "ExN02EventAction.hh"
 #include "ExN02Analysis.hh" // TODO
 
 #include "G4Run.hh"
@@ -40,15 +41,18 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ExN02RunAction::ExN02RunAction()
-  : G4UserRunAction()
+//ExN02RunAction::ExN02RunAction()
+//  : G4UserRunAction()
+ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
+  : G4UserRunAction(),
+    fEventAction(eventAction)
 {
   // set printing event number per each event
-
   G4RunManager::GetRunManager()->SetPrintProgress(1);
-  // Create analysis manager                                                                                                                                                   
+
+  // Create analysis manager                                        
   // The choice of analysis technology is done via selectin of a namespace       
-  // in B4Analysis.hh                                                                                                                                                    
+  // in B4Analysis.hh                                                              
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   G4cout << "Using " << analysisManager->GetType() << G4endl;
 
@@ -67,30 +71,39 @@ ExN02RunAction::ExN02RunAction()
   analysisManager->CreateH1("TrkLght_abs_tpcup","trackL in TPC Up", 100, 0., 2*m);
   analysisManager->CreateH1("TrkLght_abs_tpcdown","trackL in TPC Down", 100, 0., 2*m);
   analysisManager->CreateH1("TrkLght_abs_target","trackL in Target", 100, 0., 2*m);
-  analysisManager->CreateH1("PrimInTPCUp","flag primary track in TPC up", 2, 0, 2);
-  analysisManager->CreateH1("PrimInTPCDown","flag primary track in TPC down", 2, 0, 2);
-  analysisManager->CreateH1("PrimInTarget","flag primary track in TPC target", 2, 0, 2);
-  //analysisManager->CreateH1("PDGFirstTPCup","PDG of first step in TPC Up", 40, 0, 40);
-  //analysisManager->CreateH1("PDGFirstTPCdown","PDG of first step in TPC Down", 40, 0, 40);
-  //analysisManager->CreateH1("PDGFirstTarget","PDG of first step in Target", 40, 0, 40);
- 
+  
   // Creating ntuple
   //             
-  analysisManager->CreateNtuple("EffStudy","Primary particle and total absorbed energy");
-  analysisManager->CreateNtupleDColumn("EabsTPCup");
-  analysisManager->CreateNtupleDColumn("EabsTPCdown");
-  analysisManager->CreateNtupleDColumn("EabsTarget");  
-  analysisManager->CreateNtupleDColumn("LabsTPCup");
-  analysisManager->CreateNtupleDColumn("LabsTPCdown");
-  analysisManager->CreateNtupleDColumn("LabsTarget");
-  analysisManager->CreateNtupleDColumn("PrimInTPCUp");
-  analysisManager->CreateNtupleDColumn("PrimInTPCDown");
-  analysisManager->CreateNtupleDColumn("PrimInTarg");
-  analysisManager->CreateNtupleDColumn("PDGPrimTPCup");
-  analysisManager->CreateNtupleDColumn("PDGPrimTPCdown");
-  analysisManager->CreateNtupleDColumn("PDGPrimTarget");
-  analysisManager->CreateNtupleDColumn("PDGPrim");
-  analysisManager->FinishNtuple();
+  if(fEventAction){
+    analysisManager->CreateNtuple("EffStudy","Primary particle and total absorbed energy");
+    analysisManager->CreateNtupleDColumn("EabsTPCup");      // 0
+    analysisManager->CreateNtupleDColumn("EabsTPCdown");    // 1
+    analysisManager->CreateNtupleDColumn("EabsTarget");     // 2
+    analysisManager->CreateNtupleDColumn("LabsTPCup");      // 3
+    analysisManager->CreateNtupleDColumn("LabsTPCdown");    // 4
+    analysisManager->CreateNtupleDColumn("LabsTarget");     // 5
+    analysisManager->CreateNtupleIColumn("NTracks");        // 6    
+    
+    analysisManager->CreateNtupleIColumn("VecTrackID" ,fEventAction->GetVecTrackID()); // 7
+    analysisManager->CreateNtupleIColumn("VecTrackPDG",fEventAction->GetVecTrackPDG()); // 8
+    analysisManager->CreateNtupleDColumn("VecTrackE",  fEventAction->GetVecTrackE()); // 9
+    analysisManager->CreateNtupleDColumn("VecTrackMomX",  fEventAction->GetVecTrackMomX()); // 10
+    analysisManager->CreateNtupleDColumn("VecTrackMomY",  fEventAction->GetVecTrackMomY()); // 11
+    analysisManager->CreateNtupleDColumn("VecTrackMomZ",  fEventAction->GetVecTrackMomZ()); // 12
+    analysisManager->CreateNtupleDColumn("VecTrackMomMag",fEventAction->GetVecTrackMomMag()); // 13
+    
+    analysisManager->CreateNtupleIColumn("TPCUp_NTracks");        // 14    
+    analysisManager->CreateNtupleIColumn("VecTPCUp_TrackID",fEventAction->GetVecTPCUp_TrackID()); // 15
+    analysisManager->CreateNtupleDColumn("VecTPCUp_TrackMomX",fEventAction->GetVecTPCUp_TrackMomZ()); // 16
+    analysisManager->CreateNtupleDColumn("VecTPCUp_TrackMomY",fEventAction->GetVecTPCUp_TrackMomY()); // 17
+    analysisManager->CreateNtupleDColumn("VecTPCUp_TrackMomZ",fEventAction->GetVecTPCUp_TrackMomZ()); // 18
+    
+    //analysisManager->CreateNtupleIColumn("VecTPCDown_TrackID",fEventAction->GetVecTPCUp_TrackID()); // XXX
+    //analysisManager->CreateNtupleIColumn("VecTarget_TrackID",fEventAction->GetVecTPCUp_TrackID()); // XXX
+    
+    analysisManager->FinishNtuple();
+  }
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

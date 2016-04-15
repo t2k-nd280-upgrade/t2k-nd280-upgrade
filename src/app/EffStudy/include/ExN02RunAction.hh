@@ -39,6 +39,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
+class ExN02EventAction;
 
 /// Run action class              
 ///                                   
@@ -62,13 +63,15 @@ class G4Run;
 class ExN02RunAction : public G4UserRunAction
 {
 public:
-  ExN02RunAction();
-  ~ExN02RunAction();
+  ExN02RunAction(ExN02EventAction* eventAction);
+  virtual ~ExN02RunAction();
   
-public:
   //virtual G4Run* GenerateRun();
   void BeginOfRunAction(const G4Run*);
   void EndOfRunAction(const G4Run*);
+  
+private:
+  ExN02EventAction* fEventAction;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

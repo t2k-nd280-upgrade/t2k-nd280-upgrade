@@ -3,6 +3,16 @@
 
 #include "G4SystemOfUnits.hh"
 
+
+/////////////////////////////////                                                                                                                                                             
+//                             //                                                                                                                                                                
+//      General constants      //                                                                                                                                                                     
+//                             //                                                                                                                                  
+/////////////////////////////////                                                                                                                                                                     
+
+const G4double kBadNum = -999.;
+
+
 ////////////////////////////
 //                        //
 //      Nomenclature      //

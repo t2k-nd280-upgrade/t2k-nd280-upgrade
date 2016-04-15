@@ -395,12 +395,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //
   // Import Geant4 geometry to VGM
   Geant4GM::Factory g4Factory;
-  g4Factory.SetDebug(1);
+  g4Factory.SetDebug(0);
   g4Factory.Import(physiWorld);
   // 
   // Export VGM geometry to Root
   RootGM::Factory rtFactory;
-  rtFactory.SetDebug(1);
+  rtFactory.SetDebug(0);
   g4Factory.Export(&rtFactory);
   gGeoManager->CloseGeometry();
   gGeoManager->Export("geometry.root");

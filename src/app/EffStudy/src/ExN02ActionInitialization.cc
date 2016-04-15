@@ -55,17 +55,29 @@ ExN02ActionInitialization::~ExN02ActionInitialization()
 
 void ExN02ActionInitialization::BuildForMaster() const
 {
-  SetUserAction(new ExN02RunAction);
+  //SetUserAction(new ExN02RunAction);
+
+  ExN02EventAction* eventAction = 0;
+  SetUserAction(new ExN02RunAction(eventAction));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02ActionInitialization::Build() const
 {
-  SetUserAction(new ExN02PrimaryGeneratorAction); 
-  SetUserAction(new ExN02RunAction);
+  //SetUserAction(new ExN02PrimaryGeneratorAction); 
+  //SetUserAction(new ExN02RunAction);
+  //ExN02EventAction* eventAction = new ExN02EventAction;
+  //SetUserAction(eventAction);
+
+  SetUserAction(new ExN02PrimaryGeneratorAction);
   ExN02EventAction* eventAction = new ExN02EventAction;
   SetUserAction(eventAction);
+  SetUserAction(new ExN02RunAction(eventAction));
+  
+
+  //SetUserAction(new TrackingAction(fDetector));
+
   SetUserAction(new ExN02SteppingAction(fDetConstruction,eventAction));
 }
   

@@ -31,19 +31,23 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
 #include "ExN02EventAction.hh"
+#include "ExN02Constants.hh"
+#include "ExN02RunAction.hh"
+#include "ExN02Analysis.hh"
+#include "ExN02TrackerHit.hh"
 
 #include "G4Event.hh"
-//#include "G4EventManager.hh"
+#include "G4RunManager.hh"
+#include "G4EventManager.hh"
+#include "G4UnitsTable.hh"
 
 #include "G4TrajectoryContainer.hh"
 #include "G4Trajectory.hh"
 #include "G4ios.hh"
 
-#include "ExN02RunAction.hh"
-#include "ExN02Analysis.hh"
-
-#include "G4RunManager.hh"
-#include "G4UnitsTable.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4VHitsCollection.hh"
+#include "G4SDManager.hh"
 
 #include "Randomize.hh"
 #include <iomanip>
@@ -59,13 +63,26 @@ ExN02EventAction::ExN02EventAction()
     fTrackLAbsTPCup(0.),
     fTrackLAbsTPCdown(0.),
     fTrackLAbsTarget(0.),
-    fPrimInTPCup(0.),
-    fPrimInTPCdown(0.),
-    fPrimInTarget(0.),
-    fPDGPrimTPCup(-999.),
-    fPDGPrimTPCdown(-999.),
-    fPDGPrimTarget(-999.)
-{}
+    fNTracks(0),
+    fHHC1ID(-1),  
+    fVecTrackID(),
+    fVecTrackPDG(),
+    fVecTrackE(),
+    fVecTrackMomX(),
+    fVecTrackMomY(),
+    fVecTrackMomZ(),
+    fVecTrackMomMag(),
+    fTPCUp_NTracks(0),
+    fVecTPCUp_TrackID(),
+    fVecTPCUp_TrackMomX(),
+    fVecTPCUp_TrackMomY(),
+    fVecTPCUp_TrackMomZ()
+{
+  // // set printing per each event
+  // G4RunManager::GetRunManager()->SetPrintProgress(1);
+
+  // initialize the vectors (don't use it)
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
@@ -76,22 +93,37 @@ ExN02EventAction::~ExN02EventAction()
  
 void ExN02EventAction::BeginOfEventAction(const G4Event*)
 {
-  // initialisation per event
+  // variable initialisation per event
   fEnergyAbsTPCup   = 0.;
   fEnergyAbsTPCdown = 0.;
   fEnergyAbsTarget  = 0.;
   fTrackLAbsTPCup   = 0.;
   fTrackLAbsTPCdown = 0.;
   fTrackLAbsTarget  = 0.;
-  fTruePrimMom   = 0.;
-  fTruePrimE     = 0.;  
-  fPrimInTPCup   = -999.;   
-  fPrimInTPCdown = -999.; 
-  fPrimInTarget  = -999.;
-  fPDGPrimTPCup = -999.;
-  fPDGPrimTPCdown  = -999.;
-  fPDGPrimTarget = -999.;
-  fPDGPrim = -999.;
+  fNTracks          = 0; // It's a counter. It must be 0 at the begin of the event.
+
+  fTPCUp_NTracks = 0;
+
+  // vector initialisation per event
+  fVecTrackID.clear(); // clear the vector
+  fVecTrackPDG.clear(); // clear the vector
+  fVecTrackE.clear(); // clear the vector
+  fVecTrackMomX.clear(); // clear the vector
+  fVecTrackMomY.clear(); // clear the vector
+  fVecTrackMomZ.clear(); // clear the vector
+  fVecTrackMomMag.clear(); // clear the vector
+
+  fVecTPCUp_TrackID.clear(); 
+  fVecTPCUp_TrackMomX.clear(); 
+  fVecTPCUp_TrackMomY.clear(); 
+  fVecTPCUp_TrackMomZ.clear(); 
+  
+  // Initialize the hit collections
+  if (fHHC1ID==-1) {
+    G4SDManager* sdManager = G4SDManager::GetSDMpointer();
+    fHHC1ID = sdManager->GetCollectionID("trackerCollection");
+  }
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -99,7 +131,84 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
 void ExN02EventAction::EndOfEventAction(const G4Event* event)
 {
   // Accumulate statistics
-  //
+  //  
+
+
+  ///////////////////////////////////////////////////////
+  //                                                   //
+  // Access hit collections and handle the stored hits //
+  //                                                   //
+  ///////////////////////////////////////////////////////
+
+  G4HCofThisEvent* hce = event->GetHCofThisEvent();
+  if (!hce) 
+    {
+      G4ExceptionDescription msg;
+      msg << "No hits collection of this event found." << G4endl; 
+      G4Exception("ExN02EventAction::EndOfEventAction()",
+		  "ExN02Code001", JustWarning, msg);
+      return;
+    }   
+    
+  // Get hits collections 
+  ExN02TrackerHitsCollection* hHC1 
+    = static_cast<ExN02TrackerHitsCollection*>(hce->GetHC(fHHC1ID));
+         
+  if ( (!hHC1) ) {
+    G4ExceptionDescription msg;
+    msg << "Some of hits collections of this event not found." << G4endl; 
+    G4Exception("ExN02EventAction::EndOfEventAction()",
+		"ExN02Code001", JustWarning, msg);
+    return;
+  }   
+  
+   G4int n_hit = hHC1->entries();
+   std::cout << "# of hits = " << n_hit << std::endl;
+
+   G4int currtrkid = kBadNum;
+   G4int prevtrkid = kBadNum;
+   
+   for (G4int i=0;i<n_hit;i++){
+     ExN02TrackerHit* hit = (*hHC1)[i];
+  
+     G4String detname = hit->GetNameDet();
+     //std::cout << detname << std::endl;
+     
+     if(detname=="TPCUp"){     
+	 
+       // Get Track initial informations (first step of the track)
+       currtrkid = hit->GetTrackID();
+       G4double trkmom = hit->GetMom();
+
+       if(prevtrkid==kBadNum){
+	 fVecTPCUp_TrackID.push_back(currtrkid);
+	 
+	 fVecTPCUp_TrackMomX.push_back(trkmom.x());
+	 fVecTPCUp_TrackMomY.push_back(trkmom.y());
+	 fVecTPCUp_TrackMomZ.push_back(trkmom.z());
+ 	 
+	 prevtrkid = currtrkid;
+	 fTPCUp_NTracks++;
+	 //std::cout << "First:" << prevtrkid << " - " << currtrkid << std::endl;
+       }
+       else if(currtrkid!=prevtrkid && prevtrkid!=kBadNum){
+	 fVecTPCUp_TrackID.push_back(currtrkid);
+
+	 fVecTPCUp_TrackMomX.push_back((G4double)trkmom.x());
+	 fVecTPCUp_TrackMomY.push_back((G4double)trkmom.y());
+	 fVecTPCUp_TrackMomZ.push_back((G4double)trkmom.z());
+
+	 prevtrkid = currtrkid;
+	 fTPCUp_NTracks++;
+	 //std::cout << prevtrkid << " - " << currtrkid << std::endl;
+       }       
+     }
+     
+     // TODO: Add all the sensitive detectors and more info
+     
+   }
+   
+  
 
   // get analysis manager  
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
@@ -111,24 +220,18 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillH1(4, fTrackLAbsTPCup);
   analysisManager->FillH1(5, fTrackLAbsTPCdown);
   analysisManager->FillH1(6, fTrackLAbsTarget);
-  analysisManager->FillH1(7, fPrimInTPCup);
-  analysisManager->FillH1(8, fPrimInTPCdown);
-  analysisManager->FillH1(9, fPrimInTarget);
 
   // fill ntuple                 
-  analysisManager->FillNtupleDColumn(0, fEnergyAbsTPCup);
-  analysisManager->FillNtupleDColumn(1, fEnergyAbsTPCdown);
-  analysisManager->FillNtupleDColumn(2, fEnergyAbsTarget);
-  analysisManager->FillNtupleDColumn(3, fTrackLAbsTPCup);
-  analysisManager->FillNtupleDColumn(4, fTrackLAbsTPCdown);
-  analysisManager->FillNtupleDColumn(5, fTrackLAbsTarget);
-  analysisManager->FillNtupleDColumn(6, fPrimInTPCup);
-  analysisManager->FillNtupleDColumn(7, fPrimInTPCdown);
-  analysisManager->FillNtupleDColumn(8, fPrimInTarget);
-  analysisManager->FillNtupleDColumn(9, fPDGPrimTPCup);
-  analysisManager->FillNtupleDColumn(10, fPDGPrimTPCdown);
-  analysisManager->FillNtupleDColumn(11, fPDGPrimTarget);
-  analysisManager->FillNtupleDColumn(12, fPDGPrim);
+  analysisManager->FillNtupleDColumn(0,  fEnergyAbsTPCup);
+  analysisManager->FillNtupleDColumn(1,  fEnergyAbsTPCdown);
+  analysisManager->FillNtupleDColumn(2,  fEnergyAbsTarget);
+  analysisManager->FillNtupleDColumn(3,  fTrackLAbsTPCup);
+  analysisManager->FillNtupleDColumn(4,  fTrackLAbsTPCdown);
+  analysisManager->FillNtupleDColumn(5,  fTrackLAbsTarget); 
+  analysisManager->FillNtupleIColumn(6,  fNTracks);
+
+  analysisManager->FillNtupleIColumn(14,  fTPCUp_NTracks);
+
   analysisManager->AddNtupleRow();
 
 
@@ -138,7 +241,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   G4int printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ( ( printModulo > 0 ) && ( eventID % printModulo == 0 ) ) {
     G4cout << "---> End of event: " << eventID << G4endl;
-
+    
     G4cout
       << "   Absorber TPC up: total energy: " << std::setw(7)
       << G4BestUnit(fEnergyAbsTPCup,"Energy")
@@ -156,10 +259,20 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       << G4BestUnit(fTrackLAbsTarget,"Length")
       << G4endl;
   }
-  
 
-
-  //G4int event_id = evt->GetEventID();
+  // Print out the informations from SteppingAction
+  std::cout << std::endl;
+  std::cout << "Print out the informations from SteppingAction:" << std::endl;
+  std::cout << std::endl;
+  std::cout << "# of Tracks = " << fNTracks << std::endl;
+  for(int itrk=0;itrk<fNTracks;itrk++){
+    std::cout << "Track ID: = " << fVecTrackID[itrk] 
+	      << " - Track PDG: = " << fVecTrackPDG[itrk]   
+	      << " - Track E: = " << fVecTrackE[itrk]   
+	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
+	      << std::endl;
+  }
+  std::cout << std::endl;
   
   // get number of stored trajectories
   //
@@ -177,3 +290,53 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02EventAction::SetTrack(G4Track *track) { // Used in SteppingAction
+
+  // Take track informations from its first step
+  G4int newtrkid      = track->GetTrackID();
+  G4int newtrkpdg     = track->GetDefinition()->GetPDGEncoding();
+
+  // Get the total initial energy of the track
+  G4double newtrkmass        = track->GetDefinition()->GetPDGMass();
+  G4double newtrkEkinVtx     = track->GetVertexKineticEnergy();  
+  G4double newtrkEtotVtx     = newtrkEkinVtx + newtrkmass;             
+  
+  // Get the total initial momentum
+  G4ThreeVector newVecMomVtx = track->GetMomentum(); //Direction(); 
+  G4double newtrkMomX   = newVecMomVtx.x();
+  G4double newtrkMomY   = newVecMomVtx.y();
+  G4double newtrkMomZ   = newVecMomVtx.z();
+  G4double newtrkMomMag = newVecMomVtx.mag();
+
+  G4int vecel = fNTracks-1;
+
+  //G4String detname = track->GetVolume()->GetName();
+  //std::vector < G4String > vecstr;  
+  //if(detname!="TPCUp") return;
+
+  if(fNTracks==0){
+    fVecTrackID .push_back(newtrkid);
+    fVecTrackPDG.push_back(newtrkpdg);
+    fVecTrackE  .push_back(newtrkEtotVtx);
+
+    fVecTrackMomX.push_back(newtrkMomX);
+    fVecTrackMomY.push_back(newtrkMomY);
+    fVecTrackMomZ.push_back(newtrkMomZ);
+    fVecTrackMomMag.push_back(newtrkMomMag);
+
+    fNTracks++;
+   }
+  else if(fNTracks>0 && newtrkid!=fVecTrackID[vecel]){ // Only the first step
+    fVecTrackID .push_back(newtrkid);
+    fVecTrackPDG.push_back(newtrkpdg);
+    fVecTrackE  .push_back(newtrkEtotVtx);
+
+    fVecTrackMomX.push_back(newtrkMomX);
+    fVecTrackMomY.push_back(newtrkMomY);
+    fVecTrackMomZ.push_back(newtrkMomZ);
+    fVecTrackMomMag.push_back(newtrkMomMag);
+
+    fNTracks++;
+  }
+}

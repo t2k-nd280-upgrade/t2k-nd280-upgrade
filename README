@@ -2,15 +2,18 @@ First of all make sure that ND280 Software is installed and the environment is l
 
 go to t2k-nd280-upgrade-master and do:
 
+
 0.) Set the environment
 
 source T2KND280Up.sh $PWD
+
 
 1.) To build the code do:
 
 cd $ND280UPGRADEPATH/build
 cmake ../src/
 make -jN (N = # of cores)
+
 
 2.) Additional building options can be added by passing extra -D command line arguments to CMake.
     The available options are listed below:

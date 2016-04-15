@@ -48,11 +48,6 @@ class ExN02EventAction;
 
 class ExN02SteppingAction : public G4UserSteppingAction
 {
-  //public:
-  //ExN02SteppingAction();
-  //~ExN02SteppingAction(){};
-  //void UserSteppingAction(const G4Step*);
-
 public:
   ExN02SteppingAction(const ExN02DetectorConstruction* detectorConstruction,
                     ExN02EventAction* eventAction);
