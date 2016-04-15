@@ -21,6 +21,26 @@ void ReadG4out
   TH1D *hEabsTPCup = new TH1D("hEabsTPCup","hEabsTPCup",100,0,150);
   TH1D *hEabsTPCdown = new TH1D("hEabsTPCdown","hEabsTPCdown",100,0,150);
 
+  
+  TH1D *hTPCUp_NTrack = new TH1D("hTPCUp_NTrack","hTPCUp_NTrack",100,0,300);
+  TH1D *hTPCUp_MomX = new TH1D("hTPCUp_MomX","hTPCUp_MomX",100,0,300);
+  TH1D *hTPCUp_MomY = new TH1D("hTPCUp_MomY","hTPCUp_MomY",100,0,300);
+  TH1D *hTPCUp_MomZ = new TH1D("hTPCUp_MomZ","hTPCUp_MomZ",100,0,300);
+  TH1D *hTPCUp_Mom = new TH1D("hTPCUp_Mom","hTPCUp_Mom",100,0,300);
+
+  TH1D *hTPCDown_NTrack = new TH1D("hTPCDown_NTrack","hTPCDown_NTrack",100,0,300);
+  TH1D *hTPCDown_MomX = new TH1D("hTPCDown_MomX","hTPCDown_MomX",100,0,300);
+  TH1D *hTPCDown_MomY = new TH1D("hTPCDown_MomY","hTPCDown_MomY",100,0,300);
+  TH1D *hTPCDown_MomZ = new TH1D("hTPCDown_MomZ","hTPCDown_MomZ",100,0,300);
+  TH1D *hTPCDown_Mom = new TH1D("hTPCDown_Mom","hTPCDown_Mom",100,0,300);
+
+  TH1D *hTarget_NTrack = new TH1D("hTarget_NTrack","hTarget_NTrack",100,0,300);
+  TH1D *hTarget_MomX = new TH1D("hTarget_MomX","hTarget_MomX",100,0,300);
+  TH1D *hTarget_MomY = new TH1D("hTarget_MomY","hTarget_MomY",100,0,300);
+  TH1D *hTarget_MomZ = new TH1D("hTarget_MomZ","hTarget_MomZ",100,0,300);
+  TH1D *hTarget_Mom = new TH1D("hTarget_Mom","hTarget_Mom",100,0,300);
+
+
   cout << endl;
   cout << "Reading file:" << endl;
   cout << filename << endl;
@@ -36,6 +56,8 @@ void ReadG4out
   double EabsTPCup=0.;
   double EabsTPCdown=0.;
   int NTracks=0;
+
+  // Global informations
   vector<int>   * VecTrackID  = new vector<int>();
   vector<int>   * VecTrackPDG = new vector<int>();
   vector<double>* VecTrackE   = new vector<double>();
@@ -43,9 +65,33 @@ void ReadG4out
   vector<double>* VecTrackMomY = new vector<double>();
   vector<double>* VecTrackMomZ = new vector<double>();
   vector<double>* VecTrackMom  = new vector<double>();
-  vector<int>* VecTPCUp_TrackID = new vector<int>();
 
+  // TPC up informations
+  int     TPCUp_NTracks;          // # of tracks in TPC Up
+  std::vector<int>   * VecTPCUp_TrackID; // Vector of trackID in TPCup
+  std::vector<double>* VecTPCUp_TrackMomX; // Vector of initial mom in TPC Up
+  std::vector<double>* VecTPCUp_TrackMomY; // Vector of initial mom in TPC Up
+  std::vector<double>* VecTPCUp_TrackMomZ; // Vector of initial mom in TPC Up
+
+  // TPC down informations
+  int     TPCDown_NTracks;          // # of tracks in TPC Down
+  std::vector<int>   * VecTPCDown_TrackID; // Vector of trackID in TPCDown
+  std::vector<double>* VecTPCDown_TrackMomX; // Vector of initial mom in TPC Down
+  std::vector<double>* VecTPCDown_TrackMomY; // Vector of initial mom in TPC Down
+  std::vector<double>* VecTPCDown_TrackMomZ; // Vector of initial mom in TPC Down
+
+  // Target informations
+  int     Target_NTracks;          // # of tracks in Target
+  std::vector<int>   * VecTarget_TrackID; // Vector of trackID in Target
+  std::vector<double>* VecTarget_TrackMomX; // Vector of initial mom in Target
+  std::vector<double>* VecTarget_TrackMomY; // Vector of initial mom in Target 
+  std::vector<double>* VecTarget_TrackMomZ; // Vector of initial mom in Target
+
+
+  //
   // From all the volume
+  //
+
   treein->SetBranchAddress("NTracks",    &NTracks);  
   treein->SetBranchAddress("VecTrackID",  &VecTrackID);
   treein->SetBranchAddress("VecTrackPDG", &VecTrackPDG);
@@ -54,12 +100,36 @@ void ReadG4out
   treein->SetBranchAddress("VecTrackMomY",   &VecTrackMomY);
   treein->SetBranchAddress("VecTrackMomZ",   &VecTrackMomZ);
   treein->SetBranchAddress("VecTrackMomMag", &VecTrackMom);
+
+  //
   // From sensitive detector
+  //
+  
   treein->SetBranchAddress("EabsTarget", &EabsTarget);
   treein->SetBranchAddress("EabsTPCup",  &EabsTPCup);
   treein->SetBranchAddress("EabsTPCdown",&EabsTPCdown);
-  treein->SetBranchAddress("VecTPCUp_TrackID", &VecTPCUp_TrackID);
-  
+
+  treein->SetBranchAddress("TPCUp_NTracks",      &TPCUp_NTracks);
+  treein->SetBranchAddress("VecTPCUp_TrackID",   &VecTPCUp_TrackID);
+  treein->SetBranchAddress("VecTPCUp_TrackMomX", &VecTPCUp_TrackMomX);
+  treein->SetBranchAddress("VecTPCUp_TrackMomY", &VecTPCUp_TrackMomY);
+  treein->SetBranchAddress("VecTPCUp_TrackMomZ", &VecTPCUp_TrackMomZ);
+
+  treein->SetBranchAddress("TPCDown_NTracks",      &TPCDown_NTracks);
+  treein->SetBranchAddress("VecTPCDown_TrackID",   &VecTPCDown_TrackID);
+  treein->SetBranchAddress("VecTPCDown_TrackMomX", &VecTPCDown_TrackMomX);
+  treein->SetBranchAddress("VecTPCDown_TrackMomY", &VecTPCDown_TrackMomY);
+  treein->SetBranchAddress("VecTPCDown_TrackMomZ", &VecTPCDown_TrackMomZ);
+
+  treein->SetBranchAddress("Target_NTracks",      &Target_NTracks);
+  treein->SetBranchAddress("VecTarget_TrackID",   &VecTarget_TrackID);
+  treein->SetBranchAddress("VecTarget_TrackMomX", &VecTarget_TrackMomX);
+  treein->SetBranchAddress("VecTarget_TrackMomY", &VecTarget_TrackMomY);
+  treein->SetBranchAddress("VecTarget_TrackMomZ", &VecTarget_TrackMomZ);
+
+
+
+
   // Loop over the ntuple events
   
   int Nentries = treein->GetEntries();
@@ -112,12 +182,68 @@ void ReadG4out
     hEabsTPCdown->Fill(EabsTPCdown);
     hEabsTarget->Fill(EabsTarget);
 
+    //
     // TPC Up tracks
-    for(int itrk=0;itrk<VecTPCUp_TrackID.size();itrk++){
-      cout << VecTPCUp_TrackID->at(itrk) << ", ";
-    }
-    cout << endl;
+    //
+
+    hTPCUp_NTrack->Fill(TPCUp_NTracks);
     
+    for(int itrk=0;itrk<VecTPCUp_TrackID->size();itrk++){
+     //cout << VecTPCUp_TrackID->at(itrk) << ", ";
+
+      double momX = VecTPCUp_TrackMomX->at(itrk);
+      double momY = VecTPCUp_TrackMomY->at(itrk);
+      double momZ = VecTPCUp_TrackMomZ->at(itrk);
+      hTPCUp_MomX->Fill(momX);
+      hTPCUp_MomY->Fill(momY);
+      hTPCUp_MomZ->Fill(momZ);
+      
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      hTPCUp_Mom->Fill(mom);
+    }
+    //cout << endl;
+
+    //
+    // TPC Down tracks
+    //
+
+    hTPCDown_NTrack->Fill(TPCDown_NTracks);
+    
+    for(int itrk=0;itrk<VecTPCDown_TrackID->size();itrk++){
+     //cout << VecTPCDown_TrackID->at(itrk) << ", ";
+
+      double momX = VecTPCDown_TrackMomX->at(itrk);
+      double momY = VecTPCDown_TrackMomY->at(itrk);
+      double momZ = VecTPCDown_TrackMomZ->at(itrk);
+      hTPCDown_MomX->Fill(momX);
+      hTPCDown_MomY->Fill(momY);
+      hTPCDown_MomZ->Fill(momZ);
+      
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      hTPCDown_Mom->Fill(mom);
+    }
+    //cout << endl;
+
+    //
+    // Target tracks
+    //
+
+    hTarget_NTrack->Fill(Target_NTracks);
+    
+    for(int itrk=0;itrk<VecTarget_TrackID->size();itrk++){
+     //cout << VecTarget_TrackID->at(itrk) << ", ";
+
+      double momX = VecTarget_TrackMomX->at(itrk);
+      double momY = VecTarget_TrackMomY->at(itrk);
+      double momZ = VecTarget_TrackMomZ->at(itrk);
+      hTarget_MomX->Fill(momX);
+      hTarget_MomY->Fill(momY);
+      hTarget_MomZ->Fill(momZ);
+      
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      hTarget_Mom->Fill(mom);
+    }
+    //cout << endl;
     
   } // end loop over events
 
@@ -162,6 +288,17 @@ void ReadG4out
   hTrackMomZ->Draw();
   TCanvas *cTrackMom = new TCanvas("cTrackMom","cTrackMom");
   hTrackMom->Draw();
+
+  TCanvas *cTPCUp_TrackMom = new TCanvas("cTPCUp_TrackMom","cTPCUp_TrackMom");
+  hTPCUp_Mom->Draw();
+
+  TCanvas *cTPCDown_TrackMom = new TCanvas("cTPCDown_TrackMom","cTPCDown_TrackMom");
+  hTPCDown_Mom->Draw();
+
+  TCanvas *cTarget_TrackMom = new TCanvas("cTarget_TrackMom","cTarget_TrackMom");
+  hTarget_Mom->Draw();
+
+
 
   // Print 
 

@@ -61,6 +61,7 @@ public:
   
   void SetTrack(G4Track *track);
   
+  // Global informations
   std::vector<G4int>   & GetVecTrackID  () {return fVecTrackID;};
   std::vector<G4int>   & GetVecTrackPDG () {return fVecTrackPDG;};
   std::vector<G4double>& GetVecTrackE   () {return fVecTrackE;};
@@ -68,13 +69,28 @@ public:
   std::vector<G4double>& GetVecTrackMomY() {return fVecTrackMomY;};
   std::vector<G4double>& GetVecTrackMomZ() {return fVecTrackMomZ;};
   std::vector<G4double>& GetVecTrackMomMag() {return fVecTrackMomMag;};
-  
+
+  // TPC Up informations
+  G4int               GetTPCUp_NTracks() { return fTPCUp_NTracks;};          
   std::vector<G4int>   & GetVecTPCUp_TrackID() {return fVecTPCUp_TrackID;}; 
   std::vector<G4double>& GetVecTPCUp_TrackMomX(){return fVecTPCUp_TrackMomX;}; 
   std::vector<G4double>& GetVecTPCUp_TrackMomY(){return fVecTPCUp_TrackMomY;}; 
   std::vector<G4double>& GetVecTPCUp_TrackMomZ(){return fVecTPCUp_TrackMomZ;}; 
+
+  // TPC Down informations
+  G4int               GetTPCDown_NTracks() { return fTPCDown_NTracks;};          
+  std::vector<G4int>   & GetVecTPCDown_TrackID() {return fVecTPCDown_TrackID;}; 
+  std::vector<G4double>& GetVecTPCDown_TrackMomX(){return fVecTPCDown_TrackMomX;}; 
+  std::vector<G4double>& GetVecTPCDown_TrackMomY(){return fVecTPCDown_TrackMomY;}; 
+  std::vector<G4double>& GetVecTPCDown_TrackMomZ(){return fVecTPCDown_TrackMomZ;}; 
+
+  // Target informations
+  G4int               GetTarget_NTracks() { return fTarget_NTracks;};          
+  std::vector<G4int>   & GetVecTarget_TrackID() {return fVecTarget_TrackID;}; 
+  std::vector<G4double>& GetVecTarget_TrackMomX(){return fVecTarget_TrackMomX;}; 
+  std::vector<G4double>& GetVecTarget_TrackMomY(){return fVecTarget_TrackMomY;}; 
+  std::vector<G4double>& GetVecTarget_TrackMomZ(){return fVecTarget_TrackMomZ;}; 
   
-  G4int               GetTPCUp_NTracks() { return fTPCUp_NTracks;};          
 
 private:
 
@@ -101,12 +117,26 @@ private:
   std::vector<G4double> fVecTrackMomMag; // Vector of initial momentum Z
   
   // TPC up informations
+  G4int     fTPCUp_NTracks;          // # of tracks in TPC Up
   std::vector<G4int>    fVecTPCUp_TrackID; // Vector of trackID in TPCup
   std::vector<G4double> fVecTPCUp_TrackMomX; // Vector of initial mom in TPC Up
   std::vector<G4double> fVecTPCUp_TrackMomY; // Vector of initial mom in TPC Up
   std::vector<G4double> fVecTPCUp_TrackMomZ; // Vector of initial mom in TPC Up
-  
-  G4int     fTPCUp_NTracks;          // # of tracks in TPC Up
+
+  // TPC down informations
+  G4int     fTPCDown_NTracks;          // # of tracks in TPC Down
+  std::vector<G4int>    fVecTPCDown_TrackID; // Vector of trackID in TPCDown
+  std::vector<G4double> fVecTPCDown_TrackMomX; // Vector of initial mom in TPC Down
+  std::vector<G4double> fVecTPCDown_TrackMomY; // Vector of initial mom in TPC Down
+  std::vector<G4double> fVecTPCDown_TrackMomZ; // Vector of initial mom in TPC Down
+
+  // Target informations
+  G4int     fTarget_NTracks;          // # of tracks in Target
+  std::vector<G4int>    fVecTarget_TrackID; // Vector of trackID in Target
+  std::vector<G4double> fVecTarget_TrackMomX; // Vector of initial mom in Target
+  std::vector<G4double> fVecTarget_TrackMomY; // Vector of initial mom in Target 
+  std::vector<G4double> fVecTarget_TrackMomZ; // Vector of initial mom in Target
+
 };
 
 

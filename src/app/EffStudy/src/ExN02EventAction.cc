@@ -72,11 +72,25 @@ ExN02EventAction::ExN02EventAction()
     fVecTrackMomY(),
     fVecTrackMomZ(),
     fVecTrackMomMag(),
+    
     fTPCUp_NTracks(0),
     fVecTPCUp_TrackID(),
     fVecTPCUp_TrackMomX(),
     fVecTPCUp_TrackMomY(),
-    fVecTPCUp_TrackMomZ()
+    fVecTPCUp_TrackMomZ(),
+
+    fTPCDown_NTracks(0),
+    fVecTPCDown_TrackID(),
+    fVecTPCDown_TrackMomX(),
+    fVecTPCDown_TrackMomY(),
+    fVecTPCDown_TrackMomZ(),
+
+    fTarget_NTracks(0),
+    fVecTarget_TrackID(),
+    fVecTarget_TrackMomX(),
+    fVecTarget_TrackMomY(),
+    fVecTarget_TrackMomZ()
+
 {
   // // set printing per each event
   // G4RunManager::GetRunManager()->SetPrintProgress(1);
@@ -103,6 +117,8 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
   fNTracks          = 0; // It's a counter. It must be 0 at the begin of the event.
 
   fTPCUp_NTracks = 0;
+  fTPCDown_NTracks = 0;
+  fTarget_NTracks = 0;
 
   // vector initialisation per event
   fVecTrackID.clear(); // clear the vector
@@ -117,6 +133,16 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
   fVecTPCUp_TrackMomX.clear(); 
   fVecTPCUp_TrackMomY.clear(); 
   fVecTPCUp_TrackMomZ.clear(); 
+
+  fVecTPCDown_TrackID.clear(); 
+  fVecTPCDown_TrackMomX.clear(); 
+  fVecTPCDown_TrackMomY.clear(); 
+  fVecTPCDown_TrackMomZ.clear(); 
+
+  fVecTarget_TrackID.clear(); 
+  fVecTarget_TrackMomX.clear(); 
+  fVecTarget_TrackMomY.clear(); 
+  fVecTarget_TrackMomZ.clear(); 
   
   // Initialize the hit collections
   if (fHHC1ID==-1) {
@@ -165,46 +191,110 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
    G4int n_hit = hHC1->entries();
    std::cout << "# of hits = " << n_hit << std::endl;
 
-   G4int currtrkid = kBadNum;
-   G4int prevtrkid = kBadNum;
+   G4int currtrkid_TPCUp = kBadNum;
+   G4int prevtrkid_TPCUp = kBadNum;
+   G4int currtrkid_TPCDown = kBadNum;
+   G4int prevtrkid_TPCDown = kBadNum;
+   G4int currtrkid_Target = kBadNum;
+   G4int prevtrkid_Target = kBadNum;
    
    for (G4int i=0;i<n_hit;i++){
      ExN02TrackerHit* hit = (*hHC1)[i];
-  
+     
      G4String detname = hit->GetNameDet();
      //std::cout << detname << std::endl;
      
      if(detname=="TPCUp"){     
 	 
        // Get Track initial informations (first step of the track)
-       currtrkid = hit->GetTrackID();
-       G4double trkmom = hit->GetMom();
+       currtrkid_TPCUp = hit->GetTrackID();
+       G4ThreeVector trkmom = hit->GetMom();
 
-       if(prevtrkid==kBadNum){
-	 fVecTPCUp_TrackID.push_back(currtrkid);
+       if(prevtrkid_TPCUp==kBadNum){
+	 fVecTPCUp_TrackID.push_back(currtrkid_TPCUp);
 	 
 	 fVecTPCUp_TrackMomX.push_back(trkmom.x());
 	 fVecTPCUp_TrackMomY.push_back(trkmom.y());
 	 fVecTPCUp_TrackMomZ.push_back(trkmom.z());
  	 
-	 prevtrkid = currtrkid;
+	 prevtrkid_TPCUp = currtrkid_TPCUp;
 	 fTPCUp_NTracks++;
-	 //std::cout << "First:" << prevtrkid << " - " << currtrkid << std::endl;
+	 //std::cout << "First:" << prevtrkid_TPCUp << " - " << currtrkid_TPCUp << std::endl;
        }
-       else if(currtrkid!=prevtrkid && prevtrkid!=kBadNum){
-	 fVecTPCUp_TrackID.push_back(currtrkid);
-
+       else if(currtrkid_TPCUp!=prevtrkid_TPCUp && prevtrkid_TPCUp!=kBadNum){
+	 fVecTPCUp_TrackID.push_back(currtrkid_TPCUp);
+	 
 	 fVecTPCUp_TrackMomX.push_back((G4double)trkmom.x());
 	 fVecTPCUp_TrackMomY.push_back((G4double)trkmom.y());
 	 fVecTPCUp_TrackMomZ.push_back((G4double)trkmom.z());
 
-	 prevtrkid = currtrkid;
+	 prevtrkid_TPCUp = currtrkid_TPCUp;
 	 fTPCUp_NTracks++;
-	 //std::cout << prevtrkid << " - " << currtrkid << std::endl;
+	 //std::cout << prevtrkid_TPCUp << " - " << currtrkid_TPCUp << std::endl;
        }       
      }
-     
-     // TODO: Add all the sensitive detectors and more info
+
+     else if(detname=="TPCDown"){     
+	 
+       // Get Track initial informations (first step of the track)
+       currtrkid_TPCDown = hit->GetTrackID();
+       G4ThreeVector trkmom = hit->GetMom();
+
+       if(prevtrkid_TPCDown==kBadNum){
+	 fVecTPCDown_TrackID.push_back(currtrkid_TPCDown);
+	 
+	 fVecTPCDown_TrackMomX.push_back(trkmom.x());
+	 fVecTPCDown_TrackMomY.push_back(trkmom.y());
+	 fVecTPCDown_TrackMomZ.push_back(trkmom.z());
+ 	 
+	 prevtrkid_TPCDown = currtrkid_TPCDown;
+	 fTPCDown_NTracks++;
+	 //std::cout << "First:" << prevtrkid_TPCDown << " - " << currtrkid_TPCDown << std::endl;
+       }
+       else if(currtrkid_TPCDown!=prevtrkid_TPCDown && prevtrkid_TPCDown!=kBadNum){
+	 fVecTPCDown_TrackID.push_back(currtrkid_TPCDown);
+	 
+	 fVecTPCDown_TrackMomX.push_back((G4double)trkmom.x());
+	 fVecTPCDown_TrackMomY.push_back((G4double)trkmom.y());
+	 fVecTPCDown_TrackMomZ.push_back((G4double)trkmom.z());
+
+	 prevtrkid_TPCDown = currtrkid_TPCDown;
+	 fTPCDown_NTracks++;
+	 //std::cout << prevtrkid_TPCDown << " - " << currtrkid_TPCDown << std::endl;
+       }       
+     }
+
+     else if(detname=="Target"){     
+	 
+       // Get Track initial informations (first step of the track)
+       currtrkid_Target = hit->GetTrackID();
+       G4ThreeVector trkmom = hit->GetMom();
+
+       if(prevtrkid_Target==kBadNum){
+	 fVecTarget_TrackID.push_back(currtrkid_Target);
+	 
+	 fVecTarget_TrackMomX.push_back(trkmom.x());
+	 fVecTarget_TrackMomY.push_back(trkmom.y());
+	 fVecTarget_TrackMomZ.push_back(trkmom.z());
+ 	 
+	 prevtrkid_Target = currtrkid_Target;
+	 fTarget_NTracks++;
+	 //std::cout << "First:" << prevtrkid_Target << " - " << currtrkid_Target << std::endl;
+       }
+       else if(currtrkid_Target!=prevtrkid_Target && prevtrkid_Target!=kBadNum){
+	 fVecTarget_TrackID.push_back(currtrkid_Target);
+	 
+	 fVecTarget_TrackMomX.push_back((G4double)trkmom.x());
+	 fVecTarget_TrackMomY.push_back((G4double)trkmom.y());
+	 fVecTarget_TrackMomZ.push_back((G4double)trkmom.z());
+
+	 prevtrkid_Target = currtrkid_Target;
+	 fTarget_NTracks++;
+	 //std::cout << prevtrkid_Target << " - " << currtrkid_Target << std::endl;
+       }       
+     }
+
+
      
    }
    
@@ -213,15 +303,18 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   // get analysis manager  
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
-  // fill histograms
-  analysisManager->FillH1(1, fEnergyAbsTPCup);
-  analysisManager->FillH1(2, fEnergyAbsTPCdown);
-  analysisManager->FillH1(3, fEnergyAbsTarget);
-  analysisManager->FillH1(4, fTrackLAbsTPCup);
-  analysisManager->FillH1(5, fTrackLAbsTPCdown);
-  analysisManager->FillH1(6, fTrackLAbsTarget);
+  // // fill histograms
+  // analysisManager->FillH1(1, fEnergyAbsTPCup);
+  // analysisManager->FillH1(2, fEnergyAbsTPCdown);
+  // analysisManager->FillH1(3, fEnergyAbsTarget);
+  // analysisManager->FillH1(4, fTrackLAbsTPCup);
+  // analysisManager->FillH1(5, fTrackLAbsTPCdown);
+  // analysisManager->FillH1(6, fTrackLAbsTarget);
 
-  // fill ntuple                 
+  //
+  // Fill Ntuple: be careful to the column ID. Check with RunAction where the Ntuple is created                 
+  //
+
   analysisManager->FillNtupleDColumn(0,  fEnergyAbsTPCup);
   analysisManager->FillNtupleDColumn(1,  fEnergyAbsTPCdown);
   analysisManager->FillNtupleDColumn(2,  fEnergyAbsTarget);
@@ -230,7 +323,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillNtupleDColumn(5,  fTrackLAbsTarget); 
   analysisManager->FillNtupleIColumn(6,  fNTracks);
 
-  analysisManager->FillNtupleIColumn(14,  fTPCUp_NTracks);
+  analysisManager->FillNtupleIColumn(7,  fTPCUp_NTracks);
+  analysisManager->FillNtupleIColumn(8,  fTPCDown_NTracks);
+  analysisManager->FillNtupleIColumn(9,  fTarget_NTracks);
 
   analysisManager->AddNtupleRow();
 
