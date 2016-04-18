@@ -304,7 +304,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
   // // fill histograms
-  // analysisManager->FillH1(1, fEnergyAbsTPCup);
+  analysisManager->FillH1(1, fEnergyAbsTPCup);
   // analysisManager->FillH1(2, fEnergyAbsTPCdown);
   // analysisManager->FillH1(3, fEnergyAbsTarget);
   // analysisManager->FillH1(4, fTrackLAbsTPCup);

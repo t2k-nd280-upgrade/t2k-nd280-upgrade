@@ -66,7 +66,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
   //
 
   // // Creating histograms 
-  // analysisManager->CreateH1("Edep_abs_tpcup","Edep in TPC Up", 100, 0., 800*MeV);
+  analysisManager->CreateH1("Edep_abs_tpcup","Edep in TPC Up", 100, 0., 800*MeV);
   // analysisManager->CreateH1("Edep_abs_tpcdown","Edep in TPC Down", 100, 0., 800*MeV);
   // analysisManager->CreateH1("Edep_abs_target","Edep in Target", 100, 0., 800*MeV);
   // analysisManager->CreateH1("TrkLght_abs_tpcup","trackL in TPC Up", 100, 0., 2*m);
