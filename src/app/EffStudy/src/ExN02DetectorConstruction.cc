@@ -392,6 +392,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // VGM demo 
   // Export geometry in Root and save it in a file
   //
+  // TGeoManager::Import("geometry.root");
+  // gGeoManager->GetTopVolume()->Draw();
   //
   // Import Geant4 geometry to VGM
   Geant4GM::Factory g4Factory;
@@ -403,7 +405,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   rtFactory.SetDebug(0);
   g4Factory.Export(&rtFactory);
   gGeoManager->CloseGeometry();
+  gGeoManager->SetName("ND280Geometry");
   gGeoManager->Export("geometry.root");
+  //G4cout << gGeoManager->GetName() << G4endl;
   //
   // end VGM demo
   //---------------------------------------------------------------------------
