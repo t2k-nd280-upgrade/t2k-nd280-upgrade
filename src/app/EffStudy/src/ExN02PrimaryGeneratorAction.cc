@@ -53,8 +53,11 @@ ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
   // default particle kinematic
   //
 
-  G4String particlename = "pi-"; //"pi-" //"pi+"                        
-  G4double particleenergy = 125 * MeV; // GeV 
+  G4String particlename = "mu-"; //"pi-" //"pi+" 
+  G4double particleenergy = 600 * MeV; // GeV   
+
+  //G4String particlename = "pi-"; //"pi-" //"pi+"                        
+  //G4double particleenergy = 125 * MeV; // GeV 
   
   //G4String particlename = "proton";                        
   //G4double particleenergy = 50. * MeV; // GeV 

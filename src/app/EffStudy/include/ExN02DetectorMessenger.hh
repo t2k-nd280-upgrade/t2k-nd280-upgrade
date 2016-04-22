@@ -58,7 +58,7 @@ class ExN02DetectorMessenger: public G4UImessenger
     G4UIdirectory*             detDir;
     G4UIcmdWithAString*        TargMatCmd;
     G4UIcmdWithAString*        ChamMatCmd;    
-    G4UIcmdWithADoubleAndUnit* FieldCmd;
+    //G4UIcmdWithADoubleAndUnit* FieldCmd;
     G4UIcmdWithADoubleAndUnit* StepMaxCmd;    
 };
 

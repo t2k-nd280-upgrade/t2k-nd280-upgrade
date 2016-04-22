@@ -58,6 +58,8 @@
 #include "ExN02SteppingAction.hh"
 #include "ExN02SteppingVerbose.hh"
 
+#include "G4BlineTracer.hh"
+
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 
@@ -97,7 +99,9 @@ int main(int argc,char** argv)
   //physlist->RegisterPhysics(new G4StepLimiterBuilder()); // attach the step limit to each particle   
   runManager->SetUserInitialization(physlist);
   
-
+  // Instantiate the G4BlineTracer class                                                                               
+  G4BlineTracer* theBlineTool = new G4BlineTracer();
+  
 
   // User Action classes (OLD STYLE)
   //
@@ -112,31 +116,16 @@ int main(int argc,char** argv)
   //G4UserSteppingAction* stepping_action = new ExN02SteppingAction; // OLD
   // //G4UserSteppingAction* stepping_action = new ExN02SteppingAction(detector,event_action); // NEW
   //runManager->SetUserAction(stepping_action);
-                                                                                                                                                 
-  
+                                                                                                
   // Initialize all User Action classes
   ExN02ActionInitialization* actionInitialization = new ExN02ActionInitialization(detector);
   runManager->SetUserInitialization(actionInitialization);
 
-  // Initialize G4 kernel                                                                                                                                                       
+  // Initialize G4 kernel                                                                                                                  
   //                                                                                                                                    
   runManager->Initialize();
 
   //
-
-
-  // // Import Geant4 geometry to VGM                       
-  // Geant4GM::Factory g4Factory;
-  // g4Factory.Import(physiWorld);     // where physiWorld is of G4VPhysicalVolume* type 
-
-  // // Export VGM geometry to Root                         
-  // RootGM::Factory rtFactory;
-  // g4Factory.Export(&rtFactory);
-  // gGeoManager->CloseGeometry();
-  // return rtFactory.World();        // returns Root top node, of TGeoNode* type       
- 
-  //
-
       
 #ifdef G4VIS_USE
   G4VisManager* visManager = new G4VisExecutive;
@@ -167,15 +156,17 @@ int main(int argc,char** argv)
 #ifdef G4VIS_USE
       delete visManager;
 #endif     
-    }
 
+    }
+  
   // Free the store: user actions, physics_list and detector_description are
   //                 owned and deleted by the run manager, so they should not
   //                 be deleted in the main() program !
 
+  delete theBlineTool;
   delete runManager;
   delete verbosity;
-
+  
   return 0;
 }
 

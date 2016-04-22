@@ -59,12 +59,12 @@ ExN02DetectorMessenger::ExN02DetectorMessenger(ExN02DetectorConstruction* myDet)
   ChamMatCmd->SetParameterName("choice",false);
   ChamMatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);  
   
-  FieldCmd = new G4UIcmdWithADoubleAndUnit("/N02/det/setField",this);  
-  FieldCmd->SetGuidance("Define magnetic field.");
-  FieldCmd->SetGuidance("Magnetic field will be in X direction.");
-  FieldCmd->SetParameterName("Bx",false);
-  FieldCmd->SetUnitCategory("Magnetic flux density");
-  FieldCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  //FieldCmd = new G4UIcmdWithADoubleAndUnit("/N02/det/setField",this);  
+  //FieldCmd->SetGuidance("Define magnetic field.");
+  //FieldCmd->SetGuidance("Magnetic field will be in X direction.");
+  //FieldCmd->SetParameterName("Bx",false);
+  //FieldCmd->SetUnitCategory("Magnetic flux density");
+  //FieldCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
         
   StepMaxCmd = new G4UIcmdWithADoubleAndUnit("/N02/det/stepMax",this);  
   StepMaxCmd->SetGuidance("Define a step max");
@@ -79,7 +79,7 @@ ExN02DetectorMessenger::~ExN02DetectorMessenger()
 {
   delete TargMatCmd;
   delete ChamMatCmd;
-  delete FieldCmd;
+  //delete FieldCmd;
   delete StepMaxCmd;  
   delete detDir;
   delete N02Dir;
@@ -95,8 +95,8 @@ void ExN02DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == ChamMatCmd )
    { myDetector->setChamberMaterial(newValue);}  
   
-  if( command == FieldCmd )
-   { myDetector->SetMagField(FieldCmd->GetNewDoubleValue(newValue));}
+  //if( command == FieldCmd )
+  //{ myDetector->SetMagField(FieldCmd->GetNewDoubleValue(newValue));}
       
   if( command == StepMaxCmd )
    { myDetector->SetMaxStep(StepMaxCmd->GetNewDoubleValue(newValue));}   

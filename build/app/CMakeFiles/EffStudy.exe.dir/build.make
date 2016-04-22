@@ -259,28 +259,28 @@ app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ChamberParameterisation.cc.o.p
 
 app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ChamberParameterisation.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ChamberParameterisation.cc.o
 
-app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
-app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02MagneticField.cc
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02FieldMessenger.cc
 	$(CMAKE_COMMAND) -E cmake_progress_report /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles $(CMAKE_PROGRESS_10)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o"
-	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02MagneticField.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02FieldMessenger.cc
 
-app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.i"
-	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02MagneticField.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.i
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.i"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02FieldMessenger.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.i
 
-app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.s"
-	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02MagneticField.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.s
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.s"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02FieldMessenger.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.s
 
-app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o.requires:
-.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o.requires:
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o.requires
 
-app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o.requires
-	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o.provides.build
-.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o.provides
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o.requires
+	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o.provides.build
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o.provides
 
-app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o
 
 app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02DetectorConstruction.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
 app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02DetectorConstruction.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02DetectorConstruction.cc
@@ -374,6 +374,167 @@ app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.o.provides: app/C
 
 app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.o
 
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02FieldSetup.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles $(CMAKE_PROGRESS_15)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02FieldSetup.cc
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.i"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02FieldSetup.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.i
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.s"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/src/ExN02FieldSetup.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.s
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o.requires:
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o.requires
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o.requires
+	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o.provides.build
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o.provides
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles $(CMAKE_PROGRESS_16)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.i"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.i
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.s"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.s
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o.requires:
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o.requires
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o.requires
+	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o.provides.build
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o.provides
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineEventAction.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles $(CMAKE_PROGRESS_17)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineEventAction.cc
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.i"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineEventAction.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.i
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.s"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineEventAction.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.s
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o.requires:
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o.requires
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o.requires
+	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o.provides.build
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o.provides
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles $(CMAKE_PROGRESS_18)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.i"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.i
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.s"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.s
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o.requires:
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o.requires
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o.requires
+	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o.provides.build
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o.provides
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineTracer.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles $(CMAKE_PROGRESS_19)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineTracer.cc
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.i"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineTracer.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.i
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.s"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineTracer.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.s
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o.requires:
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o.requires
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o.requires
+	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o.provides.build
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o.provides
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles $(CMAKE_PROGRESS_20)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.i"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.i
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.s"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.s
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o.requires:
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o.requires
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o.requires
+	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o.provides.build
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o.provides
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o: app/CMakeFiles/EffStudy.exe.dir/flags.make
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineEquation.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles $(CMAKE_PROGRESS_21)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o -c /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineEquation.cc
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.i"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineEquation.cc > CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.i
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.s"
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/BlineTracer/src/G4BlineEquation.cc -o CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.s
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o.requires:
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o.requires
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o.provides: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o.requires
+	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o.provides.build
+.PHONY : app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o.provides
+
+app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o.provides.build: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o
+
 # Object files for target EffStudy.exe
 EffStudy_exe_OBJECTS = \
 "CMakeFiles/EffStudy.exe.dir/EffStudy/Main.cc.o" \
@@ -385,11 +546,18 @@ EffStudy_exe_OBJECTS = \
 "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02RunAction.cc.o" \
 "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02SteppingAction.cc.o" \
 "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ChamberParameterisation.cc.o" \
-"CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o" \
+"CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o" \
 "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02DetectorConstruction.cc.o" \
 "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ActionInitialization.cc.o" \
 "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02PrimaryGeneratorAction.cc.o" \
-"CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.o"
+"CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.o" \
+"CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o" \
+"CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o" \
+"CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o" \
+"CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o" \
+"CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o" \
+"CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o" \
+"CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o"
 
 # External object files for target EffStudy.exe
 EffStudy_exe_EXTERNAL_OBJECTS =
@@ -403,11 +571,18 @@ EffStudy_exe_EXTERNAL_OBJECTS =
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02RunAction.cc.o
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02SteppingAction.cc.o
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ChamberParameterisation.cc.o
-/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02DetectorConstruction.cc.o
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ActionInitialization.cc.o
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02PrimaryGeneratorAction.cc.o
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.o
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/build.make
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe: app/CMakeFiles/EffStudy.exe.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/bin/EffStudy.exe"
@@ -426,11 +601,18 @@ app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStu
 app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02RunAction.cc.o.requires
 app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02SteppingAction.cc.o.requires
 app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ChamberParameterisation.cc.o.requires
-app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o.requires
 app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02DetectorConstruction.cc.o.requires
 app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ActionInitialization.cc.o.requires
 app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02PrimaryGeneratorAction.cc.o.requires
 app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o.requires
+app/CMakeFiles/EffStudy.exe.dir/requires: app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o.requires
 .PHONY : app/CMakeFiles/EffStudy.exe.dir/requires
 
 app/CMakeFiles/EffStudy.exe.dir/clean:

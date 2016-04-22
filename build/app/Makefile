@@ -115,6 +115,150 @@ EffStudy.exe/fast:
 	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/build
 .PHONY : EffStudy.exe/fast
 
+EffStudy/BlineTracer/src/G4BlineEquation.o: EffStudy/BlineTracer/src/G4BlineEquation.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineEquation.o
+
+# target to build an object file
+EffStudy/BlineTracer/src/G4BlineEquation.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineEquation.cc.o
+
+EffStudy/BlineTracer/src/G4BlineEquation.i: EffStudy/BlineTracer/src/G4BlineEquation.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineEquation.i
+
+# target to preprocess a source file
+EffStudy/BlineTracer/src/G4BlineEquation.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineEquation.cc.i
+
+EffStudy/BlineTracer/src/G4BlineEquation.s: EffStudy/BlineTracer/src/G4BlineEquation.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineEquation.s
+
+# target to generate assembly for a file
+EffStudy/BlineTracer/src/G4BlineEquation.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEquation.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineEquation.cc.s
+
+EffStudy/BlineTracer/src/G4BlineEventAction.o: EffStudy/BlineTracer/src/G4BlineEventAction.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineEventAction.o
+
+# target to build an object file
+EffStudy/BlineTracer/src/G4BlineEventAction.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineEventAction.cc.o
+
+EffStudy/BlineTracer/src/G4BlineEventAction.i: EffStudy/BlineTracer/src/G4BlineEventAction.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineEventAction.i
+
+# target to preprocess a source file
+EffStudy/BlineTracer/src/G4BlineEventAction.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineEventAction.cc.i
+
+EffStudy/BlineTracer/src/G4BlineEventAction.s: EffStudy/BlineTracer/src/G4BlineEventAction.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineEventAction.s
+
+# target to generate assembly for a file
+EffStudy/BlineTracer/src/G4BlineEventAction.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineEventAction.cc.s
+
+EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.o: EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.o
+
+# target to build an object file
+EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o
+
+EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.i: EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.i
+
+# target to preprocess a source file
+EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.i
+
+EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.s: EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.s
+
+# target to generate assembly for a file
+EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.s
+
+EffStudy/BlineTracer/src/G4BlineSteppingAction.o: EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineSteppingAction.o
+
+# target to build an object file
+EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.o
+
+EffStudy/BlineTracer/src/G4BlineSteppingAction.i: EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineSteppingAction.i
+
+# target to preprocess a source file
+EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.i
+
+EffStudy/BlineTracer/src/G4BlineSteppingAction.s: EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineSteppingAction.s
+
+# target to generate assembly for a file
+EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineSteppingAction.cc.s
+
+EffStudy/BlineTracer/src/G4BlineTracer.o: EffStudy/BlineTracer/src/G4BlineTracer.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracer.o
+
+# target to build an object file
+EffStudy/BlineTracer/src/G4BlineTracer.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracer.cc.o
+
+EffStudy/BlineTracer/src/G4BlineTracer.i: EffStudy/BlineTracer/src/G4BlineTracer.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracer.i
+
+# target to preprocess a source file
+EffStudy/BlineTracer/src/G4BlineTracer.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracer.cc.i
+
+EffStudy/BlineTracer/src/G4BlineTracer.s: EffStudy/BlineTracer/src/G4BlineTracer.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracer.s
+
+# target to generate assembly for a file
+EffStudy/BlineTracer/src/G4BlineTracer.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracer.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracer.cc.s
+
+EffStudy/BlineTracer/src/G4BlineTracerMessenger.o: EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracerMessenger.o
+
+# target to build an object file
+EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o
+
+EffStudy/BlineTracer/src/G4BlineTracerMessenger.i: EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracerMessenger.i
+
+# target to preprocess a source file
+EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.i
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.i
+
+EffStudy/BlineTracer/src/G4BlineTracerMessenger.s: EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracerMessenger.s
+
+# target to generate assembly for a file
+EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.s
+.PHONY : EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.s
+
 EffStudy/Main.o: EffStudy/Main.cc.o
 .PHONY : EffStudy/Main.o
 
@@ -259,29 +403,53 @@ EffStudy/src/ExN02EventAction.cc.s:
 	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02EventAction.cc.s
 .PHONY : EffStudy/src/ExN02EventAction.cc.s
 
-EffStudy/src/ExN02MagneticField.o: EffStudy/src/ExN02MagneticField.cc.o
-.PHONY : EffStudy/src/ExN02MagneticField.o
+EffStudy/src/ExN02FieldMessenger.o: EffStudy/src/ExN02FieldMessenger.cc.o
+.PHONY : EffStudy/src/ExN02FieldMessenger.o
 
 # target to build an object file
-EffStudy/src/ExN02MagneticField.cc.o:
-	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.o
-.PHONY : EffStudy/src/ExN02MagneticField.cc.o
+EffStudy/src/ExN02FieldMessenger.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.o
+.PHONY : EffStudy/src/ExN02FieldMessenger.cc.o
 
-EffStudy/src/ExN02MagneticField.i: EffStudy/src/ExN02MagneticField.cc.i
-.PHONY : EffStudy/src/ExN02MagneticField.i
+EffStudy/src/ExN02FieldMessenger.i: EffStudy/src/ExN02FieldMessenger.cc.i
+.PHONY : EffStudy/src/ExN02FieldMessenger.i
 
 # target to preprocess a source file
-EffStudy/src/ExN02MagneticField.cc.i:
-	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.i
-.PHONY : EffStudy/src/ExN02MagneticField.cc.i
+EffStudy/src/ExN02FieldMessenger.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.i
+.PHONY : EffStudy/src/ExN02FieldMessenger.cc.i
 
-EffStudy/src/ExN02MagneticField.s: EffStudy/src/ExN02MagneticField.cc.s
-.PHONY : EffStudy/src/ExN02MagneticField.s
+EffStudy/src/ExN02FieldMessenger.s: EffStudy/src/ExN02FieldMessenger.cc.s
+.PHONY : EffStudy/src/ExN02FieldMessenger.s
 
 # target to generate assembly for a file
-EffStudy/src/ExN02MagneticField.cc.s:
-	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02MagneticField.cc.s
-.PHONY : EffStudy/src/ExN02MagneticField.cc.s
+EffStudy/src/ExN02FieldMessenger.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldMessenger.cc.s
+.PHONY : EffStudy/src/ExN02FieldMessenger.cc.s
+
+EffStudy/src/ExN02FieldSetup.o: EffStudy/src/ExN02FieldSetup.cc.o
+.PHONY : EffStudy/src/ExN02FieldSetup.o
+
+# target to build an object file
+EffStudy/src/ExN02FieldSetup.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o
+.PHONY : EffStudy/src/ExN02FieldSetup.cc.o
+
+EffStudy/src/ExN02FieldSetup.i: EffStudy/src/ExN02FieldSetup.cc.i
+.PHONY : EffStudy/src/ExN02FieldSetup.i
+
+# target to preprocess a source file
+EffStudy/src/ExN02FieldSetup.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.i
+.PHONY : EffStudy/src/ExN02FieldSetup.cc.i
+
+EffStudy/src/ExN02FieldSetup.s: EffStudy/src/ExN02FieldSetup.cc.s
+.PHONY : EffStudy/src/ExN02FieldSetup.s
+
+# target to generate assembly for a file
+EffStudy/src/ExN02FieldSetup.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.s
+.PHONY : EffStudy/src/ExN02FieldSetup.cc.s
 
 EffStudy/src/ExN02PhysicsList.o: EffStudy/src/ExN02PhysicsList.cc.o
 .PHONY : EffStudy/src/ExN02PhysicsList.o
@@ -460,6 +628,24 @@ help:
 	@echo "... EffStudy.exe"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... EffStudy/BlineTracer/src/G4BlineEquation.o"
+	@echo "... EffStudy/BlineTracer/src/G4BlineEquation.i"
+	@echo "... EffStudy/BlineTracer/src/G4BlineEquation.s"
+	@echo "... EffStudy/BlineTracer/src/G4BlineEventAction.o"
+	@echo "... EffStudy/BlineTracer/src/G4BlineEventAction.i"
+	@echo "... EffStudy/BlineTracer/src/G4BlineEventAction.s"
+	@echo "... EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.o"
+	@echo "... EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.i"
+	@echo "... EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.s"
+	@echo "... EffStudy/BlineTracer/src/G4BlineSteppingAction.o"
+	@echo "... EffStudy/BlineTracer/src/G4BlineSteppingAction.i"
+	@echo "... EffStudy/BlineTracer/src/G4BlineSteppingAction.s"
+	@echo "... EffStudy/BlineTracer/src/G4BlineTracer.o"
+	@echo "... EffStudy/BlineTracer/src/G4BlineTracer.i"
+	@echo "... EffStudy/BlineTracer/src/G4BlineTracer.s"
+	@echo "... EffStudy/BlineTracer/src/G4BlineTracerMessenger.o"
+	@echo "... EffStudy/BlineTracer/src/G4BlineTracerMessenger.i"
+	@echo "... EffStudy/BlineTracer/src/G4BlineTracerMessenger.s"
 	@echo "... EffStudy/Main.o"
 	@echo "... EffStudy/Main.i"
 	@echo "... EffStudy/Main.s"
@@ -478,9 +664,12 @@ help:
 	@echo "... EffStudy/src/ExN02EventAction.o"
 	@echo "... EffStudy/src/ExN02EventAction.i"
 	@echo "... EffStudy/src/ExN02EventAction.s"
-	@echo "... EffStudy/src/ExN02MagneticField.o"
-	@echo "... EffStudy/src/ExN02MagneticField.i"
-	@echo "... EffStudy/src/ExN02MagneticField.s"
+	@echo "... EffStudy/src/ExN02FieldMessenger.o"
+	@echo "... EffStudy/src/ExN02FieldMessenger.i"
+	@echo "... EffStudy/src/ExN02FieldMessenger.s"
+	@echo "... EffStudy/src/ExN02FieldSetup.o"
+	@echo "... EffStudy/src/ExN02FieldSetup.i"
+	@echo "... EffStudy/src/ExN02FieldSetup.s"
 	@echo "... EffStudy/src/ExN02PhysicsList.o"
 	@echo "... EffStudy/src/ExN02PhysicsList.i"
 	@echo "... EffStudy/src/ExN02PhysicsList.s"

@@ -33,7 +33,7 @@
 #include "ExN02DetectorConstruction.hh"
 #include "ExN02DetectorMessenger.hh"
 #include "ExN02ChamberParameterisation.hh"
-#include "ExN02MagneticField.hh"
+//#include "ExN02MagneticField.hh" // OLD
 #include "ExN02TrackerSD.hh"
 #include "ExN02Constants.hh"
 
@@ -52,6 +52,11 @@
 #include "G4Colour.hh"
 #include "G4ios.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4AutoDelete.hh"
+
+// Magnetic field
+#include "ExN02FieldSetup.hh"
+//
 
 // VGM demo
 #include "Geant4GM/volumes/Factory.h"
@@ -76,7 +81,8 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
   solidChamberUp(0),logicChamberUp(0),physiChamberUp(0), 
   solidChamberDown(0),logicChamberDown(0),physiChamberDown(0), 
   TargetMater(0), ChamberMater(0), //chamberParam(0),
-  stepLimit(0), fpMagField(0),
+  stepLimit(0), 
+  //fpMagField(0), // OLD
   fWorldLength(0.), fWorldWidth(0.), fWorldHeight(0.),
   fTargetLength(0.),fTargetWidth(0.),fTargetHeight(0.),
   fTrackerLength(0.),
@@ -85,7 +91,7 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
   fGapPV(0), // new
   fCheckOverlaps(true) // new
 {
-  fpMagField = new ExN02MagneticField();
+  //fpMagField = new ExN02MagneticField(); // OLD
   detectorMessenger = new ExN02DetectorMessenger(this);
 }
 
@@ -93,7 +99,7 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
  
 ExN02DetectorConstruction::~ExN02DetectorConstruction()
 {
-  delete fpMagField;
+  //delete fpMagField; // OLD
   delete stepLimit;
   //delete chamberParam;
   delete detectorMessenger;             
@@ -338,6 +344,24 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   logicChamberDown->SetSensitiveDetector( aTrackerSD );
   logicTarget->SetSensitiveDetector( aTrackerSD );
     
+
+
+
+
+
+  // Construct the field creator - this will register the field it creates
+  if (!fEmFieldSetup.Get()) {
+    ExN02FieldSetup* fieldSetup
+      = new ExN02FieldSetup(G4ThreeVector( 0.0, 0.2*tesla, 0.0 ) );
+    G4AutoDelete::Register(fieldSetup); // Kernel will delete the ExN02FieldSetup
+    fEmFieldSetup.Put(fieldSetup);
+  }
+
+
+
+
+
+  
   //--------- Visualization attributes -------------------------------
 
   G4VisAttributes* BoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
@@ -405,7 +429,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   rtFactory.SetDebug(0);
   g4Factory.Export(&rtFactory);
   gGeoManager->CloseGeometry();
-  gGeoManager->SetName("ND280Geometry");
+  gGeoManager->SetName("ND280Geometry"); // TGeoManager object name must be "ND280Geometry" to be read by NEUT
   gGeoManager->Export("geometry.root");
   //G4cout << gGeoManager->GetName() << G4endl;
   //
@@ -446,10 +470,10 @@ void ExN02DetectorConstruction::setChamberMaterial(G4String materialName)
  
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
-void ExN02DetectorConstruction::SetMagField(G4double fieldValue)
-{
-  fpMagField->SetMagFieldValue(fieldValue);  
-}
+//void ExN02DetectorConstruction::SetMagField(G4double fieldValue) // OLD
+//{
+//fpMagField->SetMagFieldValue(fieldValue);  
+//}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

@@ -35,7 +35,9 @@
 
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
-#include "ExN02MagneticField.hh"
+#include "G4Cache.hh"
+
+//#include "ExN02MagneticField.hh" // OLD
 
 class G4Box;
 class G4LogicalVolume;
@@ -43,7 +45,11 @@ class G4VPhysicalVolume;
 class G4Material;
 class G4VPVParameterisation;
 class G4UserLimits;
+class G4UniformMagField; // needed for magnetic field
+
 class ExN02DetectorMessenger;
+class ExN02FieldSetup;
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -79,7 +85,7 @@ public:
   void SetMaxStep (G4double);     
   
   void DefineMaterials();
-                                                                                                                                                                                           
+                         
   const G4VPhysicalVolume* GetAbsorberPV() const; // new
   const G4VPhysicalVolume* GetGapPV() const; // new
   
@@ -88,6 +94,8 @@ protected:
   G4Material* FindMaterial(G4String m);
 
 private:
+
+  G4Cache<ExN02FieldSetup*>    fEmFieldSetup;
 
   G4Box*             solidWorld;    // pointer to the solid envelope 
   G4LogicalVolume*   logicWorld;    // pointer to the logical envelope
@@ -120,7 +128,7 @@ private:
 
   G4UserLimits* stepLimit;             // pointer to user step limits
 
-  ExN02MagneticField* fpMagField;   // pointer to the magnetic field 
+  //ExN02MagneticField* fpMagField;   // pointer to the magnetic field 
      
   ExN02DetectorMessenger* detectorMessenger;  // pointer to the Messenger
        

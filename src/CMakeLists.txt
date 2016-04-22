@@ -36,7 +36,8 @@ if    (VGM_FOUND)
   LINK_DIRECTORIES   (${VGM_LIBRARY_DIR})
 endif (VGM_FOUND)
 
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/include) ### include GEANT4 example
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/include) ### include GEANT4 simulation
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/BlineTracer/include) ### include GEANT4 package to visualize magnetic field
 
 message(STATUS "C flags      : " ${CMAKE_C_FLAGS})
 message(STATUS "CXX flags    : " ${CMAKE_CXX_FLAGS})
