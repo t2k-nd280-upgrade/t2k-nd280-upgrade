@@ -60,22 +60,22 @@ ExN02FieldMessenger::ExN02FieldMessenger(ExN02FieldSetup* fieldSetup)
   fStepperCmd->SetDefaultValue(4);
   fStepperCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  //fUpdateCmd = new G4UIcmdWithoutParameter("/field/update",this);
-  //fUpdateCmd->SetGuidance("Update calorimeter geometry.");
-  //fUpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
-  //fUpdateCmd->SetGuidance("if you changed geometrical value(s).");
-  //fUpdateCmd->AvailableForStates(G4State_Idle);
+  fUpdateCmd = new G4UIcmdWithoutParameter("/field/update",this);
+  fUpdateCmd->SetGuidance("Update detector geometry.");
+  fUpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
+  fUpdateCmd->SetGuidance("if you changed geometrical value(s).");
+  fUpdateCmd->AvailableForStates(G4State_Idle);
  
-  fMagFieldCmd = new G4UIcmdWithADoubleAndUnit("/field/setFieldZ",this);
+  fMagFieldCmd = new G4UIcmdWithADoubleAndUnit("/field/setFieldX",this);
   fMagFieldCmd->SetGuidance("Define magnetic field.");
-  fMagFieldCmd->SetGuidance("Magnetic field will be in Z direction.");
-  fMagFieldCmd->SetParameterName("Bz",false,false);
+  fMagFieldCmd->SetGuidance("Magnetic field will be in X direction.");
+  fMagFieldCmd->SetParameterName("Bx",false,false);
   fMagFieldCmd->SetDefaultUnit("tesla");
   fMagFieldCmd->AvailableForStates(G4State_Idle);
  
   fMinStepCmd = new G4UIcmdWithADoubleAndUnit("/field/setMinStep",this);
   fMinStepCmd->SetGuidance("Define minimal step");
-  fMinStepCmd->SetGuidance("Magnetic field will be in Z direction.");
+  fMinStepCmd->SetGuidance("Magnetic field will be in X direction.");
   fMinStepCmd->SetParameterName("min step",false,false);
   fMinStepCmd->SetDefaultUnit("mm");
   fMinStepCmd->AvailableForStates(G4State_Idle);

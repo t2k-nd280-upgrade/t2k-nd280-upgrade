@@ -37,6 +37,7 @@
 
 #include "ExN02FieldSetup.hh"
 #include "ExN02FieldMessenger.hh"
+#include "ExN02Constants.hh"
 
 #include "G4MagneticField.hh"
 #include "G4UniformMagField.hh"
@@ -104,9 +105,8 @@ void ExN02FieldSetup::InitialiseAll()
  
   fEquation = new G4Mag_UsualEqRhs(fMagneticField);
  
-  fMinStep     = 1.0*mm; // minimal step of 1 mm is default
-
-  fStepperType = 4;      // ClassicalRK4 is default stepper
+  fMinStep     = cMinStep;
+  fStepperType = cStepperType;     
 
   fFieldManager = G4TransportationManager::GetTransportationManager()
                     ->GetFieldManager();
@@ -131,7 +131,7 @@ void ExN02FieldSetup::CreateStepperAndChordFinder()
 
   SetStepper();
   G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl;
-
+  
   fFieldManager->SetDetectorField(fMagneticField );
 
   if (fChordFinder) delete fChordFinder;
@@ -139,13 +139,20 @@ void ExN02FieldSetup::CreateStepperAndChordFinder()
   fChordFinder = new G4ChordFinder( fMagneticField, fMinStep,fStepper );
 
   fFieldManager->SetChordFinder( fChordFinder );
+  
+  G4double fieldValue[6],  position[4];
+  position[0] = position[1] = position[2] = position[3] = 0.0;
+  this->GetGlobalFieldManager()->GetDetectorField()->GetFieldValue( position, fieldValue);
+  G4ThreeVector fieldVec(fieldValue[0], fieldValue[1], fieldValue[2]);
+  G4cout << "Magnetic field vector is "
+	 << fieldVec / tesla << " T " << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02FieldSetup::SetStepper()
 {
-// Set stepper according to the stepper type
+  // Set stepper according to the stepper type
 
   if (fStepper) delete fStepper;
 
@@ -199,14 +206,14 @@ void ExN02FieldSetup::SetStepper()
 
 void ExN02FieldSetup::SetFieldValue(G4double fieldStrength)
 {
-  // Set the value of the Global Field to fieldValue along Z
+  // Set the value of the Global Field to fieldValue along X
 
 #ifdef G4VERBOSE
   G4cout << "Setting Field strength to "
          << fieldStrength / tesla  << " Tesla."; // << G4endl;
 #endif
 
-  G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
+  G4ThreeVector fieldSetVec(fieldStrength, 0.0, 0.0);
   this->SetFieldValue( fieldSetVec );
 
 #ifdef G4VERBOSE
@@ -217,7 +224,7 @@ void ExN02FieldSetup::SetFieldValue(G4double fieldStrength)
     G4ThreeVector fieldVec(fieldValue[0], fieldValue[1], fieldValue[2]);
     // G4cout << " fMagneticField is now " << fMagneticField
     G4cout << " Magnetic field vector is "
-           << fieldVec / gauss << " G " << G4endl;
+           << fieldVec / tesla << " T " << G4endl;
   } else {
     if ( fMagneticField == 0 )
       G4cout << " Magnetic field pointer is null." << G4endl;

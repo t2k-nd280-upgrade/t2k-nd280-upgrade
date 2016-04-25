@@ -85,8 +85,9 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
   //fpMagField(0), // OLD
   fWorldLength(0.), fWorldWidth(0.), fWorldHeight(0.),
   fTargetLength(0.),fTargetWidth(0.),fTargetHeight(0.),
-  fTrackerLength(0.),
-  NbOfChambers(0) ,  ChamberWidth(0.),  ChamberSpacing(0.),
+  fTrackerLength(0.),fTrackerWidth(0.),fTrackerHeight(0.),
+  fNbOfChambers(0) , fChamberSpacing(0.),
+  fChamberLength(0.),fChamberWidth(0.),fChamberHeight(0.),
   fAbsorberPV(0), // new
   fGapPV(0), // new
   fCheckOverlaps(true) // new
@@ -123,19 +124,24 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   fTargetWidth   = cTargetWidth;     // Full width of Target 
   fTargetHeight  = cTargetHeight;    // Full length of Target 
  
-  ChamberLength = cChamberLength;
-  ChamberWidth  = cChamberWidth;
-  ChamberHeight = cChamberHeight;
+  fChamberLength = cChamberLength;
+  fChamberWidth  = cChamberWidth;
+  fChamberHeight = cChamberHeight;
 
   fTrackerLength = cTrackerLength;                
   fTrackerWidth  = cTrackerWidth;                  
   fTrackerHeight = cTrackerHeight;
+
+  fBasketLength = cBasketLength;
+  fBasketWidth  = cBasketWidth;
+  fBasketHeight = cBasketHeight;
 
   fWorldLength = cWorldLength;
   fWorldWidth  = cWorldWidth;
   fWorldHeight = cWorldHeight;
 
   WorldMater   = FindMaterial(cWorldMater); 
+  BasketMater  = FindMaterial(cBasketMater); 
   TrackerMater = FindMaterial(cTrackerMater);  
   TargetMater  = FindMaterial(cTargetMater);  
   ChamberMater = FindMaterial(cChamberMater);
@@ -177,14 +183,55 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
                                  0,               // copy number
 				 fCheckOverlaps); // checking overlaps
  
-  G4cout << "World is " 
-  	 << fWorldHeight/cm << " x " 
-  	 << fWorldWidth/cm  << " x " 
-  	 << fWorldLength/cm << " cm^3" 
+  G4cout << "World is "
+  	 << fWorldWidth/mm  << " (width) x " 
+  	 << fWorldHeight/mm << " (height) x " 
+  	 << fWorldLength/mm << " (length) mm^3" 
 	 << " of " << WorldMater->GetName()
   	 << G4endl;
-				 
+  
 
+
+  //------------------------------ 
+  // Basket
+  //------------------------------
+  
+  G4double HalfBasketLength  = 0.5*(fBasketLength); 
+  G4double HalfBasketWidth   = 0.5*(fBasketWidth); 
+  G4double HalfBasketHeight  = 0.5*(fBasketHeight); 
+
+  if( (HalfBasketLength>HalfWorldLength) || 
+      (HalfBasketWidth>HalfWorldWidth) || 
+      (HalfBasketHeight>HalfWorldHeight)  
+      )
+    {
+      G4cerr << G4endl;
+      G4cerr << "The Basket is bigger than the World!!!" << G4endl;
+      G4cerr << G4endl;
+      exit(1);
+    }
+
+  G4ThreeVector positionBasket = G4ThreeVector(0,0,0);
+
+  solidBasket = new G4Box(cNameSolidBasket,HalfBasketWidth,HalfBasketHeight,HalfBasketLength);
+  logicBasket = new G4LogicalVolume(solidBasket,BasketMater,cNameLogicBasket,0,0,0);  
+  physiBasket = new G4PVPlacement(0,                 // no rotation
+  				  positionBasket,   // at (x,y,z)
+  				  logicBasket,      // its logical volume	 
+  				  cNamePhysiBasket, // its name
+  				  logicWorld,        // its mother  volume
+  				  false,             // no boolean operations
+  				  0,                 // copy number 
+  				  fCheckOverlaps);   // checking overlaps     				 
+  
+  G4cout << "Basket is " 
+  	 << fBasketWidth/mm  << " (width) x " 
+  	 << fBasketHeight/mm << " (height) x " 
+  	 << fBasketLength/mm << " (length) mm^3"
+	 << " of " << BasketMater->GetName()
+  	 << G4endl;
+
+  
   //------------------------------ 
   // Tracker
   //------------------------------
@@ -201,15 +248,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				   positionTracker,   // at (x,y,z)
 				   logicTracker,      // its logical volume	 
 				   cNamePhysiTracker, // its name
-				   logicWorld,        // its mother  volume
+				   //logicWorld,        // its mother  volume
+				   logicBasket,        // its mother  volume
 				   false,             // no boolean operations
 				   0,                 // copy number 
 				   fCheckOverlaps);   // checking overlaps     
 
   G4cout << "Tracker is " 
-  	 << fTrackerWidth/cm  << " x " 
-  	 << fTrackerHeight/cm << " x " 
-  	 << fTrackerLength/cm << " cm^3"
+  	 << fTrackerWidth/mm  << " (width) x " 
+  	 << fTrackerHeight/mm << " (height) x " 
+  	 << fTrackerLength/mm << " (length) mm^3"
 	 << " of " << TrackerMater->GetName()
   	 << G4endl;
  
@@ -234,9 +282,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				  fCheckOverlaps);   // checking overlaps     
 
   G4cout << "Target is " 
-  	 << fTargetWidth/cm  << " x " 
-  	 << fTargetHeight/cm << " x " 
-  	 << fTargetLength/cm << " cm^3" 
+  	 << fTargetWidth/mm  << " (width) x " 
+  	 << fTargetHeight/mm << " (height) x " 
+  	 << fTargetLength/mm << " (length) mm^3" 
          << " of " << TargetMater->GetName() 
   	 << G4endl;
 
@@ -248,14 +296,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // An example of Parameterised volumes
   // dummy values for G4Box -- modified by parameterised volume
   
-  G4double HalfChamberLength = 0.5 * ChamberLength;
-  G4double HalfChamberWidth  = 0.5 * ChamberWidth;
-  G4double HalfChamberHeight = 0.5 * ChamberHeight;
+  G4double HalfChamberLength = 0.5 * fChamberLength;
+  G4double HalfChamberWidth  = 0.5 * fChamberWidth;
+  G4double HalfChamberHeight = 0.5 * fChamberHeight;
   
   solidChamberUp = new G4Box(cNameSolidChamberUp, HalfChamberWidth, HalfChamberHeight, HalfChamberLength); 
   logicChamberUp = new G4LogicalVolume(solidChamberUp,ChamberMater,cNameLogicChamberUp,0,0,0);
 
-  ChamberSpacing = fTargetHeight;
+  fChamberSpacing = fTargetHeight;
   
   G4ThreeVector positionChamberUp = G4ThreeVector(0,
 						  (HalfChamberHeight+HalfTargetHeight),
@@ -286,9 +334,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				       fCheckOverlaps);  // checking overlaps     
   
   G4cout << "Chamber is " 
-  	 << ChamberWidth/cm  << " x " 
-  	 << ChamberHeight/cm << " x " 
-  	 << ChamberLength/cm << " cm^3" 
+  	 << fChamberWidth/mm  << " (width) x " 
+  	 << fChamberHeight/mm << " (height) x " 
+  	 << fChamberLength/mm << " (length) mm^3" 
          << " of " << ChamberMater->GetName() 
   	 << G4endl;
 
@@ -298,11 +346,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // 				 logicTracker,    // Mother logical volume
   // 				 kYAxis,          // Are placed along this axis 
   // 				 NbOfChambers,    // Number of chambers
-  // 				 ChamberWidth,    // Width of a chamber
+  // 				 fChamberWidth,    // Width of a chamber
   // 				 0.0); // Spacing between chambers 
   //ChamberSpacing); // Spacing between chambers 
  
-  // G4double firstPosition = -trackerSizeLenght + 0.5*ChamberWidth;  
+  // G4double firstPosition = -trackerSizeLenght + 0.5*fChamberWidth;  
   // G4double firstLength = fTrackerLength/10;
   // G4double lastLength  = fTrackerLength;
   
@@ -310,7 +358,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // 			   NbOfChambers,          // NoChambers 
   // 			   firstPosition,         // Z of center of first 
   // 			   ChamberSpacing,        // Z spacing of centers
-  // 			   ChamberWidth,          // Width Chamber 
+  // 			   fChamberWidth,          // Width Chamber 
   // 			   firstLength,           // lengthInitial 
   // 			   lastLength);           // lengthFinal
 			   
@@ -325,9 +373,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //                           chamberParam);   // The parametrisation
 
   // G4cout << "There are " << NbOfChambers << " chambers in the tracker region. "
-  //        << "The chambers are " << ChamberWidth/mm << " mm of " 
+  //        << "The chambers are " << fChamberWidth/mm << " mm of " 
   //        << ChamberMater->GetName() << "\n The distance between chamber is "
-  // 	 << ChamberSpacing/cm << " cm" << G4endl;
+  // 	 << ChamberSpacing/mm << " mm" << G4endl;
 	 
 
 
@@ -352,7 +400,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // Construct the field creator - this will register the field it creates
   if (!fEmFieldSetup.Get()) {
     ExN02FieldSetup* fieldSetup
-      = new ExN02FieldSetup(G4ThreeVector( 0.0, 0.2*tesla, 0.0 ) );
+      = new ExN02FieldSetup(G4ThreeVector( cMagFieldX, 0.0, 0.0 ) );
     G4AutoDelete::Register(fieldSetup); // Kernel will delete the ExN02FieldSetup
     fEmFieldSetup.Put(fieldSetup);
   }
@@ -448,7 +496,7 @@ void ExN02DetectorConstruction::setTargetMaterial(G4String materialName)
   if (pttoMaterial)
     {TargetMater = pttoMaterial;
       logicTarget->SetMaterial(pttoMaterial); 
-      G4cout << "\n----> The target is " << fTargetLength/cm << " cm of "
+      G4cout << "\n----> The target is " << fTargetLength/mm << " mm of "
              << materialName << G4endl;
     }             
 }
@@ -463,7 +511,7 @@ void ExN02DetectorConstruction::setChamberMaterial(G4String materialName)
     {ChamberMater = pttoMaterial;
       logicChamberUp->SetMaterial(pttoMaterial); 
       logicChamberDown->SetMaterial(pttoMaterial); 
-      G4cout << "\n----> The chambers are " << ChamberWidth/cm << " cm of "
+      G4cout << "\n----> The chambers are " << fChamberWidth/mm << " mm of "
              << materialName << G4endl;
     }             
 }

@@ -1135,44 +1135,82 @@ Shape {
 		coord Coordinate {
 			point [
 				0 0 0,
-				0 0.63893 1.75411e-05,
-				-0.000205818 0.638929 8.58436e-05,
-				-0.00280153 7.5393 0.00617367,
-				0.0143252 7.53928 0.0126509,
-				0.298869 99.7348 0.738059,
-				-0.0957563 99.7364 0.625236,
-				-0.31615 125.778 1.05915,
-				-0.315571 125.78 0.951607,
-				-0.469876 151.5 1.31451,
-				-2.6443 296.802 5.61644,
-				-4.86089 444.85 11.9775,
-				-7.07748 592.798 20.332,
-				-9.29406 740.62 30.6786,
-				-10.1059 794.722 34.9659,
-				-10.8024 794.684 35.3007,
-				-11.6384 844.611 39.5477,
-				-11.6485 844.611 39.5465,
-				-12.8474 914.775 45.8745,
-				-12.8468 914.774 45.8779,
-				-14.4386 1008.03 55.0058,
-				-14.3984 1008.04 55.0086,
-				-16.7979 1151.5 70.5825,
-				-17.1869 1175.49 73.3931,
-				-17.1836 1175.49 73.3947,
-				-18.2132 1240 81.2275,
-				-18.6008 1264.27 84.2811,
-				-18.6024 1264.27 84.2807,
-				-20.9736 1411.12 103.945,
-				-21.0344 1414.88 104.475,
-				-21.0212 1414.88 104.458,
-				-22.1805 1488 115.01,
+				0 17.6245 0.0133469,
+				-0.0350285 17.6241 0.0982364,
+				-0.0865972 30.4961 0.171664,
+				-0.0922481 30.4961 0.154897,
+				-0.227189 67.901 0.487608,
+				-0.215559 67.9025 0.302613,
+				-0.351845 95.99 0.293639,
+				-0.458136 95.9893 0.265983,
+				-0.503302 102.08 0.263178,
+				-0.488182 102.08 0.249081,
+				-0.64185 151.5 0.219746,
+				-0.676945 156.22 0.207407,
+				-0.676924 156.22 0.207397,
+				-1.3148 242.739 0.338027,
+				-1.32157 242.739 0.374367,
+				-1.42681 257.012 0.468882,
+				-1.42756 257.012 0.468098,
+				-1.60116 280.025 0.653445,
+				-1.59964 280.025 0.653663,
+				-2.17261 355.687 1.60238,
+				-2.1617 355.687 1.58388,
+				-2.37951 385.859 2.10343,
+				-2.37392 385.859 2.10649,
+				-2.91596 464.12 3.85256,
+				-2.93467 464.119 3.85999,
+				-3.88818 589.365 7.87355,
+				-3.90483 589.365 7.86844,
+				-4.11862 616.979 8.93997,
+				-4.11732 616.979 8.94092,
+				-4.61529 680.879 11.6892,
+				-4.61491 680.879 11.684,
+				-4.9695 727.573 13.9196,
+				-4.97375 727.574 13.9159,
+				-5.95134 852.499 20.8609,
+				-5.93091 852.504 20.7832,
+				-6.2417 894.484 23.404,
+				-6.24649 894.484 23.4047,
+				-6.85276 974.397 28.8189,
+				-6.86397 974.397 28.8105,
+				-7.09528 1003.39 30.9102,
+				-7.08935 1003.39 30.9087,
+				-7.61088 1070.59 36.0597,
+				-7.59669 1070.59 36.0643,
+				-7.5971 1070.64 36.0685,
+				-7.5971 1070.64 36.0685,
+				-8.20909 1151.5 42.8287,
+				-8.22484 1153.47 43.0015,
+				-8.22484 1153.47 43.0015,
+				-8.26673 1158.7 43.4625,
+				-8.2669 1158.7 43.4627,
+				-8.87073 1234.55 50.4324,
+				-8.88458 1234.55 50.4255,
+				-8.92909 1240 50.9459,
+				-9.4335 1301.22 56.9805,
+				-9.43529 1301.22 56.9795,
+				-9.4557 1303.68 57.2292,
+				-9.4557 1303.68 57.2293,
+				-9.92163 1359.16 63.0349,
+				-9.92497 1359.17 63.0265,
+				-10.2872 1402.62 67.756,
+				-10.286 1402.62 67.752,
+				-10.5149 1429.65 70.774,
+				-10.5154 1429.65 70.7749,
+				-10.7966 1462.87 74.5856,
+				-10.7968 1462.87 74.5888,
+				-11.0097 1488 77.539,
 			]
 		}
 		coordIndex [
 			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 
 			10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
 			20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 
-			30, 31, -1
+			30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 
+			40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 
+			50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 
+			60, 61, 62, 63, 64, 65, 66, -1
 		]
 	}
 }
@@ -1201,11 +1239,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-0.000205818  0.638929  8.58436e-05)"
+ description "(-0.0350285  17.6241  0.0982364)"
  url "" 
  children [
   Transform {
-   translation -0.000205818 0.638929 8.58436e-05
+   translation -0.0350285 17.6241 0.0982364
    children [
 	Shape {
 		appearance Appearance {
@@ -1224,11 +1262,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(0.0143252  7.53928  0.0126509)"
+ description "(-0.0922481  30.4961  0.154897)"
  url "" 
  children [
   Transform {
-   translation 0.0143252 7.53928 0.0126509
+   translation -0.0922481 30.4961 0.154897
    children [
 	Shape {
 		appearance Appearance {
@@ -1247,11 +1285,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-0.0957563  99.7364  0.625236)"
+ description "(-0.215559  67.9025  0.302613)"
  url "" 
  children [
   Transform {
-   translation -0.0957563 99.7364 0.625236
+   translation -0.215559 67.9025 0.302613
    children [
 	Shape {
 		appearance Appearance {
@@ -1270,11 +1308,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-0.315571  125.78  0.951607)"
+ description "(-0.458136  95.9893  0.265983)"
  url "" 
  children [
   Transform {
-   translation -0.315571 125.78 0.951607
+   translation -0.458136 95.9893 0.265983
    children [
 	Shape {
 		appearance Appearance {
@@ -1293,11 +1331,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-0.469876  151.5  1.31451)"
+ description "(-0.488182  102.08  0.249081)"
  url "" 
  children [
   Transform {
-   translation -0.469876 151.5 1.31451
+   translation -0.488182 102.08 0.249081
    children [
 	Shape {
 		appearance Appearance {
@@ -1316,11 +1354,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-10.8024  794.684  35.3007)"
+ description "(-0.64185  151.5  0.219746)"
  url "" 
  children [
   Transform {
-   translation -10.8024 794.684 35.3007
+   translation -0.64185 151.5 0.219746
    children [
 	Shape {
 		appearance Appearance {
@@ -1339,11 +1377,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-11.6485  844.611  39.5465)"
+ description "(-0.676924  156.22  0.207397)"
  url "" 
  children [
   Transform {
-   translation -11.6485 844.611 39.5465
+   translation -0.676924 156.22 0.207397
    children [
 	Shape {
 		appearance Appearance {
@@ -1362,11 +1400,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-12.8468  914.774  45.8779)"
+ description "(-1.32157  242.739  0.374367)"
  url "" 
  children [
   Transform {
-   translation -12.8468 914.774 45.8779
+   translation -1.32157 242.739 0.374367
    children [
 	Shape {
 		appearance Appearance {
@@ -1385,11 +1423,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-14.3984  1008.04  55.0086)"
+ description "(-1.42756  257.012  0.468098)"
  url "" 
  children [
   Transform {
-   translation -14.3984 1008.04 55.0086
+   translation -1.42756 257.012 0.468098
    children [
 	Shape {
 		appearance Appearance {
@@ -1408,11 +1446,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-16.7979  1151.5  70.5825)"
+ description "(-1.59964  280.025  0.653663)"
  url "" 
  children [
   Transform {
-   translation -16.7979 1151.5 70.5825
+   translation -1.59964 280.025 0.653663
    children [
 	Shape {
 		appearance Appearance {
@@ -1431,11 +1469,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-17.1836  1175.49  73.3947)"
+ description "(-2.1617  355.687  1.58388)"
  url "" 
  children [
   Transform {
-   translation -17.1836 1175.49 73.3947
+   translation -2.1617 355.687 1.58388
    children [
 	Shape {
 		appearance Appearance {
@@ -1454,11 +1492,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-18.2132  1240  81.2275)"
+ description "(-2.37392  385.859  2.10649)"
  url "" 
  children [
   Transform {
-   translation -18.2132 1240 81.2275
+   translation -2.37392 385.859 2.10649
    children [
 	Shape {
 		appearance Appearance {
@@ -1477,11 +1515,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-18.6024  1264.27  84.2807)"
+ description "(-2.93467  464.119  3.85999)"
  url "" 
  children [
   Transform {
-   translation -18.6024 1264.27 84.2807
+   translation -2.93467 464.119 3.85999
    children [
 	Shape {
 		appearance Appearance {
@@ -1500,11 +1538,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-21.0212  1414.88  104.458)"
+ description "(-3.90483  589.365  7.86844)"
  url "" 
  children [
   Transform {
-   translation -21.0212 1414.88 104.458
+   translation -3.90483 589.365 7.86844
    children [
 	Shape {
 		appearance Appearance {
@@ -1523,11 +1561,471 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-22.1805  1488  115.01)"
+ description "(-4.11732  616.979  8.94092)"
  url "" 
  children [
   Transform {
-   translation -22.1805 1488 115.01
+   translation -4.11732 616.979 8.94092
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-4.61491  680.879  11.684)"
+ url "" 
+ children [
+  Transform {
+   translation -4.61491 680.879 11.684
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-4.97375  727.574  13.9159)"
+ url "" 
+ children [
+  Transform {
+   translation -4.97375 727.574 13.9159
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-5.93091  852.504  20.7832)"
+ url "" 
+ children [
+  Transform {
+   translation -5.93091 852.504 20.7832
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-6.24649  894.484  23.4047)"
+ url "" 
+ children [
+  Transform {
+   translation -6.24649 894.484 23.4047
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-6.86397  974.397  28.8105)"
+ url "" 
+ children [
+  Transform {
+   translation -6.86397 974.397 28.8105
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.08935  1003.39  30.9087)"
+ url "" 
+ children [
+  Transform {
+   translation -7.08935 1003.39 30.9087
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.59669  1070.59  36.0643)"
+ url "" 
+ children [
+  Transform {
+   translation -7.59669 1070.59 36.0643
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.5971  1070.64  36.0685)"
+ url "" 
+ children [
+  Transform {
+   translation -7.5971 1070.64 36.0685
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.20909  1151.5  42.8287)"
+ url "" 
+ children [
+  Transform {
+   translation -8.20909 1151.5 42.8287
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.22484  1153.47  43.0015)"
+ url "" 
+ children [
+  Transform {
+   translation -8.22484 1153.47 43.0015
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.2669  1158.7  43.4627)"
+ url "" 
+ children [
+  Transform {
+   translation -8.2669 1158.7 43.4627
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.88458  1234.55  50.4255)"
+ url "" 
+ children [
+  Transform {
+   translation -8.88458 1234.55 50.4255
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.92909  1240  50.9459)"
+ url "" 
+ children [
+  Transform {
+   translation -8.92909 1240 50.9459
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-9.43529  1301.22  56.9795)"
+ url "" 
+ children [
+  Transform {
+   translation -9.43529 1301.22 56.9795
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-9.4557  1303.68  57.2293)"
+ url "" 
+ children [
+  Transform {
+   translation -9.4557 1303.68 57.2293
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-9.92497  1359.17  63.0265)"
+ url "" 
+ children [
+  Transform {
+   translation -9.92497 1359.17 63.0265
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.286  1402.62  67.752)"
+ url "" 
+ children [
+  Transform {
+   translation -10.286 1402.62 67.752
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.5154  1429.65  70.7749)"
+ url "" 
+ children [
+  Transform {
+   translation -10.5154 1429.65 70.7749
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.7968  1462.87  74.5888)"
+ url "" 
+ children [
+  Transform {
+   translation -10.7968 1462.87 74.5888
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-11.0097  1488  77.539)"
+ url "" 
+ children [
+  Transform {
+   translation -11.0097 1488 77.539
    children [
 	Shape {
 		appearance Appearance {
@@ -1555,15 +2053,2125 @@ Shape {
 	geometry IndexedLineSet {
 		coord Coordinate {
 			point [
-				-21.0212 1414.88 104.458,
-				-21.4735 1414.99 104.254,
-				-21.4735 1414.99 104.254,
-				-21.7937 1415.29 103.91,
-				-21.7937 1415.29 103.91,
-				-22.2687 1415.29 103.788,
-				-22.2687 1415.29 103.788,
-				-22.3038 1415.28 103.803,
-				-22.3038 1415.28 103.803,
+				-10.7968 1462.87 74.5888,
+				-10.7681 1462.86 74.6753,
+				-10.7681 1462.86 74.6753,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.7968  1462.87  74.5888)"
+ url "" 
+ children [
+  Transform {
+   translation -10.7968 1462.87 74.5888
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.7681  1462.86  74.6753)"
+ url "" 
+ children [
+  Transform {
+   translation -10.7681 1462.86 74.6753
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-10.5154 1429.65 70.7749,
+				-10.4696 1429.65 70.7969,
+				-10.4696 1429.65 70.7969,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.5154  1429.65  70.7749)"
+ url "" 
+ children [
+  Transform {
+   translation -10.5154 1429.65 70.7749
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.4696  1429.65  70.7969)"
+ url "" 
+ children [
+  Transform {
+   translation -10.4696 1429.65 70.7969
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-10.286 1402.62 67.752,
+				-10.2889 1402.61 67.8199,
+				-10.2889 1402.61 67.8199,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.286  1402.62  67.752)"
+ url "" 
+ children [
+  Transform {
+   translation -10.286 1402.62 67.752
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-10.2889  1402.61  67.8199)"
+ url "" 
+ children [
+  Transform {
+   translation -10.2889 1402.61 67.8199
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-9.92497 1359.17 63.0265,
+				-11.6123 1359.25 63.2501,
+				-11.6123 1359.25 63.2501,
+				-12.224 1359.45 62.3657,
+				-12.224 1359.45 62.3657,
+				-12.0263 1359.29 62.1443,
+				-12.0263 1359.29 62.1443,
+			]
+		}
+		coordIndex [
+			0, 1, 2, 3, 4, 5, 6, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-9.92497  1359.17  63.0265)"
+ url "" 
+ children [
+  Transform {
+   translation -9.92497 1359.17 63.0265
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-11.6123  1359.25  63.2501)"
+ url "" 
+ children [
+  Transform {
+   translation -11.6123 1359.25 63.2501
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-12.224  1359.45  62.3657)"
+ url "" 
+ children [
+  Transform {
+   translation -12.224 1359.45 62.3657
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-12.0263  1359.29  62.1443)"
+ url "" 
+ children [
+  Transform {
+   translation -12.0263 1359.29 62.1443
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-9.4557 1303.68 57.2293,
+				-9.47961 1303.69 57.1992,
+				-9.47961 1303.69 57.1992,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-9.4557  1303.68  57.2293)"
+ url "" 
+ children [
+  Transform {
+   translation -9.4557 1303.68 57.2293
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-9.47961  1303.69  57.1992)"
+ url "" 
+ children [
+  Transform {
+   translation -9.47961 1303.69 57.1992
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-9.43529 1301.22 56.9795,
+				-9.48423 1301.22 56.9988,
+				-9.48423 1301.22 56.9988,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-9.43529  1301.22  56.9795)"
+ url "" 
+ children [
+  Transform {
+   translation -9.43529 1301.22 56.9795
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-9.48423  1301.22  56.9988)"
+ url "" 
+ children [
+  Transform {
+   translation -9.48423 1301.22 56.9988
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-8.88458 1234.55 50.4255,
+				-8.87098 1234.55 50.4434,
+				-8.87098 1234.55 50.4434,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.88458  1234.55  50.4255)"
+ url "" 
+ children [
+  Transform {
+   translation -8.88458 1234.55 50.4255
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.87098  1234.55  50.4434)"
+ url "" 
+ children [
+  Transform {
+   translation -8.87098 1234.55 50.4434
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-8.2669 1158.7 43.4627,
+				-8.76779 1158.89 43.0566,
+				-8.76779 1158.89 43.0566,
+				-8.77114 1158.87 43.0154,
+				-8.77114 1158.87 43.0154,
+			]
+		}
+		coordIndex [
+			0, 1, 2, 3, 4, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.2669  1158.7  43.4627)"
+ url "" 
+ children [
+  Transform {
+   translation -8.2669 1158.7 43.4627
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.76779  1158.89  43.0566)"
+ url "" 
+ children [
+  Transform {
+   translation -8.76779 1158.89 43.0566
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.77114  1158.87  43.0154)"
+ url "" 
+ children [
+  Transform {
+   translation -8.77114 1158.87 43.0154
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-8.76779 1158.89 43.0566,
+				-8.77401 1158.88 43.0697,
+				-8.77401 1158.88 43.0697,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.76779  1158.89  43.0566)"
+ url "" 
+ children [
+  Transform {
+   translation -8.76779 1158.89 43.0566
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.77401  1158.88  43.0697)"
+ url "" 
+ children [
+  Transform {
+   translation -8.77401 1158.88 43.0697
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-8.22484 1153.47 43.0015,
+				-8.21905 1153.48 42.9722,
+				-8.21905 1153.48 42.9722,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.22484  1153.47  43.0015)"
+ url "" 
+ children [
+  Transform {
+   translation -8.22484 1153.47 43.0015
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-8.21905  1153.48  42.9722)"
+ url "" 
+ children [
+  Transform {
+   translation -8.21905 1153.48 42.9722
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-7.5971 1070.64 36.0685,
+				-7.61498 1070.64 36.0667,
+				-7.61498 1070.64 36.0667,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.5971  1070.64  36.0685)"
+ url "" 
+ children [
+  Transform {
+   translation -7.5971 1070.64 36.0685
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.61498  1070.64  36.0667)"
+ url "" 
+ children [
+  Transform {
+   translation -7.61498 1070.64 36.0667
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-7.59669 1070.59 36.0643,
+				-7.61201 1070.59 36.0522,
+				-7.61201 1070.59 36.0522,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.59669  1070.59  36.0643)"
+ url "" 
+ children [
+  Transform {
+   translation -7.59669 1070.59 36.0643
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.61201  1070.59  36.0522)"
+ url "" 
+ children [
+  Transform {
+   translation -7.61201 1070.59 36.0522
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-7.08935 1003.39 30.9087,
+				-7.07591 1003.38 30.9299,
+				-7.07591 1003.38 30.9299,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.08935  1003.39  30.9087)"
+ url "" 
+ children [
+  Transform {
+   translation -7.08935 1003.39 30.9087
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-7.07591  1003.38  30.9299)"
+ url "" 
+ children [
+  Transform {
+   translation -7.07591 1003.38 30.9299
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-6.86397 974.397 28.8105,
+				-6.58796 974.385 29.0391,
+				-6.58796 974.385 29.0391,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-6.86397  974.397  28.8105)"
+ url "" 
+ children [
+  Transform {
+   translation -6.86397 974.397 28.8105
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-6.58796  974.385  29.0391)"
+ url "" 
+ children [
+  Transform {
+   translation -6.58796 974.385 29.0391
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-6.24649 894.484 23.4047,
+				-6.20567 894.483 23.4553,
+				-6.20567 894.483 23.4553,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-6.24649  894.484  23.4047)"
+ url "" 
+ children [
+  Transform {
+   translation -6.24649 894.484 23.4047
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-6.20567  894.483  23.4553)"
+ url "" 
+ children [
+  Transform {
+   translation -6.20567 894.483 23.4553
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-5.93091 852.504 20.7832,
+				-5.97472 852.508 20.7623,
+				-5.97472 852.508 20.7623,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-5.93091  852.504  20.7832)"
+ url "" 
+ children [
+  Transform {
+   translation -5.93091 852.504 20.7832
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-5.97472  852.508  20.7623)"
+ url "" 
+ children [
+  Transform {
+   translation -5.97472 852.508 20.7623
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-4.97375 727.574 13.9159,
+				-4.95923 727.575 13.9033,
+				-4.95923 727.575 13.9033,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-4.97375  727.574  13.9159)"
+ url "" 
+ children [
+  Transform {
+   translation -4.97375 727.574 13.9159
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-4.95923  727.575  13.9033)"
+ url "" 
+ children [
+  Transform {
+   translation -4.95923 727.575 13.9033
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-4.61491 680.879 11.684,
+				-4.63813 680.879 11.7011,
+				-4.63813 680.879 11.7011,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-4.61491  680.879  11.684)"
+ url "" 
+ children [
+  Transform {
+   translation -4.61491 680.879 11.684
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-4.63813  680.879  11.7011)"
+ url "" 
+ children [
+  Transform {
+   translation -4.63813 680.879 11.7011
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-4.11732 616.979 8.94092,
+				-4.09862 616.979 8.96106,
+				-4.09862 616.979 8.96106,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-4.11732  616.979  8.94092)"
+ url "" 
+ children [
+  Transform {
+   translation -4.11732 616.979 8.94092
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-4.09862  616.979  8.96106)"
+ url "" 
+ children [
+  Transform {
+   translation -4.09862 616.979 8.96106
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-3.90483 589.365 7.86844,
+				-3.9987 589.369 7.87438,
+				-3.9987 589.369 7.87438,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-3.90483  589.365  7.86844)"
+ url "" 
+ children [
+  Transform {
+   translation -3.90483 589.365 7.86844
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-3.9987  589.369  7.87438)"
+ url "" 
+ children [
+  Transform {
+   translation -3.9987 589.369 7.87438
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-2.93467 464.119 3.85999,
+				-2.98896 464.146 3.70354,
+				-2.98896 464.146 3.70354,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.93467  464.119  3.85999)"
+ url "" 
+ children [
+  Transform {
+   translation -2.93467 464.119 3.85999
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.98896  464.146  3.70354)"
+ url "" 
+ children [
+  Transform {
+   translation -2.98896 464.146 3.70354
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-2.37392 385.859 2.10649,
+				-2.40208 385.86 2.10707,
+				-2.40208 385.86 2.10707,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.37392  385.859  2.10649)"
+ url "" 
+ children [
+  Transform {
+   translation -2.37392 385.859 2.10649
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.40208  385.86  2.10707)"
+ url "" 
+ children [
+  Transform {
+   translation -2.40208 385.86 2.10707
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-2.1617 355.687 1.58388,
+				-2.2539 355.751 1.28957,
+				-2.2539 355.751 1.28957,
+				-2.29973 355.807 1.23633,
+				-2.29973 355.807 1.23633,
+			]
+		}
+		coordIndex [
+			0, 1, 2, 3, 4, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.1617  355.687  1.58388)"
+ url "" 
+ children [
+  Transform {
+   translation -2.1617 355.687 1.58388
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.2539  355.751  1.28957)"
+ url "" 
+ children [
+  Transform {
+   translation -2.2539 355.751 1.28957
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.29973  355.807  1.23633)"
+ url "" 
+ children [
+  Transform {
+   translation -2.29973 355.807 1.23633
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-2.2539 355.751 1.28957,
+				-2.26133 355.728 1.27307,
+				-2.26133 355.728 1.27307,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.2539  355.751  1.28957)"
+ url "" 
+ children [
+  Transform {
+   translation -2.2539 355.751 1.28957
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-2.26133  355.728  1.27307)"
+ url "" 
+ children [
+  Transform {
+   translation -2.26133 355.728 1.27307
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-1.59964 280.025 0.653663,
+				-1.59977 280.026 0.63102,
+				-1.59977 280.026 0.63102,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-1.59964  280.025  0.653663)"
+ url "" 
+ children [
+  Transform {
+   translation -1.59964 280.025 0.653663
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-1.59977  280.026  0.63102)"
+ url "" 
+ children [
+  Transform {
+   translation -1.59977 280.026 0.63102
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-1.42756 257.012 0.468098,
+				-1.41362 257.013 0.492106,
+				-1.41362 257.013 0.492106,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-1.42756  257.012  0.468098)"
+ url "" 
+ children [
+  Transform {
+   translation -1.42756 257.012 0.468098
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-1.41362  257.013  0.492106)"
+ url "" 
+ children [
+  Transform {
+   translation -1.41362 257.013 0.492106
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-1.32157 242.739 0.374367,
+				-1.34184 242.739 0.404212,
+				-1.34184 242.739 0.404212,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-1.32157  242.739  0.374367)"
+ url "" 
+ children [
+  Transform {
+   translation -1.32157 242.739 0.374367
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-1.34184  242.739  0.404212)"
+ url "" 
+ children [
+  Transform {
+   translation -1.34184 242.739 0.404212
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-0.676924 156.22 0.207397,
+				-0.711701 156.222 0.185515,
+				-0.711701 156.222 0.185515,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-0.676924  156.22  0.207397)"
+ url "" 
+ children [
+  Transform {
+   translation -0.676924 156.22 0.207397
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-0.711701  156.222  0.185515)"
+ url "" 
+ children [
+  Transform {
+   translation -0.711701 156.222 0.185515
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-0.488182 102.08 0.249081,
+				-0.790402 102.343 -0.0751704,
+				-0.790402 102.343 -0.0751704,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-0.488182  102.08  0.249081)"
+ url "" 
+ children [
+  Transform {
+   translation -0.488182 102.08 0.249081
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-0.790402  102.343  -0.0751704)"
+ url "" 
+ children [
+  Transform {
+   translation -0.790402 102.343 -0.0751704
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-0.458136 95.9893 0.265983,
+				-0.585005 96.1869 0.627425,
+				-0.585005 96.1869 0.627425,
+			]
+		}
+		coordIndex [
+			0, 1, 2, -1
+		]
+	}
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-0.458136  95.9893  0.265983)"
+ url "" 
+ children [
+  Transform {
+   translation -0.458136 95.9893 0.265983
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-0.585005  96.1869  0.627425)"
+ url "" 
+ children [
+  Transform {
+   translation -0.585005 96.1869 0.627425
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- POLYLINE
+Shape {
+	appearance Appearance {
+		material Material {
+			diffuseColor 1 0 0
+			emissiveColor 1 0 0
+		}
+	}
+	geometry IndexedLineSet {
+		coord Coordinate {
+			point [
+				-0.215559 67.9025 0.302613,
+				0.0631159 69.223 1.64194,
+				0.0631159 69.223 1.64194,
+				0.15172 70.3701 1.06623,
+				0.15172 70.3701 1.06623,
+				0.308845 70.9028 1.16195,
+				0.308845 70.9028 1.16195,
+				0.296215 70.8709 1.1568,
+				0.296215 70.8709 1.1568,
 			]
 		}
 		coordIndex [
@@ -1573,11 +4181,11 @@ Shape {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-21.0212  1414.88  104.458)"
+ description "(-0.215559  67.9025  0.302613)"
  url "" 
  children [
   Transform {
-   translation -21.0212 1414.88 104.458
+   translation -0.215559 67.9025 0.302613
    children [
 	Shape {
 		appearance Appearance {
@@ -1596,11 +4204,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-21.4735  1414.99  104.254)"
+ description "(0.0631159  69.223  1.64194)"
  url "" 
  children [
   Transform {
-   translation -21.4735 1414.99 104.254
+   translation 0.0631159 69.223 1.64194
    children [
 	Shape {
 		appearance Appearance {
@@ -1619,11 +4227,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-21.7937  1415.29  103.91)"
+ description "(0.15172  70.3701  1.06623)"
  url "" 
  children [
   Transform {
-   translation -21.7937 1415.29 103.91
+   translation 0.15172 70.3701 1.06623
    children [
 	Shape {
 		appearance Appearance {
@@ -1642,11 +4250,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-22.2687  1415.29  103.788)"
+ description "(0.308845  70.9028  1.16195)"
  url "" 
  children [
   Transform {
-   translation -22.2687 1415.29 103.788
+   translation 0.308845 70.9028 1.16195
    children [
 	Shape {
 		appearance Appearance {
@@ -1665,11 +4273,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-22.3038  1415.28  103.803)"
+ description "(0.296215  70.8709  1.1568)"
  url "" 
  children [
   Transform {
-   translation -22.3038 1415.28 103.803
+   translation 0.296215 70.8709 1.1568
    children [
 	Shape {
 		appearance Appearance {
@@ -1697,763 +4305,34 @@ Shape {
 	geometry IndexedLineSet {
 		coord Coordinate {
 			point [
-				-21.7937 1415.29 103.91,
-				-21.7988 1415.27 103.934,
-				-21.7988 1415.27 103.934,
-			]
-		}
-		coordIndex [
-			0, 1, 2, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-21.7937  1415.29  103.91)"
- url "" 
- children [
-  Transform {
-   translation -21.7937 1415.29 103.91
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-21.7988  1415.27  103.934)"
- url "" 
- children [
-  Transform {
-   translation -21.7988 1415.27 103.934
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-21.4735 1414.99 104.254,
-				-21.5007 1414.98 104.267,
-				-21.5007 1414.98 104.267,
-			]
-		}
-		coordIndex [
-			0, 1, 2, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-21.4735  1414.99  104.254)"
- url "" 
- children [
-  Transform {
-   translation -21.4735 1414.99 104.254
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-21.5007  1414.98  104.267)"
- url "" 
- children [
-  Transform {
-   translation -21.5007 1414.98 104.267
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-18.6024 1264.27 84.2807,
-				-18.5766 1264.28 84.2523,
-				-18.5766 1264.28 84.2523,
-			]
-		}
-		coordIndex [
-			0, 1, 2, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-18.6024  1264.27  84.2807)"
- url "" 
- children [
-  Transform {
-   translation -18.6024 1264.27 84.2807
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-18.5766  1264.28  84.2523)"
- url "" 
- children [
-  Transform {
-   translation -18.5766 1264.28 84.2523
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-17.1836 1175.49 73.3947,
-				-17.1975 1175.49 73.3664,
-				-17.1975 1175.49 73.3664,
-			]
-		}
-		coordIndex [
-			0, 1, 2, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-17.1836  1175.49  73.3947)"
- url "" 
- children [
-  Transform {
-   translation -17.1836 1175.49 73.3947
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-17.1975  1175.49  73.3664)"
- url "" 
- children [
-  Transform {
-   translation -17.1975 1175.49 73.3664
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-14.3984 1008.04 55.0086,
-				-14.3361 1008.05 54.9806,
-				-14.3361 1008.05 54.9806,
-				-14.3184 1008.03 54.8615,
-				-14.3184 1008.03 54.8615,
-			]
-		}
-		coordIndex [
-			0, 1, 2, 3, 4, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-14.3984  1008.04  55.0086)"
- url "" 
- children [
-  Transform {
-   translation -14.3984 1008.04 55.0086
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-14.3361  1008.05  54.9806)"
- url "" 
- children [
-  Transform {
-   translation -14.3361 1008.05 54.9806
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-14.3184  1008.03  54.8615)"
- url "" 
- children [
-  Transform {
-   translation -14.3184 1008.03 54.8615
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-14.3361 1008.05 54.9806,
-				-14.2998 1008.07 54.9827,
-				-14.2998 1008.07 54.9827,
-			]
-		}
-		coordIndex [
-			0, 1, 2, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-14.3361  1008.05  54.9806)"
- url "" 
- children [
-  Transform {
-   translation -14.3361 1008.05 54.9806
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-14.2998  1008.07  54.9827)"
- url "" 
- children [
-  Transform {
-   translation -14.2998 1008.07 54.9827
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-12.8468 914.774 45.8779,
-				-12.8569 914.772 45.9014,
-				-12.8569 914.772 45.9014,
-			]
-		}
-		coordIndex [
-			0, 1, 2, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-12.8468  914.774  45.8779)"
- url "" 
- children [
-  Transform {
-   translation -12.8468 914.774 45.8779
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-12.8569  914.772  45.9014)"
- url "" 
- children [
-  Transform {
-   translation -12.8569 914.772 45.9014
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-11.6485 844.611 39.5465,
-				-11.6567 844.608 39.5909,
-				-11.6567 844.608 39.5909,
-			]
-		}
-		coordIndex [
-			0, 1, 2, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-11.6485  844.611  39.5465)"
- url "" 
- children [
-  Transform {
-   translation -11.6485 844.611 39.5465
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-11.6567  844.608  39.5909)"
- url "" 
- children [
-  Transform {
-   translation -11.6567 844.608 39.5909
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-10.8024 794.684 35.3007,
-				-10.8001 794.686 35.2815,
-				-10.8001 794.686 35.2815,
-			]
-		}
-		coordIndex [
-			0, 1, 2, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-10.8024  794.684  35.3007)"
- url "" 
- children [
-  Transform {
-   translation -10.8024 794.684 35.3007
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-10.8001  794.686  35.2815)"
- url "" 
- children [
-  Transform {
-   translation -10.8001 794.686 35.2815
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-0.315571 125.78 0.951607,
-				-0.54005 126.091 1.45453,
-				-0.54005 126.091 1.45453,
-				-0.547044 126.078 1.48496,
-				-0.547044 126.078 1.48496,
-			]
-		}
-		coordIndex [
-			0, 1, 2, 3, 4, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-0.315571  125.78  0.951607)"
- url "" 
- children [
-  Transform {
-   translation -0.315571 125.78 0.951607
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-0.54005  126.091  1.45453)"
- url "" 
- children [
-  Transform {
-   translation -0.54005 126.091 1.45453
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-0.547044  126.078  1.48496)"
- url "" 
- children [
-  Transform {
-   translation -0.547044 126.078 1.48496
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-0.0957563 99.7364 0.625236,
-				-0.100953 111.31 4.52774,
-				-1.84347 111.377 4.34784,
-				-2.36465 112.498 5.17321,
-				-2.31778 112.443 5.27633,
-				-6.36791 118.49 10.8391,
-				-7.79507 118.498 9.83089,
-				-10.4261 119.656 11.6951,
-				-10.4261 119.656 11.6951,
-				-13.7319 120.665 15.1344,
-				-13.7319 120.665 15.1344,
-				-16.2155 121.277 17.8105,
-				-16.2155 121.277 17.8105,
-				-17.83 120.117 19.6129,
-				-17.83 120.117 19.6129,
-				-18.5498 119.451 20.8141,
-				-18.5498 119.451 20.8141,
-				-19.0845 119.232 21.2701,
-				-19.0845 119.232 21.2701,
-				-19.0869 119.161 21.254,
-				-19.0869 119.161 21.254,
+				-0.0922481 30.4961 0.154897,
+				-2.26991 34.7053 -0.141225,
+				-2.26991 34.7053 -0.141225,
+				-2.17903 34.8766 -0.92043,
+				-2.17903 34.8766 -0.92043,
+				-0.943843 34.9565 -3.66985,
+				-0.943843 34.9565 -3.66985,
+				-0.0710846 35.1991 -5.36026,
+				-0.0710846 35.1991 -5.36026,
+				0.0985515 35.9765 -6.04647,
+				0.0985515 35.9765 -6.04647,
+				0.161646 35.925 -5.92805,
+				0.161646 35.925 -5.92805,
 			]
 		}
 		coordIndex [
 			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 
-			10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
-			20, -1
+			10, 11, 12, -1
 		]
 	}
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-0.0957563  99.7364  0.625236)"
+ description "(-0.0922481  30.4961  0.154897)"
  url "" 
  children [
   Transform {
-   translation -0.0957563 99.7364 0.625236
+   translation -0.0922481 30.4961 0.154897
    children [
 	Shape {
 		appearance Appearance {
@@ -2472,11 +4351,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-1.84347  111.377  4.34784)"
+ description "(-2.26991  34.7053  -0.141225)"
  url "" 
  children [
   Transform {
-   translation -1.84347 111.377 4.34784
+   translation -2.26991 34.7053 -0.141225
    children [
 	Shape {
 		appearance Appearance {
@@ -2495,11 +4374,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-2.31778  112.443  5.27633)"
+ description "(-2.17903  34.8766  -0.92043)"
  url "" 
  children [
   Transform {
-   translation -2.31778 112.443 5.27633
+   translation -2.17903 34.8766 -0.92043
    children [
 	Shape {
 		appearance Appearance {
@@ -2518,11 +4397,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-7.79507  118.498  9.83089)"
+ description "(-0.943843  34.9565  -3.66985)"
  url "" 
  children [
   Transform {
-   translation -7.79507 118.498 9.83089
+   translation -0.943843 34.9565 -3.66985
    children [
 	Shape {
 		appearance Appearance {
@@ -2541,11 +4420,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-10.4261  119.656  11.6951)"
+ description "(-0.0710846  35.1991  -5.36026)"
  url "" 
  children [
   Transform {
-   translation -10.4261 119.656 11.6951
+   translation -0.0710846 35.1991 -5.36026
    children [
 	Shape {
 		appearance Appearance {
@@ -2564,11 +4443,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-13.7319  120.665  15.1344)"
+ description "(0.0985515  35.9765  -6.04647)"
  url "" 
  children [
   Transform {
-   translation -13.7319 120.665 15.1344
+   translation 0.0985515 35.9765 -6.04647
    children [
 	Shape {
 		appearance Appearance {
@@ -2587,103 +4466,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-16.2155  121.277  17.8105)"
+ description "(0.161646  35.925  -5.92805)"
  url "" 
  children [
   Transform {
-   translation -16.2155 121.277 17.8105
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-17.83  120.117  19.6129)"
- url "" 
- children [
-  Transform {
-   translation -17.83 120.117 19.6129
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-18.5498  119.451  20.8141)"
- url "" 
- children [
-  Transform {
-   translation -18.5498 119.451 20.8141
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-19.0845  119.232  21.2701)"
- url "" 
- children [
-  Transform {
-   translation -19.0845 119.232 21.2701
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-19.0869  119.161  21.254)"
- url "" 
- children [
-  Transform {
-   translation -19.0869 119.161 21.254
+   translation 0.161646 35.925 -5.92805
    children [
 	Shape {
 		appearance Appearance {
@@ -2711,153 +4498,11 @@ Shape {
 	geometry IndexedLineSet {
 		coord Coordinate {
 			point [
-				-10.4261 119.656 11.6951,
-				-12.5934 119.483 11.6673,
-				-12.5934 119.483 11.6673,
-				-13.6565 119.117 12.4731,
-				-13.6565 119.117 12.4731,
-				-13.9415 118.476 12.5405,
-				-13.9415 118.476 12.5405,
-				-13.9392 118.447 12.4817,
-				-13.9392 118.447 12.4817,
-			]
-		}
-		coordIndex [
-			0, 1, 2, 3, 4, 5, 6, 7, 8, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-10.4261  119.656  11.6951)"
- url "" 
- children [
-  Transform {
-   translation -10.4261 119.656 11.6951
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-12.5934  119.483  11.6673)"
- url "" 
- children [
-  Transform {
-   translation -12.5934 119.483 11.6673
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-13.6565  119.117  12.4731)"
- url "" 
- children [
-  Transform {
-   translation -13.6565 119.117 12.4731
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-13.9415  118.476  12.5405)"
- url "" 
- children [
-  Transform {
-   translation -13.9415 118.476 12.5405
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(-13.9392  118.447  12.4817)"
- url "" 
- children [
-  Transform {
-   translation -13.9392 118.447 12.4817
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				-2.31778 112.443 5.27633,
-				-2.11107 112.513 5.78004,
-				-2.11107 112.513 5.78004,
-				-2.14561 112.518 5.80122,
-				-2.14561 112.518 5.80122,
+				-2.17903 34.8766 -0.92043,
+				-2.30819 35.3515 -1.23292,
+				-2.30819 35.3515 -1.23292,
+				-2.30819 35.3515 -1.23292,
+				-2.30819 35.3515 -1.23292,
 			]
 		}
 		coordIndex [
@@ -2867,11 +4512,11 @@ Shape {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-2.31778  112.443  5.27633)"
+ description "(-2.17903  34.8766  -0.92043)"
  url "" 
  children [
   Transform {
-   translation -2.31778 112.443 5.27633
+   translation -2.17903 34.8766 -0.92043
    children [
 	Shape {
 		appearance Appearance {
@@ -2890,11 +4535,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-2.11107  112.513  5.78004)"
+ description "(-2.30819  35.3515  -1.23292)"
  url "" 
  children [
   Transform {
-   translation -2.11107 112.513 5.78004
+   translation -2.30819 35.3515 -1.23292
    children [
 	Shape {
 		appearance Appearance {
@@ -2913,153 +4558,11 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-2.14561  112.518  5.80122)"
+ description "(-2.30819  35.3515  -1.23292)"
  url "" 
  children [
   Transform {
-   translation -2.14561 112.518 5.80122
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- POLYLINE
-Shape {
-	appearance Appearance {
-		material Material {
-			diffuseColor 1 0 0
-			emissiveColor 1 0 0
-		}
-	}
-	geometry IndexedLineSet {
-		coord Coordinate {
-			point [
-				0.0143252 7.53928 0.0126509,
-				1.38889 9.5901 -0.728641,
-				1.38889 9.5901 -0.728641,
-				3.1278 10.1099 -1.32887,
-				3.1278 10.1099 -1.32887,
-				3.357 9.08842 -1.43443,
-				3.357 9.08842 -1.43443,
-				3.37141 8.76725 -1.38254,
-				3.37141 8.76725 -1.38254,
-			]
-		}
-		coordIndex [
-			0, 1, 2, 3, 4, 5, 6, 7, 8, -1
-		]
-	}
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(0.0143252  7.53928  0.0126509)"
- url "" 
- children [
-  Transform {
-   translation 0.0143252 7.53928 0.0126509
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(1.38889  9.5901  -0.728641)"
- url "" 
- children [
-  Transform {
-   translation 1.38889 9.5901 -0.728641
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(3.1278  10.1099  -1.32887)"
- url "" 
- children [
-  Transform {
-   translation 3.1278 10.1099 -1.32887
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(3.357  9.08842  -1.43443)"
- url "" 
- children [
-  Transform {
-   translation 3.357 9.08842 -1.43443
-   children [
-	Shape {
-		appearance Appearance {
-			material Material {
-				diffuseColor 1 1 0
-				emissiveColor 1 1 0
-			}
-		}
-		geometry Sphere {
-			radius 10.8918
-		}
-	}
-   ]
-  }
- ]
-}
-#---------- 3D MARKER (Circle)
-Anchor {
- description "(3.37141  8.76725  -1.38254)"
- url "" 
- children [
-  Transform {
-   translation 3.37141 8.76725 -1.38254
+   translation -2.30819 35.3515 -1.23292
    children [
 	Shape {
 		appearance Appearance {
@@ -3087,23 +4590,27 @@ Shape {
 	geometry IndexedLineSet {
 		coord Coordinate {
 			point [
-				-0.000205818 0.638929 8.58436e-05,
-				-0.180617 1.10678 -0.630346,
-				-0.180617 1.10678 -0.630346,
+				-0.0350285 17.6241 0.0982364,
+				-0.579345 18.6348 1.1598,
+				-0.579345 18.6348 1.1598,
+				-1.20813 19.0683 0.959626,
+				-1.20813 19.0683 0.959626,
+				-1.26011 19.1071 0.974692,
+				-1.26011 19.1071 0.974692,
 			]
 		}
 		coordIndex [
-			0, 1, 2, -1
+			0, 1, 2, 3, 4, 5, 6, -1
 		]
 	}
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-0.000205818  0.638929  8.58436e-05)"
+ description "(-0.0350285  17.6241  0.0982364)"
  url "" 
  children [
   Transform {
-   translation -0.000205818 0.638929 8.58436e-05
+   translation -0.0350285 17.6241 0.0982364
    children [
 	Shape {
 		appearance Appearance {
@@ -3122,11 +4629,57 @@ Anchor {
 }
 #---------- 3D MARKER (Circle)
 Anchor {
- description "(-0.180617  1.10678  -0.630346)"
+ description "(-0.579345  18.6348  1.1598)"
  url "" 
  children [
   Transform {
-   translation -0.180617 1.10678 -0.630346
+   translation -0.579345 18.6348 1.1598
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-1.20813  19.0683  0.959626)"
+ url "" 
+ children [
+  Transform {
+   translation -1.20813 19.0683 0.959626
+   children [
+	Shape {
+		appearance Appearance {
+			material Material {
+				diffuseColor 1 1 0
+				emissiveColor 1 1 0
+			}
+		}
+		geometry Sphere {
+			radius 10.8918
+		}
+	}
+   ]
+  }
+ ]
+}
+#---------- 3D MARKER (Circle)
+Anchor {
+ description "(-1.26011  19.1071  0.974692)"
+ url "" 
+ children [
+  Transform {
+   translation -1.26011 19.1071 0.974692
    children [
 	Shape {
 		appearance Appearance {

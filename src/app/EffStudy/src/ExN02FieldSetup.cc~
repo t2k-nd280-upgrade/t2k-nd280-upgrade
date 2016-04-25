@@ -75,7 +75,7 @@ ExN02FieldSetup::ExN02FieldSetup(G4ThreeVector fieldVector)
    fFieldMessenger(0)
 {
   G4cout << " ExN02FieldSetup: magnetic field set to Uniform( "
-         << fieldVector << " ) " << G4endl;
+         << fieldVector / tesla << " ) T" << G4endl;
   InitialiseAll();
 }
 
@@ -203,7 +203,7 @@ void ExN02FieldSetup::SetFieldValue(G4double fieldStrength)
 
 #ifdef G4VERBOSE
   G4cout << "Setting Field strength to "
-         << fieldStrength / gauss  << " Gauss."; // << G4endl;
+         << fieldStrength / tesla  << " Tesla."; // << G4endl;
 #endif
 
   G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);

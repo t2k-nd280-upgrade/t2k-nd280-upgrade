@@ -67,6 +67,10 @@ public:
   const 
   G4VPhysicalVolume* GetTracker() {return physiTracker;};
 
+  G4double GetBasketFullLength() {return fBasketLength;};
+  G4double GetBasketFullWidth()  {return fBasketWidth;};
+  G4double GetBasketFullHeight() {return fBasketHeight;};
+
   G4double GetTrackerFullLength() {return fTrackerLength;};
   G4double GetTrackerFullWidth()  {return fTrackerWidth;};
   G4double GetTrackerFullHeight() {return fTrackerHeight;};
@@ -101,6 +105,10 @@ private:
   G4LogicalVolume*   logicWorld;    // pointer to the logical envelope
   G4VPhysicalVolume* physiWorld;    // pointer to the physical envelope
      
+  G4Box*             solidBasket;  // pointer to the solid Basket
+  G4LogicalVolume*   logicBasket;  // pointer to the logical Basket
+  G4VPhysicalVolume* physiBasket;  // pointer to the physical Basket
+
   G4Box*             solidTarget;   // pointer to the solid Target
   G4LogicalVolume*   logicTarget;   // pointer to the logical Target
   G4VPhysicalVolume* physiTarget;   // pointer to the physical Target
@@ -117,8 +125,9 @@ private:
   G4LogicalVolume*   logicChamberDown;  // pointer to the logical Chamber
   G4VPhysicalVolume* physiChamberDown;  // pointer to the physical Chamber
 
-  G4Material* WorldMater;  // pointer to the target  material
-  G4Material* TrackerMater;  // pointer to the target  material
+  G4Material* WorldMater;  // pointer to the world  material
+  G4Material* BasketMater;  // pointer to the basket  material
+  G4Material* TrackerMater;  // pointer to the tracker  material
   G4Material* TargetMater;  // pointer to the target  material
   G4Material* ChamberMater; // pointer to the chamber material                  
   G4Material* fDefaultMaterial;   /// The default material.       
@@ -135,6 +144,10 @@ private:
   G4double fWorldLength;            // Full length of the world volume
   G4double fWorldWidth;             // Full Width of the world volume
   G4double fWorldHeight;            // Full Height of the world volume
+
+  G4double fBasketLength;           // Full length of Basket
+  G4double fBasketWidth;            // Full Width of Basket
+  G4double fBasketHeight;           // Full Height of Basket
   
   G4double fTargetLength;           // Full length of Target
   G4double fTargetWidth;            // Full Width of Target
@@ -144,17 +157,15 @@ private:
   G4double fTrackerWidth;           // Full width of Tracker
   G4double fTrackerHeight;          // Full height of Tracker
 
-  G4int    NbOfChambers;            // Nb of chambers in the tracker region
-  G4double ChamberLength;           // length of the chambers
-  G4double ChamberWidth;            // width of the chambers
-  G4double ChamberHeight;           // height of the chambers
-  G4double ChamberSpacing;	    // distance between chambers
+  G4int    fNbOfChambers;            // Nb of chambers in the tracker region
+  G4double fChamberLength;           // length of the chambers
+  G4double fChamberWidth;            // width of the chambers
+  G4double fChamberHeight;           // height of the chambers
+  G4double fChamberSpacing;	    // distance between chambers
 
-  G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume                                                                                                                                       
-  G4VPhysicalVolume*   fGapPV;      // the gap physical volume                                                                                                                                            
-
-  G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps                                                                                                                              
-
+  G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume
+  G4VPhysicalVolume*   fGapPV;      // the gap physical volume
+  G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
 };
 
 // In line functions

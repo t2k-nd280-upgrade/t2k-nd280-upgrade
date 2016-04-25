@@ -36,7 +36,7 @@
 
 # For smooth trajectory choose a small max step length
 #
-/vis/blineTracer/setMaxStepLength 1. m
+/vis/blineTracer/setMaxStepLength 0.1 m
 
 # One line is computed
 #
