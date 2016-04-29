@@ -47,6 +47,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
   : G4UserRunAction(),
     fEventAction(eventAction)
 {
+
   // set printing event number per each event
   G4RunManager::GetRunManager()->SetPrintProgress(1);
 
@@ -56,7 +57,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   G4cout << "Using " << analysisManager->GetType() << G4endl;
 
-  // Create directories                                                                                                                                                        
+  // Create directories                                            
   //analysisManager->SetHistoDirectoryName("histograms");                            
   //analysisManager->SetNtupleDirectoryName("ntuple");                                                       
   analysisManager->SetVerboseLevel(1);

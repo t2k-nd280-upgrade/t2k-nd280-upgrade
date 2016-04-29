@@ -3,6 +3,16 @@
 
 #include "G4SystemOfUnits.hh"
 
+/////////////////////////////////                 
+//                             //                    
+//         Input files         //                         
+//                             //          
+/////////////////////////////////                                       
+
+const G4String cPathFiles    = "../files/"; // executable is run in $T2KND280UP/bin
+//const G4String cNEUTfilename = "genev_output_nd280geom.root";
+const G4String cNEUTfilename = "genev_output_newgeom.root";
+const G4String cNEUTtreename = "nRooTracker";
 
 /////////////////////////////////                 
 //                             //                    

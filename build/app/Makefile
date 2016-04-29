@@ -499,6 +499,30 @@ EffStudy/src/ExN02PrimaryGeneratorAction.cc.s:
 	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02PrimaryGeneratorAction.cc.s
 .PHONY : EffStudy/src/ExN02PrimaryGeneratorAction.cc.s
 
+EffStudy/src/ExN02RooTrackerKinematicsGenerator.o: EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.o
+.PHONY : EffStudy/src/ExN02RooTrackerKinematicsGenerator.o
+
+# target to build an object file
+EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.o
+.PHONY : EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.o
+
+EffStudy/src/ExN02RooTrackerKinematicsGenerator.i: EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.i
+.PHONY : EffStudy/src/ExN02RooTrackerKinematicsGenerator.i
+
+# target to preprocess a source file
+EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.i
+.PHONY : EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.i
+
+EffStudy/src/ExN02RooTrackerKinematicsGenerator.s: EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.s
+.PHONY : EffStudy/src/ExN02RooTrackerKinematicsGenerator.s
+
+# target to generate assembly for a file
+EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.s
+.PHONY : EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.s
+
 EffStudy/src/ExN02RunAction.o: EffStudy/src/ExN02RunAction.cc.o
 .PHONY : EffStudy/src/ExN02RunAction.o
 
@@ -619,6 +643,30 @@ EffStudy/src/ExN02TrackerSD.cc.s:
 	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.s
 .PHONY : EffStudy/src/ExN02TrackerSD.cc.s
 
+EffStudy/src/ExN02VertexInfo.o: EffStudy/src/ExN02VertexInfo.cc.o
+.PHONY : EffStudy/src/ExN02VertexInfo.o
+
+# target to build an object file
+EffStudy/src/ExN02VertexInfo.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02VertexInfo.cc.o
+.PHONY : EffStudy/src/ExN02VertexInfo.cc.o
+
+EffStudy/src/ExN02VertexInfo.i: EffStudy/src/ExN02VertexInfo.cc.i
+.PHONY : EffStudy/src/ExN02VertexInfo.i
+
+# target to preprocess a source file
+EffStudy/src/ExN02VertexInfo.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02VertexInfo.cc.i
+.PHONY : EffStudy/src/ExN02VertexInfo.cc.i
+
+EffStudy/src/ExN02VertexInfo.s: EffStudy/src/ExN02VertexInfo.cc.s
+.PHONY : EffStudy/src/ExN02VertexInfo.s
+
+# target to generate assembly for a file
+EffStudy/src/ExN02VertexInfo.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02VertexInfo.cc.s
+.PHONY : EffStudy/src/ExN02VertexInfo.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -676,6 +724,9 @@ help:
 	@echo "... EffStudy/src/ExN02PrimaryGeneratorAction.o"
 	@echo "... EffStudy/src/ExN02PrimaryGeneratorAction.i"
 	@echo "... EffStudy/src/ExN02PrimaryGeneratorAction.s"
+	@echo "... EffStudy/src/ExN02RooTrackerKinematicsGenerator.o"
+	@echo "... EffStudy/src/ExN02RooTrackerKinematicsGenerator.i"
+	@echo "... EffStudy/src/ExN02RooTrackerKinematicsGenerator.s"
 	@echo "... EffStudy/src/ExN02RunAction.o"
 	@echo "... EffStudy/src/ExN02RunAction.i"
 	@echo "... EffStudy/src/ExN02RunAction.s"
@@ -691,6 +742,9 @@ help:
 	@echo "... EffStudy/src/ExN02TrackerSD.o"
 	@echo "... EffStudy/src/ExN02TrackerSD.i"
 	@echo "... EffStudy/src/ExN02TrackerSD.s"
+	@echo "... EffStudy/src/ExN02VertexInfo.o"
+	@echo "... EffStudy/src/ExN02VertexInfo.i"
+	@echo "... EffStudy/src/ExN02VertexInfo.s"
 .PHONY : help
 
 

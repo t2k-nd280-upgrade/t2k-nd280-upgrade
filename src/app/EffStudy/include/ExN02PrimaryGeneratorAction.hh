@@ -31,6 +31,8 @@
 #ifndef ExN02PrimaryGeneratorAction_h
 #define ExN02PrimaryGeneratorAction_h 1
 
+#include "ExN02RooTrackerKinematicsGenerator.hh"
+
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
 
@@ -57,6 +59,9 @@ public:
 
 private:
   G4ParticleGun*  fParticleGun; // G4 particle gun
+
+  ExN02RooTrackerKinematicsGenerator RooTrackerNEUT; // NEUT input tree
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

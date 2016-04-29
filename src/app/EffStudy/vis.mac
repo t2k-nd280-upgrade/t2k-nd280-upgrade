@@ -64,12 +64,12 @@
 #/vis/scene/add/hits
 
 # To draw only gammas:
-#/vis/filtering/trajectories/create/particleFilter
+/vis/filtering/trajectories/create/particleFilter
 #/vis/filtering/trajectories/particleFilter-0/add gamma
 
 # To invert the above, drawing all particles except gammas,
 # keep the above two lines but also add:
-#/vis/filtering/trajectories/particleFilter-0/invert true
+/vis/filtering/trajectories/particleFilter-0/invert true
 
 # Many other options are available with /vis/modeling and /vis/filtering.
 # For example, to select colour by particle ID:
@@ -86,4 +86,4 @@
 # For file-based drivers, use this to create an empty detector view:
 #/vis/viewer/flush
 
-/run/beamOn 10
+/run/beamOn 20

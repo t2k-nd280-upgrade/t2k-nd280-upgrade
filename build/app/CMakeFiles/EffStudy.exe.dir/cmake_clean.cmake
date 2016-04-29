@@ -14,6 +14,8 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02PrimaryGeneratorAction.cc.o"
   "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02TrackerSD.cc.o"
   "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.o"
+  "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02RooTrackerKinematicsGenerator.cc.o"
+  "CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02VertexInfo.cc.o"
   "CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlinePrimaryGeneratorAction.cc.o"
   "CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineEventAction.cc.o"
   "CMakeFiles/EffStudy.exe.dir/EffStudy/BlineTracer/src/G4BlineTracerMessenger.cc.o"
