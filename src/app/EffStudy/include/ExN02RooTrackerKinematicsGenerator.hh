@@ -27,6 +27,9 @@ public :
   
   void GeneratePrimaryVertex(G4Event *anEvent);
 
+  G4int GetTotNEUTevents(){ return fTotEntry;};
+  G4int GetCurrNEUTevent(){ return fCurrEntry;};
+  
 private :
 
   G4String ffilename; // NEUT file name to read
@@ -35,18 +38,20 @@ private :
 
   void ReadNEUT(G4String filename);
 
-
-
   int fTotEntry;
   int fCurrEntry;
 
-  // THE FOLLOWING VARIABLES ARE COPIED AND PASTED FROM nd280mc CODE
-
-
+  //
+  //
+  // THE FOLLOWING VARIABLES ARE TAKEN FROM nd280mc CODE
+  //
+  //
 
   /// The next entry to read from the file.  The entry to be used is
   /// fEntryVector[fNextEntry].
-  unsigned int fNextEntry;
+  
+  //unsigned int fNextEntry;
+  int fNextEntry;
   
   /// A pre-filled vector of entry numbers to be used from input tree.  This
   /// is used to allow the order of the input interactions to be randomized.

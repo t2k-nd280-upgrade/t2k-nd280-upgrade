@@ -29,6 +29,7 @@
 /// \brief Implementation of the B4PrimaryGeneratorAction class
 
 #include "ExN02PrimaryGeneratorAction.hh"
+#include "ExN02PrimaryGeneratorMessenger.hh"
 #include "ExN02RooTrackerKinematicsGenerator.hh"
 
 #include "G4RunManager.hh"
@@ -41,34 +42,33 @@
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
+#include "G4Run.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
  : G4VUserPrimaryGeneratorAction(),
    fParticleGun(0),
+   fPrimaryGeneratorMessenger(0),
    RooTrackerNEUT()
 {
-  G4int nofParticles = 1;
-  fParticleGun = new G4ParticleGun(nofParticles);
-
+  // Set the messenger  
+  fPrimaryGeneratorMessenger = new ExN02PrimaryGeneratorMessenger(this); 
+  
+  //
   // default particle kinematic
   //
 
+  G4int nofParticles = 1;
+  fParticleGun = new G4ParticleGun(nofParticles);
+  
   G4String particlename = "mu-"; //"pi-" //"pi+" 
   G4double particleenergy = 600 * MeV; // GeV   
-  //G4String particlename = "pi-"; //"pi-" //"pi+"                        
-  //G4double particleenergy = 125 * MeV; // GeV   
-  //G4String particlename = "proton";                        
-  //G4double particleenergy = 50. * MeV; // GeV 
-
+  
   G4ParticleDefinition* particleDefinition 
     = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
   fParticleGun->SetParticleDefinition(particleDefinition);
-  
-  //fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.)); // Along Y
-  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,1.,0.)); // Along Z
-
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,1.,0.)); 
   fParticleGun->SetParticleEnergy(particleenergy);
 }
 
@@ -76,6 +76,7 @@ ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
 
 ExN02PrimaryGeneratorAction::~ExN02PrimaryGeneratorAction()
 {
+  delete fPrimaryGeneratorMessenger;
   delete fParticleGun;
 }
 
@@ -84,10 +85,12 @@ ExN02PrimaryGeneratorAction::~ExN02PrimaryGeneratorAction()
 void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   // This function is called at the begining of event
- 
+
   bool doGun = false;
+  if(fGeneratorType=="ParticleGun") doGun = true;
+
   if(doGun){
-    
+  
     // In order to avoid dependence of PrimaryGeneratorAction
     // on DetectorConstruction class we get world volume
     // from G4LogicalVolumeStore
@@ -108,8 +111,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       msg << "Perhaps you have changed geometry." << G4endl;
       msg << "The gun will be place in the center.";
       G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
-		  "MyCode0002", JustWarning, msg);
-      exit(1);
+		  "MyCode0002",FatalException, msg);
     } 
     
     G4LogicalVolume* targetLV
@@ -125,26 +127,68 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       msg << "Perhaps you have changed geometry." << G4endl;
       msg << "The gun will be place in the center.";
       G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
-		  "MyCode0002", JustWarning, msg);
-      exit(1);
+		  "MyCode0002",FatalException, msg);
     } 
-    
-    // Set gun position
-    G4double positionZ = 0.; //-1. * worldZHalfLength;
-    //G4double positionY = -2. * targetYHalfLength;
-    G4double positionY = 0.;  
-    
-    //fParticleGun->SetParticlePosition(G4ThreeVector(0.*cm, positionY, positionZ));
-    fParticleGun->SetParticlePosition(G4ThreeVector(0.*cm, positionY, positionZ));    
+        
     fParticleGun->GeneratePrimaryVertex(anEvent);
   }
   
-  else{ // Read NEUT output
-    RooTrackerNEUT.GeneratePrimaryVertex(anEvent);
-  }  
-  
-     
+  else if(fGeneratorType=="NEUT"){ // Read NEUT output
+
+    //
+    // Check that the # of G4 envents is <= # of NEUT events
+    // It must be done here because in order to get the tot # of events
+    // the G4Run object is needed, but it's initialized only at the beginning of the first event
+    // (see http://hypernews.slac.stanford.edu/HyperNews/geant4/get/runmanage/175/1.html)
+    //
+    // Also use current event ID from NEUT tree object, since the event is not initialized yet
+    //
     
+    G4int CurrNEUTEvtID = RooTrackerNEUT.GetCurrNEUTevent();
+    if(CurrNEUTEvtID==0){
+      
+      G4int TotG4events = G4RunManager::GetRunManager()->GetCurrentRun()->GetNumberOfEventToBeProcessed(); // Number passed to BeamOn in vis.mac
+      G4int TotNEUTevents = RooTrackerNEUT.GetTotNEUTevents();
+      
+      if(TotG4events > TotNEUTevents){
+	
+	G4cerr << G4endl;
+	G4cerr << "The total # of G4 events exceeds the # of available NEUT events" << G4endl;
+	G4cerr << " - # G4 events = " << TotG4events << G4endl; 
+	G4cerr << " - # NEUT events = " << TotNEUTevents << G4endl;
+	G4cerr << G4endl;
+	
+	const char *msg = "The # of G4 events is larger than # of available NEUT events!";
+	const char *origin = "ExN02PrimaryGeneratorAction::GeneratePrimaries";
+	const char *code = "if(CurrNEUTEvtID==0){";
+	G4Exception(origin,code,FatalException,msg);   
+      }  
+    }
+    
+    // Generate the primary vertex
+
+    RooTrackerNEUT.GeneratePrimaryVertex(anEvent);
+    
+    //G4PrimaryVertex* CheckVertex = anEvent->GetPrimaryVertex();
+    //G4cout << CheckVertex->GetX0() / m << " "
+    //     << CheckVertex->GetY0() / m << " "
+    //	   << CheckVertex->GetZ0() / m << " "
+    //     << G4endl;    
+  }  
+
+  else if(fGeneratorType=="GENIE"){ // Read GENIE output
+    G4ExceptionDescription msg;
+    msg << "Reading of GENIE output is not yet implemented!!!" << G4endl;
+    G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
+		"MyCode0002",FatalException, msg);    
+  }
+  else{
+    G4ExceptionDescription msg;
+    msg << "Generator type has not been set!!!" << G4endl;
+    G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
+		"MyCode0002",FatalException, msg);        
+  }
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

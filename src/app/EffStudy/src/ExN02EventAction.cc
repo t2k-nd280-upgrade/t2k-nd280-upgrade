@@ -156,6 +156,7 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
  
 void ExN02EventAction::EndOfEventAction(const G4Event* event)
 {
+
   // Accumulate statistics
   //  
 

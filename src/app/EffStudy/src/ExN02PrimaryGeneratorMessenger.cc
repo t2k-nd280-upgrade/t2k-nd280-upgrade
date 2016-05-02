@@ -23,54 +23,55 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4PrimaryGeneratorAction.hh 68058 2013-03-13 14:47:43Z gcosmo $
+//
+// $Id: ExN02DetectorMessenger.cc,v 1.12 2008-09-22 16:41:20 maire Exp $
+// GEANT4 tag $Name: not supported by cvs2svn $
 // 
-/// \file B4PrimaryGeneratorAction.hh
-/// \brief Definition of the B4PrimaryGeneratorAction class
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef ExN02PrimaryGeneratorAction_h
-#define ExN02PrimaryGeneratorAction_h 1
+#include "ExN02PrimaryGeneratorMessenger.hh"
+#include "ExN02PrimaryGeneratorAction.hh"
 
-#include "ExN02RooTrackerKinematicsGenerator.hh"
-
-#include "G4VUserPrimaryGeneratorAction.hh"
+#include "G4UIdirectory.hh"
+#include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWithAnInteger.hh"
+#include "G4UIcmdWithoutParameter.hh"
 #include "globals.hh"
-
-class G4ParticleGun;
-class G4Event;
-class ExN02PrimaryGeneratorMessenger;
-
-/// The primary generator action class with particle gum.
-///
-/// It defines a single particle which hits the calorimeter 
-/// perpendicular to the input face. The type of the particle
-/// can be changed via the G4 build-in commands of G4ParticleGun class 
-/// (see the macros provided with this example).
-
-class ExN02PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
-{
-public:
-  ExN02PrimaryGeneratorAction();    
-  virtual ~ExN02PrimaryGeneratorAction();
-
-  virtual void GeneratePrimaries(G4Event* event);
-  
-  // set methods
-  void SetRandomFlag(G4bool value);
-  void SetGeneratorType(G4String name){fGeneratorType=name;};
-
-private:
-  G4ParticleGun*  fParticleGun; // G4 particle gun
-
-  ExN02RooTrackerKinematicsGenerator RooTrackerNEUT; // NEUT input tree
-
-  // Variables of the messenger
-  ExN02PrimaryGeneratorMessenger *fPrimaryGeneratorMessenger;
-  G4String fGeneratorType;
-};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#endif
+ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGeneratorAction* myPrimGen)
+  : G4UImessenger(),
+    fPrimgenDir(0),
+    fGeneratorCmd(0),
+    myPrimaryGenerator(myPrimGen)
+{   
+  fPrimgenDir = new G4UIdirectory("/generator/");
+  fPrimgenDir->SetGuidance("Primary Generator");
+  
+  fGeneratorCmd = new G4UIcmdWithAString("/generator/type",this);
+  fGeneratorCmd->SetGuidance("Choose the generator: NEUT, GENIE or ParticleGun");
+  fGeneratorCmd->SetParameterName("generator type",false);
+  fGeneratorCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
+}
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+ExN02PrimaryGeneratorMessenger::~ExN02PrimaryGeneratorMessenger()
+{
+  delete fGeneratorCmd;
+  delete fPrimgenDir;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
+{ 
+  if( command == fGeneratorCmd ){
+    myPrimaryGenerator->SetGeneratorType(newValue);
+  }  
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

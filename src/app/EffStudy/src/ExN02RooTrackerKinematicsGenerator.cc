@@ -19,6 +19,9 @@
 #include <G4ParticleDefinition.hh>
 #include <G4Tokenizer.hh>
 #include <G4UnitsTable.hh>
+#include <G4RunManager.hh>
+#include <G4EventManager.hh>
+#include <G4Run.hh>
 
 ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
 {
@@ -169,9 +172,9 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   G4cout << "fCurrEntry = " << fCurrEntry << G4endl;
   G4cout << "fTotEntry = " << fTotEntry << G4endl;
   G4cout << "fNuParentPdg = " << fNuParentPdg << G4endl;
-  G4cout << "fEvtVtx[0]*m = " << fEvtVtx[0]*m << G4endl;
-  G4cout << "fEvtVtx[1]*m = " << fEvtVtx[1]*m << G4endl;
-  G4cout << "fEvtVtx[2]*m = " << fEvtVtx[2]*m << G4endl;
+  G4cout << "fEvtVtx[0] = " << fEvtVtx[0] << " m" << G4endl;
+  G4cout << "fEvtVtx[1] = " << fEvtVtx[1] << " m" << G4endl;
+  G4cout << "fEvtVtx[2] = " << fEvtVtx[2] << " m" << G4endl;
   G4cout << "fEvtVtx[3]*second = " << fEvtVtx[3]*second << G4endl;  
   
   //
@@ -187,7 +190,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
    					fEvtVtx[2]*m),
    			  fEvtVtx[3]*second);
   anEvent->AddPrimaryVertex(theVertex);
-  
+
   // Add an information field to the vertex.
   ExN02VertexInfo *vertexInfo = new ExN02VertexInfo;
   theVertex->SetUserInformation(vertexInfo);

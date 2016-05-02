@@ -23,54 +23,44 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4PrimaryGeneratorAction.hh 68058 2013-03-13 14:47:43Z gcosmo $
-// 
-/// \file B4PrimaryGeneratorAction.hh
-/// \brief Definition of the B4PrimaryGeneratorAction class
+//
+// $Id: ExN02PrimaryGeneratorMessenger.hh,v 1.9 2008-09-22 16:41:20 maire Exp $
+// GEANT4 tag $Name: not supported by cvs2svn $
+//
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef ExN02PrimaryGeneratorAction_h
-#define ExN02PrimaryGeneratorAction_h 1
+#ifndef ExN02PrimaryGeneratorMessenger_h
+#define ExN02PrimaryGeneratorMessenger_h 1
 
-#include "ExN02RooTrackerKinematicsGenerator.hh"
-
-#include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
+#include "G4UImessenger.hh"
 
-class G4ParticleGun;
-class G4Event;
-class ExN02PrimaryGeneratorMessenger;
+class ExN02PrimaryGeneratorAction;
+class G4UIdirectory;
+class G4UIcmdWithAString;
+class G4UIcmdWithADoubleAndUnit;
+class G4UIcmdWithAnInteger;
 
-/// The primary generator action class with particle gum.
-///
-/// It defines a single particle which hits the calorimeter 
-/// perpendicular to the input face. The type of the particle
-/// can be changed via the G4 build-in commands of G4ParticleGun class 
-/// (see the macros provided with this example).
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class ExN02PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
+class ExN02PrimaryGeneratorMessenger: public G4UImessenger
 {
 public:
-  ExN02PrimaryGeneratorAction();    
-  virtual ~ExN02PrimaryGeneratorAction();
-
-  virtual void GeneratePrimaries(G4Event* event);
+  ExN02PrimaryGeneratorMessenger(ExN02PrimaryGeneratorAction*);
+  ~ExN02PrimaryGeneratorMessenger();
   
-  // set methods
-  void SetRandomFlag(G4bool value);
-  void SetGeneratorType(G4String name){fGeneratorType=name;};
-
+  void SetNewValue(G4UIcommand*, G4String);
+ 
 private:
-  G4ParticleGun*  fParticleGun; // G4 particle gun
+  
+  ExN02PrimaryGeneratorAction* myPrimaryGenerator;
 
-  ExN02RooTrackerKinematicsGenerator RooTrackerNEUT; // NEUT input tree
-
-  // Variables of the messenger
-  ExN02PrimaryGeneratorMessenger *fPrimaryGeneratorMessenger;
-  G4String fGeneratorType;
+  G4UIdirectory*             fPrimgenDir;
+  G4UIcmdWithAString*        fGeneratorCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-
 
