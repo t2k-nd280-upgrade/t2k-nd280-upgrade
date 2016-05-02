@@ -90,7 +90,16 @@ public:
   std::vector<G4double>& GetVecTarget_TrackMomX(){return fVecTarget_TrackMomX;}; 
   std::vector<G4double>& GetVecTarget_TrackMomY(){return fVecTarget_TrackMomY;}; 
   std::vector<G4double>& GetVecTarget_TrackMomZ(){return fVecTarget_TrackMomZ;}; 
-  
+
+  // Vertex informations
+  G4int               GetNVtx() { return fNVtx;};
+  std::vector<G4double>& GetVecVtx_X(){return fVecVtx_X;}; 
+  std::vector<G4double>& GetVecVtx_Y(){return fVecVtx_Y;}; 
+  std::vector<G4double>& GetVecVtx_Z(){return fVecVtx_Z;}; 
+  std::vector<G4int>   & GetVecVtx_NuPDG()    {return fVecVtx_NuPDG;}; 
+  std::vector<G4int>   & GetVecVtx_ReacMode() {return fVecVtx_ReacMode;}; 
+  std::vector<G4double>& GetVecVtx_EvtProb()  {return fVecVtx_EvtProb;}; 
+  std::vector<G4double>& GetVecVtx_EvtWeight(){return fVecVtx_EvtWeight;}; 
 
 private:
 
@@ -137,6 +146,15 @@ private:
   std::vector<G4double> fVecTarget_TrackMomY; // Vector of initial mom in Target 
   std::vector<G4double> fVecTarget_TrackMomZ; // Vector of initial mom in Target
 
+  // Vertex informations
+  G4int     fNVtx;
+  std::vector<G4double> fVecVtx_X; // Vector of vertex X position
+  std::vector<G4double> fVecVtx_Y; // Vector of vertex Y position
+  std::vector<G4double> fVecVtx_Z; // Vector of vertex Z position
+  std::vector<G4int>    fVecVtx_NuPDG;     // Vector of vertex Nu PDG
+  std::vector<G4int>    fVecVtx_ReacMode;  // Vector of vertex reaction mode
+  std::vector<G4double> fVecVtx_EvtProb;   // Vector of vertex event prob
+  std::vector<G4double> fVecVtx_EvtWeight; // Vector of vertex event weight
 };
 
 

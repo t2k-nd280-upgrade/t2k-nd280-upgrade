@@ -36,6 +36,8 @@
 #include "ExN02Analysis.hh"
 #include "ExN02TrackerHit.hh"
 
+#include "ExN02VertexInfo.hh"
+
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 #include "G4EventManager.hh"
@@ -89,7 +91,16 @@ ExN02EventAction::ExN02EventAction()
     fVecTarget_TrackID(),
     fVecTarget_TrackMomX(),
     fVecTarget_TrackMomY(),
-    fVecTarget_TrackMomZ()
+    fVecTarget_TrackMomZ(),
+
+    fNVtx(0),
+    fVecVtx_X(), 
+    fVecVtx_Y(), 
+    fVecVtx_Z(), 
+    fVecVtx_NuPDG(),     
+    fVecVtx_ReacMode(),  
+    fVecVtx_EvtProb(),   
+    fVecVtx_EvtWeight() 
 
 {
   // // set printing per each event
@@ -114,11 +125,13 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
   fTrackLAbsTPCup   = 0.;
   fTrackLAbsTPCdown = 0.;
   fTrackLAbsTarget  = 0.;
-  fNTracks          = 0; // It's a counter. It must be 0 at the begin of the event.
+  fNTracks          = 0; // It's a counter. It must be 0 at beginning of event.
 
   fTPCUp_NTracks = 0;
   fTPCDown_NTracks = 0;
   fTarget_NTracks = 0;
+
+  fNVtx = 0; // It's a counter. It must be 0 at  beginning of event
 
   // vector initialisation per event
   fVecTrackID.clear(); // clear the vector
@@ -143,6 +156,14 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
   fVecTarget_TrackMomX.clear(); 
   fVecTarget_TrackMomY.clear(); 
   fVecTarget_TrackMomZ.clear(); 
+
+  fVecVtx_X.clear(); 
+  fVecVtx_Y.clear(); 
+  fVecVtx_Z.clear(); 
+  fVecVtx_NuPDG.clear();     
+  fVecVtx_ReacMode.clear();  
+  fVecVtx_EvtProb.clear();   
+  fVecVtx_EvtWeight.clear(); 
   
   // Initialize the hit collections
   if (fHHC1ID==-1) {
@@ -160,13 +181,105 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   // Accumulate statistics
   //  
 
+  ///////////////////////////////////////////////////////
+  //                                                   //
+  //   Access the primary and informational vertices   //
+  //                                                   //
+  ///////////////////////////////////////////////////////
+
+
+  // Get the Primary Vertex
+
+  G4int vtxNumber=0;
+  for (G4PrimaryVertex* vtx = event->GetPrimaryVertex();vtx;vtx = vtx->GetNext()) {
+    ++vtxNumber;
+                       
+    // G4int vtxNumber=0;
+    // for (G4int ivtx=0; ivtx<event->GetNumberOfPrimaryVertex(); ivtx++){  
+    // ++vtxNumber;
+    // G4PrimaryVertex* vtx = event->GetPrimaryVertex();
+  
+    G4cout << "Vertex: " << vtxNumber  
+  	   << " w/ " << vtx->GetNumberOfParticle() << " primaries" 
+  	   << " at " 
+  	   << " (" << G4BestUnit(vtx->GetX0(),"Length") 
+  	   << ", " << G4BestUnit(vtx->GetY0(),"Length") 
+  	   << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
+  	   << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
+  	   << G4endl;
+
+    ExN02VertexInfo* vInfo 
+      = dynamic_cast<ExN02VertexInfo*>(vtx->GetUserInformation());
+    if (vInfo) {
+      G4cout << "  Generator: " << vInfo->GetName() << G4endl;
+      G4cout << "  Reaction:  " << vInfo->GetReaction() << G4endl;
+      G4cout << "  Weight:    " << vInfo->GetWeight() << G4endl;
+      G4cout << "  Prob:      " << vInfo->GetProbability() << G4endl;
+    }
+    for (int p=0; p<vtx->GetNumberOfParticle(); ++p) {
+      G4PrimaryParticle* prim = vtx->GetPrimary(p);
+      G4ParticleDefinition* partDef = prim->GetG4code();
+      G4ThreeVector dir = prim->GetMomentum().unit();
+      G4cout << "  " << partDef->GetParticleName() << " "
+    	     << prim->GetPDGcode()
+    	     << " w/ "
+    	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
+    	     << "  Direction: (" << dir.x()
+    	     << ", " << dir.y()
+    	     << ", " << dir.z() << ")"
+    	     << G4endl;
+    }
+   
+    // Get the Incoming Vertex
+    G4cout << "Incoming Vertex:" << vtxNumber << G4endl;
+    const G4PrimaryVertex *incvtx = vInfo->GetInformationalVertex();
+    for (int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
+      G4PrimaryParticle* prim = incvtx->GetPrimary(nu);
+      G4ParticleDefinition* partDef = prim->GetG4code();
+      G4ThreeVector dir = prim->GetMomentum().unit();
+      G4cout << "  " << partDef->GetParticleName() << " "
+    	     << prim->GetPDGcode()
+    	     << " w/ "
+    	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
+    	     << "  Direction: (" << dir.x()
+    	     << ", " << dir.y()
+    	     << ", " << dir.z() << ")"
+    	     << G4endl;	
+      G4int pdg = prim->GetPDGcode();
+    
+      G4cout << pdg << " " << fabs(pdg) << G4endl;
+
+      if( fabs(pdg)==12 ||
+    	  fabs(pdg)==14 ||
+    	  fabs(pdg)==16  ){	
+    	fVecVtx_NuPDG.push_back(prim->GetPDGcode());
+      }
+    }
+    // Get the Decay Vertex
+    // Get the Production Vertex
+
+    // Fill the Ntuple
+
+    fVecVtx_X.push_back(vtx->GetX0());
+    fVecVtx_Y.push_back(vtx->GetY0());
+    fVecVtx_Z.push_back(vtx->GetZ0()); 
+    G4int mode = G4UIcommand::ConvertToInt(vInfo->GetReaction());
+    fVecVtx_ReacMode .push_back(mode);
+    fVecVtx_EvtProb  .push_back(vInfo->GetWeight());
+    fVecVtx_EvtWeight.push_back(vInfo->GetProbability()); 
+  }
+
+  fNVtx = vtxNumber; // get # of vertices in the event
+     
+
+
 
   ///////////////////////////////////////////////////////
   //                                                   //
   // Access hit collections and handle the stored hits //
   //                                                   //
   ///////////////////////////////////////////////////////
-
+    
   G4HCofThisEvent* hce = event->GetHCofThisEvent();
   if (!hce) 
     {
@@ -274,9 +387,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        if(prevtrkid_Target==kBadNum){
 	 fVecTarget_TrackID.push_back(currtrkid_Target);
 	 
-	 fVecTarget_TrackMomX.push_back(trkmom.x());
-	 fVecTarget_TrackMomY.push_back(trkmom.y());
-	 fVecTarget_TrackMomZ.push_back(trkmom.z());
+	 fVecTarget_TrackMomX.push_back((G4double)trkmom.x());
+	 fVecTarget_TrackMomY.push_back((G4double)trkmom.y());
+	 fVecTarget_TrackMomZ.push_back((G4double)trkmom.z());
  	 
 	 prevtrkid_Target = currtrkid_Target;
 	 fTarget_NTracks++;
@@ -293,11 +406,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fTarget_NTracks++;
 	 //std::cout << prevtrkid_Target << " - " << currtrkid_Target << std::endl;
        }       
-     }
-
-
+     }     
      
-   }
+   } // end loop over the hits
    
   
 
@@ -306,11 +417,6 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
   // // fill histograms
   analysisManager->FillH1(1, fEnergyAbsTPCup);
-  // analysisManager->FillH1(2, fEnergyAbsTPCdown);
-  // analysisManager->FillH1(3, fEnergyAbsTarget);
-  // analysisManager->FillH1(4, fTrackLAbsTPCup);
-  // analysisManager->FillH1(5, fTrackLAbsTPCdown);
-  // analysisManager->FillH1(6, fTrackLAbsTarget);
 
   //
   // Fill Ntuple: be careful to the column ID. Check with RunAction where the Ntuple is created                 
@@ -327,7 +433,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillNtupleIColumn(7,  fTPCUp_NTracks);
   analysisManager->FillNtupleIColumn(8,  fTPCDown_NTracks);
   analysisManager->FillNtupleIColumn(9,  fTarget_NTracks);
-
+  
+  analysisManager->FillNtupleIColumn(10, fNVtx);
+  
   analysisManager->AddNtupleRow();
 
 
@@ -338,37 +446,36 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   if ( ( printModulo > 0 ) && ( eventID % printModulo == 0 ) ) {
     G4cout << "---> End of event: " << eventID << G4endl;
     
-    G4cout
-      << "   Absorber TPC up: total energy: " << std::setw(7)
-      << G4BestUnit(fEnergyAbsTPCup,"Energy")
-      << "       total track length: " << std::setw(7)
-      << G4BestUnit(fTrackLAbsTPCup,"Length")
-      << G4endl 
-      << "   Absorber TPC down: total energy: " << std::setw(7)
-      << G4BestUnit(fEnergyAbsTPCup,"Energy")
-      << "       total track length: " << std::setw(7)
-      << G4BestUnit(fTrackLAbsTPCup,"Length")
-      << G4endl
-      << "   Absorber Target: total energy: " << std::setw(7)
-      << G4BestUnit(fEnergyAbsTarget,"Energy")
-      << "       total track length: " << std::setw(7)
-      << G4BestUnit(fTrackLAbsTarget,"Length")
-      << G4endl;
+    //   G4cout << "   Absorber TPC up: total energy: " << std::setw(7)
+    // 	   << G4BestUnit(fEnergyAbsTPCup,"Energy")
+    // 	   << "       total track length: " << std::setw(7)
+    // 	   << G4BestUnit(fTrackLAbsTPCup,"Length")
+    // 	   << G4endl 
+    // 	   << "   Absorber TPC down: total energy: " << std::setw(7)
+    // 	   << G4BestUnit(fEnergyAbsTPCup,"Energy")
+    // 	   << "       total track length: " << std::setw(7)
+    // 	   << G4BestUnit(fTrackLAbsTPCup,"Length")
+    // 	   << G4endl
+    // 	   << "   Absorber Target: total energy: " << std::setw(7)
+    // 	   << G4BestUnit(fEnergyAbsTarget,"Energy")
+    // 	   << "       total track length: " << std::setw(7)
+    // 	   << G4BestUnit(fTrackLAbsTarget,"Length")
+    // 	   << G4endl;
   }
 
-  // Print out the informations from SteppingAction
-  std::cout << std::endl;
-  std::cout << "Print out the informations from SteppingAction:" << std::endl;
-  std::cout << std::endl;
-  std::cout << "# of Tracks = " << fNTracks << std::endl;
-  for(int itrk=0;itrk<fNTracks;itrk++){
-    std::cout << "Track ID: = " << fVecTrackID[itrk] 
-	      << " - Track PDG: = " << fVecTrackPDG[itrk]   
-	      << " - Track E: = " << fVecTrackE[itrk]   
-	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
-	      << std::endl;
-  }
-  std::cout << std::endl;
+  // // Print out the informations from SteppingAction
+  // std::cout << std::endl;
+  // std::cout << "Print out the informations from SteppingAction:" << std::endl;
+  // std::cout << std::endl;
+  // std::cout << "# of Tracks = " << fNTracks << std::endl;
+  // for(int itrk=0;itrk<fNTracks;itrk++){
+  //   std::cout << "Track ID: = " << fVecTrackID[itrk] 
+  // 	      << " - Track PDG: = " << fVecTrackPDG[itrk]   
+  // 	      << " - Track E: = " << fVecTrackE[itrk]   
+  // 	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
+  // 	      << std::endl;
+  // }
+  // std::cout << std::endl;
   
   // get number of stored trajectories
   //

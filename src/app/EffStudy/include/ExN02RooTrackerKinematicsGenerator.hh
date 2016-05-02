@@ -37,6 +37,7 @@ private :
   TTree *fneutree;    // NEUT tree to read
 
   void ReadNEUT(G4String filename);
+  void ReadGENIE(G4String filename);
 
   int fTotEntry;
   int fCurrEntry;

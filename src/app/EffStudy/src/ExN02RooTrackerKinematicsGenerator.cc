@@ -34,8 +34,10 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
   
   G4String inputfile = cPathFiles ;
   inputfile.append(cNEUTfilename);
-  
+
+  // TODO: choose between NEUT and GENIE
   this->ReadNEUT(inputfile);
+  //this->ReadGENIE(inputfile);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -110,6 +112,12 @@ void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
+{
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
 {  
   if (!fneutfile) {
@@ -165,18 +173,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   fneutree->GetEntry(evtID); // take NEUT entry using event ID
 
 
-  
-  // Read vertex inputs from NEUT
-  
-  G4cout << "evtID = " << evtID << G4endl;
-  G4cout << "fCurrEntry = " << fCurrEntry << G4endl;
-  G4cout << "fTotEntry = " << fTotEntry << G4endl;
-  G4cout << "fNuParentPdg = " << fNuParentPdg << G4endl;
-  G4cout << "fEvtVtx[0] = " << fEvtVtx[0] << " m" << G4endl;
-  G4cout << "fEvtVtx[1] = " << fEvtVtx[1] << " m" << G4endl;
-  G4cout << "fEvtVtx[2] = " << fEvtVtx[2] << " m" << G4endl;
-  G4cout << "fEvtVtx[3]*second = " << fEvtVtx[3]*second << G4endl;  
-  
+ 
   //
   // NB: The following code to add the vertex is taken from nd280mc code
   //     except a few minor differences (e.g. ND280LOG, the interaction vertex index, different G4 version...)
@@ -194,7 +191,10 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // Add an information field to the vertex.
   ExN02VertexInfo *vertexInfo = new ExN02VertexInfo;
   theVertex->SetUserInformation(vertexInfo);
-  
+
+  // Fill the generator name
+  vertexInfo->SetName("NEUT");
+
   // Fill the information fields for this vertex.
   vertexInfo->SetReaction(std::string(fEvtCode->String().Data()));
   // Set the file name for this event.
@@ -208,8 +208,8 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   vertexInfo->SetCrossSection(fEvtXSec*1E-38*cm2);
   vertexInfo->SetDiffCrossSection(fEvtDXSec*1E-38*cm2);
   vertexInfo->SetWeight(fEvtWght);
-  vertexInfo->SetProbability(fEvtProb);
-    
+  vertexInfo->SetProbability(fEvtProb);  
+  
   // Add an informational vertex for storing the incoming 
   // neutrino particle and target nucleus.
   G4PrimaryVertex* theIncomingVertex 
@@ -348,7 +348,24 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
 			    fNuParentProP4[2]*GeV);
   theProductionVertex->SetPrimary(theProductionParticle);
   
-  
   fCurrEntry++; // move to next event
- 
+  
+
+  // // Read vertex inputs from NEUT  
+  // G4cout << G4endl;
+  // G4cout << "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex" << G4endl;
+  // G4cout << "evtID = " << evtID << G4endl;
+  // G4cout << "fCurrEntry = " << fCurrEntry << G4endl;
+  // G4cout << "fTotEntry = " << fTotEntry << G4endl;
+  // G4cout << "fNuParentPdg = " << fNuParentPdg << G4endl;
+  // G4cout << "XSec = " << vertexInfo->GetCrossSection() << G4endl;
+  // G4cout << "EvtWeight = " << vertexInfo->GetWeight() << G4endl;
+  // G4cout << "EvtProb = " << vertexInfo->GetProbability() << G4endl;  
+  // G4cout << "Primary Vertex: " << G4endl;
+  // G4cout << " - fEvtVtx[0] = " << fEvtVtx[0] << " m" << G4endl;
+  // G4cout << " - fEvtVtx[1] = " << fEvtVtx[1] << " m" << G4endl;
+  // G4cout << " - fEvtVtx[2] = " << fEvtVtx[2] << " m" << G4endl;
+  // G4cout << " - fEvtVtx[3]*second = " << fEvtVtx[3]*second << G4endl;  
+  // G4cout << G4endl;
+  
 }

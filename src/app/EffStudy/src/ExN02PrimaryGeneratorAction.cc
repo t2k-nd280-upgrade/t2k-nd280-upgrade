@@ -32,6 +32,8 @@
 #include "ExN02PrimaryGeneratorMessenger.hh"
 #include "ExN02RooTrackerKinematicsGenerator.hh"
 
+#include "ExN02VertexInfo.hh"
+
 #include "G4RunManager.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4LogicalVolume.hh"
@@ -188,7 +190,6 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
 		"MyCode0002",FatalException, msg);        
   }
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

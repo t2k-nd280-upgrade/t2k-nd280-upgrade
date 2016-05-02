@@ -1,15 +1,12 @@
 
 //
 // This class has been copied from nd280mc code: ND280VertexInfo
-// A few minor changes:
-// - Include G4PrimaryVertex class
 //
 
 #ifndef ExN02VertexInfo_hh_seen
 #define ExN02VertexInfo_hh_seen
 
 #include <G4VUserPrimaryVertexInformation.hh>
-#include <G4PrimaryVertex.hh>
 
 /// Hold information that is associated with each primary vertex.  This holds
 /// the particle reaction code that generated the vertex, the name of the

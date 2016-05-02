@@ -5,7 +5,13 @@ void ReadG4out
  const char *filename = "../bin/EffStudy.root",
  )
 {
-
+  // Vertex
+  TH1D *hVtx_X = new TH1D("hVtx_X","hVtx_X",200,-10,10);
+  TH1D *hVtx_Y = new TH1D("hVtx_Y","hVtx_Y",200,-10,10);
+  TH1D *hVtx_Z = new TH1D("hVtx_Z","hVtx_Z",200,-10,10);
+  TH1D *hVtx_NuPDG = new TH1D("hVtx_NuPDG","hVtx_NuPDG",10,10,20);
+  TH1D *hVtx_ReacMode = new TH1D("hVtx_ReacMode","hVtx_ReacMode",100,-50,50);
+  
   // All the volume
   TH1D *hNTracks = new TH1D("hNTracks","hNTracks",100,0,100);
   TH1D *hTrackE = new TH1D("hTrackE","hTrackE",100,0,2000);
@@ -20,7 +26,6 @@ void ReadG4out
   TH1D *hEabsTarget = new TH1D("hEabsTarget","hEabsTarget",100,0,150);
   TH1D *hEabsTPCup = new TH1D("hEabsTPCup","hEabsTPCup",100,0,150);
   TH1D *hEabsTPCdown = new TH1D("hEabsTPCdown","hEabsTPCdown",100,0,150);
-
   
   TH1D *hTPCUp_NTrack = new TH1D("hTPCUp_NTrack","hTPCUp_NTrack",100,0,300);
   TH1D *hTPCUp_MomX = new TH1D("hTPCUp_MomX","hTPCUp_MomX",100,0,300);
@@ -86,6 +91,16 @@ void ReadG4out
   std::vector<double>* VecTarget_TrackMomX; // Vector of initial mom in Target
   std::vector<double>* VecTarget_TrackMomY; // Vector of initial mom in Target 
   std::vector<double>* VecTarget_TrackMomZ; // Vector of initial mom in Target
+  
+  // Vertex informations
+  int     NVtx;
+  std::vector<double> *VecVtx_X; // Vector of vertex X position
+  std::vector<double> *VecVtx_Y; // Vector of vertex Y position
+  std::vector<double> *VecVtx_Z; // Vector of vertex Z position
+  std::vector<int>    *VecVtx_NuPDG;     // Vector of vertex Nu PDG
+  std::vector<int>    *VecVtx_ReacMode;  // Vector of vertex reaction mode
+  std::vector<double> *VecVtx_EvtProb;   // Vector of vertex event prob
+  std::vector<double> *VecVtx_EvtWeight; // Vector of vertex event weight
 
 
   //
@@ -127,6 +142,14 @@ void ReadG4out
   treein->SetBranchAddress("VecTarget_TrackMomY", &VecTarget_TrackMomY);
   treein->SetBranchAddress("VecTarget_TrackMomZ", &VecTarget_TrackMomZ);
 
+  treein->SetBranchAddress("NVtx", &NVtx);
+  treein->SetBranchAddress("VtxX", &VecVtx_X);
+  treein->SetBranchAddress("VtxY", &VecVtx_Y);
+  treein->SetBranchAddress("VtxZ", &VecVtx_Z);
+  treein->SetBranchAddress("VecVtx_NuPDG", &VecVtx_NuPDG);
+  treein->SetBranchAddress("VecVtx_ReacMode", &VecVtx_ReacMode);
+  treein->SetBranchAddress("VecVtx_EvtProb", &VecVtx_EvtProb);
+  treein->SetBranchAddress("VecVtx_EvtWeight", &VecVtx_EvtWeight);
 
 
 
@@ -136,8 +159,38 @@ void ReadG4out
   for(int ientry=0;ientry<Nentries;ientry++){
     treein->GetEntry(ientry);
 
+    cout << endl;
     cout << "Event " << ientry << endl;
-        
+
+    //
+    // Read the vertices
+    //
+    
+    if(NVtx!=1){
+      cerr << endl;
+      cerr << "The # of vertices is " << NVtx << "!!!" << endl;
+      cerr << endl;
+      exit(1);
+    }
+    
+    if( VecVtx_X->size()!=NVtx){
+      cerr << endl;
+      cerr << "The vector size is larger than the # of vertices:" << endl;
+      cerr << "NVtx = " << NVtx << endl;
+      cerr << "VecVtx_X->size() = " << VecVtx_X->size() << endl;
+      cerr << endl;
+      exit(1);
+    }
+    
+    for(int ivtx=0;ivtx<NVtx;ivtx++){
+      hVtx_X->Fill( VecVtx_X->at(ivtx));
+      hVtx_Y->Fill( VecVtx_Y->at(ivtx));
+      hVtx_Z->Fill( VecVtx_Z->at(ivtx));
+      hVtx_NuPDG->Fill( VecVtx_NuPDG->at(ivtx));
+      hVtx_ReacMode->Fill( VecVtx_ReacMode->at(ivtx));
+    }
+
+    
     //
     // Read all the tracks in the event (all volume)
     //
