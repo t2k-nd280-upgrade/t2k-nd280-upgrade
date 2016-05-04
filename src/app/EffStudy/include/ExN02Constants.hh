@@ -61,7 +61,7 @@ const G4String cBasketMater  = "Air";
 const G4String cTrackerMater = "Air";
 const G4String cTargetMater  = "ActiveWater"; //fgd active water
 //const G4String cTargetMater  = "FGDScintillator"; //fgd scintillator
-const G4String cChamberMater = "GasMixtureTPC"; // gas mixture of ND280 TPCs
+const G4String cChamberMater = "FGDScintillator"; //"GasMixtureTPC"; // gas mixture of ND280 TPCs
 
 
 ////////////////////////////

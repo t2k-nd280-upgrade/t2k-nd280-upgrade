@@ -202,10 +202,14 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     G4cout << "Vertex: " << vtxNumber  
   	   << " w/ " << vtx->GetNumberOfParticle() << " primaries" 
   	   << " at " 
-  	   << " (" << G4BestUnit(vtx->GetX0(),"Length") 
-  	   << ", " << G4BestUnit(vtx->GetY0(),"Length") 
-  	   << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
-  	   << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
+  	   // << " (" << G4BestUnit(vtx->GetX0(),"Length") 
+  	   // << ", " << G4BestUnit(vtx->GetY0(),"Length") 
+  	   // << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
+  	   // << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
+  	   << " (" << vtx->GetX0() / cm 
+  	   << ", " << vtx->GetY0() / cm
+  	   << ", " << vtx->GetZ0() / cm 
+  	   << ", " << vtx->GetT0() / second << ")"
   	   << G4endl;
 
     ExN02VertexInfo* vInfo 
@@ -259,10 +263,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     // Get the Production Vertex
 
     // Fill the Ntuple
-
-    fVecVtx_X.push_back(vtx->GetX0());
-    fVecVtx_Y.push_back(vtx->GetY0());
-    fVecVtx_Z.push_back(vtx->GetZ0()); 
+    
+    fVecVtx_X.push_back(vtx->GetX0()/m);
+    fVecVtx_Y.push_back(vtx->GetY0()/m);
+    fVecVtx_Z.push_back(vtx->GetZ0()/m); 
     G4int mode = G4UIcommand::ConvertToInt(vInfo->GetReaction());
     fVecVtx_ReacMode .push_back(mode);
     fVecVtx_EvtProb  .push_back(vInfo->GetWeight());

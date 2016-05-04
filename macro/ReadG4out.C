@@ -6,9 +6,12 @@ void ReadG4out
  )
 {
   // Vertex
-  TH1D *hVtx_X = new TH1D("hVtx_X","hVtx_X",200,-10,10);
-  TH1D *hVtx_Y = new TH1D("hVtx_Y","hVtx_Y",200,-10,10);
-  TH1D *hVtx_Z = new TH1D("hVtx_Z","hVtx_Z",200,-10,10);
+  TH2D *hVtx_XY = new TH2D("hVtx_XY","hVtx_XY",400,-4,4,400,-4,4);
+  TH2D *hVtx_XZ = new TH2D("hVtx_XZ","hVtx_XZ",400,-4,4,400,-4,4);
+  TH2D *hVtx_YZ = new TH2D("hVtx_YZ","hVtx_YZ",400,-4,4,400,-4,4);
+  TH1D *hVtx_X = new TH1D("hVtx_X","hVtx_X",400,-4,4);
+  TH1D *hVtx_Y = new TH1D("hVtx_Y","hVtx_Y",400,-4,4);
+  TH1D *hVtx_Z = new TH1D("hVtx_Z","hVtx_Z",400,-4,4);
   TH1D *hVtx_NuPDG = new TH1D("hVtx_NuPDG","hVtx_NuPDG",10,10,20);
   TH1D *hVtx_ReacMode = new TH1D("hVtx_ReacMode","hVtx_ReacMode",100,-50,50);
   
@@ -183,9 +186,18 @@ void ReadG4out
     }
     
     for(int ivtx=0;ivtx<NVtx;ivtx++){
-      hVtx_X->Fill( VecVtx_X->at(ivtx));
-      hVtx_Y->Fill( VecVtx_Y->at(ivtx));
-      hVtx_Z->Fill( VecVtx_Z->at(ivtx));
+
+      double vtx_x = VecVtx_X->at(ivtx);
+      double vtx_y = VecVtx_Y->at(ivtx);
+      double vtx_z = VecVtx_Z->at(ivtx);
+
+      hVtx_XY->Fill(vtx_x,vtx_y);
+      hVtx_XZ->Fill(vtx_x,vtx_z);
+      hVtx_YZ->Fill(vtx_y,vtx_z);      
+      hVtx_X->Fill(vtx_x);
+      hVtx_Y->Fill(vtx_y);
+      hVtx_Z->Fill(vtx_z);
+
       hVtx_NuPDG->Fill( VecVtx_NuPDG->at(ivtx));
       hVtx_ReacMode->Fill( VecVtx_ReacMode->at(ivtx));
     }
@@ -351,6 +363,21 @@ void ReadG4out
   TCanvas *cTarget_TrackMom = new TCanvas("cTarget_TrackMom","cTarget_TrackMom");
   hTarget_Mom->Draw();
 
+  
+  TCanvas *cVtx_X = new TCanvas("cVtx_X","cVtx_X");
+  hVtx_X->Draw();
+  TCanvas *cVtx_Y = new TCanvas("cVtx_Y","cVtx_Y");
+  hVtx_Y->Draw();
+  TCanvas *cVtx_Z = new TCanvas("cVtx_Z","cVtx_Z");
+  hVtx_Z->Draw();
+
+  TCanvas *cVtx_XY = new TCanvas("cVtx_XY","cVtx_XY");
+  hVtx_XY->Draw("colz");
+  TCanvas *cVtx_XZ = new TCanvas("cVtx_XZ","cVtx_XZ");
+  hVtx_XZ->Draw("colz");
+  TCanvas *cVtx_YZ = new TCanvas("cVtx_YZ","cVtx_YZ");
+  hVtx_YZ->Draw("colz");
+  
 
 
   // Print 
@@ -363,14 +390,21 @@ void ReadG4out
   sprintf(name,"outputs/cEabsTPCup_%s.pdf",tag);   cEabsTPCup->Print(name);
   sprintf(name,"outputs/cEabsTPCdown_%s.pdf",tag); cEabsTPCdown->Print(name);
    
+  sprintf(name,"outputs/cVtx_X_%s.pdf",tag); cVtx_X->Print(name);
+  sprintf(name,"outputs/cVtx_Y_%s.pdf",tag); cVtx_Y->Print(name);
+  sprintf(name,"outputs/cVtx_Z_%s.pdf",tag); cVtx_Z->Print(name);
+  sprintf(name,"outputs/cVtx_XY_%s.pdf",tag); cVtx_XY->Print(name);
+  sprintf(name,"outputs/cVtx_XZ_%s.pdf",tag); cVtx_XZ->Print(name);
+  sprintf(name,"outputs/cVtx_YZ_%s.pdf",tag); cVtx_YZ->Print(name);
+
   // Write text file
   
   ofstream * outfilep = new ofstream(Form("outputs/%s.txt",tag),ios_base::trunc);
   ofstream & outfile = *outfilep;
 
   stringstream streamer;
-  streamer << endl;
-  streamer << endl;
+  //streamer << endl;
+  //streamer << endl;
   cout << streamer.str() << endl;
   
   // get size of file
