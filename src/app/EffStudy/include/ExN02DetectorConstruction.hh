@@ -158,11 +158,11 @@ private:
   G4double fTrackerHeight;          // Full height of Tracker
 
   G4int    fNbOfChambers;            // Nb of chambers in the tracker region
+  G4double fChamberSpacing;         // distance between chambers 
   G4double fChamberLength;           // length of the chambers
   G4double fChamberWidth;            // width of the chambers
   G4double fChamberHeight;           // height of the chambers
-  G4double fChamberSpacing;	    // distance between chambers
-
+ 
   G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume
   G4VPhysicalVolume*   fGapPV;      // the gap physical volume
   G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps

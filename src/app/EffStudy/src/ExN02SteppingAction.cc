@@ -70,11 +70,11 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   if(edep==0.) return;
 
   G4StepPoint* prestep  = step->GetPreStepPoint();
-  G4StepPoint* poststep = step->GetPostStepPoint();
+  //G4StepPoint* poststep = step->GetPostStepPoint();
   G4Track *track = step->GetTrack();
 
   // get volume of the current step
-  G4VPhysicalVolume* volume = prestep->GetTouchableHandle()->GetVolume();
+  //G4VPhysicalVolume* volume = prestep->GetTouchableHandle()->GetVolume();
 
   // step lenght                                                    
   G4double stepLength = 0.;

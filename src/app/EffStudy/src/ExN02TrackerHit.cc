@@ -110,7 +110,7 @@ void ExN02TrackerHit::Draw()
 
 void ExN02TrackerHit::Print()
 {
-  G4int prec = G4cout.precision(5);
+  G4cout.precision(5);
   
   //if(namedet=="Target" || namedet=="TPC Up"){
   G4cout << "  trackID: " << trackID 

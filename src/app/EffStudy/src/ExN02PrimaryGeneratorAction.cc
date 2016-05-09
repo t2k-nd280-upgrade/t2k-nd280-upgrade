@@ -51,8 +51,9 @@
 ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
  : G4VUserPrimaryGeneratorAction(),
    fParticleGun(0),
+   RooTrackerNEUT(),
    fPrimaryGeneratorMessenger(0),
-   RooTrackerNEUT()
+   fGeneratorType("")
 {
   // Set the messenger  
   fPrimaryGeneratorMessenger = new ExN02PrimaryGeneratorMessenger(this); 

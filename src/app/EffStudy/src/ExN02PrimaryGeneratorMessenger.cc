@@ -44,9 +44,9 @@
 
 ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGeneratorAction* myPrimGen)
   : G4UImessenger(),
+    myPrimaryGenerator(myPrimGen),
     fPrimgenDir(0),
-    fGeneratorCmd(0),
-    myPrimaryGenerator(myPrimGen)
+    fGeneratorCmd(0)
 {   
   fPrimgenDir = new G4UIdirectory("/generator/");
   fPrimgenDir->SetGuidance("Primary Generator");

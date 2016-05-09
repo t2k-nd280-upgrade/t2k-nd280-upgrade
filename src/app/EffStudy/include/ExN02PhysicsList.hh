@@ -33,64 +33,76 @@
 #ifndef ExN02PhysicsList_h
 #define ExN02PhysicsList_h 1
 
-#include "G4VUserPhysicsList.hh"
+#include "G4VModularPhysicsList.hh"
 #include "globals.hh"
-#include "G4ParallelWorldScoringProcess.hh"
+#include "G4LossTableManager.hh"
 
-//
-// NOT AVAILABLE IN THIS GEANT4 VERSION
-//
-//#include "DataCards.hh"
+//#include "StepMax.hh"
 
+#ifdef USE_PAI
+class G4EmConfigurator;
+class G4ProductionCuts;
+#endif
+
+class G4VPhysicsConstructor;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class ExN02PhysicsList: public G4VUserPhysicsList
+class ExN02PhysicsList: public G4VModularPhysicsList
 {
-  public:
-    ExN02PhysicsList();
-   ~ExN02PhysicsList();
-
-  // bool IsDefined(G4int pid);
+public:
+  ExN02PhysicsList();
+  ~ExN02PhysicsList();
   
-  // virtual void SetCuts();
-  // void loadDataCards();
+  virtual void ConstructParticle();
 
-  // protected:
-  //   // Construct particle and physics
-  //   void ConstructParticle();
-  //   void ConstructProcess();
- 
-  //   void ConstructBosons();
-  //   void ConstructLeptons();
-  //   void ConstructMesons();
-  //   void ConstructBaryons();
-  //   void ConstructIons();
-  //   void ConstructShortLived();
+  void AddPhysicsList(const G4String& name);
+  virtual void ConstructProcess();
+    
+  //void AddStepMax();       
+  //StepMax* GetStepMaxProcess() {return fStepMaxProcess;};
 
-  //   void ConstructEM();
-  //   void ConstructEM(std::string emlist);
-  //   void ConstructHad(std::string hadlist);
+  private:
 
-  //   void AddTransportation();
-  //   void AddVirtualScoringProcess();
+  // void AddIonGasModels();
+
+  // G4bool   fHelIsRegisted;
+  // G4bool   fBicIsRegisted;
+  // G4bool   fBiciIsRegisted;
+    
+  G4String                             fEmName;
+  G4VPhysicsConstructor*               fEmPhysicsList;
+  G4VPhysicsConstructor*               fDecPhysicsList;
+  std::vector<G4VPhysicsConstructor*>  fHadronPhys;    
+  //StepMax*                             fStepMaxProcess;
+
+  /// Make sure that the EM physics list is empty.
+  void ClearEMPhysics();
   
-  // protected:
-  // // these methods Construct physics processes and register them
-  //   void ConstructGeneral();
-  //   void AddStepMax();
+  /// Make sure that the hadron physics list is empty.
+  void ClearHadronPhysics();
+    
+  //PhysicsListMessenger*  fMessenger;
 
-  //   G4int VerboseLevel;
-  //   G4int OpVerbLevel;
-  
-  //   //
-  //   // NOT AVAILABLE IN THIS GEANT4 VERSION
-  //   //
-  //   //DataCards*			cards_;
-  //   //G4bool      		cardsLoaded_;
+  void SetBuilderList0(G4bool flagHP = false);
+  void SetBuilderList1(G4bool flagHP = false);
+  void SetBuilderList2(G4bool flagHP = false);
+  void SetBuilderList3(G4bool flagHP = false);
+  void SetBuilderList4(G4bool flagHP = false);
+  void SetBuilderList5(G4bool flagHP = false);
+  void SetBuilderList6(G4bool flagHP = false);
+
+#ifdef USE_PAI
+    void AddPAIModel();
+
+    G4EmConfigurator* em_config;
+#endif
+
+  protected:
+  // these methods Construct physics processes and register them
+
 };
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

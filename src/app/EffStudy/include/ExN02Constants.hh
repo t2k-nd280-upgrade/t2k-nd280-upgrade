@@ -10,8 +10,11 @@
 /////////////////////////////////                                       
 
 const G4String cPathFiles    = "../files/"; // executable is run in $T2KND280UP/bin
+
 //const G4String cNEUTfilename = "genev_output_nd280geom.root";
 const G4String cNEUTfilename = "genev_output_newgeom.root";
+//const G4String cNEUTfilename = "setup_output_scint_in_tpc.root";
+
 const G4String cNEUTtreename = "nRooTracker";
 
 /////////////////////////////////                 
@@ -61,7 +64,7 @@ const G4String cBasketMater  = "Air";
 const G4String cTrackerMater = "Air";
 const G4String cTargetMater  = "ActiveWater"; //fgd active water
 //const G4String cTargetMater  = "FGDScintillator"; //fgd scintillator
-const G4String cChamberMater = "FGDScintillator"; //"GasMixtureTPC"; // gas mixture of ND280 TPCs
+const G4String cChamberMater = "GasMixtureTPC"; // gas mixture of ND280 TPCs
 
 
 ////////////////////////////
