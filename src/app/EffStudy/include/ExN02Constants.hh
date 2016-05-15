@@ -5,6 +5,17 @@
 
 /////////////////////////////////                 
 //                             //                    
+//      Flags for compiler     //                         
+//                             //          
+/////////////////////////////////                                       
+
+#define USE_PAI
+
+//#define USE_BLINETRACER // Use the BlineTracer class w/ bline_vis.mac
+                          // Plot geantino along magnetic field direction
+ 
+/////////////////////////////////                 
+//                             //                    
 //         Input files         //                         
 //                             //          
 /////////////////////////////////                                       
@@ -12,8 +23,9 @@
 const G4String cPathFiles    = "../files/"; // executable is run in $T2KND280UP/bin
 
 //const G4String cNEUTfilename = "genev_output_nd280geom.root";
-const G4String cNEUTfilename = "genev_output_newgeom.root";
-//const G4String cNEUTfilename = "setup_output_scint_in_tpc.root";
+const G4String cNEUTfilename = "genev_output_newgeom_O16.root";
+//const G4String cNEUTfilename = "genev_output_newgeom_O12.root";
+//const G4String cNEUTfilename = "genev_output_newgeom_scint_in_tpc.root";
 
 const G4String cNEUTtreename = "nRooTracker";
 
@@ -140,7 +152,7 @@ const G4int    cStepperType = 4;           // ClassicalRK4 is default stepper
 //                        //
 ////////////////////////////
 
-const G4double cMaxStep = 0.5 * cChamberWidth;
+const G4double cStepLimit = 1.0 * mm; // used in the TPC drift region for charge particles
 
 
 #endif

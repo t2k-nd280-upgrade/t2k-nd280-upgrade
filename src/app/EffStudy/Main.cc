@@ -41,8 +41,9 @@
 
 #include "ExN02DetectorConstruction.hh"
 #include "ExN02ActionInitialization.hh"
+#include "ExN02Constants.hh"
 
-//#include "ExN02PhysicsList.hh"
+#include "ExN02PhysicsList.hh"
 #include "FTFP_BERT.hh"
 #include "QGSP_BERT.hh"
 
@@ -88,19 +89,23 @@ int main(int argc,char** argv)
   //
   ExN02DetectorConstruction* detector = new ExN02DetectorConstruction;
   runManager->SetUserInitialization(detector);
-  //
 
-  //G4VUserPhysicsList* physics = new ExN02PhysicsList;
-  //runManager->SetUserInitialization(physics);
+
+  // Set the physics list
+
+#ifndef USE_BLINETRACER
+  ExN02PhysicsList* physics = new ExN02PhysicsList;
+  runManager->SetUserInitialization(physics);
+#else
   G4int verbose = 1;
-  //FTFP_BERT* physlist = new FTFP_BERT(verbose);
   QGSP_BERT* physlist = new QGSP_BERT(verbose);
   //physlist->RegisterPhysics(new G4StepLimiterPhysics()); // attach the step limit to each particle 
   //physlist->RegisterPhysics(new G4StepLimiterBuilder()); // attach the step limit to each particle   
   runManager->SetUserInitialization(physlist);
-  
-  // Instantiate the G4BlineTracer class                                                                               
+
+  // Instantiate the G4BlineTracer class
   G4BlineTracer* theBlineTool = new G4BlineTracer();
+#endif
   
 
   // User Action classes (OLD STYLE)
@@ -163,7 +168,9 @@ int main(int argc,char** argv)
   //                 owned and deleted by the run manager, so they should not
   //                 be deleted in the main() program !
 
+#ifdef USE_BLINETRACER
   delete theBlineTool;
+#endif
   delete runManager;
   delete verbosity;
   

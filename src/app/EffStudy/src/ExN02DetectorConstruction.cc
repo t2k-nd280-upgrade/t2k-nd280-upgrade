@@ -54,6 +54,11 @@
 #include "G4SystemOfUnits.hh"
 #include "G4AutoDelete.hh"
 
+#ifdef USE_PAI
+#include <G4Region.hh>
+#endif  
+#include "G4RegionStore.hh"
+
 // Magnetic field
 #include "ExN02FieldSetup.hh"
 //
@@ -113,6 +118,12 @@ ExN02DetectorConstruction::~ExN02DetectorConstruction()
  
 G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 {
+#ifdef USE_PAI
+  // Create a region for the PAI Model.
+  G4RegionStore::GetInstance()->FindOrCreateRegion("driftRegion");
+#endif
+  
+
   //--------- Define materials ----------
   
   this->DefineMaterials(); // method copied from ND280 software
@@ -382,7 +393,23 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 
 
 
+  //------------------------------------------------ 
+  // Set regions
+  //------------------------------------------------ 
 
+#ifdef USE_PAI
+  G4Region* driftRegion = G4RegionStore::GetInstance()->
+    GetRegion("driftRegion",false);
+  if (driftRegion) {
+    driftRegion->AddRootLogicalVolume(logicChamberUp);
+    driftRegion->AddRootLogicalVolume(logicChamberDown);
+  } else {
+    G4ExceptionDescription msg;
+    msg << "The drift region does not exist" << G4endl;
+    G4Exception("ExN02DetectorConstruction::Construct",
+		"MyCode0002",FatalException, msg);
+  }
+#endif
 
   //------------------------------------------------ 
   // Sensitive detectors
@@ -404,11 +431,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4AutoDelete::Register(fieldSetup); // Kernel will delete the ExN02FieldSetup
     fEmFieldSetup.Put(fieldSetup);
   }
-
-
-
-
-
   
   //--------- Visualization attributes -------------------------------
 
@@ -423,28 +445,17 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4VisAttributes* ChamberVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
   logicChamberUp->SetVisAttributes(ChamberVisAtt);
   logicChamberDown->SetVisAttributes(ChamberVisAtt);
+
+
+
+  //--------- Set Step Limiter -------------------------------
   
+  // Sets a max Step length in the drift region, with G4StepLimiter 
+  // Each step limiter must be attached to each physics list in ExN02PhysicsList
+  logicChamberUp  ->SetUserLimits(new G4UserLimits(cStepLimit));
+  logicChamberDown->SetUserLimits(new G4UserLimits(cStepLimit));
 
 
-
-
-  //--------- example of User Limits -------------------------------
-
-  // below is an example of how to set tracking constraints in a given
-  // logical volume(see also in N02PhysicsList how to setup the processes
-  // G4StepLimiter or G4UserSpecialCuts).
-  
-  // Sets a max Step length in the tracker region, with G4StepLimiter
-  
-  G4double maxStep = cMaxStep; 
-  stepLimit = new G4UserLimits(maxStep);
-  logicTracker->SetUserLimits(stepLimit);
-  logicTarget->SetUserLimits(stepLimit);
-  
-  // Set additional contraints on the track, with G4UserSpecialCuts
-  //G4double maxLength = 4*fTrackerLength, maxTime = 10*ns, minEkin = 10*keV;
-  //logicTracker->SetUserLimits(new G4UserLimits(maxStep,maxLength,maxTime,minEkin));
-  //logicTarget->SetUserLimits(new G4UserLimits(maxStep,maxLength,maxTime,minEkin));
 
   //------------------------------------------------------------------
   // // writing the geometry to a ROOT file
@@ -1129,4 +1140,11 @@ void ExN02DetectorConstruction::DefineMaterials() {
 G4Material* ExN02DetectorConstruction::FindMaterial(G4String name) {
   G4Material* material = G4Material::GetMaterial(name,true);
   return material;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void SetRegions(){
+
+
 }

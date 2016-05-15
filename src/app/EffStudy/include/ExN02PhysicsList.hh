@@ -37,13 +37,14 @@
 #include "globals.hh"
 #include "G4LossTableManager.hh"
 
-//#include "StepMax.hh"
-
 #ifdef USE_PAI
 class G4EmConfigurator;
 class G4ProductionCuts;
 #endif
 
+class ExN02StepMax;
+
+class ExN02PhysicsListMessenger;
 class G4VPhysicsConstructor;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -56,51 +57,72 @@ public:
   
   virtual void ConstructParticle();
 
+  void SetCuts();
+  void SetCutForGamma(G4double);
+  G4double GetCutForGamma() const;
+  void SetCutForElectron(G4double);
+  G4double GetCutForElectron() const;
+  void SetCutForPositron(G4double);
+  G4double GetCutForPositron() const;
+  
+  /// Add physics to the Physics List        
   void AddPhysicsList(const G4String& name);
-  virtual void ConstructProcess();
-    
-  //void AddStepMax();       
-  //StepMax* GetStepMaxProcess() {return fStepMaxProcess;};
 
-  private:
-
-  // void AddIonGasModels();
-
-  // G4bool   fHelIsRegisted;
-  // G4bool   fBicIsRegisted;
-  // G4bool   fBiciIsRegisted;
-    
-  G4String                             fEmName;
-  G4VPhysicsConstructor*               fEmPhysicsList;
-  G4VPhysicsConstructor*               fDecPhysicsList;
-  std::vector<G4VPhysicsConstructor*>  fHadronPhys;    
-  //StepMax*                             fStepMaxProcess;
+  /// Remove specific EM physics from EM physics list.
+  void RemoveFromEMPhysicsList(const G4String&);
+  
+  /// Remove specific Hadron physics from Hadron physics list.
+  void RemoveFromHadronPhysicsList(const G4String&);
 
   /// Make sure that the EM physics list is empty.
   void ClearEMPhysics();
-  
+
   /// Make sure that the hadron physics list is empty.
   void ClearHadronPhysics();
+
+  virtual void ConstructProcess();
+  void List();
     
+  void SetUsePAIModel(G4bool in) {fUsePAIModel = in;G4cout<<"Use PAI Model"<<G4endl;};
+  void SetHadronicPhysList(G4String in) {fSetHadronicPhysList = in;G4cout<<"Hadronic physics list: " << fSetHadronicPhysList <<G4endl;};
+
+  ExN02StepMax* GetStepMaxProcess() {return fStepMaxProcess;};
+  
+  private:
+    
+  G4double fCutForGamma;
+  G4double fCutForElectron;
+  G4double fCutForPositron;
+
+  G4String                             fEmName;
+  G4VPhysicsConstructor*               fDecPhysicsList;
+  //G4VPhysicsConstructor*               fEmPhysicsList;
+  std::vector<G4VPhysicsConstructor*>  fEMPhys;
+  std::vector<G4VPhysicsConstructor*>  fHadronPhys;
+          
   //PhysicsListMessenger*  fMessenger;
 
   void SetBuilderList0(G4bool flagHP = false);
   void SetBuilderList1(G4bool flagHP = false);
-  void SetBuilderList2(G4bool flagHP = false);
-  void SetBuilderList3(G4bool flagHP = false);
-  void SetBuilderList4(G4bool flagHP = false);
-  void SetBuilderList5(G4bool flagHP = false);
-  void SetBuilderList6(G4bool flagHP = false);
+  // void SetBuilderList2(G4bool flagHP = false);
+  // void SetBuilderList3(G4bool flagHP = false);
+  // void SetBuilderList4(G4bool flagHP = false);
+  // void SetBuilderList5(G4bool flagHP = false);
+  // void SetBuilderList6(G4bool flagHP = false);
 
-#ifdef USE_PAI
-    void AddPAIModel();
+  void AddPAIModel();
+  void AddStepMax();
 
-    G4EmConfigurator* em_config;
-#endif
+  G4EmConfigurator* em_config;
+  
+  ExN02PhysicsListMessenger* fPhysicsListMessenger;
+
+  ExN02StepMax* fStepMaxProcess;
 
   protected:
-  // these methods Construct physics processes and register them
-
+  
+  G4bool   fUsePAIModel;
+  G4String fSetHadronicPhysList;
 };
 
 

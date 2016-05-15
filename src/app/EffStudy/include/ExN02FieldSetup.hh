@@ -66,7 +66,7 @@ public:
 
   void SetStepper();
 
-  void SetMinStep(G4double s) { fMinStep = s; }
+  void SetMinStep(G4double st) { fMinStep = st; }
 
   void InitialiseAll();    //  Set parameters and call method below
   void CreateStepperAndChordFinder();

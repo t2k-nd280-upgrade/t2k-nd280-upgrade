@@ -6,12 +6,12 @@ void ReadG4out
  )
 {
   // Vertex
-  TH2D *hVtx_XY = new TH2D("hVtx_XY","hVtx_XY",400,-4,4,400,-4,4);
-  TH2D *hVtx_XZ = new TH2D("hVtx_XZ","hVtx_XZ",400,-4,4,400,-4,4);
-  TH2D *hVtx_YZ = new TH2D("hVtx_YZ","hVtx_YZ",400,-4,4,400,-4,4);
-  TH1D *hVtx_X = new TH1D("hVtx_X","hVtx_X",400,-4,4);
-  TH1D *hVtx_Y = new TH1D("hVtx_Y","hVtx_Y",400,-4,4);
-  TH1D *hVtx_Z = new TH1D("hVtx_Z","hVtx_Z",400,-4,4);
+  TH2D *hVtx_XY = new TH2D("hVtx_XY","hVtx_XY",4000,-4,4,400,-4,4);
+  TH2D *hVtx_XZ = new TH2D("hVtx_XZ","hVtx_XZ",4000,-4,4,400,-4,4);
+  TH2D *hVtx_YZ = new TH2D("hVtx_YZ","hVtx_YZ",4000,-4,4,400,-4,4);
+  TH1D *hVtx_X = new TH1D("hVtx_X","hVtx_X",4000,-4,4);
+  TH1D *hVtx_Y = new TH1D("hVtx_Y","hVtx_Y",4000,-4,4);
+  TH1D *hVtx_Z = new TH1D("hVtx_Z","hVtx_Z",4000,-4,4);
   TH1D *hVtx_NuPDG = new TH1D("hVtx_NuPDG","hVtx_NuPDG",10,10,20);
   TH1D *hVtx_ReacMode = new TH1D("hVtx_ReacMode","hVtx_ReacMode",100,-50,50);
   
@@ -164,7 +164,7 @@ void ReadG4out
 
     cout << endl;
     cout << "Event " << ientry << endl;
-
+    
     //
     // Read the vertices
     //
@@ -190,6 +190,11 @@ void ReadG4out
       double vtx_x = VecVtx_X->at(ivtx);
       double vtx_y = VecVtx_Y->at(ivtx);
       double vtx_z = VecVtx_Z->at(ivtx);
+      
+      cout << "vtx_x = " << vtx_x
+	   << " _ vtx_y = " << vtx_y
+	   << " _ vtx_z = " << vtx_z
+	   << endl;
 
       hVtx_XY->Fill(vtx_x,vtx_y);
       hVtx_XZ->Fill(vtx_x,vtx_z);
@@ -197,7 +202,7 @@ void ReadG4out
       hVtx_X->Fill(vtx_x);
       hVtx_Y->Fill(vtx_y);
       hVtx_Z->Fill(vtx_z);
-
+      
       hVtx_NuPDG->Fill( VecVtx_NuPDG->at(ivtx));
       hVtx_ReacMode->Fill( VecVtx_ReacMode->at(ivtx));
     }
@@ -365,17 +370,26 @@ void ReadG4out
 
   
   TCanvas *cVtx_X = new TCanvas("cVtx_X","cVtx_X");
+  hVtx_X->GetXaxis()->SetTitle("X (meters)");
   hVtx_X->Draw();
   TCanvas *cVtx_Y = new TCanvas("cVtx_Y","cVtx_Y");
+  hVtx_Y->GetXaxis()->SetTitle("Y (meters)");
   hVtx_Y->Draw();
   TCanvas *cVtx_Z = new TCanvas("cVtx_Z","cVtx_Z");
+  hVtx_Z->GetXaxis()->SetTitle("Z (meters)");
   hVtx_Z->Draw();
 
   TCanvas *cVtx_XY = new TCanvas("cVtx_XY","cVtx_XY");
+  hVtx_XY->GetXaxis()->SetTitle("X (meters)");
+  hVtx_XY->GetYaxis()->SetTitle("Y (meters)");
   hVtx_XY->Draw("colz");
   TCanvas *cVtx_XZ = new TCanvas("cVtx_XZ","cVtx_XZ");
+  hVtx_XZ->GetXaxis()->SetTitle("X (meters)");
+  hVtx_XZ->GetYaxis()->SetTitle("Z (meters)");
   hVtx_XZ->Draw("colz");
   TCanvas *cVtx_YZ = new TCanvas("cVtx_YZ","cVtx_YZ");
+  hVtx_YZ->GetXaxis()->SetTitle("Y (meters)");
+  hVtx_YZ->GetYaxis()->SetTitle("Z (meters)");
   hVtx_YZ->Draw("colz");
   
 

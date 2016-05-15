@@ -93,6 +93,33 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
 
   // Get track info    
   fEventAction->SetTrack(track); 
+
+
+
+
+
+  // // Take track informations from its first step
+  // G4int newtrkid      = track->GetTrackID();
+  // G4int newtrkpdg     = track->GetDefinition()->GetPDGEncoding();
+
+  // // Get the total initial energy of the track
+  // G4double newtrkmass        = track->GetDefinition()->GetPDGMass();
+  // G4double newtrkEkinVtx     = track->GetVertexKineticEnergy();  
+  // G4double newtrkEtotVtx     = newtrkEkinVtx + newtrkmass;             
+  
+  // // Get the total initial momentum
+  // G4ThreeVector newVecMomVtx = track->GetMomentum(); //Direction(); 
+  // G4double newtrkMomX   = newVecMomVtx.x();
+  // G4double newtrkMomY   = newVecMomVtx.y();
+  // G4double newtrkMomZ   = newVecMomVtx.z();
+  // G4double newtrkMomMag = newVecMomVtx.mag();
+  
+  // std::cout << "Track ID: = " << newtrkid 
+  // 	    << " - Track PDG: = " << newtrkpdg   
+  // 	    << " - Track E: = " << newtrkEtotVtx  
+  // 	    << " - Track Mom: = " << newtrkMomMag   
+  // 	    << std::endl;
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......      

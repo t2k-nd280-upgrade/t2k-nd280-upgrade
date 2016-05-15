@@ -478,9 +478,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   for(int itrk=0;itrk<fNTracks;itrk++){
     std::cout << "Track ID: = " << fVecTrackID[itrk] 
    	      << " - Track PDG: = " << fVecTrackPDG[itrk]   
-   	      << " - Track E: = " << fVecTrackE[itrk]   
-   	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
-   	      << std::endl;
+    	      << " - Track E: = " << fVecTrackE[itrk]   
+    	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
+    	      << std::endl;
   }
   std::cout << std::endl;
   

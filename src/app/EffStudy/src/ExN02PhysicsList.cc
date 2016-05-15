@@ -30,9 +30,14 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#define USE_PAI
-
 #include "ExN02PhysicsList.hh"
+#include "ExN02PhysicsListMessenger.hh"
+#include "ExN02Constants.hh"
+
+#include "ExN02StepMax.hh"
+
+//#include "ExN02ExtraPhysics.hh"
+#include <G4StepLimiter.hh>
 
 #include "G4EmStandardPhysics.hh"
 #include "G4EmStandardPhysics_option1.hh"
@@ -68,44 +73,60 @@
 #include "G4EmExtraPhysics.hh"
 #include "G4EmProcessOptions.hh"
 
+#include "G4LossTableManager.hh"
+
 #include "G4ProcessManager.hh"
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
+
 #include "G4Gamma.hh"
 #include "G4Electron.hh"
 #include "G4Positron.hh"
 #include "G4Proton.hh"
+
 #include "G4SystemOfUnits.hh"
 
+#include "G4Region.hh"
+#include "G4RegionStore.hh"
+#include "G4ProductionCuts.hh"
+
 #ifdef USE_PAI
-#include "G4PAIModel.hh"
-#include "G4PAIPhotonModel.hh"
-#include "G4EmConfigurator.hh"
+  #include "G4PAIModel.hh"
+  #include "G4PAIPhotonModel.hh"
+  #include "G4EmConfigurator.hh"
 #endif
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ExN02PhysicsList::ExN02PhysicsList() : 
   G4VModularPhysicsList(),
-  fEmPhysicsList(0),
+  //fEmPhysicsList(0),
   fDecPhysicsList(0),
-  fHadronPhys()    
-  //fStepMaxProcess(0),
-  //fMessenger(0)
+  fEMPhys(),   
+  fHadronPhys(),   
+  fUsePAIModel(0),
+  fSetHadronicPhysList(""),
+  fPhysicsListMessenger(0),
+  fStepMaxProcess(0)
 {
+  fStepMaxProcess  = 0;
+
   G4LossTableManager::Instance();
 
-  //fStepMaxProcess  = 0;
+  defaultCutValue = 1.*mm;
+  fCutForGamma     = defaultCutValue;
+  fCutForElectron  = defaultCutValue;
+  fCutForPositron  = defaultCutValue;
 
-  //fMessenger = new PhysicsListMessenger(this);
+  SetVerboseLevel(3);
 
-  SetVerboseLevel(1);
-  
+  fPhysicsListMessenger = new ExN02PhysicsListMessenger(this);
+    
+  // Deacy physics and all particles
+  fDecPhysicsList = new G4DecayPhysics("decays"); // w/o "decays" option is same
+
   // EM physics --> EM3
   AddPhysicsList("emstandard_opt3");
-
-  // Deacy physics and all particles
-  fDecPhysicsList = new G4DecayPhysics("decays"); // w/o "decays" option is the same
   
   // Set the default hadronic physics.
   AddPhysicsList("QGSP_BERT");
@@ -115,36 +136,47 @@ ExN02PhysicsList::ExN02PhysicsList() :
 
 ExN02PhysicsList::~ExN02PhysicsList()
 {
-  //delete fMessenger;
-  delete fEmPhysicsList;
+  delete fPhysicsListMessenger;
   delete fDecPhysicsList;
 
-  //ClearEMPhysics();
+  // delete fEmPhysicsList;
+  ClearEMPhysics();
+    
   ClearHadronPhysics();
-
-  for(size_t i=0; i<fHadronPhys.size(); i++) {delete fHadronPhys[i];}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-// void ExN02PhysicsList::ClearEMPhysics() {
-//     for(PhysicsListVector::iterator p = fEMPhysics->begin();
-//         p != fEMPhysics->end();
-//         ++p) {
-//         delete (*p);
-//     }
-//     fEMPhysics->clear();
-// }
+void ExN02PhysicsList::ClearEMPhysics() {
+
+  for(size_t i=0; i<fEMPhys.size(); i++) {
+    delete fEMPhys[i];
+  }
+  fEMPhys.clear();
+  
+  // for(std::vector<G4VPhysicsConstructor*>::iterator p = fEMPhys.begin();
+  //     p != fEMPhysics.end();
+  //     ++p) {
+  //   delete (*p);
+  // }
+  // fEMPhys.clear();
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02PhysicsList::ClearHadronPhysics() {
-  for(std::vector<G4VPhysicsConstructor*>::iterator p = fHadronPhys.begin();
-      p != fHadronPhys.end();
-      ++p) {
-    delete (*p);
+
+  for(size_t i=0; i<fHadronPhys.size(); i++) {
+    delete fHadronPhys[i];
   }
   fHadronPhys.clear();
+
+  // for(std::vector<G4VPhysicsConstructor*>::iterator p = fHadronPhys.begin();
+  //     p != fHadronPhys.end();
+  //     ++p) {
+  //   delete (*p);
+  // }
+  // fHadronPhys.clear();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -164,25 +196,73 @@ void ExN02PhysicsList::ConstructProcess()
   
   // electromagnetic physics list
   //
-  fEmPhysicsList->ConstructProcess();
+  //fEmPhysicsList->ConstructProcess();
+  for(size_t i=0; i<fEMPhys.size(); i++) {
+    fEMPhys[i]->ConstructProcess();
+  }
 
-  // decay physics list
-  //
-  fDecPhysicsList->ConstructProcess();
-  
 #ifdef USE_PAI
   AddPAIModel();
   em_config->AddModels();
 #endif
 
+  // decay physics list
+  //
+  fDecPhysicsList->ConstructProcess();
+  
   // hadronic physics lists
   for(size_t i=0; i<fHadronPhys.size(); i++) {
     fHadronPhys[i]->ConstructProcess();
   }
-  
+
+  //
   // step limitation (as a full process)
-  //  
-  //AddStepMax();  
+  //
+  AddStepMax();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02PhysicsList::RemoveFromEMPhysicsList(const G4String& name) {
+
+  G4bool success = false;
+  for(std::vector<G4VPhysicsConstructor*>::iterator p = fEMPhys.begin();
+      p != fEMPhys.end(); ++p) {
+    G4VPhysicsConstructor* e = (*p);
+    if (e->GetPhysicsName() == name) {
+      fEMPhys.erase(p);
+      success = true;
+      break;
+    }
+  }
+  if (!success) {
+    G4ExceptionDescription msg;
+    msg << "PhysicsList::RemoveFromEMPhysicsList "<< name << "not found";  
+    G4Exception("ExN02PhysicsList::RemoveFromEMPhysicsList",
+		"MyCode0002",FatalException, msg);
+  }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02PhysicsList::RemoveFromHadronPhysicsList(const G4String& name) {
+
+  G4bool success = false;
+  for(std::vector<G4VPhysicsConstructor*>::iterator p = fHadronPhys.begin();
+      p != fHadronPhys.end(); ++p) {
+    G4VPhysicsConstructor* e = (*p);
+    if (e->GetPhysicsName() == name) {
+      fHadronPhys.erase(p);
+      success = true;
+      break;
+    }
+  }
+  if (!success) {
+    G4ExceptionDescription msg;
+    msg << "PhysicsList::RemoveFromHadronPhysicsList "<< name << "not found";  
+    G4Exception("ExN02PhysicsList::RemoveFromHadronPhysicsList",
+		"MyCode0002",FatalException, msg);
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -195,84 +275,82 @@ void ExN02PhysicsList::AddPhysicsList(const G4String& name)
 
   if (name == fEmName) return;
 
-  // if (name == "local") {
-  //   fEmName = name;
-  //   delete fEmPhysicsList;
-  //   fEmPhysicsList = new PhysListEmStandard(name);
-  // } else if (name == "emstandard_opt0") {
-
   if (name == "emstandard_opt0") {
-    
     fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmStandardPhysics(1);
-
-  } else if (name == "emstandard_opt1") {
-
+    ClearEMPhysics();
+    fEMPhys.push_back(new G4EmStandardPhysics());
+    //fEMPhys.push_back(new ExN02ExtraPhysics());
+    //delete fEmPhysicsList;
+    //fEmPhysicsList = new G4EmStandardPhysics();    
+  } 
+  else if (name == "emstandard_opt1") {
     fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmStandardPhysics_option1();
-
-  } else if (name == "emstandard_opt2") {
-
+    ClearEMPhysics();
+    fEMPhys.push_back(new G4EmStandardPhysics_option1());
+    //fEMPhys.push_back(new ExN02ExtraPhysics());
+    //delete fEmPhysicsList;
+    //fEmPhysicsList = new G4EmStandardPhysics_option1();
+  } 
+  else if (name == "emstandard_opt2") {
     fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmStandardPhysics_option2();
-    
-  } else if (name == "emstandard_opt3") {
-
+    ClearEMPhysics();
+    fEMPhys.push_back(new G4EmStandardPhysics_option2());
+    //fEMPhys.push_back(new ExN02ExtraPhysics());
+    //delete fEmPhysicsList;
+    //fEmPhysicsList = new G4EmStandardPhysics_option2();
+  } 
+  else if (name == "emstandard_opt3") {
     fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmStandardPhysics_option3();    
-    
-  } else if (name == "emstandard_opt4") {
-
+    ClearEMPhysics();
+    fEMPhys.push_back(new G4EmStandardPhysics_option3());
+    //fEMPhys.push_back(new ExN02ExtraPhysics());
+    //delete fEmPhysicsList;
+    //fEmPhysicsList = new G4EmStandardPhysics_option3();    
+  } 
+  else if (name == "emstandard_opt4") {
     fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmStandardPhysics_option4();    
-
-  // } else if (name == "standardSS") {
-
-  //   fEmName = name;
-  //   delete fEmPhysicsList;
-  //   fEmPhysicsList = new PhysListEmStandardSS(name);
-
-  // } else if (name == "ionGasModels") {
-
-  //   AddPhysicsList("emstandard_opt0");
-  //   fEmName = name;
-  //   AddIonGasModels();
-
-  // } else if (name == "standardNR") {
-
-  //   fEmName = name;
-  //   delete fEmPhysicsList;
-  //   fEmPhysicsList = new PhysListEmStandardNR(name);
-
-  } else if (name == "emlivermore") {
+    ClearEMPhysics();
+    fEMPhys.push_back(new G4EmStandardPhysics_option4());
+    //fEMPhys.push_back(new ExN02ExtraPhysics());
+    //delete fEmPhysicsList;
+    //fEmPhysicsList = new G4EmStandardPhysics_option4();    
+  } 
+  else if (name == "emlivermore") {
     fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmLivermorePhysics();
-
-  } else if (name == "empenelope") {
+    ClearEMPhysics();
+    fEMPhys.push_back(new G4EmLivermorePhysics());
+    //fEMPhys.push_back(new ExN02ExtraPhysics());
+    //delete fEmPhysicsList;
+    //fEmPhysicsList = new G4EmLivermorePhysics();
+  } 
+  else if (name == "empenelope") {
     fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmPenelopePhysics();
-
-  } else if (name == "emlowenergy") {
+    ClearEMPhysics();
+    fEMPhys.push_back(new G4EmPenelopePhysics());
+    //fEMPhys.push_back(new ExN02ExtraPhysics());
+    //delete fEmPhysicsList;
+    //fEmPhysicsList = new G4EmPenelopePhysics();
+  }
+  else if (name == "emlowenergy") {
     fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmLowEPPhysics();
-    
-  } else if (name == "QGSP_BERT") {
+    ClearEMPhysics();
+    fEMPhys.push_back(new G4EmLowEPPhysics());
+    //fEMPhys.push_back(new ExN02ExtraPhysics());
+    //delete fEmPhysicsList;
+    //fEmPhysicsList = new G4EmLowEPPhysics();
+  }
+  else if (name == "QGSP_BERT") {
     SetBuilderList1();
     fHadronPhys.push_back( new G4HadronPhysicsQGSP_BERT());
-
-  } else {
-    
+  } 
+  else {  
     G4cout << "PhysicsList::AddPhysicsList: <" << name << ">"
            << " is not defined"
            << G4endl;
+    G4ExceptionDescription msg;
+    msg << "The physics list " << name << " is not available" << G4endl;
+    G4Exception("ExN02PhysicsList::AddPhysicsList()",
+		"MyCode0002",FatalException, msg);
   }
 }
 
@@ -301,7 +379,7 @@ void ExN02PhysicsList::SetBuilderList0(G4bool flagHP)
       fHadronPhys.push_back( new G4HadronElasticPhysics(verboseLevel) );
     }
     
-    // G4StoppingPhysics not available any longer
+    // G4QStoppingPhysics not available any longer
     fHadronPhys.push_back(new G4StoppingPhysics("stopping",verboseLevel));
 
     fHadronPhys.push_back(new G4IonBinaryCascadePhysics("ionBIC",verboseLevel));
@@ -332,7 +410,7 @@ void ExN02PhysicsList::SetBuilderList1(G4bool flagHP)
       fHadronPhys.push_back( new G4HadronElasticPhysics(verboseLevel) );
     }
     
-    // G4StoppingPhysics not available any longer
+    // G4QStoppingPhysics not available any longer
     fHadronPhys.push_back(new G4StoppingPhysics("stopping",verboseLevel));
     
     fHadronPhys.push_back(new G4IonBinaryCascadePhysics("ion",verboseLevel));
@@ -340,84 +418,115 @@ void ExN02PhysicsList::SetBuilderList1(G4bool flagHP)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-// void ExN02PhysicsList::SetBuilderList2(G4bool flagHP)
-// {
-//     ClearHadronPhysics();
-//     fHadronPhys.push_back(new G4EmExtraPhysics("extra EM"));
-//     fHadronPhys.push_back(new G4HadronElasticPhysics("LElastic",
-//                                                         verboseLevel,
-//                                                         flagHP));
-//     fHadronPhys.push_back(new G4IonBinaryCascadePhysics("ion"));
-// }
-// //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-// void ExN02PhysicsList::SetBuilderList3(G4bool flagHP)
-// {
-//     ClearHadronPhysics();
-//     fHadronPhys.push_back(new G4EmExtraPhysics("extra EM"));
-//     fHadronPhys.push_back(new G4HadronElasticPhysics("LElastic",
-//                                                         verboseLevel,
-//                                                         flagHP));
-//     fHadronPhys.push_back(new  G4QStoppingPhysics("stopping",
-//                                                      verboseLevel));
-//     fHadronPhys.push_back(new G4IonBinaryCascadePhysics("ion"));
-// }
-// //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-// void ExN02PhysicsList::SetBuilderList4(G4bool)
-// {
-//     ClearHadronPhysics();
-//     fHadronPhys.push_back(new G4EmExtraPhysics("extra EM"));
-//     fHadronPhys.push_back(new G4HadronQElasticPhysics("elastic",
-//                                                         verboseLevel));
-//     fHadronPhys.push_back(new  G4QStoppingPhysics("stopping",
-//                                                      verboseLevel));
-//     fHadronPhys.push_back(new G4IonBinaryCascadePhysics("ion"));
-//     fHadronPhys.push_back(new G4NeutronTrackingCut("nTackingCut",
-//                                                      verboseLevel));
-// }
-// //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-// void ExN02PhysicsList::SetBuilderList5(G4bool flagHP)
-// {
-//     ClearHadronPhysics();
-//     fHadronPhys.push_back(new G4EmExtraPhysics("extra EM"));
-//     fHadronPhys.push_back(new G4HadronDElasticPhysics(verboseLevel,
-//                                                           flagHP));
-//     fHadronPhys.push_back(new  G4QStoppingPhysics("stopping",
-//                                                      verboseLevel));
-//     fHadronPhys.push_back(new G4IonBinaryCascadePhysics("ionBIC"));
-//     fHadronPhys.push_back(new G4NeutronTrackingCut("nTackingCut",
-//                                                      verboseLevel));
-// }
-// //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-// void ExN02PhysicsList::SetBuilderList6(G4bool flagHP)
-// {
-//     ClearHadronPhysics();
-//     fHadronPhys.push_back(new G4EmExtraPhysics("extra EM"));
-//     fHadronPhys.push_back(new G4HadronHElasticPhysics(verboseLevel,
-//                                                           flagHP));
-//     fHadronPhys.push_back(new  G4QStoppingPhysics("stopping",
-//                                                      verboseLevel));
-//     fHadronPhys.push_back(new G4IonBinaryCascadePhysics("ionBIC"));
-//     fHadronPhys.push_back(new G4NeutronTrackingCut("nTackingCut",
-//                                                      verboseLevel));
-// }
-// //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+
+
+
+void ExN02PhysicsList::SetCuts() {
+
+  G4cout << " ExN02PhysicsList::SetCuts " 
+  	 << G4BestUnit(defaultCutValue,"Length")
+  	 << G4endl;
+  
+  // set cut values for gamma at first and for e- second and next for e+,
+  // because some processes for e+/e- need cut values for gamma
+  SetCutValue(fCutForGamma, "gamma","DefaultRegionForTheWorld");
+  SetCutValue(fCutForElectron, "e-","DefaultRegionForTheWorld");
+  SetCutValue(fCutForPositron, "e+","DefaultRegionForTheWorld");
+  
+  //
+  // Hall region (around the detector) is not defined in the simulation
+  //  
+  // G4Region* hallRegion = G4RegionStore::GetInstance()->
+  //                                GetRegion("hallRegion",false);
+  // if (hallRegion) {
+  //    G4ProductionCuts* hallCuts = new G4ProductionCuts();
+  //    hallCuts->SetProductionCut(10*mm);
+  //    hallRegion->SetProductionCuts(hallCuts);
+  // } else {
+  //    ND280Error("hallRegion does not exist");
+  //    G4Exception("ND280PhysicsList::SetCuts() found no hallRegion");
+  // }
+  //
+  
+#ifdef USE_PAI
+    G4Region* driftRegion = G4RegionStore::GetInstance()->GetRegion("driftRegion",false);
+    if (driftRegion) {
+       G4ProductionCuts* defaultRegionCuts = G4ProductionCutsTable::
+                    GetProductionCutsTable()->GetDefaultProductionCuts();
+       G4ProductionCuts* driftRegionCuts = new G4ProductionCuts();
+       *driftRegionCuts = *defaultRegionCuts;
+       driftRegion->SetProductionCuts(driftRegionCuts);
+       //       driftRegion->SetProductionCuts(G4ProductionCutsTable::
+       //                    GetProductionCutsTable()->GetDefaultProductionCuts());
+    } else {
+      G4ExceptionDescription msg;
+      msg << "The driftRegion is not found" << G4endl;
+      G4Exception("ExN02PhysicsList::SetCuts() found no driftRegion",
+    		  "MyCode0002",FatalException, msg); 
+    }
+#endif
+    
+    if (verboseLevel>0) DumpCutValuesTable(); // see the content of the physics list
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02PhysicsList::SetCutForGamma(G4double cut) {
+    fCutForGamma = cut;
+    SetParticleCuts(fCutForGamma, G4Gamma::Gamma());
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4double ExN02PhysicsList::GetCutForGamma() const {
+    return fCutForGamma;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02PhysicsList::SetCutForElectron(G4double cut) {
+    fCutForElectron = cut;
+    SetParticleCuts(fCutForElectron, G4Electron::Electron());
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4double ExN02PhysicsList::GetCutForElectron() const {
+    return fCutForElectron;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02PhysicsList::SetCutForPositron(G4double cut) {
+    fCutForPositron = cut;
+    SetParticleCuts(fCutForPositron, G4Positron::Positron());
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4double ExN02PhysicsList::GetCutForPositron() const {
+    return fCutForPositron;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #ifdef USE_PAI
-void ND280PhysicsList::AddPAIModel()
+void ExN02PhysicsList::AddPAIModel()
 {
-    em_config = G4LossTableManager::Instance()->EmConfigurator();
-//    em_config->SetVerbose(2);
-
-    theParticleIterator->reset();
-    while ((*theParticleIterator)())
+  em_config = G4LossTableManager::Instance()->EmConfigurator();
+  // em_config->SetVerbose(2);
+  
+  theParticleIterator->reset();
+  while ((*theParticleIterator)())
     {
       G4ParticleDefinition* particle = theParticleIterator->value();
       G4String particleName = particle->GetParticleName();
-
+      
       if(particleName == "e-" || particleName == "e+") {
         G4PAIModel* pai = new G4PAIModel(particle,"PAIModel");
         em_config->SetExtraEmModel(particleName,"eIoni",pai,"driftRegion",
-                                                           0.0,100.*GeV,pai);
+				   0.0,100.*GeV,pai);
       } else if (particleName == "mu-" || particleName == "mu+") {
         G4PAIModel* pai = new G4PAIModel(particle,"PAIModel");
         em_config->SetExtraEmModel(particleName,"muIoni",pai,"driftRegion",
@@ -432,3 +541,34 @@ void ND280PhysicsList::AddPAIModel()
     }
 }
 #endif
+
+void ExN02PhysicsList::AddStepMax(){
+  G4cout << " ExN02PhysicsList::AddStepMax:: Add Step Limiters" << G4endl;
+  
+  //
+  // From example TestEm7 (modified)
+  //
+  // Step limitation seen as a process
+   
+  fStepMaxProcess = new ExN02StepMax();
+  
+  theParticleIterator->reset();
+  while ((*theParticleIterator)()){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+    G4String particleType = particle->GetParticleType();
+    double charge = particle->GetPDGCharge();
+
+    if (fStepMaxProcess->IsApplicable(*particle) && pmanager)
+      {
+	pmanager ->AddDiscreteProcess(fStepMaxProcess);
+      }
+    else if (!pmanager) {
+      G4ExceptionDescription msg;
+      msg << "Particle without a Process Manager" << G4endl;
+      G4Exception("ExN02ExtraPhysics::ConstructProcess()",
+                  "MyCode0002",FatalException, msg);
+    }
+  }
+}
