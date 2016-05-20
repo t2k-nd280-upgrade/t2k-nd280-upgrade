@@ -31,11 +31,15 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "ExN02TrackerSD.hh"
+#include "ExN02Constants.hh"
+
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
 #include "G4ThreeVector.hh"
 #include "G4SDManager.hh"
 #include "G4ios.hh"
+
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -78,15 +82,15 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   // The geometry is stored in the PreStepPoint()
   
   G4StepPoint* prestep  = aStep->GetPreStepPoint();
-  G4StepPoint* poststep = aStep->GetPostStepPoint();
+  //G4StepPoint* poststep = aStep->GetPostStepPoint();
   G4Track* track        = aStep->GetTrack();
-
+  G4double steplength   = aStep->GetStepLength();
+  
   //if (prestep->GetStepStatus() == fGeomBoundary)  return false;
   //if (poststep->GetStepStatus() == fGeomBoundary) return false;  
 
-  G4String namedet     = prestep->GetTouchableHandle()->GetVolume()->GetName();
-  
-  G4ThreeVector pos    = poststep->GetPosition();
+  G4String namedet     = prestep->GetTouchableHandle()->GetVolume()->GetName();  
+  G4ThreeVector pos    = prestep->GetPosition();
 
   G4ThreeVector mom    = track->GetMomentum();
   G4double charge      = track->GetDefinition()->GetPDGCharge();
@@ -111,6 +115,7 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   newHit->SetTrackPDG   (trackpdg);
   newHit->SetTrackLength(tracklength);
   newHit->SetNSteps     (NSteps_);
+  newHit->SetStepLength (steplength);
 
   trackerCollection->insert( newHit );
   

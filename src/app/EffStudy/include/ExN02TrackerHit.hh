@@ -68,6 +68,7 @@ public:
   void SetTrackPDG    (G4int pdg)        { trackpdg = pdg; };
   void SetTrackName   (G4String name)    { trackname = name; };
   void SetTrackLength (G4double length ) { tracklength = length; };
+  void SetStepLength  (G4double length ) { steplength = length; };
   void SetNSteps      (G4int num)        { nsteps = num; };
   
   G4int GetTrackID()       { return trackID; };
@@ -80,6 +81,7 @@ public:
   G4int GetTrackPDG()      { return trackpdg; }; 
   G4String GetTrackName()  { return trackname; }; 
   G4double GetTrackLength(){ return tracklength; }; 
+  G4double GetStepLength() { return steplength; }; 
   G4int GetNSteps()        { return nsteps; }; 
   
 private:
@@ -94,6 +96,7 @@ private:
   G4int         trackpdg;
   G4String      trackname;  
   G4double      tracklength;
+  G4double      steplength;
   G4int         nsteps;
 };
 

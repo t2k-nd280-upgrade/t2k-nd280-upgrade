@@ -28,16 +28,25 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
   fTotEntry = 0;
   fNextEntry = 0;
   fCurrEntry = 0;
-
   fneutfile = 0;
   fneutree = 0;
   
-  G4String inputfile = cPathFiles ;
-  inputfile.append(cNEUTfilename);
-
-  // TODO: choose between NEUT and GENIE
-  this->ReadNEUT(inputfile);
-  //this->ReadGENIE(inputfile);
+  if(cGeneratorType=="NEUT"){
+    G4String inputfile = cPathFiles;
+    inputfile.append(cNEUTfilename);
+    this->ReadNEUT(inputfile);
+  }
+  else if(cGeneratorType=="GENIE"){
+    G4String inputfile = cPathFiles;
+    inputfile.append(cGENIEfilename);
+    this->ReadGENIE(inputfile);
+  }
+  else{
+    G4ExceptionDescription msg;
+    msg << "The generator type "<< cGeneratorType << " is not available";
+    G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
+                "MyCode0002",FatalException, msg);
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -55,8 +64,7 @@ ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
-{
-
+{ 
   fneutfile = TFile::Open(filename,"OLD");
   if (!fneutfile->IsOpen()) {
     const char *msg = "NEUT file is not open!";
@@ -66,7 +74,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
   }
 
   G4cout << G4endl;
-  G4cout << "Open a RooTracker tree from " << filename << G4endl;
+  G4cout << "Open a RooTracker NEUT tree from " << filename << G4endl;
 
   fneutree = dynamic_cast<TTree*>(fneutfile->Get(cNEUTtreename));
   if (!fneutree) {
@@ -114,6 +122,64 @@ void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
 
 void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
 {
+
+  //
+  // Try to read GENIE file
+  // if not read set GENIEflag = false
+  // --> GeneratePrimaryVertexGENIE() cannot be used!!!
+  //
+
+  fneutfile = TFile::Open(filename,"OLD");
+  if (!fneutfile->IsOpen()) {
+    const char *msg = "GENIE file is not open!";
+    const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadGENIE";
+    const char *code = "if (!fgeniefile->IsOpen())";
+    G4Exception(origin,code,FatalException,msg);
+  }
+
+  G4cout << G4endl;
+  G4cout << "Open a RooTracker GENIE tree from " << filename << G4endl;
+
+  fneutree = dynamic_cast<TTree*>(fneutfile->Get(cGENIEtreename));
+  if (!fneutree) {
+    const char *msg = "GENIE tree is not open!";
+    const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadGENIE";
+    const char *code = "if (!fneutree->IsOpen())";
+    G4Exception(origin,code,FatalException,msg);
+  }  
+  
+  G4cout << "   File has  " << fneutree->GetEntries() << " entries" << G4endl;
+  G4cout << G4endl;
+  
+  fEvtFlags = NULL;
+  fneutree->SetBranchAddress("EvtFlags",       &fEvtFlags);
+  fEvtCode = NULL;
+  fneutree->SetBranchAddress("EvtCode",        &fEvtCode);
+  fneutree->SetBranchAddress("EvtNum",         &fEvtNum);
+  fneutree->SetBranchAddress("EvtXSec",        &fEvtXSec);
+  fneutree->SetBranchAddress("EvtDXSec",       &fEvtDXSec);
+  fneutree->SetBranchAddress("EvtWght",        &fEvtWght);
+  fneutree->SetBranchAddress("EvtProb",        &fEvtProb);
+  fneutree->SetBranchAddress("EvtVtx",          fEvtVtx);
+  fneutree->SetBranchAddress("StdHepN",        &fStdHepN);
+  fneutree->SetBranchAddress("StdHepPdg",       fStdHepPdg);
+  fneutree->SetBranchAddress("StdHepStatus",    fStdHepStatus);
+  fneutree->SetBranchAddress("StdHepX4",        fStdHepX4);
+  fneutree->SetBranchAddress("StdHepP4",        fStdHepP4);
+  fneutree->SetBranchAddress("StdHepPolz",      fStdHepPolz);
+  fneutree->SetBranchAddress("StdHepFd",        fStdHepFd);
+  fneutree->SetBranchAddress("StdHepLd",        fStdHepLd);
+  fneutree->SetBranchAddress("StdHepFm",        fStdHepFm);
+  fneutree->SetBranchAddress("StdHepLm",        fStdHepLm);
+  fneutree->SetBranchAddress("NuParentPdg",    &fNuParentPdg);
+  fneutree->SetBranchAddress("NuParentDecMode",&fNuParentDecMode);
+  fneutree->SetBranchAddress("NuParentDecP4",   fNuParentDecP4);
+  fneutree->SetBranchAddress("NuParentDecX4",   fNuParentDecX4);
+  fneutree->SetBranchAddress("NuParentProP4",   fNuParentProP4);
+  fneutree->SetBranchAddress("NuParentProX4",   fNuParentProX4);
+  fneutree->SetBranchAddress("NuParentProNVtx",&fNuParentProNVtx);
+
+  fTotEntry = fneutree->GetEntries();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -132,12 +198,14 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
     
     G4cerr << G4endl;
     G4cerr << "fNextEntry = " << fNextEntry << G4endl;
-    G4cerr << "fEntryVector.size() = " << fEntryVector.size() << G4endl;
+    G4cerr << "fTotEntry = " << fTotEntry << G4endl;
+    //G4cerr << "fEntryVector.size() = " << fEntryVector.size() << G4endl;
     G4cerr << G4endl;
 
     const char *msg = "The # of events available in NEUT file is exceeded!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
-    const char *code = "if (fNextEntry >= fEntryVector.size()) {";
+    //const char *code = "if (fNextEntry >= fEntryVector.size()) {";
+    const char *code = "if (fNextEntry >= fTotEntry)) {";
     G4Exception(origin,code,FatalException,msg);
   }
   
@@ -369,3 +437,10 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   G4cout << G4endl;
   
 }
+
+
+
+
+
+
+

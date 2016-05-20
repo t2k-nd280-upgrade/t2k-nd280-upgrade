@@ -23,55 +23,69 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+/// \file electromagnetic/TestEm7/src/StepMax.cc
+/// \brief Implementation of the StepMax class
 //
-// $Id: ExN02DetectorMessenger.cc,v 1.12 2008-09-22 16:41:20 maire Exp $
-// GEANT4 tag $Name: not supported by cvs2svn $
-// 
+// $Id: StepMax.cc 67268 2013-02-13 11:38:40Z ihrivnac $
+//
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "ExN02PrimaryGeneratorMessenger.hh"
-#include "ExN02PrimaryGeneratorAction.hh"
-
-#include "G4UIdirectory.hh"
-#include "G4UIcmdWithAString.hh"
-#include "G4UIcmdWithADoubleAndUnit.hh"
-#include "G4UIcmdWithAnInteger.hh"
-#include "G4UIcmdWithoutParameter.hh"
-#include "globals.hh"
+#include "ExN02StepMax.hh"
+#include "ExN02StepMaxMessenger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGeneratorAction* myPrimGen)
-  : G4UImessenger(),
-    myPrimaryGenerator(myPrimGen),
-    fPrimgenDir(0),
-    fGeneratorCmd(0)
-{   
-  fPrimgenDir = new G4UIdirectory("/generator/");
-  fPrimgenDir->SetGuidance("Primary Generator");
-  
-  fGeneratorCmd = new G4UIcmdWithAString("/generator/type",this);
-  fGeneratorCmd->SetGuidance("Choose the generator: Generator (don't need to specify NEUT or GENIE) and ParticleGun");
-  fGeneratorCmd->SetParameterName("generator type",false);
-  fGeneratorCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-ExN02PrimaryGeneratorMessenger::~ExN02PrimaryGeneratorMessenger()
+ExN02StepMax::ExN02StepMax(const G4String& processName)
+ : G4VDiscreteProcess(processName),fMaxChargedStep(DBL_MAX),fMess(0)
 {
-  delete fGeneratorCmd;
-  delete fPrimgenDir;
+  fMess = new ExN02StepMaxMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void ExN02PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
-{ 
-  if( command == fGeneratorCmd ){
-    myPrimaryGenerator->SetGeneratorType(newValue);
-  }  
+ExN02StepMax::~ExN02StepMax() { delete fMess; }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4bool ExN02StepMax::IsApplicable(const G4ParticleDefinition& particle)
+{
+  return (particle.GetPDGCharge() != 0. && !particle.IsShortLived());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02StepMax::SetMaxStep(G4double step) {fMaxChargedStep = step;}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4double ExN02StepMax::PostStepGetPhysicalInteractionLength( 
+                                                 const G4Track& aTrack,
+                                                       G4double,
+                                                       G4ForceCondition* condition )
+{
+  // condition is set to "Not Forced"
+  *condition = NotForced;
+  
+  G4double ProposedStep = DBL_MAX;
+
+  if((fMaxChargedStep > 0.) &&
+     (aTrack.GetVolume() != NULL) &&
+     (aTrack.GetVolume()->GetName() != "World"))
+     ProposedStep = fMaxChargedStep;
+
+  return ProposedStep;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4VParticleChange* ExN02StepMax::PostStepDoIt(const G4Track& aTrack, const G4Step&)
+{
+   // do nothing
+   aParticleChange.Initialize(aTrack);
+   return &aParticleChange;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+

@@ -76,6 +76,9 @@ public:
   std::vector<G4double>& GetVecTPCUp_TrackMomX(){return fVecTPCUp_TrackMomX;}; 
   std::vector<G4double>& GetVecTPCUp_TrackMomY(){return fVecTPCUp_TrackMomY;}; 
   std::vector<G4double>& GetVecTPCUp_TrackMomZ(){return fVecTPCUp_TrackMomZ;}; 
+  std::vector<G4double>& GetVecTPCUp_TrackLength(){return fVecTPCUp_TrackLength;}; 
+  std::vector<G4double>& GetVecTPCUp_TrackEdep(){return fVecTPCUp_TrackEdep;}; 
+  std::vector<G4double>& GetVecTPCUp_TrackCharge(){return fVecTPCUp_TrackCharge;}; 
 
   // TPC Down informations
   G4int               GetTPCDown_NTracks() { return fTPCDown_NTracks;};          
@@ -83,6 +86,9 @@ public:
   std::vector<G4double>& GetVecTPCDown_TrackMomX(){return fVecTPCDown_TrackMomX;}; 
   std::vector<G4double>& GetVecTPCDown_TrackMomY(){return fVecTPCDown_TrackMomY;}; 
   std::vector<G4double>& GetVecTPCDown_TrackMomZ(){return fVecTPCDown_TrackMomZ;}; 
+  std::vector<G4double>& GetVecTPCDown_TrackLength(){return fVecTPCDown_TrackLength;}; 
+  std::vector<G4double>& GetVecTPCDown_TrackEdep(){return fVecTPCDown_TrackEdep;}; 
+  std::vector<G4double>& GetVecTPCDown_TrackCharge(){return fVecTPCDown_TrackCharge;}; 
 
   // Target informations
   G4int               GetTarget_NTracks() { return fTarget_NTracks;};          
@@ -90,6 +96,9 @@ public:
   std::vector<G4double>& GetVecTarget_TrackMomX(){return fVecTarget_TrackMomX;}; 
   std::vector<G4double>& GetVecTarget_TrackMomY(){return fVecTarget_TrackMomY;}; 
   std::vector<G4double>& GetVecTarget_TrackMomZ(){return fVecTarget_TrackMomZ;}; 
+  std::vector<G4double>& GetVecTarget_TrackLength(){return fVecTarget_TrackLength;}; 
+  std::vector<G4double>& GetVecTarget_TrackEdep(){return fVecTarget_TrackEdep;}; 
+  std::vector<G4double>& GetVecTarget_TrackCharge(){return fVecTarget_TrackCharge;}; 
 
   // Vertex informations
   G4int               GetNVtx() { return fNVtx;};
@@ -131,13 +140,19 @@ private:
   std::vector<G4double> fVecTPCUp_TrackMomX; // Vector of initial mom in TPC Up
   std::vector<G4double> fVecTPCUp_TrackMomY; // Vector of initial mom in TPC Up
   std::vector<G4double> fVecTPCUp_TrackMomZ; // Vector of initial mom in TPC Up
-
+  std::vector<G4double> fVecTPCUp_TrackLength; // Vector of track length in TPC Up
+  std::vector<G4double> fVecTPCUp_TrackEdep; // Vector of track edep in TPC Up
+  std::vector<G4double> fVecTPCUp_TrackCharge; // Vector of track charge in TPC Up
+  
   // TPC down informations
   G4int     fTPCDown_NTracks;          // # of tracks in TPC Down
   std::vector<G4int>    fVecTPCDown_TrackID; // Vector of trackID in TPCDown
   std::vector<G4double> fVecTPCDown_TrackMomX; // Vector of initial mom in TPC Down
   std::vector<G4double> fVecTPCDown_TrackMomY; // Vector of initial mom in TPC Down
   std::vector<G4double> fVecTPCDown_TrackMomZ; // Vector of initial mom in TPC Down
+  std::vector<G4double> fVecTPCDown_TrackLength; // Vector of track length in TPC Down
+  std::vector<G4double> fVecTPCDown_TrackEdep; // Vector of track edep in TPC Down
+  std::vector<G4double> fVecTPCDown_TrackCharge; // Vector of track charge in TPC Down
 
   // Target informations
   G4int     fTarget_NTracks;          // # of tracks in Target
@@ -145,6 +160,9 @@ private:
   std::vector<G4double> fVecTarget_TrackMomX; // Vector of initial mom in Target
   std::vector<G4double> fVecTarget_TrackMomY; // Vector of initial mom in Target 
   std::vector<G4double> fVecTarget_TrackMomZ; // Vector of initial mom in Target
+  std::vector<G4double> fVecTarget_TrackLength; // Vector of track length in Target
+  std::vector<G4double> fVecTarget_TrackEdep; // Vector of track edep in Target
+  std::vector<G4double> fVecTarget_TrackCharge; // Vector of track charge in Target
 
   // Vertex informations
   G4int     fNVtx;

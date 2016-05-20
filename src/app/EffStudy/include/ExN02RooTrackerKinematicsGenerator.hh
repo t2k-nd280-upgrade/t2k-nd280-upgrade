@@ -25,26 +25,26 @@ public :
   ExN02RooTrackerKinematicsGenerator();
   virtual ~ExN02RooTrackerKinematicsGenerator();
   
-  void GeneratePrimaryVertex(G4Event *anEvent);
+  void GeneratePrimaryVertex(G4Event *anEvent);      // Use NEUT output
 
   G4int GetTotNEUTevents(){ return fTotEntry;};
   G4int GetCurrNEUTevent(){ return fCurrEntry;};
-  
+
 private :
 
   G4String ffilename; // NEUT file name to read
   TFile *fneutfile;   // NEUT file to read
   TTree *fneutree;    // NEUT tree to read
-
-  void ReadNEUT(G4String filename);
-  void ReadGENIE(G4String filename);
-
   int fTotEntry;
   int fCurrEntry;
+  
+  void ReadGENIE(G4String filename);
+  void ReadNEUT(G4String filename);
+
 
   //
   //
-  // THE FOLLOWING VARIABLES ARE TAKEN FROM nd280mc CODE
+  // NEUT: THE FOLLOWING VARIABLES ARE TAKEN FROM nd280mc CODE
   //
   //
 

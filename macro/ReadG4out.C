@@ -3,15 +3,16 @@ void ReadG4out
 (
  const char *tag = "prova",
  const char *filename = "../bin/EffStudy.root",
+ const bool doprint = false
  )
 {
   // Vertex
-  TH2D *hVtx_XY = new TH2D("hVtx_XY","hVtx_XY",4000,-4,4,400,-4,4);
-  TH2D *hVtx_XZ = new TH2D("hVtx_XZ","hVtx_XZ",4000,-4,4,400,-4,4);
-  TH2D *hVtx_YZ = new TH2D("hVtx_YZ","hVtx_YZ",4000,-4,4,400,-4,4);
-  TH1D *hVtx_X = new TH1D("hVtx_X","hVtx_X",4000,-4,4);
-  TH1D *hVtx_Y = new TH1D("hVtx_Y","hVtx_Y",4000,-4,4);
-  TH1D *hVtx_Z = new TH1D("hVtx_Z","hVtx_Z",4000,-4,4);
+  TH2D *hVtx_XY = new TH2D("hVtx_XY","hVtx_XY",4000,-4000,4000,400,-4000,4000); // mm
+  TH2D *hVtx_XZ = new TH2D("hVtx_XZ","hVtx_XZ",4000,-4000,4000,400,-4000,4000); // mm
+  TH2D *hVtx_YZ = new TH2D("hVtx_YZ","hVtx_YZ",4000,-4000,4000,400,-4000,4000); // mm
+  TH1D *hVtx_X = new TH1D("hVtx_X","hVtx_X",4000,-4000,4000); // mm
+  TH1D *hVtx_Y = new TH1D("hVtx_Y","hVtx_Y",4000,-4000,4000); // mm
+  TH1D *hVtx_Z = new TH1D("hVtx_Z","hVtx_Z",4000,-4000,4000); // mm
   TH1D *hVtx_NuPDG = new TH1D("hVtx_NuPDG","hVtx_NuPDG",10,10,20);
   TH1D *hVtx_ReacMode = new TH1D("hVtx_ReacMode","hVtx_ReacMode",100,-50,50);
   
@@ -35,18 +36,27 @@ void ReadG4out
   TH1D *hTPCUp_MomY = new TH1D("hTPCUp_MomY","hTPCUp_MomY",100,0,300);
   TH1D *hTPCUp_MomZ = new TH1D("hTPCUp_MomZ","hTPCUp_MomZ",100,0,300);
   TH1D *hTPCUp_Mom = new TH1D("hTPCUp_Mom","hTPCUp_Mom",100,0,300);
+  TH1D *hTPCUp_Length = new TH1D("hTPCUp_Length","hTPCUp_Length",100,0,300); // mm
+  TH1D *hTPCUp_Edep = new TH1D("hTPCUp_Edep","hTPCUp_Edep",100,0,300);
+  TH1D *hTPCUp_Charge = new TH1D("hTPCUp_Charge","hTPCUp_Charge",200,-100,100);
 
   TH1D *hTPCDown_NTrack = new TH1D("hTPCDown_NTrack","hTPCDown_NTrack",100,0,300);
   TH1D *hTPCDown_MomX = new TH1D("hTPCDown_MomX","hTPCDown_MomX",100,0,300);
   TH1D *hTPCDown_MomY = new TH1D("hTPCDown_MomY","hTPCDown_MomY",100,0,300);
   TH1D *hTPCDown_MomZ = new TH1D("hTPCDown_MomZ","hTPCDown_MomZ",100,0,300);
   TH1D *hTPCDown_Mom = new TH1D("hTPCDown_Mom","hTPCDown_Mom",100,0,300);
+  TH1D *hTPCDown_Length = new TH1D("hTPCDown_Length","hTPCDown_Length",100,0,300); // mm
+  TH1D *hTPCDown_Edep = new TH1D("hTPCDown_Edep","hTPCDown_Edep",100,0,300);
+  TH1D *hTPCDown_Charge = new TH1D("hTPCDown_Charge","hTPCDown_Charge",200,-100,100);
 
   TH1D *hTarget_NTrack = new TH1D("hTarget_NTrack","hTarget_NTrack",100,0,300);
   TH1D *hTarget_MomX = new TH1D("hTarget_MomX","hTarget_MomX",100,0,300);
   TH1D *hTarget_MomY = new TH1D("hTarget_MomY","hTarget_MomY",100,0,300);
   TH1D *hTarget_MomZ = new TH1D("hTarget_MomZ","hTarget_MomZ",100,0,300);
   TH1D *hTarget_Mom = new TH1D("hTarget_Mom","hTarget_Mom",100,0,300);
+  TH1D *hTarget_Length = new TH1D("hTarget_Length","hTarget_Length",100,0,300); // mm
+  TH1D *hTarget_Edep = new TH1D("hTarget_Edep","hTarget_Edep",100,0,300);
+  TH1D *hTarget_Charge = new TH1D("hTarget_Charge","hTarget_Charge",200,-100,100);
 
 
   cout << endl;
@@ -80,6 +90,9 @@ void ReadG4out
   std::vector<double>* VecTPCUp_TrackMomX; // Vector of initial mom in TPC Up
   std::vector<double>* VecTPCUp_TrackMomY; // Vector of initial mom in TPC Up
   std::vector<double>* VecTPCUp_TrackMomZ; // Vector of initial mom in TPC Up
+  std::vector<double>* VecTPCUp_TrackLength; // Vector of length in TPC Up
+  std::vector<double>* VecTPCUp_TrackEdep; // Vector of edep in TPC Up
+  std::vector<double>* VecTPCUp_TrackCharge; // Vector of charge in TPC Up
 
   // TPC down informations
   int     TPCDown_NTracks;          // # of tracks in TPC Down
@@ -87,6 +100,9 @@ void ReadG4out
   std::vector<double>* VecTPCDown_TrackMomX; // Vector of initial mom in TPC Down
   std::vector<double>* VecTPCDown_TrackMomY; // Vector of initial mom in TPC Down
   std::vector<double>* VecTPCDown_TrackMomZ; // Vector of initial mom in TPC Down
+  std::vector<double>* VecTPCDown_TrackLength; // Vector of length in TPC Down
+  std::vector<double>* VecTPCDown_TrackEdep; // Vector of edep in TPC Down
+  std::vector<double>* VecTPCDown_TrackCharge; // Vector of charge in TPC Down
 
   // Target informations
   int     Target_NTracks;          // # of tracks in Target
@@ -94,6 +110,9 @@ void ReadG4out
   std::vector<double>* VecTarget_TrackMomX; // Vector of initial mom in Target
   std::vector<double>* VecTarget_TrackMomY; // Vector of initial mom in Target 
   std::vector<double>* VecTarget_TrackMomZ; // Vector of initial mom in Target
+  std::vector<double>* VecTarget_TrackLength; // Vector of length in Target
+  std::vector<double>* VecTarget_TrackEdep; // Vector of edep in Target
+  std::vector<double>* VecTarget_TrackCharge; // Vector of charge in Target
   
   // Vertex informations
   int     NVtx;
@@ -132,18 +151,27 @@ void ReadG4out
   treein->SetBranchAddress("VecTPCUp_TrackMomX", &VecTPCUp_TrackMomX);
   treein->SetBranchAddress("VecTPCUp_TrackMomY", &VecTPCUp_TrackMomY);
   treein->SetBranchAddress("VecTPCUp_TrackMomZ", &VecTPCUp_TrackMomZ);
+  treein->SetBranchAddress("VecTPCUp_TrackLength", &VecTPCUp_TrackLength);
+  treein->SetBranchAddress("VecTPCUp_TrackEdep", &VecTPCUp_TrackEdep);
+  treein->SetBranchAddress("VecTPCUp_TrackCharge", &VecTPCUp_TrackCharge);
 
   treein->SetBranchAddress("TPCDown_NTracks",      &TPCDown_NTracks);
   treein->SetBranchAddress("VecTPCDown_TrackID",   &VecTPCDown_TrackID);
   treein->SetBranchAddress("VecTPCDown_TrackMomX", &VecTPCDown_TrackMomX);
   treein->SetBranchAddress("VecTPCDown_TrackMomY", &VecTPCDown_TrackMomY);
   treein->SetBranchAddress("VecTPCDown_TrackMomZ", &VecTPCDown_TrackMomZ);
+  treein->SetBranchAddress("VecTPCDown_TrackLength", &VecTPCDown_TrackLength);
+  treein->SetBranchAddress("VecTPCDown_TrackEdep", &VecTPCDown_TrackEdep);
+  treein->SetBranchAddress("VecTPCDown_TrackCharge", &VecTPCDown_TrackCharge);
 
   treein->SetBranchAddress("Target_NTracks",      &Target_NTracks);
   treein->SetBranchAddress("VecTarget_TrackID",   &VecTarget_TrackID);
   treein->SetBranchAddress("VecTarget_TrackMomX", &VecTarget_TrackMomX);
   treein->SetBranchAddress("VecTarget_TrackMomY", &VecTarget_TrackMomY);
   treein->SetBranchAddress("VecTarget_TrackMomZ", &VecTarget_TrackMomZ);
+  treein->SetBranchAddress("VecTarget_TrackLength", &VecTarget_TrackLength);
+  treein->SetBranchAddress("VecTarget_TrackEdep", &VecTarget_TrackEdep);
+  treein->SetBranchAddress("VecTarget_TrackCharge", &VecTarget_TrackCharge);
 
   treein->SetBranchAddress("NVtx", &NVtx);
   treein->SetBranchAddress("VtxX", &VecVtx_X);
@@ -270,6 +298,13 @@ void ReadG4out
       
       double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
       hTPCUp_Mom->Fill(mom);
+
+      double length = VecTPCUp_TrackLength->at(itrk);
+      hTPCUp_Length->Fill(length);
+      double edep = VecTPCUp_TrackEdep->at(itrk);
+      hTPCUp_Edep->Fill(edep);
+      double charge = VecTPCUp_TrackCharge->at(itrk);
+      hTPCUp_Charge->Fill(charge);
     }
     //cout << endl;
 
@@ -291,6 +326,13 @@ void ReadG4out
       
       double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
       hTPCDown_Mom->Fill(mom);
+
+      double length = VecTPCDown_TrackLength->at(itrk);
+      hTPCDown_Length->Fill(length);
+      double edep = VecTPCDown_TrackEdep->at(itrk);
+      hTPCDown_Edep->Fill(edep);
+      double charge = VecTPCDown_TrackCharge->at(itrk);
+      hTPCDown_Charge->Fill(charge);
     }
     //cout << endl;
 
@@ -312,6 +354,13 @@ void ReadG4out
       
       double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
       hTarget_Mom->Fill(mom);
+
+      double length = VecTarget_TrackLength->at(itrk);
+      hTarget_Length->Fill(length);
+      double edep = VecTarget_TrackEdep->at(itrk);
+      hTarget_Edep->Fill(edep);
+      double charge = VecTarget_TrackCharge->at(itrk);
+      hTarget_Charge->Fill(charge);
     }
     //cout << endl;
     
@@ -361,13 +410,31 @@ void ReadG4out
 
   TCanvas *cTPCUp_TrackMom = new TCanvas("cTPCUp_TrackMom","cTPCUp_TrackMom");
   hTPCUp_Mom->Draw();
-
   TCanvas *cTPCDown_TrackMom = new TCanvas("cTPCDown_TrackMom","cTPCDown_TrackMom");
   hTPCDown_Mom->Draw();
-
   TCanvas *cTarget_TrackMom = new TCanvas("cTarget_TrackMom","cTarget_TrackMom");
   hTarget_Mom->Draw();
 
+  TCanvas *cTPCUp_TrackLength = new TCanvas("cTPCUp_TrackLength","cTPCUp_TrackLength");
+  hTPCUp_Length->Draw();
+  TCanvas *cTPCDown_TrackLength = new TCanvas("cTPCDown_TrackLength","cTPCDown_TrackLength");
+  hTPCDown_Length->Draw();
+  TCanvas *cTarget_TrackLength = new TCanvas("cTarget_TrackLength","cTarget_TrackLength");
+  hTarget_Length->Draw();
+
+  TCanvas *cTPCUp_TrackEdep = new TCanvas("cTPCUp_TrackEdep","cTPCUp_TrackEdep");
+  hTPCUp_Edep->Draw();
+  TCanvas *cTPCDown_TrackEdep = new TCanvas("cTPCDown_TrackEdep","cTPCDown_TrackEdep");
+  hTPCDown_Edep->Draw();
+  TCanvas *cTarget_TrackEdep = new TCanvas("cTarget_TrackEdep","cTarget_TrackEdep");
+  hTarget_Edep->Draw();
+
+  TCanvas *cTPCUp_TrackCharge = new TCanvas("cTPCUp_TrackCharge","cTPCUp_TrackCharge");
+  hTPCUp_Charge->Draw();
+  TCanvas *cTPCDown_TrackCharge = new TCanvas("cTPCDown_TrackCharge","cTPCDown_TrackCharge");
+  hTPCDown_Charge->Draw();
+  TCanvas *cTarget_TrackCharge = new TCanvas("cTarget_TrackCharge","cTarget_TrackCharge");
+  hTarget_Charge->Draw();
   
   TCanvas *cVtx_X = new TCanvas("cVtx_X","cVtx_X");
   hVtx_X->GetXaxis()->SetTitle("X (meters)");
@@ -399,18 +466,20 @@ void ReadG4out
   // Store plots
 
   char name[300];
-  sprintf(name,"outputs/EabsTot_%s.pdf",tag);      cEabsTot->Print(name);
-  sprintf(name,"outputs/cEabsTarget_%s.pdf",tag);  cEabsTarget->Print(name);
-  sprintf(name,"outputs/cEabsTPCup_%s.pdf",tag);   cEabsTPCup->Print(name);
-  sprintf(name,"outputs/cEabsTPCdown_%s.pdf",tag); cEabsTPCdown->Print(name);
-   
-  sprintf(name,"outputs/cVtx_X_%s.pdf",tag); cVtx_X->Print(name);
-  sprintf(name,"outputs/cVtx_Y_%s.pdf",tag); cVtx_Y->Print(name);
-  sprintf(name,"outputs/cVtx_Z_%s.pdf",tag); cVtx_Z->Print(name);
-  sprintf(name,"outputs/cVtx_XY_%s.pdf",tag); cVtx_XY->Print(name);
-  sprintf(name,"outputs/cVtx_XZ_%s.pdf",tag); cVtx_XZ->Print(name);
-  sprintf(name,"outputs/cVtx_YZ_%s.pdf",tag); cVtx_YZ->Print(name);
-
+  if(doprint){
+    sprintf(name,"outputs/EabsTot_%s.pdf",tag);      cEabsTot->Print(name);
+    sprintf(name,"outputs/cEabsTarget_%s.pdf",tag);  cEabsTarget->Print(name);
+    sprintf(name,"outputs/cEabsTPCup_%s.pdf",tag);   cEabsTPCup->Print(name);
+    sprintf(name,"outputs/cEabsTPCdown_%s.pdf",tag); cEabsTPCdown->Print(name);
+    
+    sprintf(name,"outputs/cVtx_X_%s.pdf",tag); cVtx_X->Print(name);
+    sprintf(name,"outputs/cVtx_Y_%s.pdf",tag); cVtx_Y->Print(name);
+    sprintf(name,"outputs/cVtx_Z_%s.pdf",tag); cVtx_Z->Print(name);
+    sprintf(name,"outputs/cVtx_XY_%s.pdf",tag); cVtx_XY->Print(name);
+    sprintf(name,"outputs/cVtx_XZ_%s.pdf",tag); cVtx_XZ->Print(name);
+    sprintf(name,"outputs/cVtx_YZ_%s.pdf",tag); cVtx_YZ->Print(name);
+  }
+  
   // Write text file
   
   ofstream * outfilep = new ofstream(Form("outputs/%s.txt",tag),ios_base::trunc);

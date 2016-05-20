@@ -136,7 +136,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     fParticleGun->GeneratePrimaryVertex(anEvent);
   }
   
-  else if(fGeneratorType=="NEUT"){ // Read NEUT output
+  else if(fGeneratorType=="Generator"){ // Read NEUT or GENIE output (same format)
 
     //
     // Check that the # of G4 envents is <= # of NEUT events
@@ -179,12 +179,6 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     //     << G4endl;    
   }  
 
-  else if(fGeneratorType=="GENIE"){ // Read GENIE output
-    G4ExceptionDescription msg;
-    msg << "Reading of GENIE output is not yet implemented!!!" << G4endl;
-    G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
-		"MyCode0002",FatalException, msg);    
-  }
   else{
     G4ExceptionDescription msg;
     msg << "Generator type has not been set!!!" << G4endl;

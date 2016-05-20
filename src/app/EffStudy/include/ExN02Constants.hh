@@ -9,7 +9,7 @@
 //                             //          
 /////////////////////////////////                                       
 
-#define USE_PAI
+//#define USE_PAI
 
 //#define USE_BLINETRACER // Use the BlineTracer class w/ bline_vis.mac
                           // Plot geantino along magnetic field direction
@@ -26,8 +26,13 @@ const G4String cPathFiles    = "../files/"; // executable is run in $T2KND280UP/
 const G4String cNEUTfilename = "genev_output_newgeom_O16.root";
 //const G4String cNEUTfilename = "genev_output_newgeom_O12.root";
 //const G4String cNEUTfilename = "genev_output_newgeom_scint_in_tpc.root";
-
 const G4String cNEUTtreename = "nRooTracker";
+
+//const G4String cGENIEfilename = "out.rootracker.root";
+const G4String cGENIEfilename = "out.rootracker_jnubeam.root";
+const G4String cGENIEtreename = "gRooTracker";
+
+const G4String cGeneratorType = "GENIE"; // "GENIE" or "NEUT" 
 
 /////////////////////////////////                 
 //                             //                    
