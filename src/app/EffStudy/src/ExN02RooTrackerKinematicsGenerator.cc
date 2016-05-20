@@ -420,21 +420,21 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   
 
   // Read vertex inputs from NEUT  
-  G4cout << G4endl;
-  G4cout << "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex" << G4endl;
-  G4cout << "evtID = " << evtID << G4endl;
-  G4cout << "fCurrEntry = " << fCurrEntry << G4endl;
-  G4cout << "fTotEntry = " << fTotEntry << G4endl;
-  G4cout << "fNuParentPdg = " << fNuParentPdg << G4endl;
-  G4cout << "XSec = " << vertexInfo->GetCrossSection() << G4endl;
-  G4cout << "EvtWeight = " << vertexInfo->GetWeight() << G4endl;
-  G4cout << "EvtProb = " << vertexInfo->GetProbability() << G4endl;  
-  G4cout << "Primary Vertex: " << G4endl;
-  G4cout << " - fEvtVtx[0] = " << fEvtVtx[0] << " m" << G4endl;
-  G4cout << " - fEvtVtx[1] = " << fEvtVtx[1] << " m" << G4endl;
-  G4cout << " - fEvtVtx[2] = " << fEvtVtx[2] << " m" << G4endl;
-  G4cout << " - fEvtVtx[3]*second = " << fEvtVtx[3]*second << G4endl;  
-  G4cout << G4endl;
+  //G4cout << G4endl;
+  //G4cout << "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex" << G4endl;
+  //G4cout << "evtID = " << evtID << G4endl;
+  //G4cout << "fCurrEntry = " << fCurrEntry << G4endl;
+  //G4cout << "fTotEntry = " << fTotEntry << G4endl;
+  //G4cout << "fNuParentPdg = " << fNuParentPdg << G4endl;
+  //G4cout << "XSec = " << vertexInfo->GetCrossSection() << G4endl;
+  //G4cout << "EvtWeight = " << vertexInfo->GetWeight() << G4endl;
+  //G4cout << "EvtProb = " << vertexInfo->GetProbability() << G4endl;  
+  //G4cout << "Primary Vertex: " << G4endl;
+  //G4cout << " - fEvtVtx[0] = " << fEvtVtx[0] << " m" << G4endl;
+  //G4cout << " - fEvtVtx[1] = " << fEvtVtx[1] << " m" << G4endl;
+  //G4cout << " - fEvtVtx[2] = " << fEvtVtx[2] << " m" << G4endl;
+  //G4cout << " - fEvtVtx[3]*second = " << fEvtVtx[3]*second << G4endl;  
+  //G4cout << G4endl;
   
 }
 

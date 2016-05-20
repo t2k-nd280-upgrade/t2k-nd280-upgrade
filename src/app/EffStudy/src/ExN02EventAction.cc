@@ -86,6 +86,7 @@ ExN02EventAction::ExN02EventAction()
     fVecTPCUp_TrackLength(),
     fVecTPCUp_TrackEdep(),
     fVecTPCUp_TrackCharge(),
+    fVecTPCUp_TrackPDG(),
 
     fTPCDown_NTracks(0),
     fVecTPCDown_TrackID(),
@@ -95,6 +96,7 @@ ExN02EventAction::ExN02EventAction()
     fVecTPCDown_TrackLength(),
     fVecTPCDown_TrackEdep(),
     fVecTPCDown_TrackCharge(),
+    fVecTPCDown_TrackPDG(),
 
     fTarget_NTracks(0),
     fVecTarget_TrackID(),
@@ -104,6 +106,7 @@ ExN02EventAction::ExN02EventAction()
     fVecTarget_TrackLength(),
     fVecTarget_TrackEdep(),
     fVecTarget_TrackCharge(),
+    fVecTarget_TrackPDG(),
 
     fNVtx(0),
     fVecVtx_X(), 
@@ -161,6 +164,7 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
   fVecTPCUp_TrackLength.clear(); 
   fVecTPCUp_TrackEdep.clear(); 
   fVecTPCUp_TrackCharge.clear(); 
+  fVecTPCUp_TrackPDG.clear();
 
   fVecTPCDown_TrackID.clear(); 
   fVecTPCDown_TrackMomX.clear(); 
@@ -169,6 +173,7 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
   fVecTPCDown_TrackLength.clear(); 
   fVecTPCDown_TrackEdep.clear(); 
   fVecTPCDown_TrackCharge.clear(); 
+  fVecTPCDown_TrackPDG.clear();
 
   fVecTarget_TrackID.clear(); 
   fVecTarget_TrackMomX.clear(); 
@@ -177,6 +182,7 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
   fVecTarget_TrackLength.clear(); 
   fVecTarget_TrackEdep.clear(); 
   fVecTarget_TrackCharge.clear(); 
+  fVecTarget_TrackPDG.clear();
 
   fVecVtx_X.clear(); 
   fVecVtx_Y.clear(); 
@@ -349,6 +355,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        currtrkid_TPCUp = hit->GetTrackID();
        G4ThreeVector trkmom = hit->GetMom();
        G4double trkcharge = hit->GetCharge();
+       G4int trkpdg = hit->GetTrackPDG();
 
        if(prevtrkid_TPCUp==kBadNum){
 	 fVecTPCUp_TrackID.push_back(currtrkid_TPCUp);
@@ -357,6 +364,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTPCUp_TrackMomY.push_back((G4double)trkmom.y() / MeV);
 	 fVecTPCUp_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
 	 fVecTPCUp_TrackCharge.push_back(trkcharge / eplus);
+	 fVecTPCUp_TrackPDG.push_back(trkpdg);
 
 	 prevtrkid_TPCUp = currtrkid_TPCUp;
 	 fTPCUp_NTracks++;
@@ -369,7 +377,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTPCUp_TrackMomY.push_back((G4double)trkmom.y() / MeV);
 	 fVecTPCUp_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
 	 fVecTPCUp_TrackCharge.push_back(trkcharge / eplus);
-	 
+	 fVecTPCUp_TrackPDG.push_back(trkpdg);
+
 	 prevtrkid_TPCUp = currtrkid_TPCUp;
 	 fTPCUp_NTracks++;
 	 //std::cout << prevtrkid_TPCUp << " - " << currtrkid_TPCUp << std::endl;
@@ -382,6 +391,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        currtrkid_TPCDown = hit->GetTrackID();
        G4ThreeVector trkmom = hit->GetMom();
        G4double trkcharge = hit->GetCharge();
+       G4int trkpdg = hit->GetTrackPDG();
        
        if(prevtrkid_TPCDown==kBadNum){
 	 fVecTPCDown_TrackID.push_back(currtrkid_TPCDown);
@@ -390,6 +400,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTPCDown_TrackMomY.push_back((G4double)trkmom.y() / MeV);
 	 fVecTPCDown_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
 	 fVecTPCDown_TrackCharge.push_back(trkcharge / eplus);
+	 fVecTPCDown_TrackPDG.push_back(trkpdg);
 	 
 	 prevtrkid_TPCDown = currtrkid_TPCDown;
 	 fTPCDown_NTracks++;
@@ -402,6 +413,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTPCDown_TrackMomY.push_back((G4double)trkmom.y() / MeV);
 	 fVecTPCDown_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
 	 fVecTPCDown_TrackCharge.push_back(trkcharge / eplus);
+	 fVecTPCDown_TrackPDG.push_back(trkpdg);
 
 	 prevtrkid_TPCDown = currtrkid_TPCDown;
 	 fTPCDown_NTracks++;
@@ -415,6 +427,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        currtrkid_Target = hit->GetTrackID();
        G4ThreeVector trkmom = hit->GetMom();
        G4double trkcharge = hit->GetCharge();
+       G4int trkpdg = hit->GetTrackPDG();
 
        if(prevtrkid_Target==kBadNum){
 	 fVecTarget_TrackID.push_back(currtrkid_Target);
@@ -423,7 +436,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTarget_TrackMomY.push_back((G4double)trkmom.y() / MeV);
 	 fVecTarget_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
 	 fVecTarget_TrackCharge.push_back(trkcharge / eplus);
- 	 
+ 	 fVecTarget_TrackPDG.push_back(trkpdg);
+
 	 prevtrkid_Target = currtrkid_Target;
 	 fTarget_NTracks++;
 	 //std::cout << "First:" << prevtrkid_Target << " - " << currtrkid_Target << std::endl;
@@ -435,6 +449,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTarget_TrackMomY.push_back((G4double)trkmom.y() / MeV);
 	 fVecTarget_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
 	 fVecTarget_TrackCharge.push_back(trkcharge / eplus);
+	 fVecTarget_TrackPDG.push_back(trkpdg);
 
 	 prevtrkid_Target = currtrkid_Target;
 	 fTarget_NTracks++;
@@ -621,7 +636,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-     void ExN02EventAction::SetTrack(G4Track *track) { // Used in SteppingAction
+void ExN02EventAction::SetTrack(G4Track *track) { // Used in SteppingAction
   
   // Take track informations from its first step
   G4int newtrkid      = track->GetTrackID();

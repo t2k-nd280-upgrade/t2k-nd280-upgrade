@@ -39,6 +39,7 @@ void ReadG4out
   TH1D *hTPCUp_Length = new TH1D("hTPCUp_Length","hTPCUp_Length",100,0,300); // mm
   TH1D *hTPCUp_Edep = new TH1D("hTPCUp_Edep","hTPCUp_Edep",100,0,300);
   TH1D *hTPCUp_Charge = new TH1D("hTPCUp_Charge","hTPCUp_Charge",200,-100,100);
+  TH1D *hTPCUp_PDG = new TH1D("hTPCUp_PDG","hTPCUp_PDG",800,-400,400);
 
   TH1D *hTPCDown_NTrack = new TH1D("hTPCDown_NTrack","hTPCDown_NTrack",100,0,300);
   TH1D *hTPCDown_MomX = new TH1D("hTPCDown_MomX","hTPCDown_MomX",100,0,300);
@@ -48,6 +49,7 @@ void ReadG4out
   TH1D *hTPCDown_Length = new TH1D("hTPCDown_Length","hTPCDown_Length",100,0,300); // mm
   TH1D *hTPCDown_Edep = new TH1D("hTPCDown_Edep","hTPCDown_Edep",100,0,300);
   TH1D *hTPCDown_Charge = new TH1D("hTPCDown_Charge","hTPCDown_Charge",200,-100,100);
+  TH1D *hTPCDown_PDG = new TH1D("hTPCDown_PDG","hTPCDown_PDG",800,-400,400);
 
   TH1D *hTarget_NTrack = new TH1D("hTarget_NTrack","hTarget_NTrack",100,0,300);
   TH1D *hTarget_MomX = new TH1D("hTarget_MomX","hTarget_MomX",100,0,300);
@@ -57,7 +59,7 @@ void ReadG4out
   TH1D *hTarget_Length = new TH1D("hTarget_Length","hTarget_Length",100,0,300); // mm
   TH1D *hTarget_Edep = new TH1D("hTarget_Edep","hTarget_Edep",100,0,300);
   TH1D *hTarget_Charge = new TH1D("hTarget_Charge","hTarget_Charge",200,-100,100);
-
+  TH1D *hTarget_PDG = new TH1D("hTarget_PDG","hTarget_PDG",800,-400,400);
 
   cout << endl;
   cout << "Reading file:" << endl;
@@ -93,6 +95,7 @@ void ReadG4out
   std::vector<double>* VecTPCUp_TrackLength; // Vector of length in TPC Up
   std::vector<double>* VecTPCUp_TrackEdep; // Vector of edep in TPC Up
   std::vector<double>* VecTPCUp_TrackCharge; // Vector of charge in TPC Up
+  std::vector<int>   * VecTPCUp_TrackPDG; // Vector of pdg in TPC Up 
 
   // TPC down informations
   int     TPCDown_NTracks;          // # of tracks in TPC Down
@@ -103,6 +106,8 @@ void ReadG4out
   std::vector<double>* VecTPCDown_TrackLength; // Vector of length in TPC Down
   std::vector<double>* VecTPCDown_TrackEdep; // Vector of edep in TPC Down
   std::vector<double>* VecTPCDown_TrackCharge; // Vector of charge in TPC Down
+  std::vector<double>* VecTPCDown_TrackCharge; // Vector of charge in TPC Down  
+  std::vector<int>   * VecTPCDown_TrackPDG; // Vector of pdg in TPC Down 
 
   // Target informations
   int     Target_NTracks;          // # of tracks in Target
@@ -113,7 +118,8 @@ void ReadG4out
   std::vector<double>* VecTarget_TrackLength; // Vector of length in Target
   std::vector<double>* VecTarget_TrackEdep; // Vector of edep in Target
   std::vector<double>* VecTarget_TrackCharge; // Vector of charge in Target
-  
+  std::vector<int>   * VecTarget_TrackPDG; // Vector of pdg in Target
+
   // Vertex informations
   int     NVtx;
   std::vector<double> *VecVtx_X; // Vector of vertex X position
@@ -154,6 +160,7 @@ void ReadG4out
   treein->SetBranchAddress("VecTPCUp_TrackLength", &VecTPCUp_TrackLength);
   treein->SetBranchAddress("VecTPCUp_TrackEdep", &VecTPCUp_TrackEdep);
   treein->SetBranchAddress("VecTPCUp_TrackCharge", &VecTPCUp_TrackCharge);
+  treein->SetBranchAddress("VecTPCUp_TrackPDG", &VecTPCUp_TrackPDG);
 
   treein->SetBranchAddress("TPCDown_NTracks",      &TPCDown_NTracks);
   treein->SetBranchAddress("VecTPCDown_TrackID",   &VecTPCDown_TrackID);
@@ -163,6 +170,7 @@ void ReadG4out
   treein->SetBranchAddress("VecTPCDown_TrackLength", &VecTPCDown_TrackLength);
   treein->SetBranchAddress("VecTPCDown_TrackEdep", &VecTPCDown_TrackEdep);
   treein->SetBranchAddress("VecTPCDown_TrackCharge", &VecTPCDown_TrackCharge);
+  treein->SetBranchAddress("VecTPCDown_TrackPDG", &VecTPCDown_TrackPDG);
 
   treein->SetBranchAddress("Target_NTracks",      &Target_NTracks);
   treein->SetBranchAddress("VecTarget_TrackID",   &VecTarget_TrackID);
@@ -172,6 +180,7 @@ void ReadG4out
   treein->SetBranchAddress("VecTarget_TrackLength", &VecTarget_TrackLength);
   treein->SetBranchAddress("VecTarget_TrackEdep", &VecTarget_TrackEdep);
   treein->SetBranchAddress("VecTarget_TrackCharge", &VecTarget_TrackCharge);
+  treein->SetBranchAddress("VecTarget_TrackPDG", &VecTarget_TrackPDG);
 
   treein->SetBranchAddress("NVtx", &NVtx);
   treein->SetBranchAddress("VtxX", &VecVtx_X);
@@ -190,8 +199,7 @@ void ReadG4out
   for(int ientry=0;ientry<Nentries;ientry++){
     treein->GetEntry(ientry);
 
-    cout << endl;
-    cout << "Event " << ientry << endl;
+    if(!(ientry%100)) cout << "Event " << ientry << endl;
     
     //
     // Read the vertices
@@ -219,10 +227,10 @@ void ReadG4out
       double vtx_y = VecVtx_Y->at(ivtx);
       double vtx_z = VecVtx_Z->at(ivtx);
       
-      cout << "vtx_x = " << vtx_x
-	   << " _ vtx_y = " << vtx_y
-	   << " _ vtx_z = " << vtx_z
-	   << endl;
+      //cout << "vtx_x = " << vtx_x
+      //   << " _ vtx_y = " << vtx_y
+      //   << " _ vtx_z = " << vtx_z
+      //   << endl;
 
       hVtx_XY->Fill(vtx_x,vtx_y);
       hVtx_XZ->Fill(vtx_x,vtx_z);
@@ -305,6 +313,8 @@ void ReadG4out
       hTPCUp_Edep->Fill(edep);
       double charge = VecTPCUp_TrackCharge->at(itrk);
       hTPCUp_Charge->Fill(charge);
+      double pdg = VecTPCUp_TrackPDG->at(itrk);
+      hTPCUp_PDG->Fill(pdg);
     }
     //cout << endl;
 
@@ -333,6 +343,8 @@ void ReadG4out
       hTPCDown_Edep->Fill(edep);
       double charge = VecTPCDown_TrackCharge->at(itrk);
       hTPCDown_Charge->Fill(charge);
+      double pdg = VecTPCDown_TrackPDG->at(itrk);
+      hTPCDown_PDG->Fill(pdg);
     }
     //cout << endl;
 
@@ -361,7 +373,9 @@ void ReadG4out
       hTarget_Edep->Fill(edep);
       double charge = VecTarget_TrackCharge->at(itrk);
       hTarget_Charge->Fill(charge);
-    }
+      double pdg = VecTarget_TrackPDG->at(itrk);
+      hTarget_PDG->Fill(pdg);
+   }
     //cout << endl;
     
   } // end loop over events
@@ -436,6 +450,13 @@ void ReadG4out
   TCanvas *cTarget_TrackCharge = new TCanvas("cTarget_TrackCharge","cTarget_TrackCharge");
   hTarget_Charge->Draw();
   
+  TCanvas *cTPCUp_TrackPDG = new TCanvas("cTPCUp_TrackPDG","cTPCUp_TrackPDG");
+  hTPCUp_PDG->Draw();
+  TCanvas *cTPCDown_TrackPDG = new TCanvas("cTPCDown_TrackPDG","cTPCDown_TrackPDG");
+  hTPCDown_PDG->Draw();
+  TCanvas *cTarget_TrackPDG = new TCanvas("cTarget_TrackPDG","cTarget_TrackPDG");
+  hTarget_PDG->Draw();
+
   TCanvas *cVtx_X = new TCanvas("cVtx_X","cVtx_X");
   hVtx_X->GetXaxis()->SetTitle("X (meters)");
   hVtx_X->Draw();

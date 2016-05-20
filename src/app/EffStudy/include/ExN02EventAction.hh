@@ -79,6 +79,7 @@ public:
   std::vector<G4double>& GetVecTPCUp_TrackLength(){return fVecTPCUp_TrackLength;}; 
   std::vector<G4double>& GetVecTPCUp_TrackEdep(){return fVecTPCUp_TrackEdep;}; 
   std::vector<G4double>& GetVecTPCUp_TrackCharge(){return fVecTPCUp_TrackCharge;}; 
+  std::vector<G4int>   & GetVecTPCUp_TrackPDG(){return fVecTPCUp_TrackPDG;};
 
   // TPC Down informations
   G4int               GetTPCDown_NTracks() { return fTPCDown_NTracks;};          
@@ -89,6 +90,7 @@ public:
   std::vector<G4double>& GetVecTPCDown_TrackLength(){return fVecTPCDown_TrackLength;}; 
   std::vector<G4double>& GetVecTPCDown_TrackEdep(){return fVecTPCDown_TrackEdep;}; 
   std::vector<G4double>& GetVecTPCDown_TrackCharge(){return fVecTPCDown_TrackCharge;}; 
+  std::vector<G4int>   & GetVecTPCDown_TrackPDG(){return fVecTPCDown_TrackPDG;};
 
   // Target informations
   G4int               GetTarget_NTracks() { return fTarget_NTracks;};          
@@ -99,6 +101,7 @@ public:
   std::vector<G4double>& GetVecTarget_TrackLength(){return fVecTarget_TrackLength;}; 
   std::vector<G4double>& GetVecTarget_TrackEdep(){return fVecTarget_TrackEdep;}; 
   std::vector<G4double>& GetVecTarget_TrackCharge(){return fVecTarget_TrackCharge;}; 
+  std::vector<G4int>   & GetVecTarget_TrackPDG(){return fVecTarget_TrackPDG;};
 
   // Vertex informations
   G4int               GetNVtx() { return fNVtx;};
@@ -143,7 +146,8 @@ private:
   std::vector<G4double> fVecTPCUp_TrackLength; // Vector of track length in TPC Up
   std::vector<G4double> fVecTPCUp_TrackEdep; // Vector of track edep in TPC Up
   std::vector<G4double> fVecTPCUp_TrackCharge; // Vector of track charge in TPC Up
-  
+  std::vector<G4int> fVecTPCUp_TrackPDG; // Vector of track pdg in TPC Up 
+
   // TPC down informations
   G4int     fTPCDown_NTracks;          // # of tracks in TPC Down
   std::vector<G4int>    fVecTPCDown_TrackID; // Vector of trackID in TPCDown
@@ -153,6 +157,7 @@ private:
   std::vector<G4double> fVecTPCDown_TrackLength; // Vector of track length in TPC Down
   std::vector<G4double> fVecTPCDown_TrackEdep; // Vector of track edep in TPC Down
   std::vector<G4double> fVecTPCDown_TrackCharge; // Vector of track charge in TPC Down
+  std::vector<G4int> fVecTPCDown_TrackPDG; // Vector of track pdg in TPC Down 
 
   // Target informations
   G4int     fTarget_NTracks;          // # of tracks in Target
@@ -163,6 +168,7 @@ private:
   std::vector<G4double> fVecTarget_TrackLength; // Vector of track length in Target
   std::vector<G4double> fVecTarget_TrackEdep; // Vector of track edep in Target
   std::vector<G4double> fVecTarget_TrackCharge; // Vector of track charge in Target
+  std::vector<G4int>    fVecTarget_TrackPDG; // Vector of track pdg in Target 
 
   // Vertex informations
   G4int     fNVtx;
