@@ -1,13 +1,28 @@
 
+#include <list>       
+#include <iterator>
 #include <algorithm>
 #include <vector>
+
+using namespace std;
 
 void SkimNtuple
 (  
  const char *tag = "prova",
  const char *filename = "../bin/EffStudy_AllEvents.root",
  //const char *filename = "../bin/EffStudy.root",
- const bool doprint = false
+ const bool doprint = false,
+
+ const bool doCut_Vtx = true, 
+ const bool doCut_dLyz = true,
+ const bool doCut_poscharge = true,
+
+ const bool doSelPDG = false,
+ const int SetPDG = -13,
+
+ // For debugging:
+ const bool doSingleEvent = true,
+ const int SingleEventID = 0, // 87
    )
 {  
   // True tracks
@@ -40,6 +55,22 @@ void SkimNtuple
   TH1D *hGlob_PosFinY = new TH1D("hGlob_PosFinY","hGlob_PosFinY",600,-3000,3000);
   TH1D *hGlob_PosFinZ = new TH1D("hGlob_PosFinZ","hGlob_PosFinZ",600,-3000,3000);
 
+  TH1D *hReco_MomX = new TH1D("hReco_MomX","hReco_MomX",100,0,10000); 
+  TH1D *hReco_MomY = new TH1D("hReco_MomY","hReco_MomY",100,0,10000);
+  TH1D *hReco_MomZ = new TH1D("hReco_MomZ","hReco_MomZ",100,0,10000);
+  TH1D *hReco_Mom = new TH1D("hReco_Mom","hReco_Mom",100,0,10000);
+  TH1D *hReco_Length = new TH1D("hReco_Length","hReco_Length",100,0,3000); // mm
+  TH1D *hReco_Edep = new TH1D("hReco_Edep","hReco_Edep",100,0,300);
+  TH1D *hReco_Charge = new TH1D("hReco_Charge","hReco_Charge",6,-3,3);
+  TH1D *hReco_PDG = new TH1D("hReco_PDG","hReco_PDG",800,-400,400);
+  TH1D *hReco_PosIniX = new TH1D("hReco_PosIniX","hReco_PosIniX",600,-3000,3000);
+  TH1D *hReco_PosIniY = new TH1D("hReco_PosIniY","hReco_PosIniY",600,-3000,3000);
+  TH1D *hReco_PosIniZ = new TH1D("hReco_PosIniZ","hReco_PosIniZ",600,-3000,3000);
+  TH1D *hReco_PosFinX = new TH1D("hReco_PosFinX","hReco_PosFinX",600,-3000,3000);
+  TH1D *hReco_PosFinY = new TH1D("hReco_PosFinY","hReco_PosFinY",600,-3000,3000);
+  TH1D *hReco_PosFinZ = new TH1D("hReco_PosFinZ","hReco_PosFinZ",600,-3000,3000);
+  TH2D *hReco_CosThetaVsMom = new TH2D("hReco_CosThetaVsMom","hReco_CosThetaVsMom",50,-1,1,100,0,10000);
+  
   TH1D *hTPCUp_MomX = new TH1D("hTPCUp_MomX","hTPCUp_MomX",100,0,10000);
   TH1D *hTPCUp_MomY = new TH1D("hTPCUp_MomY","hTPCUp_MomY",100,0,10000);
   TH1D *hTPCUp_MomZ = new TH1D("hTPCUp_MomZ","hTPCUp_MomZ",100,0,10000);
@@ -302,6 +333,7 @@ void SkimNtuple
   // double Glob_High_PosFinX;
   // double Glob_High_PosFinY;
   // double Glob_High_PosFinZ;
+  double TPCUp_High_ID;
   double TPCUp_High_mom;
   double TPCUp_High_costheta;
   double TPCUp_High_len;
@@ -316,6 +348,7 @@ void SkimNtuple
   double TPCUp_High_PosFinX;
   double TPCUp_High_PosFinY;
   double TPCUp_High_PosFinZ;
+  double TPCDown_High_ID;
   double TPCDown_High_mom;
   double TPCDown_High_costheta;
   double TPCDown_High_len;
@@ -330,6 +363,7 @@ void SkimNtuple
   double TPCDown_High_PosFinX;
   double TPCDown_High_PosFinY;
   double TPCDown_High_PosFinZ;
+  double Target_High_ID;
   double Target_High_mom;
   double Target_High_costheta;
   double Target_High_len;
@@ -353,6 +387,7 @@ void SkimNtuple
   // treeoa->Branch("Glob_High_edep",      &Glob_High_edep);
   // treeoa->Branch("Glob_High_pdg",       &Glob_High_pdg);
   // treeoa->Branch("Glob_High_parent_pdg",&Glob_High_parent_pdg);
+  treeoa->Branch("TPCUp_High_ID",      &TPCUp_High_ID);
   treeoa->Branch("TPCUp_High_mom",      &TPCUp_High_mom);
   treeoa->Branch("TPCUp_High_costheta", &TPCUp_High_costheta);
   treeoa->Branch("TPCUp_High_len",      &TPCUp_High_len);
@@ -367,6 +402,7 @@ void SkimNtuple
   treeoa->Branch("TPCUp_High_PosFinX",&TPCUp_High_PosFinX);
   treeoa->Branch("TPCUp_High_PosFinY",&TPCUp_High_PosFinY);
   treeoa->Branch("TPCUp_High_PosFinZ",&TPCUp_High_PosFinZ);
+  treeoa->Branch("TPCDown_High_ID",    &TPCDown_High_ID);
   treeoa->Branch("TPCDown_High_mom",    &TPCDown_High_mom);
   treeoa->Branch("TPCDown_High_costheta",&TPCDown_High_costheta);
   treeoa->Branch("TPCDown_High_len",    &TPCDown_High_len);
@@ -381,6 +417,7 @@ void SkimNtuple
   treeoa->Branch("TPCDown_High_PosFinX",&TPCDown_High_PosFinX);
   treeoa->Branch("TPCDown_High_PosFinY",&TPCDown_High_PosFinY);
   treeoa->Branch("TPCDown_High_PosFinZ",&TPCDown_High_PosFinZ);
+  treeoa->Branch("Target_High_ID",     &Target_High_ID);
   treeoa->Branch("Target_High_mom",     &Target_High_mom);
   treeoa->Branch("Target_High_costheta",&Target_High_costheta);
   treeoa->Branch("Target_High_len",     &Target_High_len);
@@ -399,13 +436,16 @@ void SkimNtuple
   // Loop over the ntuple events
   
   int Nentries = treein->GetEntries();
+  
   for(int ientry=0;ientry<Nentries;ientry++){
     
+    if(doSingleEvent){
+      ientry = SingleEventID;
+      Nentries = ientry+1;
+    }
+
     // Reset variables
-    // Glob_High_mom = -999;
-    // Glob_High_len = -999;
-    // Glob_High_charge = -999;
-    // Glob_High_edep = -999;
+    TPCUp_High_ID = -999;
     TPCUp_High_mom = -999;
     TPCUp_High_costheta = -999;
     TPCUp_High_len = -999;
@@ -420,6 +460,7 @@ void SkimNtuple
     TPCUp_High_PosFinX = -999;
     TPCUp_High_PosFinY = -999;
     TPCUp_High_PosFinZ = -999;
+    TPCDown_High_ID = -999;
     TPCDown_High_mom = -999;
     TPCDown_High_costheta = -999;
     TPCDown_High_len = -999;
@@ -434,10 +475,11 @@ void SkimNtuple
     TPCDown_High_PosFinX = -999;
     TPCDown_High_PosFinY = -999;
     TPCDown_High_PosFinZ = -999;
+    Target_High_ID = -999;
     Target_High_mom = -999;
     Target_High_costheta = -999;
     Target_High_len = -999;
-    Target_High_yz = -999;
+    Target_High_dlyz = -999;
     Target_High_charge = -999;
     Target_High_edep = -999;
     Target_High_pdg = -999;
@@ -452,7 +494,6 @@ void SkimNtuple
     treein->GetEntry(ientry);
 
     if(!(ientry%100)) cout << "Event " << ientry << endl;
-    //cout << "Event " << ientry << endl;
 
     //
     // Read all the tracks in the event (all volume)
@@ -469,6 +510,15 @@ void SkimNtuple
     double vtx_y = VecVtx_Y->at(0);
     double vtx_z = VecVtx_Z->at(0);
     
+    //
+    // Cut 1: Apply vertex cuts (in the target FV)
+    //
+    if(doCut_Vtx){
+      if(vtx_x < -1150  || vtx_x > +1150)  continue;
+      if(vtx_y < -151.5 || vtx_y > +151.1) continue;
+      if(vtx_z < -1200  || vtx_z > +1200)  continue;
+    }
+
     hVtx_XY->Fill(vtx_x,vtx_y);
     hVtx_XZ->Fill(vtx_x,vtx_z);
     hVtx_YZ->Fill(vtx_y,vtx_z);      
@@ -508,14 +558,103 @@ void SkimNtuple
       exit(1);
     }
 
+
+    //
+    // Loop over all tracks
+    // 
+
+    for(int trkid=1;trkid<=NTracks;trkid++){ // loop over track ID (1 to NTracks)
+      
+      int vecel,id;
+      double costheta, momX, momY, momZ, mom, length, deltaLyz, edep, charge, pdg, posX, posY, posZ, posLastX, posLastY, posLastZ;       
+      
+      // Check if reconstructed in Target
+      vecel = FindTrackElem(VecTarget_TrackID,trkid);      
+      if(vecel>0){
+	id = VecTarget_TrackID->at(vecel);
+	costheta = VecTarget_TrackCosTheta->at(vecel);
+	momX = VecTarget_TrackMomX->at(vecel);
+	momY = VecTarget_TrackMomY->at(vecel);
+	momZ = VecTarget_TrackMomZ->at(vecel);
+	mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+	//length = VecTarget_TrackLength->at(vecel);
+	deltaLyz = VecTarget_TrackDeltaLyz->at(vecel);
+	//edep = VecTarget_TrackEdep->at(vecel);
+	//charge = VecTarget_TrackCharge->at(vecel);
+	pdg = VecTarget_TrackPDG->at(vecel);
+	//posX = VecTarget_TrackStepFirstX->at(vecel);
+	//posY = VecTarget_TrackStepFirstY->at(vecel);
+	//posZ = VecTarget_TrackStepFirstZ->at(vecel);
+	//posLastX = VecTarget_TrackStepLastX->at(vecel);
+	//posLastY = VecTarget_TrackStepLastY->at(vecel);
+	//posLastZ = VecTarget_TrackStepLastZ->at(vecel);
+	
+	// Cut 2: Select tracks with dLyz > 200mm
+	if(doCut_dLyz && deltaLyz < 200) continue;
+
+	// Check if reconstructed in TPCUp
+	vecel = FindTrackElem(VecTPCUp_TrackID,trkid);      
+	if(vecel>0){
+	  id = VecTPCUp_TrackID->at(vecel);
+	  //costheta = VecTPC_TrackCosTheta->at(vecel);
+	  //momX = VecTarget_TrackMomX->at(vecel);
+	  //momY = VecTarget_TrackMomY->at(vecel);
+	  //momZ = VecTarget_TrackMomZ->at(vecel);
+	  //mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+	  //length = VecTarget_TrackLength->at(vecel);
+	  deltaLyz = VecTarget_TrackDeltaLyz->at(vecel);
+	  edep = VecTarget_TrackEdep->at(vecel);
+	  charge = VecTarget_TrackCharge->at(vecel);
+	  //pdg = VecTarget_TrackPDG->at(vecel);
+	  //posX = VecTarget_TrackStepFirstX->at(vecel);
+	  //posY = VecTarget_TrackStepFirstY->at(vecel);
+	  //posZ = VecTarget_TrackStepFirstZ->at(vecel);
+	  //posLastX = VecTarget_TrackStepLastX->at(vecel);
+	  //posLastY = VecTarget_TrackStepLastY->at(vecel);
+	  //posLastZ = VecTarget_TrackStepLastZ->at(vecel);
+	
+	} // reco in TPCUp
+	
+	else if(){
+	} // TPCDown
+	
+	if(doSingleEvent){
+	  cout << "Target track: " << " ";
+	  cout << "id = " << id << ", ";
+	  cout << "event = " << ientry << ", ";
+	  cout << "mom = " << mom << ", ";
+	  cout << "deltaLyz = " << deltaLyz << ", ";
+	  cout << "charge = " << charge << ", ";
+	  cout << "edep = " << edep << ", ";    
+	  cout << "pdg = " << pdg << ", ";
+	  cout << endl;    
+	}
+	
+      
+      } // in the Target
+      
+      else
+	continue;     
+
+    } // end loop over all tracks
+  
+    
+    cout << endl;
+    cout << endl;
+    cout << endl;
+
+
+
+
+
+
     //
     // TPC Up tracks
     //
         
     for(int itrk=0;itrk<VecTPCUp_TrackID->size();itrk++){
       
-      // 1: Select highest momentum track
-
+      int id = VecTPCUp_TrackID->at(itrk);
       double costheta = VecTPCUp_TrackCosTheta->at(itrk);
       double momX = VecTPCUp_TrackMomX->at(itrk);
       double momY = VecTPCUp_TrackMomY->at(itrk);
@@ -532,28 +671,27 @@ void SkimNtuple
       double posLastX = VecTPCUp_TrackStepLastX->at(itrk);
       double posLastY = VecTPCUp_TrackStepLastY->at(itrk);
       double posLastZ = VecTPCUp_TrackStepLastZ->at(itrk);
+
+      if(doSingleEvent){
+	cout << "TPC Up track: " << " ";
+	cout << "id = " << id << ", ";
+	cout << "event = " << ientry << ", ";
+	cout << "mom = " << mom << ", ";
+	cout << "deltaLyz = " << deltaLyz << ", ";
+	cout << "charge = " << charge << ", ";
+	cout << "edep = " << edep << ", ";    
+	cout << "pdg = " << TPCUp_High_pdg << endl;    
+      }
       
-      // if(mom > 100){
-      // 	vector <int>::iterator i = VecTPCUp_TrackID->begin();
-      // 	i = std::find (VecTPCUp_TrackID->begin(),VecTPCUp_TrackID->end(), VecTPCUp_ParentID->at(itrk));
-      // 	if (i != VecTPCUp_TrackID->end())
-      // 	  {
-      // 	    int nPosition = std::distance(VecTPCUp_TrackID->begin(), i);
-      // 	    cout << "Value "<< *i;
-      // 	    cout << " found in the vector at position: " << nPosition << endl;
-      // 	  }
-      // 	cout << "TPCUp: ";
-      // 	cout << " trkid = " << VecTPCUp_TrackID->at(itrk)
-      // 	  //<< " parentid = " << VecTPCUp_ParentID->at(itrk)
-      // 	     << " mom = " << mom
-      // 	     << " pdg = " << pdg 
-      // 	     << " x = " << posX
-      // 	     << " y = " << posY
-      // 	     << " z = " << posZ
-      // 	     << endl;
-      // }
+      // Cut 2: Select tracks with dLyz > 200mm
+      if(doCut_dLyz && deltaLyz < 200) continue;
+
+      // Cut 3: Select charged particles
+      if(doCut_poscharge && fabs(charge)!=1) continue;
       
+      // Cut 4: Select highest momentum track
       if(mom > TPCUp_High_mom){
+	TPCUp_High_ID = id;
 	TPCUp_High_mom = mom;
 	TPCUp_High_costheta = costheta;
 	TPCUp_High_len = length;
@@ -568,22 +706,6 @@ void SkimNtuple
 	TPCUp_High_PosFinY = posLastY;
 	TPCUp_High_PosFinZ = posLastZ;
       }
-
-      // if(mom > Glob_High_mom){
-      // 	Glob_High_mom = mom;
-      // 	Glob_High_len = length;
-      // 	Glob_High_dlyz = deltaLyz;
-      // 	Glob_High_charge = charge;
-      // 	Glob_High_edep = edep;
-      // 	Glob_High_pdg = pdg;
-      // 	Glob_High_PosIniX = posX;
-      // 	Glob_High_PosIniY = posY;
-      // 	Glob_High_PosIniZ = posZ;
-      // 	Glob_High_PosFinX = posLastX;
-      // 	Glob_High_PosFinY = posLastY;
-      // 	Glob_High_PosFinZ = posLastZ;
-      // }
-
     } // end TPC Up tracks
 
 
@@ -593,8 +715,7 @@ void SkimNtuple
     
     for(int itrk=0;itrk<VecTPCDown_TrackID->size();itrk++){
 
-      // 1: Select highest momentum track
-
+      int id = VecTPCDown_TrackID->at(itrk);
       double costheta = VecTPCDown_TrackCosTheta->at(itrk);
       double momX = VecTPCDown_TrackMomX->at(itrk);
       double momY = VecTPCDown_TrackMomY->at(itrk);
@@ -612,18 +733,26 @@ void SkimNtuple
       double posLastY = VecTPCDown_TrackStepLastY->at(itrk);
       double posLastZ = VecTPCDown_TrackStepLastZ->at(itrk);
 
-      // if(mom > 100 && posZ<-1199.){
-      // 	cout << "TPCDown: ";
-      // 	cout << " trkid = " << VecTPCDown_TrackID->at(itrk)
-      // 	     << " mom = " << mom
-      // 	     << " pdg = " << pdg 
-      // 	     << " x = " << posX
-      // 	     << " y = " << posY
-      // 	     << " z = " << posZ
-      // 	     << endl;
-      // }
+      if(doSingleEvent){
+	cout << "TPC Down track: " << " ";
+	cout << "id = " << id << ", ";
+	cout << "event = " << ientry << ", ";
+	cout << "mom = " << mom << ", ";
+	cout << "deltaLyz = " << deltaLyz << ", ";
+	cout << "charge = " << charge << ", ";
+	cout << "edep = " << edep << ", ";    
+	cout << "pdg = " << TPCUp_High_pdg << endl;    
+      }
+
+      // Cut 2: Select tracks with dLyz > 200mm
+      if(doCut_dLyz && deltaLyz < 200) continue;
+
+      // Cut 3: Select charged particles
+      if(doCut_poscharge && fabs(charge)!=1) continue;
       
+      // Cut 4: Select highest momentum track      
       if(mom > TPCDown_High_mom){
+	TPCDown_High_ID = id;
 	TPCDown_High_mom = mom;
 	TPCDown_High_costheta = costheta;
 	TPCDown_High_len = length;
@@ -637,23 +766,7 @@ void SkimNtuple
 	TPCDown_High_PosFinX = posLastX;
 	TPCDown_High_PosFinY = posLastY;
 	TPCDown_High_PosFinZ = posLastZ;
-      }
-      
-      // if(mom > Glob_High_mom){
-      // 	Glob_High_mom = mom;
-      // 	Glob_High_len = length;
-      // 	Glob_High_dlyz = deltaLyz;
-      // 	Glob_High_charge = charge;
-      // 	Glob_High_edep = edep;
-      // 	Glob_High_pdg = pdg;
-      // 	Glob_High_PosIniX = posX;
-      // 	Glob_High_PosIniY = posY;
-      // 	Glob_High_PosIniZ = posZ;
-      // 	Glob_High_PosFinX = posLastX;
-      // 	Glob_High_PosFinY = posLastY;
-      // 	Glob_High_PosFinZ = posLastZ;
-      // }
-      
+      }     
     } // end TPC Down tracks
     
     //
@@ -662,8 +775,7 @@ void SkimNtuple
     
     for(int itrk=0;itrk<VecTarget_TrackID->size();itrk++){
 
-      // 1: Select highest momentum track
-
+      int id = VecTarget_TrackID->at(itrk);
       double costheta = VecTarget_TrackCosTheta->at(itrk);
       double momX = VecTarget_TrackMomX->at(itrk);
       double momY = VecTarget_TrackMomY->at(itrk);
@@ -680,19 +792,24 @@ void SkimNtuple
       double posLastX = VecTarget_TrackStepLastX->at(itrk);
       double posLastY = VecTarget_TrackStepLastY->at(itrk);
       double posLastZ = VecTarget_TrackStepLastZ->at(itrk);
-      
-      // if(mom > 100){
-      // 	cout << "Target: ";
-      // 	cout << " trkid = " << VecTarget_TrackID->at(itrk)
-      // 	     << " mom = " << mom
-      // 	     << " pdg = " << pdg 
-      // 	     << " x = " << posX
-      // 	     << " y = " << posY
-      // 	     << " z = " << posZ
-      // 	     << endl;
-      // }
-      
+
+      if(doSingleEvent){
+	cout << "Target track: " << " ";
+	cout << "id = " << id << ", ";
+	cout << "event = " << ientry << ", ";
+	cout << "mom = " << mom << ", ";
+	cout << "deltaLyz = " << deltaLyz << ", ";
+	cout << "charge = " << charge << ", ";
+	cout << "edep = " << edep << ", ";    
+	cout << "pdg = " << TPCUp_High_pdg << endl;    
+      }
+
+      // Cut 2: Select tracks with dLyz > 50mm
+      if(doCut_dLyz && deltaLyz < 50) continue;
+       
+      // Cut 3: Select highest momentum track
       if(mom > Target_High_mom){
+	Target_High_ID = id;
 	Target_High_costheta = costheta;
 	Target_High_mom = mom;
 	Target_High_len = length;
@@ -707,60 +824,23 @@ void SkimNtuple
 	Target_High_PosFinY = posLastY;
 	Target_High_PosFinZ = posLastZ;
       }
-
-      // if(mom > Glob_High_mom){
-      // 	Glob_High_mom = mom;
-      // 	Glob_High_len = length;
-      // 	Glob_High_dlyz = deltaLyz;
-      // 	Glob_High_charge = charge;
-      // 	Glob_High_edep = edep;
-      // 	Glob_High_pdg = pdg;
-      // 	Glob_High_PosIniX = posX;
-      // 	Glob_High_PosIniY = posY;
-      // 	Glob_High_PosIniZ = posZ;
-      // 	Glob_High_PosFinX = posLastX;
-      // 	Glob_High_PosFinY = posLastY;
-      // 	Glob_High_PosFinZ = posLastZ;
-      // }
-
     } // end Target tracks
 
     
     
-    // Cuts on the global track
-    //if(Glob_High_pdg!=2212) continue;
-
-
-    // Print out the event
-    
-    // cout << endl;
-    // cout << "Event " << ientry << endl;
-
-    // cout << " Global high mom track: " << endl;
-    // cout << " - mom = " << Glob_High_mom << endl;
-    // cout << " - length = " << Glob_High_len << endl;
-    // cout << " - charge = " << Glob_High_charge << endl;
-    // cout << " - edep = " << Glob_High_edep << endl;
-    // cout << " - pdg = " << Glob_High_pdg << endl;    
-    // hGlob_Mom   ->Fill(Glob_High_mom);
-    // hGlob_Length->Fill(Glob_High_len);
-    // hGlob_Charge->Fill(Glob_High_charge);
-    // hGlob_PDG   ->Fill(Glob_High_pdg);
-    // hGlob_Edep  ->Fill(Glob_High_edep);
-    // hGlob_PosIniX->Fill(Glob_High_PosIniX);
-    // hGlob_PosIniY->Fill(Glob_High_PosIniY);
-    // hGlob_PosIniZ->Fill(Glob_High_PosIniZ);
-    // hGlob_PosFinX->Fill(Glob_High_PosFinX);
-    // hGlob_PosFinY->Fill(Glob_High_PosFinY);
-    // hGlob_PosFinZ->Fill(Glob_High_PosFinZ);
-
+    // Print out the highest momentum track
+ 
     if(TPCUp_High_mom>0.){
-      // cout << " TPC Up high mom track: " << endl;
-      // cout << " - mom = " << TPCUp_High_mom << endl;
-      // cout << " - length = " << TPCUp_High_len << endl;
-      // cout << " - charge = " << TPCUp_High_charge << endl;
-      // cout << " - edep = " << TPCUp_High_edep << endl;
-      // cout << " - pdg = " << TPCUp_High_pdg << endl;    
+       
+      cout << "TPC Up high mom track: " << " ";
+      cout << "event = " << ientry << ", ";
+      cout << "id = " << TPCUp_High_ID << ", ";
+      cout << "mom = " << TPCUp_High_mom << ", ";
+      cout << "length = " << TPCUp_High_len << ", ";
+      cout << "charge = " << TPCUp_High_charge << ", ";
+      cout << "edep = " << TPCUp_High_edep << ", ";
+      cout << "pdg = " << TPCUp_High_pdg << endl;    
+
       hTPCUp_CosTheta->Fill(TPCUp_High_costheta);
       hTPCUp_Mom   ->Fill(TPCUp_High_mom);
       hTPCUp_Length->Fill(TPCUp_High_len);
@@ -777,12 +857,16 @@ void SkimNtuple
     }
 
     if(TPCDown_High_mom>0.){
-      // cout << " TPC Down high mom track: " << endl;
-      // cout << " - mom = " << TPCDown_High_mom << endl;
-      // cout << " - length = " << TPCDown_High_len << endl;
-      // cout << " - charge = " << TPCDown_High_charge << endl;
-      // cout << " - edep = " << TPCDown_High_edep << endl;
-      // cout << " - pdg = " << TPCDown_High_pdg << endl;    
+
+      cout << "TPC Down high mom track: " << " ";
+      cout << "event = " << ientry << ", ";
+      cout << "id = " << TPCDown_High_ID << ", ";
+      cout << "mom = " << TPCDown_High_mom << ", ";
+      cout << "length = " << TPCDown_High_len << ", ";
+      cout << "charge = " << TPCDown_High_charge << ", ";
+      cout << "edep = " << TPCDown_High_edep << ", ";
+      cout << "pdg = " << TPCDown_High_pdg << endl;    
+
       hTPCDown_CosTheta->Fill(TPCDown_High_costheta);
       hTPCDown_Mom   ->Fill(TPCDown_High_mom);
       hTPCDown_Length->Fill(TPCDown_High_len);
@@ -799,12 +883,16 @@ void SkimNtuple
     }    
 
     if(Target_High_mom>0.){
-      // cout << " Target high mom track: " << endl;
-      // cout << " - mom = " << Target_High_mom << endl;
-      // cout << " - length = " << Target_High_len << endl;
-      // cout << " - charge = " << Target_High_charge << endl;
-      // cout << " - edep = " << Target_High_edep << endl;
-      // cout << " - pdg = " << Target_High_pdg << endl;    
+
+      cout << "Target high mom track: " << " ";
+      cout << "event = " << ientry << ", ";
+      cout << "id = " << Target_High_ID << ", ";
+      cout << "mom = " << Target_High_mom << ", ";
+      cout << "length = " << Target_High_len << ", ";
+      cout << "charge = " << Target_High_charge << ", ";
+      cout << "edep = " << Target_High_edep << ", ";
+      cout << "pdg = " << Target_High_pdg << endl;    
+
       hTarget_CosTheta->Fill(Target_High_costheta);
       hTarget_Mom   ->Fill(Target_High_mom);
       hTarget_Length->Fill(Target_High_len);
@@ -838,8 +926,7 @@ void SkimNtuple
       // 	     << " costheta = " << Target_High_costheta
       // 	     << " pdg = " << Target_High_pdg
       // 	     << endl;
-      // }
-      
+      // }      
     }  
     
   } // end loop over events
@@ -847,6 +934,9 @@ void SkimNtuple
   
   treeoa->Write(); // store the tree   
   fileoa->Close(); //
+
+
+
   
 
   // Draw histograms
@@ -942,18 +1032,6 @@ void SkimNtuple
   // hTarget_Charge->Draw();
   // TCanvas *cTarget_TrackPDG = new TCanvas("cTarget_TrackPDG","cTarget_TrackPDG");
   // hTarget_PDG->Draw();
-  TCanvas *cTarget_PosIniX = new TCanvas("cTarget_PosIniX","cTarget_PosIniX");
-  hTarget_PosIniX->Draw();
-  TCanvas *cTarget_PosIniY = new TCanvas("cTarget_PosIniY","cTarget_PosIniY");
-  hTarget_PosIniY->Draw();
-  TCanvas *cTarget_PosIniZ = new TCanvas("cTarget_PosIniZ","cTarget_PosIniZ");
-  hTarget_PosIniZ->Draw();
-  TCanvas *cTarget_PosFinX = new TCanvas("cTarget_PosFinX","cTarget_PosFinX");
-  hTarget_PosFinX->Draw();
-  TCanvas *cTarget_PosFinY = new TCanvas("cTarget_PosFinY","cTarget_PosFinY");
-  hTarget_PosFinY->Draw();
-  TCanvas *cTarget_PosFinZ = new TCanvas("cTarget_PosFinZ","cTarget_PosFinZ");
-  hTarget_PosFinZ->Draw();
 
   TCanvas *cVtx_X = new TCanvas("cVtx_X","cVtx_X");
   hVtx_X->GetXaxis()->SetTitle("X (mm)");
@@ -966,20 +1044,31 @@ void SkimNtuple
   hVtx_Z->Draw();
   
 
-  TCanvas *cVtxMinusPosIni_Target_X = new TCanvas("cVtxMinusPosIni_Target_X","cVtxMinusPosIni_Target_X");
-  hVtxMinusPosIni_Target_X->GetXaxis()->SetTitle("Vtx pos - First step pos (mm)");
-  hVtxMinusPosIni_Target_X->Draw();
+  // TCanvas *cTarget_PosIniX = new TCanvas("cTarget_PosIniX","cTarget_PosIniX");
+  // hTarget_PosIniX->Draw();
+  // TCanvas *cTarget_PosIniY = new TCanvas("cTarget_PosIniY","cTarget_PosIniY");
+  // hTarget_PosIniY->Draw();
+  // TCanvas *cTarget_PosIniZ = new TCanvas("cTarget_PosIniZ","cTarget_PosIniZ");
+  // hTarget_PosIniZ->Draw();
+  // TCanvas *cTarget_PosFinX = new TCanvas("cTarget_PosFinX","cTarget_PosFinX");
+  // hTarget_PosFinX->Draw();
+  // TCanvas *cTarget_PosFinY = new TCanvas("cTarget_PosFinY","cTarget_PosFinY");
+  // hTarget_PosFinY->Draw();
+  // TCanvas *cTarget_PosFinZ = new TCanvas("cTarget_PosFinZ","cTarget_PosFinZ");
+  // hTarget_PosFinZ->Draw();
 
-  TCanvas *cVtxMinusPosIni_Target_Y = new TCanvas("cVtxMinusPosIni_Target_Y","cVtxMinusPosIni_Target_Y");
-  hVtxMinusPosIni_Target_Y->GetXaxis()->SetTitle("Vtx pos - First step pos (mm)");
-  hVtxMinusPosIni_Target_Y->Draw();
+  // TCanvas *cVtxMinusPosIni_Target_X = new TCanvas("cVtxMinusPosIni_Target_X","cVtxMinusPosIni_Target_X");
+  // hVtxMinusPosIni_Target_X->GetXaxis()->SetTitle("Vtx pos - First step pos (mm)");
+  // hVtxMinusPosIni_Target_X->Draw();
+  // TCanvas *cVtxMinusPosIni_Target_Y = new TCanvas("cVtxMinusPosIni_Target_Y","cVtxMinusPosIni_Target_Y");
+  // hVtxMinusPosIni_Target_Y->GetXaxis()->SetTitle("Vtx pos - First step pos (mm)");
+  // hVtxMinusPosIni_Target_Y->Draw();
+  // TCanvas *cVtxMinusPosIni_Target_Z = new TCanvas("cVtxMinusPosIni_Target_Z","cVtxMinusPosIni_Target_Z");
+  // hVtxMinusPosIni_Target_Z->GetXaxis()->SetTitle("Vtx pos - First step pos (mm)");
+  // hVtxMinusPosIni_Target_Z->Draw();
 
-  TCanvas *cVtxMinusPosIni_Target_Z = new TCanvas("cVtxMinusPosIni_Target_Z","cVtxMinusPosIni_Target_Z");
-  hVtxMinusPosIni_Target_Z->GetXaxis()->SetTitle("Vtx pos - First step pos (mm)");
-  hVtxMinusPosIni_Target_Z->Draw();
 
-
-  // // Print 
+  // Print 
 
   // Store plots
 
@@ -1029,4 +1118,34 @@ void SkimNtuple
 
   // outfile.write (streamer.str().c_str(),size);
   // outfile.close();
+}
+
+
+
+
+int FindTrackElem(std::vector<int> *vectrk,int trkid){
+ 
+  //cout << "Find index of value " << trkid << endl;
+  //cout << "vectrk.size() = " << vectrk->size() << endl;
+  
+  int nPosition = -999;
+  vector <int>::iterator i = vectrk->begin();
+  
+  //while (i != vectrk->end()){
+  //cout << *i << endl;
+  //++ i;
+  //}
+
+  i = find(vectrk->begin(),vectrk->end(),trkid);
+  
+  //cout << "The found value is " << *i << endl;
+  
+  if(i != vectrk->end()){
+    //nPosition = std::distance( vectrk->begin(), i); // not defined in CINT
+    nPosition = i - vectrk->begin();
+    //cout << "Value "<< *i;
+    //cout << " found in the vector at position: " << nPosition << endl;
+  }
+  
+  return nPosition;
 }

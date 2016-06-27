@@ -6,6 +6,15 @@
 
 #include <vector>
 
+
+//TGeoVolume * topvol = rgeom->GetGeometry()->GetTopVolume();
+//TGeoShape * bounding_box = topvol->GetShape();
+//bounding_box->GetAxisRange(3, zmin, zmax);
+//bounding_box->GetAxisRange(2, ymin, ymax);
+//bounding_box->GetAxisRange(1, xmin, xmax);
+
+
+
 void CheckGeometryROOT
 (
  string filename = "../bin/geometry.root",
