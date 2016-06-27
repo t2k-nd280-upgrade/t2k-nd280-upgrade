@@ -224,6 +224,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // Take event ID and pass to the NEUT entry
 
   G4int evtID = anEvent->GetEventID();
+  //evtID = 39;
 
   if(evtID > fTotEntry){
     const char *msg = "Event ID exceeds the number of NEUT events!";
@@ -239,7 +240,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   }
   
   fneutree->GetEntry(evtID); // take NEUT entry using event ID
-
+  //fneutree->GetEntry(39);
 
  
   //
@@ -299,14 +300,14 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // to informational vertex.
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4IonTable     * ionTable      = G4IonTable::GetIonTable();
-  for (int cnt = 0; cnt < fStdHepN; ++cnt) {
+  for (G4int cnt = 0; cnt < fStdHepN; ++cnt) {
     G4ParticleDefinition* particleDef
       = particleTable->FindParticle(fStdHepPdg[cnt]);
     if (!particleDef) {
       //maybe we have an ion; figure out if it makes any sense
-      int ionA = (fStdHepPdg[cnt]/10) % 1000;
-      int ionZ = (fStdHepPdg[cnt]/10000) % 1000;
-      int type = (fStdHepPdg[cnt]/100000000);
+      G4int ionA = (fStdHepPdg[cnt]/10) % 1000;
+      G4int ionZ = (fStdHepPdg[cnt]/10000) % 1000;
+      G4int type = (fStdHepPdg[cnt]/100000000);
       if (type == 10 && ionZ > 0 && ionA > ionZ) {
 	//particleDef = particleTable->GetIon(ionZ, ionA, 0.*MeV);
 	particleDef = ionTable->GetIon(ionZ, ionA, 0.*MeV);
@@ -335,7 +336,10 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
 	     << " w/ mothers " << fStdHepFm[cnt]
 	     << " to " << fStdHepLm[cnt] 
 	     << G4endl;        
+      
+      G4cout << fStdHepStatus[cnt] << G4endl;
     }
+
     
     // We are only interested in particles to be tracked (status==1)
     // or incident neutrino/target nucleus (status==0).

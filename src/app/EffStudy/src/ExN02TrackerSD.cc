@@ -82,33 +82,80 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   // The geometry is stored in the PreStepPoint()
   
   G4StepPoint* prestep  = aStep->GetPreStepPoint();
-  //G4StepPoint* poststep = aStep->GetPostStepPoint();
+  G4StepPoint* poststep = aStep->GetPostStepPoint();
   G4Track* track        = aStep->GetTrack();
-  G4double steplength   = aStep->GetStepLength();
   
+  G4double steplength   = aStep->GetStepLength(); // step length corrected w/ multiple scattering
+
+  // Get geometrical step length on yz plane (transverse). Not corrected w/ multiple scattering
+
+  G4ThreeVector deltapos = aStep->GetDeltaPosition(); // geometrical step length (not corrected)
+  G4double deltalength = deltapos.mag();
+
+  G4ThreeVector prestepPos = prestep->GetPosition();
+  G4ThreeVector poststepPos = poststep->GetPosition();
+
+  G4double prestep_x = prestepPos.x() / mm;
+  G4double prestep_y = prestepPos.y() / mm;
+  G4double prestep_z = prestepPos.z() / mm;
+
+  G4double poststep_x = poststepPos.x() / mm;
+  G4double poststep_y = poststepPos.y() / mm;
+  G4double poststep_z = poststepPos.z() / mm;
+  
+  G4double stepdeltalyz = sqrt( (prestep_y - poststep_y)*(prestep_y - poststep_y) +
+				(prestep_z - poststep_z)*(prestep_z - poststep_z) );
+
+  // G4double steplength_oth = sqrt( (prestep_x - poststep_x)*(prestep_x - poststep_x) +
+  //(prestep_y - poststep_y)*(prestep_y - poststep_y) +
+  //(prestep_z - poststep_z)*(prestep_z - poststep_z) );
+
+  //if( fabs(steplength_oth-steplength) > 0.0001){
+  //G4cout << steplength << ", " 
+  //<< deltalength << ", "
+  //	   << steplength_oth << ": " 
+  //	   << (prestep_x - poststep_x) << ", "
+  //	   << (prestep_y - poststep_y) << ", "
+  //	   << (prestep_z - poststep_z) << ", "
+  //	   << G4endl;
+  //}
+
   //if (prestep->GetStepStatus() == fGeomBoundary)  return false;
   //if (poststep->GetStepStatus() == fGeomBoundary) return false;  
-
+  
   G4String namedet     = prestep->GetTouchableHandle()->GetVolume()->GetName();  
-  G4ThreeVector pos    = prestep->GetPosition();
-
-  G4ThreeVector mom    = track->GetMomentum();
+  
+  //G4ThreeVector mom    = track->GetMomentum(); // gives poststep momentum --> WRONG!!!
+  G4ThreeVector mom    = prestep->GetMomentum(); // gives prestep momentum
+  
   G4double charge      = track->GetDefinition()->GetPDGCharge();
   G4int trackid        = track->GetTrackID();
+  G4int parentid       = track->GetParentID();
   G4int trackpdg       = track->GetDefinition()->GetPDGEncoding();
   G4String trackname   = track->GetDefinition()->GetParticleName();
-  G4double tracklength = track->GetTrackLength();
   
+  //G4double tracklength = track->GetTrackLength(); // use sum of step lengths!!!
+  G4double tracklength = 0.;
   
+  G4double trackcosth = prestep->GetMomentumDirection().z(); // wrt nu direction (0,0,1)
+
+  // if(aStep->IsFirstStepInVolume()){
+  //   G4cout << "It's the first step" << G4endl; 
+  // }
+  // else if(aStep->IsLastStepInVolume()){
+  //   G4cout << "It's the last step" << G4endl;     
+  // }  
 
   ExN02TrackerHit* newHit = new ExN02TrackerHit();
   //newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
   //->GetCopyNumber());
     
   newHit->SetTrackID    (trackid);
+  newHit->SetParentID   (parentid);
   newHit->SetEdep       (edep);
   newHit->SetMom        (mom); 
-  newHit->SetPos        (pos);
+  newHit->SetPreStepPos (prestepPos);
+  newHit->SetPostStepPos(poststepPos);
   newHit->SetNameDet    (namedet);
   newHit->SetCharge     (charge);
   newHit->SetTrackName  (trackname);
@@ -116,6 +163,8 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   newHit->SetTrackLength(tracklength);
   newHit->SetNSteps     (NSteps_);
   newHit->SetStepLength (steplength);
+  newHit->SetStepDeltaLyz (stepdeltalyz);
+  newHit->SetTrackCosTheta (trackcosth);
 
   trackerCollection->insert( newHit );
   

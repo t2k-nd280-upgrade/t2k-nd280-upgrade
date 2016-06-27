@@ -449,11 +449,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
   //--------- Set Step Limiter -------------------------------
-  
+  //
+  // NO EFFECT BECAUSE NOT USED IN THE MAIN 
+  //
   // Sets a max Step length in the drift region, with G4StepLimiter 
   // Each step limiter must be attached to each physics list in ExN02PhysicsList
-  logicChamberUp  ->SetUserLimits(new G4UserLimits(cStepLimit));
-  logicChamberDown->SetUserLimits(new G4UserLimits(cStepLimit));
+  //logicChamberUp  ->SetUserLimits(new G4UserLimits(cStepLimit));
+  //logicChamberDown->SetUserLimits(new G4UserLimits(cStepLimit));
 
 
 

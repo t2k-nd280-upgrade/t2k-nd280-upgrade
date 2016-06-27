@@ -35,8 +35,8 @@ private :
   G4String ffilename; // NEUT file name to read
   TFile *fneutfile;   // NEUT file to read
   TTree *fneutree;    // NEUT tree to read
-  int fTotEntry;
-  int fCurrEntry;
+  G4int fTotEntry;
+  G4int fCurrEntry;
   
   void ReadGENIE(G4String filename);
   void ReadNEUT(G4String filename);
@@ -51,8 +51,8 @@ private :
   /// The next entry to read from the file.  The entry to be used is
   /// fEntryVector[fNextEntry].
   
-  //unsigned int fNextEntry;
-  int fNextEntry;
+  //unsigned G4int fNextEntry;
+  G4int fNextEntry;
   
   /// A pre-filled vector of entry numbers to be used from input tree.  This
   /// is used to allow the order of the input interactions to be randomized.
@@ -60,7 +60,7 @@ private :
   /// pipe so that they can generate larger samples.  This has the
   /// unfortunate effect that consecutive neutrino interactions will have
   /// correlated energies.
-  std::vector<int> fEntryVector;
+  std::vector<G4int> fEntryVector;
   
   //////////////////////////////////////////////////////////////
   // Declare the information to get from the ntuple.  This does not get all
@@ -74,35 +74,35 @@ private :
   TObjString*  fEvtCode;
   
   /// The sequence number of the event (the event number).
-  int         fEvtNum;
+  G4int         fEvtNum;
   
   /// The cross section for the event (1E-38 cm2)
-  double      fEvtXSec;
+  G4double      fEvtXSec;
   
   /// The differential cross section for the event kinematics 
   /// (1E-38 cm2/{K^n})
-  double      fEvtDXSec;
+  G4double      fEvtDXSec;
   
   /// The weight for the event
-  double      fEvtWght;
+  G4double      fEvtWght;
   
   /// The probability for the event (given the cross section, path lengths,
   /// etc.).
-  double      fEvtProb;
+  G4double      fEvtProb;
   
   /// The event vertex position in detector coord syst (in meters and
   /// seconds).
-  double      fEvtVtx[4];
+  G4double      fEvtVtx[4];
   
   /// The number of particles in the particle arrays to track
-  int         fStdHepN;
+  G4int         fStdHepN;
   
   /// The maximum number of particles that can be in the particle arrays.
-  static const int kNPmax = 4000;
+  static const G4int kNPmax = 4000;
   
   /// The PDG codes for the particles to track.  This may include generator
   /// specific codes for pseudo particles.
-  int         fStdHepPdg[kNPmax]; //[fStdHepN]
+  G4int         fStdHepPdg[kNPmax]; //[fStdHepN]
   
   /// The a generator specific status for each particle.  Particles with a
   /// status equal to 1 will be tracked.
@@ -135,29 +135,29 @@ private :
   ///   -  3 -- A particle which decayed and should not be tracked.  If 
   ///            this particle produced daughters to be tracked, they will
   ///            have a state of 1.
-  int         fStdHepStatus[kNPmax]; //[fStdHepN]
+  G4int         fStdHepStatus[kNPmax]; //[fStdHepN]
   
   /// The position (x, y, z, t) (fm, second) of the particle in the nuclear
   /// frame
-  double      fStdHepX4[kNPmax][4]; //[fStdHepN]
+  G4double      fStdHepX4[kNPmax][4]; //[fStdHepN]
   
   /// The 4-momentum (px, py, pz, E) of the particle in the LAB frame (GeV)
-  double      fStdHepP4[kNPmax][4]; //[fStdHepN]
+  G4double      fStdHepP4[kNPmax][4]; //[fStdHepN]
   
   /// The particle polarization vector.
-  double      fStdHepPolz  [kNPmax][3]; //[fStdHepN]
+  G4double      fStdHepPolz  [kNPmax][3]; //[fStdHepN]
   
   /// The index of the first daughter of the particle in the arrays.
-  int         fStdHepFd[kNPmax]; //[fStdHepN]
+  G4int         fStdHepFd[kNPmax]; //[fStdHepN]
   
   /// The index last daughter of the particle in the arrays.
-  int         fStdHepLd[kNPmax]; //[fStdHepN]
+  G4int         fStdHepLd[kNPmax]; //[fStdHepN]
   
   /// The index of the first mother of the particle in there arrays.
-  int         fStdHepFm[kNPmax]; //[fStdHepN]
+  G4int         fStdHepFm[kNPmax]; //[fStdHepN]
   
   /// The index of the last mother of the particle in the arrays.
-  int         fStdHepLm[kNPmax]; //[fStdHepN]
+  G4int         fStdHepLm[kNPmax]; //[fStdHepN]
   
   //////////////////////////////
   /// The following variables are copied more or less directly from the
@@ -165,33 +165,33 @@ private :
   //////////////////////////////
   
   /// The PDG code of the particle which created the parent neutrino.
-  int         fNuParentPdg;
+  G4int         fNuParentPdg;
   
   /// The interaction mode at the vertex which created the parent neutrino.
   /// This is normally the decay mode of the parent particle.
-  int         fNuParentDecMode;
+  G4int         fNuParentDecMode;
   
   /// The 4 momentum of the particle at the vertex which created the parent
   /// neutrino.  This is normally the momentum of the parent particle at the
   /// decay point.
-  double      fNuParentDecP4[4];
+  G4double      fNuParentDecP4[4];
   
   /// The position of the vertex at which the neutrino was created.  This is
   /// passed directly from the beam (or other flux) generator, and is in the
   /// native units of the original generator.
-  double      fNuParentDecX4[4];
+  G4double      fNuParentDecX4[4];
   
   /// The momentum of the parent particle at it's production point.  This is
   /// in the native energy units of the flux generator.
-  double      fNuParentProP4[4];
+  G4double      fNuParentProP4[4];
   
   /// The position of the parent particle at it's production point.  This
   /// uses the target as the origin and is in the native units of the flux
   /// generator.
-  double      fNuParentProX4[4];
+  G4double      fNuParentProX4[4];
   
   /// The vertex ID of the parent particle vertex.
-  int         fNuParentProNVtx;
+  G4int         fNuParentProNVtx;
 };
 
 #endif

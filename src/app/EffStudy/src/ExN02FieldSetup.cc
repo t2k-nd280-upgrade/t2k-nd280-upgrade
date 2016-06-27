@@ -229,7 +229,7 @@ void ExN02FieldSetup::SetFieldValue(G4double fieldStrength)
     if ( fMagneticField == 0 )
       G4cout << " Magnetic field pointer is null." << G4endl;
     else
-      G4Exception("ExN02FieldSetup::SetFieldValue(double)",
+      G4Exception("ExN02FieldSetup::SetFieldValue(G4double)",
                   "IncorrectForZeroField",
                   FatalException,
                   "fMagneticField ptr should be set to 0 for no field.");

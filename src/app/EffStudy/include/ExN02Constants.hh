@@ -146,7 +146,7 @@ const G4double cWorldHeight = 1.2 *(cBasketHeight);
 //                        //
 ////////////////////////////
 
-const G4double cMagFieldX   = 0.2 * tesla; // Default ND280 magnetic field (NIM A 659 (2011) 106–135)
+const G4double cMagFieldX   = 0.18 * tesla; // Default ND280 magnetic field (NIM A 659 (2011) 106–135)
 const G4double cMinStep     = 1.0 * mm;    // Minimal step of 1 mm is default
 const G4int    cStepperType = 4;           // ClassicalRK4 is default stepper
 

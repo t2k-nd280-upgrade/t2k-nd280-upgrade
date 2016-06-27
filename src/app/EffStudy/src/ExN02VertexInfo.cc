@@ -17,7 +17,7 @@ const G4PrimaryVertex* ExN02VertexInfo::GetInformationalVertex(G4int i) const {
     }
     if (i<0) return NULL;
     const G4PrimaryVertex* infoVertex = fInformationalVertex;
-    for (int j=0; j < i; j++) {
+    for (G4int j=0; j < i; j++) {
         if (infoVertex == NULL) return NULL;
         infoVertex = infoVertex->GetNext();
     }
@@ -33,10 +33,10 @@ void ExN02VertexInfo::AddInformationalVertex(G4PrimaryVertex* vtx) {
     }
 }
 
-int ExN02VertexInfo::GetNumberOfInformationalVertex() const {
-    int number = 0;
+G4int ExN02VertexInfo::GetNumberOfInformationalVertex() const {
+    G4int number = 0;
     const G4PrimaryVertex* infoVertex = fInformationalVertex;
-    for (int j=0; j < 1000; j++) {
+    for (G4int j=0; j < 1000; j++) {
         if (infoVertex == NULL) return number;
         ++number;
         infoVertex = infoVertex->GetNext();

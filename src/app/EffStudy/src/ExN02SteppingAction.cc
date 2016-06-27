@@ -71,12 +71,12 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
 
   G4StepPoint* prestep  = step->GetPreStepPoint();
   //G4StepPoint* poststep = step->GetPostStepPoint();
-  G4Track *track = step->GetTrack();
+  G4Track *track = step->GetTrack(); // it's PostStepPoint!!!
 
   // get volume of the current step
   //G4VPhysicalVolume* volume = prestep->GetTouchableHandle()->GetVolume();
 
-  // step lenght                                                    
+  // step length                                                    
   G4double stepLength = 0.;
   if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
     stepLength = step->GetStepLength();
@@ -92,14 +92,12 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
     fEventAction->AddAbsTarget(edep,stepLength);
 
   // Get track info    
-  fEventAction->SetTrack(track); 
-
-
-
+  fEventAction->SetTrack(step);
 
 
   // // Take track informations from its first step
   // G4int newtrkid      = track->GetTrackID();
+  // G4int newparentid   = track->GetParentID();
   // G4int newtrkpdg     = track->GetDefinition()->GetPDGEncoding();
 
   // // Get the total initial energy of the track
@@ -108,18 +106,20 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   // G4double newtrkEtotVtx     = newtrkEkinVtx + newtrkmass;             
   
   // // Get the total initial momentum
-  // G4ThreeVector newVecMomVtx = track->GetMomentum(); //Direction(); 
-  // G4double newtrkMomX   = newVecMomVtx.x();
-  // G4double newtrkMomY   = newVecMomVtx.y();
-  // G4double newtrkMomZ   = newVecMomVtx.z();
-  // G4double newtrkMomMag = newVecMomVtx.mag();
+  // //G4ThreeVector newVecMomVtx = track->GetMomentum(); // it's PostStep not PreStep!!!  
+  // G4double newtrkMomX   = prestep->GetMomentum().x();
+  // G4double newtrkMomY   = prestep->GetMomentum().y();
+  // G4double newtrkMomZ   = prestep->GetMomentum().z();
+  // G4double newtrkMomMag = prestep->GetMomentum().mag();
   
   // std::cout << "Track ID: = " << newtrkid 
-  // 	    << " - Track PDG: = " << newtrkpdg   
-  // 	    << " - Track E: = " << newtrkEtotVtx  
-  // 	    << " - Track Mom: = " << newtrkMomMag   
-  // 	    << std::endl;
-  
+  //  	    << " - Parent ID: = " << newparentid
+  //  	    << " - Track PDG: = " << newtrkpdg   
+  //  	    << " - Track E: = " << newtrkEtotVtx  
+  //  	    << " - Track Mom: = " << newtrkMomMag   
+  //   //<< " - PreStep Mom: = " << prestep->GetMomentum().mag()
+  //   //<< " - PostStep Mom: = " << poststep->GetMomentum().mag()
+  //  	    << std::endl;  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......      

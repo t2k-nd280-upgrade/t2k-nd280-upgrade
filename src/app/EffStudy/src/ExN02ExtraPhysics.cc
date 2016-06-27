@@ -29,7 +29,7 @@ void ExN02ExtraPhysics::ConstructProcess() {
     G4ProcessManager* pman = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
     G4String particleType = particle->GetParticleType();
-    double charge = particle->GetPDGCharge();
+    G4double charge = particle->GetPDGCharge();
     
     if (!pman) {
       G4ExceptionDescription msg;

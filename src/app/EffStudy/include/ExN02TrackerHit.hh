@@ -59,9 +59,11 @@ public:
 public:
   
   void SetTrackID     (G4int track)      { trackID = track; };
+  void SetParentID    (G4int parent)     { parentID = parent; };
   void SetChamberNb   (G4int chamb)      { chamberNb = chamb; };  
   void SetEdep        (G4double de)      { edep = de; };
-  void SetPos         (G4ThreeVector xyz){ pos = xyz; };  
+  void SetPreStepPos  (G4ThreeVector xyz){ prestepPos = xyz; };  
+  void SetPostStepPos (G4ThreeVector xyz){ poststepPos = xyz; };  
   void SetMom         (G4ThreeVector xyz){ mom = xyz; }; 
   void SetNameDet     (G4String name)    { namedet = name; };
   void SetCharge      (G4int mycharge)   { charge = mycharge; };
@@ -69,12 +71,16 @@ public:
   void SetTrackName   (G4String name)    { trackname = name; };
   void SetTrackLength (G4double length ) { tracklength = length; };
   void SetStepLength  (G4double length ) { steplength = length; };
+  void SetStepDeltaLyz(G4double deltalyz ) { stepdeltalyz = deltalyz; };
   void SetNSteps      (G4int num)        { nsteps = num; };
-  
+  void SetTrackCosTheta(G4double costh)  { trackcostheta = costh; };
+
   G4int GetTrackID()       { return trackID; };
+  G4int GetParentID()      { return parentID; };
   G4int GetChamberNb()     { return chamberNb; };
   G4double GetEdep()       { return edep; };      
-  G4ThreeVector GetPos()   { return pos; };
+  G4ThreeVector GetPreStepPos()   { return prestepPos; };
+  G4ThreeVector GetPostStepPos() { return poststepPos; };
   G4ThreeVector GetMom()   { return mom; }; 
   G4String GetNameDet()    { return namedet; }; 
   G4int GetCharge()        { return charge; }; 
@@ -82,14 +88,18 @@ public:
   G4String GetTrackName()  { return trackname; }; 
   G4double GetTrackLength(){ return tracklength; }; 
   G4double GetStepLength() { return steplength; }; 
+  G4double GetStepDeltaLyz() { return stepdeltalyz; }; 
   G4int GetNSteps()        { return nsteps; }; 
+  G4double GetTrackCosTheta(){ return trackcostheta; };
   
 private:
   
   G4int         trackID;
+  G4int         parentID;
   G4int         chamberNb;
   G4double      edep;
-  G4ThreeVector pos;
+  G4ThreeVector prestepPos;
+  G4ThreeVector poststepPos;
   G4String      namedet;
   G4int         charge;
   G4ThreeVector mom; 
@@ -97,7 +107,9 @@ private:
   G4String      trackname;  
   G4double      tracklength;
   G4double      steplength;
+  G4double      stepdeltalyz;
   G4int         nsteps;
+  G4double      trackcostheta;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

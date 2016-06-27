@@ -52,32 +52,44 @@ ExN02TrackerHit::~ExN02TrackerHit() {}
 ExN02TrackerHit::ExN02TrackerHit(const ExN02TrackerHit& right)
   : G4VHit()
 {
-  trackID     = right.trackID;
-  chamberNb   = right.chamberNb;
-  edep        = right.edep;
-  pos         = right.pos;
-  mom         = right.mom; 
-  namedet     = right.namedet;
-  trackpdg    = right.trackpdg;
-  trackname   = right.trackname;
-  tracklength = right.tracklength;
-  nsteps      = right.nsteps;  
+  trackID      = right.trackID;
+  parentID     = right.parentID;
+  chamberNb    = right.chamberNb;
+  edep         = right.edep;
+  prestepPos   = right.prestepPos;
+  poststepPos  = right.poststepPos;
+  namedet      = right.namedet;
+  charge       = right.charge;
+  mom          = right.mom; 
+  trackpdg     = right.trackpdg;
+  trackname    = right.trackname;
+  tracklength  = right.tracklength;
+  steplength   = right.steplength;
+  stepdeltalyz = right.stepdeltalyz;
+  nsteps       = right.nsteps;  
+  trackcostheta= right.trackcostheta;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 const ExN02TrackerHit& ExN02TrackerHit::operator=(const ExN02TrackerHit& right)
 {
-  trackID     = right.trackID;
-  chamberNb   = right.chamberNb;
-  edep        = right.edep;
-  pos         = right.pos;
-  mom         = right.mom; 
-  namedet     = right.namedet;
-  trackpdg    = right.trackpdg;
-  trackname   = right.trackname;
-  tracklength = right.tracklength;
-  nsteps      = right.nsteps;
+  trackID      = right.trackID;
+  parentID     = right.parentID;
+  chamberNb    = right.chamberNb;
+  edep         = right.edep;
+  prestepPos   = right.prestepPos;
+  poststepPos  = right.poststepPos;
+  namedet      = right.namedet;
+  charge       = right.charge;
+  mom          = right.mom; 
+  trackpdg     = right.trackpdg;
+  trackname    = right.trackname;
+  tracklength  = right.tracklength;
+  steplength   = right.steplength;
+  stepdeltalyz = right.stepdeltalyz;
+  nsteps       = right.nsteps;  
+  trackcostheta= right.trackcostheta;
   
   return *this;
 }
@@ -96,7 +108,7 @@ void ExN02TrackerHit::Draw()
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
   if(pVVisManager)
   {
-    G4Circle circle(pos);
+    G4Circle circle(prestepPos);
     circle.SetScreenSize(2.);
     circle.SetFillStyle(G4Circle::filled);
     G4Colour colour(1.,0.,0.);

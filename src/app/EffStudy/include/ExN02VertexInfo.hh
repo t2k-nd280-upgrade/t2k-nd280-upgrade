@@ -46,52 +46,52 @@ public:
     const G4String& GetFilename() {return fFilename;}
 
     /// Set the index of the interaction within the input interaction file.
-    void SetInteractionNumber(int i) {fInteractionNumber = i;}
+    void SetInteractionNumber(G4int i) {fInteractionNumber = i;}
 
     /// Get the index of the interaction within the input interaction file.
-    int GetInteractionNumber() const {return fInteractionNumber;}
+    G4int GetInteractionNumber() const {return fInteractionNumber;}
 
     /// Set the cross section for the reaction that created this vertex.  This
     /// should be in normal HEP units.
-    void SetCrossSection(double xs) {fCrossSection = xs;}
+    void SetCrossSection(G4double xs) {fCrossSection = xs;}
 
     /// Get the cross section for the reaction that created this vertex.
-    double GetCrossSection() const {return fCrossSection;}
+    G4double GetCrossSection() const {return fCrossSection;}
 
     /// Set the differential cross section for the kinematics that created
     /// this vertex.  This should be in normal HEP units.
-    void SetDiffCrossSection(double xs) {fDiffCrossSection = xs;}
+    void SetDiffCrossSection(G4double xs) {fDiffCrossSection = xs;}
     
     /// Get the differential cross section for the kinematics of the reaction
     /// that created this vertex.
-    double GetDiffCrossSection() const {return fDiffCrossSection;}
+    G4double GetDiffCrossSection() const {return fDiffCrossSection;}
 
     /// Set the weight for the vertex.  This is used if the generator is using
     /// a weighted sample (e.g. over sampling the high energy part of the
     /// neutrino spectrum smooth out the distributions).
-    void SetWeight(double w) {fWeight = w;}
+    void SetWeight(G4double w) {fWeight = w;}
     
     /// Get the weight of the vertex.  This will be one if it's not filled.
-    double GetWeight() const {return fWeight;}
+    G4double GetWeight() const {return fWeight;}
 
     /// Set the probability of the interaction that created this vertex.  This
     /// includes the effect of the cross section, path length through the
     /// material, etc.
-    void SetProbability(double p) {fProbability = p;}
+    void SetProbability(G4double p) {fProbability = p;}
 
     /// Get the probability of the interaction.
-    double GetProbability() const {return fProbability;}
+    G4double GetProbability() const {return fProbability;}
 
     /// Return the informational vertices that are associated with this event.
     /// These vertices usually contain information associated with the primary
     /// interaction, such as the incoming neutrino and nucleon.
-    virtual const G4PrimaryVertex* GetInformationalVertex(int i = 0) const;
+    virtual const G4PrimaryVertex* GetInformationalVertex(G4int i = 0) const;
 
     /// Add an informational vertex to this event.
     virtual void AddInformationalVertex(G4PrimaryVertex* vtx);
 
     /// Return the number of informational vertices.
-    virtual int GetNumberOfInformationalVertex() const;
+    virtual G4int GetNumberOfInformationalVertex() const;
 
     /// Required by G4UserPrimaryVertexInformation.
     void Print() const {};
@@ -111,22 +111,22 @@ private:
     G4String fFilename;
 
     /// The index of the interaction in the input neutrino file.
-    int fInteractionNumber;
+    G4int fInteractionNumber;
 
     /// The total cross section of the interaction creating this vertex.  This
     /// is zero if it's not filled.
-    double fCrossSection;
+    G4double fCrossSection;
 
     /// The differential cross section of the interaction kinematics creating
     /// this vertex.  This is zero if it's not filled.
-    double fDiffCrossSection;
+    G4double fDiffCrossSection;
     
     /// The weight for the interaction creating this vertex.  This is one if
     /// it's not filled.
-    double fWeight;
+    G4double fWeight;
 
     /// The overall probability of this interaction given the cross sections,
     /// path lengths through materials, &c).  This is one if it is not filled.
-    double fProbability;
+    G4double fProbability;
 };
 #endif
