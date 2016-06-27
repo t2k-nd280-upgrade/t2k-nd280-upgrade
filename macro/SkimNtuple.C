@@ -3,35 +3,46 @@
 #include <iterator>
 #include <algorithm>
 #include <vector>
+#include <iostream>
+
+#include <TCanvas.h>
+#include <TTree.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TFile.h>
 
 using namespace std;
 
+int FindTrackElem(std::vector<int> *vectrk,int trkid);
+
 void SkimNtuple
-(  
- const char *tag = "prova",
- const char *filename = "../bin/EffStudy_AllEvents.root",
- //const char *filename = "../bin/EffStudy.root",
- const bool doprint = false,
-
- const bool doCut_Vtx = true, 
- const bool doCut_dLyz = true,
- const bool doCut_poscharge = true,
-
- const bool doSelPDG = false,
- const int SetPDG = -13,
-
- // For debugging:
- const bool doSingleEvent = true,
- const int SingleEventID = 0, // 87
-   )
+()
 {  
+  const char *tag = "prova";
+  const char *filename = "../bin/EffStudy_AllEvents.root";
+  //const char *filename = "../bin/EffStudy.root",
+  const bool doprint = false;
+
+  const bool doCut_Vtx = true; 
+  const bool doCut_dL = true; // full length in target and dlyz in tpcs
+  const bool doCut_poscharge = true;
+
+  const bool doSelPDG = false;
+  const int SetPDG = -13;
+
+  // For debugging:
+  const bool doSingleEvent = false;
+  const int SingleEventID = 17; // 87
+
+  const int doPrintTrack = false;
+
+  ////////////////////////
+
+
   // True tracks
   TH1D *hNTracks = new TH1D("hNTracks","hNTracks",100,0,100);
   TH1D *hTrackE = new TH1D("hTrackE","hTrackE",100,0,2000);
   TH1D *hTrackPDG = new TH1D("hTrackPDG","hTrackPDG",500,-500,500);
-  TH1D *hTrackMomX = new TH1D("hTrackMomX","hTrackMomX",100,-1000,+1000);
-  TH1D *hTrackMomY = new TH1D("hTrackMomY","hTrackMomY",100,-1000,+1000);
-  TH1D *hTrackMomZ = new TH1D("hTrackMomZ","hTrackMomZ",100,-1000,+1000);
   TH1D *hTrackMom  = new TH1D("hTrackMom","hTrackMom",100,0,1000);
   
   // From Sensitive detector
@@ -40,36 +51,11 @@ void SkimNtuple
   TH1D *hEabsTPCup = new TH1D("hEabsTPCup","hEabsTPCup",100,0,150);
   TH1D *hEabsTPCdown = new TH1D("hEabsTPCdown","hEabsTPCdown",100,0,150);
   
-  TH1D *hGlob_MomX = new TH1D("hGlob_MomX","hGlob_MomX",100,0,10000); 
-  TH1D *hGlob_MomY = new TH1D("hGlob_MomY","hGlob_MomY",100,0,10000);
-  TH1D *hGlob_MomZ = new TH1D("hGlob_MomZ","hGlob_MomZ",100,0,10000);
-  TH1D *hGlob_Mom = new TH1D("hGlob_Mom","hGlob_Mom",100,0,10000);
-  TH1D *hGlob_Length = new TH1D("hGlob_Length","hGlob_Length",100,0,3000); // mm
-  TH1D *hGlob_Edep = new TH1D("hGlob_Edep","hGlob_Edep",100,0,300);
-  TH1D *hGlob_Charge = new TH1D("hGlob_Charge","hGlob_Charge",6,-3,3);
-  TH1D *hGlob_PDG = new TH1D("hGlob_PDG","hGlob_PDG",800,-400,400);
-  TH1D *hGlob_PosIniX = new TH1D("hGlob_PosIniX","hGlob_PosIniX",600,-3000,3000);
-  TH1D *hGlob_PosIniY = new TH1D("hGlob_PosIniY","hGlob_PosIniY",600,-3000,3000);
-  TH1D *hGlob_PosIniZ = new TH1D("hGlob_PosIniZ","hGlob_PosIniZ",600,-3000,3000);
-  TH1D *hGlob_PosFinX = new TH1D("hGlob_PosFinX","hGlob_PosFinX",600,-3000,3000);
-  TH1D *hGlob_PosFinY = new TH1D("hGlob_PosFinY","hGlob_PosFinY",600,-3000,3000);
-  TH1D *hGlob_PosFinZ = new TH1D("hGlob_PosFinZ","hGlob_PosFinZ",600,-3000,3000);
-
-  TH1D *hReco_MomX = new TH1D("hReco_MomX","hReco_MomX",100,0,10000); 
-  TH1D *hReco_MomY = new TH1D("hReco_MomY","hReco_MomY",100,0,10000);
-  TH1D *hReco_MomZ = new TH1D("hReco_MomZ","hReco_MomZ",100,0,10000);
   TH1D *hReco_Mom = new TH1D("hReco_Mom","hReco_Mom",100,0,10000);
-  TH1D *hReco_Length = new TH1D("hReco_Length","hReco_Length",100,0,3000); // mm
-  TH1D *hReco_Edep = new TH1D("hReco_Edep","hReco_Edep",100,0,300);
-  TH1D *hReco_Charge = new TH1D("hReco_Charge","hReco_Charge",6,-3,3);
+  TH1D *hReco_CosTheta = new TH1D("hReco_CosTheta","hReco_CosTheta",50,-1,+1);
   TH1D *hReco_PDG = new TH1D("hReco_PDG","hReco_PDG",800,-400,400);
-  TH1D *hReco_PosIniX = new TH1D("hReco_PosIniX","hReco_PosIniX",600,-3000,3000);
-  TH1D *hReco_PosIniY = new TH1D("hReco_PosIniY","hReco_PosIniY",600,-3000,3000);
-  TH1D *hReco_PosIniZ = new TH1D("hReco_PosIniZ","hReco_PosIniZ",600,-3000,3000);
-  TH1D *hReco_PosFinX = new TH1D("hReco_PosFinX","hReco_PosFinX",600,-3000,3000);
-  TH1D *hReco_PosFinY = new TH1D("hReco_PosFinY","hReco_PosFinY",600,-3000,3000);
-  TH1D *hReco_PosFinZ = new TH1D("hReco_PosFinZ","hReco_PosFinZ",600,-3000,3000);
-  TH2D *hReco_CosThetaVsMom = new TH2D("hReco_CosThetaVsMom","hReco_CosThetaVsMom",50,-1,1,100,0,10000);
+  TH2D *hReco_CosThetaVsMom_Target = new TH2D("hReco_CosThetaVsMom_Target","hReco_CosThetaVsMom_Target",50,-1,1,100,0,10000);
+  TH2D *hReco_CosThetaVsMom_Fin = new TH2D("hReco_CosThetaVsMom_Fin","hReco_CosThetaVsMom_Fin",50,-1,1,100,0,10000);
   
   TH1D *hTPCUp_MomX = new TH1D("hTPCUp_MomX","hTPCUp_MomX",100,0,10000);
   TH1D *hTPCUp_MomY = new TH1D("hTPCUp_MomY","hTPCUp_MomY",100,0,10000);
@@ -134,11 +120,13 @@ void SkimNtuple
   TH1D *hVtxMinusPosIni_Target_X = new TH1D("hVtxMinusPosIni_Target_X","hVtxMinusPosIni_Target_X",6000,-3000,3000);
   TH1D *hVtxMinusPosIni_Target_Y = new TH1D("hVtxMinusPosIni_Target_Y","hVtxMinusPosIni_Target_Y",6000,-3000,3000);
   TH1D *hVtxMinusPosIni_Target_Z = new TH1D("hVtxMinusPosIni_Target_Z","hVtxMinusPosIni_Target_Z",6000,-3000,3000);
-  
+
+ 
   cout << endl;
   cout << "Reading file:" << endl;
   cout << filename << endl;
   cout << endl;
+
   
   TFile *filein = new TFile(filename,"READ");
   TTree *treein = (TTree*)filein->Get("EffStudy");
@@ -321,18 +309,6 @@ void SkimNtuple
   
   // Create tree to store outputs
 
-  // double Glob_High_mom;
-  // double Glob_High_len;
-  // double Glob_High_charge;
-  // double Glob_High_edep;
-  // double Glob_High_pdg;
-  // double Glob_High_parent_pdg;
-  // double Glob_High_PosIniX;
-  // double Glob_High_PosIniY;
-  // double Glob_High_PosIniZ;
-  // double Glob_High_PosFinX;
-  // double Glob_High_PosFinY;
-  // double Glob_High_PosFinZ;
   double TPCUp_High_ID;
   double TPCUp_High_mom;
   double TPCUp_High_costheta;
@@ -381,12 +357,6 @@ void SkimNtuple
 
   TFile *fileoa = new TFile("../bin/fileoa.root","RECREATE");
   TTree * treeoa = new TTree("treeoa","Skimmed MC");
-  // treeoa->Branch("Glob_High_mom",       &Glob_High_mom);
-  // treeoa->Branch("Glob_High_len",       &Glob_High_len);
-  // treeoa->Branch("Glob_High_charge",    &Glob_High_charge);
-  // treeoa->Branch("Glob_High_edep",      &Glob_High_edep);
-  // treeoa->Branch("Glob_High_pdg",       &Glob_High_pdg);
-  // treeoa->Branch("Glob_High_parent_pdg",&Glob_High_parent_pdg);
   treeoa->Branch("TPCUp_High_ID",      &TPCUp_High_ID);
   treeoa->Branch("TPCUp_High_mom",      &TPCUp_High_mom);
   treeoa->Branch("TPCUp_High_costheta", &TPCUp_High_costheta);
@@ -432,13 +402,15 @@ void SkimNtuple
   treeoa->Branch("Target_High_PosFinX",&Target_High_PosFinX);
   treeoa->Branch("Target_High_PosFinY",&Target_High_PosFinY);
   treeoa->Branch("Target_High_PosFinZ",&Target_High_PosFinZ);
+
+
   
   // Loop over the ntuple events
   
   int Nentries = treein->GetEntries();
   
   for(int ientry=0;ientry<Nentries;ientry++){
-    
+  
     if(doSingleEvent){
       ientry = SingleEventID;
       Nentries = ientry+1;
@@ -493,8 +465,11 @@ void SkimNtuple
 
     treein->GetEntry(ientry);
 
-    if(!(ientry%100)) cout << "Event " << ientry << endl;
+    
 
+
+    if(!(ientry%1)) cout << "Event " << ientry << endl;
+    
     //
     // Read all the tracks in the event (all volume)
     //
@@ -506,6 +481,7 @@ void SkimNtuple
       exit(1);
     }
 
+    
     double vtx_x = VecVtx_X->at(0);
     double vtx_y = VecVtx_Y->at(0);
     double vtx_z = VecVtx_Z->at(0);
@@ -528,8 +504,8 @@ void SkimNtuple
 
     if(NTracks!=VecTrackID->size()){
       cerr << endl;
-      cerr << "VecTrackID.size() != NTracks" << endl;
-      cerr << "VecTrackID.size() = " << VecTrackID->size() << endl;
+      cerr << "VecTrackID->size() != NTracks" << endl;
+      cerr << "VecTrackID->size() = " << VecTrackID->size() << endl;
       cerr << "NTracks = " << NTracks << endl;
       cerr << endl;
       exit(1);
@@ -564,11 +540,16 @@ void SkimNtuple
     // 
 
     for(int trkid=1;trkid<=NTracks;trkid++){ // loop over track ID (1 to NTracks)
+          
+      int vecel=-999,id=-999;
+      double costheta=-999,momX=-999,momY=-999,momZ=-999,mom=-999,length=-999,deltaLyz=-999,edep=-999,charge=-999,pdg=-999,posX=-999,posY=-999,posZ=-999,posLastX=-999,posLastY=-999,posLastZ=-999;   
+      int vecel_tpc=-999,id_tpc=-999;
+      double costheta_tpc=-999,momX_tpc=-999,momY_tpc=-999,momZ_tpc=-999,mom_tpc=-999,length_tpc=-999,deltaLyz_tpc=-999,edep_tpc=-999,charge_tpc=-999,pdg_tpc=-999,posX_tpc=-999,posY_tpc=-999,posZ_tpc=-999,posLastX_tpc=-999,posLastY_tpc=-999,posLastZ_tpc=-999;       
       
-      int vecel,id;
-      double costheta, momX, momY, momZ, mom, length, deltaLyz, edep, charge, pdg, posX, posY, posZ, posLastX, posLastY, posLastZ;       
-      
+      //
       // Check if reconstructed in Target
+      //
+
       vecel = FindTrackElem(VecTarget_TrackID,trkid);      
       if(vecel>0){
 	id = VecTarget_TrackID->at(vecel);
@@ -577,357 +558,408 @@ void SkimNtuple
 	momY = VecTarget_TrackMomY->at(vecel);
 	momZ = VecTarget_TrackMomZ->at(vecel);
 	mom = sqrt( momX*momX + momY*momY + momZ*momZ );
-	//length = VecTarget_TrackLength->at(vecel);
 	deltaLyz = VecTarget_TrackDeltaLyz->at(vecel);
-	//edep = VecTarget_TrackEdep->at(vecel);
-	//charge = VecTarget_TrackCharge->at(vecel);
+	length = VecTarget_TrackLength->at(vecel);
+	edep = VecTarget_TrackEdep->at(vecel);
+	charge = VecTarget_TrackCharge->at(vecel);
 	pdg = VecTarget_TrackPDG->at(vecel);
-	//posX = VecTarget_TrackStepFirstX->at(vecel);
-	//posY = VecTarget_TrackStepFirstY->at(vecel);
-	//posZ = VecTarget_TrackStepFirstZ->at(vecel);
-	//posLastX = VecTarget_TrackStepLastX->at(vecel);
-	//posLastY = VecTarget_TrackStepLastY->at(vecel);
-	//posLastZ = VecTarget_TrackStepLastZ->at(vecel);
 	
-	// Cut 2: Select tracks with dLyz > 200mm
-	if(doCut_dLyz && deltaLyz < 200) continue;
+	// Cut 1: Select track PDG 
+	if(doSelPDG && pdg!=SetPDG) continue;
 
-	// Check if reconstructed in TPCUp
-	vecel = FindTrackElem(VecTPCUp_TrackID,trkid);      
-	if(vecel>0){
-	  id = VecTPCUp_TrackID->at(vecel);
-	  //costheta = VecTPC_TrackCosTheta->at(vecel);
-	  //momX = VecTarget_TrackMomX->at(vecel);
-	  //momY = VecTarget_TrackMomY->at(vecel);
-	  //momZ = VecTarget_TrackMomZ->at(vecel);
-	  //mom = sqrt( momX*momX + momY*momY + momZ*momZ );
-	  //length = VecTarget_TrackLength->at(vecel);
-	  deltaLyz = VecTarget_TrackDeltaLyz->at(vecel);
-	  edep = VecTarget_TrackEdep->at(vecel);
-	  charge = VecTarget_TrackCharge->at(vecel);
-	  //pdg = VecTarget_TrackPDG->at(vecel);
-	  //posX = VecTarget_TrackStepFirstX->at(vecel);
-	  //posY = VecTarget_TrackStepFirstY->at(vecel);
-	  //posZ = VecTarget_TrackStepFirstZ->at(vecel);
-	  //posLastX = VecTarget_TrackStepLastX->at(vecel);
-	  //posLastY = VecTarget_TrackStepLastY->at(vecel);
-	  //posLastZ = VecTarget_TrackStepLastZ->at(vecel);
-	
-	} // reco in TPCUp
-	
-	else if(){
-	} // TPCDown
-	
-	if(doSingleEvent){
-	  cout << "Target track: " << " ";
-	  cout << "id = " << id << ", ";
+	// Cut 2: Select tracks with dLyz > 50mm
+	if(doCut_dL && length < 50) continue;
+
+	// Cut 3: Select charged particles
+	if(fabs(charge)!=1) continue;
+
+	hReco_CosThetaVsMom_Target->Fill(costheta,mom); // Fill efficiency denominator
+
+	if(doPrintTrack){
+	  cout << "Track ID = " << trkid << endl;
+	  cout << "- Target track: " << " ";
 	  cout << "event = " << ientry << ", ";
 	  cout << "mom = " << mom << ", ";
-	  cout << "deltaLyz = " << deltaLyz << ", ";
+	  cout << "length = " << length << ", ";
 	  cout << "charge = " << charge << ", ";
 	  cout << "edep = " << edep << ", ";    
 	  cout << "pdg = " << pdg << ", ";
 	  cout << endl;    
 	}
 	
-      
-      } // in the Target
-      
-      else
-	continue;     
+	//
+	// Check if reconstructed in TPCUp
+	//
+	
+	vecel = FindTrackElem(VecTPCUp_TrackID,trkid);  
+	if(vecel>0){
+	  id = VecTPCUp_TrackID->at(vecel);
+	  costheta = VecTPCUp_TrackCosTheta->at(vecel);
+	  momX = VecTPCUp_TrackMomX->at(vecel);
+	  momY = VecTPCUp_TrackMomY->at(vecel);
+	  momZ = VecTPCUp_TrackMomZ->at(vecel);
+	  mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+	  deltaLyz = VecTPCUp_TrackDeltaLyz->at(vecel);
+	  length = VecTPCUp_TrackLength->at(vecel);
+	  edep = VecTPCUp_TrackEdep->at(vecel);
+	  charge = VecTPCUp_TrackCharge->at(vecel);
+	  pdg = VecTPCUp_TrackPDG->at(vecel);
 
+	  // Cut 2: Select tracks with dLyz > 200mm
+	  if(doCut_dL && deltaLyz < 200) continue;
+
+	  // Cut 3: Select charged particles
+	  if(doCut_poscharge && fabs(charge)!=1) continue;
+	  
+	  hReco_CosThetaVsMom_Fin->Fill(costheta,mom); // Fill efficiency denominator
+
+	  if(doPrintTrack){
+	    cout << "- TPCUp track: " << " ";
+	    cout << "event = " << ientry << ", ";
+	    cout << "mom = " << mom << ", ";
+	    cout << "deltaLyz = " << deltaLyz << ", ";
+	    cout << "charge = " << charge << ", ";
+	    cout << "edep = " << edep << ", ";    
+	    cout << "pdg = " << pdg << ", ";
+	    cout << endl;
+	  }
+
+	} // reco in TPCUp
+	
+	
+	else {
+	  
+	  //
+	  // Check if reconstructed in TPCDown
+	  //
+	  
+	  vecel = FindTrackElem(VecTPCDown_TrackID,trkid);      
+	  if(vecel>0){
+	    id = VecTPCDown_TrackID->at(vecel);
+	    costheta = VecTPCDown_TrackCosTheta->at(vecel);
+	    momX = VecTPCDown_TrackMomX->at(vecel);
+	    momY = VecTPCDown_TrackMomY->at(vecel);
+	    momZ = VecTPCDown_TrackMomZ->at(vecel);
+	    mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+	    deltaLyz = VecTPCDown_TrackDeltaLyz->at(vecel);
+	    length = VecTPCDown_TrackLength->at(vecel);
+	    edep = VecTPCDown_TrackEdep->at(vecel);
+	    charge = VecTPCDown_TrackCharge->at(vecel);
+	    pdg = VecTPCDown_TrackPDG->at(vecel);
+
+	    // Cut 2: Select tracks with dLyz > 200mm
+	    if(doCut_dL && deltaLyz < 200) continue;
+	    
+	    // Cut 3: Select charged particles
+	    if(doCut_poscharge && fabs(charge)!=1) continue;
+	    
+	    hReco_CosThetaVsMom_Fin->Fill(costheta,mom); // Fill efficiency denominator
+	    
+	    if(doPrintTrack){
+	      cout << "- TPCDown track: " << " ";
+	      cout << "id = " << id_tpc << ", ";
+	      cout << "event = " << ientry << ", ";
+	      cout << "mom = " << mom << ", ";
+	      cout << "deltaLyz = " << deltaLyz << ", ";
+	      cout << "charge = " << charge << ", ";
+	      cout << "edep = " << edep << ", ";    
+	      cout << "pdg = " << pdg << ", ";
+	      cout << endl;
+	    }
+	  } // reco in TPCDown
+	} // not in TPCDown
+	
+	cout << endl;
+	
+      } // in the Target
+     
     } // end loop over all tracks
   
     
-    cout << endl;
-    cout << endl;
-    cout << endl;
+    
 
+    
 
-
-
-
-
-    //
-    // TPC Up tracks
-    //
+    // //
+    // // TPC Up tracks
+    // //
         
-    for(int itrk=0;itrk<VecTPCUp_TrackID->size();itrk++){
+    // for(int itrk=0;itrk<VecTPCUp_TrackID->size();itrk++){
       
-      int id = VecTPCUp_TrackID->at(itrk);
-      double costheta = VecTPCUp_TrackCosTheta->at(itrk);
-      double momX = VecTPCUp_TrackMomX->at(itrk);
-      double momY = VecTPCUp_TrackMomY->at(itrk);
-      double momZ = VecTPCUp_TrackMomZ->at(itrk);
-      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
-      double length = VecTPCUp_TrackLength->at(itrk);
-      double deltaLyz = VecTPCUp_TrackDeltaLyz->at(itrk);
-      double edep = VecTPCUp_TrackEdep->at(itrk);
-      double charge = VecTPCUp_TrackCharge->at(itrk);
-      double pdg = VecTPCUp_TrackPDG->at(itrk);
-      double posX = VecTPCUp_TrackStepFirstX->at(itrk);
-      double posY = VecTPCUp_TrackStepFirstY->at(itrk);
-      double posZ = VecTPCUp_TrackStepFirstZ->at(itrk);
-      double posLastX = VecTPCUp_TrackStepLastX->at(itrk);
-      double posLastY = VecTPCUp_TrackStepLastY->at(itrk);
-      double posLastZ = VecTPCUp_TrackStepLastZ->at(itrk);
+    //   int id = VecTPCUp_TrackID->at(itrk);
+    //   double costheta = VecTPCUp_TrackCosTheta->at(itrk);
+    //   double momX = VecTPCUp_TrackMomX->at(itrk);
+    //   double momY = VecTPCUp_TrackMomY->at(itrk);
+    //   double momZ = VecTPCUp_TrackMomZ->at(itrk);
+    //   double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+    //   double length = VecTPCUp_TrackLength->at(itrk);
+    //   double deltaLyz = VecTPCUp_TrackDeltaLyz->at(itrk);
+    //   double edep = VecTPCUp_TrackEdep->at(itrk);
+    //   double charge = VecTPCUp_TrackCharge->at(itrk);
+    //   double pdg = VecTPCUp_TrackPDG->at(itrk);
+    //   double posX = VecTPCUp_TrackStepFirstX->at(itrk);
+    //   double posY = VecTPCUp_TrackStepFirstY->at(itrk);
+    //   double posZ = VecTPCUp_TrackStepFirstZ->at(itrk);
+    //   double posLastX = VecTPCUp_TrackStepLastX->at(itrk);
+    //   double posLastY = VecTPCUp_TrackStepLastY->at(itrk);
+    //   double posLastZ = VecTPCUp_TrackStepLastZ->at(itrk);
 
-      if(doSingleEvent){
-	cout << "TPC Up track: " << " ";
-	cout << "id = " << id << ", ";
-	cout << "event = " << ientry << ", ";
-	cout << "mom = " << mom << ", ";
-	cout << "deltaLyz = " << deltaLyz << ", ";
-	cout << "charge = " << charge << ", ";
-	cout << "edep = " << edep << ", ";    
-	cout << "pdg = " << TPCUp_High_pdg << endl;    
-      }
+    //   if(doSingleEvent){
+    // 	cout << "TPC Up track: " << " ";
+    // 	cout << "id = " << id << ", ";
+    // 	cout << "event = " << ientry << ", ";
+    // 	cout << "mom = " << mom << ", ";
+    // 	cout << "deltaLyz = " << deltaLyz << ", ";
+    // 	cout << "charge = " << charge << ", ";
+    // 	cout << "edep = " << edep << ", ";    
+    // 	cout << "pdg = " << pdg << endl;    
+    //   }
       
-      // Cut 2: Select tracks with dLyz > 200mm
-      if(doCut_dLyz && deltaLyz < 200) continue;
+    //   // Cut 2: Select tracks with dLyz > 200mm
+    //   if(doCut_dL && deltaLyz < 200) continue;
 
-      // Cut 3: Select charged particles
-      if(doCut_poscharge && fabs(charge)!=1) continue;
+    //   // Cut 3: Select charged particles
+    //   if(doCut_poscharge && fabs(charge)!=1) continue;
       
-      // Cut 4: Select highest momentum track
-      if(mom > TPCUp_High_mom){
-	TPCUp_High_ID = id;
-	TPCUp_High_mom = mom;
-	TPCUp_High_costheta = costheta;
-	TPCUp_High_len = length;
-	TPCUp_High_dlyz = deltaLyz;
-	TPCUp_High_charge = charge;
-	TPCUp_High_edep = edep;
-	TPCUp_High_pdg = pdg;
-	TPCUp_High_PosIniX = posX;
-	TPCUp_High_PosIniY = posY;
-	TPCUp_High_PosIniZ = posZ;
-	TPCUp_High_PosFinX = posLastX;
-	TPCUp_High_PosFinY = posLastY;
-	TPCUp_High_PosFinZ = posLastZ;
-      }
-    } // end TPC Up tracks
+    //   // Cut 4: Select highest momentum track
+    //   if(mom > TPCUp_High_mom){
+    // 	TPCUp_High_ID = id;
+    // 	TPCUp_High_mom = mom;
+    // 	TPCUp_High_costheta = costheta;
+    // 	TPCUp_High_len = length;
+    // 	TPCUp_High_dlyz = deltaLyz;
+    // 	TPCUp_High_charge = charge;
+    // 	TPCUp_High_edep = edep;
+    // 	TPCUp_High_pdg = pdg;
+    // 	TPCUp_High_PosIniX = posX;
+    // 	TPCUp_High_PosIniY = posY;
+    // 	TPCUp_High_PosIniZ = posZ;
+    // 	TPCUp_High_PosFinX = posLastX;
+    // 	TPCUp_High_PosFinY = posLastY;
+    // 	TPCUp_High_PosFinZ = posLastZ;
+    //   }
+    // } // end TPC Up tracks
 
 
-    //
-    // TPC Down tracks
-    //
+    // //
+    // // TPC Down tracks
+    // //
     
-    for(int itrk=0;itrk<VecTPCDown_TrackID->size();itrk++){
+    // for(int itrk=0;itrk<VecTPCDown_TrackID->size();itrk++){
 
-      int id = VecTPCDown_TrackID->at(itrk);
-      double costheta = VecTPCDown_TrackCosTheta->at(itrk);
-      double momX = VecTPCDown_TrackMomX->at(itrk);
-      double momY = VecTPCDown_TrackMomY->at(itrk);
-      double momZ = VecTPCDown_TrackMomZ->at(itrk);
-      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
-      double length = VecTPCDown_TrackLength->at(itrk);
-      double deltaLyz = VecTPCDown_TrackDeltaLyz->at(itrk);
-      double edep = VecTPCDown_TrackEdep->at(itrk);
-      double charge = VecTPCDown_TrackCharge->at(itrk);
-      double pdg = VecTPCDown_TrackPDG->at(itrk);
-      double posX = VecTPCDown_TrackStepFirstX->at(itrk);
-      double posY = VecTPCDown_TrackStepFirstY->at(itrk);
-      double posZ = VecTPCDown_TrackStepFirstZ->at(itrk);
-      double posLastX = VecTPCDown_TrackStepLastX->at(itrk);
-      double posLastY = VecTPCDown_TrackStepLastY->at(itrk);
-      double posLastZ = VecTPCDown_TrackStepLastZ->at(itrk);
+    //   int id = VecTPCDown_TrackID->at(itrk);
+    //   double costheta = VecTPCDown_TrackCosTheta->at(itrk);
+    //   double momX = VecTPCDown_TrackMomX->at(itrk);
+    //   double momY = VecTPCDown_TrackMomY->at(itrk);
+    //   double momZ = VecTPCDown_TrackMomZ->at(itrk);
+    //   double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+    //   double length = VecTPCDown_TrackLength->at(itrk);
+    //   double deltaLyz = VecTPCDown_TrackDeltaLyz->at(itrk);
+    //   double edep = VecTPCDown_TrackEdep->at(itrk);
+    //   double charge = VecTPCDown_TrackCharge->at(itrk);
+    //   double pdg = VecTPCDown_TrackPDG->at(itrk);
+    //   double posX = VecTPCDown_TrackStepFirstX->at(itrk);
+    //   double posY = VecTPCDown_TrackStepFirstY->at(itrk);
+    //   double posZ = VecTPCDown_TrackStepFirstZ->at(itrk);
+    //   double posLastX = VecTPCDown_TrackStepLastX->at(itrk);
+    //   double posLastY = VecTPCDown_TrackStepLastY->at(itrk);
+    //   double posLastZ = VecTPCDown_TrackStepLastZ->at(itrk);
 
-      if(doSingleEvent){
-	cout << "TPC Down track: " << " ";
-	cout << "id = " << id << ", ";
-	cout << "event = " << ientry << ", ";
-	cout << "mom = " << mom << ", ";
-	cout << "deltaLyz = " << deltaLyz << ", ";
-	cout << "charge = " << charge << ", ";
-	cout << "edep = " << edep << ", ";    
-	cout << "pdg = " << TPCUp_High_pdg << endl;    
-      }
+    //   if(doSingleEvent){
+    // 	cout << "TPC Down track: " << " ";
+    // 	cout << "id = " << id << ", ";
+    // 	cout << "event = " << ientry << ", ";
+    // 	cout << "mom = " << mom << ", ";
+    // 	cout << "deltaLyz = " << deltaLyz << ", ";
+    // 	cout << "charge = " << charge << ", ";
+    // 	cout << "edep = " << edep << ", ";    
+    // 	cout << "pdg = " << pdg << endl;    
+    //   }
 
-      // Cut 2: Select tracks with dLyz > 200mm
-      if(doCut_dLyz && deltaLyz < 200) continue;
+    //   // Cut 2: Select tracks with dLyz > 200mm
+    //   if(doCut_dL && deltaLyz < 200) continue;
 
-      // Cut 3: Select charged particles
-      if(doCut_poscharge && fabs(charge)!=1) continue;
+    //   // Cut 3: Select charged particles
+    //   if(doCut_poscharge && fabs(charge)!=1) continue;
       
-      // Cut 4: Select highest momentum track      
-      if(mom > TPCDown_High_mom){
-	TPCDown_High_ID = id;
-	TPCDown_High_mom = mom;
-	TPCDown_High_costheta = costheta;
-	TPCDown_High_len = length;
-	TPCDown_High_dlyz = deltaLyz;
-	TPCDown_High_charge = charge;
-	TPCDown_High_edep = edep;
-	TPCDown_High_pdg = pdg;
-	TPCDown_High_PosIniX = posX;
-	TPCDown_High_PosIniY = posY;
-	TPCDown_High_PosIniZ = posZ;
-	TPCDown_High_PosFinX = posLastX;
-	TPCDown_High_PosFinY = posLastY;
-	TPCDown_High_PosFinZ = posLastZ;
-      }     
-    } // end TPC Down tracks
+    //   // Cut 4: Select highest momentum track      
+    //   if(mom > TPCDown_High_mom){
+    // 	TPCDown_High_ID = id;
+    // 	TPCDown_High_mom = mom;
+    // 	TPCDown_High_costheta = costheta;
+    // 	TPCDown_High_len = length;
+    // 	TPCDown_High_dlyz = deltaLyz;
+    // 	TPCDown_High_charge = charge;
+    // 	TPCDown_High_edep = edep;
+    // 	TPCDown_High_pdg = pdg;
+    // 	TPCDown_High_PosIniX = posX;
+    // 	TPCDown_High_PosIniY = posY;
+    // 	TPCDown_High_PosIniZ = posZ;
+    // 	TPCDown_High_PosFinX = posLastX;
+    // 	TPCDown_High_PosFinY = posLastY;
+    // 	TPCDown_High_PosFinZ = posLastZ;
+    //   }     
+    // } // end TPC Down tracks
     
-    //
-    // Target tracks
-    //
+    // //
+    // // Target tracks
+    // //
     
-    for(int itrk=0;itrk<VecTarget_TrackID->size();itrk++){
+    // for(int itrk=0;itrk<VecTarget_TrackID->size();itrk++){
 
-      int id = VecTarget_TrackID->at(itrk);
-      double costheta = VecTarget_TrackCosTheta->at(itrk);
-      double momX = VecTarget_TrackMomX->at(itrk);
-      double momY = VecTarget_TrackMomY->at(itrk);
-      double momZ = VecTarget_TrackMomZ->at(itrk);
-      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
-      double length = VecTarget_TrackLength->at(itrk);
-      double deltaLyz = VecTarget_TrackDeltaLyz->at(itrk);
-      double edep = VecTarget_TrackEdep->at(itrk);
-      double charge = VecTarget_TrackCharge->at(itrk);
-      double pdg = VecTarget_TrackPDG->at(itrk);
-      double posX = VecTarget_TrackStepFirstX->at(itrk);
-      double posY = VecTarget_TrackStepFirstY->at(itrk);
-      double posZ = VecTarget_TrackStepFirstZ->at(itrk);
-      double posLastX = VecTarget_TrackStepLastX->at(itrk);
-      double posLastY = VecTarget_TrackStepLastY->at(itrk);
-      double posLastZ = VecTarget_TrackStepLastZ->at(itrk);
+    //   int id = VecTarget_TrackID->at(itrk);
+    //   double costheta = VecTarget_TrackCosTheta->at(itrk);
+    //   double momX = VecTarget_TrackMomX->at(itrk);
+    //   double momY = VecTarget_TrackMomY->at(itrk);
+    //   double momZ = VecTarget_TrackMomZ->at(itrk);
+    //   double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+    //   double length = VecTarget_TrackLength->at(itrk);
+    //   double deltaLyz = VecTarget_TrackDeltaLyz->at(itrk);
+    //   double edep = VecTarget_TrackEdep->at(itrk);
+    //   double charge = VecTarget_TrackCharge->at(itrk);
+    //   double pdg = VecTarget_TrackPDG->at(itrk);
+    //   double posX = VecTarget_TrackStepFirstX->at(itrk);
+    //   double posY = VecTarget_TrackStepFirstY->at(itrk);
+    //   double posZ = VecTarget_TrackStepFirstZ->at(itrk);
+    //   double posLastX = VecTarget_TrackStepLastX->at(itrk);
+    //   double posLastY = VecTarget_TrackStepLastY->at(itrk);
+    //   double posLastZ = VecTarget_TrackStepLastZ->at(itrk);
 
-      if(doSingleEvent){
-	cout << "Target track: " << " ";
-	cout << "id = " << id << ", ";
-	cout << "event = " << ientry << ", ";
-	cout << "mom = " << mom << ", ";
-	cout << "deltaLyz = " << deltaLyz << ", ";
-	cout << "charge = " << charge << ", ";
-	cout << "edep = " << edep << ", ";    
-	cout << "pdg = " << TPCUp_High_pdg << endl;    
-      }
+    //   if(doSingleEvent){
+    // 	cout << "Target track: " << " ";
+    // 	cout << "id = " << id << ", ";
+    // 	cout << "event = " << ientry << ", ";
+    // 	cout << "mom = " << mom << ", ";
+    // 	cout << "deltaLyz = " << deltaLyz << ", ";
+    // 	cout << "charge = " << charge << ", ";
+    // 	cout << "edep = " << edep << ", ";    
+    // 	cout << "pdg = " << pdg << endl;    
+    //   }
 
-      // Cut 2: Select tracks with dLyz > 50mm
-      if(doCut_dLyz && deltaLyz < 50) continue;
+    //   // Cut 2: Select tracks with dLyz > 50mm
+    //   if(doCut_dL && deltaLyz < 50) continue;
        
-      // Cut 3: Select highest momentum track
-      if(mom > Target_High_mom){
-	Target_High_ID = id;
-	Target_High_costheta = costheta;
-	Target_High_mom = mom;
-	Target_High_len = length;
-	Target_High_dlyz = deltaLyz;
-	Target_High_charge = charge;
-	Target_High_edep = edep;
-	Target_High_pdg = pdg;
-	Target_High_PosIniX = posX;
-	Target_High_PosIniY = posY;
-	Target_High_PosIniZ = posZ;
-	Target_High_PosFinX = posLastX;
-	Target_High_PosFinY = posLastY;
-	Target_High_PosFinZ = posLastZ;
-      }
-    } // end Target tracks
+    //   // Cut 3: Select highest momentum track
+    //   if(mom > Target_High_mom){
+    // 	Target_High_ID = id;
+    // 	Target_High_costheta = costheta;
+    // 	Target_High_mom = mom;
+    // 	Target_High_len = length;
+    // 	Target_High_dlyz = deltaLyz;
+    // 	Target_High_charge = charge;
+    // 	Target_High_edep = edep;
+    // 	Target_High_pdg = pdg;
+    // 	Target_High_PosIniX = posX;
+    // 	Target_High_PosIniY = posY;
+    // 	Target_High_PosIniZ = posZ;
+    // 	Target_High_PosFinX = posLastX;
+    // 	Target_High_PosFinY = posLastY;
+    // 	Target_High_PosFinZ = posLastZ;
+    //   }
+    // } // end Target tracks
 
     
     
-    // Print out the highest momentum track
+    // // Print out the highest momentum track
  
-    if(TPCUp_High_mom>0.){
+    // if(TPCUp_High_mom>0.){
        
-      cout << "TPC Up high mom track: " << " ";
-      cout << "event = " << ientry << ", ";
-      cout << "id = " << TPCUp_High_ID << ", ";
-      cout << "mom = " << TPCUp_High_mom << ", ";
-      cout << "length = " << TPCUp_High_len << ", ";
-      cout << "charge = " << TPCUp_High_charge << ", ";
-      cout << "edep = " << TPCUp_High_edep << ", ";
-      cout << "pdg = " << TPCUp_High_pdg << endl;    
+    //   cout << "TPC Up high mom track: " << " ";
+    //   cout << "event = " << ientry << ", ";
+    //   cout << "id = " << TPCUp_High_ID << ", ";
+    //   cout << "mom = " << TPCUp_High_mom << ", ";
+    //   cout << "length = " << TPCUp_High_len << ", ";
+    //   cout << "charge = " << TPCUp_High_charge << ", ";
+    //   cout << "edep = " << TPCUp_High_edep << ", ";
+    //   cout << "pdg = " << TPCUp_High_pdg << endl;    
 
-      hTPCUp_CosTheta->Fill(TPCUp_High_costheta);
-      hTPCUp_Mom   ->Fill(TPCUp_High_mom);
-      hTPCUp_Length->Fill(TPCUp_High_len);
-      hTPCUp_DeltaLyz->Fill(TPCUp_High_dlyz);
-      hTPCUp_Charge->Fill(TPCUp_High_charge);
-      hTPCUp_PDG   ->Fill(TPCUp_High_pdg);
-      hTPCUp_Edep  ->Fill(TPCUp_High_edep);
-      hTPCUp_PosIniX->Fill(TPCUp_High_PosIniX);
-      hTPCUp_PosIniY->Fill(TPCUp_High_PosIniY);
-      hTPCUp_PosIniZ->Fill(TPCUp_High_PosIniZ);
-      hTPCUp_PosFinX->Fill(TPCUp_High_PosFinX);
-      hTPCUp_PosFinY->Fill(TPCUp_High_PosFinY);
-      hTPCUp_PosFinZ->Fill(TPCUp_High_PosFinZ);
-    }
+    //   hTPCUp_CosTheta->Fill(TPCUp_High_costheta);
+    //   hTPCUp_Mom   ->Fill(TPCUp_High_mom);
+    //   hTPCUp_Length->Fill(TPCUp_High_len);
+    //   hTPCUp_DeltaLyz->Fill(TPCUp_High_dlyz);
+    //   hTPCUp_Charge->Fill(TPCUp_High_charge);
+    //   hTPCUp_PDG   ->Fill(TPCUp_High_pdg);
+    //   hTPCUp_Edep  ->Fill(TPCUp_High_edep);
+    //   hTPCUp_PosIniX->Fill(TPCUp_High_PosIniX);
+    //   hTPCUp_PosIniY->Fill(TPCUp_High_PosIniY);
+    //   hTPCUp_PosIniZ->Fill(TPCUp_High_PosIniZ);
+    //   hTPCUp_PosFinX->Fill(TPCUp_High_PosFinX);
+    //   hTPCUp_PosFinY->Fill(TPCUp_High_PosFinY);
+    //   hTPCUp_PosFinZ->Fill(TPCUp_High_PosFinZ);
+    // }
 
-    if(TPCDown_High_mom>0.){
+    // if(TPCDown_High_mom>0.){
 
-      cout << "TPC Down high mom track: " << " ";
-      cout << "event = " << ientry << ", ";
-      cout << "id = " << TPCDown_High_ID << ", ";
-      cout << "mom = " << TPCDown_High_mom << ", ";
-      cout << "length = " << TPCDown_High_len << ", ";
-      cout << "charge = " << TPCDown_High_charge << ", ";
-      cout << "edep = " << TPCDown_High_edep << ", ";
-      cout << "pdg = " << TPCDown_High_pdg << endl;    
+    //   cout << "TPC Down high mom track: " << " ";
+    //   cout << "event = " << ientry << ", ";
+    //   cout << "id = " << TPCDown_High_ID << ", ";
+    //   cout << "mom = " << TPCDown_High_mom << ", ";
+    //   cout << "length = " << TPCDown_High_len << ", ";
+    //   cout << "charge = " << TPCDown_High_charge << ", ";
+    //   cout << "edep = " << TPCDown_High_edep << ", ";
+    //   cout << "pdg = " << TPCDown_High_pdg << endl;    
 
-      hTPCDown_CosTheta->Fill(TPCDown_High_costheta);
-      hTPCDown_Mom   ->Fill(TPCDown_High_mom);
-      hTPCDown_Length->Fill(TPCDown_High_len);
-      hTPCDown_DeltaLyz->Fill(TPCDown_High_dlyz);
-      hTPCDown_Charge->Fill(TPCDown_High_charge);
-      hTPCDown_PDG   ->Fill(TPCDown_High_pdg);
-      hTPCDown_Edep  ->Fill(TPCDown_High_edep);
-      hTPCDown_PosIniX->Fill(TPCDown_High_PosIniX);
-      hTPCDown_PosIniY->Fill(TPCDown_High_PosIniY);
-      hTPCDown_PosIniZ->Fill(TPCDown_High_PosIniZ);
-      hTPCDown_PosFinX->Fill(TPCDown_High_PosFinX);
-      hTPCDown_PosFinY->Fill(TPCDown_High_PosFinY);
-      hTPCDown_PosFinZ->Fill(TPCDown_High_PosFinZ);
-    }    
+    //   hTPCDown_CosTheta->Fill(TPCDown_High_costheta);
+    //   hTPCDown_Mom   ->Fill(TPCDown_High_mom);
+    //   hTPCDown_Length->Fill(TPCDown_High_len);
+    //   hTPCDown_DeltaLyz->Fill(TPCDown_High_dlyz);
+    //   hTPCDown_Charge->Fill(TPCDown_High_charge);
+    //   hTPCDown_PDG   ->Fill(TPCDown_High_pdg);
+    //   hTPCDown_Edep  ->Fill(TPCDown_High_edep);
+    //   hTPCDown_PosIniX->Fill(TPCDown_High_PosIniX);
+    //   hTPCDown_PosIniY->Fill(TPCDown_High_PosIniY);
+    //   hTPCDown_PosIniZ->Fill(TPCDown_High_PosIniZ);
+    //   hTPCDown_PosFinX->Fill(TPCDown_High_PosFinX);
+    //   hTPCDown_PosFinY->Fill(TPCDown_High_PosFinY);
+    //   hTPCDown_PosFinZ->Fill(TPCDown_High_PosFinZ);
+    // }    
 
-    if(Target_High_mom>0.){
+    // if(Target_High_mom>0.){
 
-      cout << "Target high mom track: " << " ";
-      cout << "event = " << ientry << ", ";
-      cout << "id = " << Target_High_ID << ", ";
-      cout << "mom = " << Target_High_mom << ", ";
-      cout << "length = " << Target_High_len << ", ";
-      cout << "charge = " << Target_High_charge << ", ";
-      cout << "edep = " << Target_High_edep << ", ";
-      cout << "pdg = " << Target_High_pdg << endl;    
+    //   cout << "Target high mom track: " << " ";
+    //   cout << "event = " << ientry << ", ";
+    //   cout << "id = " << Target_High_ID << ", ";
+    //   cout << "mom = " << Target_High_mom << ", ";
+    //   cout << "length = " << Target_High_len << ", ";
+    //   cout << "charge = " << Target_High_charge << ", ";
+    //   cout << "edep = " << Target_High_edep << ", ";
+    //   cout << "pdg = " << Target_High_pdg << endl;    
 
-      hTarget_CosTheta->Fill(Target_High_costheta);
-      hTarget_Mom   ->Fill(Target_High_mom);
-      hTarget_Length->Fill(Target_High_len);
-      hTarget_DeltaLyz->Fill(Target_High_dlyz);
-      hTarget_Charge->Fill(Target_High_charge);
-      hTarget_PDG   ->Fill(Target_High_pdg);
-      hTarget_Edep  ->Fill(Target_High_edep);
-      hTarget_PosIniX->Fill(Target_High_PosIniX);
-      hTarget_PosIniY->Fill(Target_High_PosIniY);
-      hTarget_PosIniZ->Fill(Target_High_PosIniZ);
-      hTarget_PosFinX->Fill(Target_High_PosFinX);
-      hTarget_PosFinY->Fill(Target_High_PosFinY);
-      hTarget_PosFinZ->Fill(Target_High_PosFinZ);
+    //   hTarget_CosTheta->Fill(Target_High_costheta);
+    //   hTarget_Mom   ->Fill(Target_High_mom);
+    //   hTarget_Length->Fill(Target_High_len);
+    //   hTarget_DeltaLyz->Fill(Target_High_dlyz);
+    //   hTarget_Charge->Fill(Target_High_charge);
+    //   hTarget_PDG   ->Fill(Target_High_pdg);
+    //   hTarget_Edep  ->Fill(Target_High_edep);
+    //   hTarget_PosIniX->Fill(Target_High_PosIniX);
+    //   hTarget_PosIniY->Fill(Target_High_PosIniY);
+    //   hTarget_PosIniZ->Fill(Target_High_PosIniZ);
+    //   hTarget_PosFinX->Fill(Target_High_PosFinX);
+    //   hTarget_PosFinY->Fill(Target_High_PosFinY);
+    //   hTarget_PosFinZ->Fill(Target_High_PosFinZ);
       
-      hVtxMinusPosIni_Target_X->Fill(vtx_x-Target_High_PosIniX);
-      hVtxMinusPosIni_Target_Y->Fill(vtx_y-Target_High_PosIniY);
-      hVtxMinusPosIni_Target_Z->Fill(vtx_z-Target_High_PosIniZ);
+    //   hVtxMinusPosIni_Target_X->Fill(vtx_x-Target_High_PosIniX);
+    //   hVtxMinusPosIni_Target_Y->Fill(vtx_y-Target_High_PosIniY);
+    //   hVtxMinusPosIni_Target_Z->Fill(vtx_z-Target_High_PosIniZ);
       
-      // if( fabs(vtx_x-Target_High_PosIniX) > 0.){
-      // 	cout << "Vtx - Target first step pos:" 
-      // 	     << " x = " << vtx_x-Target_High_PosIniX
-      // 	     << " y = " << vtx_y-Target_High_PosIniY
-      // 	     << " z = " << vtx_z-Target_High_PosIniZ
-      // 	     << " - Vtx pos:"
-      // 	     << " x = " << vtx_x
-      // 	     << " y = " << vtx_y
-      // 	     << " z = " << vtx_z
-      // 	     << " - Vtx reac mode: " << VecVtx_ReacMode->at(0)
-      // 	     << " - High track: "
-      // 	     << " mom = " << Target_High_mom
-      // 	     << " costheta = " << Target_High_costheta
-      // 	     << " pdg = " << Target_High_pdg
-      // 	     << endl;
-      // }      
-    }  
+    //   // if( fabs(vtx_x-Target_High_PosIniX) > 0.){
+    //   // 	cout << "Vtx - Target first step pos:" 
+    //   // 	     << " x = " << vtx_x-Target_High_PosIniX
+    //   // 	     << " y = " << vtx_y-Target_High_PosIniY
+    //   // 	     << " z = " << vtx_z-Target_High_PosIniZ
+    //   // 	     << " - Vtx pos:"
+    //   // 	     << " x = " << vtx_x
+    //   // 	     << " y = " << vtx_y
+    //   // 	     << " z = " << vtx_z
+    //   // 	     << " - Vtx reac mode: " << VecVtx_ReacMode->at(0)
+    //   // 	     << " - High track: "
+    //   // 	     << " mom = " << Target_High_mom
+    //   // 	     << " costheta = " << Target_High_costheta
+    //   // 	     << " pdg = " << Target_High_pdg
+    //   // 	     << endl;
+    //   // }      
+    // }  
     
   } // end loop over events
 
@@ -941,29 +973,6 @@ void SkimNtuple
 
   // Draw histograms
 
-  // TCanvas *cGlob_TrackMom = new TCanvas("cGlob_TrackMom","cGlob_TrackMom");
-  // hGlob_Mom->Draw();
-  // TCanvas *cGlob_TrackLength = new TCanvas("cGlob_TrackLength","cGlob_TrackLength");
-  // hGlob_Length->Draw();
-  // TCanvas *cGlob_TrackEdep = new TCanvas("cGlob_TrackEdep","cGlob_TrackEdep");
-  // hGlob_Edep->Draw();
-  // TCanvas *cGlob_TrackCharge = new TCanvas("cGlob_TrackCharge","cGlob_TrackCharge");
-  // hGlob_Charge->Draw();
-  // // TCanvas *cGlob_TrackPDG = new TCanvas("cGlob_TrackPDG","cGlob_TrackPDG");
-  // // hGlob_PDG->Draw();
-  // TCanvas *cGlob_PosIniX = new TCanvas("cGlob_PosIniX","cGlob_PosIniX");
-  // hGlob_PosIniX->Draw();
-  // TCanvas *cGlob_PosIniY = new TCanvas("cGlob_PosIniY","cGlob_PosIniY");
-  // hGlob_PosIniY->Draw();
-  // TCanvas *cGlob_PosIniZ = new TCanvas("cGlob_PosIniZ","cGlob_PosIniZ");
-  // hGlob_PosIniZ->Draw();
-  // TCanvas *cGlob_PosFinX = new TCanvas("cGlob_PosFinX","cGlob_PosFinX");
-  // hGlob_PosFinX->Draw();
-  // TCanvas *cGlob_PosFinY = new TCanvas("cGlob_PosFinY","cGlob_PosFinY");
-  // hGlob_PosFinY->Draw();
-  // TCanvas *cGlob_PosFinZ = new TCanvas("cGlob_PosFinZ","cGlob_PosFinZ");
-  // hGlob_PosFinZ->Draw();
-  
   TCanvas *cTPCUp_TrackMom = new TCanvas("cTPCUp_TrackMom","cTPCUp_TrackMom");
   hTPCUp_Mom->Draw();
   TCanvas *cTPCUp_TrackCosTheta = new TCanvas("cTPCUp_TrackCosTheta","cTPCUp_TrackCosTheta");
@@ -1044,6 +1053,18 @@ void SkimNtuple
   hVtx_Z->Draw();
   
 
+  TCanvas *cReco_CosThetaVsMom_Target = new TCanvas("cReco_CosThetaVsMom_Target","cReco_CosThetaVsMom_Target");
+  hReco_CosThetaVsMom_Target->Draw("colz");
+  TCanvas *cReco_CosThetaVsMom_Fin = new TCanvas("cReco_CosThetaVsMom_Fin","cReco_CosThetaVsMom_Fin");
+  hReco_CosThetaVsMom_Fin->Draw("colz");
+  TCanvas *cReco_Mom = new TCanvas("cReco_Mom","cReco_Mom");
+  hReco_Mom->Draw();
+  TCanvas *cTarget_CosTheta = new TCanvas("cTarget_CosTheta","cTarget_CosTheta");
+  hReco_CosTheta->Draw();
+  TCanvas *cReco_PDG = new TCanvas("cReco_PDG","cReco_PDG");
+  hReco_PDG->Draw();
+  
+
   // TCanvas *cTarget_PosIniX = new TCanvas("cTarget_PosIniX","cTarget_PosIniX");
   // hTarget_PosIniX->Draw();
   // TCanvas *cTarget_PosIniY = new TCanvas("cTarget_PosIniY","cTarget_PosIniY");
@@ -1078,26 +1099,26 @@ void SkimNtuple
     sprintf(name,"outputs/cVecVtx_Y_%s.pdf",tag); cVtx_Y->Print(name);
     sprintf(name,"outputs/cVecVtx_Z_%s.pdf",tag); cVtx_Z->Print(name);
  
-    sprintf(name,"outputs/cTarget_PosIniX_%s.pdf",tag); cTarget_PosIniX->Print(name);
-    sprintf(name,"outputs/cTarget_PosIniY_%s.pdf",tag); cTarget_PosIniY->Print(name);
-    sprintf(name,"outputs/cTarget_PosIniZ_%s.pdf",tag); cTarget_PosIniZ->Print(name);
-    sprintf(name,"outputs/cTarget_PosFinX_%s.pdf",tag); cTarget_PosFinX->Print(name);
-    sprintf(name,"outputs/cTarget_PosFinY_%s.pdf",tag); cTarget_PosFinY->Print(name);
-    sprintf(name,"outputs/cTarget_PosFinZ_%s.pdf",tag); cTarget_PosFinZ->Print(name);
+    //sprintf(name,"outputs/cTarget_PosIniX_%s.pdf",tag); cTarget_PosIniX->Print(name);
+    //sprintf(name,"outputs/cTarget_PosIniY_%s.pdf",tag); cTarget_PosIniY->Print(name);
+    //sprintf(name,"outputs/cTarget_PosIniZ_%s.pdf",tag); cTarget_PosIniZ->Print(name);
+    //sprintf(name,"outputs/cTarget_PosFinX_%s.pdf",tag); cTarget_PosFinX->Print(name);
+    //sprintf(name,"outputs/cTarget_PosFinY_%s.pdf",tag); cTarget_PosFinY->Print(name);
+    //sprintf(name,"outputs/cTarget_PosFinZ_%s.pdf",tag); cTarget_PosFinZ->Print(name);
 
-    sprintf(name,"outputs/cTPCUp_PosIniX_%s.pdf",tag); cTPCUp_PosIniX->Print(name);
-    sprintf(name,"outputs/cTPCUp_PosIniY_%s.pdf",tag); cTPCUp_PosIniY->Print(name);
-    sprintf(name,"outputs/cTPCUp_PosIniZ_%s.pdf",tag); cTPCUp_PosIniZ->Print(name);
-    sprintf(name,"outputs/cTPCUp_PosFinX_%s.pdf",tag); cTPCUp_PosFinX->Print(name);
-    sprintf(name,"outputs/cTPCUp_PosFinY_%s.pdf",tag); cTPCUp_PosFinY->Print(name);
-    sprintf(name,"outputs/cTPCUp_PosFinZ_%s.pdf",tag); cTPCUp_PosFinZ->Print(name);
+    //sprintf(name,"outputs/cTPCUp_PosIniX_%s.pdf",tag); cTPCUp_PosIniX->Print(name);
+    //sprintf(name,"outputs/cTPCUp_PosIniY_%s.pdf",tag); cTPCUp_PosIniY->Print(name);
+    //sprintf(name,"outputs/cTPCUp_PosIniZ_%s.pdf",tag); cTPCUp_PosIniZ->Print(name);
+    //sprintf(name,"outputs/cTPCUp_PosFinX_%s.pdf",tag); cTPCUp_PosFinX->Print(name);
+    //sprintf(name,"outputs/cTPCUp_PosFinY_%s.pdf",tag); cTPCUp_PosFinY->Print(name);
+    //sprintf(name,"outputs/cTPCUp_PosFinZ_%s.pdf",tag); cTPCUp_PosFinZ->Print(name);
 
-    sprintf(name,"outputs/cTPCDown_PosIniX_%s.pdf",tag); cTPCDown_PosIniX->Print(name);
-    sprintf(name,"outputs/cTPCDown_PosIniY_%s.pdf",tag); cTPCDown_PosIniY->Print(name);
-    sprintf(name,"outputs/cTPCDown_PosIniZ_%s.pdf",tag); cTPCDown_PosIniZ->Print(name);
-    sprintf(name,"outputs/cTPCDown_PosFinX_%s.pdf",tag); cTPCDown_PosFinX->Print(name);
-    sprintf(name,"outputs/cTPCDown_PosFinY_%s.pdf",tag); cTPCDown_PosFinY->Print(name);
-    sprintf(name,"outputs/cTPCDown_PosFinZ_%s.pdf",tag); cTPCDown_PosFinZ->Print(name);
+    //sprintf(name,"outputs/cTPCDown_PosIniX_%s.pdf",tag); cTPCDown_PosIniX->Print(name);
+    //sprintf(name,"outputs/cTPCDown_PosIniY_%s.pdf",tag); cTPCDown_PosIniY->Print(name);
+    //sprintf(name,"outputs/cTPCDown_PosIniZ_%s.pdf",tag); cTPCDown_PosIniZ->Print(name);
+    //sprintf(name,"outputs/cTPCDown_PosFinX_%s.pdf",tag); cTPCDown_PosFinX->Print(name);
+    //sprintf(name,"outputs/cTPCDown_PosFinY_%s.pdf",tag); cTPCDown_PosFinY->Print(name);
+    //sprintf(name,"outputs/cTPCDown_PosFinZ_%s.pdf",tag); cTPCDown_PosFinZ->Print(name);
   }
   
   // // Write text file
@@ -1118,7 +1139,10 @@ void SkimNtuple
 
   // outfile.write (streamer.str().c_str(),size);
   // outfile.close();
-}
+
+
+
+  }
 
 
 
@@ -1129,13 +1153,14 @@ int FindTrackElem(std::vector<int> *vectrk,int trkid){
   //cout << "vectrk.size() = " << vectrk->size() << endl;
   
   int nPosition = -999;
-  vector <int>::iterator i = vectrk->begin();
+   
+  std::vector<int>::iterator i = vectrk->begin();
   
   //while (i != vectrk->end()){
   //cout << *i << endl;
   //++ i;
   //}
-
+  
   i = find(vectrk->begin(),vectrk->end(),trkid);
   
   //cout << "The found value is " << *i << endl;
