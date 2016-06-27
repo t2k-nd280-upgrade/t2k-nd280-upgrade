@@ -2,7 +2,14 @@
 void ReadG4out
 (
  const char *tag = "prova",
+ 
  const char *filename = "../bin/EffStudy.root",
+ //const char *filename = "../bin/EffStudy_genie_event0.root",
+
+ //const SelTruePDG = 13,   // muon
+ //const SelTruePDG = 2212, // proton
+ const SelTruePDG = -211, // pi+
+   
  const bool doprint = false
  )
 {
@@ -23,7 +30,7 @@ void ReadG4out
   TH1D *hTrackMomX = new TH1D("hTrackMomX","hTrackMomX",100,-1000,+1000);
   TH1D *hTrackMomY = new TH1D("hTrackMomY","hTrackMomY",100,-1000,+1000);
   TH1D *hTrackMomZ = new TH1D("hTrackMomZ","hTrackMomZ",100,-1000,+1000);
-  TH1D *hTrackMom  = new TH1D("hTrackMom","hTrackMom",100,0,1000);
+  TH1D *hTrackMom  = new TH1D("hTrackMom","hTrackMom",100,0,5000);
   
   // From Sensitive detector
   TH1D *hEabsTot = new TH1D("hEabsTot","hEabsTot",100,0,150);
@@ -35,19 +42,19 @@ void ReadG4out
   TH1D *hTPCUp_MomX = new TH1D("hTPCUp_MomX","hTPCUp_MomX",100,0,300);
   TH1D *hTPCUp_MomY = new TH1D("hTPCUp_MomY","hTPCUp_MomY",100,0,300);
   TH1D *hTPCUp_MomZ = new TH1D("hTPCUp_MomZ","hTPCUp_MomZ",100,0,300);
-  TH1D *hTPCUp_Mom = new TH1D("hTPCUp_Mom","hTPCUp_Mom",100,0,300);
-  TH1D *hTPCUp_Length = new TH1D("hTPCUp_Length","hTPCUp_Length",100,0,300); // mm
-  TH1D *hTPCUp_Edep = new TH1D("hTPCUp_Edep","hTPCUp_Edep",100,0,300);
+  TH1D *hTPCUp_Mom = new TH1D("hTPCUp_Mom","hTPCUp_Mom",100,0,5000);
+  TH1D *hTPCUp_Length = new TH1D("hTPCUp_Length","hTPCUp_Length",100,0,3000); // mm
+  TH1D *hTPCUp_Edep = new TH1D("hTPCUp_Edep","hTPCUp_Edep",100,0,1000);
   TH1D *hTPCUp_Charge = new TH1D("hTPCUp_Charge","hTPCUp_Charge",200,-100,100);
   TH1D *hTPCUp_PDG = new TH1D("hTPCUp_PDG","hTPCUp_PDG",800,-400,400);
 
-  TH1D *hTPCDown_NTrack = new TH1D("hTPCDown_NTrack","hTPCDown_NTrack",100,0,300);
-  TH1D *hTPCDown_MomX = new TH1D("hTPCDown_MomX","hTPCDown_MomX",100,0,300);
-  TH1D *hTPCDown_MomY = new TH1D("hTPCDown_MomY","hTPCDown_MomY",100,0,300);
-  TH1D *hTPCDown_MomZ = new TH1D("hTPCDown_MomZ","hTPCDown_MomZ",100,0,300);
-  TH1D *hTPCDown_Mom = new TH1D("hTPCDown_Mom","hTPCDown_Mom",100,0,300);
-  TH1D *hTPCDown_Length = new TH1D("hTPCDown_Length","hTPCDown_Length",100,0,300); // mm
-  TH1D *hTPCDown_Edep = new TH1D("hTPCDown_Edep","hTPCDown_Edep",100,0,300);
+  TH1D *hTPCDown_NTrack = new TH1D("hTPCDown_NTrack","hTPCDown_NTrack",100,0,3000);
+  TH1D *hTPCDown_MomX = new TH1D("hTPCDown_MomX","hTPCDown_MomX",100,0,3000);
+  TH1D *hTPCDown_MomY = new TH1D("hTPCDown_MomY","hTPCDown_MomY",100,0,3000);
+  TH1D *hTPCDown_MomZ = new TH1D("hTPCDown_MomZ","hTPCDown_MomZ",100,0,3000);
+  TH1D *hTPCDown_Mom = new TH1D("hTPCDown_Mom","hTPCDown_Mom",100,0,5000);
+  TH1D *hTPCDown_Length = new TH1D("hTPCDown_Length","hTPCDown_Length",100,0,3000); // mm
+  TH1D *hTPCDown_Edep = new TH1D("hTPCDown_Edep","hTPCDown_Edep",100,0,1000);
   TH1D *hTPCDown_Charge = new TH1D("hTPCDown_Charge","hTPCDown_Charge",200,-100,100);
   TH1D *hTPCDown_PDG = new TH1D("hTPCDown_PDG","hTPCDown_PDG",800,-400,400);
 
@@ -55,9 +62,9 @@ void ReadG4out
   TH1D *hTarget_MomX = new TH1D("hTarget_MomX","hTarget_MomX",100,0,300);
   TH1D *hTarget_MomY = new TH1D("hTarget_MomY","hTarget_MomY",100,0,300);
   TH1D *hTarget_MomZ = new TH1D("hTarget_MomZ","hTarget_MomZ",100,0,300);
-  TH1D *hTarget_Mom = new TH1D("hTarget_Mom","hTarget_Mom",100,0,300);
-  TH1D *hTarget_Length = new TH1D("hTarget_Length","hTarget_Length",100,0,300); // mm
-  TH1D *hTarget_Edep = new TH1D("hTarget_Edep","hTarget_Edep",100,0,300);
+  TH1D *hTarget_Mom = new TH1D("hTarget_Mom","hTarget_Mom",100,0,5000);
+  TH1D *hTarget_Length = new TH1D("hTarget_Length","hTarget_Length",100,0,3000); // mm
+  TH1D *hTarget_Edep = new TH1D("hTarget_Edep","hTarget_Edep",100,0,1000);
   TH1D *hTarget_Charge = new TH1D("hTarget_Charge","hTarget_Charge",200,-100,100);
   TH1D *hTarget_PDG = new TH1D("hTarget_PDG","hTarget_PDG",800,-400,400);
 
@@ -240,7 +247,7 @@ void ReadG4out
       hVtx_Z->Fill(vtx_z);
       
       hVtx_NuPDG->Fill( VecVtx_NuPDG->at(ivtx));
-      hVtx_ReacMode->Fill( VecVtx_ReacMode->at(ivtx));
+      hVtx_ReacMode->Fill( VecVtx_ReacMode->at(ivtx)); //
     }
 
     
@@ -268,6 +275,12 @@ void ReadG4out
       double trackMomZ = VecTrackMomZ->at(itrk);
       double trackMom  = VecTrackMom ->at(itrk);
 
+      if(trackPDG!=SelTruePDG) continue;
+
+      // cout << "ID = " << trackid  
+      // 	   << " - trackPDG = " << trackPDG << endl;
+      
+      
       hTrackPDG->Fill(trackPDG);
       hTrackE->Fill(trackE);
       hTrackMomX->Fill(trackMomX);
@@ -295,25 +308,37 @@ void ReadG4out
     hTPCUp_NTrack->Fill(TPCUp_NTracks);
     
     for(int itrk=0;itrk<VecTPCUp_TrackID->size();itrk++){
-     //cout << VecTPCUp_TrackID->at(itrk) << ", ";
-
+      
+      //if(VecTPCUp_TrackID[itrk]!=0) continue;
+      //cout << VecTPCUp_TrackID->at(itrk) << ", ";
+       
       double momX = VecTPCUp_TrackMomX->at(itrk);
       double momY = VecTPCUp_TrackMomY->at(itrk);
       double momZ = VecTPCUp_TrackMomZ->at(itrk);
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      double length = VecTPCUp_TrackLength->at(itrk);
+      double edep = VecTPCUp_TrackEdep->at(itrk);
+      double charge = VecTPCUp_TrackCharge->at(itrk);
+      double pdg = VecTPCUp_TrackPDG->at(itrk);
+      
+      //if(mom<200)     continue;
+      //if(charge<0.)   continue;
+      //if(length<100.) continue;
+      if(pdg!=SelTruePDG)     continue;
+      //if(Edep<100.)   continue;
+      
+      //cout << "pdg = " << pdg << endl;
+      
+      //cout << "TPD Up: ID = " << VecTPCUp_TrackID->at(itrk)  
+      //<< " - trackPDG = " << pdg << endl;
+      
       hTPCUp_MomX->Fill(momX);
       hTPCUp_MomY->Fill(momY);
-      hTPCUp_MomZ->Fill(momZ);
-      
-      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      hTPCUp_MomZ->Fill(momZ);      
       hTPCUp_Mom->Fill(mom);
-
-      double length = VecTPCUp_TrackLength->at(itrk);
       hTPCUp_Length->Fill(length);
-      double edep = VecTPCUp_TrackEdep->at(itrk);
       hTPCUp_Edep->Fill(edep);
-      double charge = VecTPCUp_TrackCharge->at(itrk);
       hTPCUp_Charge->Fill(charge);
-      double pdg = VecTPCUp_TrackPDG->at(itrk);
       hTPCUp_PDG->Fill(pdg);
     }
     //cout << endl;
@@ -330,20 +355,24 @@ void ReadG4out
       double momX = VecTPCDown_TrackMomX->at(itrk);
       double momY = VecTPCDown_TrackMomY->at(itrk);
       double momZ = VecTPCDown_TrackMomZ->at(itrk);
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      double length = VecTPCDown_TrackLength->at(itrk);
+      double edep = VecTPCDown_TrackEdep->at(itrk);
+      double charge = VecTPCDown_TrackCharge->at(itrk);
+      double pdg = VecTPCDown_TrackPDG->at(itrk);
+      
+      if(pdg!=SelTruePDG)     continue;
+
+      cout << "TPD Up: ID = " << VecTPCDown_TrackID->at(itrk)  
+	   << " - trackPDG = " << pdg << endl;
+ 
       hTPCDown_MomX->Fill(momX);
       hTPCDown_MomY->Fill(momY);
       hTPCDown_MomZ->Fill(momZ);
-      
-      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
       hTPCDown_Mom->Fill(mom);
-
-      double length = VecTPCDown_TrackLength->at(itrk);
       hTPCDown_Length->Fill(length);
-      double edep = VecTPCDown_TrackEdep->at(itrk);
       hTPCDown_Edep->Fill(edep);
-      double charge = VecTPCDown_TrackCharge->at(itrk);
       hTPCDown_Charge->Fill(charge);
-      double pdg = VecTPCDown_TrackPDG->at(itrk);
       hTPCDown_PDG->Fill(pdg);
     }
     //cout << endl;
@@ -360,20 +389,28 @@ void ReadG4out
       double momX = VecTarget_TrackMomX->at(itrk);
       double momY = VecTarget_TrackMomY->at(itrk);
       double momZ = VecTarget_TrackMomZ->at(itrk);
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      double length = VecTarget_TrackLength->at(itrk);
+      double edep = VecTarget_TrackEdep->at(itrk);
+      double charge = VecTarget_TrackCharge->at(itrk);
+      double pdg = VecTarget_TrackPDG->at(itrk);
+
+      //if(mom<200)     continue;
+      //if(charge<0.)   continue;
+      //if(length<100.) continue;
+      if(pdg!=SelTruePDG) continue;
+      //if(Edep<100.)   continue;
+
+      cout << "Target: ID = " << VecTarget_TrackID->at(itrk)  
+	   << " - trackPDG = " << pdg << endl;
+
       hTarget_MomX->Fill(momX);
       hTarget_MomY->Fill(momY);
-      hTarget_MomZ->Fill(momZ);
-      
-      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      hTarget_MomZ->Fill(momZ);      
       hTarget_Mom->Fill(mom);
-
-      double length = VecTarget_TrackLength->at(itrk);
       hTarget_Length->Fill(length);
-      double edep = VecTarget_TrackEdep->at(itrk);
       hTarget_Edep->Fill(edep);
-      double charge = VecTarget_TrackCharge->at(itrk);
       hTarget_Charge->Fill(charge);
-      double pdg = VecTarget_TrackPDG->at(itrk);
       hTarget_PDG->Fill(pdg);
    }
     //cout << endl;
@@ -414,40 +451,75 @@ void ReadG4out
   hTrackE->Draw();
 
   TCanvas *cTrackMomX = new TCanvas("cTrackMomX","cTrackMomX");
+  hTrackMomX->GetXaxis()->SetTitle("Momentum (MeV/c)");
+  hTrackMomX->GetYaxis()->SetTitle("Entries");  
   hTrackMomX->Draw();
   TCanvas *cTrackMomY = new TCanvas("cTrackMomY","cTrackMomY");
+  hTrackMomY->GetXaxis()->SetTitle("Momentum (MeV/c)");
+  hTrackMomY->GetYaxis()->SetTitle("Entries");  
+  hTrackMomY->Draw();
   hTrackMomY->Draw();
   TCanvas *cTrackMomZ = new TCanvas("cTrackMomZ","cTrackMomZ");
+  hTrackMomZ->GetXaxis()->SetTitle("Momentum (MeV/c)");
+  hTrackMomZ->GetYaxis()->SetTitle("Entries");  
+  hTrackMomZ->Draw();
   hTrackMomZ->Draw();
   TCanvas *cTrackMom = new TCanvas("cTrackMom","cTrackMom");
+  hTrackMom->GetXaxis()->SetTitle("Momentum (MeV/c)");
+  hTrackMom->GetYaxis()->SetTitle("Entries");  
+  hTrackMom->Draw();
   hTrackMom->Draw();
 
   TCanvas *cTPCUp_TrackMom = new TCanvas("cTPCUp_TrackMom","cTPCUp_TrackMom");
+  hTPCUp_Mom->GetXaxis()->SetTitle("Momentum (MeV/c)");
+  hTPCUp_Mom->GetYaxis()->SetTitle("Entries");  
   hTPCUp_Mom->Draw();
   TCanvas *cTPCDown_TrackMom = new TCanvas("cTPCDown_TrackMom","cTPCDown_TrackMom");
+  hTPCDown_Mom->GetXaxis()->SetTitle("Momentum (MeV/c)");
+  hTPCDown_Mom->GetYaxis()->SetTitle("Entries");  
   hTPCDown_Mom->Draw();
   TCanvas *cTarget_TrackMom = new TCanvas("cTarget_TrackMom","cTarget_TrackMom");
+  hTarget_Mom->GetXaxis()->SetTitle("Momentum (MeV/c)");
+  hTarget_Mom->GetYaxis()->SetTitle("Entries");  
   hTarget_Mom->Draw();
 
   TCanvas *cTPCUp_TrackLength = new TCanvas("cTPCUp_TrackLength","cTPCUp_TrackLength");
+  hTPCUp_Length->GetXaxis()->SetTitle("Track length (mm)");
+  hTPCUp_Length->GetYaxis()->SetTitle("Entries");  
   hTPCUp_Length->Draw();
   TCanvas *cTPCDown_TrackLength = new TCanvas("cTPCDown_TrackLength","cTPCDown_TrackLength");
+  hTPCDown_Length->GetXaxis()->SetTitle("Track length (mm)");
+  hTPCDown_Length->GetYaxis()->SetTitle("Entries");  
   hTPCDown_Length->Draw();
   TCanvas *cTarget_TrackLength = new TCanvas("cTarget_TrackLength","cTarget_TrackLength");
+  hTarget_Length->GetXaxis()->SetTitle("Track length (mm)");
+  hTarget_Length->GetYaxis()->SetTitle("Entries");  
   hTarget_Length->Draw();
 
   TCanvas *cTPCUp_TrackEdep = new TCanvas("cTPCUp_TrackEdep","cTPCUp_TrackEdep");
+  hTPCUp_Edep->GetXaxis()->SetTitle("Deposited energy (MeV)");
+  hTPCUp_Edep->GetYaxis()->SetTitle("Entries");  
   hTPCUp_Edep->Draw();
   TCanvas *cTPCDown_TrackEdep = new TCanvas("cTPCDown_TrackEdep","cTPCDown_TrackEdep");
+  hTPCDown_Edep->GetXaxis()->SetTitle("Deposited energy (MeV)");
+  hTPCDown_Edep->GetYaxis()->SetTitle("Entries");  
   hTPCDown_Edep->Draw();
   TCanvas *cTarget_TrackEdep = new TCanvas("cTarget_TrackEdep","cTarget_TrackEdep");
+  hTarget_Edep->GetXaxis()->SetTitle("Deposited energy (MeV)");
+  hTarget_Edep->GetYaxis()->SetTitle("Entries");  
   hTarget_Edep->Draw();
 
   TCanvas *cTPCUp_TrackCharge = new TCanvas("cTPCUp_TrackCharge","cTPCUp_TrackCharge");
+  hTPCUp_Charge->GetXaxis()->SetTitle("Charge (Units e)");
+  hTPCUp_Charge->GetYaxis()->SetTitle("Entries");  
   hTPCUp_Charge->Draw();
   TCanvas *cTPCDown_TrackCharge = new TCanvas("cTPCDown_TrackCharge","cTPCDown_TrackCharge");
+  hTPCDown_Charge->GetXaxis()->SetTitle("Charge (Units e)");
+  hTPCDown_Charge->GetYaxis()->SetTitle("Entries");  
   hTPCDown_Charge->Draw();
   TCanvas *cTarget_TrackCharge = new TCanvas("cTarget_TrackCharge","cTarget_TrackCharge");
+  hTarget_Charge->GetXaxis()->SetTitle("Charge (Units e)");
+  hTarget_Charge->GetYaxis()->SetTitle("Entries");  
   hTarget_Charge->Draw();
   
   TCanvas *cTPCUp_TrackPDG = new TCanvas("cTPCUp_TrackPDG","cTPCUp_TrackPDG");
@@ -458,26 +530,26 @@ void ReadG4out
   hTarget_PDG->Draw();
 
   TCanvas *cVtx_X = new TCanvas("cVtx_X","cVtx_X");
-  hVtx_X->GetXaxis()->SetTitle("X (meters)");
+  hVtx_X->GetXaxis()->SetTitle("X (mm)");
   hVtx_X->Draw();
   TCanvas *cVtx_Y = new TCanvas("cVtx_Y","cVtx_Y");
-  hVtx_Y->GetXaxis()->SetTitle("Y (meters)");
+  hVtx_Y->GetXaxis()->SetTitle("Y (mm)");
   hVtx_Y->Draw();
   TCanvas *cVtx_Z = new TCanvas("cVtx_Z","cVtx_Z");
-  hVtx_Z->GetXaxis()->SetTitle("Z (meters)");
+  hVtx_Z->GetXaxis()->SetTitle("Z (mm)");
   hVtx_Z->Draw();
 
   TCanvas *cVtx_XY = new TCanvas("cVtx_XY","cVtx_XY");
-  hVtx_XY->GetXaxis()->SetTitle("X (meters)");
-  hVtx_XY->GetYaxis()->SetTitle("Y (meters)");
+  hVtx_XY->GetXaxis()->SetTitle("X (mm)");
+  hVtx_XY->GetYaxis()->SetTitle("Y (mm)");
   hVtx_XY->Draw("colz");
   TCanvas *cVtx_XZ = new TCanvas("cVtx_XZ","cVtx_XZ");
-  hVtx_XZ->GetXaxis()->SetTitle("X (meters)");
-  hVtx_XZ->GetYaxis()->SetTitle("Z (meters)");
+  hVtx_XZ->GetXaxis()->SetTitle("X (mm)");
+  hVtx_XZ->GetYaxis()->SetTitle("Z (mm)");
   hVtx_XZ->Draw("colz");
   TCanvas *cVtx_YZ = new TCanvas("cVtx_YZ","cVtx_YZ");
-  hVtx_YZ->GetXaxis()->SetTitle("Y (meters)");
-  hVtx_YZ->GetYaxis()->SetTitle("Z (meters)");
+  hVtx_YZ->GetXaxis()->SetTitle("Y (mm)");
+  hVtx_YZ->GetYaxis()->SetTitle("Z (mm)");
   hVtx_YZ->Draw("colz");
   
 
