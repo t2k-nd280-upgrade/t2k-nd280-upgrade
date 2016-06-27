@@ -27,12 +27,12 @@ void SkimNtuple
   const bool doCut_dL = true; // full length in target and dlyz in tpcs
   const bool doCut_poscharge = true;
 
-  const bool doSelPDG = false;
-  const int SetPDG = -13;
+  const bool doSelPDG = true;
+  const int SetPDG = +211; //+2212; //+13;
 
   // For debugging:
   const bool doSingleEvent = false;
-  const int SingleEventID = 17; // 87
+  const int SingleEventID = 1914; //1523; // 87
 
   const int doPrintTrack = false;
 
@@ -54,8 +54,9 @@ void SkimNtuple
   TH1D *hReco_Mom = new TH1D("hReco_Mom","hReco_Mom",100,0,10000);
   TH1D *hReco_CosTheta = new TH1D("hReco_CosTheta","hReco_CosTheta",50,-1,+1);
   TH1D *hReco_PDG = new TH1D("hReco_PDG","hReco_PDG",800,-400,400);
-  TH2D *hReco_CosThetaVsMom_Target = new TH2D("hReco_CosThetaVsMom_Target","hReco_CosThetaVsMom_Target",50,-1,1,100,0,10000);
-  TH2D *hReco_CosThetaVsMom_Fin = new TH2D("hReco_CosThetaVsMom_Fin","hReco_CosThetaVsMom_Fin",50,-1,1,100,0,10000);
+  TH2D *hReco_CosThetaVsMom_Target = new TH2D("hReco_CosThetaVsMom_Target","hReco_CosThetaVsMom_Target",10,-1,1,20,0,10000);
+  TH2D *hReco_CosThetaVsMom_Fin = new TH2D("hReco_CosThetaVsMom_Fin","hReco_CosThetaVsMom_Fin",10,-1,1,20,0,10000);
+  TH2D *hReco_CosThetaVsMom_Eff; // = new TH2D("hReco_CosThetaVsMom_Eff","hReco_CosThetaVsMom_Eff",10,-1,1,20,0,10000);
   
   TH1D *hTPCUp_MomX = new TH1D("hTPCUp_MomX","hTPCUp_MomX",100,0,10000);
   TH1D *hTPCUp_MomY = new TH1D("hTPCUp_MomY","hTPCUp_MomY",100,0,10000);
@@ -140,84 +141,84 @@ void SkimNtuple
   int NTracks=0;
 
   // Global informations
-  vector<int>   * VecTrackID  = new vector<int>();
-  vector<int>   * VecParentID  = new vector<int>();
-  vector<int>   * VecTrackPDG = new vector<int>();
-  vector<double>* VecTrackE   = new vector<double>();
-  vector<double>* VecTrackMomX = new vector<double>();
-  vector<double>* VecTrackMomY = new vector<double>();
-  vector<double>* VecTrackMomZ = new vector<double>();
-  vector<double>* VecTrackMom  = new vector<double>();
+  vector<int>   * VecTrackID = 0; 
+  vector<int>   * VecParentID = 0; 
+  vector<int>   * VecTrackPDG = 0; 
+  vector<double>* VecTrackE   = 0; 
+  vector<double>* VecTrackMomX = 0; 
+  vector<double>* VecTrackMomY = 0; 
+  vector<double>* VecTrackMomZ = 0; 
+  vector<double>* VecTrackMom  = 0; 
 
   // TPC up informations
   int     TPCUp_NTracks;          // # of tracks in TPC Up
-  std::vector<int>   * VecTPCUp_TrackID; // Vector of trackID in TPCup
-  std::vector<int>   * VecTPCUp_ParentID; // Vector of parentID in TPCup
-  std::vector<double>* VecTPCUp_TrackMomX; // Vector of initial mom in TPC Up (MeV)
-  std::vector<double>* VecTPCUp_TrackMomY; // Vector of initial mom in TPC Up (MeV)
-  std::vector<double>* VecTPCUp_TrackMomZ; // Vector of initial mom in TPC Up (MeV)
-  std::vector<double>* VecTPCUp_TrackLength; // Vector of corrected (mult. scatt.) length in TPC Up (mm)
-  std::vector<double>* VecTPCUp_TrackDeltaLyz; // Vector of geometrical length yz in TPC Up (mm)
-  std::vector<double>* VecTPCUp_TrackEdep; // Vector of edep in TPC Up (MeV)
-  std::vector<double>* VecTPCUp_TrackCharge; // Vector of charge in TPC Up (e-)
-  std::vector<int>   * VecTPCUp_TrackPDG; // Vector of pdg in TPC Up 
-  std::vector<double> *VecTPCUp_TrackStepFirstX; // Vector of first step position in TPC Up
-  std::vector<double> *VecTPCUp_TrackStepFirstY; // Vector of first step position in TPC Up
-  std::vector<double> *VecTPCUp_TrackStepFirstZ; // Vector of first step position in TPC Up
-  std::vector<double> *VecTPCUp_TrackStepLastX; // Vector of last step position in TPC Up
-  std::vector<double> *VecTPCUp_TrackStepLastY; // Vector of last step position in TPC Up
-  std::vector<double> *VecTPCUp_TrackStepLastZ; // Vector of last step position in TPC Up
-  std::vector<double> *VecTPCUp_TrackCosTheta; // Vector of cos(theta) wrt nu direction (z axis) in TPC Up
+  std::vector<int>   * VecTPCUp_TrackID = 0; // Vector of trackID in TPCup
+  std::vector<int>   * VecTPCUp_ParentID = 0; // Vector of parentID in TPCup
+  std::vector<double>* VecTPCUp_TrackMomX = 0; // Vector of initial mom in TPC Up (MeV)
+  std::vector<double>* VecTPCUp_TrackMomY = 0; // Vector of initial mom in TPC Up (MeV)
+  std::vector<double>* VecTPCUp_TrackMomZ = 0; // Vector of initial mom in TPC Up (MeV)
+  std::vector<double>* VecTPCUp_TrackLength = 0; // Vector of corrected (mult. scatt.) length in TPC Up (mm)
+  std::vector<double>* VecTPCUp_TrackDeltaLyz = 0; // Vector of geometrical length yz in TPC Up (mm)
+  std::vector<double>* VecTPCUp_TrackEdep = 0; // Vector of edep in TPC Up (MeV)
+  std::vector<double>* VecTPCUp_TrackCharge = 0; // Vector of charge in TPC Up (e-)
+  std::vector<int>   * VecTPCUp_TrackPDG = 0; // Vector of pdg in TPC Up 
+  std::vector<double> *VecTPCUp_TrackStepFirstX = 0; // Vector of first step position in TPC Up
+  std::vector<double> *VecTPCUp_TrackStepFirstY = 0; // Vector of first step position in TPC Up
+  std::vector<double> *VecTPCUp_TrackStepFirstZ = 0; // Vector of first step position in TPC Up
+  std::vector<double> *VecTPCUp_TrackStepLastX = 0; // Vector of last step position in TPC Up
+  std::vector<double> *VecTPCUp_TrackStepLastY = 0; // Vector of last step position in TPC Up
+  std::vector<double> *VecTPCUp_TrackStepLastZ = 0; // Vector of last step position in TPC Up
+  std::vector<double> *VecTPCUp_TrackCosTheta = 0; // Vector of cos(theta) wrt nu direction (z axis) in TPC Up
 
   // TPC down informations
-  int     TPCDown_NTracks;          // # of tracks in TPC Down
-  std::vector<int>   * VecTPCDown_TrackID; // Vector of trackID in TPCDown
-  std::vector<int>   * VecTPCDown_ParentID; // Vector of parentID in TPCDown
-  std::vector<double>* VecTPCDown_TrackMomX; // Vector of initial mom in TPC Down (MeV)
-  std::vector<double>* VecTPCDown_TrackMomY; // Vector of initial mom in TPC Down (MeV)
-  std::vector<double>* VecTPCDown_TrackMomZ; // Vector of initial mom in TPC Down (MeV)
-  std::vector<double>* VecTPCDown_TrackLength; // Vector of corrected (mult. scatt.) length in TPC Down (mm)
-  std::vector<double>* VecTPCDown_TrackDeltaLyz; // Vector of geometrical length yz in TPC Down (mm)
-  std::vector<double>* VecTPCDown_TrackEdep; // Vector of edep in TPC Down (MeV)
-  std::vector<double>* VecTPCDown_TrackCharge; // Vector of charge in TPC Down (e-)
-  std::vector<int>   * VecTPCDown_TrackPDG; // Vector of pdg in TPC Down 
-  std::vector<double> *VecTPCDown_TrackStepFirstX; // Vector of first step position in TPC Down
-  std::vector<double> *VecTPCDown_TrackStepFirstY; // Vector of first step position in TPC Down
-  std::vector<double> *VecTPCDown_TrackStepFirstZ; // Vector of first step position in TPC Down
-  std::vector<double> *VecTPCDown_TrackStepLastX; // Vector of last step position in TPC Down
-  std::vector<double> *VecTPCDown_TrackStepLastY; // Vector of last step position in TPC Down
-  std::vector<double> *VecTPCDown_TrackStepLastZ; // Vector of last step position in TPC Down
-  std::vector<double> *VecTPCDown_TrackCosTheta; // Vector of cos(theta) wrt nu direction (z axis) in TPC Down
+  int     TPCDown_NTracks = 0;          // # of tracks in TPC Down
+  std::vector<int>   * VecTPCDown_TrackID = 0; // Vector of trackID in TPCDown
+  std::vector<int>   * VecTPCDown_ParentID = 0; // Vector of parentID in TPCDown
+  std::vector<double>* VecTPCDown_TrackMomX = 0; // Vector of initial mom in TPC Down (MeV)
+  std::vector<double>* VecTPCDown_TrackMomY = 0; // Vector of initial mom in TPC Down (MeV)
+  std::vector<double>* VecTPCDown_TrackMomZ = 0; // Vector of initial mom in TPC Down (MeV)
+  std::vector<double>* VecTPCDown_TrackLength = 0; // Vector of corrected (mult.scatt.) length in TPC Down (mm)
+  std::vector<double>* VecTPCDown_TrackDeltaLyz = 0; // Vector of geometrical length yz in TPC Down (mm)
+  std::vector<double>* VecTPCDown_TrackEdep = 0; // Vector of edep in TPC Down (MeV)
+  std::vector<double>* VecTPCDown_TrackCharge = 0; // Vector of charge in TPC Down (e-)
+  std::vector<int>   * VecTPCDown_TrackPDG = 0; // Vector of pdg in TPC Down 
+  std::vector<double> *VecTPCDown_TrackStepFirstX = 0; // Vector of first step position in TPC Down
+  std::vector<double> *VecTPCDown_TrackStepFirstY = 0; // Vector of first step position in TPC Down
+  std::vector<double> *VecTPCDown_TrackStepFirstZ = 0; // Vector of first step position in TPC Down
+  std::vector<double> *VecTPCDown_TrackStepLastX = 0; // Vector of last step position in TPC Down
+  std::vector<double> *VecTPCDown_TrackStepLastY = 0; // Vector of last step position in TPC Down
+  std::vector<double> *VecTPCDown_TrackStepLastZ = 0; // Vector of last step position in TPC Down
+  std::vector<double> *VecTPCDown_TrackCosTheta = 0; // Vector of cos(theta) wrt nu direction (z axis) in TPC Down
 
   // Target informations
   int     Target_NTracks;          // # of tracks in Target
-  std::vector<int>   * VecTarget_TrackID; // Vector of trackID in Target
-  std::vector<int>   * VecTarget_ParentID; // Vector of parentID in Target
-  std::vector<double>* VecTarget_TrackMomX; // Vector of initial mom in Target (MeV)
-  std::vector<double>* VecTarget_TrackMomY; // Vector of initial mom in Target (MeV)
-  std::vector<double>* VecTarget_TrackMomZ; // Vector of initial mom in Target (MeV)
-  std::vector<double>* VecTarget_TrackLength; // Vector of corrected (mult. scatt.) length in Target (mm)
-  std::vector<double>* VecTarget_TrackDeltaLyz; // Vector of geometrical length yz in Target (mm)
-  std::vector<double>* VecTarget_TrackEdep; // Vector of edep in Target (MeV)
-  std::vector<double>* VecTarget_TrackCharge; // Vector of charge in Target (e-)
-  std::vector<int>   * VecTarget_TrackPDG; // Vector of pdg in Target
-  std::vector<double> *VecTarget_TrackStepFirstX; // Vector of first step position in Target
-  std::vector<double> *VecTarget_TrackStepFirstY; // Vector of first step position in Target
-  std::vector<double> *VecTarget_TrackStepFirstZ; // Vector of first step position in Target
-  std::vector<double> *VecTarget_TrackStepLastX; // Vector of last step position in Target
-  std::vector<double> *VecTarget_TrackStepLastY; // Vector of last step position in Target
-  std::vector<double> *VecTarget_TrackStepLastZ; // Vector of last step position in Target
-  std::vector<double> *VecTarget_TrackCosTheta; // Vector of cos(theta) wrt nu direction (z axis) in Target
+  std::vector<int>   * VecTarget_TrackID = 0; // Vector of trackID in Target
+  std::vector<int>   * VecTarget_ParentID = 0; // Vector of parentID in Target
+  std::vector<double>* VecTarget_TrackMomX = 0; // Vector of initial mom in Target (MeV)
+  std::vector<double>* VecTarget_TrackMomY = 0; // Vector of initial mom in Target (MeV)
+  std::vector<double>* VecTarget_TrackMomZ = 0; // Vector of initial mom in Target (MeV)
+  std::vector<double>* VecTarget_TrackLength = 0; // Vector of corrected (mult. scatt.) length in Target (mm)
+  std::vector<double>* VecTarget_TrackDeltaLyz = 0; // Vector of geometrical length yz in Target (mm)
+  std::vector<double>* VecTarget_TrackEdep = 0; // Vector of edep in Target (MeV)
+  std::vector<double>* VecTarget_TrackCharge = 0; // Vector of charge in Target (e-)
+  std::vector<int>   * VecTarget_TrackPDG = 0; // Vector of pdg in Target
+  std::vector<double> *VecTarget_TrackStepFirstX = 0; // Vector of first step position in Target
+  std::vector<double> *VecTarget_TrackStepFirstY = 0; // Vector of first step position in Target
+  std::vector<double> *VecTarget_TrackStepFirstZ = 0; // Vector of first step position in Target
+  std::vector<double> *VecTarget_TrackStepLastX = 0; // Vector of last step position in Target
+  std::vector<double> *VecTarget_TrackStepLastY = 0; // Vector of last step position in Target
+  std::vector<double> *VecTarget_TrackStepLastZ = 0; // Vector of last step position in Target
+  std::vector<double> *VecTarget_TrackCosTheta = 0; // Vector of cos(theta) wrt nu direction (z axis) in Target
 
   // Vertex informations                                          
   int     NVtx;
-  std::vector<double> *VecVtx_X; // Vector of vertex X position
-  std::vector<double> *VecVtx_Y; // Vector of vertex Y position
-  std::vector<double> *VecVtx_Z; // Vector of vertex Z position
-  std::vector<int>    *VecVtx_NuPDG;     // Vector of vertex Nu PDG
-  std::vector<int>    *VecVtx_ReacMode;  // Vector of vertex reaction mode
-  std::vector<double> *VecVtx_EvtProb;   // Vector of vertex event prob
-  std::vector<double> *VecVtx_EvtWeight; // Vector of vertex event weight
+  std::vector<double> *VecVtx_X = 0; // Vector of vertex X position
+  std::vector<double> *VecVtx_Y = 0; // Vector of vertex Y position
+  std::vector<double> *VecVtx_Z = 0; // Vector of vertex Z position
+  std::vector<int>    *VecVtx_NuPDG = 0;     // Vector of vertex Nu PDG
+  std::vector<int>    *VecVtx_ReacMode = 0;  // Vector of vertex reaction mode
+  std::vector<double> *VecVtx_EvtProb = 0;   // Vector of vertex event prob
+  std::vector<double> *VecVtx_EvtWeight = 0; // Vector of vertex event weight
 
   //
   // From all the volume
@@ -404,7 +405,6 @@ void SkimNtuple
   treeoa->Branch("Target_High_PosFinZ",&Target_High_PosFinZ);
 
 
-  
   // Loop over the ntuple events
   
   int Nentries = treein->GetEntries();
@@ -465,11 +465,9 @@ void SkimNtuple
 
     treein->GetEntry(ientry);
 
-    
+    if(!(ientry%100)) cout << "Event " << ientry << endl;
+    if(doPrintTrack) cout << "Event " << ientry << endl;
 
-
-    if(!(ientry%1)) cout << "Event " << ientry << endl;
-    
     //
     // Read all the tracks in the event (all volume)
     //
@@ -480,7 +478,6 @@ void SkimNtuple
       cerr << endl;
       exit(1);
     }
-
     
     double vtx_x = VecVtx_X->at(0);
     double vtx_y = VecVtx_Y->at(0);
@@ -510,6 +507,30 @@ void SkimNtuple
       cerr << endl;
       exit(1);
     }
+    // if(NTracks!=VecTarget_TrackID->size()){
+    //   cerr << endl;
+    //   cerr << "VecTarget_TrackID->size() != NTracks" << endl;
+    //   cerr << "VecTarget_TrackID->size() = " << VecTarget_TrackID->size() << endl;
+    //   cerr << "NTracks = " << NTracks << endl;
+    //   cerr << endl;
+    //   exit(1);
+    // }
+    // if(NTracks!=VecTPCUp_TrackID->size()){
+    //   cerr << endl;
+    //   cerr << "VecTPCUp_TrackID->size() != NTracks" << endl;
+    //   cerr << "VecTPCUp_TrackID->size() = " << VecTPCUp_TrackID->size() << endl;
+    //   cerr << "NTracks = " << NTracks << endl;
+    //   cerr << endl;
+    //   exit(1);
+    // }
+    // if(NTracks!=VecTPCDown_TrackID->size()){
+    //   cerr << endl;
+    //   cerr << "VecTPCDown_TrackID->size() != NTracks" << endl;
+    //   cerr << "VecTPCDown_TrackID->size() = " << VecTPCDown_TrackID->size() << endl;
+    //   cerr << "NTracks = " << NTracks << endl;
+    //   cerr << endl;
+    //   exit(1);
+    // }
 
     int NStepFirst_TPCUp = VecTPCUp_TrackStepFirstX->size();
     int NStepLast_TPCUp = VecTPCUp_TrackStepLastX->size();
@@ -540,6 +561,7 @@ void SkimNtuple
     // 
 
     for(int trkid=1;trkid<=NTracks;trkid++){ // loop over track ID (1 to NTracks)
+    //for(int trkid=1;trkid<=1;trkid++){ // loop over track ID (1 to NTracks)
           
       int vecel=-999,id=-999;
       double costheta=-999,momX=-999,momY=-999,momZ=-999,mom=-999,length=-999,deltaLyz=-999,edep=-999,charge=-999,pdg=-999,posX=-999,posY=-999,posZ=-999,posLastX=-999,posLastY=-999,posLastZ=-999;   
@@ -551,7 +573,7 @@ void SkimNtuple
       //
 
       vecel = FindTrackElem(VecTarget_TrackID,trkid);      
-      if(vecel>0){
+      if(vecel>=0){
 	id = VecTarget_TrackID->at(vecel);
 	costheta = VecTarget_TrackCosTheta->at(vecel);
 	momX = VecTarget_TrackMomX->at(vecel);
@@ -576,8 +598,8 @@ void SkimNtuple
 	hReco_CosThetaVsMom_Target->Fill(costheta,mom); // Fill efficiency denominator
 
 	if(doPrintTrack){
-	  cout << "Track ID = " << trkid << endl;
-	  cout << "- Target track: " << " ";
+	  cout << "  Track ID = " << trkid << endl;
+	  cout << "     - Target track: " << " ";
 	  cout << "event = " << ientry << ", ";
 	  cout << "mom = " << mom << ", ";
 	  cout << "length = " << length << ", ";
@@ -592,7 +614,7 @@ void SkimNtuple
 	//
 	
 	vecel = FindTrackElem(VecTPCUp_TrackID,trkid);  
-	if(vecel>0){
+	if(vecel>=0){
 	  id = VecTPCUp_TrackID->at(vecel);
 	  costheta = VecTPCUp_TrackCosTheta->at(vecel);
 	  momX = VecTPCUp_TrackMomX->at(vecel);
@@ -612,9 +634,9 @@ void SkimNtuple
 	  if(doCut_poscharge && fabs(charge)!=1) continue;
 	  
 	  hReco_CosThetaVsMom_Fin->Fill(costheta,mom); // Fill efficiency denominator
-
+	  
 	  if(doPrintTrack){
-	    cout << "- TPCUp track: " << " ";
+	    cout << "     - TPCUp track: " << " ";
 	    cout << "event = " << ientry << ", ";
 	    cout << "mom = " << mom << ", ";
 	    cout << "deltaLyz = " << deltaLyz << ", ";
@@ -634,7 +656,7 @@ void SkimNtuple
 	  //
 	  
 	  vecel = FindTrackElem(VecTPCDown_TrackID,trkid);      
-	  if(vecel>0){
+	  if(vecel>=0){
 	    id = VecTPCDown_TrackID->at(vecel);
 	    costheta = VecTPCDown_TrackCosTheta->at(vecel);
 	    momX = VecTPCDown_TrackMomX->at(vecel);
@@ -656,8 +678,7 @@ void SkimNtuple
 	    hReco_CosThetaVsMom_Fin->Fill(costheta,mom); // Fill efficiency denominator
 	    
 	    if(doPrintTrack){
-	      cout << "- TPCDown track: " << " ";
-	      cout << "id = " << id_tpc << ", ";
+	      cout << "     - TPCDown track: " << " ";
 	      cout << "event = " << ientry << ", ";
 	      cout << "mom = " << mom << ", ";
 	      cout << "deltaLyz = " << deltaLyz << ", ";
@@ -668,308 +689,324 @@ void SkimNtuple
 	    }
 	  } // reco in TPCDown
 	} // not in TPCDown
-	
-	cout << endl;
-	
+		
       } // in the Target
      
     } // end loop over all tracks
   
     
-    
+   
+    /////////////////////////////////////////////////
+    //                                             //
+    // Check tracks in each detector independently //
+    //                                             //
+    /////////////////////////////////////////////////
 
-    
-
-    // //
-    // // TPC Up tracks
-    // //
+    //
+    // TPC Up tracks
+    //
         
-    // for(int itrk=0;itrk<VecTPCUp_TrackID->size();itrk++){
+    for(int itrk=0;itrk<VecTPCUp_TrackID->size();itrk++){
       
-    //   int id = VecTPCUp_TrackID->at(itrk);
-    //   double costheta = VecTPCUp_TrackCosTheta->at(itrk);
-    //   double momX = VecTPCUp_TrackMomX->at(itrk);
-    //   double momY = VecTPCUp_TrackMomY->at(itrk);
-    //   double momZ = VecTPCUp_TrackMomZ->at(itrk);
-    //   double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
-    //   double length = VecTPCUp_TrackLength->at(itrk);
-    //   double deltaLyz = VecTPCUp_TrackDeltaLyz->at(itrk);
-    //   double edep = VecTPCUp_TrackEdep->at(itrk);
-    //   double charge = VecTPCUp_TrackCharge->at(itrk);
-    //   double pdg = VecTPCUp_TrackPDG->at(itrk);
-    //   double posX = VecTPCUp_TrackStepFirstX->at(itrk);
-    //   double posY = VecTPCUp_TrackStepFirstY->at(itrk);
-    //   double posZ = VecTPCUp_TrackStepFirstZ->at(itrk);
-    //   double posLastX = VecTPCUp_TrackStepLastX->at(itrk);
-    //   double posLastY = VecTPCUp_TrackStepLastY->at(itrk);
-    //   double posLastZ = VecTPCUp_TrackStepLastZ->at(itrk);
+      int id = VecTPCUp_TrackID->at(itrk);
+      double costheta = VecTPCUp_TrackCosTheta->at(itrk);
+      double momX = VecTPCUp_TrackMomX->at(itrk);
+      double momY = VecTPCUp_TrackMomY->at(itrk);
+      double momZ = VecTPCUp_TrackMomZ->at(itrk);
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      double length = VecTPCUp_TrackLength->at(itrk);
+      double deltaLyz = VecTPCUp_TrackDeltaLyz->at(itrk);
+      double edep = VecTPCUp_TrackEdep->at(itrk);
+      double charge = VecTPCUp_TrackCharge->at(itrk);
+      double pdg = VecTPCUp_TrackPDG->at(itrk);
+      double posX = VecTPCUp_TrackStepFirstX->at(itrk);
+      double posY = VecTPCUp_TrackStepFirstY->at(itrk);
+      double posZ = VecTPCUp_TrackStepFirstZ->at(itrk);
+      double posLastX = VecTPCUp_TrackStepLastX->at(itrk);
+      double posLastY = VecTPCUp_TrackStepLastY->at(itrk);
+      double posLastZ = VecTPCUp_TrackStepLastZ->at(itrk);
 
-    //   if(doSingleEvent){
-    // 	cout << "TPC Up track: " << " ";
-    // 	cout << "id = " << id << ", ";
-    // 	cout << "event = " << ientry << ", ";
-    // 	cout << "mom = " << mom << ", ";
-    // 	cout << "deltaLyz = " << deltaLyz << ", ";
-    // 	cout << "charge = " << charge << ", ";
-    // 	cout << "edep = " << edep << ", ";    
-    // 	cout << "pdg = " << pdg << endl;    
-    //   }
+      if(doPrintTrack){
+    	cout << "TPC Up track: " << " ";
+    	cout << "id = " << id << ", ";
+    	cout << "event = " << ientry << ", ";
+    	cout << "mom = " << mom << ", ";
+    	cout << "deltaLyz = " << deltaLyz << ", ";
+    	cout << "charge = " << charge << ", ";
+    	cout << "edep = " << edep << ", ";    
+    	cout << "pdg = " << pdg << endl;    
+      }
       
-    //   // Cut 2: Select tracks with dLyz > 200mm
-    //   if(doCut_dL && deltaLyz < 200) continue;
+      // Cut 2: Select tracks with dLyz > 200mm
+      if(doCut_dL && deltaLyz < 200) continue;
 
-    //   // Cut 3: Select charged particles
-    //   if(doCut_poscharge && fabs(charge)!=1) continue;
+      // Cut 3: Select charged particles
+      if(doCut_poscharge && fabs(charge)!=1) continue;
       
-    //   // Cut 4: Select highest momentum track
-    //   if(mom > TPCUp_High_mom){
-    // 	TPCUp_High_ID = id;
-    // 	TPCUp_High_mom = mom;
-    // 	TPCUp_High_costheta = costheta;
-    // 	TPCUp_High_len = length;
-    // 	TPCUp_High_dlyz = deltaLyz;
-    // 	TPCUp_High_charge = charge;
-    // 	TPCUp_High_edep = edep;
-    // 	TPCUp_High_pdg = pdg;
-    // 	TPCUp_High_PosIniX = posX;
-    // 	TPCUp_High_PosIniY = posY;
-    // 	TPCUp_High_PosIniZ = posZ;
-    // 	TPCUp_High_PosFinX = posLastX;
-    // 	TPCUp_High_PosFinY = posLastY;
-    // 	TPCUp_High_PosFinZ = posLastZ;
-    //   }
-    // } // end TPC Up tracks
+      // Cut 4: Select highest momentum track
+      if(mom > TPCUp_High_mom){
+    	TPCUp_High_ID = id;
+    	TPCUp_High_mom = mom;
+    	TPCUp_High_costheta = costheta;
+    	TPCUp_High_len = length;
+    	TPCUp_High_dlyz = deltaLyz;
+    	TPCUp_High_charge = charge;
+    	TPCUp_High_edep = edep;
+    	TPCUp_High_pdg = pdg;
+    	TPCUp_High_PosIniX = posX;
+    	TPCUp_High_PosIniY = posY;
+    	TPCUp_High_PosIniZ = posZ;
+    	TPCUp_High_PosFinX = posLastX;
+    	TPCUp_High_PosFinY = posLastY;
+    	TPCUp_High_PosFinZ = posLastZ;
+      }
+    } // end TPC Up tracks
 
 
-    // //
-    // // TPC Down tracks
-    // //
+    //
+    // TPC Down tracks
+    //
     
-    // for(int itrk=0;itrk<VecTPCDown_TrackID->size();itrk++){
+    for(int itrk=0;itrk<VecTPCDown_TrackID->size();itrk++){
 
-    //   int id = VecTPCDown_TrackID->at(itrk);
-    //   double costheta = VecTPCDown_TrackCosTheta->at(itrk);
-    //   double momX = VecTPCDown_TrackMomX->at(itrk);
-    //   double momY = VecTPCDown_TrackMomY->at(itrk);
-    //   double momZ = VecTPCDown_TrackMomZ->at(itrk);
-    //   double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
-    //   double length = VecTPCDown_TrackLength->at(itrk);
-    //   double deltaLyz = VecTPCDown_TrackDeltaLyz->at(itrk);
-    //   double edep = VecTPCDown_TrackEdep->at(itrk);
-    //   double charge = VecTPCDown_TrackCharge->at(itrk);
-    //   double pdg = VecTPCDown_TrackPDG->at(itrk);
-    //   double posX = VecTPCDown_TrackStepFirstX->at(itrk);
-    //   double posY = VecTPCDown_TrackStepFirstY->at(itrk);
-    //   double posZ = VecTPCDown_TrackStepFirstZ->at(itrk);
-    //   double posLastX = VecTPCDown_TrackStepLastX->at(itrk);
-    //   double posLastY = VecTPCDown_TrackStepLastY->at(itrk);
-    //   double posLastZ = VecTPCDown_TrackStepLastZ->at(itrk);
+      int id = VecTPCDown_TrackID->at(itrk);
+      double costheta = VecTPCDown_TrackCosTheta->at(itrk);
+      double momX = VecTPCDown_TrackMomX->at(itrk);
+      double momY = VecTPCDown_TrackMomY->at(itrk);
+      double momZ = VecTPCDown_TrackMomZ->at(itrk);
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      double length = VecTPCDown_TrackLength->at(itrk);
+      double deltaLyz = VecTPCDown_TrackDeltaLyz->at(itrk);
+      double edep = VecTPCDown_TrackEdep->at(itrk);
+      double charge = VecTPCDown_TrackCharge->at(itrk);
+      double pdg = VecTPCDown_TrackPDG->at(itrk);
+      double posX = VecTPCDown_TrackStepFirstX->at(itrk);
+      double posY = VecTPCDown_TrackStepFirstY->at(itrk);
+      double posZ = VecTPCDown_TrackStepFirstZ->at(itrk);
+      double posLastX = VecTPCDown_TrackStepLastX->at(itrk);
+      double posLastY = VecTPCDown_TrackStepLastY->at(itrk);
+      double posLastZ = VecTPCDown_TrackStepLastZ->at(itrk);
 
-    //   if(doSingleEvent){
-    // 	cout << "TPC Down track: " << " ";
-    // 	cout << "id = " << id << ", ";
-    // 	cout << "event = " << ientry << ", ";
-    // 	cout << "mom = " << mom << ", ";
-    // 	cout << "deltaLyz = " << deltaLyz << ", ";
-    // 	cout << "charge = " << charge << ", ";
-    // 	cout << "edep = " << edep << ", ";    
-    // 	cout << "pdg = " << pdg << endl;    
-    //   }
+      if(doPrintTrack){
+    	cout << "TPC Down track: " << " ";
+    	cout << "id = " << id << ", ";
+    	cout << "event = " << ientry << ", ";
+    	cout << "mom = " << mom << ", ";
+    	cout << "deltaLyz = " << deltaLyz << ", ";
+    	cout << "charge = " << charge << ", ";
+    	cout << "edep = " << edep << ", ";    
+    	cout << "pdg = " << pdg << endl;    
+      }
 
-    //   // Cut 2: Select tracks with dLyz > 200mm
-    //   if(doCut_dL && deltaLyz < 200) continue;
+      // Cut 2: Select tracks with dLyz > 200mm
+      if(doCut_dL && deltaLyz < 200) continue;
 
-    //   // Cut 3: Select charged particles
-    //   if(doCut_poscharge && fabs(charge)!=1) continue;
+      // Cut 3: Select charged particles
+      if(doCut_poscharge && fabs(charge)!=1) continue;
       
-    //   // Cut 4: Select highest momentum track      
-    //   if(mom > TPCDown_High_mom){
-    // 	TPCDown_High_ID = id;
-    // 	TPCDown_High_mom = mom;
-    // 	TPCDown_High_costheta = costheta;
-    // 	TPCDown_High_len = length;
-    // 	TPCDown_High_dlyz = deltaLyz;
-    // 	TPCDown_High_charge = charge;
-    // 	TPCDown_High_edep = edep;
-    // 	TPCDown_High_pdg = pdg;
-    // 	TPCDown_High_PosIniX = posX;
-    // 	TPCDown_High_PosIniY = posY;
-    // 	TPCDown_High_PosIniZ = posZ;
-    // 	TPCDown_High_PosFinX = posLastX;
-    // 	TPCDown_High_PosFinY = posLastY;
-    // 	TPCDown_High_PosFinZ = posLastZ;
-    //   }     
-    // } // end TPC Down tracks
+      // Cut 4: Select highest momentum track      
+      if(mom > TPCDown_High_mom){
+    	TPCDown_High_ID = id;
+    	TPCDown_High_mom = mom;
+    	TPCDown_High_costheta = costheta;
+    	TPCDown_High_len = length;
+    	TPCDown_High_dlyz = deltaLyz;
+    	TPCDown_High_charge = charge;
+    	TPCDown_High_edep = edep;
+    	TPCDown_High_pdg = pdg;
+    	TPCDown_High_PosIniX = posX;
+    	TPCDown_High_PosIniY = posY;
+    	TPCDown_High_PosIniZ = posZ;
+    	TPCDown_High_PosFinX = posLastX;
+    	TPCDown_High_PosFinY = posLastY;
+    	TPCDown_High_PosFinZ = posLastZ;
+      }     
+    } // end TPC Down tracks
     
-    // //
-    // // Target tracks
-    // //
+    //
+    // Target tracks
+    //
     
-    // for(int itrk=0;itrk<VecTarget_TrackID->size();itrk++){
+    for(int itrk=0;itrk<VecTarget_TrackID->size();itrk++){
 
-    //   int id = VecTarget_TrackID->at(itrk);
-    //   double costheta = VecTarget_TrackCosTheta->at(itrk);
-    //   double momX = VecTarget_TrackMomX->at(itrk);
-    //   double momY = VecTarget_TrackMomY->at(itrk);
-    //   double momZ = VecTarget_TrackMomZ->at(itrk);
-    //   double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
-    //   double length = VecTarget_TrackLength->at(itrk);
-    //   double deltaLyz = VecTarget_TrackDeltaLyz->at(itrk);
-    //   double edep = VecTarget_TrackEdep->at(itrk);
-    //   double charge = VecTarget_TrackCharge->at(itrk);
-    //   double pdg = VecTarget_TrackPDG->at(itrk);
-    //   double posX = VecTarget_TrackStepFirstX->at(itrk);
-    //   double posY = VecTarget_TrackStepFirstY->at(itrk);
-    //   double posZ = VecTarget_TrackStepFirstZ->at(itrk);
-    //   double posLastX = VecTarget_TrackStepLastX->at(itrk);
-    //   double posLastY = VecTarget_TrackStepLastY->at(itrk);
-    //   double posLastZ = VecTarget_TrackStepLastZ->at(itrk);
+      int id = VecTarget_TrackID->at(itrk);
+      double costheta = VecTarget_TrackCosTheta->at(itrk);
+      double momX = VecTarget_TrackMomX->at(itrk);
+      double momY = VecTarget_TrackMomY->at(itrk);
+      double momZ = VecTarget_TrackMomZ->at(itrk);
+      double mom = sqrt( momX*momX + momY*momY + momZ*momZ );
+      double length = VecTarget_TrackLength->at(itrk);
+      double deltaLyz = VecTarget_TrackDeltaLyz->at(itrk);
+      double edep = VecTarget_TrackEdep->at(itrk);
+      double charge = VecTarget_TrackCharge->at(itrk);
+      double pdg = VecTarget_TrackPDG->at(itrk);
+      double posX = VecTarget_TrackStepFirstX->at(itrk);
+      double posY = VecTarget_TrackStepFirstY->at(itrk);
+      double posZ = VecTarget_TrackStepFirstZ->at(itrk);
+      double posLastX = VecTarget_TrackStepLastX->at(itrk);
+      double posLastY = VecTarget_TrackStepLastY->at(itrk);
+      double posLastZ = VecTarget_TrackStepLastZ->at(itrk);
 
-    //   if(doSingleEvent){
-    // 	cout << "Target track: " << " ";
-    // 	cout << "id = " << id << ", ";
-    // 	cout << "event = " << ientry << ", ";
-    // 	cout << "mom = " << mom << ", ";
-    // 	cout << "deltaLyz = " << deltaLyz << ", ";
-    // 	cout << "charge = " << charge << ", ";
-    // 	cout << "edep = " << edep << ", ";    
-    // 	cout << "pdg = " << pdg << endl;    
-    //   }
+      if(doPrintTrack){
+    	cout << "Target track: " << " ";
+    	cout << "id = " << id << ", ";
+    	cout << "event = " << ientry << ", ";
+    	cout << "mom = " << mom << ", ";
+    	cout << "deltaLyz = " << deltaLyz << ", ";
+    	cout << "charge = " << charge << ", ";
+    	cout << "edep = " << edep << ", ";    
+    	cout << "pdg = " << pdg << endl;    
+      }
 
-    //   // Cut 2: Select tracks with dLyz > 50mm
-    //   if(doCut_dL && deltaLyz < 50) continue;
+      // Cut 2: Select tracks with dLyz > 50mm
+      if(doCut_dL && deltaLyz < 50) continue;
        
-    //   // Cut 3: Select highest momentum track
-    //   if(mom > Target_High_mom){
-    // 	Target_High_ID = id;
-    // 	Target_High_costheta = costheta;
-    // 	Target_High_mom = mom;
-    // 	Target_High_len = length;
-    // 	Target_High_dlyz = deltaLyz;
-    // 	Target_High_charge = charge;
-    // 	Target_High_edep = edep;
-    // 	Target_High_pdg = pdg;
-    // 	Target_High_PosIniX = posX;
-    // 	Target_High_PosIniY = posY;
-    // 	Target_High_PosIniZ = posZ;
-    // 	Target_High_PosFinX = posLastX;
-    // 	Target_High_PosFinY = posLastY;
-    // 	Target_High_PosFinZ = posLastZ;
-    //   }
-    // } // end Target tracks
+      // Cut 3: Select charged particles
+      if(doCut_poscharge && fabs(charge)!=1) continue;
+
+      // Cut 4: Select highest momentum track
+      if(mom > Target_High_mom){
+    	Target_High_ID = id;
+    	Target_High_costheta = costheta;
+    	Target_High_mom = mom;
+    	Target_High_len = length;
+    	Target_High_dlyz = deltaLyz;
+    	Target_High_charge = charge;
+    	Target_High_edep = edep;
+    	Target_High_pdg = pdg;
+    	Target_High_PosIniX = posX;
+    	Target_High_PosIniY = posY;
+    	Target_High_PosIniZ = posZ;
+    	Target_High_PosFinX = posLastX;
+    	Target_High_PosFinY = posLastY;
+    	Target_High_PosFinZ = posLastZ;
+      }
+    } // end Target tracks
 
     
     
-    // // Print out the highest momentum track
+    // Print out the highest momentum track
  
-    // if(TPCUp_High_mom>0.){
-       
-    //   cout << "TPC Up high mom track: " << " ";
-    //   cout << "event = " << ientry << ", ";
-    //   cout << "id = " << TPCUp_High_ID << ", ";
-    //   cout << "mom = " << TPCUp_High_mom << ", ";
-    //   cout << "length = " << TPCUp_High_len << ", ";
-    //   cout << "charge = " << TPCUp_High_charge << ", ";
-    //   cout << "edep = " << TPCUp_High_edep << ", ";
-    //   cout << "pdg = " << TPCUp_High_pdg << endl;    
-
-    //   hTPCUp_CosTheta->Fill(TPCUp_High_costheta);
-    //   hTPCUp_Mom   ->Fill(TPCUp_High_mom);
-    //   hTPCUp_Length->Fill(TPCUp_High_len);
-    //   hTPCUp_DeltaLyz->Fill(TPCUp_High_dlyz);
-    //   hTPCUp_Charge->Fill(TPCUp_High_charge);
-    //   hTPCUp_PDG   ->Fill(TPCUp_High_pdg);
-    //   hTPCUp_Edep  ->Fill(TPCUp_High_edep);
-    //   hTPCUp_PosIniX->Fill(TPCUp_High_PosIniX);
-    //   hTPCUp_PosIniY->Fill(TPCUp_High_PosIniY);
-    //   hTPCUp_PosIniZ->Fill(TPCUp_High_PosIniZ);
-    //   hTPCUp_PosFinX->Fill(TPCUp_High_PosFinX);
-    //   hTPCUp_PosFinY->Fill(TPCUp_High_PosFinY);
-    //   hTPCUp_PosFinZ->Fill(TPCUp_High_PosFinZ);
-    // }
-
-    // if(TPCDown_High_mom>0.){
-
-    //   cout << "TPC Down high mom track: " << " ";
-    //   cout << "event = " << ientry << ", ";
-    //   cout << "id = " << TPCDown_High_ID << ", ";
-    //   cout << "mom = " << TPCDown_High_mom << ", ";
-    //   cout << "length = " << TPCDown_High_len << ", ";
-    //   cout << "charge = " << TPCDown_High_charge << ", ";
-    //   cout << "edep = " << TPCDown_High_edep << ", ";
-    //   cout << "pdg = " << TPCDown_High_pdg << endl;    
-
-    //   hTPCDown_CosTheta->Fill(TPCDown_High_costheta);
-    //   hTPCDown_Mom   ->Fill(TPCDown_High_mom);
-    //   hTPCDown_Length->Fill(TPCDown_High_len);
-    //   hTPCDown_DeltaLyz->Fill(TPCDown_High_dlyz);
-    //   hTPCDown_Charge->Fill(TPCDown_High_charge);
-    //   hTPCDown_PDG   ->Fill(TPCDown_High_pdg);
-    //   hTPCDown_Edep  ->Fill(TPCDown_High_edep);
-    //   hTPCDown_PosIniX->Fill(TPCDown_High_PosIniX);
-    //   hTPCDown_PosIniY->Fill(TPCDown_High_PosIniY);
-    //   hTPCDown_PosIniZ->Fill(TPCDown_High_PosIniZ);
-    //   hTPCDown_PosFinX->Fill(TPCDown_High_PosFinX);
-    //   hTPCDown_PosFinY->Fill(TPCDown_High_PosFinY);
-    //   hTPCDown_PosFinZ->Fill(TPCDown_High_PosFinZ);
-    // }    
-
-    // if(Target_High_mom>0.){
-
-    //   cout << "Target high mom track: " << " ";
-    //   cout << "event = " << ientry << ", ";
-    //   cout << "id = " << Target_High_ID << ", ";
-    //   cout << "mom = " << Target_High_mom << ", ";
-    //   cout << "length = " << Target_High_len << ", ";
-    //   cout << "charge = " << Target_High_charge << ", ";
-    //   cout << "edep = " << Target_High_edep << ", ";
-    //   cout << "pdg = " << Target_High_pdg << endl;    
-
-    //   hTarget_CosTheta->Fill(Target_High_costheta);
-    //   hTarget_Mom   ->Fill(Target_High_mom);
-    //   hTarget_Length->Fill(Target_High_len);
-    //   hTarget_DeltaLyz->Fill(Target_High_dlyz);
-    //   hTarget_Charge->Fill(Target_High_charge);
-    //   hTarget_PDG   ->Fill(Target_High_pdg);
-    //   hTarget_Edep  ->Fill(Target_High_edep);
-    //   hTarget_PosIniX->Fill(Target_High_PosIniX);
-    //   hTarget_PosIniY->Fill(Target_High_PosIniY);
-    //   hTarget_PosIniZ->Fill(Target_High_PosIniZ);
-    //   hTarget_PosFinX->Fill(Target_High_PosFinX);
-    //   hTarget_PosFinY->Fill(Target_High_PosFinY);
-    //   hTarget_PosFinZ->Fill(Target_High_PosFinZ);
+    if(TPCUp_High_mom>0.){
       
-    //   hVtxMinusPosIni_Target_X->Fill(vtx_x-Target_High_PosIniX);
-    //   hVtxMinusPosIni_Target_Y->Fill(vtx_y-Target_High_PosIniY);
-    //   hVtxMinusPosIni_Target_Z->Fill(vtx_z-Target_High_PosIniZ);
+      if(doPrintTrack){
+	cout << "TPC Up high mom track: " << " ";
+	cout << "event = " << ientry << ", ";
+	cout << "id = " << TPCUp_High_ID << ", ";
+	cout << "mom = " << TPCUp_High_mom << ", ";
+	cout << "length = " << TPCUp_High_len << ", ";
+	cout << "charge = " << TPCUp_High_charge << ", ";
+	cout << "edep = " << TPCUp_High_edep << ", ";
+	cout << "pdg = " << TPCUp_High_pdg << endl;    
+      }
+
+      hTPCUp_CosTheta->Fill(TPCUp_High_costheta);
+      hTPCUp_Mom   ->Fill(TPCUp_High_mom);
+      hTPCUp_Length->Fill(TPCUp_High_len);
+      hTPCUp_DeltaLyz->Fill(TPCUp_High_dlyz);
+      hTPCUp_Charge->Fill(TPCUp_High_charge);
+      hTPCUp_PDG   ->Fill(TPCUp_High_pdg);
+      hTPCUp_Edep  ->Fill(TPCUp_High_edep);
+      hTPCUp_PosIniX->Fill(TPCUp_High_PosIniX);
+      hTPCUp_PosIniY->Fill(TPCUp_High_PosIniY);
+      hTPCUp_PosIniZ->Fill(TPCUp_High_PosIniZ);
+      hTPCUp_PosFinX->Fill(TPCUp_High_PosFinX);
+      hTPCUp_PosFinY->Fill(TPCUp_High_PosFinY);
+      hTPCUp_PosFinZ->Fill(TPCUp_High_PosFinZ);
+    }
+
+    if(TPCDown_High_mom>0.){
+
+      if(doPrintTrack){
+	cout << "TPC Down high mom track: " << " ";
+	cout << "event = " << ientry << ", ";
+	cout << "id = " << TPCDown_High_ID << ", ";
+	cout << "mom = " << TPCDown_High_mom << ", ";
+	cout << "length = " << TPCDown_High_len << ", ";
+	cout << "charge = " << TPCDown_High_charge << ", ";
+	cout << "edep = " << TPCDown_High_edep << ", ";
+	cout << "pdg = " << TPCDown_High_pdg << endl;    
+      }
       
-    //   // if( fabs(vtx_x-Target_High_PosIniX) > 0.){
-    //   // 	cout << "Vtx - Target first step pos:" 
-    //   // 	     << " x = " << vtx_x-Target_High_PosIniX
-    //   // 	     << " y = " << vtx_y-Target_High_PosIniY
-    //   // 	     << " z = " << vtx_z-Target_High_PosIniZ
-    //   // 	     << " - Vtx pos:"
-    //   // 	     << " x = " << vtx_x
-    //   // 	     << " y = " << vtx_y
-    //   // 	     << " z = " << vtx_z
-    //   // 	     << " - Vtx reac mode: " << VecVtx_ReacMode->at(0)
-    //   // 	     << " - High track: "
-    //   // 	     << " mom = " << Target_High_mom
-    //   // 	     << " costheta = " << Target_High_costheta
-    //   // 	     << " pdg = " << Target_High_pdg
-    //   // 	     << endl;
-    //   // }      
-    // }  
+      hTPCDown_CosTheta->Fill(TPCDown_High_costheta);
+      hTPCDown_Mom   ->Fill(TPCDown_High_mom);
+      hTPCDown_Length->Fill(TPCDown_High_len);
+      hTPCDown_DeltaLyz->Fill(TPCDown_High_dlyz);
+      hTPCDown_Charge->Fill(TPCDown_High_charge);
+      hTPCDown_PDG   ->Fill(TPCDown_High_pdg);
+      hTPCDown_Edep  ->Fill(TPCDown_High_edep);
+      hTPCDown_PosIniX->Fill(TPCDown_High_PosIniX);
+      hTPCDown_PosIniY->Fill(TPCDown_High_PosIniY);
+      hTPCDown_PosIniZ->Fill(TPCDown_High_PosIniZ);
+      hTPCDown_PosFinX->Fill(TPCDown_High_PosFinX);
+      hTPCDown_PosFinY->Fill(TPCDown_High_PosFinY);
+      hTPCDown_PosFinZ->Fill(TPCDown_High_PosFinZ);
+    }    
+
+    if(Target_High_mom>0.){
+
+      if(doPrintTrack){
+	cout << "Target high mom track: " << " ";
+	cout << "event = " << ientry << ", ";
+	cout << "id = " << Target_High_ID << ", ";
+	cout << "mom = " << Target_High_mom << ", ";
+	cout << "length = " << Target_High_len << ", ";
+	cout << "charge = " << Target_High_charge << ", ";
+	cout << "edep = " << Target_High_edep << ", ";
+	cout << "pdg = " << Target_High_pdg << endl;    
+      }
+
+      hTarget_CosTheta->Fill(Target_High_costheta);
+      hTarget_Mom   ->Fill(Target_High_mom);
+      hTarget_Length->Fill(Target_High_len);
+      hTarget_DeltaLyz->Fill(Target_High_dlyz);
+      hTarget_Charge->Fill(Target_High_charge);
+      hTarget_PDG   ->Fill(Target_High_pdg);
+      hTarget_Edep  ->Fill(Target_High_edep);
+      hTarget_PosIniX->Fill(Target_High_PosIniX);
+      hTarget_PosIniY->Fill(Target_High_PosIniY);
+      hTarget_PosIniZ->Fill(Target_High_PosIniZ);
+      hTarget_PosFinX->Fill(Target_High_PosFinX);
+      hTarget_PosFinY->Fill(Target_High_PosFinY);
+      hTarget_PosFinZ->Fill(Target_High_PosFinZ);
+      
+      hVtxMinusPosIni_Target_X->Fill(vtx_x-Target_High_PosIniX);
+      hVtxMinusPosIni_Target_Y->Fill(vtx_y-Target_High_PosIniY);
+      hVtxMinusPosIni_Target_Z->Fill(vtx_z-Target_High_PosIniZ);
+      
+      // if( fabs(vtx_x-Target_High_PosIniX) > 0.){
+      // 	cout << "Vtx - Target first step pos:" 
+      // 	     << " x = " << vtx_x-Target_High_PosIniX
+      // 	     << " y = " << vtx_y-Target_High_PosIniY
+      // 	     << " z = " << vtx_z-Target_High_PosIniZ
+      // 	     << " - Vtx pos:"
+      // 	     << " x = " << vtx_x
+      // 	     << " y = " << vtx_y
+      // 	     << " z = " << vtx_z
+      // 	     << " - Vtx reac mode: " << VecVtx_ReacMode->at(0)
+      // 	     << " - High track: "
+      // 	     << " mom = " << Target_High_mom
+      // 	     << " costheta = " << Target_High_costheta
+      // 	     << " pdg = " << Target_High_pdg
+      // 	     << endl;
+      // }      
+    }
+
+    
     
   } // end loop over events
 
+
+  // Store the Tree 
+  treeoa->Write();   
+  fileoa->Close();
+
   
-  treeoa->Write(); // store the tree   
-  fileoa->Close(); //
-
-
-
-  
+  // Get the efficiency
+  hReco_CosThetaVsMom_Eff = (TH2D*)hReco_CosThetaVsMom_Fin->Clone("hReco_CosThetaVsMom_Eff");
+  hReco_CosThetaVsMom_Eff->Divide(hReco_CosThetaVsMom_Target);
+    
+   
 
   // Draw histograms
 
@@ -1057,6 +1094,9 @@ void SkimNtuple
   hReco_CosThetaVsMom_Target->Draw("colz");
   TCanvas *cReco_CosThetaVsMom_Fin = new TCanvas("cReco_CosThetaVsMom_Fin","cReco_CosThetaVsMom_Fin");
   hReco_CosThetaVsMom_Fin->Draw("colz");
+  TCanvas *cReco_CosThetaVsMom_Eff = new TCanvas("cReco_CosThetaVsMom_Eff","cReco_CosThetaVsMom_Eff");
+  hReco_CosThetaVsMom_Eff->Draw("colz");
+
   TCanvas *cReco_Mom = new TCanvas("cReco_Mom","cReco_Mom");
   hReco_Mom->Draw();
   TCanvas *cTarget_CosTheta = new TCanvas("cTarget_CosTheta","cTarget_CosTheta");
