@@ -15,24 +15,37 @@ using namespace std;
 
 int FindTrackElem(std::vector<int> *vectrk,int trkid);
 
-void SkimNtuple
-()
+void SkimNtuple()
 {  
   const char *tag = "prova";
   const char *filename = "../bin/EffStudy_AllEvents.root";
   //const char *filename = "../bin/EffStudy.root",
   const bool doprint = false;
 
+  // Vertex cut (inside the Target)
   const bool doCut_Vtx = true; 
-  const bool doCut_dL = true; // full length in target and dlyz in tpcs
-  const bool doCut_poscharge = true;
+  const double vtx_min_x = -1150;  //mm
+  const double vtx_max_x = +1150;  //mm
+  const double vtx_min_y = -151.5; //mm
+  const double vtx_max_y = +151.1; //mm
+  const double vtx_min_z = -1200;  //mm
+  const double vtx_max_z = +1200;  //mm
 
-  const bool doSelPDG = true;
-  const int SetPDG = +211; //+2212; //+13;
+  // DeltaLyz cut (TPCs and Target)
+  const bool doCut_dL = true; // full length in target and dlyz in tpcs
+  const double dlyz_target_min = 50; //mm 
+  const double len_tpc_min = 200; //mm
+  
+  // Charge cut (TPCs and Target)
+  const bool doCut_poscharge = true;
+  const double cut_charge = 1; // only charge particles
+  
+  const bool doSelPDG = false;
+  const int SetPDG = +2212; //+2212; //+13;
 
   // For debugging:
   const bool doSingleEvent = false;
-  const int SingleEventID = 1914; //1523; // 87
+  const int SingleEventID = 9; // 87
 
   const int doPrintTrack = false;
 
@@ -410,6 +423,7 @@ void SkimNtuple
   int Nentries = treein->GetEntries();
   
   for(int ientry=0;ientry<Nentries;ientry++){
+  //for(int ientry=0;ientry<10;ientry++){
   
     if(doSingleEvent){
       ientry = SingleEventID;
@@ -487,9 +501,9 @@ void SkimNtuple
     // Cut 1: Apply vertex cuts (in the target FV)
     //
     if(doCut_Vtx){
-      if(vtx_x < -1150  || vtx_x > +1150)  continue;
-      if(vtx_y < -151.5 || vtx_y > +151.1) continue;
-      if(vtx_z < -1200  || vtx_z > +1200)  continue;
+      if(vtx_x < vtx_min_x || vtx_x > vtx_max_x)  continue;
+      if(vtx_y < vtx_min_y || vtx_y > vtx_max_y)  continue;
+      if(vtx_z < vtx_min_z || vtx_z > vtx_max_z)  continue;
     }
 
     hVtx_XY->Fill(vtx_x,vtx_y);
@@ -499,7 +513,7 @@ void SkimNtuple
     hVtx_Y->Fill(vtx_y);
     hVtx_Z->Fill(vtx_z);
 
-    if(NTracks!=VecTrackID->size()){
+    if(NTracks!=(int)VecTrackID->size()){
       cerr << endl;
       cerr << "VecTrackID->size() != NTracks" << endl;
       cerr << "VecTrackID->size() = " << VecTrackID->size() << endl;
@@ -565,8 +579,6 @@ void SkimNtuple
           
       int vecel=-999,id=-999;
       double costheta=-999,momX=-999,momY=-999,momZ=-999,mom=-999,length=-999,deltaLyz=-999,edep=-999,charge=-999,pdg=-999,posX=-999,posY=-999,posZ=-999,posLastX=-999,posLastY=-999,posLastZ=-999;   
-      int vecel_tpc=-999,id_tpc=-999;
-      double costheta_tpc=-999,momX_tpc=-999,momY_tpc=-999,momZ_tpc=-999,mom_tpc=-999,length_tpc=-999,deltaLyz_tpc=-999,edep_tpc=-999,charge_tpc=-999,pdg_tpc=-999,posX_tpc=-999,posY_tpc=-999,posZ_tpc=-999,posLastX_tpc=-999,posLastY_tpc=-999,posLastZ_tpc=-999;       
       
       //
       // Check if reconstructed in Target
@@ -590,10 +602,10 @@ void SkimNtuple
 	if(doSelPDG && pdg!=SetPDG) continue;
 
 	// Cut 2: Select tracks with dLyz > 50mm
-	if(doCut_dL && length < 50) continue;
+	if(doCut_dL && length < dlyz_target_min) continue;
 
 	// Cut 3: Select charged particles
-	if(fabs(charge)!=1) continue;
+	if(fabs(charge)!=cut_charge) continue;
 
 	hReco_CosThetaVsMom_Target->Fill(costheta,mom); // Fill efficiency denominator
 
@@ -628,10 +640,10 @@ void SkimNtuple
 	  pdg = VecTPCUp_TrackPDG->at(vecel);
 
 	  // Cut 2: Select tracks with dLyz > 200mm
-	  if(doCut_dL && deltaLyz < 200) continue;
+	  if(doCut_dL && deltaLyz < len_tpc_min) continue;
 
 	  // Cut 3: Select charged particles
-	  if(doCut_poscharge && fabs(charge)!=1) continue;
+	  if(doCut_poscharge && fabs(charge)!=cut_charge) continue;
 	  
 	  hReco_CosThetaVsMom_Fin->Fill(costheta,mom); // Fill efficiency denominator
 	  
@@ -670,12 +682,14 @@ void SkimNtuple
 	    pdg = VecTPCDown_TrackPDG->at(vecel);
 
 	    // Cut 2: Select tracks with dLyz > 200mm
-	    if(doCut_dL && deltaLyz < 200) continue;
+	    if(doCut_dL && deltaLyz < len_tpc_min) continue;
 	    
 	    // Cut 3: Select charged particles
-	    if(doCut_poscharge && fabs(charge)!=1) continue;
+	    if(doCut_poscharge && fabs(charge)!=cut_charge) continue;
 	    
 	    hReco_CosThetaVsMom_Fin->Fill(costheta,mom); // Fill efficiency denominator
+	    hReco_CosTheta->Fill(costheta);
+	    hReco_Mom->Fill(mom);
 	    
 	    if(doPrintTrack){
 	      cout << "     - TPCDown track: " << " ";
@@ -694,6 +708,12 @@ void SkimNtuple
      
     } // end loop over all tracks
   
+
+
+
+    
+
+
     
    
     /////////////////////////////////////////////////
@@ -706,7 +726,7 @@ void SkimNtuple
     // TPC Up tracks
     //
         
-    for(int itrk=0;itrk<VecTPCUp_TrackID->size();itrk++){
+    for(int itrk=0;itrk<(int)VecTPCUp_TrackID->size();itrk++){
       
       int id = VecTPCUp_TrackID->at(itrk);
       double costheta = VecTPCUp_TrackCosTheta->at(itrk);
@@ -767,7 +787,7 @@ void SkimNtuple
     // TPC Down tracks
     //
     
-    for(int itrk=0;itrk<VecTPCDown_TrackID->size();itrk++){
+    for(int itrk=0;itrk<(int)VecTPCDown_TrackID->size();itrk++){
 
       int id = VecTPCDown_TrackID->at(itrk);
       double costheta = VecTPCDown_TrackCosTheta->at(itrk);
@@ -827,7 +847,7 @@ void SkimNtuple
     // Target tracks
     //
     
-    for(int itrk=0;itrk<VecTarget_TrackID->size();itrk++){
+    for(int itrk=0;itrk<(int)VecTarget_TrackID->size();itrk++){
 
       int id = VecTarget_TrackID->at(itrk);
       double costheta = VecTarget_TrackCosTheta->at(itrk);
@@ -1194,21 +1214,21 @@ int FindTrackElem(std::vector<int> *vectrk,int trkid){
   
   int nPosition = -999;
    
-  std::vector<int>::iterator i = vectrk->begin();
+  std::vector<int>::iterator it = vectrk->begin();
   
-  //while (i != vectrk->end()){
-  //cout << *i << endl;
-  //++ i;
+  //while (it != vectrk->end()){
+  //cout << *it << endl;
+  //++ it;
   //}
   
-  i = find(vectrk->begin(),vectrk->end(),trkid);
+  it = find(vectrk->begin(),vectrk->end(),trkid);
   
-  //cout << "The found value is " << *i << endl;
+  //cout << "The found value is " << *it << endl;
   
-  if(i != vectrk->end()){
-    //nPosition = std::distance( vectrk->begin(), i); // not defined in CINT
-    nPosition = i - vectrk->begin();
-    //cout << "Value "<< *i;
+  if(it != vectrk->end()){
+    //nPosition = std::distance( vectrk->begin(), it); // not defined in CINT
+    nPosition = it - vectrk->begin();
+    //cout << "Value "<< *it;
     //cout << " found in the vector at position: " << nPosition << endl;
   }
   
