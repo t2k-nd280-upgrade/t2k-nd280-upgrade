@@ -1,0 +1,888 @@
+#!/usr/bin/perl
+
+
+#-------------------------------------------------------------------------------------------------------------------------------
+# Submit a batch of build_marg_toys.C jobs
+#
+# Inputs
+#  --resource               : Computer resource, <ETH-Monch, RAL, Oxford, Grid, interactive>. Default: interactive.
+#  --tag                    : Tag for output files.
+#  --config-file            : Analysis configuration file from the config/ directory.
+#  --fit-param-list         : Fit parameter list. See FitParamList.h for allowed options.
+#  --physparam-freepar      : Free parameter
+#  --npt-freepar            : Number of points of the free parameter to scan
+#  --step-freepar           : Step of the free parameter scan
+
+#  --tweak-systematics      : generate marginalization toy MC with randomized systematics
+#  --cpu-time               : Required CPU time. Default: "6:00:00" for RAL, "11:50:00" for Oxford.
+#  --job-dir                : Directory for job scripts and outputs. Default: `pwd`.
+#  --softw-dir              : Oscillation code top-level directory. Default: `pwd`.
+#  --dmsq-scheme            : abs23 or fogli
+#  --hierarchy              : normal or inverted
+#  --mix-param-choice       : sinsq2theta or sinsqtheta
+#  --mix-param-octant       : one or two
+#
+# D.Sgalaberna
+#-------------------------------------------------------------------------------------------------------------------------------
+#
+
+use File::Path;
+
+$iarg=0;
+foreach (@ARGV) {
+
+    if($iarg % 2 == 1) {$iarg++; next;}
+
+    ##################################### Common ########################################
+    if   ($_ eq '--resource'         ) { $resource        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cpu-time'         ) { $cput            = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--fmwk-dir'         ) { $fmwk_dir        = $ARGV[$iarg+1]; }
+    
+    elsif($_ eq '--config-file'      ) { $config_file     = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--n-experiments'    ) { $nexpts          = $ARGV[$iarg+1]; }
+    elsif($_ eq '--first-experiment' ) { $first_expt      = $ARGV[$iarg+1]; }
+     
+    elsif($_ eq '--marginalize-mh'   ) { $marg_hierarchy  = $ARGV[$iarg+1]; }
+    elsif($_ eq '--hierarchy'        ) { $masshierarchy   = $ARGV[$iarg+1]; }
+   
+    elsif($_ eq '--dmsq23'           ) { $dmsq23          = $ARGV[$iarg+1]; }
+    elsif($_ eq '--dmsq12'           ) { $dmsq12          = $ARGV[$iarg+1]; }
+    elsif($_ eq '--mix23'            ) { $mix23           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--mix13'            ) { $mix13           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--mix12'            ) { $mix12           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--deltacp'          ) { $deltacp         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--betaBar'          ) { $betaBar         = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--dmsq-scheme'      ) { $dmsqscheme      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--mix-param-scheme' ) { $mixparamscheme  = $ARGV[$iarg+1]; }
+    elsif($_ eq '--mix-param-octant' ) { $mixparamoctant  = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cpv-param-scheme' ) { $cpvparamscheme  = $ARGV[$iarg+1]; }
+    #####################################################################################
+
+    ############################ Only for generate_toymc*.C #############################
+    elsif($_ eq '--hypothesis'              ) { $hypothesis            = $ARGV[$iarg+1]; }
+    elsif($_ eq '--do-toys'                 ) { $do_toys               = $ARGV[$iarg+1]; }  
+    elsif($_ eq '--use-xml-file'            ) { $using_xml_file        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--fakedata-root-file'      ) { $fakedata_root_file    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--fakedata-xml-file'       ) { $fakedata_xml_file     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--print-syst-variation'    ) { $print_syst_variation  = $ARGV[$iarg+1]; }
+    elsif($_ eq '--rethrow-unphysical'      ) { $rethrow_unphysical    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--verbose-syst-throws'     ) { $verbose_systthrows    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--verbose-fit'             ) { $verbose_fit           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--rethrow-unphysical-toys' ) { $rethrow_unphysical    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--synch-osc-ih-to-nh'      ) { $sync_ih_to_nh         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--stat-fluct'              ) { $stat_fluct            = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tweak-systematics'       ) { $tweak_systematics     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--prior-prob-nh'           ) { $prior_prob_nh         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--prior-mode'              ) { $prior_mode            = $ARGV[$iarg+1]; }
+    elsif($_ eq '--save-xml'                ) { $save_xml              = $ARGV[$iarg+1]; }
+    elsif($_ eq '--save-fluct-xml'          ) { $save_fluct_xml        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--save-root'               ) { $save_root             = $ARGV[$iarg+1]; }
+    elsif($_ eq '--file-priors'             ) { $file_priors           = $ARGV[$iarg+1]; }
+    #####################################################################################
+
+    ####################### Only for run_fc_marginalization*.C #########################
+    elsif($_ eq '--fit-param-list'     ) { $fitparamlist        = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--do-fc'              ) { $do_fc               = $ARGV[$iarg+1]; }
+    elsif($_ eq '--file-margtoys'      ) { $file_margtoys       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--file-margtoys-nh'   ) { $file_margtoys_nh    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--file-margtoys-ih'   ) { $file_margtoys_ih    = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--nfiles-margtoys'    ) { $nfiles_margtoys     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--marginalize-mh-margtoys') { $marg_hierarchy_margtoys = $ARGV[$iarg+1]; }
+    elsif($_ eq '--hierarchy-marg'     ) { $masshierarchy_marg  = $ARGV[$iarg+1]; }
+    elsif($_ eq '--ntoys-margtoys'     ) { $ntoys_margtoys      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--freepar0'           ) { $freepar0            = $ARGV[$iarg+1]; }
+    elsif($_ eq '--minfreepar0'        ) { $minfreepar0         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--maxfreepar0'        ) { $maxfreepar0         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--npt-freepar0'       ) { $npt_freepar0        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--freepar1'           ) { $freepar1            = $ARGV[$iarg+1]; }
+    elsif($_ eq '--minfreepar1'        ) { $minfreepar1         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--maxfreepar1'        ) { $maxfreepar1         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--npt-freepar1'       ) { $npt_freepar1        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--type-error'         ) { $type_error          = $ARGV[$iarg+1]; }
+    elsif($_ eq '--draw-full-chisq'    ) { $draw_full_chisq     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--test-stat'          ) { $test_stat           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--store-like-weights' ) { $store_like_weights  = $ARGV[$iarg+1]; }
+    elsif($_ eq '--penalty-par0'       ) { $penalty_freepar0    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--penatly-par1'       ) { $penalty_freepar1    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--read-skexp'         ) { $read_skexp          = $ARGV[$iarg+1]; }
+    elsif($_ eq '--queue'              ) { $queue               = $ARGV[$iarg+1]; }
+    elsif($_ eq '--run-fullgrid'       ) { $run_fullgrid        = $ARGV[$iarg+1]; }    
+#####################################################################################
+    
+    else {
+	print "Unrecognised argument ".$_."\n"; exit;
+    }
+    $iarg++;
+}
+
+
+########################### Variables to set in the script ##############################
+
+# @array_freepar0_user = (0.03, 0.045); # run only on these points. If empty run on all the grid points
+# @array_freepar0_user = (-3.14159265358979312); # run only on these points. If empty run on all the grid points
+# @array_freepar1_user = (-1,0); # run only on these points. If empty run on all the grid points
+# @array_freepar1_user = (); # run only on these points. If empty run on all the grid points
+
+@array_freepar0_skip = (-3.14159265358979312, -1.5707963267949, 0., 1.5707963267949, 3.14159265358979312);
+@array_freepar1_skip = ();
+$run_fullgrid  = 0   unless defined $run_fullgrid; # 0 --> run single point, 1 --> run many grid points
+
+########################################################################################
+
+
+####################################### Common #########################################
+
+$resource        = "interactive"               unless defined $resource;
+
+$tag             = "fitmarg_fc_dcp"  unless defined $tag;
+
+#$nruns           = 500                           unless defined $nruns;  # number of jobs per freepar point (dcp 1D) 
+#$nruns           = 250                           unless defined $nruns;  # number of jobs per freepar point  (sinsqth13 Vs dcp 2D) 
+$nruns           = 1                           unless defined $nruns;  # number of jobs per freepar point  (sinsqth13 Vs dcp 2D) 
+
+#
+# NEW CONFIGURATION FILES (14/3/16 BANFF WITH FIT BIAS)
+#
+$config_file    = "analysis_configuration_data_theta_elike_RFGRPA_NIWG2015c_1p1h_fitbias.xml"  unless defined $config_file;
+
+#$nexpts          = 10000  unless defined $nexpts;  # number of toy experiments and fits per freepar point   (sinsqth13 Vs dcp 2D) 
+#$nexpts          = 20  unless defined $nexpts;  # number of toy experiments and fits per freepar point   (sinsqth13 Vs dcp 2D) 
+$nexpts          = 1  unless defined $nexpts;  # number of toy experiments and fits per freepar point   (sinsqth13 Vs dcp 2D) 
+
+$first_expt      = 0   unless defined $first_expt; # first toy experiment id 
+
+$dmsq23          = -999                    unless defined $dmsq23;
+$dmsq12          = -999                     unless defined $dmsq12;
+$mix23           = -999                       unless defined $mix23;
+$mix13           = -999                      unless defined $mix13;
+#$mix13           = 0.028                     unless defined $mix13;
+$mix12           = -999                       unless defined $mix12;      
+#$deltacp         = 0.                      unless defined $deltacp;
+#$deltacp         = 1.570796                      unless defined $deltacp;
+$deltacp         = -1.601                      unless defined $deltacp;
+#$deltacp         = 3.141                      unless defined $deltacp;
+$betaBar         = 1.                          unless defined $betaBar;
+
+#
+# ASIMOV A
+#
+# $dmsq23          = 2.509E-3                        unless defined $dmsq23;
+# $dmsq12          = 7.53E-5                        unless defined $dmsq12;
+# $mix23           = 0.528                        unless defined $mix23;
+# $mix13           = 0.0217                        unless defined $mix13; # PDG 2015
+# $mix12           = 0.304                        unless defined $mix12;
+# $deltacp         = -1.601                        unless defined $deltacp;
+# $betaBar         = 1.                          unless defined $betaBar;
+
+#
+# ASIMOV B
+#
+# $dmsq23          = 2.509E-3                      unless defined $dmsq23;
+# $dmsq12          = 7.53E-5                       unless defined $dmsq12;
+# $mix23           = 0.45                          unless defined $mix23;
+# $mix13           = 0.0217                        unless defined $mix13; # PDG 2015
+# $mix12           = 0.304                         unless defined $mix12;
+# $deltacp         = 0.                            unless defined $deltacp;
+# $betaBar         = 1.                            unless defined $betaBar;
+
+$marg_hierarchy  = 0                           unless defined $marg_hierarchy; # toys for mass hierarchy in fake data sets
+$masshierarchy   = "normal"                    unless defined $masshierarchy;  # mass hierarchy in fake data sets
+
+$dmsqscheme      = "auto"                      unless defined $dmsqscheme;
+$mixparamscheme  = "sinsqtheta"                unless defined $mixparamscheme;
+$mixparamoctant  = "two"                       unless defined $mixparamoctant;
+$cpvparamscheme  = "delta"                     unless defined $cpvparamscheme;
+
+$job_dir         = "."                         unless defined $job_dir;
+$softw_dir       = $ENV{'T2KOSCANA'}           unless defined $softw_dir;
+$fmwk_dir        = $ENV{'VALOR_FMWK'}          unless defined $fmwk_dir;
+$queue           = "0"                         unless defined $queue;
+
+if( !defined $cput ) {
+    if($resource eq "RAL"   ) { $cput = "6:00:00";  }
+    if($resource eq "OLDRAL") { $cput = "6:00:00";  }
+    if($resource eq "Oxford") { $cput = "1:50:00"; }
+}
+########################################################################################
+
+############################ Toy generation ################################
+$hypothesis             = "3f_osc"             unless defined $hypothesis;  
+#$hypothesis            = "3f_osc_normbar"     unless defined $hypothesis;
+$do_toys                = 0                   unless defined $do_toys;
+$using_xml_file         = 0                    unless defined $using_xml_file;
+#$fakedata_root_file     = "data_run1to6/SKdata_Run16.root" unless defined $fakedata_root_file;
+$fakedata_root_file = "../outputs/test/PROVA/Toys_fit_fit_marg_PROVA_nexp_1_-1.601_-999.000-job0-_0_0.root" unless defined $fakedata_root_file;
+$fakedata_xml_file      = ""                   unless defined $fakedata_xml_file;
+$print_syst_variation   = 0                    unless defined $print_syst_variation;
+$rethrow_unphysical     = 1                    unless defined $rethrow_unphysical;
+$verbose_systthrows     = 0                    unless defined $verbose_systthrows;
+$verbose_fit            = 1                    unless defined $verbose_fit;
+$sync_ih_to_nh          = 1                    unless defined $sync_ih_to_nh;
+$stat_fluct             = 1                    unless defined $stat_fluct;
+$tweak_systematics      = 1                    unless defined $tweak_systematics;
+$prior_prob_nh          = 0.5                  unless defined $prior_prob_nh;
+$prior_mode             = 1                    unless defined $prior_mode; # 0-->fix,1-->react,2-->t2k-only
+$save_xml               = 1                    unless defined $save_xml;
+$save_fluct_xml         = 1                    unless defined $save_fluc_xml;
+$save_root              = 1                    unless defined $save_root;
+$file_priors            = ""                   unless defined $file_priors;
+########################################################################################
+
+########################## Fit w/ marginalization #########################
+
+$fitparamlist    = "nuosc3f+nuisance"          unless defined $fitparamlist; # standard joint fit
+#$fitparamlist   = "nuosc3f_normbar+nuisance"  unless defined $fitparamlist; # nuebar appearance analysis  /* options: "2f_numu_disap", "3f_osc, 3f_oscbar, 3f_osc_normbar, 3f_oscbar_normbar" */
+
+#
+# NEW MARGINALIZATION FILES (BANFF RELEASE 14/3/16 WITH FIT BIAS)
+#
+
+$file_margtoys_nh = "../TECH_NOTE_14_3_16/MARGTOYS/RUN16/joint_dcp_react_NH_10kToys/joint_deltaCP_niwg2015c_react_NH_10kToys" unless defined $file_margtoys_nh;
+$file_margtoys_ih = "../TECH_NOTE_14_3_16/MARGTOYS/RUN16/joint_dcp_react_IH_10kToys/joint_deltaCP_niwg2015c_react_IH_10kToys" unless defined $file_margtoys_ih;
+
+#$file_margtoys_nh = "/mnt/lnec/davides/VALOR/results/Template2D_BANFF_FITBIAS_14_3_16/joint_dcp_react_NH_10kToys/joint_deltaCP_niwg2015c_react_NH_10kToys" unless defined $file_margtoys_nh;
+#$file_margtoys_ih = "/mnt/lnec/davides/VALOR/results/Template2D_BANFF_FITBIAS_14_3_16/joint_dcp_react_IH_10kToys/joint_deltaCP_niwg2015c_react_IH_10kToys" unless defined $file_margtoys_ih;
+
+#$nfiles_margtoys   = 1           unless defined $nfiles_margtoys; # of marginalization files
+#$nfiles_margtoys   = 2           unless defined $nfiles_margtoys; # of marginalization files
+$nfiles_margtoys   = 201           unless defined $nfiles_margtoys; # of marginalization files
+#$nfiles_margtoys   = 546            unless defined $nfiles_margtoys; # of marginalization files        
+#$nfiles_margtoys   = 533            unless defined $nfiles_margtoys; # of marginalization files      
+#$nfiles_margtoys   = 441            unless defined $nfiles_margtoys; # of marginalization files
+
+$ntoys_margtoys    = 10000         unless defined $ntoys_margtoys;     # of marginalization toys
+#$ntoys_margtoys    = 2         unless defined $ntoys_margtoys;     # of marginalization toys
+
+# # 1D fit - betaBar (nuebar appearance)
+# $freepar0               = "betaBar"                 unless defined $freepar0;
+# $minfreepar0            = 0.                        unless defined $minfreepar0;     # Minimum free parameter allowed value
+# $maxfreepar0            = 1.                        unless defined $maxfreepar0;     # Maximum free parameter allowed value 
+# $npt_freepar0           = 2                         unless defined $npt_freepar0;    # of free parameter points to scan
+# $freepar1               = ""                        unless defined $freepar1;
+# $minfreepar1            = 0.                        unless defined $minfreepar1;     # Minimum free parameter allowed value
+# $maxfreepar1            = 0.                        unless defined $maxfreepar1;     # Maximum free parameter allowed value 
+# $npt_freepar1           = 1                         unless defined $npt_freepar1;    # of free parameter points to scan
+
+# 1D fit - dcp
+$freepar0          = "deltacp"     unless defined $freepar0;
+$minfreepar0       = -3.14159265358979312e+00  unless defined $minfreepar0;  # Min free param allowed value
+$maxfreepar0       = +3.14159265358979312e+00  unless defined $maxfreepar0;  # Max free param allowed value
+$npt_freepar0      = 201            unless defined $npt_freepar0; # of free parameter points to scan
+$freepar1          = ""             unless defined $freepar1;
+$minfreepar1       = 0              unless defined $minfreepar1;  # Min free param allowed value
+$maxfreepar1       = 0              unless defined $maxfreepar1;  # Max free param allowed value
+$npt_freepar1      = 1              unless defined $npt_freepar1; # of free parameter points to scan
+
+# # 1D fit - mixing13 (t2k only)                                                                                                                            
+# $freepar0               = "mixing13"                unless defined $freepar0;                                                                                    
+# $minfreepar0            = 0.                        unless defined $minfreepar0;     # Minimum free parameter allowed value                                 
+# $maxfreepar0            = 0.113                     unless defined $maxfreepar0;     # Maximum free parameter allowed value                                         
+# $npt_freepar0           = 201                       unless defined $npt_freepar0;    # of free parameter points to scan                                     
+# $freepar1               = ""                        unless defined $freepar1;                                                                            
+# $minfreepar1            = 0.                        unless defined $minfreepar1;     # Minimum free parameter allowed value                                  
+# $maxfreepar1            = 0.                        unless defined $maxfreepar1;     # Maximum free parameter allowed value                                 
+# $npt_freepar1           = 1                         unless defined $npt_freepar1;    # of free parameter points to scan                                         
+
+# # 1D fit - mixing23 (reactors)                                                                                                                         
+# $freepar0               = "mixing23"                unless defined $freepar0;                                                                       
+# $minfreepar0            = 0.3                        unless defined $minfreepar0;     # Minimum free parameter allowed value                                            
+# $maxfreepar0            = 0.7                     unless defined $maxfreepar0;     # Maximum free parameter allowed value                            
+# $npt_freepar0           = 201                       unless defined $npt_freepar0;    # of free parameter points to scan                              
+# $freepar1               = ""                        unless defined $freepar1;                                                                 
+# $minfreepar1            = 0.                        unless defined $minfreepar1;     # Minimum free parameter allowed value                    
+# $maxfreepar1            = 0.                        unless defined $maxfreepar1;     # Maximum free parameter allowed value                       
+# $npt_freepar1           = 1                         unless defined $npt_freepar1;    # of free parameter points to scan                                    
+
+# # 1D fit - dmsq23 (reactors)                                                                                                                                    
+# $freepar0               = "dmsq23"                  unless defined $freepar0;
+# $minfreepar0            = 2.E-3                     unless defined $minfreepar0;     # Minimum free parameter allowed value                  
+# $maxfreepar0            = 3.E-3                     unless defined $maxfreepar0;     # Maximum free parameter allowed value                                
+# $npt_freepar0           = 201                       unless defined $npt_freepar0;    # of free parameter points to scan                                  
+# $freepar1               = ""                        unless defined $freepar1;
+# $minfreepar1            = 0.                        unless defined $minfreepar1;     # Minimum free parameter allowed value                                                        
+# $maxfreepar1            = 0.                        unless defined $maxfreepar1;     # Maximum free parameter allowed value                               
+# $npt_freepar1           = 1                         unless defined $npt_freepar1;    # of free parameter points to scan                                    
+
+# # 2D fit - sinsqth13 Vs dcp (t2k only)
+# $freepar0            = "mixing13"                 unless defined $freepar0;
+# $minfreepar0         = 0.                         unless defined $minfreepar0;     # Minimum free parameter allowed value
+# $maxfreepar0         = 0.113                        unless defined $maxfreepar0;     # Maximum free parameter allowed value 
+# $npt_freepar0        = 81                          unless defined $npt_freepar0;    # of free parameter points to scan
+# $freepar1            = "deltacp"                  unless defined $freepar1;
+# $minfreepar1         = -3.14159265358979312e+00   unless defined $minfreepar1;     # Minimum free parameter allowed value
+# $maxfreepar1         = +3.14159265358979312e+00   unless defined $maxfreepar1;     # Maximum free parameter allowed value 
+# $npt_freepar1        = 51                          unless defined $npt_freepar1;    # of free parameter points to scan
+
+# # 2D fit - sinsqth13 Vs dcp (t2k reactors)
+# $freepar0          = "mixing13"                 unless defined $freepar0;
+# $minfreepar0       = 0.015                      unless defined $minfreepar0;     # Minimum free parameter allowed value
+# $maxfreepar0       = 0.036                      unless defined $maxfreepar0;     # Maximum free parameter allowed value 
+# $npt_freepar0      = 81                         unless defined $npt_freepar0;    # of free parameter points to scan
+# $freepar1          = "deltacp"                  unless defined $freepar1;
+# $minfreepar1       = -3.14159265358979312e+00   unless defined $minfreepar1;     # Minimum free parameter allowed value
+# $maxfreepar1       = +3.14159265358979312e+00   unless defined $maxfreepar1;     # Maximum free parameter allowed value 
+# $npt_freepar1      = 51                         unless defined $npt_freepar1;    # of free parameter points to scan
+
+# # 2D fit - sinsqth23 Vs dmsq
+# $freepar0          = "mixing23"                 unless defined $freepar0;
+# $minfreepar0       = 0.3                        unless defined $minfreepar0;     # Minimum free parameter allowed value
+# $maxfreepar0       = 0.7                        unless defined $maxfreepar0;     # Maximum free parameter allowed value 
+# $npt_freepar0      = 81                         unless defined $npt_freepar0;    # of free parameter points to scan
+# $freepar1          = "dmsq23"                   unless defined $freepar1;
+# $minfreepar1       = 2.E-3                      unless defined $minfreepar1;     # Minimum free parameter allowed value
+# $maxfreepar1       = 3.E-3                      unless defined $maxfreepar1;     # Maximum free parameter allowed value 
+# $npt_freepar1      = 21                         unless defined $npt_freepar1;    # of free parameter points to scan
+
+# # 2D fit - sinsqth23 Vs dcp
+# $freepar0               = "mixing23"                 unless defined $freepar0;    
+# $minfreepar0            = 0.3                        unless defined $minfreepar0;     # Minimum free parameter allowed value 
+# $maxfreepar0            = 0.7                        unless defined $maxfreepar0;     # Maximum free parameter allowed value  
+# $npt_freepar0           = 81                         unless defined $npt_freepar0;    # of free parameter points to scan   
+# $freepar1               = "deltacp"                  unless defined $freepar1;        
+# $minfreepar1            = -3.14159265358979312e+00   unless defined $minfreepar1;     # Minimum free parameter allowed value  
+# $maxfreepar1            = +3.14159265358979312e+00   unless defined $maxfreepar1;     # Maximum free parameter allowed value  
+# $npt_freepar1           = 51                         unless defined $npt_freepar1;    # of free parameter points to scan 
+
+$type_error        = ""             unless defined $type_error;     # HESSE, MINOS or both (use "-" between)
+$draw_full_chisq   = 0              unless defined $draw_full_chisq;
+
+$test_stat         = "rate+shape"   unless defined $test_stat;     # "rate-only" or "rate+shape"
+
+$store_like_weights = 0             unless defined $store_like_weights;  # set to 1 only if 1 fit is run
+
+$penalty_freepar0   = 0             unless defined $penalty_freepar0;
+$penalty_freepar1   = 0             unless defined $penalty_freepar1;
+$read_skexp         = 0               unless defined $read_skexp;
+
+
+########################################################################################
+
+
+print "\nThe free parameters of the fit are:\n";
+print "$freepar0\n";
+print "$freepar1\n\n";
+
+
+mkpath ($job_dir, {verbose => 1, mode=>0777});
+die("$job_dir doesn't exist") unless -d $job_dir;
+
+# Set the grid of the free parameter
+
+if($freepar0 eq "deltacp"){
+    $freepar0_first = -3.14159265358979312;
+    $freepar0_last  = +3.14159265358979312;
+    $i_freepar0     = 0;
+    #$n_freepar0     = 201; # (it includes pi,-pi/2,0,+pi/2)
+    $n_freepar0     = 9; # (it includes pi,-pi/2,0,+pi/2)
+    #$n_freepar0     = 17; # (it includes pi,-pi/2,0,+pi/2)
+    $step_freepar0  = ($freepar0_last - $freepar0_first) / ($n_freepar0-1);
+    $init_freepar0  = $deltacp;
+}
+elsif($freepar0 eq "mixing13"){
+    $freepar0_first = 0.;
+    $freepar0_last  = 0.1;
+    $i_freepar0     = 0;
+    $n_freepar0     = 3; #81;  # same as chisq grid
+    $step_freepar0  = ($freepar0_last - $freepar0_first) / ($n_freepar0-1);
+    $init_freepar0  = $mix13;
+}
+elsif($freepar0 eq "mixing23"){
+    $freepar0_first = 0.3;
+    $freepar0_last  = 0.7;
+    $i_freepar0     = 0;
+    $n_freepar0     = 81;  # same as chisq grid
+    $step_freepar0  = ($freepar0_last - $freepar0_first) / ($n_freepar0-1);
+    $init_freepar0  = $mix23;
+}
+elsif($freepar0 eq "dmsq23"){
+    $freepar0_first = 2.E-3;
+    $freepar0_last  = 3.E-3;
+    $i_freepar0     = 0;
+    $n_freepar0     = 21;  # same as chisq grid
+    $step_freepar0  = ($freepar0_last - $freepar0_first) / ($n_freepar0-1);
+    $init_freepar0  = $dmsq23;
+}
+elsif($freepar0 eq "betaBar"){
+    $freepar0_first = 0.;
+    $freepar0_last  = 1.;
+    $i_freepar0     = 0;
+    $n_freepar0     = 2;  # same as chisq grid
+    $step_freepar0  = ($freepar0_last - $freepar0_first) / ($n_freepar0-1);
+    $init_freepar0  = $betaBar;
+}
+else{
+    print "\n The grid of $freepar0 for Feldman-Cousins is not defined\n";
+    exit;
+}
+
+if($freepar1 eq ""){
+    $freepar1_first = 0;
+    $freepar1_last  = 0;
+    $i_freepar1     = 0;
+    $n_freepar1     = 1;
+    $step_freepar1  = 0;
+    $init_freepar1  = -999;
+}
+elsif($freepar1 eq "deltacp"){
+    $freepar1_first = -3.14159265358979312;
+    $freepar1_last  = +3.14159265358979312;
+    $i_freepar1     = 0;
+    $n_freepar1     = 3; #201; # same as chisq grid
+    $step_freepar1  = ($freepar1_last - $freepar1_first) / ($n_freepar1-1);
+    $init_freepar1  = $deltacp;
+}
+elsif($freepar1 eq "mixing13"){
+    $freepar1_first = 0.;
+    $freepar1_last  = 0.113;
+    $i_freepar1     = 0;
+    $n_freepar1     = 81;  # same as chisq grid
+    $step_freepar1  = ($freepar1_last - $freepar1_first) / ($n_freepar1-1);
+    $init_freepar1  = $mix13;
+}
+elsif($freepar1 eq "mixing23"){
+    $freepar1_first = 0.3;
+    $freepar1_last  = 0.7;
+    $i_freepar1     = 0;
+    $n_freepar1     = 81;  # same as chisq grid
+    $step_freepar1  = ($freepar1_last - $freepar1_first) / ($n_freepar1-1);
+    $init_freepar1  = $mix23;
+}
+elsif($freepar1 eq "dmsq23"){
+    $freepar1_first = 2.E-3;
+    $freepar1_last  = 3.E-3;
+    $i_freepar1     = 0;
+    $n_freepar1     = 21;  # same as chisq grid
+    $step_freepar1  = ($freepar1_last - $freepar1_first) / ($n_freepar1-1);
+    $init_freepar1  = $dmsq23;
+}
+elsif($freepar1 eq "betaBar"){
+    $freepar1_first = 0.;
+    $freepar1_last  = 1.;
+    $i_freepar1     = 0;
+    $n_freepar1     = 2;  # same as chisq grid
+    $step_freepar1  = ($freepar1_last - $freepar1_first) / ($n_freepar1-1);
+    $init_freepar1  = $betaBar;
+}
+else{
+    print "\n The grid of $freepar1 for Feldman-Cousins is not defined\n";
+    exit;
+}
+
+# Check if freepar1 = freepar0
+if($freepar1 eq $freepar0){
+    print "\nThe free parameter 0 is the same as the free parameter 1: $freepar0 - $freepar1\n";
+    exit;
+}
+
+
+
+# Fill the array of grid points
+
+my $array_freepar0;
+$i_freepar0     = 0;
+while($i_freepar0 < $n_freepar0) {
+    $pt_freepar0 = $freepar0_first + $i_freepar0 * $step_freepar0;
+    #$ifile_first = 0;
+    #$ifile_last  = $nexpts; # The "last" experiment is included
+    push @array_freepar0, $pt_freepar0;
+    $i_freepar0++;
+}
+
+my $array_freepar1;
+$i_freepar1     = 0;
+while($i_freepar1 < $n_freepar1) {
+    $pt_freepar1 = $freepar1_first + $i_freepar1 * $step_freepar1;
+    #$ifile_first = 0;
+    #$ifile_last  = $nexpts; # The "last" experiment is included
+    push @array_freepar1, $pt_freepar1;
+    $i_freepar1++;
+}
+
+
+
+################### Loop over the grid points ################
+
+print "\nLoop over the grid points\n";
+print "\n////////////////////////////// \n\n";
+
+$NjobsTot = 0;
+
+# parameter 1
+
+$i_freepar1     = 0;
+while($i_freepar1 < $n_freepar1) { 
+    
+    $pt_freepar1 = $array_freepar1[$i_freepar1];
+    
+    # if running single init point  
+    if($run_fullgrid==0){
+	$n_freepar1 = 1;
+	$pt_freepar1 = $init_freepar1;
+    }
+    
+    # set the running point to the pt of the grid
+    else{
+	if   ($freepar1 eq "deltacp") { $deltacp  = $pt_freepar1; }
+	elsif($freepar1 eq "mixing13"){ $mix13    = $pt_freepar1; }
+	elsif($freepar1 eq "mixing23"){ $mix23    = $pt_freepar1; }
+	elsif($freepar1 eq "dmsq23")  { $dmsq23   = $pt_freepar1; }    
+	elsif($freepar1 eq ""){}
+	else{
+	    print "\n $freepar1 is not defined\n";
+	    exit;
+	}
+	
+	# Skip points in array_freepar1_skip
+	my $n_freepar1_skip = @array_freepar1_skip;	
+	#print " $n_freepar1_skip \n";
+	if($n_freepar1_skip>0){
+	    $skip_point = 0;
+	    for (my $i=0; $i < $n_freepar1_skip; $i++) {	    	    
+		# print " $pt_freepar1";
+		# print " | $array_freepar1_skip[$i] \n";
+		if( abs($pt_freepar1 - $array_freepar1_skip[$i]) < 0.001 ){
+		    $skip_point = 1;
+		    last;
+		}
+	    }
+	    if($skip_point==1){
+		print "Skip this point parameter 1 : ";
+		print " $pt_freepar1 \n";
+		print "\n////////////////////////////// \n\n";
+		$i_freepar1++;
+		next;
+	    }
+	}
+	
+	
+	# # Select grid points to run. If array_freepar_user is empty, then run all the points
+	# my $n_freepar1_user = @array_freepar1_user;	
+	# if($n_freepar1_user>0){
+	# $skip_point = 0;
+
+	#for (my $i=0; $i < $n_freepar1_user; $i++) {
+	# #print "$array_freepar1_user[$i] - $array_freepar1[$i_freepar1] \n";
+	# if( abs($array_freepar1_user[$i] - $array_freepar1[$i_freepar1]) < 0.01 ){
+	#print "Run the point $array_freepar1[$i_freepar1] \n"; 
+	#print "user = $array_freepar1_user[$i_freepar1] / grid = $array_freepar1[$i_freepar1] \n"; 
+	#$skip_point = 0;
+	#last;
+	#}
+	#else{	
+	#$skip_point = 1;
+	#}
+	#}
+	#if($skip_point==1){
+	#print "Skip this point of parameter 1 : ";
+	#print " $array_freepar1[$i_freepar1] \n";
+	#print "\n////////////////////////////// \n\n";
+	#
+	#$i_freepar1++;
+	#next;
+	#}
+	#}
+	
+    } # loop over grid
+    
+    
+    # parameter 0 
+ 
+    $i_freepar0     = 0;
+    while($i_freepar0 < $n_freepar0) { 
+        
+	$pt_freepar0 = $array_freepar0[$i_freepar0];
+
+	# if running single point
+	if($run_fullgrid==0){
+	    $n_freepar0 = 1;
+	    $pt_freepar0 = $init_freepar0;
+	}
+	
+	# set the running point to the pt of the grid
+	else{
+	    if   ($freepar0 eq "deltacp") { $deltacp  = $pt_freepar0; }
+	    elsif($freepar0 eq "mixing13"){ $mix13    = $pt_freepar0; }
+	    elsif($freepar0 eq "mixing23"){ $mix23    = $pt_freepar0; }
+	    elsif($freepar0 eq "dmsq23")  { $dmsq23   = $pt_freepar0; }    
+	    elsif($freepar0 eq ""){}
+	    else{
+		print "\n $freepar0 is not defined\n";
+		exit;
+	    }
+	    
+	    print "\n";
+	    print "Point of freepar0 $i_freepar0: $pt_freepar0 \n";
+	    print "Point of freepar1 $i_freepar1: $pt_freepar1 \n";
+	    
+	    # Skip points in array_freepar0_skip
+	    my $n_freepar0_skip = @array_freepar0_skip;	
+	    #print " $n_freepar0_skip \n";
+	    if($n_freepar0_skip>0){
+		$skip_point = 0;
+		for (my $i=0; $i < $n_freepar0_skip; $i++) {	    	    
+		    # print " $pt_freepar0";
+		    # print " | $array_freepar0_skip[$i] \n";
+		    if( abs($pt_freepar0 - $array_freepar0_skip[$i]) < 0.001 ){
+			$skip_point = 1;
+			last;
+		    }
+		}
+		if($skip_point==1){
+		    print "Skip this point parameter 0 : ";
+		    print " $pt_freepar0 \n";
+		    print "\n////////////////////////////// \n\n";
+		    $i_freepar0++;
+		    next;
+		}
+	    }
+	    
+	    # # Select grid points to run. If array_freepar_user is empty, then run all the points
+	    # my $n_freepar0_user = @array_freepar0_user;	
+	    # if($n_freepar0_user>0){
+	    # $skip_point = 0;
+	    # for (my $i=0; $i < $n_freepar0_user; $i++) {
+	    # #print "$array_freepar0_user[$i] - $array_freepar0[$i_freepar0] \n";
+	    # if( abs($array_freepar0_user[$i] - $array_freepar0[$i_freepar0]) < 0.01 ){
+	    # print "Run the point $array_freepar0[$i_freepar0] \n"; 
+	    # print "user = $array_freepar0_user[$i_freepar0] / grid = $array_freepar0[$i_freepar0] \n"; 
+	    # $skip_point = 0;
+	    # last;
+	    # }
+	    # else{		
+	    # $skip_point = 1;
+	    # }
+	    # }
+	    # if($skip_point==1){
+	    # print "Skip this point parameter 0 : ";
+	    # print " $array_freepar0[$i_freepar0] \n";
+	    # print "\n////////////////////////////// \n\n";
+	    # $i_freepar0++;
+	    # next;
+	    # }
+	    # }
+	
+	} # loop over grid
+	
+	#
+	# Loop over the jobs (for each freepar point)
+	# Not used if toys are run. See code line $irun = $nruns;
+	#
+	
+	#$irun = $first_expt;
+	$irun = 0;
+	while($irun < $nruns) { # loop over the jobs
+	    
+	    $ifile_first = $first_expt + $irun * $nexpts;
+	    $ifile_last  = $ifile_first + $nexpts - 1; # The "last" experiment is included
+	    
+	    print "\n";
+	    print "Submitting job: $NjobsTot \n";
+	    print "Submitting run: $irun \n";
+	    print "first: $ifile_first \n";
+	    print "last: $ifile_last \n";
+	    print "param 0: $pt_freepar0 \n";
+	    print "param 1: $pt_freepar1 \n\n";
+	    print "Oscillation parameters: \n";
+	    print "mh=$masshierarchy \n";
+	    print "dcp=$deltacp, mix13=$mix13, mix23=$mix23, dmsq23=$dmsq23 \n\n";
+	    
+	    # Variable to set, not by the user
+	    #$dotoys = 0;                # Don't do toys on fly but read either xml or root files
+	    #$stat_fluct_fit = 0;        # Useless for fits, since toys are read and not performed
+	    #$tweak_systematics_fit = 0; # Useless for fits, since toys are read and not performed
+	    $tag_freepar = sprintf("fit_%s_%s_nexp_%d_%1.3f_%1.3f-job%1.0f",$tag,$masshierarchy,$nexpts,$pt_freepar0,$pt_freepar1,$irun);
+	    
+	    $tag_in = $tag_freepar; # needed for the output files
+
+	    $program = "";
+
+	    #
+	    # Make Feldman-Cousins: hard-coded is --do-fc 1 
+	    #
+
+	    $do_fc                   = 1;        # flag to perform Feldman-Cousins --> make the following 2 variables useless
+	    $marg_hierarchy_margtoys = 0;        # marginalization of mass hierarchy in marginalization toys  --> No effect!
+	    $masshierarchy_marg      = "normal"; # mass hierarchy in marginalization toys if not marginalized --> No effect!
+	    $file_margtoys           = "";       # file with marginalization toys --> Not used!
+	    $dominimize              = 1;        # only true chisq values are computed --> if 1 then it only takes more time computing also betabar=0 stuffs
+
+	    $arguments = "$softw_dir//bin/run_fc_marginalization --file-tag \"$tag_freepar\" --run \"$irun\" --config-file \"$config_file\" --n-experiments $nexpts --first-experiment $ifile_first --rethrow-unphysical-toys $rethrow_unphysical --verbose-syst-throws $verbose_systthrows --verbose-fit $verbose_fit --synch-osc-ih-to-nh $sync_ih_to_nh --throw-mass-hierarchy $marg_hierarchy --prior-mode-toy $prior_mode --do-toys $do_toys --use-xml-file $using_xml_file --fakedata-root-file $fakedata_root_file --fakedata-xml-file $fakedata_xml_file --dmsq-scheme \"$dmsqscheme\" --mix-param-scheme \"$mixparamscheme\" --mass-hierarchy \"$masshierarchy\" --mix-param-octant \"$mixparamoctant\" --cpv-phase-scheme \"$cpvparamscheme\" --hypothesis \"$hypothesis\" --cpv-nh $deltacp --mixing13-nh $mix13 --mixing23-nh $mix23 --mixing12-nh $mix12 --dm12sq-nh $dmsq12 --dm23sq-nh $dmsq23 --beta-bar $betaBar --normal-mass-hierarchy-prior $prior_prob_nh --stat-fluct $stat_fluct --syst-tweak-mode $tweak_systematics --fit-param-list \"$fitparamlist\" --file-margtoys \"$file_margtoys\" --file-margtoys-nh \"$file_margtoys_nh\" --file-margtoys-ih \"$file_margtoys_ih\" --nfiles-margtoys $nfiles_margtoys --ntoys-margtoys $ntoys_margtoys --freepar0-name \"$freepar0\" --freepar1-name \"$freepar1\" --freepar0-min $minfreepar0 --freepar0-max $maxfreepar0 --freepar0-npt $npt_freepar0 --freepar1-min $minfreepar1 --freepar1-max $maxfreepar1 --freepar1-npt $npt_freepar1 --marginalize-mh-margtoys $marg_hierarchy_margtoys --mass-hierarchy-margtoys  \"$masshierarchy_marg\" --test-statistic \"$test_stat\" --full-chisq $draw_full_chisq --type-error \"$type_error\" --store-like-weights $store_like_weights --penalty-freepar0 $penalty_freepar0 --penalty-freepar1 $penalty_freepar1 --do-fc $do_fc --do-minimize $dominimize --read-skexp $read_skexp";
+	    
+	    # # $command = "$program $arguments $arguments_bool";
+	    $command = "$program $arguments";
+
+	    #if(using_xml_file) { $command = " $command --use-xml-file $xml_file_freepar"; }
+	    #if(using_root_file){ $command = " $command --use-root-file $root_file_freepar"; }
+	    
+	    print "$command \n";
+	    
+	    print "\n////////////////////////////// \n\n";
+
+	  
+	    ################################### Submit the job ##################################
+	    
+	    #
+	    # ETH (Monch cluster), $job_dir not used, $tag gives path/name of output file
+	    #
+	    if($resource eq "ETH-Monch") {
+		open(PBS, ">/mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch") or die("Can not create the sbatch script");
+		print PBS "#!/bin/bash -l  \n";
+		#print PBS "#SBATCH --partition=dphys_compute_wk  \n";
+		#print PBS "#SBATCH --partition=dphys_compute  \n";
+		print PBS "#SBATCH --partition=dphys_compute --mem-per-cpu=2000  \n"; # in MB. Same as dphys_largemem default RAM    
+		#print PBS "#SBATCH --partition=dphys_largemem  \n";
+		#print PBS "#SBATCH --partition=dphys_largemem --mem-per-cpu=4000  \n";
+		print PBS "#SBATCH --nodes=1  \n";
+		print PBS "#SBATCH --ntasks-per-node=1  \n";
+		print PBS "#SBATCH --output=/mnt/lnec/davides/VALOR/outputs/out-$tag_in.%j.o  \n";
+		print PBS "#SBATCH --error=/mnt/lnec/davides/VALOR/outputs/out-$tag_in.%j.e  \n";
+		print PBS "echo \$SLURM_JOB_NODELIST \n"; # print the node  number
+		print PBS "$command \n";
+		close(PBS);
+		#`sbatch -t 23:59:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+		#`sbatch -t 1-00:00:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+		#`sbatch -t 10:00:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+		`sbatch -t 07:00:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+		#`sbatch -t 05:00:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+		#`sbatch -t 00:59:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+		#`sbatch -t 00:15:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+		#`sbatch -t 00:02:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+	    }
+	    
+	    #
+	    # ETH (Brutus cluster)
+	    #
+	    if($resource eq "ETH-Brutus") {
+		open(PBS, ">$job_dir/$tag-$ijob.sh") or die("Can not create the PBS batch script");
+		print PBS "#!/bin/bash \n";
+		#print PBS "#PBS -N $tag-$irun \n";
+		#print PBS "#PBS -l cput=$cput \n";
+		#print PBS "#PBS -o $job_dir/$tag-$irun.pbs.out \n";
+		#print PBS "#PBS -e $job_dir/$tag-$irun.pbs.err \n";
+		#print PBS "#PBS -q prod \n";
+		#print PBS "#PBS -l walltime=$cput \n";
+		#print PBS "cd $job_dir \n";
+		#print PBS "source $softw_dir/setup/setup_at_ral.sh $softw_dir\n";
+		print PBS "$command \n";
+		close(PBS);
+		`bsub -W 3:59 < $job_dir/$tag-$ijob.sh`;
+		#`bsub -W 1:59 < $job_dir/$tag-$ijob.sh`;
+		#`bsub -W 0:29 < $job_dir/$tag-$ijob.sh`;
+	    }
+	    
+	    #
+	    # RAL
+	    #
+	    if($resource eq "RAL") {
+		$source = `which bash`;
+		$fullprogram = `which root2k`;
+		$fullprogram = `readlink -m $fullprogram`;
+		$arguments =~ s/\"/\\\"/g;        # All double quotes must be escaped for Condor
+		$arguments =~ s/\'//g;            # and apparently single quotes are unnecessary but break it
+		
+		$consh   = "$job_dir/$tag_in-run_fc_marg-$ijob.consh";
+		$cndname = "$job_dir/$tag_in-run_fc_marg-$ijob.condor";
+		
+		open(CONSH,">$consh") or die("Cannot make shell script for Condor");
+		print CONSH "cd $job_dir \n";
+		print CONSH "$command \n";
+		close(CONSH);
+		
+		open(CND, ">$cndname") or die("Cannot create the Condor file");
+		print CND "Executable               = $source \n";
+		print CND "Arguments                = $consh \n";
+		print CND "Error                    = $job_dir/fit_marg_$tag_in-${ijob}_\$\(Process\).err \n";
+		print CND "Output                   = $job_dir/fit_marg_$tag_in-${ijob}_\$\(Process\).out \n";
+		print CND "Universe                 = vanilla \n";
+		print CND "Getenv                   = True \n";
+		print CND "should_transfer_files    = YES \n";
+		print CND "when_to_transfer_output  = ON_EXIT \n";
+		
+		print CND "InitialDir               = $job_dir \n";
+		
+		print CND "\nqueue\n";
+		
+		close(CND);
+		`condor_submit $cndname`;
+	    }
+	    
+	    
+	    #
+	    # RAL (SL5)
+	    #
+	    if($resource eq "OLDRAL") {
+		open(PBS, ">$job_dir/$tag-$irun.pbs") or die("Can not create the PBS batch script");
+		print PBS "#!/bin/bash \n";
+		print PBS "#PBS -N $tag-$irun \n";
+		print PBS "#PBS -l cput=$cput \n";
+		print PBS "#PBS -o $job_dir/$tag-$irun.pbs.out \n";
+		print PBS "#PBS -e $job_dir/$tag-$irun.pbs.err \n";
+		print PBS "#PBS -q prod \n";
+		print PBS "#PBS -l walltime=$cput \n";
+		print PBS "cd $job_dir \n";
+		print PBS "source $softw_dir/setup/setup_at_ral.sh $softw_dir\n";
+		print PBS "$command \n";
+		close(PBS);
+		#`qsub -q prod $job_dir/$tag-$irun.pbs`;
+	    }
+	    
+	    #
+	    # Oxford
+	    #
+	    if($resource eq "Oxford") {
+		open(PBS, ">$job_dir/$tag_in-$irun.pbs") or die("Can not create the PBS batch script");
+		print PBS "#!/bin/bash \n";
+		print PBS "#PBS -N $tag_in-$irun \n";
+		print PBS "#PBS -l cput=$cput \n";
+		print PBS "#PBS -o $job_dir/$tag_in-$irun.pbs.out \n";
+		print PBS "#PBS -e $job_dir/$tag_in-$irun.pbs.err \n";
+    if($queue ne "0")
+    {
+      print PBS "#PBS -q $queue \n";
+    }
+		print PBS "cd $job_dir \n";
+		print PBS "source $softw_dir/setup/setup_at_cvmfs.sh $softw_dir $fmwk_dir\n";
+		print PBS "$command \n";
+		print PBS "mailoutput(){\n echo \"Check Oxford servers\" \n grep 'root2k' $job_dir/$tag-$irun.pbs \n }\n";
+		print PBS "mailoutput | mail -s \"run_fc_dcp job done!\" rajbatchjobresult\@gmail.com\n";
+		close(PBS);
+	#	`qsub $job_dir/$tag_in-$irun.pbs`;
+	    }    #
+    
+	    # Grid
+	    #
+	    if($resource eq "Grid") {
+		print "Not supported just yet!\n";
+	    }
+	    #
+	    # interactive
+	    #
+	    if($resource eq "interactive") {
+		system($command);
+	    }
+	    
+	    
+	    $irun++;
+	    $NjobsTot++;
+
+	} # loop over irun 
+	
+	$i_freepar0++;
+	
+    } # loop over i_freepar0
+
+    $i_freepar1++;
+    
+} # loop over i_freepar1
+       
+
+
