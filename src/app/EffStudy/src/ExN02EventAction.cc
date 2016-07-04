@@ -145,7 +145,7 @@ ExN02EventAction::ExN02EventAction()
     fVecVtx_ReacMode(),  
     fVecVtx_EvtProb(),   
     fVecVtx_EvtWeight() 
-
+    
 {
   // // set printing per each event
   // G4RunManager::GetRunManager()->SetPrintProgress(1);
@@ -445,13 +445,13 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
      if(hit_before!=0) detname_before = hit_before->GetNameDet();
      //std::cout << detname_after << std::endl;
      
-     // // if(detname=="Target"){
+     // if(detname=="Target"){
      // G4cout << "i = " << i 
      // 	    << " - current ID = " << hit->GetTrackID() 
      // 	    << " - after ID = " << hit_after->GetTrackID() 
      // 	    << " --> detname = " << detname << " -->  detname_after = " << detname_after << G4endl;
-     // //}
-     // //continue;
+     //}
+     //continue;
 
 
      if(detname=="TPCUp"){     
@@ -463,7 +463,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
  
        if(hit_after!=0) aftertrkid_TPCUp = hit_after->GetTrackID(); // following track 
        else aftertrkid_TPCUp = kBadNum;
-
+       
        G4ThreeVector trkmom = hit->GetMom();
        G4double trkcharge = hit->GetCharge();
        G4int trkpdg = hit->GetTrackPDG();
@@ -514,8 +514,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 prevtrkid_TPCUp = currtrkid_TPCUp;
 	 fTPCUp_NTracks++;	
 	 
-	 // G4cout << "First:" << prevtrkid_TPCUp << " --> " << currtrkid_TPCUp 
-	 // 	<< " - " << detname_before << " --> " << detname << G4endl;
+	 //G4cout << "First:" << prevtrkid_TPCUp << " --> " << currtrkid_TPCUp 
+	 //<< " - " << detname_before << " --> " << detname << G4endl;
 	 
        } // if first step of the track
 
@@ -535,8 +535,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTPCUp_TrackStepLastY.push_back(y);	 	 
 	 fVecTPCUp_TrackStepLastZ.push_back(z);	 	 
 	 
-	 // std::cout << "Last:" << currtrkid_TPCUp << " --> " << aftertrkid_TPCUp 
-	 // 	   << " - " << detname << " --> " << detname_after << std::endl;     
+	 //std::cout << "Last:" << currtrkid_TPCUp << " --> " << aftertrkid_TPCUp 
+	 //<< " - " << detname << " --> " << detname_after << std::endl;     
 
        } // if last step of the track
        
@@ -578,7 +578,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
 	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
 	 fVecTPCDown_TrackCosTheta.push_back(costh);
-
+	 
 	 // if(trkmom.mag() / MeV > 100 ){
 	 //   double mom_oth = sqrt( trkmom.x()*trkmom.x() +  
 	 // 			  trkmom.y()*trkmom.y() +
@@ -596,11 +596,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
 	 prevtrkid_TPCDown = currtrkid_TPCDown;
 	 fTPCDown_NTracks++;
-	
-	 // G4cout << "First:" << prevtrkid_TPCDown << " --> " << currtrkid_TPCDown 
-	 // 	<< " - " << detname_before << " --> " << detname << G4endl;
-
-       
+	 
+	 //G4cout << "First:" << prevtrkid_TPCDown << " --> " << currtrkid_TPCDown 
+	 //<< " - " << detname_before << " --> " << detname << G4endl;
+	 
        } // if first step of the track 
 
        // Get Track initial informations (LAST STEP of the track in detector)
@@ -618,8 +617,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTPCDown_TrackStepLastY.push_back(y);	 	 
 	 fVecTPCDown_TrackStepLastZ.push_back(z);	 	 
 	 
-	 // std::cout << "Last:" << currtrkid_TPCDown << " --> " << aftertrkid_TPCDown
-	 // 	   << " - " << detname << " --> " << detname_after << std::endl;     
+	 //std::cout << "Last:" << currtrkid_TPCDown << " --> " << aftertrkid_TPCDown
+	 //<< " - " << detname << " --> " << detname_after << std::endl;     
 
        } // if last step of the track
 
@@ -673,7 +672,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 prevtrkid_Target = currtrkid_Target;
 	 fTarget_NTracks++;
 	 // G4cout << "First:" << prevtrkid_Target << " --> " << currtrkid_Target 
-	 // 	<< " - " << detname_before << " --> " << detname << G4endl;
+	 //  	<< " - " << detname_before << " --> " << detname << G4endl;
+	 // G4cout << " - pos: " << x << ", " << y << ", " << z << G4endl;
 	 
 	 // if(trkmom.mag() / MeV > 100){	   
 	 //   double mom_oth = sqrt( trkmom.x()*trkmom.x() +  
@@ -706,8 +706,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 fVecTarget_TrackStepLastY.push_back(y);	 	 
 	 fVecTarget_TrackStepLastZ.push_back(z);	 	 
 	 
-	 // std::cout << "Last:" << currtrkid_Target << " --> " << aftertrkid_Target 
-	 // 	   << " - " << detname << " --> " << detname_after << std::endl;     
+	 //G4cout << "Last:" << currtrkid_Target << " --> " << aftertrkid_Target 
+	 //<< " - " << detname << " --> " << detname_after << G4endl;   
+	 //G4cout << " - pos: " << x << ", " << y << ", " << z << G4endl;
   
        } // if last step of the track
 

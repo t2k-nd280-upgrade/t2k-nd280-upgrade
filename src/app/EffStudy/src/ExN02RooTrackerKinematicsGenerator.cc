@@ -8,6 +8,7 @@
 #include "ExN02RooTrackerKinematicsGenerator.hh"
 #include "ExN02Constants.hh"
 #include "ExN02VertexInfo.hh"
+#include "ExN02ND280XML.hh"
 
 #include "globals.hh"
 
@@ -30,20 +31,19 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
   fCurrEntry = 0;
   fneutfile = 0;
   fneutree = 0;
-  
-  if(cGeneratorType=="NEUT"){
-    G4String inputfile = cPathFiles;
-    inputfile.append(cNEUTfilename);
+
+  G4String inputfile = inxml.GetXMLPathFiles();
+  inputfile.append(inxml.GetXMLGenerFileName());
+
+  if(inxml.GetXMLGenerTypeName()=="NEUT"){
     this->ReadNEUT(inputfile);
   }
-  else if(cGeneratorType=="GENIE"){
-    G4String inputfile = cPathFiles;
-    inputfile.append(cGENIEfilename);
+  else if(inxml.GetXMLGenerTypeName()=="GENIE"){
     this->ReadGENIE(inputfile);
   }
   else{
     G4ExceptionDescription msg;
-    msg << "The generator type "<< cGeneratorType << " is not available";
+    msg << "The generator type "<< inxml.GetXMLGenerTypeName() << " is not available";
     G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
                 "MyCode0002",FatalException, msg);
   }
@@ -76,7 +76,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
   G4cout << G4endl;
   G4cout << "Open a RooTracker NEUT tree from " << filename << G4endl;
 
-  fneutree = dynamic_cast<TTree*>(fneutfile->Get(cNEUTtreename));
+  fneutree = dynamic_cast<TTree*>(fneutfile->Get( inxml.GetXMLGenerTreeName() ));
   if (!fneutree) {
     const char *msg = "NEUT tree is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadNEUT";
@@ -140,7 +140,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
   G4cout << G4endl;
   G4cout << "Open a RooTracker GENIE tree from " << filename << G4endl;
 
-  fneutree = dynamic_cast<TTree*>(fneutfile->Get(cGENIEtreename));
+  fneutree = dynamic_cast<TTree*>(fneutfile->Get( inxml.GetXMLGenerTreeName() ));
   if (!fneutree) {
     const char *msg = "GENIE tree is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadGENIE";
@@ -224,8 +224,8 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // Take event ID and pass to the NEUT entry
 
   G4int evtID = anEvent->GetEventID();
-  //evtID = 39;
-
+  //evtID = 1523;
+  
   if(evtID > fTotEntry){
     const char *msg = "Event ID exceeds the number of NEUT events!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
@@ -240,9 +240,8 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   }
   
   fneutree->GetEntry(evtID); // take NEUT entry using event ID
-  //fneutree->GetEntry(39);
-
- 
+  //fneutree->GetEntry(1523);
+  
   //
   // NB: The following code to add the vertex is taken from nd280mc code
   //     except a few minor differences (e.g. ND280LOG, the interaction vertex index, different G4 version...)
