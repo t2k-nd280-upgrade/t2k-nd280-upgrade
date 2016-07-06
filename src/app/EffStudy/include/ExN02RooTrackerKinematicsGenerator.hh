@@ -12,6 +12,8 @@
 #include "G4RunManager.hh"
 #include "G4Event.hh"
 
+#include "ExN02ND280XML.hh"
+
 #include <TTree.h>
 #include <TFile.h>
 #include <TBits.h>
@@ -37,6 +39,8 @@ private :
   TTree *fneutree;    // NEUT tree to read
   G4int fTotEntry;
   G4int fCurrEntry;
+  
+  ExN02ND280XML inxml;
   
   void ReadGENIE(G4String filename);
   void ReadNEUT(G4String filename);
