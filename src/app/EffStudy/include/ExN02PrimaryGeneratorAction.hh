@@ -59,6 +59,14 @@ public:
   void SetRandomFlag(G4bool value);
   void SetGeneratorType(G4String name){fGeneratorType=name;};
 
+
+
+  void SetFirstEvent(int evt1){FirstEvent = evt1;};
+  G4int GetFirstEvent(){return FirstEvent;};
+  G4int FirstEvent;
+
+
+
 private:
   G4ParticleGun*  fParticleGun; // G4 particle gun
 

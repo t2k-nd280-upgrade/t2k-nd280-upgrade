@@ -32,6 +32,10 @@ public :
   G4int GetTotNEUTevents(){ return fTotEntry;};
   G4int GetCurrNEUTevent(){ return fCurrEntry;};
 
+  void SetFirstEvent(G4int evt1){FirstEvent = evt1;};
+  G4int GetFirstEvent(){return FirstEvent;};
+  G4int FirstEvent;
+
 private :
 
   G4String ffilename; // NEUT file name to read

@@ -19,16 +19,12 @@
 //         Input files         //                         
 //                             //          
 /////////////////////////////////                                       
-
-const G4String cPathFiles    = "";//"/neutrino/data7/davide/files/";
-
-const G4String cNEUTfilename = "";//"genev_output_newgeom_O16.root";
-const G4String cNEUTtreename = "";//"nRooTracker";
-
-const G4String cGENIEfilename = "";//"out.rootracker_highstat.root";
-const G4String cGENIEtreename = "";//"gRooTracker";
-
-const G4String cGeneratorType = ""; //"GENIE"; // "GENIE" or "NEUT" 
+//const G4String cPathFiles    = "";//"/neutrino/data7/davide/files/";
+//const G4String cNEUTfilename = "";//"genev_output_newgeom_O16.root";
+//const G4String cNEUTtreename = "";//"nRooTracker";
+//const G4String cGENIEfilename = "";//"out.rootracker_highstat.root";
+//const G4String cGENIEtreename = "";//"gRooTracker";
+//const G4String cGeneratorType = ""; //"GENIE"; // "GENIE" or "NEUT" 
 
 /////////////////////////////////                 
 //                             //                    
@@ -36,7 +32,7 @@ const G4String cGeneratorType = ""; //"GENIE"; // "GENIE" or "NEUT"
 //                             //          
 /////////////////////////////////                                       
 
-const G4double kBadNum = -999.;
+const G4double kBadNum = -9999999.;
 
 ////////////////////////////
 //                        //
@@ -62,6 +58,14 @@ const G4String cNameSolidTarget      = "target";
 const G4String cNameLogicTarget      = "Target";
 const G4String cNamePhysiTarget      = "Target";
 
+const G4String cNameSolidTarget1     = "target1";
+const G4String cNameLogicTarget1     = "Target1";
+const G4String cNamePhysiTarget1     = "Target1";
+
+const G4String cNameSolidTarget2     = "target2";
+const G4String cNameLogicTarget2     = "Target2";
+const G4String cNamePhysiTarget2     = "Target2";
+
 const G4String cNameSolidChamberUp   = "tpcup";
 const G4String cNameLogicChamberUp   = "TPCUp";
 const G4String cNamePhysiChamberUp   = "TPCUp";
@@ -75,8 +79,11 @@ const G4String cNamePhysiChamberDown = "TPCDown";
 const G4String cWorldMater   = "Air";
 const G4String cBasketMater  = "Air";
 const G4String cTrackerMater = "Air";
+
 const G4String cTargetMater  = "ActiveWater"; //fgd active water
-//const G4String cTargetMater  = "FGDScintillator"; //fgd scintillator
+const G4String cTargetMater1  = "FGDScintillator"; //fgd scintillator  
+const G4String cTargetMater2  = "ActiveWater"; //fgd active water  
+
 const G4String cChamberMater = "GasMixtureTPC"; // gas mixture of ND280 TPCs
 
 
@@ -85,21 +92,6 @@ const G4String cChamberMater = "GasMixtureTPC"; // gas mixture of ND280 TPCs
 // Dimension of detectors //
 //                        //
 ////////////////////////////
-
-// Water Target
-const G4double cTargetLength = 2400.0 * mm; 
-const G4double cTargetWidth  = 2300.0 * mm; 
-const G4double cTargetHeight = 303.0  * mm;   
-
-// Side TPCs
-const G4double cChamberLength = cTargetLength;// mm; 
-const G4double cChamberWidth  = cTargetWidth; // mm;
-const G4double cChamberHeight = 1000.0 * mm;  
-
-// Tracker 
-const G4double cTrackerLength = cTargetLength;                 // Full length of Tracker
-const G4double cTrackerWidth  = cTargetWidth;                  // Full width of Tracker
-const G4double cTrackerHeight = cTargetHeight + cChamberHeight*2; // Full height of Tracker
 
 // Basket 
 // Follow nd280mc convention in order to match NEUT requirements: 
@@ -134,6 +126,21 @@ const G4double cBasketHeight = cBasketOuterHeight;
 const G4double cWorldLength = 1.2 *(cBasketLength);
 const G4double cWorldWidth  = 1.2 *(cBasketWidth);
 const G4double cWorldHeight = 1.2 *(cBasketHeight);
+
+// Tracker 
+const G4double cTrackerLength = cBasketLength; //cTargetLength;                 // Full length of Tracker
+const G4double cTrackerWidth  = 2320. * mm; //cTargetWidth;                  // Full width of Tracker
+const G4double cTrackerHeight = 2414. * mm; //cTargetHeight + cChamberHeight*2; // Full height of Tracker
+
+// Water Target
+const G4double cTargetLength = 1560 * mm; // 2400.0 * mm; 
+const G4double cTargetWidth  = 2300.0 * mm; 
+const G4double cTargetHeight = 303.0  * mm;   
+
+// Side TPCs
+const G4double cChamberLength = cTargetLength;// mm; 
+const G4double cChamberWidth  = cTargetWidth; // mm;
+const G4double cChamberHeight = 1000.0 * mm;  
 
 
 ////////////////////////////

@@ -33,7 +33,9 @@ public :
   G4String GetXMLPathFiles(){return fPathFiles;};
   G4String GetXMLGenerTreeName(){return fGenerTreeName;};
   G4String GetXMLGenerFileName(){return fGenerFileName;};
-
+  //G4int GetXMLFirstEvent(){return fGenerFirstEvent;};
+  G4int GetXMLStepEvent(){return fGenerStepEvent;};
+  
   void SetInputs();
 
 private :
@@ -43,9 +45,11 @@ private :
   G4String fPathFiles;
   G4String fGenerTreeName;
   G4String fGenerFileName;
+  //G4int    fGenerFirstEvent;
+  G4int    fGenerStepEvent;
 
   void XML2String(string tmp_app,string &dest);
-  
+  void XML2Int   (string tmp_app,int &dest);
   
   // XMLNodePointer_t FindNode          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   // bool             NodeExists        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);

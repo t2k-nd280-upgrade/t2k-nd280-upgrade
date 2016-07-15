@@ -36,6 +36,9 @@
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4Cache.hh"
+#include "G4ThreeVector.hh"
+#include "G4RotationMatrix.hh"
+#include "G4VisAttributes.hh"
 
 //#include "ExN02MagneticField.hh" // OLD
 
@@ -75,7 +78,7 @@ public:
   G4double GetTrackerFullWidth()  {return fTrackerWidth;};
   G4double GetTrackerFullHeight() {return fTrackerHeight;};
 
-  G4double GetTargetFullLenght()  {return fTargetLength;};
+  G4double GetTargetFullLength()  {return fTargetLength;};
   G4double GetTargetFullWidth()   {return fTargetWidth;};
   G4double GetTargetFullHeight()  {return fTargetHeight;};
 
@@ -84,6 +87,8 @@ public:
   G4double GetWorldFullHeight()   {return fWorldHeight;}; 
      
   void setTargetMaterial (G4String);
+  void setTargetMaterial1 (G4String);
+  void setTargetMaterial2 (G4String);
   void setChamberMaterial(G4String);
   void SetMagField(G4double);
   void SetMaxStep (G4double);     
@@ -92,7 +97,10 @@ public:
                          
   const G4VPhysicalVolume* GetAbsorberPV() const; // new
   const G4VPhysicalVolume* GetGapPV() const; // new
-  
+
+  G4LogicalVolume* GetPieceTPC(void);
+  const G4VisAttributes* GetVisual(void) const;
+ 
 protected:
   
   G4Material* FindMaterial(G4String m);
@@ -113,6 +121,14 @@ private:
   G4LogicalVolume*   logicTarget;   // pointer to the logical Target
   G4VPhysicalVolume* physiTarget;   // pointer to the physical Target
                
+  G4Box*             solidTarget1;   // pointer to the solid Target                                                                                                                                  
+  G4LogicalVolume*   logicTarget1;   // pointer to the logical Target                                                                                                                                 
+  G4VPhysicalVolume* physiTarget1;   // pointer to the physical Target
+
+  G4Box*             solidTarget2;   // pointer to the solid Target                                                                                                                
+  G4LogicalVolume*   logicTarget2;   // pointer to the logical Target                                                                                                                            
+  G4VPhysicalVolume* physiTarget2;   // pointer to the physical Target 
+
   G4Box*             solidTracker;  // pointer to the solid Tracker
   G4LogicalVolume*   logicTracker;  // pointer to the logical Tracker
   G4VPhysicalVolume* physiTracker;  // pointer to the physical Tracker
@@ -129,6 +145,8 @@ private:
   G4Material* BasketMater;  // pointer to the basket  material
   G4Material* TrackerMater;  // pointer to the tracker  material
   G4Material* TargetMater;  // pointer to the target  material
+  G4Material* TargetMater1;  // pointer to the target  material
+  G4Material* TargetMater2;  // pointer to the target  material
   G4Material* ChamberMater; // pointer to the chamber material                  
   G4Material* fDefaultMaterial;   /// The default material.       
 
@@ -166,6 +184,129 @@ private:
   G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume
   G4VPhysicalVolume*   fGapPV;      // the gap physical volume
   G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
+
+  // Visualization
+  G4VisAttributes* BoxVisAtt;
+  G4VisAttributes* TargetVisAtt;
+  G4VisAttributes* ChamberVisAtt;
+  G4VisAttributes* ChamberCO2;
+  G4VisAttributes* ChamberDeadMat;
+
+
+
+
+
+  ////////////////////////////////
+  //                            //
+  //        FROM nd280mc        //
+  //                            //
+  ////////////////////////////////
+
+  /// Variables to transform TPC MM modules
+  G4ThreeVector tpcMMTrans[2][12];
+  G4RotationMatrix* tpcMMRot[2][12];
+  G4ThreeVector tpcMMRotAxis;
+
+  G4ThreeVector GetRotOffset(G4ThreeVector axis, double angle);
+ 
+  void SetLength(double d){fLength = d;};
+  void SetWidth(double d){fWidth = d;};
+  void SetHeight(double d){fHeight = d;};
+  double GetLength(){return fLength;};
+  double GetWidth(){return fWidth;};
+  double GetHeight(){return fHeight;};
+  double fLength;
+  double fWidth;
+  double fHeight;
+
+  /// Set the width (x) dimension of the TPC drift volume.
+  void SetDriftWidth(double d) {fDriftWidth = d;}
+  /// Get the width (x) dimension of the TPC drift volume.
+  double GetDriftWidth(void) {return fDriftWidth;}
+  /// Set the height (y) dimension of the TPC drift volume.
+  void SetDriftHeight(double d) {fDriftHeight = d;}
+  /// Get the height (y) dimension of the TPC drift volume.
+  double GetDriftHeight(void) {return fDriftHeight;}
+  /// Set the length (z) dimension of the TPC drift volume.
+  void SetDriftLength(double d) {fDriftLength = d;}
+  /// Get the length (z) dimension of the TPC drift volume.
+  double GetDriftLength(void) {return fDriftLength;}
+  /// Set the central cathode thickness of the TPC.
+  void SetCathodeThickness(double d) {fCathodeThickness = d;}
+  /// Get the central cathode thickness of the TPC.
+  double GetCathodeThickness(void) {return fCathodeThickness;}
+  /// Set the amount of CO2 gap on the top of the TPC.
+  void SetCO2Top(double d) {fCO2Top = d;}
+  /// Get the amount of CO2 gap on the top of the TPC.
+  double GetCO2Top(void) {return fCO2Top;}
+  /// Set the amount of CO2 gap on the sides of the TPC.
+  void SetCO2Sides(double d) {fCO2Sides = d;}
+  /// Get the amount of CO2 gap on the sides of the TPC.
+  double GetCO2Sides(void) {return fCO2Sides;}
+  /// Set the amount of CO2 gap on the bottom of the TPC.
+  void SetCO2Bottom(double d) {fCO2Bottom = d;}
+  /// Get the amount of CO2 gap on the bottom of the TPC.
+  double GetCO2Bottom(void) {return fCO2Bottom;}
+  /// Set the inner box wall thickness.
+  void SetInnerBoxWall(double d) {fInnerBoxWall = d;}
+  /// Get the inner box wall thickness.
+  double GetInnerBoxWall(void) {return fInnerBoxWall;}
+  /// Set the outer box wall thickness.
+  void SetOuterBoxWall(double d) {fOuterBoxWall = d;}
+  /// Get the outer box wall thickness.
+  double GetOuterBoxWall(void) {return fOuterBoxWall;}
+  /// Get the vertical offset required for the FGD to be
+  /// centered on the TPC MM pattern (inner cradle)
+  double GetActiveTPCVerticalOffset(void) {return fActiveTPCVerticalOffset;}
+  /// Set the step length limit for charged particles inside of the TPC.
+  /// The step length limit should be short enough that the curvature of
+  /// tracks is properly saved.  In general, it should probably be about the
+  /// same as the minimum pad dimension.
+  void SetSteppingLimit(double d) {fSteppingLimit = d;}
+  /// Get the step length limit for charged particles inside of the TPC.
+  double GetSteppingLimit(void) {return fSteppingLimit;}
+  /// Set the flag to show the outer volume.
+  void SetShowOuterVolume(bool flag) {fShowOuterVolume = flag;}
+  /// Get the flag to show the outer volume.
+  bool GetShowOuterVolume(void) {return fShowOuterVolume;}    
+  // Set transformation parameters for TPC MM modules.
+  //void SetMMTranslation(int rp, int mm, G4ThreeVector trans); 
+  //void SetMMRotation(int rp, int mm, double angle);  
+  /// The width (x) dimension of the TPC drift volume.
+  double fDriftWidth;
+  /// The height (y) dimension of the TPC drift volume.
+  double fDriftHeight;
+  /// The length (z) dimension of the TPC drift volume.
+  double fDriftLength;
+  /// The central cathode thickness of the TPC.
+  double fCathodeThickness;
+  /// The amount of CO2 gap on the top of the TPC.
+  double fCO2Top;
+  /// The amount of CO2 gap on the sides of the TPC.
+  double fCO2Sides;
+  /// The amount of CO2 gap on the bottom of the TPC.
+  double fCO2Bottom;
+  /// The inner box wall thickness.
+  double fInnerBoxWall;
+  /// The outer box wall thickness.
+  double fOuterBoxWall;
+  /// The vertical offset required for the FGD to be
+  /// centered on the TPC MM pattern (inner cradle)
+  double fActiveTPCVerticalOffset;
+  /// Flag to show the envelope volume instead of the drift volume.
+  bool fShowOuterVolume;
+  /// The stepping limit used for the TPC drift volume.
+  double fSteppingLimit;
+  void Init(void);
+  /// Method to build the TPC Central Cathode.
+  void BuildTPCCentralCathode(G4LogicalVolume* v);
+  /// Method to build the TPC Inner and Outer cages.
+  void BuildTPCCages(G4LogicalVolume* v);
+
+  /// Flag to turn on extra debug printouts 
+  bool DebugTPCMass;
+
+  //
 };
 
 // In line functions
@@ -177,6 +318,8 @@ inline const G4VPhysicalVolume* ExN02DetectorConstruction::GetAbsorberPV() const
 inline const G4VPhysicalVolume* ExN02DetectorConstruction::GetGapPV() const  {
   return fGapPV;
 }
+
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
 

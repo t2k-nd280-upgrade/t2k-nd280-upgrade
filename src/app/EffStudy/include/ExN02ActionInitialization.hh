@@ -31,6 +31,10 @@
 #ifndef ExN02ActionInitialization_h
 #define ExN02ActionInitialization_h 1
 
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4Run.hh"
+
 #include "G4VUserActionInitialization.hh"
 
 class ExN02DetectorConstruction;
@@ -46,7 +50,13 @@ public:
   
   virtual void BuildForMaster() const;
   virtual void Build() const;
-  
+
+
+  G4int FirstEvent;
+  void SetFirstEvent(const G4int evtid){FirstEvent = evtid;};
+  G4int GetFirstEvent(){return FirstEvent;};
+
+
 private:
   ExN02DetectorConstruction* fDetConstruction;
 };
