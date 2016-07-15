@@ -19,6 +19,9 @@
 /field/setFieldX 0.2 tesla
 /field/update
 
+# Test geometry (overlaps...)	
+/geometry/test/run
+
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
 /generator/type Generator
 		
@@ -103,4 +106,4 @@
 # For file-based drivers, use this to create an empty detector view:
 #/vis/viewer/flush
 
-/run/beamOn 1 #40 #1915
+#/run/beamOn 99999999 #1 #19553 #10 #40 #1915 # Set in Main.cc
