@@ -193,21 +193,19 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
     G4Exception(origin,code,FatalException,msg);
   }
   
-  // Check to see if the next event is there.
-  if (fNextEntry >= fTotEntry) {
-    
-    G4cerr << G4endl;
-    G4cerr << "fNextEntry = " << fNextEntry << G4endl;
-    G4cerr << "fTotEntry = " << fTotEntry << G4endl;
-    //G4cerr << "fEntryVector.size() = " << fEntryVector.size() << G4endl;
-    G4cerr << G4endl;
-
-    const char *msg = "The # of events available in NEUT file is exceeded!";
-    const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
-    //const char *code = "if (fNextEntry >= fEntryVector.size()) {";
-    const char *code = "if (fNextEntry >= fTotEntry)) {";
-    G4Exception(origin,code,FatalException,msg);
-  }
+  // // Check to see if the next event is there.
+  // if (fNextEntry >= fTotEntry) {
+  //   G4cerr << G4endl;
+  //   G4cerr << "fNextEntry = " << fNextEntry << G4endl;
+  //   G4cerr << "fTotEntry = " << fTotEntry << G4endl;
+  //   //G4cerr << "fEntryVector.size() = " << fEntryVector.size() << G4endl;
+  //   G4cerr << G4endl;
+  //   const char *msg = "The # of events available in NEUT file is exceeded!";
+  //   const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
+  //   //const char *code = "if (fNextEntry >= fEntryVector.size()) {";
+  //   const char *code = "if (fNextEntry >= fTotEntry)) {";
+  //   G4Exception(origin,code,FatalException,msg);
+  // }
   
   fneutfile->cd();
   
@@ -224,24 +222,38 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // Take event ID and pass to the NEUT entry
 
   G4int evtID = anEvent->GetEventID();
-  //evtID = 1523;
-  
-  if(evtID > fTotEntry){
+  G4int treeEvtID = this->GetFirstEvent()+evtID; // tree event to pick up!!!
+
+  G4cout << "--> Generate primary vertex from tree event: " << treeEvtID << G4endl;
+
+  G4cout << "evtID = " << evtID << G4endl;
+  G4cout << "treeEvtID = " << treeEvtID << G4endl;
+  G4cout << "fTotEntry = " << fTotEntry << G4endl;
+
+
+
+  //if(evtID > fTotEntry){
+  if(treeEvtID >= fTotEntry){
     const char *msg = "Event ID exceeds the number of NEUT events!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
-    const char *code = "if(evtID > fTotEntry){";
+    const char *code = "if(evtID >= fTotEntry){";
     G4Exception(origin,code,FatalException,msg);
+    //G4RunManager::GetRunManager()->AbortRun(true); // don't use it because the last to last event will be stored twice
+    //anEvent->SetEventAborted();
   }
-  if(evtID != fCurrEntry){
-    const char *msg = "Event ID different from current NEUT event!";
-    const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
-    const char *code = " if(evtID != fCurrEntry){";
-    G4Exception(origin,code,FatalException,msg);
-  }
+
+
+
+  // if(evtID != fCurrEntry){
+  //   const char *msg = "Event ID different from current NEUT event!";
+  //   const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
+  //   const char *code = " if(evtID != fCurrEntry){";
+  //   G4Exception(origin,code,FatalException,msg);
+  // }
   
-  fneutree->GetEntry(evtID); // take NEUT entry using event ID
-  //fneutree->GetEntry(1523);
-  
+  //fneutree->GetEntry(evtID); // take tree entry using event ID
+  fneutree->GetEntry(treeEvtID); // take tree entry using event ID + first event (for running on bunch of events) 
+    
   //
   // NB: The following code to add the vertex is taken from nd280mc code
   //     except a few minor differences (e.g. ND280LOG, the interaction vertex index, different G4 version...)

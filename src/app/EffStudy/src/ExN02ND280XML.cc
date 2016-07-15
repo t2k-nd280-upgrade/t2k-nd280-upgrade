@@ -37,6 +37,8 @@ void ExN02ND280XML::SetInputs(){
     XML2String("Path2file",fPathFiles);
     XML2String("filename",fGenerFileName);  
     XML2String("treename",fGenerTreeName);      
+    //XML2Int   ("firstevent",fGenerFirstEvent);      
+    XML2Int   ("stepevent",fGenerStepEvent);      
     myfile.close();
   }
   else cout << "Unable to open file"; 
@@ -46,7 +48,7 @@ void ExN02ND280XML::SetInputs(){
 
 void ExN02ND280XML::XML2String(string tmp_app,string &dest){
   string line;
-  ifstream in("/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/configuration.xml");
+  ifstream in(fXMLFile);
   
   bool begin_tag = false;
   while (getline(in,line)){
@@ -73,6 +75,12 @@ void ExN02ND280XML::XML2String(string tmp_app,string &dest){
   return;
 }
 
+void ExN02ND280XML::XML2Int(string tmp_app,int &dest){
+  string dest_string;
+  XML2String(tmp_app,dest_string);
+  dest = atoi(dest_string.c_str());
+  return;
+}
 
 
 

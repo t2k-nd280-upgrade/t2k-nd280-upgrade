@@ -867,19 +867,19 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
   }
 
-  // // Print out the informations from SteppingAction
-  // std::cout << std::endl;
-  // std::cout << "Print out the informations from SteppingAction:" << std::endl;
-  // std::cout << std::endl;
-  // std::cout << "# of Tracks = " << fNTracks << std::endl;
-  // for(G4int itrk=0;itrk<fNTracks;itrk++){
-  //   std::cout << "Track ID: = " << fVecTrackID[itrk] 
-  // 	      << " - Track PDG: = " << fVecTrackPDG[itrk]   
-  // 	      << " - Track E: = " << fVecTrackE[itrk]   
-  //    	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
-  //    	      << std::endl;
-  // }
-  // std::cout << std::endl;
+  // Print out the informations from SteppingAction
+  //std::cout << std::endl;
+  //std::cout << "Print out the informations from SteppingAction:" << std::endl;
+  //std::cout << std::endl;
+  //std::cout << "# of Tracks = " << fNTracks << std::endl;
+  //for(G4int itrk=0;itrk<fNTracks;itrk++){
+  //std::cout << "Track ID: = " << fVecTrackID[itrk] 
+  //	      << " - Track PDG: = " << fVecTrackPDG[itrk]   
+  //	      << " - Track E: = " << fVecTrackE[itrk]   
+  //  	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
+  //  	      << std::endl;
+  //}
+  //std::cout << std::endl;
   
   // get number of stored trajectories
   //

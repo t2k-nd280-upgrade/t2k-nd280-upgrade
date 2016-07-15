@@ -87,6 +87,11 @@ ExN02PrimaryGeneratorAction::~ExN02PrimaryGeneratorAction()
 
 void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
+  // Pass the tree event number to RooTrackerNEUT
+
+  G4int firstevent = this->GetFirstEvent();
+  RooTrackerNEUT.SetFirstEvent(firstevent);
+
   // This function is called at the begining of event
 
   bool doGun = false;
@@ -146,27 +151,28 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     //
     // Also use current event ID from NEUT tree object, since the event is not initialized yet
     //
+
+
+
     
-    G4int CurrNEUTEvtID = RooTrackerNEUT.GetCurrNEUTevent();
-    if(CurrNEUTEvtID==0){
-      
-      G4int TotG4events = G4RunManager::GetRunManager()->GetCurrentRun()->GetNumberOfEventToBeProcessed(); // Number passed to BeamOn in vis.mac
-      G4int TotNEUTevents = RooTrackerNEUT.GetTotNEUTevents();
-      
-      if(TotG4events > TotNEUTevents){
-	
-	G4cerr << G4endl;
-	G4cerr << "The total # of G4 events exceeds the # of available NEUT events" << G4endl;
-	G4cerr << " - # G4 events = " << TotG4events << G4endl; 
-	G4cerr << " - # NEUT events = " << TotNEUTevents << G4endl;
-	G4cerr << G4endl;
-	
-	const char *msg = "The # of G4 events is larger than # of available NEUT events!";
-	const char *origin = "ExN02PrimaryGeneratorAction::GeneratePrimaries";
-	const char *code = "if(CurrNEUTEvtID==0){";
-	G4Exception(origin,code,FatalException,msg);   
-      }  
-    }
+    // G4int CurrNEUTEvtID = RooTrackerNEUT.GetCurrNEUTevent();
+    // if(CurrNEUTEvtID==0){      
+    //   G4int TotG4events = G4RunManager::GetRunManager()->GetCurrentRun()->GetNumberOfEventToBeProcessed(); // Number passed to BeamOn in vis.mac
+    //   G4int TotNEUTevents = RooTrackerNEUT.GetTotNEUTevents();      
+    //   if(TotG4events > TotNEUTevents){	
+    // 	G4cerr << G4endl;
+    // 	G4cerr << "The total # of G4 events exceeds the # of available NEUT events" << G4endl;
+    // 	G4cerr << " - # G4 events = " << TotG4events << G4endl; 
+    // 	G4cerr << " - # NEUT events = " << TotNEUTevents << G4endl;
+    // 	G4cerr << G4endl;	
+    // 	const char *msg = "The # of G4 events is larger than # of available NEUT events!";
+    // 	const char *origin = "ExN02PrimaryGeneratorAction::GeneratePrimaries";
+    // 	const char *code = "if(CurrNEUTEvtID==0){";
+    // 	G4Exception(origin,code,FatalException,msg);   
+    //   }  
+    // }
+
+
     
     // Generate the primary vertex
 
