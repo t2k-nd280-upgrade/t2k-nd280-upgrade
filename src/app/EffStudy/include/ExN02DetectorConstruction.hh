@@ -33,6 +33,8 @@
 #ifndef ExN02DetectorConstruction_h
 #define ExN02DetectorConstruction_h 1
 
+#include "ExN02ND280XML.hh"
+
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4Cache.hh"
@@ -66,9 +68,53 @@ public:
 public:
   
   G4VPhysicalVolume* Construct();
-     
+
+  // Initialize the XML parser
+  ExN02ND280XML ND280XMLInput;
+
   const 
   G4VPhysicalVolume* GetTracker() {return physiTracker;};
+
+  void DefineDimensions();
+
+  void SetBasketFullLength(G4double length) {fBasketLength = length;};
+  void SetBasketFullWidth(G4double width)  {fBasketWidth = width;};
+  void SetBasketFullHeight(G4double height) {fBasketHeight = height;};
+
+  void SetTrackerFullLength(G4double length) {fTrackerLength = length;};
+  void SetTrackerFullWidth(G4double width)  {fTrackerWidth = width;};
+  void SetTrackerFullHeight(G4double height) {fTrackerHeight = height;};
+
+  void SetTargetFullLength1(G4double length)  {fTargetLength1 = length;};
+  void SetTargetFullWidth1(G4double width)   {fTargetWidth1 = width;};
+  void SetTargetFullHeight1(G4double height)  {fTargetHeight1 = height;};
+  void SetTargetPos1(G4double x,G4double y,G4double z) {fTargetPos1 = G4ThreeVector(x,y,z);};
+
+  void SetTargetFullLength2(G4double length)  {fTargetLength2 = length;};
+  void SetTargetFullWidth2(G4double width)   {fTargetWidth2 = width;};
+  void SetTargetFullHeight2(G4double height)  {fTargetHeight2 = height;};
+  void SetTargetPos2(G4double x,G4double y,G4double z) {fTargetPos2 = G4ThreeVector(x,y,z);};
+
+  void SetForwTPCPos1(G4double x,G4double y,G4double z) {fForwTPCPos1 = G4ThreeVector(x,y,z);};
+  void SetForwTPCPos2(G4double x,G4double y,G4double z) {fForwTPCPos2 = G4ThreeVector(x,y,z);};
+  void SetForwTPCPos3(G4double x,G4double y,G4double z) {fForwTPCPos3 = G4ThreeVector(x,y,z);};
+
+  void SetChamberFullLength1(G4double length)  {fChamberLength1 = length;};
+  void SetChamberFullWidth1(G4double width)   {fChamberWidth1 = width;};
+  void SetChamberFullHeight1(G4double height)  {fChamberHeight1 = height;};
+  void SetChamberUpPos1(G4double x,G4double y,G4double z) {fChamberUpPos1 = G4ThreeVector(x,y,z);};
+  void SetChamberDownPos1(G4double x,G4double y,G4double z) {fChamberDownPos1 = G4ThreeVector(x,y,z);};
+
+  void SetChamberFullLength2(G4double length)  {fChamberLength2 = length;};
+  void SetChamberFullWidth2(G4double width)   {fChamberWidth2 = width;};
+  void SetChamberFullHeight2(G4double height)  {fChamberHeight2 = height;};
+  void SetChamberUpPos2(G4double x,G4double y,G4double z) {fChamberUpPos2 = G4ThreeVector(x,y,z);};
+  void SetChamberDownPos2(G4double x,G4double y,G4double z) {fChamberDownPos2 = G4ThreeVector(x,y,z);};
+
+  void SetWorldFullLength(G4double length)   {fWorldLength = length;}; 
+  void SetWorldFullWidth(G4double width)    {fWorldWidth = width;}; 
+  void SetWorldFullHeight(G4double height)   {fWorldHeight = height;}; 
+
 
   G4double GetBasketFullLength() {return fBasketLength;};
   G4double GetBasketFullWidth()  {return fBasketWidth;};
@@ -78,18 +124,40 @@ public:
   G4double GetTrackerFullWidth()  {return fTrackerWidth;};
   G4double GetTrackerFullHeight() {return fTrackerHeight;};
 
-  G4double GetTargetFullLength()  {return fTargetLength;};
-  G4double GetTargetFullWidth()   {return fTargetWidth;};
-  G4double GetTargetFullHeight()  {return fTargetHeight;};
+  G4double GetTargetFullLength1()  {return fTargetLength1;};
+  G4double GetTargetFullWidth1()   {return fTargetWidth1;};
+  G4double GetTargetFullHeight1()  {return fTargetHeight1;};
+  G4ThreeVector GetTargetPos1()    {return fTargetPos1;};
+
+  G4double GetTargetFullLength2()  {return fTargetLength2;};
+  G4double GetTargetFullWidth2()   {return fTargetWidth2;};
+  G4double GetTargetFullHeight2()  {return fTargetHeight2;};
+  G4ThreeVector GetTargetPos2()    {return fTargetPos2;};
+
+  G4ThreeVector GetForwTPCPos1()  {return fForwTPCPos1;};
+  G4ThreeVector GetForwTPCPos2()  {return fForwTPCPos2;};
+  G4ThreeVector GetForwTPCPos3()  {return fForwTPCPos3;};
+
+  G4double GetChamberFullLength1()  {return fChamberLength1;};
+  G4double GetChamberFullWidth1()   {return fChamberWidth1;};
+  G4double GetChamberFullHeight1()  {return fChamberHeight1;};
+  G4ThreeVector GetChamberUpPos1()  {return fChamberUpPos1;};
+  G4ThreeVector GetChamberDownPos1(){return fChamberDownPos1;};
+
+  G4double GetChamberFullLength2()  {return fChamberLength2;};
+  G4double GetChamberFullWidth2()   {return fChamberWidth2;};
+  G4double GetChamberFullHeight2()  {return fChamberHeight2;};
+  G4ThreeVector GetChamberUpPos2()  {return fChamberUpPos2;};
+  G4ThreeVector GetChamberDownPos2(){return fChamberDownPos2;};
 
   G4double GetWorldFullLength()   {return fWorldLength;}; 
   G4double GetWorldFullWidth()    {return fWorldWidth;}; 
   G4double GetWorldFullHeight()   {return fWorldHeight;}; 
      
-  void setTargetMaterial (G4String);
-  void setTargetMaterial1 (G4String);
-  void setTargetMaterial2 (G4String);
-  void setChamberMaterial(G4String);
+  void setMaterial_Target (G4String);
+  void setMaterial_Target1 (G4String);
+  void setMaterial_Target2 (G4String);
+  void setMaterial_Chamber(G4String);
   void SetMagField(G4double);
   void SetMaxStep (G4double);     
   
@@ -121,30 +189,37 @@ private:
   G4LogicalVolume*   logicTarget;   // pointer to the logical Target
   G4VPhysicalVolume* physiTarget;   // pointer to the physical Target
                
-  G4Box*             solidTarget1;   // pointer to the solid Target                                                                                                                                  
-  G4LogicalVolume*   logicTarget1;   // pointer to the logical Target                                                                                                                                 
+  G4Box*             solidTarget1;   // pointer to the solid Target       
+  G4LogicalVolume*   logicTarget1;   // pointer to the logical Target      
   G4VPhysicalVolume* physiTarget1;   // pointer to the physical Target
 
-  G4Box*             solidTarget2;   // pointer to the solid Target                                                                                                                
-  G4LogicalVolume*   logicTarget2;   // pointer to the logical Target                                                                                                                            
+  G4Box*             solidTarget2;   // pointer to the solid Target 
+  G4LogicalVolume*   logicTarget2;   // pointer to the logical Target 
   G4VPhysicalVolume* physiTarget2;   // pointer to the physical Target 
 
   G4Box*             solidTracker;  // pointer to the solid Tracker
   G4LogicalVolume*   logicTracker;  // pointer to the logical Tracker
   G4VPhysicalVolume* physiTracker;  // pointer to the physical Tracker
      
-  G4Box*             solidChamberUp;  // pointer to the solid Chamber
-  G4LogicalVolume*   logicChamberUp;  // pointer to the logical Chamber
-  G4VPhysicalVolume* physiChamberUp;  // pointer to the physical Chamber
+  G4Box*             solidChamberUp1;  // pointer to the solid Chamber Up 1
+  G4LogicalVolume*   logicChamberUp1;  // pointer to the logical Chamber Up 1
+  G4VPhysicalVolume* physiChamberUp1;  // pointer to the physical Chamber Up 1
+
+  G4Box*             solidChamberUp2;  // pointer to the solid Chamber Up 2
+  G4LogicalVolume*   logicChamberUp2;  // pointer to the logical Chamber Up 2
+  G4VPhysicalVolume* physiChamberUp2;  // pointer to the physical Chamber Up 2
      
-  G4Box*             solidChamberDown;  // pointer to the solid Chamber
-  G4LogicalVolume*   logicChamberDown;  // pointer to the logical Chamber
-  G4VPhysicalVolume* physiChamberDown;  // pointer to the physical Chamber
+  G4Box*             solidChamberDown1;  // pointer to the solid Chamber Down 1
+  G4LogicalVolume*   logicChamberDown1;  // pointer to the logical Chamber Down 1
+  G4VPhysicalVolume* physiChamberDown1;  // pointer to the physical Chamber Down 1
+
+  G4Box*             solidChamberDown2;  // pointer to the solid Chamber Down 2
+  G4LogicalVolume*   logicChamberDown2;  // pointer to the logical Chamber Down 2
+  G4VPhysicalVolume* physiChamberDown2;  // pointer to the physical Chamber Down 2
 
   G4Material* WorldMater;  // pointer to the world  material
   G4Material* BasketMater;  // pointer to the basket  material
   G4Material* TrackerMater;  // pointer to the tracker  material
-  G4Material* TargetMater;  // pointer to the target  material
   G4Material* TargetMater1;  // pointer to the target  material
   G4Material* TargetMater2;  // pointer to the target  material
   G4Material* ChamberMater; // pointer to the chamber material                  
@@ -167,20 +242,36 @@ private:
   G4double fBasketWidth;            // Full Width of Basket
   G4double fBasketHeight;           // Full Height of Basket
   
-  G4double fTargetLength;           // Full length of Target
-  G4double fTargetWidth;            // Full Width of Target
-  G4double fTargetHeight;           // Full Height of Target
+  G4double fTargetLength1;           // Full length of Target 1
+  G4double fTargetWidth1;            // Full Width of Target 1
+  G4double fTargetHeight1;           // Full Height of Target 1
+  G4ThreeVector fTargetPos1;         // Position of Target 1
+
+  G4double fTargetLength2;           // Full length of Target 2
+  G4double fTargetWidth2;            // Full Width of Target 2
+  G4double fTargetHeight2;           // Full Height of Target 2
+  G4ThreeVector fTargetPos2;         // Position of Target 2
  
   G4double fTrackerLength;          // Full length of Tracker
   G4double fTrackerWidth;           // Full width of Tracker
   G4double fTrackerHeight;          // Full height of Tracker
 
-  G4int    fNbOfChambers;            // Nb of chambers in the tracker region
-  G4double fChamberSpacing;         // distance between chambers 
-  G4double fChamberLength;           // length of the chambers
-  G4double fChamberWidth;            // width of the chambers
-  G4double fChamberHeight;           // height of the chambers
- 
+  G4ThreeVector fForwTPCPos1;       // Position of Forward TPC 1
+  G4ThreeVector fForwTPCPos2;       // Position of Forward TPC 2
+  G4ThreeVector fForwTPCPos3;       // Position of Forward TPC 3
+
+  G4double fChamberLength1;           // length of the chambers 1
+  G4double fChamberWidth1;            // width of the chambers 1
+  G4double fChamberHeight1;           // height of the chambers 1
+  G4ThreeVector fChamberUpPos1;       // Position of chamber Up 1
+  G4ThreeVector fChamberDownPos1;     // Position of chamber Down 1
+
+  G4double fChamberLength2;           // length of the chambers 2
+  G4double fChamberWidth2;            // width of the chambers 2
+  G4double fChamberHeight2;           // height of the chambers 2
+  G4ThreeVector fChamberUpPos2;       // Position of chamber Up 2
+  G4ThreeVector fChamberDownPos2;     // Position of chamber Down 2
+
   G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume
   G4VPhysicalVolume*   fGapPV;      // the gap physical volume
   G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
@@ -191,9 +282,6 @@ private:
   G4VisAttributes* ChamberVisAtt;
   G4VisAttributes* ChamberCO2;
   G4VisAttributes* ChamberDeadMat;
-
-
-
 
 
   ////////////////////////////////

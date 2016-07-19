@@ -37,6 +37,7 @@
 #include "ExN02TrackerSD.hh"
 #include "ExN02Constants.hh"
 #include "ND280BeamConstructor.hh"
+#include "ExN02ND280XML.hh"
 
 #include "G4Material.hh"
 #include "G4Box.hh"
@@ -85,18 +86,21 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
   solidBasket(0), logicBasket(0), physiBasket(0), 
   solidTarget(0), logicTarget(0), physiTarget(0), 
   solidTracker(0),logicTracker(0),physiTracker(0), 
-  solidChamberUp(0),logicChamberUp(0),physiChamberUp(0), 
-  solidChamberDown(0),logicChamberDown(0),physiChamberDown(0), 
-  WorldMater(0), BasketMater(0), TargetMater(0), ChamberMater(0), fDefaultMaterial(0), 
+  solidChamberUp1(0),logicChamberUp1(0),physiChamberUp1(0), 
+  solidChamberUp2(0),logicChamberUp2(0),physiChamberUp2(0), 
+  solidChamberDown1(0),logicChamberDown1(0),physiChamberDown1(0), 
+  solidChamberDown2(0),logicChamberDown2(0),physiChamberDown2(0), 
+  WorldMater(0), BasketMater(0), TargetMater1(0), TargetMater2(0), ChamberMater(0), fDefaultMaterial(0), 
   //chamberParam(0),
   stepLimit(0), 
   //fpMagField(0), // OLD
   fWorldLength(0.), fWorldWidth(0.), fWorldHeight(0.),
   fBasketLength(0.), fBasketWidth(0.), fBasketHeight(0.),
-  fTargetLength(0.),fTargetWidth(0.),fTargetHeight(0.),
+  fTargetLength1(0.),fTargetWidth1(0.),fTargetHeight1(0.),
+  fTargetLength2(0.),fTargetWidth2(0.),fTargetHeight2(0.),
   fTrackerLength(0.),fTrackerWidth(0.),fTrackerHeight(0.),
-  fNbOfChambers(0) , fChamberSpacing(0.),
-  fChamberLength(0.),fChamberWidth(0.),fChamberHeight(0.),
+  fChamberLength1(0.),fChamberWidth1(0.),fChamberHeight1(0.),
+  fChamberLength2(0.),fChamberWidth2(0.),fChamberHeight2(0.),
   fAbsorberPV(0), // new
   fGapPV(0), // new
   fCheckOverlaps(true) // new
@@ -119,13 +123,12 @@ ExN02DetectorConstruction::~ExN02DetectorConstruction()
  
 G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 {
+
   BoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
   TargetVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   ChamberVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
-  ChamberCO2 = new G4VisAttributes(G4Colour::Grey); //G4Colour(1.0,1.0,1.0));                                                                                                                             
-  ChamberDeadMat = new G4VisAttributes(G4Colour::Magenta); //G4Colour(1.0,0.0,1.0));                                                                                                                  
- 
-
+  ChamberCO2 = new G4VisAttributes(G4Colour::Grey); //G4Colour(1.0,1.0,1.0));   
+  ChamberDeadMat = new G4VisAttributes(G4Colour::Magenta); //G4Colour(1.0,0.0,1.0)); 
 
 #ifdef USE_PAI
   // Create a region for the PAI Model.
@@ -140,52 +143,22 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // G4cout << G4endl << "The materials defined are : " << G4endl << G4endl;
   // G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 
-  
-  //--------- Sizes of the principal geometrical components (solids)  ---------
-
-  fTargetLength  = cTargetLength;    // Full length of Target 
-  fTargetWidth   = cTargetWidth;     // Full width of Target 
-  fTargetHeight  = cTargetHeight;    // Full length of Target 
- 
-  fChamberLength = cChamberLength;
-  fChamberWidth  = cChamberWidth;
-  fChamberHeight = cChamberHeight;
-
-  fTrackerLength = cTrackerLength;                
-  fTrackerWidth  = cTrackerWidth;                  
-  fTrackerHeight = cTrackerHeight;
-
-  fBasketLength = cBasketLength;
-  fBasketWidth  = cBasketWidth;
-  fBasketHeight = cBasketHeight;
-
-  fWorldLength = cWorldLength;
-  fWorldWidth  = cWorldWidth;
-  fWorldHeight = cWorldHeight;
-
-  WorldMater   = FindMaterial(cWorldMater); 
-  BasketMater  = FindMaterial(cBasketMater); 
-  TrackerMater = FindMaterial(cTrackerMater);  
-  TargetMater  = FindMaterial(cTargetMater);  
-  ChamberMater = FindMaterial(cChamberMater);
-  
-  G4double targetSizeLength  = 0.5*fTargetLength;    // Half length of the Target 
-  G4double targetSizeWidth   = 0.5*fTargetWidth;     // Half width of the Target 
-  G4double targetSizeHeight  = 0.5*fTargetHeight;    // Half height of the Target 
- 
-  //G4double trackerSizeLenght = 0.5*fTrackerLength;  // Half length of the Tracker
-  //G4double trackerSizeWidth  = 0.5*fTrackerWidth;   // Half width of the Tracker
-  //G4double trackerSizeHeight = 0.5*fTrackerHeight;  // Half height of the Tracker
-      
-  //--------- Definitions of Solids, Logical Volumes, Physical Volumes ---------
+  this->DefineDimensions();
   
   //------------------------------ 
   // World
   //------------------------------ 
 
-  G4double HalfWorldLength = 0.5*fWorldLength;
-  G4double HalfWorldWidth  = 0.5*fWorldWidth;
-  G4double HalfWorldHeight = 0.5*fWorldHeight;
+  const G4String cNameSolidWorld = "world";
+  const G4String cNameLogicWorld = "World";
+  const G4String cNamePhysiWorld = "World";
+  const G4String cWorldMater = "Air";
+
+  WorldMater   = FindMaterial(cWorldMater); 
+
+  G4double HalfWorldLength = 0.5 * GetWorldFullLength();
+  G4double HalfWorldWidth  = 0.5 * GetWorldFullWidth();
+  G4double HalfWorldHeight = 0.5 * GetWorldFullHeight();
 
   G4GeometryManager::GetInstance()->SetWorldMaximumExtent(fWorldLength);
   G4cout << "Computed tolerance = "
@@ -203,8 +176,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				 cNamePhysiWorld, // its name
                                  0,               // its mother  volume
                                  false,           // no boolean operations
-                                 0,               // copy number
-				 fCheckOverlaps); // checking overlaps
+                                 0               // copy number
+				 );
+  //fCheckOverlaps); // checking overlaps
  
   G4cout << "World is "
   	 << fWorldWidth/mm  << " (width) x " 
@@ -213,15 +187,22 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << " of " << WorldMater->GetName()
   	 << G4endl;
   
-
-  
+    
   //------------------------------ 
   // Basket
   //------------------------------
+
+  const G4String cNameSolidBasket      = "basket";
+  const G4String cNameLogicBasket      = "Basket"; // match NEUT requirements
+  const G4String cNamePhysiBasket      = "Basket";
   
-  G4double HalfBasketLength  = 0.5*(fBasketLength); 
-  G4double HalfBasketWidth   = 0.5*(fBasketWidth); 
-  G4double HalfBasketHeight  = 0.5*(fBasketHeight); 
+  const G4String cBasketMater  = "Air";
+  
+  BasketMater  = FindMaterial(cBasketMater); 
+
+  G4double HalfBasketLength  = 0.5 * GetBasketFullLength(); 
+  G4double HalfBasketWidth   = 0.5 * GetBasketFullWidth(); 
+  G4double HalfBasketHeight  = 0.5 * GetBasketFullHeight(); 
 
   if( (HalfBasketLength>HalfWorldLength) || 
       (HalfBasketWidth>HalfWorldWidth) || 
@@ -244,8 +225,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   				  cNamePhysiBasket, // its name
   				  logicWorld,        // its mother  volume
   				  false,             // no boolean operations
-  				  0,                 // copy number 
-  				  fCheckOverlaps);   // checking overlaps     				 
+  				  0                  // copy number 
+  				  );
+  //fCheckOverlaps);   // checking overlaps     				 
   
   G4cout << "Basket is " 
   	 << fBasketWidth/mm  << " (width) x " 
@@ -258,10 +240,22 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //------------------------------ 
   // Tracker
   //------------------------------
+
+  const G4String cNameSolidTracker     = "tracker";
+  const G4String cNameLogicTracker     = "Tracker";
+  const G4String cNamePhysiTracker     = "Tracker";
+
+  const G4String cTrackerMater = "Air";
     
-  G4double HalfTrackerLength = 0.5*(fTrackerLength); 
-  G4double HalfTrackerWidth  = 0.5*(fTrackerWidth); 
-  G4double HalfTrackerHeight = 0.5*(fTrackerHeight); 
+  // fTrackerLength = cTrackerLength;                
+  // fTrackerWidth  = cTrackerWidth;                  
+  // fTrackerHeight = cTrackerHeight;
+
+  TrackerMater = FindMaterial(cTrackerMater);  
+
+  G4double HalfTrackerLength = 0.5 * GetTrackerFullLength(); 
+  G4double HalfTrackerWidth  = 0.5 * GetTrackerFullWidth(); 
+  G4double HalfTrackerHeight = 0.5 * GetTrackerFullHeight(); 
 
   G4ThreeVector positionTracker = G4ThreeVector(0,0,0);
 
@@ -274,9 +268,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   				   //logicWorld,        // its mother  volume
   				   logicBasket,        // its mother  volume
   				   false,             // no boolean operations
-  				   0,                 // copy number 
-  				   fCheckOverlaps);   // checking overlaps     
-
+  				   0);                 // copy number 
+ 
   G4cout << "Tracker is " 
   	 << fTrackerWidth/mm  << " (width) x " 
   	 << fTrackerHeight/mm << " (height) x " 
@@ -285,38 +278,40 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << G4endl;
 
 
-
-
-
   //------------------------------ 
   // Forward TPC 1
   //------------------------------
+  
+  G4double currentZ = 0.;
 
   G4LogicalVolume *tpc1Volume = this->GetPieceTPC();
   
-  G4ThreeVector TPC1Translation = G4ThreeVector(0., 0., 0.);
-  G4ThreeVector TPC1RotationAxis = G4ThreeVector(0., 0., 1.);
-  G4double TPC1RotationAngle = 0.;
-
-  double currentZ = 0.;
-  //totalLength += GetModuleSpace()/2;
-
-  double upstreamedge_z = +solidTracker->GetZHalfLength();
-  currentZ = upstreamedge_z - GetLength()/2.; 
-  //G4cout << "currentZ = " << currentZ << G4endl;
+  if( ND280XMLInput.GetXMLForwTPCdefault() ){ // default
+    double upstreamedge_z = +solidTracker->GetZHalfLength();
+    currentZ = upstreamedge_z - GetLength()/2.; 
+    SetForwTPCPos1(0,0,currentZ);
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLForwTPCPos1_X();
+    G4double y = ND280XMLInput.GetXMLForwTPCPos1_Y();
+    G4double z = ND280XMLInput.GetXMLForwTPCPos1_Z();
+    SetForwTPCPos1(x,y,z);
+  }
   
-  G4RotationMatrix tpc1Rot = G4RotationMatrix(TPC1RotationAxis, TPC1RotationAngle);
-  new G4PVPlacement(G4Transform3D(tpc1Rot,
-  				  G4ThreeVector(0.,0.,currentZ)+TPC1Translation+GetRotOffset(TPC1RotationAxis, TPC1RotationAngle)
-  				  ),
+  new G4PVPlacement(0,
+		    GetForwTPCPos1(),
   		    tpc1Volume,
-  		    //tpc1.GetName(),
   		    "TPC1",
-  		    //logVolume,
   		    logicTracker,
   		    false,
-  		    0,
-  		    fCheckOverlaps);
+  		    0);
+
+  G4cout << "Forward TPC 1: " << endl
+	 << " - position: ( " 
+	 << GetForwTPCPos1().x()/mm << ", "
+	 << GetForwTPCPos1().y()/mm << ", "
+	 << GetForwTPCPos1().z()/mm << " ) mm"  
+	 << G4endl;
 
 
   //------------------------------ 
@@ -325,238 +320,392 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4LogicalVolume *tpc2Volume = this->GetPieceTPC();
   
-  G4ThreeVector TPC2Translation = G4ThreeVector(0., 0., 0.);
-  G4ThreeVector TPC2RotationAxis = G4ThreeVector(0., 0., 1.);
-  G4double TPC2RotationAngle = 0.;
-
-  currentZ = 0.;
-  //totalLength += GetModuleSpace()/2;
-
-  G4RotationMatrix tpc2Rot = G4RotationMatrix(TPC2RotationAxis, TPC2RotationAngle);
-  new G4PVPlacement(G4Transform3D(tpc2Rot,
-  				  G4ThreeVector(0.,0.,currentZ)+TPC2Translation+GetRotOffset(TPC2RotationAxis, TPC2RotationAngle)
-  				  ),
+  if( ND280XMLInput.GetXMLForwTPCdefault() ){ // default
+    currentZ = 0.;
+    SetForwTPCPos2(0,0,currentZ);
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLForwTPCPos2_X();
+    G4double y = ND280XMLInput.GetXMLForwTPCPos2_Y();
+    G4double z = ND280XMLInput.GetXMLForwTPCPos2_Z();
+    SetForwTPCPos2(x,y,z);
+  }
+  
+  new G4PVPlacement(0,
+		    GetForwTPCPos2(),
   		    tpc2Volume,
-  		    //tpc2.GetName(),
   		    "TPC2",
-  		    //logVolume,
   		    logicTracker,
   		    false,
-  		    0,
-  		    fCheckOverlaps);
+  		    0);
 
-
+  G4cout << "Forward TPC 2: " << endl
+	 << " - position: ( " 
+	 << GetForwTPCPos2().x()/mm << ", "
+	 << GetForwTPCPos2().y()/mm << ", "
+	 << GetForwTPCPos2().z()/mm << " ) mm"  
+	 << G4endl;
+  
+  
   //------------------------------ 
   // Forward TPC 3
   //------------------------------
-
+  
   G4LogicalVolume *tpc3Volume = this->GetPieceTPC();
   
-  G4ThreeVector TPC3Translation = G4ThreeVector(0., 0., 0.);
-  G4ThreeVector TPC3RotationAxis = G4ThreeVector(0., 0., 1.);
-  G4double TPC3RotationAngle = 0.;
-
-  currentZ = 0.;
-  //totalLength += GetModuleSpace()/2;
-
-  double downstreamedge_z = -solidTracker->GetZHalfLength();
-  currentZ = downstreamedge_z + GetLength()/2.; 
-  //G4cout << "currentZ = " << currentZ << G4endl;
+  if( ND280XMLInput.GetXMLForwTPCdefault() ){ // default
+    double downstreamedge_z = -solidTracker->GetZHalfLength();
+    currentZ = downstreamedge_z + GetLength()/2.; 
+    SetForwTPCPos3(0,0,currentZ);
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLForwTPCPos3_X();
+    G4double y = ND280XMLInput.GetXMLForwTPCPos3_Y();
+    G4double z = ND280XMLInput.GetXMLForwTPCPos3_Z();
+    SetForwTPCPos3(x,y,z);
+  }
   
-  G4RotationMatrix tpc3Rot = G4RotationMatrix(TPC3RotationAxis, TPC3RotationAngle);
-  new G4PVPlacement(G4Transform3D(tpc3Rot,
-  				  G4ThreeVector(0.,0.,currentZ)+TPC3Translation+GetRotOffset(TPC3RotationAxis, TPC3RotationAngle)
-  				  ),
+  new G4PVPlacement(0,
+		    GetForwTPCPos3(),
   		    tpc3Volume,
-  		    //tpc3.GetName(),
   		    "TPC3",
-  		    //logVolume,
   		    logicTracker,
   		    false,
-  		    0,
-  		    fCheckOverlaps);
+  		    0);
+
+  G4cout << "Forward TPC 3: " << endl
+	 << " - position: ( " 
+	 << GetForwTPCPos3().x()/mm << ", "
+	 << GetForwTPCPos3().y()/mm << ", "
+	 << GetForwTPCPos3().z()/mm << " ) mm"  
+	 << G4endl;
+
+
+
+
   
+  // G4ThreeVector TPC3Translation = G4ThreeVector(0., 0., 0.);
+  // G4ThreeVector TPC3RotationAxis = G4ThreeVector(0., 0., 1.);
+  // G4double TPC3RotationAngle = 0.;
+  // currentZ = 0.;
+  // //totalLength += GetModuleSpace()/2;
+  // double downstreamedge_z = -solidTracker->GetZHalfLength();
+  // currentZ = downstreamedge_z + GetLength()/2.; 
+  // //G4cout << "currentZ = " << currentZ << G4endl;  
+  // G4RotationMatrix tpc3Rot = G4RotationMatrix(TPC3RotationAxis, TPC3RotationAngle);
+  // new G4PVPlacement(G4Transform3D(tpc3Rot,
+  // 				  G4ThreeVector(0.,0.,currentZ)+TPC3Translation+GetRotOffset(TPC3RotationAxis, TPC3RotationAngle)
+  // 				  ),
+  // 		    tpc3Volume,
+  // 		    //tpc3.GetName(),
+  // 		    "TPC3",
+  // 		    //logVolume,
+  // 		    logicTracker,
+  // 		    false,
+  // 		    0);  
 
 
+
+  
   //------------------------------ 
   // Target 1 - Upstream - Carbon 
   //------------------------------
-
-  G4double HalfTargetHeight  = 0.5 * GetTargetFullHeight();
   
-  currentZ = GetLength()/2. + GetTargetFullLength()/2.;
-
-  G4ThreeVector positionTarget1 = G4ThreeVector(0,0,currentZ);
+  const G4String cNameSolidTarget1     = "target1";
+  const G4String cNameLogicTarget1     = "Target1";
+  const G4String cNamePhysiTarget1     = "Target1";
   
-  solidTarget1 = new G4Box(cNameSolidTarget1,targetSizeWidth,targetSizeHeight,targetSizeLength);
-  logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("FGDScintillator"),cNameLogicTarget1,0,0,0);
+  const G4String cTargetMater1  = "FGDScintillator";  
+  TargetMater1  = FindMaterial(cTargetMater1);  
+
+  G4double targetSizeLength1  = 0.5 * GetTargetFullLength1();    // Half length of the Target 1
+  G4double targetSizeWidth1   = 0.5 * GetTargetFullWidth1();     // Half width of the Target 1
+  G4double targetSizeHeight1  = 0.5 * GetTargetFullHeight1();    // Half height of the Target 1
+
+  G4double HalfTargetHeight1  = 0.5 * GetTargetFullHeight1();
+    
+  if( ND280XMLInput.GetXMLTargetdefault1() ){ // default
+    G4double Target1_Z = GetLength()/2. + GetTargetFullLength1()/2.;
+    SetTargetPos1(0,0,Target1_Z);
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLTargetPos1_X();
+    G4double y = ND280XMLInput.GetXMLTargetPos1_Y();
+    G4double z = ND280XMLInput.GetXMLTargetPos1_Z();
+    SetTargetPos1(x,y,z);
+  }
+
+  solidTarget1 = new G4Box(cNameSolidTarget1,targetSizeWidth1,targetSizeHeight1,targetSizeLength1);
+  logicTarget1 = new G4LogicalVolume(solidTarget1,TargetMater1,cNameLogicTarget1,0,0,0);
   physiTarget1 = new G4PVPlacement(0,                 // no rotation
-  				  positionTarget1,    // at (x,y,z)
-  				  logicTarget1,       // its logical volume  	  
-  				  cNamePhysiTarget1,  // its name
-  				  logicTracker,      // its mother  volume
-  				  //logicWorld,      // its mother  volume
-  				  false,             // no boolean operations
-  				  0,                 // copy number 
-  				  fCheckOverlaps);   // checking overlaps     
+				   GetTargetPos1(),    // at (x,y,z)
+				   logicTarget1,       // its logical volume  	  
+				   cNamePhysiTarget1,  // its name
+				   logicTracker,      // its mother  volume
+				   //logicWorld,      // its mother  volume
+				   false,             // no boolean operations
+				   0);                 // copy number 
+  //fCheckOverlaps);   
 
-  G4cout << "Target 1 is " 
-  	 << fTargetWidth/mm  << " (width) x " 
-  	 << fTargetHeight/mm << " (height) x " 
-  	 << fTargetLength/mm << " (length) mm^3" 
+  G4cout << "Target 1: " << endl
+	 << " - dimensions: "
+	 << GetTargetFullWidth1()/mm  << " (width) x " 
+  	 << GetTargetFullHeight1()/mm << " (height) x " 
+  	 << GetTargetFullLength1()/mm << " (length) mm^3" 
          << " of " << logicTarget1->GetMaterial()->GetName() 
-  	 << G4endl;
-
- 
+  	 << G4endl
+	 << " - position: ( " 
+	 << GetTargetPos1().x()/mm << ", "
+	 << GetTargetPos1().y()/mm << ", "
+	 << GetTargetPos1().z()/mm << " ) mm"  
+	 << G4endl;
 
   //------------------------------ 
   // Target 2 - Upstream - Water 
   //------------------------------
 
-  HalfTargetHeight  = 0.5 * GetTargetFullHeight();
+  const G4String cNameSolidTarget2     = "target2";
+  const G4String cNameLogicTarget2     = "Target2";
+  const G4String cNamePhysiTarget2     = "Target2";
   
-  currentZ = -GetLength()/2. - GetTargetFullLength()/2.;
+  const G4String cTargetMater2  = "ActiveWater";     //fgd active water  
+  TargetMater2  = FindMaterial(cTargetMater2);  
 
-  G4ThreeVector positionTarget2 = G4ThreeVector(0,0,currentZ);
+  G4double targetSizeLength2  = 0.5 * GetTargetFullLength2();    // Half length of the Target 1
+  G4double targetSizeWidth2   = 0.5 * GetTargetFullWidth2();     // Half width of the Target 1
+  G4double targetSizeHeight2  = 0.5 * GetTargetFullHeight2();    // Half height of the Target 1
+
+  G4double HalfTargetHeight2  = 0.5 * GetTargetFullHeight2();
   
-  solidTarget2 = new G4Box(cNameSolidTarget2,targetSizeWidth,targetSizeHeight,targetSizeLength);
-  logicTarget2 = new G4LogicalVolume(solidTarget2,TargetMater,cNameLogicTarget2,0,0,0);
+  if( ND280XMLInput.GetXMLTargetdefault2() ){ // default
+    G4double Target2_Z = -GetLength()/2. - GetTargetFullLength2()/2.;
+    SetTargetPos2(0,0,Target2_Z);
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLTargetPos2_X();
+    G4double y = ND280XMLInput.GetXMLTargetPos2_Y();
+    G4double z = ND280XMLInput.GetXMLTargetPos2_Z();
+    SetTargetPos2(x,y,z);
+  }
+  
+  solidTarget2 = new G4Box(cNameSolidTarget2,targetSizeWidth2,targetSizeHeight2,targetSizeLength2);
+  logicTarget2 = new G4LogicalVolume(solidTarget2,TargetMater2,cNameLogicTarget2,0,0,0);
   physiTarget2 = new G4PVPlacement(0,                 // no rotation
-  				  positionTarget2,    // at (x,y,z)
-  				  logicTarget2,       // its logical volume  	  
-  				  cNamePhysiTarget2,  // its name
-  				  logicTracker,      // its mother  volume
-  				  //logicWorld,      // its mother  volume
-  				  false,             // no boolean operations
-  				  0,                 // copy number 
-  				  fCheckOverlaps);   // checking overlaps     
+				   GetTargetPos2(),    // at (x,y,z)
+				   logicTarget2,       // its logical volume  	  
+				   cNamePhysiTarget2,  // its name
+				   logicTracker,      // its mother  volume
+				   //logicWorld,      // its mother  volume
+				   false,             // no boolean operations
+				   0);                 // copy number 
+    //fCheckOverlaps);   
 
-  G4cout << "Target 2 is " 
-  	 << fTargetWidth/mm  << " (width) x " 
-  	 << fTargetHeight/mm << " (height) x " 
-  	 << fTargetLength/mm << " (length) mm^3" 
+  G4cout << "Target 2: " << endl
+	 << " - dimensions: "
+	 << GetTargetFullWidth2()/mm  << " (width) x " 
+  	 << GetTargetFullHeight2()/mm << " (height) x " 
+  	 << GetTargetFullLength2()/mm << " (length) mm^3" 
          << " of " << logicTarget2->GetMaterial()->GetName() 
-  	 << G4endl;
-
-
-
-  
-  // //------------------------------ 
-  // // Target  
-  // //------------------------------
-  // G4double HalfTargetHeight  = 0.5 * fTargetHeight;
-  // currentZ = GetLength()
-  // G4ThreeVector positionTarget = G4ThreeVector(0,0,0);
-  // solidTarget = new G4Box(cNameSolidTarget,targetSizeWidth,targetSizeHeight,targetSizeLength);
-  // logicTarget = new G4LogicalVolume(solidTarget,TargetMater,cNameLogicTarget,0,0,0);
-  // physiTarget = new G4PVPlacement(0,                 // no rotation
-  // 				  positionTarget,    // at (x,y,z)
-  // 				  logicTarget,       // its logical volume  	  
-  // 				  cNamePhysiTarget,  // its name
-  // 				  logicTracker,      // its mother  volume
-  // 				  //logicWorld,      // its mother  volume
-  // 				  false,             // no boolean operations
-  // 				  0,                 // copy number 
-  // 				  fCheckOverlaps);   // checking overlaps     
-  // G4cout << "Target is " 
-  // 	 << fTargetWidth/mm  << " (width) x " 
-  // 	 << fTargetHeight/mm << " (height) x " 
-  // 	 << fTargetLength/mm << " (length) mm^3" 
-  //        << " of " << TargetMater->GetName() 
-  // 	 << G4endl;
-
+  	 << G4endl
+	 << " - position: ( " 
+	 << GetTargetPos2().x()/mm << ", "
+	 << GetTargetPos2().y()/mm << ", "
+	 << GetTargetPos2().z()/mm << " ) mm"  
+	 << G4endl;
 
   
-  // //------------------------------ 
-  // // Tracker segments
-  // //------------------------------
-  // // 
-  // // An example of Parameterised volumes
-  // // dummy values for G4Box -- modified by parameterised volume
-  
-  // G4double HalfChamberLength = 0.5 * fChamberLength;
-  // G4double HalfChamberWidth  = 0.5 * fChamberWidth;
-  // G4double HalfChamberHeight = 0.5 * fChamberHeight;
-  
-  // solidChamberUp = new G4Box(cNameSolidChamberUp, HalfChamberWidth, HalfChamberHeight, HalfChamberLength); 
-  // logicChamberUp = new G4LogicalVolume(solidChamberUp,ChamberMater,cNameLogicChamberUp,0,0,0);
+  //
+  //------------------------------ 
+  // Side TPCs 
+  //------------------------------
+  // 
 
-  // fChamberSpacing = fTargetHeight;
+  const G4String cChamberMater = "GasMixtureTPC"; // gas mixture of ND280 TPCs
+  ChamberMater = FindMaterial(cChamberMater);
   
-  // G4ThreeVector positionChamberUp = G4ThreeVector(0,
-  // 						  (HalfChamberHeight+HalfTargetHeight),
-  // 						  0);
+  G4double HalfChamberLength1 = 0.5 * GetChamberFullLength1(); 
+  G4double HalfChamberWidth1  = 0.5 * GetChamberFullWidth1(); 
+  G4double HalfChamberHeight1 = 0.5 * GetChamberFullHeight1(); 
 
-  // physiChamberUp = new G4PVPlacement(0,                   // no rotation
-  // 				     positionChamberUp,   // at (x,y,z)
-  // 				     logicChamberUp,      // its logical volume	 
-  // 				     cNamePhysiChamberUp, // its name
-  // 				     logicTracker,        // its mother  volume
-  // 				     false,               // no boolean operations
-  // 				     0,                   // copy number 
-  // 				     fCheckOverlaps);     // checking overlaps     
+  G4double HalfChamberLength2 = 0.5 * GetChamberFullLength2(); 
+  G4double HalfChamberWidth2  = 0.5 * GetChamberFullWidth2(); 
+  G4double HalfChamberHeight2 = 0.5 * GetChamberFullHeight2(); 
   
-  
-  // solidChamberDown = new G4Box(cNameSolidChamberDown,HalfChamberWidth,HalfChamberHeight,HalfChamberLength); 
-  // logicChamberDown = new G4LogicalVolume(solidChamberDown,ChamberMater,cNameLogicChamberDown,0,0,0);
-  
-  // G4ThreeVector positionChamberDown = G4ThreeVector(0,-(HalfChamberHeight+HalfTargetHeight),0);
+  // TPC Up 1
 
-  // physiChamberDown = new G4PVPlacement(0,              // no rotation
-  // 				       positionChamberDown, // at (x,y,z)
-  // 				       logicChamberDown,    // its logical volume	 
-  // 				       cNamePhysiChamberDown,       // its name
-  // 				       logicTracker,      // its mother  volume
-  // 				       false,           // no boolean operations
-  // 				       0,              // copy number 
-  // 				       fCheckOverlaps);  // checking overlaps     
-  
-  // G4cout << "Chamber is " 
-  // 	 << fChamberWidth/mm  << " (width) x " 
-  // 	 << fChamberHeight/mm << " (height) x " 
-  // 	 << fChamberLength/mm << " (length) mm^3" 
-  //        << " of " << ChamberMater->GetName() 
-  // 	 << G4endl;
+  const G4String cNameSolidChamberUp1   = "tpcup1";
+  const G4String cNameLogicChamberUp1   = "TPCUp1";
+  const G4String cNamePhysiChamberUp1   = "TPCUp1";
 
-  // // physiChamber = new G4PVReplica(
-  // // 				 "Chamber",       // their name
-  // // 				 logicChamber,    // their logical volume
-  // // 				 logicTracker,    // Mother logical volume
-  // // 				 kYAxis,          // Are placed along this axis 
-  // // 				 NbOfChambers,    // Number of chambers
-  // // 				 fChamberWidth,    // Width of a chamber
-  // // 				 0.0); // Spacing between chambers 
-  // //ChamberSpacing); // Spacing between chambers 
- 
-  // // G4double firstPosition = -trackerSizeLenght + 0.5*fChamberWidth;  
-  // // G4double firstLength = fTrackerLength/10;
-  // // G4double lastLength  = fTrackerLength;
+  solidChamberUp1 = new G4Box(cNameSolidChamberUp1, HalfChamberWidth1, HalfChamberHeight1, HalfChamberLength1); 
+  logicChamberUp1 = new G4LogicalVolume(solidChamberUp1,ChamberMater,cNameLogicChamberUp1,0,0,0);
   
-  // //chamberParam = new ExN02ChamberParameterisation(  
-  // // 			   NbOfChambers,          // NoChambers 
-  // // 			   firstPosition,         // Z of center of first 
-  // // 			   ChamberSpacing,        // Z spacing of centers
-  // // 			   fChamberWidth,          // Width Chamber 
-  // // 			   firstLength,           // lengthInitial 
-  // // 			   lastLength);           // lengthFinal
-			   
-  // // // dummy value : kZAxis -- modified by parameterised volume
-  // // //
-  // // physiChamber = new G4PVParameterised(
-  // //                           "Chamber",       // their name
-  // //                           logicChamber,    // their logical volume
-  // //                           logicTracker,    // Mother logical volume
-  // // 			    kZAxis,          // Are placed along this axis 
-  // //                           NbOfChambers,    // Number of chambers
-  // //                           chamberParam);   // The parametrisation
+  if( ND280XMLInput.GetXMLSideTPCdefault1() ){ // default
+    SetChamberUpPos1(0,
+		     HalfChamberHeight1 + HalfTargetHeight1,
+		     GetTargetPos1().z()
+		     );
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLSideTPCUpPos1_X();
+    G4double y = ND280XMLInput.GetXMLSideTPCUpPos1_Y();
+    G4double z = ND280XMLInput.GetXMLSideTPCUpPos1_Z();
+    SetChamberUpPos1(x,y,z);
+  }
+  
+  physiChamberUp1 = new G4PVPlacement(0,                   // no rotation
+				      GetChamberUpPos1(),   // at (x,y,z)
+				      logicChamberUp1,      // its logical volume 
+				      cNamePhysiChamberUp1, // its name
+				      logicTracker,        // its mother  volume
+				      false,               // no boolean operations
+				      0);                   // copy number 
+  
+  G4cout << "Side TPC Up 1: " << endl
+	 << " - dimensions: "
+	 << GetChamberFullWidth1()/mm  << " (width) x " 
+  	 << GetChamberFullHeight1()/mm << " (height) x " 
+  	 << GetChamberFullLength1()/mm << " (length) mm^3" 
+         << " of " << logicChamberUp1->GetMaterial()->GetName() 
+  	 << G4endl
+	 << " - position: ( " 
+	 << GetChamberUpPos1().x()/mm << ", "
+	 << GetChamberUpPos1().y()/mm << ", "
+	 << GetChamberUpPos1().z()/mm << " ) mm"  
+	 << G4endl;
 
-  // // G4cout << "There are " << NbOfChambers << " chambers in the tracker region. "
-  // //        << "The chambers are " << fChamberWidth/mm << " mm of " 
-  // //        << ChamberMater->GetName() << "\n The distance between chamber is "
-  // // 	 << ChamberSpacing/mm << " mm" << G4endl;
+  
+  // TPC Down 1
+  
+  const G4String cNameSolidChamberDown1 = "tpcdown1";
+  const G4String cNameLogicChamberDown1 = "TPCDown1";
+  const G4String cNamePhysiChamberDown1 = "TPCDown1";
+  
+  solidChamberDown1 = new G4Box(cNameSolidChamberDown1,HalfChamberWidth1,HalfChamberHeight1,HalfChamberLength1); 
+  logicChamberDown1 = new G4LogicalVolume(solidChamberDown1,ChamberMater,cNameLogicChamberDown1,0,0,0);
+  
+  if( ND280XMLInput.GetXMLSideTPCdefault1() ){ // default
+    SetChamberDownPos1(0,
+		       -(HalfChamberHeight1 + HalfTargetHeight1),
+		       GetTargetPos1().z()
+		       );
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLSideTPCDownPos1_X();
+    G4double y = ND280XMLInput.GetXMLSideTPCDownPos1_Y();
+    G4double z = ND280XMLInput.GetXMLSideTPCDownPos1_Z();
+    SetChamberDownPos1(x,y,z);
+  }
+  
+  physiChamberDown1 = new G4PVPlacement(0,              // no rotation
+					GetChamberDownPos1(),   // at (x,y,z)
+					logicChamberDown1,      // its logical volume
+					cNamePhysiChamberDown1, // its name
+					logicTracker,      // its mother  volume
+					false,           // no boolean operations
+					0);              // copy number 
+
+  G4cout << "Side TPC Down 1: " << endl
+	 << " - dimensions: "
+	 << GetChamberFullWidth1()/mm  << " (width) x " 
+  	 << GetChamberFullHeight1()/mm << " (height) x " 
+  	 << GetChamberFullLength1()/mm << " (length) mm^3" 
+         << " of " << logicChamberDown1->GetMaterial()->GetName() 
+  	 << G4endl
+	 << " - position: ( " 
+	 << GetChamberDownPos1().x()/mm << ", "
+	 << GetChamberDownPos1().y()/mm << ", "
+	 << GetChamberDownPos1().z()/mm << " ) mm"  
+	 << G4endl;
+  
+
+  // TPC Up 2
+  
+  const G4String cNameSolidChamberUp2   = "tpcup2";
+  const G4String cNameLogicChamberUp2   = "TPCUp2";
+  const G4String cNamePhysiChamberUp2   = "TPCUp2";
+  
+  solidChamberUp2 = new G4Box(cNameSolidChamberUp2, HalfChamberWidth2, HalfChamberHeight2, HalfChamberLength2); 
+  logicChamberUp2 = new G4LogicalVolume(solidChamberUp2,ChamberMater,cNameLogicChamberUp2,0,0,0);
+  
+  if( ND280XMLInput.GetXMLSideTPCdefault2() ){ // default
+    SetChamberUpPos2(0,
+		     HalfChamberHeight2 + HalfTargetHeight2,
+		     GetTargetPos2().z()
+		     );
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLSideTPCUpPos2_X();
+    G4double y = ND280XMLInput.GetXMLSideTPCUpPos2_Y();
+    G4double z = ND280XMLInput.GetXMLSideTPCUpPos2_Z();
+    SetChamberUpPos2(x,y,z);
+  }
+
+  physiChamberUp2 = new G4PVPlacement(0,                   // no rotation
+				      GetChamberUpPos2(),   // at (x,y,z)
+				      logicChamberUp2,      // its logical volume
+				      cNamePhysiChamberUp2, // its name
+				      logicTracker,        // its mother  volume
+				      false,               // no boolean operations
+				      0);                   // copy number 
+
+  G4cout << "Side TPC Up 2: " << endl
+	 << " - dimensions: "
+	 << GetChamberFullWidth2()/mm  << " (width) x " 
+  	 << GetChamberFullHeight2()/mm << " (height) x " 
+  	 << GetChamberFullLength2()/mm << " (length) mm^3" 
+         << " of " << logicChamberUp2->GetMaterial()->GetName() 
+  	 << G4endl
+	 << " - position: ( " 
+	 << GetChamberUpPos2().x()/mm << ", "
+	 << GetChamberUpPos2().y()/mm << ", "
+	 << GetChamberUpPos2().z()/mm << " ) mm"  
+	 << G4endl;
+
+  // TPC Down 2
+  
+  const G4String cNameSolidChamberDown2 = "tpcdown2";
+  const G4String cNameLogicChamberDown2 = "TPCDown2";
+  const G4String cNamePhysiChamberDown2 = "TPCDown2";
+
+  solidChamberDown2 = new G4Box(cNameSolidChamberDown2,HalfChamberWidth2,HalfChamberHeight2,HalfChamberLength2); 
+  logicChamberDown2 = new G4LogicalVolume(solidChamberDown2,ChamberMater,cNameLogicChamberDown2,0,0,0);
+  
+  if( ND280XMLInput.GetXMLSideTPCdefault2() ){ // default
+    SetChamberDownPos2(0,
+		       -(HalfChamberHeight2 + HalfTargetHeight2),
+		       GetTargetPos2().z()
+		       );
+  }
+  else { // from XML file
+    G4double x = ND280XMLInput.GetXMLSideTPCDownPos2_X();
+    G4double y = ND280XMLInput.GetXMLSideTPCDownPos2_Y();
+    G4double z = ND280XMLInput.GetXMLSideTPCDownPos2_Z();
+    SetChamberDownPos2(x,y,z);
+  }
+
+  physiChamberDown2 = new G4PVPlacement(0,              // no rotation
+					GetChamberDownPos2(), // at (x,y,z)
+					logicChamberDown2,    // its logical volume
+					cNamePhysiChamberDown2,       // its name
+					logicTracker,      // its mother  volume
+					false,           // no boolean operations
+					0);              // copy number 
+  
+  G4cout << "Side TPC Down 2: " << endl
+	 << " - dimensions: "
+	 << GetChamberFullWidth2()/mm  << " (width) x " 
+  	 << GetChamberFullHeight2()/mm << " (height) x " 
+  	 << GetChamberFullLength2()/mm << " (length) mm^3" 
+         << " of " << logicChamberDown2->GetMaterial()->GetName() 
+  	 << G4endl
+	 << " - position: ( " 
+	 << GetChamberDownPos2().x()/mm << ", "
+	 << GetChamberDownPos2().y()/mm << ", "
+	 << GetChamberDownPos2().z()/mm << " ) mm"  
+	 << G4endl;
+
 	 
-
-
   //------------------------------------------------ 
   // Set regions
   //------------------------------------------------ 
@@ -597,21 +746,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fEmFieldSetup.Put(fieldSetup);
   }
   
-  //--------- Visualization attributes -------------------------------
+  //--------- Visualization attributes ------------------------------- 
 
   // //G4VisAttributes* BoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
   logicWorld  ->SetVisAttributes(BoxVisAtt);  
   logicBasket ->SetVisAttributes(BoxVisAtt);
   logicTracker->SetVisAttributes(BoxVisAtt);
 
-  G4VisAttributes* TargetVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
+  //G4VisAttributes* TargetVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   //logicTarget ->SetVisAttributes(TargetVisAtt);
   logicTarget1 ->SetVisAttributes(TargetVisAtt);
   logicTarget2 ->SetVisAttributes(TargetVisAtt);
 
-  // //G4VisAttributes* ChamberVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
+  //G4VisAttributes* ChamberVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
   //logicChamberUp->SetVisAttributes(ChamberVisAtt);
   //logicChamberDown->SetVisAttributes(ChamberVisAtt);
+  logicChamberUp1->SetVisAttributes(ChamberVisAtt);
+  logicChamberUp2->SetVisAttributes(ChamberVisAtt);
+  logicChamberDown1->SetVisAttributes(ChamberVisAtt);
+  logicChamberDown2->SetVisAttributes(ChamberVisAtt);
 
 
   // //--------- Set Step Limiter -------------------------------
@@ -670,29 +823,47 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
-void ExN02DetectorConstruction::setTargetMaterial(G4String materialName)
+void ExN02DetectorConstruction::setMaterial_Target1(G4String materialName)
 {
   // search the material by its name 
   G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
   if (pttoMaterial)
-    {TargetMater = pttoMaterial;
-      logicTarget->SetMaterial(pttoMaterial); 
-      G4cout << "\n----> The target is " << fTargetLength/mm << " mm of "
+    {TargetMater1 = pttoMaterial;
+      logicTarget1->SetMaterial(pttoMaterial); 
+      G4cout << "\n----> The target 1 is " << GetTargetFullLength1()/mm << " mm of "
+             << materialName << G4endl;
+    }             
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ExN02DetectorConstruction::setMaterial_Target2(G4String materialName)
+{
+  // search the material by its name 
+  G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
+  if (pttoMaterial)
+    {TargetMater2 = pttoMaterial;
+      logicTarget2->SetMaterial(pttoMaterial); 
+      G4cout << "\n----> The target 2 is " << GetTargetFullLength2()/mm << " mm of "
              << materialName << G4endl;
     }             
 }
  
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void ExN02DetectorConstruction::setChamberMaterial(G4String materialName)
+void ExN02DetectorConstruction::setMaterial_Chamber(G4String materialName)
 {
   // search the material by its name 
   G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
   if (pttoMaterial)
     {ChamberMater = pttoMaterial;
-      logicChamberUp->SetMaterial(pttoMaterial); 
-      logicChamberDown->SetMaterial(pttoMaterial); 
-      G4cout << "\n----> The chambers are " << fChamberWidth/mm << " mm of "
+      logicChamberUp1->SetMaterial(pttoMaterial); 
+      logicChamberUp2->SetMaterial(pttoMaterial); 
+      logicChamberDown1->SetMaterial(pttoMaterial); 
+      logicChamberDown2->SetMaterial(pttoMaterial); 
+      G4cout << "\n----> The chambers are " << GetChamberFullWidth1()/mm << " mm of "
+             << materialName << G4endl;
+      G4cout << "\n---->              and " << GetChamberFullWidth2()/mm << " mm of "
              << materialName << G4endl;
     }             
 }
@@ -1362,10 +1533,10 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
   // Initialize all translations and rotations to 0.
   for (int rp = 0; rp < 2; rp++)
     {
-      for (int mm = 0; mm < 12; mm++)
+      for (int imm = 0; imm < 12; imm++)
 	{
-	  tpcMMTrans[rp][mm] = G4ThreeVector(0., 0., 0.);
-	  tpcMMRot[rp][mm] = new G4RotationMatrix (G4ThreeVector(0, 0, 1), 0);
+	  tpcMMTrans[rp][imm] = G4ThreeVector(0., 0., 0.);
+	  tpcMMRot[rp][imm] = new G4RotationMatrix (G4ThreeVector(0, 0, 1), 0);
 	}
     }
   // Define the rotation axis to +x in TPC coordinate system (+z in the interface).
@@ -1377,7 +1548,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
 
   /// Create the inner TPC drift volume
   
-  G4cout << "Create the inner TPC drift volume" << G4endl;
+  //G4cout << "Create the inner TPC drift volume" << G4endl;
 
   double width  = GetDriftWidth()/2.;
   double height = GetDriftHeight()/2.;
@@ -1419,7 +1590,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
 
   // CO2 space
 
-  G4cout << "CO2 space" << G4endl;
+  //G4cout << "CO2 space" << G4endl;
 
   width  = 1150.0*mm;
   height = (1149.5*mm + 30.5*mm + 45.0*mm + 1130.0*mm + 45.0*mm)/2.;
@@ -1446,7 +1617,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
   
   /// Create the inactive volume around the TPC.
   
-  G4cout << "Create the inactive volume around the TPC" << G4endl;
+  //G4cout << "Create the inactive volume around the TPC" << G4endl;
 
   SetLength(2*(442.0*mm+45.0*mm));
   //double length_inact = (2*(442.0*mm+45.0*mm));
@@ -1478,7 +1649,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
   
   // Now do all envelope volume placements
   
-  G4cout << "Now do all envelope volume placements" << G4endl;
+  //G4cout << "Now do all envelope volume placements" << G4endl;
 
   double CO2Top = 67.8*mm;
   double CO2Bottom = 117.8*mm;
@@ -1493,8 +1664,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
 		    "TPC1/Drift",
 		    logGasGap,
 		    false,
-		    0,
-		    fCheckOverlaps);
+		    0);
+  //fCheckOverlaps);
 
   new G4PVPlacement(0,
 		    G4ThreeVector(0,0,0),
@@ -1503,13 +1674,13 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
 		    "TPC1/GasGap",
 		    logVolume,
 		    false,
-		    0,
-		    fCheckOverlaps);
+		    0);
+  //fCheckOverlaps);
   
   // Divide drift volume into two halves (readout planes)
   // Make 2 separate halves (instead of 2 copies), so that each of 24 MM can be modified.
   
-  G4cout << "Divide drift volume into two halves (readout planes)" << G4endl;
+  //G4cout << "Divide drift volume into two halves (readout planes)" << G4endl;
   
   width  = GetDriftWidth()/2.;
   height = GetDriftHeight()/2.;
@@ -1586,8 +1757,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
                       "TPC1/Half",
                       logDrift,
                       false,
-                      0,
-		      fCheckOverlaps);
+                      0);
+    //fCheckOverlaps);
 
     rm.rotateY(180.0*deg);    
  
@@ -1597,12 +1768,12 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(void) {
                       "TPC1/Half",
                       logDrift,
                       false,
-                      1,
-		      fCheckOverlaps);
+                      1);
+    //fCheckOverlaps);
 
     // add 12 Micromegas Modules to readout-plane
 
-    G4cout << "add 12 Micromegas Modules to readout-plane" << G4endl;
+    //G4cout << "add 12 Micromegas Modules to readout-plane" << G4endl;
 
     double mmWidth  = 35.29*cm;
     double mmHeight = 33.61*cm;
@@ -3079,4 +3250,152 @@ const G4VisAttributes* ExN02DetectorConstruction::GetVisual(void) const {
     G4VisAttributes* visual = new G4VisAttributes();
     visual->SetColor(0.5,0.5,1.0,0); // blue-green       
     return visual;
+}
+
+
+void ExN02DetectorConstruction::DefineDimensions(){
+    
+  ////////////////////////////
+  //                        //
+  // Dimension of detectors //
+  //                        //
+  ////////////////////////////
+  
+  // Basket 
+  // Follow nd280mc convention in order to match NEUT requirements: 
+  // - don't include the P0D
+  // - use same size variables 
+  
+  G4double cBasketInnerWidth    = 2320.0 * mm;
+  G4double cBasketSideThickness = 100.0  * mm;
+  G4double cBasketOuterWidth    = 
+    cBasketInnerWidth + 
+    cBasketSideThickness * 2.;
+  
+  G4double cBasketOuterHeight   = 2480.0 * mm;
+  
+  G4double cBasketInnerLength         = 6650.0 * mm;
+  G4double cBasketUpStreamThickness   = 140.0  * mm;
+  G4double cBasketDownStreamThickness = 140.0  * mm;
+  G4double cBasketOuterLength   = 
+    cBasketInnerLength + 
+    cBasketUpStreamThickness + 
+    cBasketDownStreamThickness;
+  
+  G4double cBasketLength = cBasketOuterLength;
+  G4double cBasketWidth  = cBasketOuterWidth;
+  G4double cBasketHeight = cBasketOuterHeight;
+
+  SetBasketFullLength(cBasketLength);
+  SetBasketFullWidth(cBasketWidth);
+  SetBasketFullHeight(cBasketHeight);
+
+  // World
+
+  G4double cWorldLength = 1.2 *(cBasketLength);
+  G4double cWorldWidth  = 1.2 *(cBasketWidth);
+  G4double cWorldHeight = 1.2 *(cBasketHeight);
+
+  SetWorldFullLength(cWorldLength);
+  SetWorldFullWidth(cWorldWidth);
+  SetWorldFullHeight(cWorldHeight);
+
+
+
+  // Tracker 
+
+  G4double cTrackerLength = cBasketLength;    // Full length of Tracker
+  G4double cTrackerWidth  = 2320. * mm;  // Full width of Tracker
+  G4double cTrackerHeight = cBasketHeight; //2414. * mm;  // Full height of Tracker
+  
+  SetTrackerFullLength(cTrackerLength);
+  SetTrackerFullWidth(cTrackerWidth);
+  SetTrackerFullHeight(cTrackerHeight);
+  
+  // Target 1 (plastic scintillator)
+  
+  G4double targetlength1 = ND280XMLInput.GetXMLTargetlength1() * mm;
+  G4double targetwidth1  = ND280XMLInput.GetXMLTargetwidth1() * mm;
+  G4double targetheight1 = ND280XMLInput.GetXMLTargetheight1() * mm;
+
+  G4double cTargetLength1 = 2000.0 * mm; //2400.0 * mm; //1560 * mm;
+  G4double cTargetWidth1  = 2300.0 * mm; 
+  G4double cTargetHeight1 = 303.0  * mm;   
+  
+  if( !ND280XMLInput.GetXMLTargetdefault1() ){
+    SetTargetFullLength1(targetlength1);
+    SetTargetFullWidth1(targetwidth1);
+    SetTargetFullHeight1(targetheight1);
+  }
+  else{
+    SetTargetFullLength1(cTargetLength1);
+    SetTargetFullWidth1(cTargetWidth1);
+    SetTargetFullHeight1(cTargetHeight1);
+  }
+
+  
+  // Target 2 (water)
+  
+  G4double targetlength2 = ND280XMLInput.GetXMLTargetlength2() * mm;
+  G4double targetwidth2  = ND280XMLInput.GetXMLTargetwidth2() * mm;
+  G4double targetheight2 = ND280XMLInput.GetXMLTargetheight2() * mm;
+
+  G4double cTargetLength2 = 2000.0 * mm; //2400.0 * mm; //1560 * mm;
+  G4double cTargetWidth2  = 2300.0 * mm; 
+  G4double cTargetHeight2 = 303.0  * mm;   
+  
+  if( !ND280XMLInput.GetXMLTargetdefault2() ){
+    SetTargetFullLength2(targetlength2);
+    SetTargetFullWidth2(targetwidth2);
+    SetTargetFullHeight2(targetheight2);
+  }
+  else{
+    SetTargetFullLength2(cTargetLength2);
+    SetTargetFullWidth2(cTargetWidth2);
+    SetTargetFullHeight2(cTargetHeight2);
+  }
+  
+
+  // Side TPCs 1
+  
+  G4double sidetpclength1 = ND280XMLInput.GetXMLSideTPClength1() * mm;
+  G4double sidetpcwidth1  = ND280XMLInput.GetXMLSideTPCwidth1() * mm;
+  G4double sidetpcheight1 = ND280XMLInput.GetXMLSideTPCheight1() * mm;
+
+  G4double cChamberLength1 = cTargetLength1;// mm; 
+  G4double cChamberWidth1  = cTargetWidth1; // mm;
+  G4double cChamberHeight1 = 1000.0 * mm;  
+
+  if(!ND280XMLInput.GetXMLSideTPCdefault1()){
+    SetChamberFullLength1(sidetpclength1);
+    SetChamberFullWidth1(sidetpcwidth1);
+    SetChamberFullHeight1(sidetpcheight1);
+  }
+  else{
+    SetChamberFullLength1(cChamberLength1);
+    SetChamberFullWidth1(cChamberWidth1);
+    SetChamberFullHeight1(cChamberHeight1);
+  }
+ 
+  // Side TPCs 2
+  
+  G4double sidetpclength2 = ND280XMLInput.GetXMLSideTPClength2() * mm;
+  G4double sidetpcwidth2  = ND280XMLInput.GetXMLSideTPCwidth2() * mm;
+  G4double sidetpcheight2 = ND280XMLInput.GetXMLSideTPCheight2() * mm;
+
+  G4double cChamberLength2 = cTargetLength2;// mm; 
+  G4double cChamberWidth2  = cTargetWidth2; // mm;
+  G4double cChamberHeight2 = 1000.0 * mm;  
+
+  if(!ND280XMLInput.GetXMLSideTPCdefault2()){
+    SetChamberFullLength2(sidetpclength2);
+    SetChamberFullWidth2(sidetpcwidth2);
+    SetChamberFullHeight2(sidetpcheight2);
+  }
+  else{ // default
+    SetChamberFullLength2(cChamberLength2);
+    SetChamberFullWidth2(cChamberWidth2);
+    SetChamberFullHeight2(cChamberHeight2);
+  }
+
 }

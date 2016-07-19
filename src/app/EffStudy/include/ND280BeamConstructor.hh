@@ -39,7 +39,7 @@ public:
   /// Get the material name.
   G4String GetMaterialName(void) {return fMaterialName;};
   /// Set the material name.
-  void SetMaterialName(G4String s) {fMaterialName = s;};
+  void SetMaterialName(G4String str) {fMaterialName = str;};
 
   // Set the material.
   G4Material * GetMaterial(void) {return fMaterial;};
@@ -48,7 +48,7 @@ public:
     
   /// Get the detector name.
   G4String GetName(void) {return fDetectorName;};
-  void SetName(G4String s) { fDetectorName = s;}; 
+  void SetName(G4String str) { fDetectorName = str;}; 
   
   // Set whether to draw the detector or not
   void SetVisible(bool isvisib=true){fIsVisible = isvisib;};

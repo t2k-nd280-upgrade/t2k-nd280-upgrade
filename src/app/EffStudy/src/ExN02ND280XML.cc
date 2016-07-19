@@ -33,12 +33,66 @@ void ExN02ND280XML::SetInputs(){
   string line;
   ifstream myfile (fXMLFile);
   if(myfile.is_open()){    
+    
     XML2String("Generator",fGenerType);
     XML2String("Path2file",fPathFiles);
     XML2String("filename",fGenerFileName);  
     XML2String("treename",fGenerTreeName);      
-    //XML2Int   ("firstevent",fGenerFirstEvent);      
-    XML2Int   ("stepevent",fGenerStepEvent);      
+
+    // Forward TPCs 
+    XML2Bool("forwTPCdefault" ,fForwTPCdefault);
+    XML2Double("forwTPCPos1_X" ,fForwTPCPos1_X);
+    XML2Double("forwTPCPos1_Y" ,fForwTPCPos1_Y);
+    XML2Double("forwTPCPos1_Z" ,fForwTPCPos1_Z);
+    XML2Double("forwTPCPos2_X" ,fForwTPCPos2_X);
+    XML2Double("forwTPCPos2_Y" ,fForwTPCPos2_Y);
+    XML2Double("forwTPCPos2_Z" ,fForwTPCPos2_Z);
+    XML2Double("forwTPCPos3_X" ,fForwTPCPos3_X);
+    XML2Double("forwTPCPos3_Y" ,fForwTPCPos3_Y);
+    XML2Double("forwTPCPos3_Z" ,fForwTPCPos3_Z);
+
+    // Side TPCs 1
+    XML2Bool("sideTPCdefault1" ,fSideTPCdefault1);
+    XML2Double("sideTPClength1",fSideTPClength1);
+    XML2Double("sideTPCwidth1" ,fSideTPCwidth1);
+    XML2Double("sideTPCheight1",fSideTPCheight1);
+    XML2Double("sideTPCUpPos1_X" ,fSideTPCUpPos1_X);
+    XML2Double("sideTPCUpPos1_Y" ,fSideTPCUpPos1_Y);
+    XML2Double("sideTPCUpPos1_Z" ,fSideTPCUpPos1_Z);
+    XML2Double("sideTPCDownPos1_X" ,fSideTPCDownPos1_X);
+    XML2Double("sideTPCDownPos1_Y" ,fSideTPCDownPos1_Y);
+    XML2Double("sideTPCDownPos1_Z" ,fSideTPCDownPos1_Z);
+
+    // Side TPCs 2
+    XML2Bool("sideTPCdefault2" ,fSideTPCdefault2);
+    XML2Double("sideTPClength2",fSideTPClength2);
+    XML2Double("sideTPCwidth2" ,fSideTPCwidth2);
+    XML2Double("sideTPCheight2",fSideTPCheight2);
+    XML2Double("sideTPCUpPos2_X" ,fSideTPCUpPos2_X);
+    XML2Double("sideTPCUpPos2_Y" ,fSideTPCUpPos2_Y);
+    XML2Double("sideTPCUpPos2_Z" ,fSideTPCUpPos2_Z);
+    XML2Double("sideTPCDownPos2_X" ,fSideTPCDownPos2_X);
+    XML2Double("sideTPCDownPos2_Y" ,fSideTPCDownPos2_Y);
+    XML2Double("sideTPCDownPos2_Z" ,fSideTPCDownPos2_Z);
+
+    // Target 1
+    XML2Bool("Targetdefault1" ,fTargetdefault1);
+    XML2Double("Targetlength1",fTargetlength1);
+    XML2Double("Targetwidth1" ,fTargetwidth1);
+    XML2Double("Targetheight1",fTargetheight1);
+    XML2Double("TargetPos1_X" ,fTargetPos1_X);
+    XML2Double("TargetPos1_Y" ,fTargetPos1_Y);
+    XML2Double("TargetPos1_Z" ,fTargetPos1_Z);
+    
+    // Target 2
+    XML2Bool("Targetdefault2",fTargetdefault2);
+    XML2Double("Targetlength2",fTargetlength2);
+    XML2Double("Targetwidth2", fTargetwidth2);
+    XML2Double("Targetheight2",fTargetheight2);
+    XML2Double("TargetPos2_X" ,fTargetPos2_X);
+    XML2Double("TargetPos2_Y" ,fTargetPos2_Y);
+    XML2Double("TargetPos2_Z" ,fTargetPos2_Z);
+    
     myfile.close();
   }
   else cout << "Unable to open file"; 
@@ -47,11 +101,13 @@ void ExN02ND280XML::SetInputs(){
 
 
 void ExN02ND280XML::XML2String(string tmp_app,string &dest){
+  
   string line;
   ifstream in(fXMLFile);
-  
+    
   bool begin_tag = false;
   while (getline(in,line)){
+    
     std::string tmp; // strip whitespaces from the beginning
     for (int i = 0; i < line.length(); i++){
       if (line[i] == ' ' && tmp.size() == 0){
@@ -61,17 +117,37 @@ void ExN02ND280XML::XML2String(string tmp_app,string &dest){
       }
     }
     
-    if ( tmp == Form("<%s>",tmp_app.c_str()) ){
+    tmp = TrimSpaces(tmp); // remove spaces
+    
+    string First = Form("<%s>",tmp_app.c_str());
+    string Last = Form("</%s>",tmp_app.c_str());
+     
+    if ( tmp == First ){
+      //if( tmp.find(First) != std::string::npos ){
       begin_tag = true;
+      //cout << "Found " << First << endl;
+      //TXMLEngine * xml_eng;
       continue;
-    }
-    else if ( tmp == Form("</%s>",tmp_app.c_str()) ){
+    }    
+    else if ( tmp == Last ){
+      //if( tmp.find(Last) != std::string::npos ){
       begin_tag = false;
+      //cout << "Found " << Last << endl;
+      //break;
     }
+    
     if (begin_tag){
       dest = tmp;
+      //cout << "dest = " << dest << endl;
     }
+    
+  } // end while
+  if(dest==""){
+    std::cout << "Path is : " << tmp_app << std::endl;
+    std::cout << "Path not found" << std::endl;
+    exit(1);
   }
+  
   return;
 }
 
@@ -82,6 +158,30 @@ void ExN02ND280XML::XML2Int(string tmp_app,int &dest){
   return;
 }
 
+void ExN02ND280XML::XML2Double(string tmp_app,double &dest){
+  string dest_string;
+  XML2String(tmp_app,dest_string);
+  dest = atof(dest_string.c_str());
+  return;
+}
+
+void ExN02ND280XML::XML2Bool(string tmp_app,bool &dest){
+  string dest_string;
+  XML2String(tmp_app,dest_string);
+    
+  if(dest_string == "true" || 
+     dest_string == "TRUE" || 
+     dest_string == "True" || 
+     dest_string == "1"    || 
+     dest_string == "I") dest=true;
+  
+  if(dest_string == "false" || 
+     dest_string == "FALSE" || 
+     dest_string == "False" || 
+     dest_string == "0"    || 
+     dest_string == "O") dest=false;
+  return;
+}
 
 
 
@@ -302,13 +402,13 @@ void ExN02ND280XML::XML2Int(string tmp_app,int &dest){
 //   return tokens;
 // }
 
-// string ExN02ND280XML::TrimSpaces(string input)
-// {
-//   if( input.find_first_not_of(" \n") != 0)
-//     input.erase( 0,  input.find_first_not_of(" \n")  );
+string ExN02ND280XML::TrimSpaces(string input)
+{
+  if( input.find_first_not_of(" \n") != 0)
+    input.erase( 0,  input.find_first_not_of(" \n")  );
 
-//   if( input.find_last_not_of(" \n") != input.length() )
-//     input.erase( input.find_last_not_of(" \n")+1, input.length() );
+  if( input.find_last_not_of(" \n") != input.length() )
+    input.erase( input.find_last_not_of(" \n")+1, input.length() );
 
-//   return input;
-// }
+  return input;
+}

@@ -19,8 +19,16 @@
 /field/setFieldX 0.2 tesla
 /field/update
 
+
+
+# Set geometry
+#/N02/det/setTargetMate1 FGDScintillator
+#/N02/det/setTargetMate2 ActiveWater
+
 # Test geometry (overlaps...)	
 /geometry/test/run
+
+
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
 /generator/type Generator

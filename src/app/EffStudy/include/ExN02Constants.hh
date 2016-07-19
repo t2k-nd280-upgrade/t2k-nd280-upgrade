@@ -16,131 +16,11 @@
  
 /////////////////////////////////                 
 //                             //                    
-//         Input files         //                         
-//                             //          
-/////////////////////////////////                                       
-//const G4String cPathFiles    = "";//"/neutrino/data7/davide/files/";
-//const G4String cNEUTfilename = "";//"genev_output_newgeom_O16.root";
-//const G4String cNEUTtreename = "";//"nRooTracker";
-//const G4String cGENIEfilename = "";//"out.rootracker_highstat.root";
-//const G4String cGENIEtreename = "";//"gRooTracker";
-//const G4String cGeneratorType = ""; //"GENIE"; // "GENIE" or "NEUT" 
-
-/////////////////////////////////                 
-//                             //                    
 //      General constants      //                         
 //                             //          
 /////////////////////////////////                                       
 
 const G4double kBadNum = -9999999.;
-
-////////////////////////////
-//                        //
-//      Nomenclature      //
-//                        //
-////////////////////////////
-
-// Detector names
-
-const G4String cNameSolidWorld       = "world";
-const G4String cNameLogicWorld       = "World";
-const G4String cNamePhysiWorld       = "World";
-
-const G4String cNameSolidBasket      = "basket";
-const G4String cNameLogicBasket      = "Basket"; // match NEUT requirements
-const G4String cNamePhysiBasket      = "Basket";
-
-const G4String cNameSolidTracker     = "tracker";
-const G4String cNameLogicTracker     = "Tracker";
-const G4String cNamePhysiTracker     = "Tracker";
-
-const G4String cNameSolidTarget      = "target";
-const G4String cNameLogicTarget      = "Target";
-const G4String cNamePhysiTarget      = "Target";
-
-const G4String cNameSolidTarget1     = "target1";
-const G4String cNameLogicTarget1     = "Target1";
-const G4String cNamePhysiTarget1     = "Target1";
-
-const G4String cNameSolidTarget2     = "target2";
-const G4String cNameLogicTarget2     = "Target2";
-const G4String cNamePhysiTarget2     = "Target2";
-
-const G4String cNameSolidChamberUp   = "tpcup";
-const G4String cNameLogicChamberUp   = "TPCUp";
-const G4String cNamePhysiChamberUp   = "TPCUp";
-
-const G4String cNameSolidChamberDown = "tpcdown";
-const G4String cNameLogicChamberDown = "TPCDown";
-const G4String cNamePhysiChamberDown = "TPCDown";
-
-// Material names (see DetectorConstruction::DefineMaterials())
-
-const G4String cWorldMater   = "Air";
-const G4String cBasketMater  = "Air";
-const G4String cTrackerMater = "Air";
-
-const G4String cTargetMater  = "ActiveWater"; //fgd active water
-const G4String cTargetMater1  = "FGDScintillator"; //fgd scintillator  
-const G4String cTargetMater2  = "ActiveWater"; //fgd active water  
-
-const G4String cChamberMater = "GasMixtureTPC"; // gas mixture of ND280 TPCs
-
-
-////////////////////////////
-//                        //
-// Dimension of detectors //
-//                        //
-////////////////////////////
-
-// Basket 
-// Follow nd280mc convention in order to match NEUT requirements: 
-// - don't include the P0D
-// - use same size variables 
-
-const G4double cBasketInnerWidth    = 2320.0 * mm;
-const G4double cBasketSideThickness = 100.0  * mm;
-const G4double cBasketOuterWidth    = 
-  cBasketInnerWidth + 
-  cBasketSideThickness * 2.;
-
-const G4double cBasketOuterHeight   = 2480.0 * mm;
-
-const G4double cBasketInnerLength         = 6650.0 * mm;
-const G4double cBasketUpStreamThickness   = 140.0  * mm;
-const G4double cBasketDownStreamThickness = 140.0  * mm;
-const G4double cBasketOuterLength   = 
-  cBasketInnerLength + 
-  cBasketUpStreamThickness + 
-  cBasketDownStreamThickness;
-
-const G4double cBasketLength = cBasketOuterLength;
-const G4double cBasketWidth  = cBasketOuterWidth;
-const G4double cBasketHeight = cBasketOuterHeight;
-
-// World
-
-//const G4double cWorldLength = 1.2 *(cTrackerLength);
-//const G4double cWorldWidth  = 1.2 *(cTrackerWidth);
-//const G4double cWorldHeight = 1.2 *(cTrackerHeight);
-const G4double cWorldLength = 1.2 *(cBasketLength);
-const G4double cWorldWidth  = 1.2 *(cBasketWidth);
-const G4double cWorldHeight = 1.2 *(cBasketHeight);
-
-// Tracker 
-const G4double cTrackerLength = cBasketLength; //cTargetLength;                 // Full length of Tracker
-const G4double cTrackerWidth  = 2320. * mm; //cTargetWidth;                  // Full width of Tracker
-const G4double cTrackerHeight = 2414. * mm; //cTargetHeight + cChamberHeight*2; // Full height of Tracker
-
-// Water Target
-const G4double cTargetLength = 1560 * mm; // 2400.0 * mm; 
-const G4double cTargetWidth  = 2300.0 * mm; 
-const G4double cTargetHeight = 303.0  * mm;   
-
-// Side TPCs
-const G4double cChamberLength = cTargetLength;// mm; 
-const G4double cChamberWidth  = cTargetWidth; // mm;
-const G4double cChamberHeight = 1000.0 * mm;  
 
 
 ////////////////////////////
@@ -152,7 +32,6 @@ const G4double cChamberHeight = 1000.0 * mm;
 const G4double cMagFieldX   = 0.18 * tesla; // Default ND280 magnetic field (NIM A 659 (2011) 106–135)
 const G4double cMinStep     = 1.0 * mm;    // Minimal step of 1 mm is default
 const G4int    cStepperType = 4;           // ClassicalRK4 is default stepper
-
 
 ////////////////////////////
 //                        //
