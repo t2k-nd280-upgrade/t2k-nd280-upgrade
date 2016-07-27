@@ -1,0 +1,24 @@
+
+// 
+// Class to define an ND280 upgrade event
+// 
+// 27/7/16 Davide Sgalaberna
+//
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+#include "nd280UpEvent.hh"
+
+using namespace std;
+
+ClassImp(nd280UpEvent)
+
+nd280UpEvent::nd280UpEvent(){
+}
+
+nd280UpEvent::~nd280UpEvent(){
+  //delete ...;
+}

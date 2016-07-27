@@ -475,6 +475,30 @@ EffStudy/src/ExN02FieldSetup.cc.s:
 	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02FieldSetup.cc.s
 .PHONY : EffStudy/src/ExN02FieldSetup.cc.s
 
+EffStudy/src/ExN02ND280XML.o: EffStudy/src/ExN02ND280XML.cc.o
+.PHONY : EffStudy/src/ExN02ND280XML.o
+
+# target to build an object file
+EffStudy/src/ExN02ND280XML.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ND280XML.cc.o
+.PHONY : EffStudy/src/ExN02ND280XML.cc.o
+
+EffStudy/src/ExN02ND280XML.i: EffStudy/src/ExN02ND280XML.cc.i
+.PHONY : EffStudy/src/ExN02ND280XML.i
+
+# target to preprocess a source file
+EffStudy/src/ExN02ND280XML.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ND280XML.cc.i
+.PHONY : EffStudy/src/ExN02ND280XML.cc.i
+
+EffStudy/src/ExN02ND280XML.s: EffStudy/src/ExN02ND280XML.cc.s
+.PHONY : EffStudy/src/ExN02ND280XML.s
+
+# target to generate assembly for a file
+EffStudy/src/ExN02ND280XML.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02ND280XML.cc.s
+.PHONY : EffStudy/src/ExN02ND280XML.cc.s
+
 EffStudy/src/ExN02PhysicsList.o: EffStudy/src/ExN02PhysicsList.cc.o
 .PHONY : EffStudy/src/ExN02PhysicsList.o
 
@@ -787,6 +811,246 @@ EffStudy/src/ExN02VertexInfo.cc.s:
 	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ExN02VertexInfo.cc.s
 .PHONY : EffStudy/src/ExN02VertexInfo.cc.s
 
+EffStudy/src/ND280BeamConstructor.o: EffStudy/src/ND280BeamConstructor.cc.o
+.PHONY : EffStudy/src/ND280BeamConstructor.o
+
+# target to build an object file
+EffStudy/src/ND280BeamConstructor.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280BeamConstructor.cc.o
+.PHONY : EffStudy/src/ND280BeamConstructor.cc.o
+
+EffStudy/src/ND280BeamConstructor.i: EffStudy/src/ND280BeamConstructor.cc.i
+.PHONY : EffStudy/src/ND280BeamConstructor.i
+
+# target to preprocess a source file
+EffStudy/src/ND280BeamConstructor.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280BeamConstructor.cc.i
+.PHONY : EffStudy/src/ND280BeamConstructor.cc.i
+
+EffStudy/src/ND280BeamConstructor.s: EffStudy/src/ND280BeamConstructor.cc.s
+.PHONY : EffStudy/src/ND280BeamConstructor.s
+
+# target to generate assembly for a file
+EffStudy/src/ND280BeamConstructor.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280BeamConstructor.cc.s
+.PHONY : EffStudy/src/ND280BeamConstructor.cc.s
+
+EffStudy/src/ND280PersistencyManager.o: EffStudy/src/ND280PersistencyManager.cc.o
+.PHONY : EffStudy/src/ND280PersistencyManager.o
+
+# target to build an object file
+EffStudy/src/ND280PersistencyManager.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280PersistencyManager.cc.o
+.PHONY : EffStudy/src/ND280PersistencyManager.cc.o
+
+EffStudy/src/ND280PersistencyManager.i: EffStudy/src/ND280PersistencyManager.cc.i
+.PHONY : EffStudy/src/ND280PersistencyManager.i
+
+# target to preprocess a source file
+EffStudy/src/ND280PersistencyManager.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280PersistencyManager.cc.i
+.PHONY : EffStudy/src/ND280PersistencyManager.cc.i
+
+EffStudy/src/ND280PersistencyManager.s: EffStudy/src/ND280PersistencyManager.cc.s
+.PHONY : EffStudy/src/ND280PersistencyManager.s
+
+# target to generate assembly for a file
+EffStudy/src/ND280PersistencyManager.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280PersistencyManager.cc.s
+.PHONY : EffStudy/src/ND280PersistencyManager.cc.s
+
+EffStudy/src/ND280PersistencyMessenger.o: EffStudy/src/ND280PersistencyMessenger.cc.o
+.PHONY : EffStudy/src/ND280PersistencyMessenger.o
+
+# target to build an object file
+EffStudy/src/ND280PersistencyMessenger.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280PersistencyMessenger.cc.o
+.PHONY : EffStudy/src/ND280PersistencyMessenger.cc.o
+
+EffStudy/src/ND280PersistencyMessenger.i: EffStudy/src/ND280PersistencyMessenger.cc.i
+.PHONY : EffStudy/src/ND280PersistencyMessenger.i
+
+# target to preprocess a source file
+EffStudy/src/ND280PersistencyMessenger.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280PersistencyMessenger.cc.i
+.PHONY : EffStudy/src/ND280PersistencyMessenger.cc.i
+
+EffStudy/src/ND280PersistencyMessenger.s: EffStudy/src/ND280PersistencyMessenger.cc.s
+.PHONY : EffStudy/src/ND280PersistencyMessenger.s
+
+# target to generate assembly for a file
+EffStudy/src/ND280PersistencyMessenger.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280PersistencyMessenger.cc.s
+.PHONY : EffStudy/src/ND280PersistencyMessenger.cc.s
+
+EffStudy/src/ND280RootPersistencyManager.o: EffStudy/src/ND280RootPersistencyManager.cc.o
+.PHONY : EffStudy/src/ND280RootPersistencyManager.o
+
+# target to build an object file
+EffStudy/src/ND280RootPersistencyManager.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280RootPersistencyManager.cc.o
+.PHONY : EffStudy/src/ND280RootPersistencyManager.cc.o
+
+EffStudy/src/ND280RootPersistencyManager.i: EffStudy/src/ND280RootPersistencyManager.cc.i
+.PHONY : EffStudy/src/ND280RootPersistencyManager.i
+
+# target to preprocess a source file
+EffStudy/src/ND280RootPersistencyManager.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280RootPersistencyManager.cc.i
+.PHONY : EffStudy/src/ND280RootPersistencyManager.cc.i
+
+EffStudy/src/ND280RootPersistencyManager.s: EffStudy/src/ND280RootPersistencyManager.cc.s
+.PHONY : EffStudy/src/ND280RootPersistencyManager.s
+
+# target to generate assembly for a file
+EffStudy/src/ND280RootPersistencyManager.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280RootPersistencyManager.cc.s
+.PHONY : EffStudy/src/ND280RootPersistencyManager.cc.s
+
+EffStudy/src/ND280Trajectory.o: EffStudy/src/ND280Trajectory.cc.o
+.PHONY : EffStudy/src/ND280Trajectory.o
+
+# target to build an object file
+EffStudy/src/ND280Trajectory.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280Trajectory.cc.o
+.PHONY : EffStudy/src/ND280Trajectory.cc.o
+
+EffStudy/src/ND280Trajectory.i: EffStudy/src/ND280Trajectory.cc.i
+.PHONY : EffStudy/src/ND280Trajectory.i
+
+# target to preprocess a source file
+EffStudy/src/ND280Trajectory.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280Trajectory.cc.i
+.PHONY : EffStudy/src/ND280Trajectory.cc.i
+
+EffStudy/src/ND280Trajectory.s: EffStudy/src/ND280Trajectory.cc.s
+.PHONY : EffStudy/src/ND280Trajectory.s
+
+# target to generate assembly for a file
+EffStudy/src/ND280Trajectory.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280Trajectory.cc.s
+.PHONY : EffStudy/src/ND280Trajectory.cc.s
+
+EffStudy/src/ND280TrajectoryMap.o: EffStudy/src/ND280TrajectoryMap.cc.o
+.PHONY : EffStudy/src/ND280TrajectoryMap.o
+
+# target to build an object file
+EffStudy/src/ND280TrajectoryMap.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280TrajectoryMap.cc.o
+.PHONY : EffStudy/src/ND280TrajectoryMap.cc.o
+
+EffStudy/src/ND280TrajectoryMap.i: EffStudy/src/ND280TrajectoryMap.cc.i
+.PHONY : EffStudy/src/ND280TrajectoryMap.i
+
+# target to preprocess a source file
+EffStudy/src/ND280TrajectoryMap.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280TrajectoryMap.cc.i
+.PHONY : EffStudy/src/ND280TrajectoryMap.cc.i
+
+EffStudy/src/ND280TrajectoryMap.s: EffStudy/src/ND280TrajectoryMap.cc.s
+.PHONY : EffStudy/src/ND280TrajectoryMap.s
+
+# target to generate assembly for a file
+EffStudy/src/ND280TrajectoryMap.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280TrajectoryMap.cc.s
+.PHONY : EffStudy/src/ND280TrajectoryMap.cc.s
+
+EffStudy/src/ND280TrajectoryPoint.o: EffStudy/src/ND280TrajectoryPoint.cc.o
+.PHONY : EffStudy/src/ND280TrajectoryPoint.o
+
+# target to build an object file
+EffStudy/src/ND280TrajectoryPoint.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280TrajectoryPoint.cc.o
+.PHONY : EffStudy/src/ND280TrajectoryPoint.cc.o
+
+EffStudy/src/ND280TrajectoryPoint.i: EffStudy/src/ND280TrajectoryPoint.cc.i
+.PHONY : EffStudy/src/ND280TrajectoryPoint.i
+
+# target to preprocess a source file
+EffStudy/src/ND280TrajectoryPoint.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280TrajectoryPoint.cc.i
+.PHONY : EffStudy/src/ND280TrajectoryPoint.cc.i
+
+EffStudy/src/ND280TrajectoryPoint.s: EffStudy/src/ND280TrajectoryPoint.cc.s
+.PHONY : EffStudy/src/ND280TrajectoryPoint.s
+
+# target to generate assembly for a file
+EffStudy/src/ND280TrajectoryPoint.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280TrajectoryPoint.cc.s
+.PHONY : EffStudy/src/ND280TrajectoryPoint.cc.s
+
+EffStudy/src/ND280UserTrackingAction.o: EffStudy/src/ND280UserTrackingAction.cc.o
+.PHONY : EffStudy/src/ND280UserTrackingAction.o
+
+# target to build an object file
+EffStudy/src/ND280UserTrackingAction.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280UserTrackingAction.cc.o
+.PHONY : EffStudy/src/ND280UserTrackingAction.cc.o
+
+EffStudy/src/ND280UserTrackingAction.i: EffStudy/src/ND280UserTrackingAction.cc.i
+.PHONY : EffStudy/src/ND280UserTrackingAction.i
+
+# target to preprocess a source file
+EffStudy/src/ND280UserTrackingAction.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280UserTrackingAction.cc.i
+.PHONY : EffStudy/src/ND280UserTrackingAction.cc.i
+
+EffStudy/src/ND280UserTrackingAction.s: EffStudy/src/ND280UserTrackingAction.cc.s
+.PHONY : EffStudy/src/ND280UserTrackingAction.s
+
+# target to generate assembly for a file
+EffStudy/src/ND280UserTrackingAction.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/EffStudy/src/ND280UserTrackingAction.cc.s
+.PHONY : EffStudy/src/ND280UserTrackingAction.cc.s
+
+nd280UpEvent/TND280UpEvent.o: nd280UpEvent/TND280UpEvent.cc.o
+.PHONY : nd280UpEvent/TND280UpEvent.o
+
+# target to build an object file
+nd280UpEvent/TND280UpEvent.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/nd280UpEvent/TND280UpEvent.cc.o
+.PHONY : nd280UpEvent/TND280UpEvent.cc.o
+
+nd280UpEvent/TND280UpEvent.i: nd280UpEvent/TND280UpEvent.cc.i
+.PHONY : nd280UpEvent/TND280UpEvent.i
+
+# target to preprocess a source file
+nd280UpEvent/TND280UpEvent.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/nd280UpEvent/TND280UpEvent.cc.i
+.PHONY : nd280UpEvent/TND280UpEvent.cc.i
+
+nd280UpEvent/TND280UpEvent.s: nd280UpEvent/TND280UpEvent.cc.s
+.PHONY : nd280UpEvent/TND280UpEvent.s
+
+# target to generate assembly for a file
+nd280UpEvent/TND280UpEvent.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/nd280UpEvent/TND280UpEvent.cc.s
+.PHONY : nd280UpEvent/TND280UpEvent.cc.s
+
+nd280UpEvent/dict.o: nd280UpEvent/dict.cc.o
+.PHONY : nd280UpEvent/dict.o
+
+# target to build an object file
+nd280UpEvent/dict.cc.o:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/nd280UpEvent/dict.cc.o
+.PHONY : nd280UpEvent/dict.cc.o
+
+nd280UpEvent/dict.i: nd280UpEvent/dict.cc.i
+.PHONY : nd280UpEvent/dict.i
+
+# target to preprocess a source file
+nd280UpEvent/dict.cc.i:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/nd280UpEvent/dict.cc.i
+.PHONY : nd280UpEvent/dict.cc.i
+
+nd280UpEvent/dict.s: nd280UpEvent/dict.cc.s
+.PHONY : nd280UpEvent/dict.s
+
+# target to generate assembly for a file
+nd280UpEvent/dict.cc.s:
+	cd /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build && $(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/nd280UpEvent/dict.cc.s
+.PHONY : nd280UpEvent/dict.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -841,6 +1105,9 @@ help:
 	@echo "... EffStudy/src/ExN02FieldSetup.o"
 	@echo "... EffStudy/src/ExN02FieldSetup.i"
 	@echo "... EffStudy/src/ExN02FieldSetup.s"
+	@echo "... EffStudy/src/ExN02ND280XML.o"
+	@echo "... EffStudy/src/ExN02ND280XML.i"
+	@echo "... EffStudy/src/ExN02ND280XML.s"
 	@echo "... EffStudy/src/ExN02PhysicsList.o"
 	@echo "... EffStudy/src/ExN02PhysicsList.i"
 	@echo "... EffStudy/src/ExN02PhysicsList.s"
@@ -880,6 +1147,36 @@ help:
 	@echo "... EffStudy/src/ExN02VertexInfo.o"
 	@echo "... EffStudy/src/ExN02VertexInfo.i"
 	@echo "... EffStudy/src/ExN02VertexInfo.s"
+	@echo "... EffStudy/src/ND280BeamConstructor.o"
+	@echo "... EffStudy/src/ND280BeamConstructor.i"
+	@echo "... EffStudy/src/ND280BeamConstructor.s"
+	@echo "... EffStudy/src/ND280PersistencyManager.o"
+	@echo "... EffStudy/src/ND280PersistencyManager.i"
+	@echo "... EffStudy/src/ND280PersistencyManager.s"
+	@echo "... EffStudy/src/ND280PersistencyMessenger.o"
+	@echo "... EffStudy/src/ND280PersistencyMessenger.i"
+	@echo "... EffStudy/src/ND280PersistencyMessenger.s"
+	@echo "... EffStudy/src/ND280RootPersistencyManager.o"
+	@echo "... EffStudy/src/ND280RootPersistencyManager.i"
+	@echo "... EffStudy/src/ND280RootPersistencyManager.s"
+	@echo "... EffStudy/src/ND280Trajectory.o"
+	@echo "... EffStudy/src/ND280Trajectory.i"
+	@echo "... EffStudy/src/ND280Trajectory.s"
+	@echo "... EffStudy/src/ND280TrajectoryMap.o"
+	@echo "... EffStudy/src/ND280TrajectoryMap.i"
+	@echo "... EffStudy/src/ND280TrajectoryMap.s"
+	@echo "... EffStudy/src/ND280TrajectoryPoint.o"
+	@echo "... EffStudy/src/ND280TrajectoryPoint.i"
+	@echo "... EffStudy/src/ND280TrajectoryPoint.s"
+	@echo "... EffStudy/src/ND280UserTrackingAction.o"
+	@echo "... EffStudy/src/ND280UserTrackingAction.i"
+	@echo "... EffStudy/src/ND280UserTrackingAction.s"
+	@echo "... nd280UpEvent/TND280UpEvent.o"
+	@echo "... nd280UpEvent/TND280UpEvent.i"
+	@echo "... nd280UpEvent/TND280UpEvent.s"
+	@echo "... nd280UpEvent/dict.o"
+	@echo "... nd280UpEvent/dict.i"
+	@echo "... nd280UpEvent/dict.s"
 .PHONY : help
 
 
