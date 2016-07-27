@@ -34,6 +34,7 @@
 #define ExN02DetectorConstruction_h 1
 
 #include "ExN02ND280XML.hh"
+#include "ExN02TrackerSD.hh"
 
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
@@ -74,7 +75,9 @@ public:
 
   const 
   G4VPhysicalVolume* GetTracker() {return physiTracker;};
-
+  
+  ExN02TrackerSD *GetSensitiveDetector() {return aTrackerSD;};
+  
   void DefineDimensions();
 
   void SetBasketFullLength(G4double length) {fBasketLength = length;};
@@ -99,17 +102,17 @@ public:
   void SetForwTPCPos2(G4double x,G4double y,G4double z) {fForwTPCPos2 = G4ThreeVector(x,y,z);};
   void SetForwTPCPos3(G4double x,G4double y,G4double z) {fForwTPCPos3 = G4ThreeVector(x,y,z);};
 
-  void SetChamberFullLength1(G4double length)  {fChamberLength1 = length;};
-  void SetChamberFullWidth1(G4double width)   {fChamberWidth1 = width;};
-  void SetChamberFullHeight1(G4double height)  {fChamberHeight1 = height;};
-  void SetChamberUpPos1(G4double x,G4double y,G4double z) {fChamberUpPos1 = G4ThreeVector(x,y,z);};
-  void SetChamberDownPos1(G4double x,G4double y,G4double z) {fChamberDownPos1 = G4ThreeVector(x,y,z);};
+  void SetSideTPCFullLength1(G4double length)  {fSideTPCLength1 = length;};
+  void SetSideTPCFullWidth1(G4double width)   {fSideTPCWidth1 = width;};
+  void SetSideTPCFullHeight1(G4double height)  {fSideTPCHeight1 = height;};
+  void SetSideTPCUpPos1(G4double x,G4double y,G4double z) {fSideTPCUpPos1 = G4ThreeVector(x,y,z);};
+  void SetSideTPCDownPos1(G4double x,G4double y,G4double z) {fSideTPCDownPos1 = G4ThreeVector(x,y,z);};
 
-  void SetChamberFullLength2(G4double length)  {fChamberLength2 = length;};
-  void SetChamberFullWidth2(G4double width)   {fChamberWidth2 = width;};
-  void SetChamberFullHeight2(G4double height)  {fChamberHeight2 = height;};
-  void SetChamberUpPos2(G4double x,G4double y,G4double z) {fChamberUpPos2 = G4ThreeVector(x,y,z);};
-  void SetChamberDownPos2(G4double x,G4double y,G4double z) {fChamberDownPos2 = G4ThreeVector(x,y,z);};
+  void SetSideTPCFullLength2(G4double length)  {fSideTPCLength2 = length;};
+  void SetSideTPCFullWidth2(G4double width)   {fSideTPCWidth2 = width;};
+  void SetSideTPCFullHeight2(G4double height)  {fSideTPCHeight2 = height;};
+  void SetSideTPCUpPos2(G4double x,G4double y,G4double z) {fSideTPCUpPos2 = G4ThreeVector(x,y,z);};
+  void SetSideTPCDownPos2(G4double x,G4double y,G4double z) {fSideTPCDownPos2 = G4ThreeVector(x,y,z);};
 
   void SetWorldFullLength(G4double length)   {fWorldLength = length;}; 
   void SetWorldFullWidth(G4double width)    {fWorldWidth = width;}; 
@@ -138,17 +141,17 @@ public:
   G4ThreeVector GetForwTPCPos2()  {return fForwTPCPos2;};
   G4ThreeVector GetForwTPCPos3()  {return fForwTPCPos3;};
 
-  G4double GetChamberFullLength1()  {return fChamberLength1;};
-  G4double GetChamberFullWidth1()   {return fChamberWidth1;};
-  G4double GetChamberFullHeight1()  {return fChamberHeight1;};
-  G4ThreeVector GetChamberUpPos1()  {return fChamberUpPos1;};
-  G4ThreeVector GetChamberDownPos1(){return fChamberDownPos1;};
+  G4double GetSideTPCFullLength1()  {return fSideTPCLength1;};
+  G4double GetSideTPCFullWidth1()   {return fSideTPCWidth1;};
+  G4double GetSideTPCFullHeight1()  {return fSideTPCHeight1;};
+  G4ThreeVector GetSideTPCUpPos1()  {return fSideTPCUpPos1;};
+  G4ThreeVector GetSideTPCDownPos1(){return fSideTPCDownPos1;};
 
-  G4double GetChamberFullLength2()  {return fChamberLength2;};
-  G4double GetChamberFullWidth2()   {return fChamberWidth2;};
-  G4double GetChamberFullHeight2()  {return fChamberHeight2;};
-  G4ThreeVector GetChamberUpPos2()  {return fChamberUpPos2;};
-  G4ThreeVector GetChamberDownPos2(){return fChamberDownPos2;};
+  G4double GetSideTPCFullLength2()  {return fSideTPCLength2;};
+  G4double GetSideTPCFullWidth2()   {return fSideTPCWidth2;};
+  G4double GetSideTPCFullHeight2()  {return fSideTPCHeight2;};
+  G4ThreeVector GetSideTPCUpPos2()  {return fSideTPCUpPos2;};
+  G4ThreeVector GetSideTPCDownPos2(){return fSideTPCDownPos2;};
 
   G4double GetWorldFullLength()   {return fWorldLength;}; 
   G4double GetWorldFullWidth()    {return fWorldWidth;}; 
@@ -157,7 +160,7 @@ public:
   void setMaterial_Target (G4String);
   void setMaterial_Target1 (G4String);
   void setMaterial_Target2 (G4String);
-  void setMaterial_Chamber(G4String);
+  void setMaterial_SideTPC(G4String);
   void SetMagField(G4double);
   void SetMaxStep (G4double);     
   
@@ -166,7 +169,7 @@ public:
   const G4VPhysicalVolume* GetAbsorberPV() const; // new
   const G4VPhysicalVolume* GetGapPV() const; // new
 
-  G4LogicalVolume* GetPieceTPC(void);
+  G4LogicalVolume* GetPieceTPC(G4String name);
   const G4VisAttributes* GetVisual(void) const;
  
 protected:
@@ -201,33 +204,32 @@ private:
   G4LogicalVolume*   logicTracker;  // pointer to the logical Tracker
   G4VPhysicalVolume* physiTracker;  // pointer to the physical Tracker
      
-  G4Box*             solidChamberUp1;  // pointer to the solid Chamber Up 1
-  G4LogicalVolume*   logicChamberUp1;  // pointer to the logical Chamber Up 1
-  G4VPhysicalVolume* physiChamberUp1;  // pointer to the physical Chamber Up 1
+  G4Box*             solidSideTPCUp1;  // pointer to the solid Side TPC Up 1
+  G4LogicalVolume*   logicSideTPCUp1;  // pointer to the logical Side TPC Up 1
+  G4VPhysicalVolume* physiSideTPCUp1;  // pointer to the physical Side TPC Up 1
 
-  G4Box*             solidChamberUp2;  // pointer to the solid Chamber Up 2
-  G4LogicalVolume*   logicChamberUp2;  // pointer to the logical Chamber Up 2
-  G4VPhysicalVolume* physiChamberUp2;  // pointer to the physical Chamber Up 2
+  G4Box*             solidSideTPCUp2;  // pointer to the solid Side TPC Up 2
+  G4LogicalVolume*   logicSideTPCUp2;  // pointer to the logical Side TPC Up 2
+  G4VPhysicalVolume* physiSideTPCUp2;  // pointer to the physical Side TPC Up 2
      
-  G4Box*             solidChamberDown1;  // pointer to the solid Chamber Down 1
-  G4LogicalVolume*   logicChamberDown1;  // pointer to the logical Chamber Down 1
-  G4VPhysicalVolume* physiChamberDown1;  // pointer to the physical Chamber Down 1
+  G4Box*             solidSideTPCDown1;  // pointer to the solid Side TPC Down 1
+  G4LogicalVolume*   logicSideTPCDown1;  // pointer to the logical Side TPC Down 1
+  G4VPhysicalVolume* physiSideTPCDown1;  // pointer to the physical Side TPC Down 1
 
-  G4Box*             solidChamberDown2;  // pointer to the solid Chamber Down 2
-  G4LogicalVolume*   logicChamberDown2;  // pointer to the logical Chamber Down 2
-  G4VPhysicalVolume* physiChamberDown2;  // pointer to the physical Chamber Down 2
+  G4Box*             solidSideTPCDown2;  // pointer to the solid Side TPC Down 2
+  G4LogicalVolume*   logicSideTPCDown2;  // pointer to the logical Side TPC Down 2
+  G4VPhysicalVolume* physiSideTPCDown2;  // pointer to the physical Side TPC Down 2
 
   G4Material* WorldMater;  // pointer to the world  material
   G4Material* BasketMater;  // pointer to the basket  material
   G4Material* TrackerMater;  // pointer to the tracker  material
   G4Material* TargetMater1;  // pointer to the target  material
   G4Material* TargetMater2;  // pointer to the target  material
-  G4Material* ChamberMater; // pointer to the chamber material                  
+  G4Material* SideTPCMater; // pointer to the side tpc material                  
   G4Material* fDefaultMaterial;   /// The default material.       
 
-  //G4VPVParameterisation* chamberParam; // pointer to chamber parameterisation
-  //G4PVReplica* chamberParam; // pointer to chamber replica
-
+  ExN02TrackerSD* aTrackerSD; // sensitive detector
+  
   G4UserLimits* stepLimit;             // pointer to user step limits
 
   //ExN02MagneticField* fpMagField;   // pointer to the magnetic field 
@@ -260,17 +262,17 @@ private:
   G4ThreeVector fForwTPCPos2;       // Position of Forward TPC 2
   G4ThreeVector fForwTPCPos3;       // Position of Forward TPC 3
 
-  G4double fChamberLength1;           // length of the chambers 1
-  G4double fChamberWidth1;            // width of the chambers 1
-  G4double fChamberHeight1;           // height of the chambers 1
-  G4ThreeVector fChamberUpPos1;       // Position of chamber Up 1
-  G4ThreeVector fChamberDownPos1;     // Position of chamber Down 1
+  G4double fSideTPCLength1;           // length of the side tpcs 1
+  G4double fSideTPCWidth1;            // width of the side tpcs 1
+  G4double fSideTPCHeight1;           // height of the side tpcs 1
+  G4ThreeVector fSideTPCUpPos1;       // Position of side tpc Up 1
+  G4ThreeVector fSideTPCDownPos1;     // Position of side tpc Down 1
 
-  G4double fChamberLength2;           // length of the chambers 2
-  G4double fChamberWidth2;            // width of the chambers 2
-  G4double fChamberHeight2;           // height of the chambers 2
-  G4ThreeVector fChamberUpPos2;       // Position of chamber Up 2
-  G4ThreeVector fChamberDownPos2;     // Position of chamber Down 2
+  G4double fSideTPCLength2;           // length of the side tpcs 2
+  G4double fSideTPCWidth2;            // width of the side tpcs 2
+  G4double fSideTPCHeight2;           // height of the side tpcs 2
+  G4ThreeVector fSideTPCUpPos2;       // Position of side tpcs Up 2
+  G4ThreeVector fSideTPCDownPos2;     // Position of side tpcs Down 2
 
   G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume
   G4VPhysicalVolume*   fGapPV;      // the gap physical volume
@@ -279,9 +281,9 @@ private:
   // Visualization
   G4VisAttributes* BoxVisAtt;
   G4VisAttributes* TargetVisAtt;
-  G4VisAttributes* ChamberVisAtt;
-  G4VisAttributes* ChamberCO2;
-  G4VisAttributes* ChamberDeadMat;
+  G4VisAttributes* TPCVisAtt;
+  G4VisAttributes* TPCCO2;
+  G4VisAttributes* TPCDeadMat;
 
 
   ////////////////////////////////
@@ -297,15 +299,15 @@ private:
 
   G4ThreeVector GetRotOffset(G4ThreeVector axis, double angle);
  
-  void SetLength(double d){fLength = d;};
-  void SetWidth(double d){fWidth = d;};
-  void SetHeight(double d){fHeight = d;};
-  double GetLength(){return fLength;};
-  double GetWidth(){return fWidth;};
-  double GetHeight(){return fHeight;};
-  double fLength;
-  double fWidth;
-  double fHeight;
+  void SetLength(double d){fLengthForwTPC = d;};
+  void SetWidth(double d){fWidthForwTPC = d;};
+  void SetHeight(double d){fHeightForwTPC = d;};
+  double GetLengthForwTPC(){return fLengthForwTPC;};
+  double GetWidthForwTPC(){return fWidthForwTPC;};
+  double GetHeightForwTPC(){return fHeightForwTPC;};
+  double fLengthForwTPC;
+  double fWidthForwTPC;
+  double fHeightForwTPC;
 
   /// Set the width (x) dimension of the TPC drift volume.
   void SetDriftWidth(double d) {fDriftWidth = d;}
@@ -357,6 +359,7 @@ private:
   void SetShowOuterVolume(bool flag) {fShowOuterVolume = flag;}
   /// Get the flag to show the outer volume.
   bool GetShowOuterVolume(void) {return fShowOuterVolume;}    
+
   // Set transformation parameters for TPC MM modules.
   //void SetMMTranslation(int rp, int mm, G4ThreeVector trans); 
   //void SetMMRotation(int rp, int mm, double angle);  

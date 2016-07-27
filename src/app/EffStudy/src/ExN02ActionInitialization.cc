@@ -36,6 +36,7 @@
 #include "ExN02RunAction.hh"
 #include "ExN02EventAction.hh"
 #include "ExN02SteppingAction.hh"
+#include "ND280UserTrackingAction.hh"
 #include "ExN02DetectorConstruction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -77,9 +78,10 @@ void ExN02ActionInitialization::Build() const
   SetUserAction(eventAction);
   SetUserAction(new ExN02RunAction(eventAction));
 
+  SetUserAction(new ND280UserTrackingAction);
   //SetUserAction(new TrackingAction(fDetector));
 
-  SetUserAction(new ExN02SteppingAction(fDetConstruction,eventAction));
+  //SetUserAction(new ExN02SteppingAction(fDetConstruction,eventAction));
 }
   
 

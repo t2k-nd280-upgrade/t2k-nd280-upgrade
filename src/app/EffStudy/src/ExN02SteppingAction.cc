@@ -84,12 +84,18 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
 
   G4String namedet = prestep->GetTouchableHandle()->GetVolume()->GetName();        
   fEventAction->AddAbsTot(edep,stepLength);    
-  if(namedet=="TPC Up")
-    fEventAction->AddAbsTPCup(edep,stepLength);
-  else if(namedet=="TPC Down")
-    fEventAction->AddAbsTPCdown(edep,stepLength);
-  else if(namedet=="Target") 
-    fEventAction->AddAbsTarget(edep,stepLength);
+  if(namedet=="TPCUp1")
+    fEventAction->AddAbsTPCup1(edep,stepLength);
+  else if(namedet=="TPCUp2")
+    fEventAction->AddAbsTPCup2(edep,stepLength);
+  else if(namedet=="TPCDown1")
+    fEventAction->AddAbsTPCdown1(edep,stepLength);
+  else if(namedet=="TPCDown2")
+    fEventAction->AddAbsTPCdown2(edep,stepLength);
+  else if(namedet=="Target1") 
+    fEventAction->AddAbsTarget1(edep,stepLength);
+  else if(namedet=="Target2") 
+    fEventAction->AddAbsTarget2(edep,stepLength);
 
   // Get track info    
   fEventAction->SetTrack(step);

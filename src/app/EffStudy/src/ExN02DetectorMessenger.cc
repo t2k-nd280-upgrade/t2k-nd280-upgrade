@@ -60,10 +60,10 @@ ExN02DetectorMessenger::ExN02DetectorMessenger(ExN02DetectorConstruction* myDet)
   Targ2MatCmd->SetParameterName("choice",false);
   Targ2MatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
-  ChamMatCmd = new G4UIcmdWithAString("/N02/det/setChamberMate",this);
-  ChamMatCmd->SetGuidance("Select Material of the Chamber.");
-  ChamMatCmd->SetParameterName("choice",false);
-  ChamMatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);  
+  SideTPCMatCmd = new G4UIcmdWithAString("/N02/det/setSideTPCMate",this);
+  SideTPCMatCmd->SetGuidance("Select Material of the Side TPCs.");
+  SideTPCMatCmd->SetParameterName("choice",false);
+  SideTPCMatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);  
   
   //FieldCmd = new G4UIcmdWithADoubleAndUnit("/N02/det/setField",this);  
   //FieldCmd->SetGuidance("Define magnetic field.");
@@ -85,7 +85,7 @@ ExN02DetectorMessenger::~ExN02DetectorMessenger()
 {
   delete Targ1MatCmd;
   delete Targ2MatCmd;
-  delete ChamMatCmd;
+  delete SideTPCMatCmd;
   //delete FieldCmd;
   delete StepMaxCmd;  
   delete detDir;
@@ -102,8 +102,8 @@ void ExN02DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == Targ2MatCmd )
     { myDetector->setMaterial_Target2(newValue);}
   
-  if( command == ChamMatCmd )
-    { myDetector->setMaterial_Chamber(newValue);}  
+  if( command == SideTPCMatCmd )
+    { myDetector->setMaterial_SideTPC(newValue);}  
   
   //if( command == FieldCmd )
   //{ myDetector->SetMagField(FieldCmd->GetNewDoubleValue(newValue));}

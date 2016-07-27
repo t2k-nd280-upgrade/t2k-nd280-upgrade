@@ -52,14 +52,14 @@
 //#include "G4StepLimiterBuilder.hh"
 
 #include "ExN02PrimaryGeneratorAction.hh"
-//#include "ExN02PrimaryGeneratorAction_DetDependency.hh"
-
 #include "ExN02RunAction.hh"
 #include "ExN02EventAction.hh"
 #include "ExN02SteppingAction.hh"
 #include "ExN02SteppingVerbose.hh"
-
+#include "ExN02ND280XML.hh"
 #include "G4BlineTracer.hh"
+#include "ND280PersistencyManager.hh"
+#include "ND280RootPersistencyManager.hh"
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
@@ -71,6 +71,9 @@
 #ifdef G4UI_USE
 #include "G4UIExecutive.hh"
 #endif
+
+#include <iostream>
+#include <fstream>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -85,14 +88,95 @@ int main(int argc,char** argv)
   //
   G4RunManager * runManager = new G4RunManager;
 
+ 
+  // Create the persistency manager.                                              
+  ND280RootPersistencyManager* persistencyManager
+    = ND280RootPersistencyManager::GetInstance();
+  
+  //G4VPersistencyManager *pMan
+  //= G4VPersistencyManager::GetPersistencyManager();
+  
+  //ND280RootPersistencyManager *pND280Man;
+  //= dynamic_cast<ND280RootPersistencyManager*>
+  //(G4VPersistencyManager::GetPersistencyManager());
+  
+  std::string rootfilename = "ND280upgrade"; 
+  persistencyManager->Open(rootfilename); 
+  if(persistencyManager->IsOpen()){
+    G4cout << "The file is open" << G4endl;
+  }
+  else{
+  }
+  
+
+  // Set BeamOn to total # of events in the tree - first event
+
+  G4int MyFirstEvent = atoi(argv[2]);
+  G4int MyStepEvent  = atoi(argv[3]);
+
+  ExN02ND280XML ND280XMLInput;
+  G4cout << "File name: " << ND280XMLInput.GetXMLFileName() << G4endl;
+  G4cout << "Generator: " << ND280XMLInput.GetXMLGenerTypeName() << G4endl;
+  G4cout << "Path to files: " << ND280XMLInput.GetXMLPathFiles() << G4endl;
+  G4cout << "Tree name: " << ND280XMLInput.GetXMLGenerTreeName() << G4endl;
+  G4cout << "File name: " << ND280XMLInput.GetXMLGenerFileName() << G4endl;
+  //G4cout << "# of events to process: " << ND280XMLInput.GetXMLStepEvent() << G4endl;
+  G4String inputfile = ND280XMLInput.GetXMLPathFiles();
+  inputfile.append(ND280XMLInput.GetXMLGenerFileName());
+  TFile *myfile = new TFile(inputfile,"READ"); 
+  if (!myfile->IsOpen()) {
+    const char *msg = "NEUT file is not open!";
+    const char *origin = "Main function";
+    const char *code = "if (!myfile->IsOpen())";
+    G4Exception(origin,code,FatalException,msg);
+  }
+  TTree *mytree = (TTree*)myfile->Get(ND280XMLInput.GetXMLGenerTreeName());
+  if (!mytree) {
+    const char *msg = "NEUT tree is not open!";
+    const char *origin = "Main function";
+    const char *code = "if (!mytree->IsOpen())";
+    G4Exception(origin,code,FatalException,msg);
+  }    
+
+  //G4int NEvtStep = ND280XMLInput.GetXMLStepEvent();
+  //G4int NEvtTot = MyFirstEvent+NEvtStep;
+  G4int NEvtStep = MyStepEvent;
+  G4int NEvtTot = MyFirstEvent+NEvtStep;
+
+  if(MyFirstEvent > (mytree->GetEntries()-1)){ // MyFirstEvent starts from 0
+    G4cout << G4endl;
+    G4cout << "MyFirstEvent = " << MyFirstEvent << G4endl;
+    G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
+    const char *msg = "First event Id exceeds the last tree event ID!";
+    const char *origin = "Main function";
+    const char *code = " if(MyFirstEvent>mytree->GetEntries())";
+    G4Exception(origin,code,FatalException,msg);
+  }
+  
+  if(NEvtTot > mytree->GetEntries()){
+    G4cout << G4endl;
+    G4cout << "MyFirstEvent = " << MyFirstEvent << G4endl;
+    G4cout << "NEvtTot = " << NEvtTot << G4endl;
+    G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
+    const char *msg = "Tot # of simulated events > tree->GetEntries()!";
+    const char *origin = "Main function";
+    const char *code = " if(NEvtTot>mytree->GetEntries())";
+    //G4Exception(origin,code,FatalException,msg);
+    G4Exception(origin,code,JustWarning,msg);
+
+    NEvtStep = NEvtTot - mytree->GetEntries(); 
+
+    G4cout << "Set tot # of simul events to :" << NEvtStep << G4endl;
+    G4cout << G4endl;
+  }
+  
   // User Initialization classes (mandatory)
   //
   ExN02DetectorConstruction* detector = new ExN02DetectorConstruction;
   runManager->SetUserInitialization(detector);
 
-
   // Set the physics list
-
+  
 #ifndef USE_BLINETRACER
   ExN02PhysicsList* physics = new ExN02PhysicsList;
   runManager->SetUserInitialization(physics);
@@ -123,13 +207,17 @@ int main(int argc,char** argv)
   //runManager->SetUserAction(stepping_action);
                                                                                                 
   // Initialize all User Action classes
+ 
   ExN02ActionInitialization* actionInitialization = new ExN02ActionInitialization(detector);
+  actionInitialization->SetFirstEvent(MyFirstEvent); // FROM CLUSTER SCRIPT!!!
+  
   runManager->SetUserInitialization(actionInitialization);
-
-  // Initialize G4 kernel                                                                                                                  
-  //                                                                                                                                    
+  
+  // Initialize G4 kernel
+  //                               
   runManager->Initialize();
 
+  
   //
       
 #ifdef G4VIS_USE
@@ -146,6 +234,15 @@ int main(int argc,char** argv)
       G4String command = "/control/execute ";
       G4String fileName = argv[1];
       UImanager->ApplyCommand(command+fileName);
+
+      // Set number of BeamOn (events to simulate)
+      //runManager->BeamOn(NEvtTot); // reset all the UImanager commands!!!
+
+      G4String RunBeamOn = Form("/run/beamOn %i",NEvtStep);
+      //G4cout << RunBeamOn << G4endl;
+      
+      UImanager->ApplyCommand(RunBeamOn);
+
     }
   else           // interactive mode : define UI session
     { 
@@ -171,6 +268,12 @@ int main(int argc,char** argv)
 #ifdef USE_BLINETRACER
   delete theBlineTool;
 #endif
+
+  if(persistencyManager->IsOpen()){
+    persistencyManager->Close(); 
+  }
+  delete persistencyManager;
+
   delete runManager;
   delete verbosity;
   

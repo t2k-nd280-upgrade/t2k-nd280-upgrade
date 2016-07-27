@@ -253,7 +253,12 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   
   //fneutree->GetEntry(evtID); // take tree entry using event ID
   fneutree->GetEntry(treeEvtID); // take tree entry using event ID + first event (for running on bunch of events) 
-    
+  
+  // Set event ID to the input Tree event ID
+  anEvent->SetEventID(treeEvtID);
+  G4cout << "Set G4 event ID to input Tree event ID: " << anEvent->GetEventID() << G4endl;
+  G4cout << G4endl;
+
   //
   // NB: The following code to add the vertex is taken from nd280mc code
   //     except a few minor differences (e.g. ND280LOG, the interaction vertex index, different G4 version...)

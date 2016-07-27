@@ -567,7 +567,7 @@ void ExN02PhysicsList::AddStepMax(){
     else if (!pmanager) {
       G4ExceptionDescription msg;
       msg << "Particle without a Process Manager" << G4endl;
-      G4Exception("ExN02ExtraPhysics::ConstructProcess()",
+      G4Exception("ExN02StepMax::ConstructProcess()",
                   "MyCode0002",FatalException, msg);
     }
   }
