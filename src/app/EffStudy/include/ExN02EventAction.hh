@@ -42,6 +42,8 @@
 #include <vector>
 #include <TVector3.h>
 
+//#include "TND280UpEvent.hh"
+
 class G4Event;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -56,6 +58,8 @@ public:
   virtual void EndOfEventAction(const G4Event*);
 
   void AddAbsForwTPC1(G4double de, G4double dl);
+  void AddAbsForwTPC2(G4double de, G4double dl);
+  void AddAbsForwTPC3(G4double de, G4double dl);
   void AddAbsTPCup1(G4double de, G4double dl);
   void AddAbsTPCdown1(G4double de, G4double dl);
   void AddAbsTarget1(G4double de, G4double dl);
@@ -98,6 +102,46 @@ public:
   std::vector<G4double>& GetVecForwTPC1_TrackStepLastY(){return fVecForwTPC1_TrackStepLastY;}; 
   std::vector<G4double>& GetVecForwTPC1_TrackStepLastZ(){return fVecForwTPC1_TrackStepLastZ;}; 
   std::vector<G4double>& GetVecForwTPC1_TrackCosTheta(){return fVecForwTPC1_TrackCosTheta;}; 
+
+  // Forward TPC 2 informations
+  G4int               GetForwTPC2_NTracks() { return fForwTPC2_NTracks;};          
+  std::vector<G4int>   & GetVecForwTPC2_TrackID()  {return fVecForwTPC2_TrackID;}; 
+  std::vector<G4int>   & GetVecForwTPC2_ParentID() {return fVecForwTPC2_ParentID;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackMomX(){return fVecForwTPC2_TrackMomX;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackMomY(){return fVecForwTPC2_TrackMomY;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackMomZ(){return fVecForwTPC2_TrackMomZ;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackLength(){return fVecForwTPC2_TrackLength;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackDeltaLyz(){return fVecForwTPC2_TrackDeltaLyz;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackEdep(){return fVecForwTPC2_TrackEdep;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackCharge(){return fVecForwTPC2_TrackCharge;}; 
+  std::vector<G4int>   & GetVecForwTPC2_TrackPDG(){return fVecForwTPC2_TrackPDG;};
+  std::vector<G4double>& GetVecForwTPC2_TrackStepFirstX(){return fVecForwTPC2_TrackStepFirstX;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackStepFirstY(){return fVecForwTPC2_TrackStepFirstY;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackStepFirstZ(){return fVecForwTPC2_TrackStepFirstZ;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackStepLastX(){return fVecForwTPC2_TrackStepLastX;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackStepLastY(){return fVecForwTPC2_TrackStepLastY;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackStepLastZ(){return fVecForwTPC2_TrackStepLastZ;}; 
+  std::vector<G4double>& GetVecForwTPC2_TrackCosTheta(){return fVecForwTPC2_TrackCosTheta;}; 
+
+  // Forward TPC 3 informations
+  G4int               GetForwTPC3_NTracks() { return fForwTPC3_NTracks;};          
+  std::vector<G4int>   & GetVecForwTPC3_TrackID()  {return fVecForwTPC3_TrackID;}; 
+  std::vector<G4int>   & GetVecForwTPC3_ParentID() {return fVecForwTPC3_ParentID;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackMomX(){return fVecForwTPC3_TrackMomX;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackMomY(){return fVecForwTPC3_TrackMomY;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackMomZ(){return fVecForwTPC3_TrackMomZ;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackLength(){return fVecForwTPC3_TrackLength;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackDeltaLyz(){return fVecForwTPC3_TrackDeltaLyz;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackEdep(){return fVecForwTPC3_TrackEdep;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackCharge(){return fVecForwTPC3_TrackCharge;}; 
+  std::vector<G4int>   & GetVecForwTPC3_TrackPDG(){return fVecForwTPC3_TrackPDG;};
+  std::vector<G4double>& GetVecForwTPC3_TrackStepFirstX(){return fVecForwTPC3_TrackStepFirstX;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackStepFirstY(){return fVecForwTPC3_TrackStepFirstY;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackStepFirstZ(){return fVecForwTPC3_TrackStepFirstZ;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackStepLastX(){return fVecForwTPC3_TrackStepLastX;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackStepLastY(){return fVecForwTPC3_TrackStepLastY;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackStepLastZ(){return fVecForwTPC3_TrackStepLastZ;}; 
+  std::vector<G4double>& GetVecForwTPC3_TrackCosTheta(){return fVecForwTPC3_TrackCosTheta;}; 
 
   // TPC Up 1 informations
   G4int               GetTPCUp1_NTracks() { return fTPCUp1_NTracks;};          
@@ -231,11 +275,15 @@ public:
 
 private:
 
+  //TND280UpEvent *nd280Event;
+
   // Hits
   G4int     fHHC1ID;           // Hit Collection 1: Full Tracker
 
   // Global informations
   G4double  fEnergyAbsForwTPC1;   // Total energy absorbed by Forward TPC 1
+  G4double  fEnergyAbsForwTPC2;   // Total energy absorbed by Forward TPC 2
+  G4double  fEnergyAbsForwTPC3;   // Total energy absorbed by Forward TPC 3
   G4double  fEnergyAbsTPCup1;   // Total energy absorbed by TPC up 1
   G4double  fEnergyAbsTPCdown1; // Total energy absorbed by TPC down 1
   G4double  fEnergyAbsTarget1;  // Total energy absorbed by Target 1
@@ -244,6 +292,8 @@ private:
   G4double  fEnergyAbsTarget2;  // Total energy absorbed by Target 2
   G4double  fEnergyAbsTot;     // Total energy absorbed in the detector
   G4double  fTrackLAbsForwTPC1;   // Length of track absorbed in Forward TPC 1
+  G4double  fTrackLAbsForwTPC2;   // Length of track absorbed in Forward TPC 2
+  G4double  fTrackLAbsForwTPC3;   // Length of track absorbed in Forward TPC 3
   G4double  fTrackLAbsTPCup1;   // Length of track absorbed in TPC up 1
   G4double  fTrackLAbsTPCdown1; // Length of track absorbed in TPC down 1
   G4double  fTrackLAbsTarget1;  // Length of track absorbed in Target 1
@@ -284,6 +334,46 @@ private:
   std::vector<G4double> fVecForwTPC1_TrackStepLastY; // Vector of last step position
   std::vector<G4double> fVecForwTPC1_TrackStepLastZ; // Vector of last step position
   std::vector<G4double> fVecForwTPC1_TrackCosTheta; // Vector of cos(theta) angle wrt nu direction (z)
+
+  // Forward TPC 2 informations
+  G4int     fForwTPC2_NTracks;          // # of tracks in Forward TPC 2
+  std::vector<G4int>    fVecForwTPC2_TrackID; // Vector of trackID in Forward TPC 2
+  std::vector<G4int>    fVecForwTPC2_ParentID; // Vector of parentID in Forward TPC 2
+  std::vector<G4double> fVecForwTPC2_TrackMomX; // Vector of initial mom in Forward TPC 2
+  std::vector<G4double> fVecForwTPC2_TrackMomY; // Vector of initial mom in Forward TPC 2
+  std::vector<G4double> fVecForwTPC2_TrackMomZ; // Vector of initial mom in Forward TPC 2
+  std::vector<G4double> fVecForwTPC2_TrackLength; // Vector of corrected (mult. scatt.) track length in Forward TPC 2
+  std::vector<G4double> fVecForwTPC2_TrackDeltaLyz; // Vector of geometrical track length in Forward TPC 2
+  std::vector<G4double> fVecForwTPC2_TrackEdep; // Vector of track edep in Forward TPC 2
+  std::vector<G4double> fVecForwTPC2_TrackCharge; // Vector of track charge in Forward TPC 2
+  std::vector<G4int>    fVecForwTPC2_TrackPDG; // Vector of track pdg in Forward TPC 2
+  std::vector<G4double> fVecForwTPC2_TrackStepFirstX; // Vector of first step position 
+  std::vector<G4double> fVecForwTPC2_TrackStepFirstY; // Vector of first step position
+  std::vector<G4double> fVecForwTPC2_TrackStepFirstZ; // Vector of first step position
+  std::vector<G4double> fVecForwTPC2_TrackStepLastX; // Vector of last step position
+  std::vector<G4double> fVecForwTPC2_TrackStepLastY; // Vector of last step position
+  std::vector<G4double> fVecForwTPC2_TrackStepLastZ; // Vector of last step position
+  std::vector<G4double> fVecForwTPC2_TrackCosTheta; // Vector of cos(theta) angle wrt nu direction (z)
+
+  // Forward TPC 3 informations
+  G4int     fForwTPC3_NTracks;          // # of tracks in Forward TPC 3
+  std::vector<G4int>    fVecForwTPC3_TrackID; // Vector of trackID in Forward TPC 3
+  std::vector<G4int>    fVecForwTPC3_ParentID; // Vector of parentID in Forward TPC 3
+  std::vector<G4double> fVecForwTPC3_TrackMomX; // Vector of initial mom in Forward TPC 3
+  std::vector<G4double> fVecForwTPC3_TrackMomY; // Vector of initial mom in Forward TPC 3
+  std::vector<G4double> fVecForwTPC3_TrackMomZ; // Vector of initial mom in Forward TPC 3
+  std::vector<G4double> fVecForwTPC3_TrackLength; // Vector of corrected (mult. scatt.) track length in Forward TPC 3
+  std::vector<G4double> fVecForwTPC3_TrackDeltaLyz; // Vector of geometrical track length in Forward TPC 3
+  std::vector<G4double> fVecForwTPC3_TrackEdep; // Vector of track edep in Forward TPC 3
+  std::vector<G4double> fVecForwTPC3_TrackCharge; // Vector of track charge in Forward TPC 3
+  std::vector<G4int>    fVecForwTPC3_TrackPDG; // Vector of track pdg in Forward TPC 3
+  std::vector<G4double> fVecForwTPC3_TrackStepFirstX; // Vector of first step position 
+  std::vector<G4double> fVecForwTPC3_TrackStepFirstY; // Vector of first step position
+  std::vector<G4double> fVecForwTPC3_TrackStepFirstZ; // Vector of first step position
+  std::vector<G4double> fVecForwTPC3_TrackStepLastX; // Vector of last step position
+  std::vector<G4double> fVecForwTPC3_TrackStepLastY; // Vector of last step position
+  std::vector<G4double> fVecForwTPC3_TrackStepLastZ; // Vector of last step position
+  std::vector<G4double> fVecForwTPC3_TrackCosTheta; // Vector of cos(theta) angle wrt nu direction (z)
 
   // TPC up 1 informations
   G4int     fTPCUp1_NTracks;          // # of tracks in TPC Up 1
@@ -422,6 +512,15 @@ inline void ExN02EventAction::AddAbsForwTPC1(G4double de, G4double dl) {
   fEnergyAbsForwTPC1 += de;
   fTrackLAbsForwTPC1 += dl;
 }
+inline void ExN02EventAction::AddAbsForwTPC2(G4double de, G4double dl) {
+  fEnergyAbsForwTPC2 += de;
+  fTrackLAbsForwTPC2 += dl;
+}
+inline void ExN02EventAction::AddAbsForwTPC3(G4double de, G4double dl) {
+  fEnergyAbsForwTPC3 += de;
+  fTrackLAbsForwTPC3 += dl;
+}
+
 inline void ExN02EventAction::AddAbsTPCup1(G4double de, G4double dl) {
   fEnergyAbsTPCup1 += de;
   fTrackLAbsTPCup1 += dl;

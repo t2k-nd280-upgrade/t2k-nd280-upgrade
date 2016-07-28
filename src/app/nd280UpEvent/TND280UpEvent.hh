@@ -14,23 +14,44 @@
 #include <TObjString.h>
 #include <vector>
 #include <TObject.h>
+#include <TList.h>
+#include <TCollection.h>
+#include <TIterator.h>
 
 #include <iostream>
+
+#include "TND280UpTrack.hh"
 
 using namespace std;
 
 class TND280UpEvent : public TObject
 {
 public :
-  
-  //using TObject::Read; // Suppress clang warnings  
-  //using TObject::Draw; // Suppress clang warnings    
+     
   TND280UpEvent();
   ~TND280UpEvent();
+
+  void AddTrack(TND280UpTrack *track);
+  TND280UpTrack *GetTrack(int trkid);
+  int GetNTracks(){return fNTracks;};
+
+  void SetEventID(int id){fEventID=id;};
+  void SetReacMode(string reac){fReacMode=reac;};
+  
+  int    GetEventID()     {return fEventID;};
+  string GetReacMode()    {return fReacMode;};
+  
+  void PrintEvent();
   
 private :
-  
 
+  TList *fListOfTracks;
+  int fNTracks;  
+  TList *GetListOfTracks(){return fListOfTracks;};
+
+  int fEventID;
+  string fReacMode;
+  
   ClassDef(TND280UpEvent,1)
 };
 

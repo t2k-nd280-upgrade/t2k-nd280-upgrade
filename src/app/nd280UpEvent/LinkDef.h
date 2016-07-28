@@ -4,7 +4,13 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class TND280UpEvent;
+#pragma link C++ class TND280UpEvent+;
 //#pragma link C++ class std::vector<TND280UpEvent>+;
+
+#pragma link C++ class TND280UpTrack+;
+#pragma link C++ class std::vector<TND280UpTrack>+;
+
+#pragma link C++ class TND280UpTrackPoint+;
+#pragma link C++ class std::vector<TND280UpTrackPoint>+;
 
 #endif
