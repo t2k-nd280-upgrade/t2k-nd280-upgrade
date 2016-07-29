@@ -19,9 +19,9 @@ rm dict.*
 
 echo "Create a new ROOT dictionary"
 echo ""
-echo "rootcint dict.cc -c TND280UpEvent.hh LinkDef.h"
+echo "rootcint dict.cc -c *.hh LinkDef.h"
 
-rootcint dict.cc -c TND280UpEvent.hh LinkDef.h
+rootcint -f dict.cc -c *.hh LinkDef.h
 
 # Run the cmake
 

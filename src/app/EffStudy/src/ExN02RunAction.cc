@@ -78,28 +78,34 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
     //
     analysisManager->CreateNtuple("EffStudy","Primary particle and total absorbed energy");
     analysisManager->CreateNtupleDColumn("EabsForwTPC1");      // column Id = 0
-    analysisManager->CreateNtupleDColumn("EabsTPCup1");      // column Id = 1
-    analysisManager->CreateNtupleDColumn("EabsTPCdown1");    // column Id = 2
-    analysisManager->CreateNtupleDColumn("EabsTarget1");     // column Id = 3
-    analysisManager->CreateNtupleDColumn("LabsForwTPC1");      // column Id = 4
-    analysisManager->CreateNtupleDColumn("LabsTPCup1");      // column Id = 5
-    analysisManager->CreateNtupleDColumn("LabsTPCdown1");    // column Id = 6
-    analysisManager->CreateNtupleDColumn("LabsTarget1");     // column Id = 7
-    analysisManager->CreateNtupleDColumn("EabsTPCup2");      // column Id = 8
-    analysisManager->CreateNtupleDColumn("EabsTPCdown2");    // column Id = 9
-    analysisManager->CreateNtupleDColumn("EabsTarget2");     // column Id = 10
-    analysisManager->CreateNtupleDColumn("LabsTPCup2");      // column Id = 11
-    analysisManager->CreateNtupleDColumn("LabsTPCdown2");    // column Id = 12
-    analysisManager->CreateNtupleDColumn("LabsTarget2");     // column Id = 13
-    analysisManager->CreateNtupleIColumn("NTracks");        // column Id = 14
-    analysisManager->CreateNtupleIColumn("ForwTPC1_NTracks");   // column Id = 15
-    analysisManager->CreateNtupleIColumn("TPCUp1_NTracks");   // column Id = 16
-    analysisManager->CreateNtupleIColumn("TPCDown1_NTracks"); // column Id = 17
-    analysisManager->CreateNtupleIColumn("Target1_NTracks");  // column Id = 18  
-    analysisManager->CreateNtupleIColumn("TPCUp2_NTracks");   // column Id = 19
-    analysisManager->CreateNtupleIColumn("TPCDown2_NTracks"); // column Id = 20
-    analysisManager->CreateNtupleIColumn("Target2_NTracks");  // column Id = 21  
-    analysisManager->CreateNtupleIColumn("NVtx");            // column Id = 22 
+    analysisManager->CreateNtupleDColumn("EabsForwTPC2");      // column Id = 1
+    analysisManager->CreateNtupleDColumn("EabsForwTPC3");      // column Id = 2
+    analysisManager->CreateNtupleDColumn("EabsTPCup1");      // column Id = 3
+    analysisManager->CreateNtupleDColumn("EabsTPCdown1");    // column Id = 4
+    analysisManager->CreateNtupleDColumn("EabsTarget1");     // column Id = 5
+    analysisManager->CreateNtupleDColumn("LabsForwTPC1");      // column Id = 6
+    analysisManager->CreateNtupleDColumn("LabsForwTPC2");      // column Id = 7
+    analysisManager->CreateNtupleDColumn("LabsForwTPC3");      // column Id = 8
+    analysisManager->CreateNtupleDColumn("LabsTPCup1");      // column Id = 9
+    analysisManager->CreateNtupleDColumn("LabsTPCdown1");    // column Id = 10
+    analysisManager->CreateNtupleDColumn("LabsTarget1");     // column Id = 11
+    analysisManager->CreateNtupleDColumn("EabsTPCup2");      // column Id = 12
+    analysisManager->CreateNtupleDColumn("EabsTPCdown2");    // column Id = 13
+    analysisManager->CreateNtupleDColumn("EabsTarget2");     // column Id = 14
+    analysisManager->CreateNtupleDColumn("LabsTPCup2");      // column Id = 15
+    analysisManager->CreateNtupleDColumn("LabsTPCdown2");    // column Id = 16
+    analysisManager->CreateNtupleDColumn("LabsTarget2");     // column Id = 17
+    analysisManager->CreateNtupleIColumn("NTracks");        // column Id = 18
+    analysisManager->CreateNtupleIColumn("ForwTPC1_NTracks");   // column Id = 19
+    analysisManager->CreateNtupleIColumn("ForwTPC2_NTracks");   // column Id = 20
+    analysisManager->CreateNtupleIColumn("ForwTPC3_NTracks");   // column Id = 21
+    analysisManager->CreateNtupleIColumn("TPCUp1_NTracks");   // column Id = 22
+    analysisManager->CreateNtupleIColumn("TPCDown1_NTracks"); // column Id = 23
+    analysisManager->CreateNtupleIColumn("Target1_NTracks");  // column Id = 24  
+    analysisManager->CreateNtupleIColumn("TPCUp2_NTracks");   // column Id = 25
+    analysisManager->CreateNtupleIColumn("TPCDown2_NTracks"); // column Id = 26
+    analysisManager->CreateNtupleIColumn("Target2_NTracks");  // column Id = 27  
+    analysisManager->CreateNtupleIColumn("NVtx");            // column Id = 28
 
     //
     // WARNING concerning vectors: HARMLESS 
@@ -144,6 +150,42 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
     analysisManager->CreateNtupleDColumn("VecForwTPC1_TrackStepLastY",fEventAction->GetVecForwTPC1_TrackStepLastY()); // column Id = 30 
     analysisManager->CreateNtupleDColumn("VecForwTPC1_TrackStepLastZ",fEventAction->GetVecForwTPC1_TrackStepLastZ()); // column Id = 30 
     analysisManager->CreateNtupleDColumn("VecForwTPC1_TrackCosTheta",fEventAction->GetVecForwTPC1_TrackCosTheta()); // column Id = 30 
+ 
+    analysisManager->CreateNtupleIColumn("VecForwTPC2_TrackID",fEventAction->GetVecForwTPC2_TrackID());     // column Id = 22
+    analysisManager->CreateNtupleIColumn("VecForwTPC2_ParentID",fEventAction->GetVecForwTPC2_ParentID());     // column Id = 22
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackMomX",fEventAction->GetVecForwTPC2_TrackMomX()); // column Id = 23
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackMomY",fEventAction->GetVecForwTPC2_TrackMomY()); // column Id = 24
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackMomZ",fEventAction->GetVecForwTPC2_TrackMomZ()); // column Id = 25
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackLength",fEventAction->GetVecForwTPC2_TrackLength()); // column Id = 26
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackDeltaLyz",fEventAction->GetVecForwTPC2_TrackDeltaLyz()); // column Id = 26
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackEdep",fEventAction->GetVecForwTPC2_TrackEdep()); // column Id = 27
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackCharge",fEventAction->GetVecForwTPC2_TrackCharge()); // column Id = 28
+    analysisManager->CreateNtupleIColumn("VecForwTPC2_TrackPDG",fEventAction->GetVecForwTPC2_TrackPDG()); // column Id = 29  
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackStepFirstX",fEventAction->GetVecForwTPC2_TrackStepFirstX()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackStepFirstY",fEventAction->GetVecForwTPC2_TrackStepFirstY()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackStepFirstZ",fEventAction->GetVecForwTPC2_TrackStepFirstZ()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackStepLastX",fEventAction->GetVecForwTPC2_TrackStepLastX()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackStepLastY",fEventAction->GetVecForwTPC2_TrackStepLastY()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackStepLastZ",fEventAction->GetVecForwTPC2_TrackStepLastZ()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC2_TrackCosTheta",fEventAction->GetVecForwTPC2_TrackCosTheta()); // column Id = 30 
+ 
+    analysisManager->CreateNtupleIColumn("VecForwTPC3_TrackID",fEventAction->GetVecForwTPC3_TrackID());     // column Id = 22
+    analysisManager->CreateNtupleIColumn("VecForwTPC3_ParentID",fEventAction->GetVecForwTPC3_ParentID());     // column Id = 22
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackMomX",fEventAction->GetVecForwTPC3_TrackMomX()); // column Id = 23
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackMomY",fEventAction->GetVecForwTPC3_TrackMomY()); // column Id = 24
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackMomZ",fEventAction->GetVecForwTPC3_TrackMomZ()); // column Id = 25
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackLength",fEventAction->GetVecForwTPC3_TrackLength()); // column Id = 26
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackDeltaLyz",fEventAction->GetVecForwTPC3_TrackDeltaLyz()); // column Id = 26
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackEdep",fEventAction->GetVecForwTPC3_TrackEdep()); // column Id = 27
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackCharge",fEventAction->GetVecForwTPC3_TrackCharge()); // column Id = 28
+    analysisManager->CreateNtupleIColumn("VecForwTPC3_TrackPDG",fEventAction->GetVecForwTPC3_TrackPDG()); // column Id = 29  
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackStepFirstX",fEventAction->GetVecForwTPC3_TrackStepFirstX()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackStepFirstY",fEventAction->GetVecForwTPC3_TrackStepFirstY()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackStepFirstZ",fEventAction->GetVecForwTPC3_TrackStepFirstZ()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackStepLastX",fEventAction->GetVecForwTPC3_TrackStepLastX()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackStepLastY",fEventAction->GetVecForwTPC3_TrackStepLastY()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackStepLastZ",fEventAction->GetVecForwTPC3_TrackStepLastZ()); // column Id = 30 
+    analysisManager->CreateNtupleDColumn("VecForwTPC3_TrackCosTheta",fEventAction->GetVecForwTPC3_TrackCosTheta()); // column Id = 30 
     
     analysisManager->CreateNtupleIColumn("VecTPCUp1_TrackID",fEventAction->GetVecTPCUp1_TrackID());     // column Id = 22
     analysisManager->CreateNtupleIColumn("VecTPCUp1_ParentID",fEventAction->GetVecTPCUp1_ParentID());     // column Id = 22
