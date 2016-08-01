@@ -4,6 +4,10 @@
  
 #include "ND280RootPersistencyManager.hh"
 
+//#include "ND280UserRunAction.hh"
+#include "ND280Trajectory.hh"
+#include "ND280TrajectoryPoint.hh"
+
 #include <memory>
 #include <cmath>
 #include <algorithm>
@@ -38,15 +42,11 @@
 #include <TGeoMedium.h>
 #include <TGeoPgon.h>
 
-//#include "ND280UserRunAction.hh"
-#include "ND280Trajectory.hh"
-#include "ND280TrajectoryPoint.hh"
-
 TROOT root("ROOT","Root of Everything");
 
 ND280RootPersistencyManager::ND280RootPersistencyManager() 
     : ND280PersistencyManager(), fOutput(NULL),
-      fEventTree(NULL), //fND280Event(NULL), 
+      fEventTree(NULL), fND280UpEvent(NULL), 
       fEventsNotSaved(0) {}
 
 ND280RootPersistencyManager* ND280RootPersistencyManager::GetInstance() {
@@ -70,59 +70,65 @@ bool ND280RootPersistencyManager::IsOpen() {
 }
 
 bool ND280RootPersistencyManager::Open(G4String filename) {
-    if (fOutput) {
-      //ND280Log("ND280RootPersistencyManager::Open "
-      //<< "-- Delete current file pointer" );
-      G4cout << "ND280RootPersistencyManager::Open "
-	     << "-- Delete current file pointer" 
-	     << G4endl;
-    }
-
-    SetFilename(filename +".root");
-
-    //ND280Log("ND280RootPersistencyManager::Open " << GetFilename());
-    G4cout << "ND280RootPersistencyManager::Open " << GetFilename() << G4endl;
-
-    // TFile::Open() crashes
-    //fOutput = TFile::Open(GetFilename(), "RECREATE", "T2K-ND280 upgrade Root Output");    
-    fOutput = new TFile(GetFilename().c_str(),"RECREATE");
-
-    fEventTree = new TTree("ND280upEvents","ND280 upgrade Event Tree");
-    //fEventTree->Branch("ND280Event","ND::TND280Event",&fND280Event,128000,0);
-    fEventTree->Branch("EventID",&fEventID);
-    
-    fEventsNotSaved = 0;
-
-    return true;
+  if (fOutput) {
+    G4cout << "ND280RootPersistencyManager::Open "
+	   << "-- Delete current file pointer" 
+	   << G4endl;
+  }
+  
+  SetFilename(filename +".root");
+  
+  G4cout << "ND280RootPersistencyManager::Open " << GetFilename() << G4endl;
+  
+  //
+  // TFile::Open() crashes!!!
+  //
+  //fOutput = TFile::Open(GetFilename(),"RECREATE","T2K-ND280 upgrade Root Output");
+  //
+  fOutput = new TFile(GetFilename().c_str(),"RECREATE");
+  
+  fEventTree = new TTree("ND280upEvents","ND280 upgrade Event Tree");
+  
+  //fND280UpEvent = new TND280UpEvent();    
+  fEventTree->Branch("Event","TND280UpEvent",&fND280UpEvent,128000,0);
+  
+  fEventsNotSaved = 0;
+  
+  return true;
 }
 
 bool ND280RootPersistencyManager::Close() {
-    if (!fOutput) {
-      //ND280Error("ND280RootPersistencyManager::Close "
-      //<< "-- No Output File");
-      return false;
-    }
+  if (!fOutput) {
+    G4ExceptionDescription msg;
+    msg << "No Output File" << G4endl; 
+    G4Exception("ND280RootPersistencyManager::Close",
+		"ExN02Code001",FatalException, msg);
+    return false;
+  }
+  
+  fOutput->cd();
+  fOutput->Write();
+  fOutput->Close();
+  
+  G4cout << "Output file " << GetFilename() << " closed." << G4endl;
+  
+  fEventTree = NULL;
+  fND280UpEvent = NULL;
 
-    fOutput->cd();
-    fOutput->Write();
-    fOutput->Close();
-    //ND280Log("Output file " << GetFilename() << " closed.");
-    G4cout << "Output file " << GetFilename() << " closed." << G4endl;
+  delete fEventTree;
+  delete fND280UpEvent;
 
-    fEventTree = NULL;
-    //fND280Event = NULL;
-
-    return true;
+  return true;
 }
 
 bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   if (!fOutput) {
-    //ND280Error("ND280RootPersistencyManager::Store "
-    //<< "-- No Output File");
+    G4ExceptionDescription msg;
+    msg << "No Output File" << G4endl; 
+    G4Exception("ND280RootPersistencyManager::Store",
+   		"ExN02Code001",FatalException, msg);
     return false;
   }
-  
-  fEventID = anEvent->GetEventID();
   
   //const G4Run* runInfo = G4RunManager::GetRunManager()->GetCurrentRun();
   //const ND280UserRunAction* runAction 
@@ -180,6 +186,137 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //   ND280Verbose("%% No Primary Particles to save");
   // }
   
+  
+  
+  fND280UpEvent = new TND280UpEvent();
+  // The event is constructed using an auto ptr since we must delete it
+  // before leaving this method.                            
+  //std::auto_ptr<TND280UpEvent> fND280UpEvent(new TND280UpEvent());
+  
+  fND280UpEvent->SetEventID(anEvent->GetEventID());
+  
+  //                                          
+  // Store the track in the ND280 event 
+  //                                          
+  
+  const G4TrajectoryContainer* trajectories = anEvent->GetTrajectoryContainer();
+  if (!trajectories) {
+    G4ExceptionDescription msg;
+    msg << "No Trajectories" << G4endl; 
+    G4Exception("ExN02EventAction::EndOfEventAction()",
+   		"ExN02Code001", JustWarning, msg);
+    return false;
+  }
+  
+  // loop over the trajectories
+  for (TrajectoryVector::iterator t = trajectories->GetVector()->begin();
+       t != trajectories->GetVector()->end();
+       ++t) { 
+    
+    ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(*t);
+    //   G4VTrajectory* g4Traj = dynamic_cast<G4VTrajectory*>(*t);
+    
+    G4String particleName = ndTraj->GetParticleName();
+    G4int NptTraj = ndTraj->GetPointEntries();
+    G4int TrajTrkId = ndTraj->GetTrackID(); 
+
+    TND280UpTrack *nd280Track = new TND280UpTrack();
+    nd280Track->SetTrackID(ndTraj->GetTrackID());
+    nd280Track->SetParentID(ndTraj->GetParentID());
+    nd280Track->SetPDG(ndTraj->GetPDGEncoding());
+    nd280Track->SetProcessName(ndTraj->GetProcessName());
+    nd280Track->SetInitKinEnergy(ndTraj->GetInitialKineticEnergy());
+    
+    double momX = ndTraj->GetInitialMomentum().x();
+    double momY = ndTraj->GetInitialMomentum().y();
+    double momZ = ndTraj->GetInitialMomentum().z();
+    nd280Track->SetInitMom(momX,momY,momZ);
+    
+    nd280Track->SetInitCosTheta(ndTraj->GetInitialCosTheta());
+    nd280Track->SetCharge(ndTraj->GetCharge());
+    nd280Track->SetRange(ndTraj->GetRange());
+    
+    int NPoints = ndTraj->GetPointEntries();
+    nd280Track->SetNPoints(NPoints);
+    
+    //
+    // Store the points of the track 
+    //
+    
+    for(int itp=0;itp<NPoints;itp++){ // loop over all the points
+      
+      ND280TrajectoryPoint* ndPoint = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp));
+      
+      if (!ndPoint) 
+	{
+	  G4ExceptionDescription msg;
+	  msg << "No Points in the Trajectory" << G4endl; 
+	  G4Exception("ExN02EventAction::EndOfEventAction()",
+		      "ExN02Code001", JustWarning, msg);
+	  return false;
+	}
+      
+      TND280UpTrackPoint *nd280TrackPoint = new TND280UpTrackPoint();
+      
+      nd280TrackPoint->SetPointID(itp);
+      nd280TrackPoint->SetTime(ndPoint->GetTime());
+      
+      // momentum 
+      double momPtX = ndPoint->GetMomentum().x();
+      double momPtY = ndPoint->GetMomentum().y();
+      double momPtZ = ndPoint->GetMomentum().z();
+      nd280TrackPoint->SetMomentum(momPtX,momPtY,momPtZ);
+      
+      nd280TrackPoint->SetEdep(ndPoint->GetEdep());
+      nd280TrackPoint->SetStepLength(ndPoint->GetStepLength());
+      nd280TrackPoint->SetStepDeltaLyz(ndPoint->GetStepDeltaLyz());
+      nd280TrackPoint->SetStepStatus(ndPoint->GetStepStatus());
+      nd280TrackPoint->SetPhysVolName(ndPoint->GetPhysVolName());
+      
+      // preStep position 
+      double prevX = ndPoint->GetPrevPosition().x();
+      double prevY = ndPoint->GetPrevPosition().y();
+      double prevZ = ndPoint->GetPrevPosition().z();
+      nd280TrackPoint->SetPrePosition(prevX,prevY,prevZ);
+      
+      // postStep position
+      double postX = ndPoint->GetPostPosition().x();
+      double postY = ndPoint->GetPostPosition().y();
+      double postZ = ndPoint->GetPostPosition().z();
+      nd280TrackPoint->SetPostPosition(postX,postY,postZ);
+      
+      nd280Track->AddPoint(nd280TrackPoint);
+      
+    } // end loop over the points
+    
+    //nd280Track->SaveIt(true); // TO DEFINE IT    
+    fND280UpEvent->AddTrack(nd280Track);
+    
+    // 
+    // ND280Trajectory::ShowTrajectory()
+    // and 
+    // G4VTrajectory::ShowTrajectory(os)
+    // don't work:
+    //
+    //  G4BestUnit: the category Momentum does not exist.
+    //
+    // -------- EEEE ------- G4Exception-START -------- EEEE -------
+    // *** G4Exception : InvalidCall
+    //       issued by : G4BestUnit::G4BestUnit()
+    // Missing unit category !
+    // *** Fatal Exception *** core dump ***
+    // -------- EEEE -------- G4Exception-END --------- EEEE -------
+    //
+    //ndTraj->ShowTrajectory(G4cout);
+    //
+    
+  } // end loop over Trajectories
+  
+  // // Print and store the ND280 event and 1 ND280 track
+  // fND280UpEvent->PrintEvent();
+  // fND280UpEvent->GetTrack(1)->PrintTrack();
+  // fND280UpEvent->GetTrack(1)->GetPoint(1)->PrintTrackPoint();
+  
   // // Save the informational particles.
   // if (eventInfo) {
   //   // No info to be saved (be sure and change this comment if some is
@@ -194,18 +331,28 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   // pointer (the fEventTree branch pointer).
   //fND280Event = event.get(); 
   fEventTree->Fill();
-  
+  fND280UpEvent = NULL;
+  delete fND280UpEvent;
 
-  
+  // ++fEventsNotSaved;
+  // if (fEventsNotSaved>100) {
+  //   ND280Info("AutoSave Event Tree");
+  //   fEventTree->AutoSave("SaveSelf");
+  //   fEventsNotSaved = 0;
+  // }
+    
   return true;
 }
 
-bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
-    return false;
-}
+
+
+
+// bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
+//     return false;
+// }
 
 //bool ND280RootPersistencyManager::Store(const G4VPhysicalVolume* aWorld) {
-  //     if (!gGeoManager) {
+//     if (!gGeoManager) {
   //         ND280Error("ND280RootPersistencyManage::Store(world) run before /t2k/update");
   //         ND280RootGeometryManager::Get()->Update(aWorld,true);
   //     }

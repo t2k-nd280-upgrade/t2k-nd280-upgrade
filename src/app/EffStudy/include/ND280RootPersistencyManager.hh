@@ -19,9 +19,9 @@ class G4VHitsCollection;
 
 #include "ND280PersistencyManager.hh"
 
-// namespace ND {
-//     class TND280Event;
-// }
+#include <TND280UpEvent.hh>
+#include <TND280UpTrack.hh>
+#include <TND280UpTrackPoint.hh>
 
 /// Provide a root output for the geant 4 events.
 class ND280RootPersistencyManager : public ND280PersistencyManager {
@@ -43,39 +43,39 @@ public:
 
   /// Stores an event to the output file.
   virtual G4bool Store(const G4Event* anEvent);
-  virtual G4bool Store(const G4Run* aRun);
+  //virtual G4bool Store(const G4Run* aRun);
   //virtual G4bool Store(const G4VPhysicalVolume* aWorld);
 
-    /// Retrieve information from a file.  This is not implemented.
-    virtual G4bool Retrieve(G4Event *&aEvent) {return false;}
-    virtual G4bool Retrieve(G4Run* &aRun) {return false;}
-    virtual G4bool Retrieve(G4VPhysicalVolume* &aWorld) {return false;};
-
-    /// Interface with PersistencyMessenger (open and close the
-    /// database).
-    virtual G4bool Open(G4String dbname);
-    virtual G4bool Close(void);
-
+  /// Retrieve information from a file.  This is not implemented.
+  virtual G4bool Retrieve(G4Event *&aEvent) {return false;}
+  virtual G4bool Retrieve(G4Run* &aRun) {return false;}
+  virtual G4bool Retrieve(G4VPhysicalVolume* &aWorld) {return false;};
+  
+  /// Interface with PersistencyMessenger (open and close the
+  /// database).
+  virtual G4bool Open(G4String dbname);
+  virtual G4bool Close(void);
+  
   /// Copy the G4 Trajectories into an output event.
   //void CopyTrajectories(ND::TND280Event& dest, 
   //const G4TrajectoryContainer* src);
-    
+  
   /// Copy the G4 Trajectory points into an output event.
   //void CopyTrajectoryPoints(ND::TG4Trajectory& points,
   //G4VTrajectory* g4Traj);
-
+  
   /// Copy the G4 Trajectories into an output event.
   //ND::TG4PrimaryVertexContainer* MakePrimary(const char* name,
   //const char* title,
   //const G4PrimaryVertex* src);
-
+  
   /// Copy the off axis tracker hits to the output object.
   //void CopyHitCollections(ND::TND280Event& dest, const G4Event* src);
   
 protected:
-    /// use GetPersistencyManager() instead
-    ND280RootPersistencyManager();
-
+  /// use GetPersistencyManager() instead
+  ND280RootPersistencyManager();
+  
   /// Find the right color for a logical volume.  This won't necessarily be
   /// the same color as set in G4, but should be a reasonable choice for a
   /// detector picture.  This will return a negative number if the volume
@@ -130,8 +130,9 @@ private:
   TTree *fEventTree;
   
   /// The TTree branches
-  //ND::TND280Event* fND280Event;  /// The ND280 Event class
-  int fEventID; 
+  TND280UpEvent *fND280UpEvent; // The ND280 Upgrade Event class
+
+  G4int fEventID; 
   
   /// The number of events saved to the output file since the last write.
   int fEventsNotSaved;

@@ -63,6 +63,8 @@
 #include <TObject.h>
 
 #include <TND280UpEvent.hh>
+#include <TND280UpTrack.hh>
+#include <TND280UpTrackPoint.hh>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
@@ -546,10 +548,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     G4cout << "Vertex: " << vtxNumber  
   	   << " w/ " << vtx->GetNumberOfParticle() << " primaries" 
   	   << " at " 
-  	   // << " (" << G4BestUnit(vtx->GetX0(),"Length") 
-  	   // << ", " << G4BestUnit(vtx->GetY0(),"Length") 
-  	   // << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
-  	   // << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
+      // << " (" << G4BestUnit(vtx->GetX0(),"Length") 
+      // << ", " << G4BestUnit(vtx->GetY0(),"Length") 
+      // << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
+      // << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
   	   << " (" << vtx->GetX0() / mm
   	   << ", " << vtx->GetY0() / mm
   	   << ", " << vtx->GetZ0() / mm 
@@ -635,7 +637,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
   fNVtx = vtxNumber; // get # of vertices in the event
      
-
+  
 
 
   ///////////////////////////////////////////////////////
@@ -1596,6 +1598,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   //  	      << std::endl;
   // }
   // std::cout << std::endl;
+
+
   
   // get number of stored trajectories
   //
@@ -1614,151 +1618,24 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
   
 
+
+  
+
+  
   //////////////////////////////////////////////
   //                                          //
   // Store the event in persistency ROOT file //
   //                                          //
   //////////////////////////////////////////////
-  
-  ND280RootPersistencyManager* pND280man
-    = ND280RootPersistencyManager::GetInstance();
-  pND280man->Store(event);
-  
-  TND280UpEvent *nd280Event = new TND280UpEvent();
-  nd280Event->SetEventID(event->GetEventID());
 
-  //                                          
-  // Store the track in the ND280 event 
-  //                                          
+  //G4cout << G4endl;
+  //G4cout << " pND280man->Store(event)" << G4endl;
+  //G4cout << G4endl;
   
-  const G4TrajectoryContainer* trajectories = event->GetTrajectoryContainer();
-  if (!trajectories) {
-    G4ExceptionDescription msg;
-    msg << "No Trajectories" << G4endl; 
-    G4Exception("ExN02EventAction::EndOfEventAction()",
-   		"ExN02Code001", JustWarning, msg);
-    return;
-  }
+  //ND280RootPersistencyManager* pND280man
+  //= ND280RootPersistencyManager::GetInstance();
+  //pND280man->Store(event);
   
-  // loop over the trajectories
-  for (TrajectoryVector::iterator t = trajectories->GetVector()->begin();
-       t != trajectories->GetVector()->end();
-       ++t) { 
-    
-    ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(*t);
-    //   G4VTrajectory* g4Traj = dynamic_cast<G4VTrajectory*>(*t);
-    
-    G4String particleName = ndTraj->GetParticleName();
-    G4int NptTraj = ndTraj->GetPointEntries();
-    G4int TrajTrkId = ndTraj->GetTrackID(); 
-
-    TND280UpTrack *nd280Track = new TND280UpTrack();
-    nd280Track->SetTrackID(ndTraj->GetTrackID());
-    nd280Track->SetParentID(ndTraj->GetParentID());
-    nd280Track->SetPDG(ndTraj->GetPDGEncoding());
-    nd280Track->SetProcessName(ndTraj->GetProcessName());
-    nd280Track->SetInitKinEnergy(ndTraj->GetInitialKineticEnergy());
-    
-    double momX = ndTraj->GetInitialMomentum().x();
-    double momY = ndTraj->GetInitialMomentum().y();
-    double momZ = ndTraj->GetInitialMomentum().z();
-    nd280Track->SetInitMom(momX,momY,momZ);
-    
-    nd280Track->SetInitCosTheta(ndTraj->GetInitialCosTheta());
-    nd280Track->SetCharge(ndTraj->GetCharge());
-    nd280Track->SetRange(ndTraj->GetRange());
-    
-    int NPoints = ndTraj->GetPointEntries();
-    nd280Track->SetNPoints(NPoints);
-    
-    //
-    // Store the points of the track 
-    //
-    
-    for(int itp=0;itp<NPoints;itp++){ // loop over all the points
-	
-	ND280TrajectoryPoint* ndPoint = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp));
-	
-	if (!ndPoint) 
-	  {
-	    G4ExceptionDescription msg;
-	    msg << "No Points in the Trajectory" << G4endl; 
-	    G4Exception("ExN02EventAction::EndOfEventAction()",
-			"ExN02Code001", JustWarning, msg);
-	    return;
-	  }
-	  
-	  TND280UpTrackPoint *nd280TrackPoint = new TND280UpTrackPoint();
-	
-	nd280TrackPoint->SetPointID(itp);
-	nd280TrackPoint->SetTime(ndPoint->GetTime());
-		
-	// momentum 
-	double momPtX = ndPoint->GetMomentum().x();
-	double momPtY = ndPoint->GetMomentum().y();
-	double momPtZ = ndPoint->GetMomentum().z();
-	nd280TrackPoint->SetMomentum(momPtX,momPtY,momPtZ);
-
-	nd280TrackPoint->SetEdep(ndPoint->GetEdep());
-	nd280TrackPoint->SetStepLength(ndPoint->GetStepLength());
-	nd280TrackPoint->SetStepDeltaLyz(ndPoint->GetStepDeltaLyz());
-	nd280TrackPoint->SetStepStatus(ndPoint->GetStepStatus());
-	nd280TrackPoint->SetPhysVolName(ndPoint->GetPhysVolName());
-	
-	// preStep position 
-	double prevX = ndPoint->GetPrevPosition().x();
-	double prevY = ndPoint->GetPrevPosition().y();
-	double prevZ = ndPoint->GetPrevPosition().z();
-	nd280TrackPoint->SetPrePosition(prevX,prevY,prevZ);
-	
-	// postStep position
-	double postX = ndPoint->GetPostPosition().x();
-	double postY = ndPoint->GetPostPosition().y();
-	double postZ = ndPoint->GetPostPosition().z();
-	nd280TrackPoint->SetPostPosition(postX,postY,postZ);
-	
-	nd280Track->AddPoint(nd280TrackPoint);
-	
-	} // end loop over the points
-    
-    
-    //nd280Track->SaveIt(true); // TO DEFINE IT    
-    nd280Event->AddTrack(nd280Track);
-    
-        
-    // 
-    // ND280Trajectory::ShowTrajectory()
-    // and 
-    // G4VTrajectory::ShowTrajectory(os)
-    // don't work:
-    //
-    //  G4BestUnit: the category Momentum does not exist.
-    //
-    // -------- EEEE ------- G4Exception-START -------- EEEE -------
-    // *** G4Exception : InvalidCall
-    //       issued by : G4BestUnit::G4BestUnit()
-    // Missing unit category !
-    // *** Fatal Exception *** core dump ***
-    // -------- EEEE -------- G4Exception-END --------- EEEE -------
-    //
-    //ndTraj->ShowTrajectory(G4cout);
-    //
-    
-  } // end loop over Trajectories
-
-  
-  
-  // Print and store the ND280 event and 1 ND280 track
-  nd280Event->PrintEvent();
-  nd280Event->GetTrack(1)->PrintTrack();
-  nd280Event->GetTrack(1)->GetPoint(0)->PrintTrackPoint();
-  nd280Event->GetTrack(1)->GetPoint(1)->PrintTrackPoint();
-  nd280Event->GetTrack(1)->GetPoint(10)->PrintTrackPoint();
-  
-  //
-  // TODO:
-  // - store the event in the ROOT file
-  //
 }
 
 

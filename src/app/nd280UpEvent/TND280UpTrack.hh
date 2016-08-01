@@ -79,9 +79,7 @@ private :
   double fCharge;
   double fRange; 
   bool fSaveIt;
-  
-  //const double kUndefinedTrack;
-  
+    
   ClassDef(TND280UpTrack,2)
 };
 

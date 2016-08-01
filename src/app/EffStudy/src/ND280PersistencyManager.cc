@@ -123,7 +123,7 @@ void ND280PersistencyManager::MarkTrajectories(const G4Event* event) {
     // 
     //   ** Gamma-rays and neutrons above a threshold which have daughters
     //         depositing energy in a sensitive detector.
-    //
+    //    
     for (TrajectoryVector::iterator t = trajectories->GetVector()->begin();
          t != trajectories->GetVector()->end();
          ++t) {
