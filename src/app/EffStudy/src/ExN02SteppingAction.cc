@@ -68,11 +68,11 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   // energy deposit
   G4double edep = step->GetTotalEnergyDeposit();
   if(edep==0.) return;
-
+  
   G4StepPoint* prestep  = step->GetPreStepPoint();
   //G4StepPoint* poststep = step->GetPostStepPoint();
   G4Track *track = step->GetTrack(); // it's PostStepPoint!!!
-
+  
   // get volume of the current step
   //G4VPhysicalVolume* volume = prestep->GetTouchableHandle()->GetVolume();
 
@@ -96,6 +96,15 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
     fEventAction->AddAbsTarget1(edep,stepLength);
   else if(namedet=="Target2") 
     fEventAction->AddAbsTarget2(edep,stepLength);
+  else if(namedet=="ForwTPC1/Half") 
+    fEventAction->AddAbsForwTPC1(edep,stepLength);
+  else if(namedet=="ForwTPC2/Half") 
+    fEventAction->AddAbsForwTPC2(edep,stepLength);
+  else if(namedet=="ForwTPC3/Half") 
+    fEventAction->AddAbsForwTPC3(edep,stepLength);
+  
+  //if(namedet=="ForwTPC1/Half")
+  //G4cout << "stepLength = " << stepLength << G4endl;
 
   // Get track info    
   fEventAction->SetTrack(step);
@@ -105,7 +114,7 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   // G4int newtrkid      = track->GetTrackID();
   // G4int newparentid   = track->GetParentID();
   // G4int newtrkpdg     = track->GetDefinition()->GetPDGEncoding();
-
+  
   // // Get the total initial energy of the track
   // G4double newtrkmass        = track->GetDefinition()->GetPDGMass();
   // G4double newtrkEkinVtx     = track->GetVertexKineticEnergy();  

@@ -21,7 +21,8 @@ G4Allocator<ND280TrajectoryPoint> aND280TrajPointAllocator;
 ND280TrajectoryPoint::ND280TrajectoryPoint()
   : fTime(0.), fMomentum(0.,0.,0.), fEdep(0), fStepLength(0),
     fStepDeltaLyz(0), fStepStatus(fUndefined), 
-    fPhysVolName("OutofWorld"), fPrevPosition(0,0,0) { }
+    fPhysVolName("OutofWorld"), fPrevPosition(0,0,0),
+    fPostPosition(0,0,0) { }
 
 // This is the one used --> See ND280Trajectory::AppendStep(G4Step)
 ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
@@ -56,6 +57,8 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
     fPhysVolName == "OutOfWorld";
   }
   fPrevPosition = aStep->GetPreStepPoint()->GetPosition();
+  
+  fPostPosition = aStep->GetPostStepPoint()->GetPosition();
 }
 
 // Used for the first point 
@@ -78,6 +81,8 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Track* aTrack)
         fPhysVolName == "OutOfWorld";
     }
     fPrevPosition = aTrack->GetPosition();
+
+    fPostPosition = aTrack->GetPosition(); // in the first point pre=post
 }
 
 ND280TrajectoryPoint::ND280TrajectoryPoint(const ND280TrajectoryPoint &right)
@@ -90,6 +95,7 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const ND280TrajectoryPoint &right)
     fStepStatus = right.fStepStatus;
     fPhysVolName = right.fPhysVolName;
     fPrevPosition = right.fPrevPosition;
+    fPostPosition = right.fPostPosition;
 }
 
 ND280TrajectoryPoint::~ND280TrajectoryPoint() { }

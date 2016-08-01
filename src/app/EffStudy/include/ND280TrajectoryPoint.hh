@@ -51,16 +51,22 @@ public:
   /// referenced by GetVolumeNode().
   G4String GetPhysVolName() const { return fPhysVolName; }
   
-  /// Get the node for the volume containing the stopping point.  If the
-  /// stopping point is on a geometric boundary, this is the volume that the
-  /// track is just exiting. 
-  int GetVolumeNode() const;
+  // /// Get the node for the volume containing the stopping point.  If the
+  // /// stopping point is on a geometric boundary, this is the volume that the
+  // /// track is just exiting. 
+  // int GetVolumeNode() const; // NOT IMPLEMENTED
   
   // Get method for HEPRep style attributes
   
   virtual const std::map<G4String,G4AttDef>* GetAttDefs() const;
   virtual std::vector<G4AttValue>* CreateAttValues() const;
   
+
+  // MY METHODS
+  G4ThreeVector GetPrevPosition() const { return fPrevPosition;};
+  G4ThreeVector GetPostPosition() const { return fPostPosition;};
+  
+
   //---------
 private:
   //---------
@@ -75,6 +81,9 @@ private:
   G4StepStatus fStepStatus;
   G4String fPhysVolName;
   G4ThreeVector fPrevPosition;
+
+  // MY METHODS
+  G4ThreeVector fPostPosition;
 };
 
 #if defined G4TRACKING_ALLOC_EXPORT

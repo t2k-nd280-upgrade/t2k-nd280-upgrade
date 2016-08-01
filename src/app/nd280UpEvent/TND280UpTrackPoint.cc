@@ -17,10 +17,55 @@ using namespace std;
 ClassImp(TND280UpTrackPoint)
 
 TND280UpTrackPoint::TND280UpTrackPoint(){
-  fPointID = -999;
+
+  fPointID = kUndefTrackPoint;
+  fTime = kUndefTrackPoint;
+  fMomentum.SetXYZ(kUndefTrackPoint,
+		   kUndefTrackPoint,
+		   kUndefTrackPoint);
+  fEdep = kUndefTrackPoint;
+  fStepLength = kUndefTrackPoint;
+  fStepDeltaLyz = kUndefTrackPoint;
+  fStepStatus = kUndefTrackPoint;
+  fPhysVolName = "";
+  fPrePosition.SetXYZ(kUndefTrackPoint,
+		      kUndefTrackPoint,
+		      kUndefTrackPoint);
+  fPostPosition.SetXYZ(kUndefTrackPoint,
+		       kUndefTrackPoint,
+		       kUndefTrackPoint);
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
 TND280UpTrackPoint::~TND280UpTrackPoint(){
   //delete ...;
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
+
+void TND280UpTrackPoint::PrintTrackPoint()
+{
+  cout << endl;
+  cout << "oooooooooooooooooooooooooooooooo" << endl;
+  cout << endl;
+  cout << "TrackPoint ID: " << fPointID << endl;
+  cout << "Time: " << fTime << endl;
+  cout << "Momentum: " << fMomentum.Mag() << endl;
+  cout << "Deposited Energy: " << fEdep << endl;
+  cout << "Step Length: " << fStepLength << endl;
+  cout << "Step DeltaLyz: " << fStepDeltaLyz << endl;
+  cout << "Step Status: " << fStepStatus << endl;
+  cout << "Phys Volume Name: " << fPhysVolName << endl;
+  cout << "preStep position: "; 
+  fPrePosition.Print(); 
+  cout << endl;
+  cout << "postStep position: " << endl;
+  fPostPosition.Print(); 
+  cout << endl;
+  cout << endl;
+  cout << "oooooooooooooooooooooooooooooooo" << endl;
+  cout << endl;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
 

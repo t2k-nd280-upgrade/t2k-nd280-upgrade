@@ -17,18 +17,20 @@ using namespace std;
 ClassImp(TND280UpTrack)
 
 TND280UpTrack::TND280UpTrack()
-{
-  const double kUndefinedTrack = -9999999;
-
-  fTrackID       = kUndefinedTrack;
-  fParentID      = kUndefinedTrack;
+{  
+  fTrackID       = kUndefTrack;
+  fParentID      = kUndefTrack;
   fProcessName   = "";
-  fPDG           = kUndefinedTrack;
-  fInitKinEnergy = kUndefinedTrack;
-  fInitMom       = kUndefinedTrack;
-  fInitCosTheta  = kUndefinedTrack;
-  fCharge        = kUndefinedTrack;
-  fRange         = kUndefinedTrack;
+  fPDG           = kUndefTrack;
+  fInitKinEnergy = kUndefTrack;
+
+  fInitMom.SetXYZ(kUndefTrack,
+		  kUndefTrack,
+		  kUndefTrack);
+
+  fInitCosTheta  = kUndefTrack;
+  fCharge        = kUndefTrack;
+  fRange         = kUndefTrack;
   fSaveIt        = true;
   
   fNPoints = 0;
@@ -76,10 +78,11 @@ void TND280UpTrack::PrintTrack()
   cout << endl;
   cout << "Track ID: " << fTrackID << endl;
   cout << "Parent ID: " << fParentID << endl;
+  cout << "# of points: " << fNPoints << endl;
   cout << "Process name: " << fProcessName << endl;
   cout << "PDG: " << fPDG << endl;
   cout << "Initial Kinetic Energy: " << fInitKinEnergy << endl;
-  cout << "Initial Momentum: " << fInitMom << endl;
+  cout << "Initial Momentum: " << fInitMom.Mag() << endl;
   cout << "Initial CosTheta: " << fInitCosTheta << endl;
   cout << "Charge: " << fCharge << endl;
   cout << "Range: " << fRange << endl;

@@ -17,7 +17,7 @@ using namespace std;
 ClassImp(TND280UpEvent)
 
 TND280UpEvent::TND280UpEvent(){
-  fEventID = -999;
+  fEventID = -9999999;
   fReacMode = "";
   
   fNTracks = 0;

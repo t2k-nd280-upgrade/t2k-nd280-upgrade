@@ -1376,7 +1376,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
    fVecTarget2_TrackEdep.resize(fTarget2_NTracks);
 
    // Loop over all the steps of each track
-   
+
    for (G4int i=0;i<n_hit;i++){ // keep same order as above!!!
      
      ExN02TrackerHit* hit = (*hHC1)[i];
@@ -1386,7 +1386,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
      //G4double tracklength = hit->GetTrackLength(); // track length at each step --> not needed
      G4int trkID = hit->GetTrackID();
      G4String detname = hit->GetNameDet();
-     
+
      // Loop over the tracks in Target 1
      if(detname=="Target1"){
        for(G4int itrk=0;itrk<fTarget1_NTracks;itrk++){
@@ -1463,7 +1463,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        } // end loop over tracks TPC Down 2
      } // TPC Down 2
 
-     else if(detname=="ForwTPC1"){       
+     else if(detname=="ForwTPC1/Half"){       
        for(G4int itrk=0;itrk<fForwTPC1_NTracks;itrk++){
 	 // Keep the same order as above!!	 
 	 G4int trkOrder = fVecForwTPC1_TrackID.at(itrk);
@@ -1475,7 +1475,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        } // end loop over tracks Forward TPC 1
      } // Forward TPC 1   
 
-     else if(detname=="ForwTPC2"){       
+     else if(detname=="ForwTPC2/Half"){       
        for(G4int itrk=0;itrk<fForwTPC2_NTracks;itrk++){
 	 // Keep the same order as above!!	 
 	 G4int trkOrder = fVecForwTPC2_TrackID.at(itrk);
@@ -1486,8 +1486,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 } 
        } // end loop over tracks Forward TPC 2
      } // Forward TPC 2  
-
-     else if(detname=="ForwTPC3"){       
+     
+     else if(detname=="ForwTPC3/Half"){       
        for(G4int itrk=0;itrk<fForwTPC3_NTracks;itrk++){
 	 // Keep the same order as above!!	 
 	 G4int trkOrder = fVecForwTPC3_TrackID.at(itrk);
@@ -1613,7 +1613,6 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   G4cout << G4endl;
 
   
-  
 
   //////////////////////////////////////////////
   //                                          //
@@ -1627,16 +1626,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   
   TND280UpEvent *nd280Event = new TND280UpEvent();
   nd280Event->SetEventID(event->GetEventID());
-        
 
-
-  
-  //////////////////////////////////
-  //                              //
-  // Print the track trajectories //
-  //                              //
-  //////////////////////////////////
-
+  //                                          
+  // Store the track in the ND280 event 
+  //                                          
   
   const G4TrajectoryContainer* trajectories = event->GetTrajectoryContainer();
   if (!trajectories) {
@@ -1646,9 +1639,12 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
    		"ExN02Code001", JustWarning, msg);
     return;
   }
+  
+  // loop over the trajectories
   for (TrajectoryVector::iterator t = trajectories->GetVector()->begin();
        t != trajectories->GetVector()->end();
-       ++t) {
+       ++t) { 
+    
     ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(*t);
     //   G4VTrajectory* g4Traj = dynamic_cast<G4VTrajectory*>(*t);
     
@@ -1656,55 +1652,80 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     G4int NptTraj = ndTraj->GetPointEntries();
     G4int TrajTrkId = ndTraj->GetTrackID(); 
 
-
-    
-
-    
-
-    
     TND280UpTrack *nd280Track = new TND280UpTrack();
     nd280Track->SetTrackID(ndTraj->GetTrackID());
     nd280Track->SetParentID(ndTraj->GetParentID());
-    nd280Track->SetInitCosTheta(ndTraj->GetInitialCosTheta());
-    nd280Track->SetInitMom(ndTraj->GetInitialMomentum().mag());
     nd280Track->SetPDG(ndTraj->GetPDGEncoding());
+    nd280Track->SetProcessName(ndTraj->GetProcessName());
+    nd280Track->SetInitKinEnergy(ndTraj->GetInitialKineticEnergy());
+    
+    double momX = ndTraj->GetInitialMomentum().x();
+    double momY = ndTraj->GetInitialMomentum().y();
+    double momZ = ndTraj->GetInitialMomentum().z();
+    nd280Track->SetInitMom(momX,momY,momZ);
+    
+    nd280Track->SetInitCosTheta(ndTraj->GetInitialCosTheta());
+    nd280Track->SetCharge(ndTraj->GetCharge());
+    nd280Track->SetRange(ndTraj->GetRange());
+    
+    int NPoints = ndTraj->GetPointEntries();
+    nd280Track->SetNPoints(NPoints);
+    
+    //
+    // Store the points of the track 
+    //
+    
+    for(int itp=0;itp<NPoints;itp++){ // loop over all the points
+	
+	ND280TrajectoryPoint* ndPoint = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp));
+	
+	if (!ndPoint) 
+	  {
+	    G4ExceptionDescription msg;
+	    msg << "No Points in the Trajectory" << G4endl; 
+	    G4Exception("ExN02EventAction::EndOfEventAction()",
+			"ExN02Code001", JustWarning, msg);
+	    return;
+	  }
+	  
+	  TND280UpTrackPoint *nd280TrackPoint = new TND280UpTrackPoint();
+	
+	nd280TrackPoint->SetPointID(itp);
+	nd280TrackPoint->SetTime(ndPoint->GetTime());
+		
+	// momentum 
+	double momPtX = ndPoint->GetMomentum().x();
+	double momPtY = ndPoint->GetMomentum().y();
+	double momPtZ = ndPoint->GetMomentum().z();
+	nd280TrackPoint->SetMomentum(momPtX,momPtY,momPtZ);
+
+	nd280TrackPoint->SetEdep(ndPoint->GetEdep());
+	nd280TrackPoint->SetStepLength(ndPoint->GetStepLength());
+	nd280TrackPoint->SetStepDeltaLyz(ndPoint->GetStepDeltaLyz());
+	nd280TrackPoint->SetStepStatus(ndPoint->GetStepStatus());
+	nd280TrackPoint->SetPhysVolName(ndPoint->GetPhysVolName());
+	
+	// preStep position 
+	double prevX = ndPoint->GetPrevPosition().x();
+	double prevY = ndPoint->GetPrevPosition().y();
+	double prevZ = ndPoint->GetPrevPosition().z();
+	nd280TrackPoint->SetPrePosition(prevX,prevY,prevZ);
+	
+	// postStep position
+	double postX = ndPoint->GetPostPosition().x();
+	double postY = ndPoint->GetPostPosition().y();
+	double postZ = ndPoint->GetPostPosition().z();
+	nd280TrackPoint->SetPostPosition(postX,postY,postZ);
+	
+	nd280Track->AddPoint(nd280TrackPoint);
+	
+	} // end loop over the points
+    
+    
+    //nd280Track->SaveIt(true); // TO DEFINE IT    
     nd280Event->AddTrack(nd280Track);
-
-
-
-
-
-
-
-
-
-    //   //for (std::vector<int>::iterator tp = selected.begin();
-    //   //tp != selected.end(); ++tp) {
-    //   ND280TrajectoryPoint* nd280Point0
-    //     = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(0)); // start from 0 (see ND280PersistencyManager)
-    //   ND280TrajectoryPoint* nd280Point1
-    //     = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(1)); // start from 1 (see ND280PersistencyManager)
-
-    // //G4String TrajDetname = nd280Point0->GetVolumeNode();
-    // G4String TrajDetname = nd280Point0->GetPhysVolName();
-
-    // G4cout << "TrajTrkId = " << TrajTrkId
-    //  	   << " - particlename = " << particleName
-    //   // 	   << " - detname = " << TrajDetname
-    //   // 	   << " - NptTraj = " << NptTraj 
-    //   // 	   << " - CosTheta(Track) = " << ndTraj->GetInitialCosTheta()
-    //   // 	   << " - IniMom(G4) = " << g4Traj->GetInitialMomentum().mag()
-    //   //   //<< " - IniMom(ND280) = " << ndTraj->GetInitialMomentum().mag()
-    //   //   //<< " - Pos Pt0 = " << nd280Point0->GetPosition()
-    //   // 	   << " - Mom Pt0 = " << nd280Point0->GetMomentum().mag()
-    //   // 	   << " - Edep Pt0 = " << nd280Point0->GetEdep()
-    //   // 	   << " - Step status Pt0 = " << nd280Point0->GetStepStatus()
-    //   // //<< " - Pos Pt1 = " << nd280Point1->GetPosition()
-    //   // 	   << " - Mom Pt1 = " << nd280Point1->GetMomentum().mag()
-    //   // 	   << " - Edep Pt1 = " << nd280Point1->GetEdep()
-    //   // 	   << " - Step status Pt1 = " << nd280Point1->GetStepStatus() 
-    // 	   << G4endl;
-
+    
+        
     // 
     // ND280Trajectory::ShowTrajectory()
     // and 
@@ -1722,13 +1743,17 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     //
     //ndTraj->ShowTrajectory(G4cout);
     //
-
+    
   } // end loop over Trajectories
 
-
+  
+  
   // Print and store the ND280 event and 1 ND280 track
   nd280Event->PrintEvent();
-  nd280Event->GetTrack(0)->PrintTrack();
+  nd280Event->GetTrack(1)->PrintTrack();
+  nd280Event->GetTrack(1)->GetPoint(0)->PrintTrackPoint();
+  nd280Event->GetTrack(1)->GetPoint(1)->PrintTrackPoint();
+  nd280Event->GetTrack(1)->GetPoint(10)->PrintTrackPoint();
   
   //
   // TODO:
