@@ -65,8 +65,13 @@ public:
   // MY METHODS
   G4ThreeVector GetPrevPosition() const { return fPrevPosition;};
   G4ThreeVector GetPostPosition() const { return fPostPosition;};
-  
+  G4bool IsOnBoundary() const { return fIsOnBoundary;};
+  G4bool SavePoint() const { return fSavePoint;};
 
+  /// Mark this point as one that should be saved in the output.  
+  void MarkPoint();
+  
+  
   //---------
 private:
   //---------
@@ -81,9 +86,12 @@ private:
   G4StepStatus fStepStatus;
   G4String fPhysVolName;
   G4ThreeVector fPrevPosition;
+  G4bool fIsOnBoundary;
 
-  // MY METHODS
+  // MY MEMBERS
   G4ThreeVector fPostPosition;
+  G4bool fSavePoint;
+  
 };
 
 #if defined G4TRACKING_ALLOC_EXPORT

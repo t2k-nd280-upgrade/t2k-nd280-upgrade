@@ -122,8 +122,12 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 
   //if (prestep->GetStepStatus() == fGeomBoundary)  return false;
   //if (poststep->GetStepStatus() == fGeomBoundary) return false;  
-  
-  G4String namedet     = prestep->GetTouchableHandle()->GetVolume()->GetName();  
+
+  //
+  // Use the preStep because the SDManager is referred to the preStep detector!!!
+  //
+  G4String namedet     = prestep->GetTouchableHandle()->GetVolume()->GetName();
+  //G4String namedet     = poststep->GetTouchableHandle()->GetVolume()->GetName();  
   
   //G4ThreeVector mom    = track->GetMomentum(); // gives poststep momentum --> WRONG!!!
   G4ThreeVector mom    = prestep->GetMomentum(); // gives prestep momentum

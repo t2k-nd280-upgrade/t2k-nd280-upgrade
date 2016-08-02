@@ -20,9 +20,9 @@ G4Allocator<ND280TrajectoryPoint> aND280TrajPointAllocator;
 
 ND280TrajectoryPoint::ND280TrajectoryPoint()
   : fTime(0.), fMomentum(0.,0.,0.), fEdep(0), fStepLength(0),
-    fStepDeltaLyz(0), fStepStatus(fUndefined), 
+    fStepDeltaLyz(0), fStepStatus(fUndefined), fIsOnBoundary(false), 
     fPhysVolName("OutofWorld"), fPrevPosition(0,0,0),
-    fPostPosition(0,0,0) { }
+    fPostPosition(0,0,0), fSavePoint(false) { }
 
 // This is the one used --> See ND280Trajectory::AppendStep(G4Step)
 ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
@@ -48,17 +48,29 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
   G4double stepdeltalyz = sqrt( (prestep_y - poststep_y)*(prestep_y - poststep_y) +
 				(prestep_z - poststep_z)*(prestep_z - poststep_z) );
   fStepDeltaLyz = stepdeltalyz;
-
+  
   fStepStatus = aStep->GetPostStepPoint()->GetStepStatus();
+  
+  // Use postStep convention, though the SDManager refers to the preStep detector
   if (aStep->GetPostStepPoint()->GetPhysicalVolume()) {
     fPhysVolName = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
   }
+  //if (aStep->GetPreStepPoint()->GetPhysicalVolume()) {
+  //fPhysVolName = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+  //}
   else {
     fPhysVolName == "OutOfWorld";
   }
-  fPrevPosition = aStep->GetPreStepPoint()->GetPosition();
   
+  if(aStep->GetPostStepPoint()->GetStepStatus()==fGeomBoundary)
+    fIsOnBoundary = true;
+  else 
+    fIsOnBoundary = false;
+
+  fPrevPosition = aStep->GetPreStepPoint()->GetPosition();
   fPostPosition = aStep->GetPostStepPoint()->GetPosition();
+
+  fSavePoint = false;
 }
 
 // Used for the first point 
@@ -74,15 +86,17 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Track* aTrack)
     fStepStatus = fUndefined;  
     //
     
-    if (aTrack->GetVolume()) {
-        fPhysVolName = aTrack->GetVolume()->GetName();
-    }
-    else {
-        fPhysVolName == "OutOfWorld";
-    }
+    if (aTrack->GetVolume())
+      fPhysVolName = aTrack->GetVolume()->GetName();
+    else
+      fPhysVolName == "OutOfWorld";
+   
     fPrevPosition = aTrack->GetPosition();
-
     fPostPosition = aTrack->GetPosition(); // in the first point pre=post
+
+    fIsOnBoundary = false; // first track point not on boundary
+
+    fSavePoint = false;
 }
 
 ND280TrajectoryPoint::ND280TrajectoryPoint(const ND280TrajectoryPoint &right)
@@ -96,6 +110,12 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const ND280TrajectoryPoint &right)
     fPhysVolName = right.fPhysVolName;
     fPrevPosition = right.fPrevPosition;
     fPostPosition = right.fPostPosition;
+    fIsOnBoundary = right.fIsOnBoundary;
+    fSavePoint = right.fSavePoint;
+}
+
+void ND280TrajectoryPoint::MarkPoint(){
+  fSavePoint = true;
 }
 
 ND280TrajectoryPoint::~ND280TrajectoryPoint() { }

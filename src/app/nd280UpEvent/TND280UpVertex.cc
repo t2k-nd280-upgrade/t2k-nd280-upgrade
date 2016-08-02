@@ -1,8 +1,8 @@
 
 // 
-// Class to define an ND280 upgrade event
+// Class to define an ND280 upgrade vertex
 // 
-// 27/7/16 Davide Sgalaberna
+// 2/8/16 Davide Sgalaberna
 //
 
 #include <iostream>
@@ -10,15 +10,15 @@
 #include <sstream>
 #include <string>
 
-#include "TND280UpEvent.hh"
+#include "TND280UpVertex.hh"
 
 using namespace std;
 
-ClassImp(TND280UpEvent)
+ClassImp(TND280UpVertex)
 
-TND280UpEvent::TND280UpEvent(){
-  fEventID = -9999999;
-  //fReacMode = "";
+TND280UpVertex::TND280UpVertex(){
+  fVertexID = -9999999;
+  fReacMode = "";
   
   fNTracks = 0;
   fListOfTracks = new TList;
@@ -26,26 +26,26 @@ TND280UpEvent::TND280UpEvent(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-TND280UpEvent::~TND280UpEvent(){
+TND280UpVertex::~TND280UpVertex(){
   //delete ...;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   
 
-void TND280UpEvent::AddTrack(TND280UpTrack *track)
+void TND280UpVertex::AddTrack(TND280UpTrack *track)
 {
   fListOfTracks->Add(track);
-  fNTracks = fListOfTracks->GetEntries(); // Update # of tracks in the event
+  fNTracks = fListOfTracks->GetEntries(); // Update # of tracks in the vertex
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
 
-TND280UpTrack * TND280UpEvent::GetTrack(int trkid)
+TND280UpTrack * TND280UpVertex::GetTrack(int trkid)
 {
   TObject *objtrack = fListOfTracks->At(trkid);
   if(!objtrack){
     cerr << endl;
-    cerr << "TND280UpEvent::GetTrack" << endl;
+    cerr << "TND280UpVertex::GetTrack" << endl;
     cerr << "The index " << trkid << " is out of range" << endl;
     cerr << endl;
     exit(1);
@@ -56,13 +56,13 @@ TND280UpTrack * TND280UpEvent::GetTrack(int trkid)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   
 
-void TND280UpEvent::PrintEvent()
+void TND280UpVertex::PrintVertex()
 {
   cout << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;
   cout << endl;
-  cout << "Event ID: " << fEventID << endl;
-  //cout << "Reaction mode: " << fReacMode << endl;
+  cout << "Vertex ID: " << fVertexID << endl;
+  cout << "Reaction mode: " << fReacMode << endl;
   cout << "# of tracks: " << fNTracks << endl;
   cout << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;

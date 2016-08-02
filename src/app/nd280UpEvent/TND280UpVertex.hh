@@ -1,12 +1,12 @@
 
 // 
-// Class to define an ND280 upgrade event (not GEANT4 based)
+// Class to define an ND280 upgrade vertex (not GEANT4 based)
 // 
-// 27/7/16 Davide Sgalaberna
+// 2/8/16 Davide Sgalaberna
 //
 
-#ifndef TND280UpEvent_h
-#define TND280UpEvent_h 1
+#ifndef TND280UpVertex_h
+#define TND280UpVertex_h 1
 
 #include <TTree.h>
 #include <TFile.h>
@@ -24,24 +24,24 @@
 
 using namespace std;
 
-class TND280UpEvent : public TObject
+class TND280UpVertex : public TObject
 {
 public :
      
-  TND280UpEvent();
-  ~TND280UpEvent();
+  TND280UpVertex();
+  ~TND280UpVertex();
 
   void AddTrack(TND280UpTrack *track);
   TND280UpTrack *GetTrack(int trkid);
   int GetNTracks(){return fNTracks;};
 
-  void SetEventID(int id){fEventID=id;};
-  //void SetReacMode(string reac){fReacMode=reac;};
+  void SetVertexID(int id){fVertexID=id;};
+  void SetReacMode(string reac){fReacMode=reac;};
   
-  int    GetEventID()     {return fEventID;};
-  //string GetReacMode()    {return fReacMode;};
+  int    GetVertexID()     {return fVertexID;};
+  string GetReacMode()    {return fReacMode;};
   
-  void PrintEvent();
+  void PrintVertex();
   
 private :
 
@@ -49,10 +49,10 @@ private :
   int fNTracks;  
   TList *GetListOfTracks(){return fListOfTracks;};
 
-  int fEventID;
-  //string fReacMode;
+  int fVertexID;
+  string fReacMode;
   
-  ClassDef(TND280UpEvent,1)
+  ClassDef(TND280UpVertex,4)
 };
 
 #endif

@@ -7,6 +7,9 @@
 #include <G4PrimaryVertex.hh>
 #include <G4PrimaryParticle.hh>
 #include <G4StepStatus.hh>
+#include <G4Region.hh>
+#include <G4RegionStore.hh>
+#include <G4LogicalVolume.hh>
 
 #include <G4SystemOfUnits.hh>
 
@@ -30,7 +33,8 @@
 // since it is only used by this class to create a singleton object.
 ND280PersistencyManager::ND280PersistencyManager() 
   : G4VPersistencyManager(), fFilename("/dev/null"),
-    fLengthThreshold(2*cm),
+    //fLengthThreshold(2*cm),
+    fLengthThreshold(1*cm),
     fGammaThreshold(50*MeV), fNeutronThreshold(50*MeV),
     fTrajectoryPointAccuracy(1*cm), fSaveAllPrimaryTrajectories(false) {
   fPersistencyMessenger = new ND280PersistencyMessenger(this);
@@ -102,152 +106,171 @@ bool ND280PersistencyManager::SaveTrajectoryBoundary(G4VTrajectory* g4Traj,
     return false;
 }
 
+
+
+void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
+  
+  G4Region* SDRegion = G4RegionStore::GetInstance()->
+    GetRegion("SDRegion",false);
+  int NSDRootVolumes =  SDRegion->GetNumberOfRootVolumes();
+  std::vector<G4LogicalVolume*>::iterator it_logicalVolumeInRegion =
+    SDRegion->GetRootLogicalVolumeIterator();
+  
+  //G4cout << "The list of SD logical volumes: " <<  G4endl;
+  for(int i = 0; i < NSDRootVolumes ; i++, it_logicalVolumeInRegion++){  
+    G4String SDLogVolName = (*it_logicalVolumeInRegion)->GetName();
+    if(ndPoint->GetPhysVolName() == SDLogVolName){
+      //G4cout << ndPoint->GetPhysVolName() << " "
+      //<< SDLogVolName << G4endl;
+      ndPoint->MarkPoint();
+    }
+  }
+}
+
+
+
+void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Event *event) {
+  
+  // Go through all of the trajectories and save:
+  //
+  //   ** Trajectories from primary particles if
+  //       1) a daughter depeosited energy in a sensitive detector
+  //       2) or, SaveAllPrimaryTrajectories() is true
+  //
+  //   ** Trajectories created by a particle decay.
+  //
+  //   ** Charged particle trajectories that pass through a sensitive
+  //         detector.
+  // 
+  //   ** Gamma-rays and neutrons above a threshold which have daughters
+  //         depositing energy in a sensitive detector.
+  //    
+  
+  std::string particleName = ndTraj->GetParticleName();
+  std::string processName = ndTraj->GetProcessName();
+  double initialMomentum = ndTraj->GetInitialMomentum().mag();
+  
+  // Check if all primary particle trajectories should be saved.  The
+  // primary particle should always be saved if it, or any of it's
+  // children, deposited energy in a sensitive detector.  If the primary
+  // didn't deposit energy in a sensitive detector, then it will only be
+  // saved if SaveAllPrimaryTrajectories is true.
+  if (ndTraj->GetParentID() == 0) {
+    if (ndTraj->GetSDTotalEnergyDeposit()>1*eV 
+	|| GetSaveAllPrimaryTrajectories()) {
+      ndTraj->MarkTrajectory();
+      return;
+    }
+  }
+  
+  // Don't save the neutrinos
+  if (particleName == "anti_nu_e") return;
+  if (particleName == "anti_nu_mu") return;
+  if (particleName == "anti_nu_tau") return;
+  if (particleName == "nu_e") return;
+  if (particleName == "nu_mu") return;
+  if (particleName == "nu_tau") return;
+  
+  // Save any decay product
+  if (processName == "Decay") {
+    ndTraj->MarkTrajectory(false);
+    return;
+  }
+  
+  // Save particles that produce a signal in a sensitive detector.  This
+  // doesn't automatically save, but the parents will be automatically
+  // considered for saving by the next bit of code.
+  if (ndTraj->GetSDLength() > GetLengthThreshold()) {
+    ndTraj->MarkTrajectory(false);
+    return;
+  }
+  
+  // For the next part, only consider particles where the children have
+  // deposited energy in a sensitive detector.
+  if (ndTraj->GetSDTotalEnergyDeposit()<1*eV) return;
+  
+  // Save higher energy gamma rays that have descendents depositing
+  // energy in a sensitive detector.
+  if (particleName == "gamma" && initialMomentum > GetGammaThreshold()) {
+    ndTraj->MarkTrajectory(false);
+    return;
+  }
+  
+  // Save higher energy neutrons that have descendents depositing energy
+  // in a sensitive detector.
+  if (particleName == "neutron" 
+      && initialMomentum > GetNeutronThreshold()) {
+    ndTraj->MarkTrajectory(false);
+    return;
+  }
+
+
+  //
+  // SHADOWED, BECAUSE ND280Trajectory ALREADY DECLARED
+  // NEEDS REWRITING!!!
+  //
+  
+  // // Go through all of the event hit collections and make sure that all
+  // // primary trajectories and trajectories contributing to a hit are saved.
+  // // These are mostly a sub-set of the trajectories marked in the previous
+  // // step, but there are a few corner cases where trajectories are not saved
+  // // because of theshold issues.
+  
+  // G4HCofThisEvent* hitCollections = event->GetHCofThisEvent();
+  // if (!hitCollections) return;
+  
+  // for (int i=0; i < hitCollections->GetNumberOfCollections(); ++i) {
+  //   G4VHitsCollection* g4Hits = hitCollections->GetHC(i);
+  //   if (g4Hits->GetSize()<1) continue;
+
+  //   for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {
+  //     ExN02TrackerHit* g4Hit
+  // 	= dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));
+      
+  //     if (!g4Hit) {
+  // 	G4ExceptionDescription msg;
+  // 	msg << "Not a hit." << G4endl; 
+  // 	G4Exception("ND280Persistency::MarkTrajectory()",
+  // 		    "ExN02Code001", FatalException, msg);
+  // 	continue;
+  //     }
+      
+  //     // Make sure that the primary trajectory associated with this hit
+  //     // is saved.  The primary trajectories are defined by
+  //     // ND280TrajectoryMap::FindPrimaryId(      int primaryId = g4Hit->GetTrackID();
+      
+  //     ND280Trajectory* ndTraj 
+  // 	= dynamic_cast<ND280Trajectory*>(
+  // 					 ND280TrajectoryMap::Get(primaryId));
+  //     // primaryId is the track ID (see nd280mc ND280TrajectoryMap)
+      
+  //     if (ndTraj) ndTraj->MarkTrajectory(false);
+  //     else{
+  // 	G4ExceptionDescription msg;
+  // 	msg << "Primary trajectory not found" << G4endl; 
+  // 	G4Exception("ND280Persistency::MarkTrajectories()",
+  // 		    "ExN02Code001", FatalException, msg);
+  //     } 
+  //   }
+  // } 
+}
+
+
+
 void ND280PersistencyManager::MarkTrajectories(const G4Event* event) {
 
-    const G4TrajectoryContainer* trajectories = event->GetTrajectoryContainer();
-    if (!trajectories) {
-      //ND280Verbose("No Trajectories ");
-      return;
-    }
-    
-    // Go through all of the trajectories and save:
-    //
-    //   ** Trajectories from primary particles if
-    //       1) a daughter depeosited energy in a sensitive detector
-    //       2) or, SaveAllPrimaryTrajectories() is true
-    //
-    //   ** Trajectories created by a particle decay.
-    //
-    //   ** Charged particle trajectories that pass through a sensitive
-    //         detector.
-    // 
-    //   ** Gamma-rays and neutrons above a threshold which have daughters
-    //         depositing energy in a sensitive detector.
-    //    
-    for (TrajectoryVector::iterator t = trajectories->GetVector()->begin();
-         t != trajectories->GetVector()->end();
-         ++t) {
-        ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(*t);
-        std::string particleName = ndTraj->GetParticleName();
-        std::string processName = ndTraj->GetProcessName();
-        double initialMomentum = ndTraj->GetInitialMomentum().mag();
-
-        // Check if all primary particle trajectories should be saved.  The
-        // primary particle should always be saved if it, or any of it's
-        // children, deposited energy in a sensitive detector.  If the primary
-        // didn't deposit energy in a sensitive detector, then it will only be
-        // saved if SaveAllPrimaryTrajectories is true.
-        if (ndTraj->GetParentID() == 0) {
-            if (ndTraj->GetSDTotalEnergyDeposit()>1*eV 
-                || GetSaveAllPrimaryTrajectories()) {
-                ndTraj->MarkTrajectory();
-                continue;
-            }
-        }
-
-        // Don't save the neutrinos
-        if (particleName == "anti_nu_e") continue;
-        if (particleName == "anti_nu_mu") continue;
-        if (particleName == "anti_nu_tau") continue;
-        if (particleName == "nu_e") continue;
-        if (particleName == "nu_mu") continue;
-        if (particleName == "nu_tau") continue;
-
-        // Save any decay product
-        if (processName == "Decay") {
-            ndTraj->MarkTrajectory(false);
-            continue;
-        }
-
-        // Save particles that produce a signal in a sensitive detector.  This
-        // doesn't automatically save, but the parents will be automatically
-        // considered for saving by the next bit of code.
-        if (ndTraj->GetSDLength() > GetLengthThreshold()) {
-            ndTraj->MarkTrajectory(false);
-            continue;
-        }
-
-        // For the next part, only consider particles where the children have
-        // deposited energy in a sensitive detector.
-        if (ndTraj->GetSDTotalEnergyDeposit()<1*eV) continue;
-
-        // Save higher energy gamma rays that have descendents depositing
-        // energy in a sensitive detector.
-        if (particleName == "gamma" && initialMomentum > GetGammaThreshold()) {
-            ndTraj->MarkTrajectory(false);
-            continue;
-        }
-
-        // Save higher energy neutrons that have descendents depositing energy
-        // in a sensitive detector.
-        if (particleName == "neutron" 
-            && initialMomentum > GetNeutronThreshold()) {
-            ndTraj->MarkTrajectory(false);
-            continue;
-        }
-    }
-
-    // Go through all of the event hit collections and make sure that all
-    // primary trajectories and trajectories contributing to a hit are saved.
-    // These are mostly a sub-set of the trajectories marked in the previous
-    // step, but there are a few corner cases where trajectories are not saved
-    // because of theshold issues.
-    
-    // G4HCofThisEvent* hitCollections = event->GetHCofThisEvent();
-    // if (!hitCollections) return;
-    // for (int i=0; i < hitCollections->GetNumberOfCollections(); ++i) {
-    //     G4VHitsCollection* g4Hits = hitCollections->GetHC(i);
-    //     if (g4Hits->GetSize()<1) continue;
-    //     for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {
-    //         ND280HitSegment* g4Hit
-    //             = dynamic_cast<ND280HitSegment*>(g4Hits->GetHit(h));
-    //         if (!g4Hit) {
-    //             ND280Severe("Not a hit segment");
-    //             continue;
-    //         }
-
-    G4HCofThisEvent* hitCollections = event->GetHCofThisEvent();
-    if (!hitCollections) return;
-    
-    //for (int i=0; i < hitCollections->GetNumberOfCollections(); ++i) {
-    //G4VHitsCollection* g4Hits = hitCollections->GetHC(i);
-
-    // Get hits collections 
-    G4SDManager* sdManager = G4SDManager::GetSDMpointer();
-    G4int fHHC1ID = sdManager->GetCollectionID("trackerCollection");
-    
-    ExN02TrackerHitsCollection* hHC1 
-      = static_cast<ExN02TrackerHitsCollection*>(hitCollections->GetHC(fHHC1ID));
-    if ( (!hHC1) ) {
-      G4ExceptionDescription msg;
-      msg << "Some of hits collections of this event not found." << G4endl; 
-      G4Exception("ND280Persistency::MarkTrajectories()",
-		  "ExN02Code001", FatalException, msg);
-      return;
-    }   
-
-    G4int n_hit = hHC1->entries();
-    for (G4int i=0;i<n_hit;i++){
-      ExN02TrackerHit* hit = (*hHC1)[i];
-      
-      // Make sure that the primary trajectory associated with this hit
-      // is saved.  The primary trajectories are defined by
-      // ND280TrajectoryMap::FindPrimaryId().
-      int primaryId = hit->GetTrackID();
-      ND280Trajectory* ndTraj 
-	= dynamic_cast<ND280Trajectory*>(
-					 ND280TrajectoryMap::Get(primaryId));
-      // primaryId is the track ID (see nd280mc ND280TrajectoryMap)
-      
-      if (ndTraj) ndTraj->MarkTrajectory(false);
-      else{
-	G4ExceptionDescription msg;
-	msg << "Primary trajectory not found" << G4endl; 
-	G4Exception("ND280Persistency::MarkTrajectories()",
-		    "ExN02Code001", FatalException, msg);
-      } 
-    }
-    
+  const G4TrajectoryContainer* trajectories = event->GetTrajectoryContainer();
+  if (!trajectories) {
+    //ND280Verbose("No Trajectories ");
+    return;
+  }
+  
+  for (TrajectoryVector::iterator t = trajectories->GetVector()->begin();
+       t != trajectories->GetVector()->end();
+       ++t) {      
+    ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(*t);
+    MarkTrajectory(ndTraj,event);
+  }
 }
 
 

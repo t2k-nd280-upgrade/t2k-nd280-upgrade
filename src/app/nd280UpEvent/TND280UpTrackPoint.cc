@@ -34,6 +34,7 @@ TND280UpTrackPoint::TND280UpTrackPoint(){
   fPostPosition.SetXYZ(kUndefTrackPoint,
 		       kUndefTrackPoint,
 		       kUndefTrackPoint);
+  fSaveIt = true;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
@@ -56,6 +57,8 @@ void TND280UpTrackPoint::PrintTrackPoint()
   cout << "Step DeltaLyz: " << fStepDeltaLyz << endl;
   cout << "Step Status: " << fStepStatus << endl;
   cout << "Phys Volume Name: " << fPhysVolName << endl;
+  cout << "Is on boundary: " << ((fIsOnBoundary) ? "YES " : "NO") << endl;
+  cout << "Save it: " << ((fSaveIt) ? "YES " : "NO") << endl;
   cout << "preStep position: "; 
   fPrePosition.Print(); 
   cout << endl;

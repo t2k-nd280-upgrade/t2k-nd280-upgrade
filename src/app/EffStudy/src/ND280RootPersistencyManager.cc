@@ -186,8 +186,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //   ND280Verbose("%% No Primary Particles to save");
   // }
   
-  
-  
+    
   fND280UpEvent = new TND280UpEvent();
   // The event is constructed using an auto ptr since we must delete it
   // before leaving this method.                            
@@ -195,6 +194,70 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   
   fND280UpEvent->SetEventID(anEvent->GetEventID());
   
+  
+  
+  // //
+  // // Store the primary Vertices
+  // //
+  
+  // G4int vtxNumber=0;
+  // for (G4PrimaryVertex* vtx = anEvent->GetPrimaryVertex();vtx;vtx = vtx->GetNext()) {
+  //   ++vtxNumber;
+    
+  //   ExN02VertexInfo* vInfo 
+  //     = dynamic_cast<ExN02VertexInfo*>(vtx->GetUserInformation());
+    
+  //   for (G4int p=0; p<vtx->GetNumberOfParticle(); ++p) {
+  //     G4PrimaryParticle* prim = vtx->GetPrimary(p);
+  //     G4ParticleDefinition* partDef = prim->GetG4code();
+  //     G4ThreeVector dir = prim->GetMomentum().unit();
+  //     G4cout << "  " << partDef->GetParticleName() << " "
+  //   	     << prim->GetPDGcode()
+  //   	     << " w/ "
+  //   	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
+  //   	     << "  Direction: (" << dir.x()
+  //   	     << ", " << dir.y()
+  //   	     << ", " << dir.z() << ")"
+  //   	     << G4endl;
+  //   }
+    
+  //   // Get the Incoming Vertex
+    
+  //   const G4PrimaryVertex *incvtx = vInfo->GetInformationalVertex();
+
+  //   for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
+  //     G4PrimaryParticle* prim = incvtx->GetPrimary(nu);
+  //     G4ParticleDefinition* partDef = prim->GetG4code();
+  //     G4ThreeVector dir = prim->GetMomentum().unit();
+  //     G4cout << "  " << partDef->GetParticleName() << " "
+  //   	     << prim->GetPDGcode()
+  //   	     << " w/ "
+  //   	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
+  //   	     << "  Direction: (" << dir.x()
+  //   	     << ", " << dir.y()
+  //   	     << ", " << dir.z() << ")"
+  //   	     << G4endl;	
+  //     G4int pdg = prim->GetPDGcode();
+
+  //     if( fabs(pdg)==12 ||
+  //   	  fabs(pdg)==14 ||
+  //   	  fabs(pdg)==16  ){	
+  //   	fVecVtx_NuPDG.push_back(prim->GetPDGcode());
+  //     }
+  //   }
+  
+  //   //G4cout << "mode = " << mode << G4endl;
+  // }
+
+  // fNVtx = vtxNumber; // get # of vertices in the event
+  
+
+
+
+
+
+
+
   //                                          
   // Store the track in the ND280 event 
   //                                          
@@ -215,7 +278,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
     ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(*t);
     //   G4VTrajectory* g4Traj = dynamic_cast<G4VTrajectory*>(*t);
-    
+
     G4String particleName = ndTraj->GetParticleName();
     G4int NptTraj = ndTraj->GetPointEntries();
     G4int TrajTrkId = ndTraj->GetTrackID(); 
@@ -235,26 +298,26 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetInitCosTheta(ndTraj->GetInitialCosTheta());
     nd280Track->SetCharge(ndTraj->GetCharge());
     nd280Track->SetRange(ndTraj->GetRange());
-    
-    int NPoints = ndTraj->GetPointEntries();
-    nd280Track->SetNPoints(NPoints);
-    
+
+    nd280Track->SetSDTotalEnergyDeposit(ndTraj->GetSDTotalEnergyDeposit());
+    nd280Track->SetSDLength(ndTraj->GetSDLength());
+        
     //
     // Store the points of the track 
     //
     
+    int NPoints = ndTraj->GetPointEntries();
     for(int itp=0;itp<NPoints;itp++){ // loop over all the points
       
       ND280TrajectoryPoint* ndPoint = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp));
       
-      if (!ndPoint) 
-	{
-	  G4ExceptionDescription msg;
-	  msg << "No Points in the Trajectory" << G4endl; 
-	  G4Exception("ExN02EventAction::EndOfEventAction()",
-		      "ExN02Code001", JustWarning, msg);
-	  return false;
-	}
+      if (!ndPoint) {
+	G4ExceptionDescription msg;
+	msg << "No Points in the Trajectory" << G4endl; 
+	G4Exception("ExN02EventAction::EndOfEventAction()",
+		    "ExN02Code001", JustWarning, msg);
+	return false;
+      }
       
       TND280UpTrackPoint *nd280TrackPoint = new TND280UpTrackPoint();
       
@@ -284,13 +347,25 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       double postY = ndPoint->GetPostPosition().y();
       double postZ = ndPoint->GetPostPosition().z();
       nd280TrackPoint->SetPostPosition(postX,postY,postZ);
+
+      nd280TrackPoint->SetIsOnBoundary(ndPoint->IsOnBoundary());
+            
+      // Mark the points 
+      MarkPoint(ndPoint); 
+      if(ndPoint->SavePoint()){    
+	nd280Track->AddPoint(nd280TrackPoint);
+      }
       
-      nd280Track->AddPoint(nd280TrackPoint);
-      
-    } // end loop over the points
-    
-    //nd280Track->SaveIt(true); // TO DEFINE IT    
-    fND280UpEvent->AddTrack(nd280Track);
+    } // end loop over the points   
+
+    // Mark the trajectories to save.
+    //MarkTrajectories(anEvent); // loop over all the tracks again...
+    MarkTrajectory(ndTraj,anEvent);
+    if(ndTraj->SaveTrajectory()){
+      nd280Track->SaveIt(true);     
+      fND280UpEvent->AddTrack(nd280Track);
+    }
+
     
     // 
     // ND280Trajectory::ShowTrajectory()
@@ -312,17 +387,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
   } // end loop over Trajectories
   
-  // // Print and store the ND280 event and 1 ND280 track
-  // fND280UpEvent->PrintEvent();
-  // fND280UpEvent->GetTrack(1)->PrintTrack();
-  // fND280UpEvent->GetTrack(1)->GetPoint(1)->PrintTrackPoint();
-  
-  // // Save the informational particles.
-  // if (eventInfo) {
-  //   // No info to be saved (be sure and change this comment if some is
-  //   // added.
-  // }
-  
+   
   fOutput->cd();
   
   // Get the address of the event from the auto_ptr to the fEventTree branch
@@ -343,6 +408,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
   return true;
 }
+
+
+
+
 
 
 

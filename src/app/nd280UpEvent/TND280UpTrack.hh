@@ -37,7 +37,7 @@ public :
   void AddPoint(TND280UpTrackPoint *point);
   TND280UpTrackPoint *GetPoint(int ptid);
   int GetNPoints(){return fNPoints;};
-  void SetNPoints(int npt){fNPoints=npt;};
+  //void SetNPoints(int npt){fNPoints=npt;};
 
   void SetTrackID(int id){fTrackID=id;};
   void SetParentID(int id){fParentID=id;};
@@ -49,6 +49,8 @@ public :
   void SetCharge(double charge){fCharge=charge;};
   void SetRange(double range){fRange=range;};
   void SaveIt(bool saveit){fSaveIt=saveit;};
+  void SetSDTotalEnergyDeposit(double sdedep){fSDTotalEnergyDeposit=sdedep;};
+  void SetSDLength(double length){fSDLength=length;};
 
   int GetTrackID() {return fTrackID;};
   int GetParentID() {return fParentID;};
@@ -60,7 +62,9 @@ public :
   double GetCharge(){return fCharge;};
   double GetRange(){return fRange;};
   double GetSaveIt(){return fSaveIt;};
-
+  double GetSDTotalEnergyDeposit(){return fSDTotalEnergyDeposit;};
+  double GetSDLength(){return fSDLength;};
+  
   void PrintTrack();
 
 private :
@@ -79,7 +83,9 @@ private :
   double fCharge;
   double fRange; 
   bool fSaveIt;
-    
+  double fSDTotalEnergyDeposit;
+  double fSDLength;
+
   ClassDef(TND280UpTrack,2)
 };
 

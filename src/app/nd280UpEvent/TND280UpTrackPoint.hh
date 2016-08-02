@@ -39,7 +39,9 @@ public :
   void SetPhysVolName(string detname){fPhysVolName=detname;};
   void SetPrePosition(double x,double y,double z){fPrePosition.SetXYZ(x,y,z);};
   void SetPostPosition(double x,double y,double z){fPostPosition.SetXYZ(x,y,z);};
-  
+  void SetIsOnBoundary(bool is){fIsOnBoundary=is;};
+  void SaveIt(bool save){fSaveIt=save;};
+
   int GetPointID() {return fPointID;};
   double GetTime() {return fTime;};
   TVector3 GetMomentum() {return fMomentum;};
@@ -50,7 +52,9 @@ public :
   string GetPhysVolName() {return fPhysVolName;};
   TVector3 GetPrePosition() {return fPrePosition;};
   TVector3 GetPostPosition() {return fPostPosition;};
-  
+  bool IsOnBoundary() {return fIsOnBoundary;};
+  bool GetSaveIt() {return fSaveIt;};
+
   void PrintTrackPoint();
   
 private :
@@ -65,6 +69,8 @@ private :
   string fPhysVolName;
   TVector3 fPrePosition;
   TVector3 fPostPosition;
+  bool fIsOnBoundary;
+  bool fSaveIt;
 
   ClassDef(TND280UpTrackPoint,3)
 };

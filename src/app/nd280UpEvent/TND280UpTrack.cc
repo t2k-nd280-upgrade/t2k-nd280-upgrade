@@ -23,16 +23,16 @@ TND280UpTrack::TND280UpTrack()
   fProcessName   = "";
   fPDG           = kUndefTrack;
   fInitKinEnergy = kUndefTrack;
-
   fInitMom.SetXYZ(kUndefTrack,
 		  kUndefTrack,
 		  kUndefTrack);
-
   fInitCosTheta  = kUndefTrack;
   fCharge        = kUndefTrack;
   fRange         = kUndefTrack;
   fSaveIt        = true;
-  
+  fSDTotalEnergyDeposit = kUndefTrack;
+  fSDLength      = kUndefTrack;
+
   fNPoints = 0;
   fListOfPoints = new TList;
 }
@@ -86,6 +86,8 @@ void TND280UpTrack::PrintTrack()
   cout << "Initial CosTheta: " << fInitCosTheta << endl;
   cout << "Charge: " << fCharge << endl;
   cout << "Range: " << fRange << endl;
+  cout << "SD total energy deposited: " << fSDTotalEnergyDeposit << endl;
+  cout << "SD length: " << fSDLength << endl;
   cout << "Save track: " << ((fSaveIt) ? "YES " : "NO") << endl;
   cout << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;

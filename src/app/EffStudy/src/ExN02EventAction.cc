@@ -39,6 +39,7 @@
 #include "ExN02TrackerHit.hh"
 #include "ExN02VertexInfo.hh"
 #include "ND280Trajectory.hh"
+#include "ND280TrajectoryMap.hh"
 #include "ND280RootPersistencyManager.hh"
 
 #include "G4Event.hh"
@@ -645,7 +646,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   // Access hit collections and handle the stored hits //
   //                                                   //
   ///////////////////////////////////////////////////////
-    
+  
   G4HCofThisEvent* hce = event->GetHCofThisEvent();
   if (!hce) 
     {
@@ -724,7 +725,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
      G4double trkcharge   = hit->GetCharge();
      G4int trkpdg         = hit->GetTrackPDG();
      G4double costh       = hit->GetTrackCosTheta();
-          
+     
      ExN02TrackerHit* hit_after;
      if(i < (n_hit-1)) hit_after = (*hHC1)[i+1];
      else              hit_after = 0;
@@ -1616,32 +1617,112 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   }
   G4cout << G4endl;
 
-  
 
 
-  
 
-  
-  //////////////////////////////////////////////
-  //                                          //
-  // Store the event in persistency ROOT file //
-  //                                          //
-  //////////////////////////////////////////////
 
-  //G4cout << G4endl;
-  //G4cout << " pND280man->Store(event)" << G4endl;
-  //G4cout << G4endl;
+
+  //
+  // Fill the trajectories with the amount of energy deposited into
+  // sensitive detectors (code from nd280mc adapted)
+  // 
+  // The code below is taken from nd280mc and adapted 
+  // 
   
-  //ND280RootPersistencyManager* pND280man
-  //= ND280RootPersistencyManager::GetInstance();
-  //pND280man->Store(event);
-  
+  //G4HCofThisEvent* HCofEvent = evt->GetHCofThisEvent(); // used in nd280mc
+  //if (!HCofEvent) return;
+  if (!hce) return;
+  G4SDManager *sdM = G4SDManager::GetSDMpointer();
+  G4HCtable *hcT = sdM->GetHCtable();
+
+  for (int i=0; i<hcT->entries(); ++i) {
+    G4String SDname = hcT->GetSDname(i);
+    G4String HCname = hcT->GetHCname(i);
+    
+    // The collection name is given by <detector name>/<Primitive Scorer name>.
+    int HCId = sdM->GetCollectionID(SDname+"/"+HCname);
+    G4VHitsCollection* g4Hits = hce->GetHC(HCId);
+    if (g4Hits->GetSize()<1) continue;
+    
+    for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {
+ 
+      //ND280HitSegment* g4Hit
+      //= dynamic_cast<ND280HitSegment*>(g4Hits->GetHit(h)); // used in nd280mc      
+      ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));
+      
+      //double energy = g4Hit->GetEnergyDeposit(); // used in nd280mc
+      double energy = g4Hit->GetEdep();
+
+      //int trackId = g4Hit->GetContributors().front(); // used in nd280mc
+      int trackId = g4Hit->GetTrackID();
+      
+      G4VTrajectory* g4Traj = ND280TrajectoryMap::Get(trackId);
+      if (!g4Traj) {
+	G4ExceptionDescription msg;
+	msg << "Missing trackId " << G4endl; 
+	G4Exception("ExN02EventAction::EndOfEventAction()",
+		    "ExN02Code001", FatalException, msg);
+       	continue;
+      }
+      ND280Trajectory* traj = dynamic_cast<ND280Trajectory*>(g4Traj);
+      if (!traj) {
+	G4ExceptionDescription msg;
+	msg << "Not a ND280Trajectory " << G4endl; 
+	G4Exception("ExN02EventAction::EndOfEventAction()",
+		    "ExN02Code001", FatalException, msg);
+	continue;
+      }
+      
+      // //if(g4Hit->GetTrackID()==779){	
+      // if(g4Hit->GetTrackID()==5){	
+      //  	G4cout << "ID: " << h << ": " 
+      // 	       << g4Hit->GetNameDet()
+      // 	       << " --> edep = " << energy << G4endl;
+      // }
+      
+      traj->AddSDEnergyDeposit(energy);
+      
+      //traj->AddSDLength(g4Hit->GetLength()); // used in nd280mc
+      traj->AddSDLength(g4Hit->GetStepLength());
+
+
+      //
+      // THE FOLLOWING PIECE OF CODE OF nd280mc IS NOT IMPLEMENTED YET
+      //
+
+      // for (int loopCount = 0; ; ++loopCount) {
+      //  	int parentId = traj->GetParentID();
+      // 	if (!parentId) break;
+      //  	g4Traj = ND280TrajectoryMap::Get(parentId);
+      //  	if (!g4Traj) {
+      // 	  G4ExceptionDescription msg;
+      // 	  msg << "Missing parentId " << G4endl; 
+      // 	  G4Exception("ExN02EventAction::EndOfEventAction()",
+      // 		      "ExN02Code001", FatalException, msg);
+      // 	  break;
+      // 	}
+      //  	traj = dynamic_cast<ND280Trajectory*>(g4Traj);
+      //  	if (!traj) {
+      // 	  G4ExceptionDescription msg;
+      // 	  msg << "Not a ND280Trajectory " << G4endl; 
+      // 	  G4Exception("ExN02EventAction::EndOfEventAction()",
+      // 		      "ExN02Code001", FatalException, msg);
+      // 	  break;
+      // 	}
+      //  	traj->AddSDDaughterEnergyDeposit(energy);
+      //  	if (loopCount>9999) {
+      // 	  G4ExceptionDescription msg;
+      // 	  msg << "Infinite loop for trajectory id. Infinite loop trap " << G4endl; 
+      // 	  G4Exception("ExN02EventAction::EndOfEventAction()",
+      // 		      "ExN02Code001", FatalException, msg);
+      // 	  break;
+      //    }
+      // }
+      
+    } // end loop over hits    
+  } // end loop over hit containers
+
 }
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-
 
 
 

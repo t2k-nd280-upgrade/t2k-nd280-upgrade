@@ -56,9 +56,9 @@
 #include "G4SystemOfUnits.hh"
 #include "G4AutoDelete.hh"
 
-#ifdef USE_PAI
-#include <G4Region.hh>
-#endif  
+//#ifdef USE_PAI
+#include <G4Region.hh> // used also to keep a list of SD logical volumes
+//#endif  
 #include "G4RegionStore.hh"
 
 // Magnetic field
@@ -140,6 +140,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4RegionStore::GetInstance()->FindOrCreateRegion("driftRegion");
 #endif
   
+  // Create a region to get track of all the SD
+  G4RegionStore::GetInstance()->FindOrCreateRegion("SDRegion");
+
 
   //--------- Define materials ----------
   
@@ -730,6 +733,23 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 		"MyCode0002",FatalException, msg);
   }
 #endif
+  
+  G4Region* SDRegion = G4RegionStore::GetInstance()->
+    GetRegion("SDRegion",false);
+  if (SDRegion) {
+    SDRegion->AddRootLogicalVolume(logicSideTPCUp1);
+    SDRegion->AddRootLogicalVolume(logicSideTPCUp2);
+    SDRegion->AddRootLogicalVolume(logicSideTPCDown1);
+    SDRegion->AddRootLogicalVolume(logicSideTPCDown2);
+    SDRegion->AddRootLogicalVolume(logicTarget1);
+    SDRegion->AddRootLogicalVolume(logicTarget2);
+  } else {
+    G4ExceptionDescription msg;
+    msg << "The SD region does not exist" << G4endl;
+    G4Exception("ExN02DetectorConstruction::Construct",
+		"MyCode0002",FatalException, msg);
+  }
+  
 
   //------------------------------------------------ 
   // Sensitive detectors
@@ -741,8 +761,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
   logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
   logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
-
-  
   
   // Construct the field creator - this will register the field it creates
   if (!fEmFieldSetup.Get()) {
@@ -1682,6 +1700,18 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
       logHalf0->SetSensitiveDetector(GetSensitiveDetector());
       logHalf1->SetSensitiveDetector(GetSensitiveDetector());
 
+      G4Region* SDRegion = G4RegionStore::GetInstance()->
+	GetRegion("SDRegion",false);
+      if (SDRegion) {
+	SDRegion->AddRootLogicalVolume(logHalf0);
+	SDRegion->AddRootLogicalVolume(logHalf1);
+      } else {
+	G4ExceptionDescription msg;
+	msg << "The SD region does not exist" << G4endl;
+	G4Exception("ExN02DetectorConstruction::GetPieceTPC",
+		    "MyCode0002",FatalException, msg);
+      }
+
 #ifdef USE_PAI
       G4Region* driftRegion = G4RegionStore::GetInstance()->
 	GetRegion("driftRegion",false);
@@ -1691,12 +1721,13 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
       } else {
 	G4ExceptionDescription msg;
 	msg << "The drift region does not exist" << G4endl;
-	G4Exception("ExN02DetectorConstruction::Construct",
+	G4Exception("ExN02DetectorConstruction::GetPieceTPC",
 		    "MyCode0002",FatalException, msg);
       }
 #endif
     }
 
+    
     //logHalf0->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
     //logHalf1->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
 
