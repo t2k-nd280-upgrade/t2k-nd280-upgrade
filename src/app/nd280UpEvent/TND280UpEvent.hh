@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "TND280UpTrack.hh"
+#include "TND280UpVertex.hh"
 
 using namespace std;
 
@@ -31,15 +32,16 @@ public :
   TND280UpEvent();
   ~TND280UpEvent();
 
+  void AddVertex(TND280UpVertex *vtx);
+  TND280UpVertex *GetVertex(int vtxid);
+  int GetNVertices(){return fNVertices;};
+  
   void AddTrack(TND280UpTrack *track);
   TND280UpTrack *GetTrack(int trkid);
   int GetNTracks(){return fNTracks;};
-
-  void SetEventID(int id){fEventID=id;};
-  //void SetReacMode(string reac){fReacMode=reac;};
   
-  int    GetEventID()     {return fEventID;};
-  //string GetReacMode()    {return fReacMode;};
+  void SetEventID(int id){fEventID=id;};  
+  int  GetEventID(){return fEventID;};
   
   void PrintEvent();
   
@@ -49,8 +51,11 @@ private :
   int fNTracks;  
   TList *GetListOfTracks(){return fListOfTracks;};
 
+  TList *fListOfVertices;
+  int fNVertices;  
+  TList *GetListOfVertices(){return fListOfVertices;};
+  
   int fEventID;
-  //string fReacMode;
   
   ClassDef(TND280UpEvent,1)
 };

@@ -81,6 +81,9 @@ private :
   /// The generator-specific string with the 'event code'
   TObjString*  fEvtCode;
   
+  /// The generator-specific string with the 'event code' (for GENIE) 
+  G4int fEvtCodeNum;
+
   /// The sequence number of the event (the event number).
   G4int         fEvtNum;
   

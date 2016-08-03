@@ -39,6 +39,12 @@ public:
     /// Get the reaction code that created this vertex.
     const G4String& GetReaction() const {return fReaction;}
 
+    /// Set reaction number (NEUT-like). Available both in GENIE and NEUT 
+    void SetReactionNum(G4int num) {fReactionNum = num;} 
+
+    /// Get the reaction number (NEUT-like) that created this vertex
+    G4int GetReactionNum() {return fReactionNum;};
+
     /// Set the file that this vertex came from.  
     void SetFilename(const G4String& f) {fFilename = f;}
 
@@ -103,6 +109,9 @@ private:
     /// The reaction code as defined by the kinematics generator.
     G4String fReaction;
 
+    /// The reaction code number as defined by the kinematics generator.
+    G4int fReactionNum;   
+  
     /// The list of informational vertices associated with this primary
     /// vertex.
     G4PrimaryVertex* fInformationalVertex;

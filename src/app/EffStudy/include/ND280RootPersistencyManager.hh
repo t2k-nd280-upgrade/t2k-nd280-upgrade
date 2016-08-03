@@ -20,6 +20,7 @@ class G4VHitsCollection;
 #include "ND280PersistencyManager.hh"
 
 #include <TND280UpEvent.hh>
+#include <TND280UpVertex.hh>
 #include <TND280UpTrack.hh>
 #include <TND280UpTrackPoint.hh>
 
@@ -43,8 +44,8 @@ public:
 
   /// Stores an event to the output file.
   virtual G4bool Store(const G4Event* anEvent);
-  //virtual G4bool Store(const G4Run* aRun);
-  //virtual G4bool Store(const G4VPhysicalVolume* aWorld);
+  virtual G4bool Store(const G4Run* aRun);
+  virtual G4bool Store(const G4VPhysicalVolume* aWorld);
 
   /// Retrieve information from a file.  This is not implemented.
   virtual G4bool Retrieve(G4Event *&aEvent) {return false;}

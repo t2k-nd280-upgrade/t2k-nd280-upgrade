@@ -59,12 +59,16 @@ void TND280UpTrackPoint::PrintTrackPoint()
   cout << "Phys Volume Name: " << fPhysVolName << endl;
   cout << "Is on boundary: " << ((fIsOnBoundary) ? "YES " : "NO") << endl;
   cout << "Save it: " << ((fSaveIt) ? "YES " : "NO") << endl;
-  cout << "preStep position: "; 
-  fPrePosition.Print(); 
-  cout << endl;
-  cout << "postStep position: " << endl;
-  fPostPosition.Print(); 
-  cout << endl;
+  cout << "preStep position: ("  
+       << fPrePosition.X() << ", " 
+       << fPrePosition.Y() << ", "
+       << fPrePosition.Z() << ") "
+       << endl;
+  cout << "postStep position: (" 
+       << fPostPosition.X() << ", "
+       << fPostPosition.Y() << ", "
+       << fPostPosition.Z() << ") " 
+       << endl;
   cout << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;
   cout << endl;

@@ -33,10 +33,12 @@
 // since it is only used by this class to create a singleton object.
 ND280PersistencyManager::ND280PersistencyManager() 
   : G4VPersistencyManager(), fFilename("/dev/null"),
-    //fLengthThreshold(2*cm),
-    fLengthThreshold(1*cm),
-    fGammaThreshold(50*MeV), fNeutronThreshold(50*MeV),
-    fTrajectoryPointAccuracy(1*cm), fSaveAllPrimaryTrajectories(false) {
+    fLengthThreshold(1*cm), // default nd280mc is 2*cm (NOT APPLIED!!!)
+    fGammaThreshold(20*MeV), // default nd280mc is 50*MeV 
+    fNeutronThreshold(50*MeV),
+    fTrajectoryPointAccuracy(1*cm), 
+    fSaveAllPrimaryTrajectories(true) //default nd280mc is false
+{
   fPersistencyMessenger = new ND280PersistencyMessenger(this);
 }
 
@@ -176,14 +178,17 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
     ndTraj->MarkTrajectory(false);
     return;
   }
-  
+
+  //
+  // DON'T APPLY ANY CUT ON THE SD TRACK LENGTH
+  //
   // Save particles that produce a signal in a sensitive detector.  This
   // doesn't automatically save, but the parents will be automatically
-  // considered for saving by the next bit of code.
-  if (ndTraj->GetSDLength() > GetLengthThreshold()) {
-    ndTraj->MarkTrajectory(false);
-    return;
-  }
+  // considered for saving by the next bit of code.  
+  //if (ndTraj->GetSDLength() > GetLengthThreshold()) {
+  //ndTraj->MarkTrajectory(false);
+  //return;
+  //}
   
   // For the next part, only consider particles where the children have
   // deposited energy in a sensitive detector.
@@ -203,47 +208,46 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
     ndTraj->MarkTrajectory(false);
     return;
   }
-
+  
+  // Since I don't apply any cut on track length
+  // I store all the tracks that were not rejected at this point.
+  // Not done in nd280mc!!!
+  ndTraj->MarkTrajectory(false);
+  
 
   //
   // SHADOWED, BECAUSE ND280Trajectory ALREADY DECLARED
   // NEEDS REWRITING!!!
   //
-  
+  //
   // // Go through all of the event hit collections and make sure that all
   // // primary trajectories and trajectories contributing to a hit are saved.
   // // These are mostly a sub-set of the trajectories marked in the previous
   // // step, but there are a few corner cases where trajectories are not saved
   // // because of theshold issues.
-  
+  //
   // G4HCofThisEvent* hitCollections = event->GetHCofThisEvent();
   // if (!hitCollections) return;
-  
   // for (int i=0; i < hitCollections->GetNumberOfCollections(); ++i) {
   //   G4VHitsCollection* g4Hits = hitCollections->GetHC(i);
-  //   if (g4Hits->GetSize()<1) continue;
-
+  //   if (g4Hits->GetSize()<1) continue;  
   //   for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {
   //     ExN02TrackerHit* g4Hit
-  // 	= dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));
-      
+  // 	= dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));      
   //     if (!g4Hit) {
   // 	G4ExceptionDescription msg;
   // 	msg << "Not a hit." << G4endl; 
   // 	G4Exception("ND280Persistency::MarkTrajectory()",
   // 		    "ExN02Code001", FatalException, msg);
   // 	continue;
-  //     }
-      
+  //     }      
   //     // Make sure that the primary trajectory associated with this hit
   //     // is saved.  The primary trajectories are defined by
   //     // ND280TrajectoryMap::FindPrimaryId(      int primaryId = g4Hit->GetTrackID();
-      
   //     ND280Trajectory* ndTraj 
   // 	= dynamic_cast<ND280Trajectory*>(
   // 					 ND280TrajectoryMap::Get(primaryId));
-  //     // primaryId is the track ID (see nd280mc ND280TrajectoryMap)
-      
+  //     // primaryId is the track ID (see nd280mc ND280TrajectoryMap)      
   //     if (ndTraj) ndTraj->MarkTrajectory(false);
   //     else{
   // 	G4ExceptionDescription msg;

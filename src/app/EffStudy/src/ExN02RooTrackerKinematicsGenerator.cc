@@ -37,6 +37,14 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
 
   if(inxml.GetXMLGenerTypeName()=="NEUT"){
     this->ReadNEUT(inputfile);
+    
+    //
+    // TODO: NEED TO FILL THE REACTION MODE FOR NEUT
+    //
+    G4ExceptionDescription msg;
+    msg << "TODO: NEED TO FILL THE REACTION MODE FOR NEUT";
+    G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
+                "MyCode0002",FatalException, msg);
   }
   else if(inxml.GetXMLGenerTypeName()=="GENIE"){
     this->ReadGENIE(inputfile);
@@ -90,7 +98,8 @@ void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
   fEvtFlags = NULL;
   fneutree->SetBranchAddress("EvtFlags",       &fEvtFlags);
   fEvtCode = NULL;
-  fneutree->SetBranchAddress("EvtCode",        &fEvtCode);
+
+  fneutree->SetBranchAddress("EvtCode",        &fEvtCode);  
   fneutree->SetBranchAddress("EvtNum",         &fEvtNum);
   fneutree->SetBranchAddress("EvtXSec",        &fEvtXSec);
   fneutree->SetBranchAddress("EvtDXSec",       &fEvtDXSec);
@@ -140,7 +149,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
   G4cout << G4endl;
   G4cout << "Open a RooTracker GENIE tree from " << filename << G4endl;
 
-  fneutree = dynamic_cast<TTree*>(fneutfile->Get( inxml.GetXMLGenerTreeName() ));
+  fneutree = dynamic_cast<TTree*>(fneutfile->Get( inxml.GetXMLGenerTreeName()));
   if (!fneutree) {
     const char *msg = "GENIE tree is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadGENIE";
@@ -154,7 +163,10 @@ void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
   fEvtFlags = NULL;
   fneutree->SetBranchAddress("EvtFlags",       &fEvtFlags);
   fEvtCode = NULL;
-  fneutree->SetBranchAddress("EvtCode",        &fEvtCode);
+  
+  fneutree->SetBranchAddress("EvtCode",        &fEvtCode); // string in GENIE
+  fneutree->SetBranchAddress("G2NeutEvtCode",  &fEvtCodeNum); // like NEUT
+
   fneutree->SetBranchAddress("EvtNum",         &fEvtNum);
   fneutree->SetBranchAddress("EvtXSec",        &fEvtXSec);
   fneutree->SetBranchAddress("EvtDXSec",       &fEvtDXSec);
@@ -178,7 +190,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
   fneutree->SetBranchAddress("NuParentProP4",   fNuParentProP4);
   fneutree->SetBranchAddress("NuParentProX4",   fNuParentProX4);
   fneutree->SetBranchAddress("NuParentProNVtx",&fNuParentProNVtx);
-
+  
   fTotEntry = fneutree->GetEntries();
 }
 
@@ -230,8 +242,6 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   G4cout << "treeEvtID = " << treeEvtID << G4endl;
   G4cout << "fTotEntry = " << fTotEntry << G4endl;
 
-
-
   //if(evtID > fTotEntry){
   if(treeEvtID >= fTotEntry){
     const char *msg = "Event ID exceeds the number of NEUT events!";
@@ -241,8 +251,6 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
     //G4RunManager::GetRunManager()->AbortRun(true); // don't use it because the last to last event will be stored twice
     //anEvent->SetEventAborted();
   }
-
-
 
   // if(evtID != fCurrEntry){
   //   const char *msg = "Event ID different from current NEUT event!";
@@ -278,10 +286,17 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   theVertex->SetUserInformation(vertexInfo);
 
   // Fill the generator name
-  vertexInfo->SetName("NEUT");
-
+  vertexInfo->SetName(inxml.GetXMLGenerTypeName().c_str());
+  
   // Fill the information fields for this vertex.
   vertexInfo->SetReaction(std::string(fEvtCode->String().Data()));
+  
+  if(inxml.GetXMLGenerTypeName()=="GENIE"){
+    vertexInfo->SetReactionNum(fEvtCodeNum);
+  }
+  else if(inxml.GetXMLGenerTypeName()=="NEUT"){
+  }
+
   // Set the file name for this event.
   std::ostringstream fs;
   //fs << fneutfile << ":" << entry;
@@ -307,7 +322,10 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // Add an information field to the vertex.
   ExN02VertexInfo *incomingVertexInfo = new ExN02VertexInfo;
   incomingVertexInfo->SetName("initial-state");
+  
   incomingVertexInfo->SetReaction(std::string(fEvtCode->String().Data()));
+  incomingVertexInfo->SetReactionNum(fEvtCodeNum);
+ 
   theIncomingVertex->SetUserInformation(incomingVertexInfo);
   
   // Fill the particles to be tracked (status ==1).  These particles are
@@ -352,8 +370,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
 	     << " w/ mothers " << fStdHepFm[cnt]
 	     << " to " << fStdHepLm[cnt] 
 	     << G4endl;        
-      
-      G4cout << fStdHepStatus[cnt] << G4endl;
+      //G4cout << fStdHepStatus[cnt] << G4endl;
     }
 
     

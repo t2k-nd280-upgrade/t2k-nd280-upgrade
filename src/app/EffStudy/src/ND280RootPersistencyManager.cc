@@ -3,10 +3,9 @@
 //
  
 #include "ND280RootPersistencyManager.hh"
-
-//#include "ND280UserRunAction.hh"
 #include "ND280Trajectory.hh"
 #include "ND280TrajectoryPoint.hh"
+#include "ExN02VertexInfo.hh"
 
 #include <memory>
 #include <cmath>
@@ -33,6 +32,7 @@
 #include <G4StepStatus.hh>
 #include <G4TransportationManager.hh>
 #include <G4FieldManager.hh>
+#include "ExN02Constants.hh"
 
 #include <TROOT.h>
 #include <TFile.h>
@@ -129,134 +129,92 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
    		"ExN02Code001",FatalException, msg);
     return false;
   }
-  
-  //const G4Run* runInfo = G4RunManager::GetRunManager()->GetCurrentRun();
-  //const ND280UserRunAction* runAction 
-  //= dynamic_cast<const ND280UserRunAction*>(
-  //G4RunManager::GetRunManager()->GetUserRunAction());
-  
-  //ND280UserEventInformation* eventInfo 
-  //= dynamic_cast<ND280UserEventInformation*>(
-  //anEvent->GetUserInformation());
-  //if (!eventInfo) {
-  //ND280Error("  %%% Event without user information.");
-  //G4Exception("Trying to write an event without user information");
-  //}
-  
-  //int runId = runInfo->GetRunID();
-  //int subId = runAction->GetT2KSubrunId();
-  //int eventId = anEvent->GetEventID();
-  //if (subId>0) eventId += 100000*subId;
-  
-  // // Build the event context.
-  // ND::TND280Context context;
-  // context.SetRun(runId);
-  // if (subId >= 0) context.SetSubRun(subId);
-  // context.SetEvent(eventId);
-  // context.SetPartition(ND::TND280Context::kMCData);
-  
-  // // The event is constructed using an auto ptr since we must delete it
-  // // before leaving this method.
-  // std::auto_ptr<ND::TND280Event> event(new ND::TND280Event(context));
-  
-  // if (!event->FindDatum("truth")) {
-  //   event->push_back(new ND::TDataVector("truth"));
-  // }
-  
-  // // Mark the trajectories to save.
-  // MarkTrajectories(anEvent);
-  
-  // // Save the trajectories.
-  // CopyTrajectories(*event,anEvent->GetTrajectoryContainer());
-  
-  // // Save the primary particles.
-  // ND::TG4PrimaryVertexContainer* vertexContainer
-  //   = MakePrimary("G4PrimVertex00",
-  // 		  "G4 Primary Particle Vertex",
-  // 		  anEvent->GetPrimaryVertex());
-  // if (vertexContainer) {
-  //   // Sort the vertex container by time.
-  //   std::stable_sort(vertexContainer->begin(), vertexContainer->end(), 
-  // 		     lt_prim_vertex);
-  //   ND::THandle<ND::TDataVector> vect
-  //     = event->Get<ND::TDataVector>("truth");
-  //   vect->push_back(vertexContainer);
-  // }
-  // else {
-  //   ND280Verbose("%% No Primary Particles to save");
-  // }
-  
     
   fND280UpEvent = new TND280UpEvent();
   // The event is constructed using an auto ptr since we must delete it
   // before leaving this method.                            
   //std::auto_ptr<TND280UpEvent> fND280UpEvent(new TND280UpEvent());
   
-  fND280UpEvent->SetEventID(anEvent->GetEventID());
-  
-  
-  
-  // //
-  // // Store the primary Vertices
-  // //
-  
-  // G4int vtxNumber=0;
-  // for (G4PrimaryVertex* vtx = anEvent->GetPrimaryVertex();vtx;vtx = vtx->GetNext()) {
-  //   ++vtxNumber;
+  fND280UpEvent->SetEventID(anEvent->GetEventID());  
     
-  //   ExN02VertexInfo* vInfo 
-  //     = dynamic_cast<ExN02VertexInfo*>(vtx->GetUserInformation());
-    
-  //   for (G4int p=0; p<vtx->GetNumberOfParticle(); ++p) {
-  //     G4PrimaryParticle* prim = vtx->GetPrimary(p);
-  //     G4ParticleDefinition* partDef = prim->GetG4code();
-  //     G4ThreeVector dir = prim->GetMomentum().unit();
-  //     G4cout << "  " << partDef->GetParticleName() << " "
-  //   	     << prim->GetPDGcode()
-  //   	     << " w/ "
-  //   	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
-  //   	     << "  Direction: (" << dir.x()
-  //   	     << ", " << dir.y()
-  //   	     << ", " << dir.z() << ")"
-  //   	     << G4endl;
-  //   }
-    
-  //   // Get the Incoming Vertex
-    
-  //   const G4PrimaryVertex *incvtx = vInfo->GetInformationalVertex();
-
-  //   for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
-  //     G4PrimaryParticle* prim = incvtx->GetPrimary(nu);
-  //     G4ParticleDefinition* partDef = prim->GetG4code();
-  //     G4ThreeVector dir = prim->GetMomentum().unit();
-  //     G4cout << "  " << partDef->GetParticleName() << " "
-  //   	     << prim->GetPDGcode()
-  //   	     << " w/ "
-  //   	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
-  //   	     << "  Direction: (" << dir.x()
-  //   	     << ", " << dir.y()
-  //   	     << ", " << dir.z() << ")"
-  //   	     << G4endl;	
-  //     G4int pdg = prim->GetPDGcode();
-
-  //     if( fabs(pdg)==12 ||
-  //   	  fabs(pdg)==14 ||
-  //   	  fabs(pdg)==16  ){	
-  //   	fVecVtx_NuPDG.push_back(prim->GetPDGcode());
-  //     }
-  //   }
+  //
+  // Store the primary Vertices
+  //
   
-  //   //G4cout << "mode = " << mode << G4endl;
-  // }
+  G4int vtxNumber=0;
+  for (G4PrimaryVertex* vtx = anEvent->GetPrimaryVertex();vtx;vtx = vtx->GetNext()) {
 
-  // fNVtx = vtxNumber; // get # of vertices in the event
+    TND280UpVertex *nd280Vertex = new TND280UpVertex("PrimaryVertex");
+    nd280Vertex->SetVertexID(vtxNumber);
+      
+    ExN02VertexInfo* vInfo 
+      = dynamic_cast<ExN02VertexInfo*>(vtx->GetUserInformation());
+
+    // Loop over particles outgoing the vertex 
+    for (G4int p=0; p<vtx->GetNumberOfParticle(); ++p) {
+     
+      // Define the vertex track
+      TND280UpTrack *nd280VtxTrack = new TND280UpTrack();
+      
+      G4PrimaryParticle* prim = vtx->GetPrimary(p);
+      G4ParticleDefinition* partDef = prim->GetG4code();
+      G4ThreeVector dir = prim->GetMomentum().unit();
+      
+      double momX = prim->GetMomentum().x();
+      double momY = prim->GetMomentum().y();
+      double momZ = prim->GetMomentum().z();
+      nd280VtxTrack->SetInitMom(momX,momY,momZ);
+
+      int pdg = prim->GetPDGcode();
+      nd280VtxTrack->SetPDG(pdg);
+      
+      // Fill the vertex with the outgoing track
+      nd280Vertex->AddOutTrack(nd280VtxTrack);
+    }
+    
+    // Get the Incoming Vertex
+    
+    const G4PrimaryVertex *incvtx = vInfo->GetInformationalVertex();
+    
+    // Loop over incoming particles
+    for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
+
+      // Define the vertex track
+      TND280UpTrack *nd280VtxTrack = new TND280UpTrack();
+
+      G4PrimaryParticle* prim = incvtx->GetPrimary(nu);
+      G4ParticleDefinition* partDef = prim->GetG4code();
+      G4ThreeVector dir = prim->GetMomentum().unit();
+
+      double momX = prim->GetMomentum().x();
+      double momY = prim->GetMomentum().y();
+      double momZ = prim->GetMomentum().z();
+      nd280VtxTrack->SetInitMom(momX,momY,momZ);
+      
+      int pdg = prim->GetPDGcode();    
+      nd280VtxTrack->SetPDG(pdg);
+
+      // Fill the vertex with the ingoing track
+      nd280Vertex->AddInTrack(nd280VtxTrack);
+    }
   
-
-
-
-
-
-
+    //
+    // TODO: define reaction mode when NEUT is used
+    //
+    nd280Vertex->SetReacMode(vInfo->GetReactionNum());
+    nd280Vertex->SetReacModeString(vInfo->GetReaction());
+    
+    nd280Vertex->SetPosition(vtx->GetX0()/mm,
+			     vtx->GetY0()/mm,
+			     vtx->GetZ0()/mm);
+    nd280Vertex->SetTime(vtx->GetT0()/second);
+        
+    // Add the vertex to the event
+    fND280UpEvent->AddVertex(nd280Vertex);
+    
+    ++vtxNumber;  
+  }
+ 
 
   //                                          
   // Store the track in the ND280 event 
@@ -357,7 +315,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       }
       
     } // end loop over the points   
-
+    
     // Mark the trajectories to save.
     //MarkTrajectories(anEvent); // loop over all the tracks again...
     MarkTrajectory(ndTraj,anEvent);
@@ -365,7 +323,6 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       nd280Track->SaveIt(true);     
       fND280UpEvent->AddTrack(nd280Track);
     }
-
     
     // 
     // ND280Trajectory::ShowTrajectory()
@@ -387,7 +344,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
   } // end loop over Trajectories
   
-   
+  
   fOutput->cd();
   
   // Get the address of the event from the auto_ptr to the fEventTree branch
@@ -404,8 +361,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //   ND280Info("AutoSave Event Tree");
   //   fEventTree->AutoSave("SaveSelf");
   //   fEventsNotSaved = 0;
-  // }
-    
+  // }  
+
   return true;
 }
 
@@ -416,42 +373,44 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
 
 
-// bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
-//     return false;
-// }
+bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
+  return false;
+}
 
-//bool ND280RootPersistencyManager::Store(const G4VPhysicalVolume* aWorld) {
-//     if (!gGeoManager) {
-  //         ND280Error("ND280RootPersistencyManage::Store(world) run before /t2k/update");
-  //         ND280RootGeometryManager::Get()->Update(aWorld,true);
-  //     }
-  //     if (!fOutput) {
-  //         ND280Error("ND280RootPersistencyManager::Store "
-  //                    << "-- No Output File");
-  //         return false;
-  //     }
-  //     fOutput->cd();
-  //     gGeoManager->Write();
-  //     return true;
-  //}
+bool ND280RootPersistencyManager::Store(const G4VPhysicalVolume* aWorld) {
+  return false;
   
-  // std::vector<int>::iterator ND280RootPersistencyManager::CleanHitContributors(
-  //     std::map<int,int>& parentMap,
-  //     const ND::TG4TrajectoryContainer& trajCon,
-  //     std::vector<int>::iterator start, 
-  //     std::vector<int>::iterator finish) {
-  
-  //     for (std::vector<int>::iterator c=start; c != finish; ++c) {
-  //         // Check each contributor to make sure that it is a valid
-  //         // trajectory.  If it isn't in the trajectory map, then set it
-  //         // to a parent that is.
-  //         int loopTrap = 100000;
-  //         while (!trajCon.GetTrajectory(*c)) {
-  //             std::map<int,int>::iterator t = parentMap.find(*c);
-  //             if (t == parentMap.end()) {
-  //                 ND280Warn("% Contributing trajectory without parent");
-  //                 break;
-  //             }
+  // if (!gGeoManager) {
+  //   ND280Error("ND280RootPersistencyManage::Store(world) run before /t2k/update");
+  //   ND280RootGeometryManager::Get()->Update(aWorld,true);
+  // }
+  // if (!fOutput) {
+  //   ND280Error("ND280RootPersistencyManager::Store "
+  // 	       << "-- No Output File");
+  //   return false;
+  // }
+  // fOutput->cd();
+  // gGeoManager->Write();
+  // return true;
+}
+
+// std::vector<int>::iterator ND280RootPersistencyManager::CleanHitContributors(
+//     std::map<int,int>& parentMap,
+//     const ND::TG4TrajectoryContainer& trajCon,
+//     std::vector<int>::iterator start, 
+//     std::vector<int>::iterator finish) {
+
+//     for (std::vector<int>::iterator c=start; c != finish; ++c) {
+//         // Check each contributor to make sure that it is a valid
+//         // trajectory.  If it isn't in the trajectory map, then set it
+//         // to a parent that is.
+//         int loopTrap = 100000;
+//         while (!trajCon.GetTrajectory(*c)) {
+//             std::map<int,int>::iterator t = parentMap.find(*c);
+//             if (t == parentMap.end()) {
+//                 ND280Warn("% Contributing trajectory without parent");
+//                 break;
+//             }
 //             *c = t->second;
 //             if ( 0 > --loopTrap) {
 //                 ND280Warn("Break loop in "

@@ -1,5 +1,4 @@
 
-
 //
 // ********************************************************************
 // * License and Disclaimer                                           *
@@ -545,7 +544,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     // for (G4int ivtx=0; ivtx<event->GetNumberOfPrimaryVertex(); ivtx++){  
     // ++vtxNumber;
     // G4PrimaryVertex* vtx = event->GetPrimaryVertex();
-  
+    
     G4cout << "Vertex: " << vtxNumber  
   	   << " w/ " << vtx->GetNumberOfParticle() << " primaries" 
   	   << " at " 
@@ -564,6 +563,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     if (vInfo) {
       G4cout << "  Generator: " << vInfo->GetName() << G4endl;
       G4cout << "  Reaction:  " << vInfo->GetReaction() << G4endl;
+      G4cout << "  Reac Num:  " << vInfo->GetReactionNum() << G4endl;
       G4cout << "  Weight:    " << vInfo->GetWeight() << G4endl;
       G4cout << "  Prob:      " << vInfo->GetProbability() << G4endl;
     }
@@ -613,7 +613,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       G4int pdg = prim->GetPDGcode();
     
       //G4cout << pdg << " " << fabs(pdg) << G4endl;
-
+      
       if( fabs(pdg)==12 ||
     	  fabs(pdg)==14 ||
     	  fabs(pdg)==16  ){	
@@ -628,12 +628,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     fVecVtx_X.push_back(vtx->GetX0() / mm);
     fVecVtx_Y.push_back(vtx->GetY0() / mm);
     fVecVtx_Z.push_back(vtx->GetZ0() / mm); 
-    G4int mode = G4UIcommand::ConvertToInt(vInfo->GetReaction());
-    fVecVtx_ReacMode .push_back(mode);
+    
+    //fVecVtx_ReacMode .push_back(mode);
     fVecVtx_EvtProb  .push_back(vInfo->GetWeight());
     fVecVtx_EvtWeight.push_back(vInfo->GetProbability()); 
-    
-    G4cout << "mode = " << mode << G4endl;
   }
 
   fNVtx = vtxNumber; // get # of vertices in the event
@@ -1689,7 +1687,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       //
       // THE FOLLOWING PIECE OF CODE OF nd280mc IS NOT IMPLEMENTED YET
       //
-
+      
       // for (int loopCount = 0; ; ++loopCount) {
       //  	int parentId = traj->GetParentID();
       // 	if (!parentId) break;

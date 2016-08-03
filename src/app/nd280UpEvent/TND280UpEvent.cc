@@ -22,6 +22,9 @@ TND280UpEvent::TND280UpEvent(){
   
   fNTracks = 0;
   fListOfTracks = new TList;
+
+  fNVertices = 0;
+  fListOfVertices = new TList;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -56,14 +59,42 @@ TND280UpTrack * TND280UpEvent::GetTrack(int trkid)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   
 
+
+void TND280UpEvent::AddVertex(TND280UpVertex *vtx)
+{
+  fListOfVertices->Add(vtx);
+  fNVertices = fListOfVertices->GetEntries(); // Update # of vertices in the event
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
+
+TND280UpVertex * TND280UpEvent::GetVertex(int vtxid)
+{
+  TObject *objvtx = fListOfVertices->At(vtxid);
+  if(!objvtx){
+    cerr << endl;
+    cerr << "TND280UpEvent::GetVertex" << endl;
+    cerr << "The index " << vtxid << " is out of range" << endl;
+    cerr << endl;
+    exit(1);
+  }
+  TND280UpVertex *vtx = dynamic_cast<TND280UpVertex*>(objvtx); 
+  return vtx;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void TND280UpEvent::PrintEvent()
 {
   cout << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;
   cout << endl;
   cout << "Event ID: " << fEventID << endl;
-  //cout << "Reaction mode: " << fReacMode << endl;
   cout << "# of tracks: " << fNTracks << endl;
+  cout << "# of vertices: " << fNVertices << endl;
+  for(int ivtx=0;ivtx<fNVertices;ivtx++){
+    cout << " - " << GetVertex(ivtx)->GetVertexName() << endl;
+  }
   cout << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;
   cout << endl;
