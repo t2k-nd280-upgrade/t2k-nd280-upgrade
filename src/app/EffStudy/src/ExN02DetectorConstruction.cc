@@ -39,6 +39,9 @@
 #include "ND280BeamConstructor.hh"
 #include "ExN02ND280XML.hh"
 
+//#include "ND280InputPersistencyManager.hh"
+#include "ND280RootPersistencyManager.hh"
+
 #include "G4Material.hh"
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
@@ -129,11 +132,26 @@ ExN02DetectorConstruction::~ExN02DetectorConstruction()
 G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 {
 
+  // Take inputs
+
+  //ND280InputPersistencyManager* InputPersistencyManager
+  //= ND280InputPersistencyManager::GetInstance();  
+  //ND280XMLInput = InputPersistencyManager->GetXMLInput();
+  
+  ND280RootPersistencyManager* InputPersistencyManager
+    = ND280RootPersistencyManager::GetInstance();
+  ND280XMLInput = InputPersistencyManager->GetXMLInput();
+
+  //
+  
   BoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
-  TargetVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
+  TargetWaterVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
+  TargetScintVisAtt = new G4VisAttributes(G4Color(0.,0.7,0.));
   TPCVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
   TPCCO2 = new G4VisAttributes(G4Colour::Grey); //G4Colour(1.0,1.0,1.0));   
-  TPCDeadMat = new G4VisAttributes(G4Colour::Magenta); //G4Colour(1.0,0.0,1.0)); 
+  TPCDeadMat = new G4VisAttributes(G4Colour::Magenta);//G4Colour(1.0,0.0,1.0)); 
+  
+  TargetWaterVisAtt->SetForceWireframe(true); // TO BE USED
 
 #ifdef USE_PAI
   // Create a region for the PAI Model.
@@ -299,15 +317,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4LogicalVolume *tpc1Volume = this->GetPieceTPC("ForwTPC1");
   
-  if( ND280XMLInput.GetXMLForwTPCdefault() ){ // default
+  if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
     double upstreamedge_z = +solidTracker->GetZHalfLength();
     currentZ = upstreamedge_z - GetLengthForwTPC()/2.; 
     SetForwTPCPos1(0,0,currentZ);
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLForwTPCPos1_X();
-    G4double y = ND280XMLInput.GetXMLForwTPCPos1_Y();
-    G4double z = ND280XMLInput.GetXMLForwTPCPos1_Z();
+    G4double x = ND280XMLInput->GetXMLForwTPCPos1_X();
+    G4double y = ND280XMLInput->GetXMLForwTPCPos1_Y();
+    G4double z = ND280XMLInput->GetXMLForwTPCPos1_Z();
     SetForwTPCPos1(x,y,z);
   }
   
@@ -333,14 +351,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4LogicalVolume *tpc2Volume = this->GetPieceTPC("ForwTPC2");
   
-  if( ND280XMLInput.GetXMLForwTPCdefault() ){ // default
+  if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
     currentZ = 0.;
     SetForwTPCPos2(0,0,currentZ);
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLForwTPCPos2_X();
-    G4double y = ND280XMLInput.GetXMLForwTPCPos2_Y();
-    G4double z = ND280XMLInput.GetXMLForwTPCPos2_Z();
+    G4double x = ND280XMLInput->GetXMLForwTPCPos2_X();
+    G4double y = ND280XMLInput->GetXMLForwTPCPos2_Y();
+    G4double z = ND280XMLInput->GetXMLForwTPCPos2_Z();
     SetForwTPCPos2(x,y,z);
   }
   
@@ -366,15 +384,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   G4LogicalVolume *tpc3Volume = this->GetPieceTPC("ForwTPC3");
   
-  if( ND280XMLInput.GetXMLForwTPCdefault() ){ // default
+  if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
     double downstreamedge_z = -solidTracker->GetZHalfLength();
     currentZ = downstreamedge_z + GetLengthForwTPC()/2.; 
     SetForwTPCPos3(0,0,currentZ);
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLForwTPCPos3_X();
-    G4double y = ND280XMLInput.GetXMLForwTPCPos3_Y();
-    G4double z = ND280XMLInput.GetXMLForwTPCPos3_Z();
+    G4double x = ND280XMLInput->GetXMLForwTPCPos3_X();
+    G4double y = ND280XMLInput->GetXMLForwTPCPos3_Y();
+    G4double z = ND280XMLInput->GetXMLForwTPCPos3_Z();
     SetForwTPCPos3(x,y,z);
   }
   
@@ -423,7 +441,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   const G4String cNameLogicTarget1     = "Target1";
   const G4String cNamePhysiTarget1     = "Target1";
   
-  const G4String cTargetMater1  = "FGDScintillator";  
+  //const G4String cTargetMater1  = "FGDScintillator";  
+  const G4String cTargetMater1 = "WAGASHIScintillatorEmpty";
+  
   TargetMater1  = FindMaterial(cTargetMater1);  
 
   G4double targetSizeLength1  = 0.5 * GetTargetFullLength1();    // Half length of the Target 1
@@ -432,14 +452,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4double HalfTargetHeight1  = 0.5 * GetTargetFullHeight1();
     
-  if( ND280XMLInput.GetXMLTargetdefault1() ){ // default
+  if( ND280XMLInput->GetXMLTargetdefault1() ){ // default
     G4double Target1_Z = GetLengthForwTPC()/2. + GetTargetFullLength1()/2.;
     SetTargetPos1(0,0,Target1_Z);
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLTargetPos1_X();
-    G4double y = ND280XMLInput.GetXMLTargetPos1_Y();
-    G4double z = ND280XMLInput.GetXMLTargetPos1_Z();
+    G4double x = ND280XMLInput->GetXMLTargetPos1_X();
+    G4double y = ND280XMLInput->GetXMLTargetPos1_Y();
+    G4double z = ND280XMLInput->GetXMLTargetPos1_Z();
     SetTargetPos1(x,y,z);
   }
 
@@ -476,7 +496,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   const G4String cNameLogicTarget2     = "Target2";
   const G4String cNamePhysiTarget2     = "Target2";
   
-  const G4String cTargetMater2  = "ActiveWater";     //fgd active water  
+  //const G4String cTargetMater2  = "ActiveWater";     //fgd active water  
+  const G4String cTargetMater2 = "Water"; // WAGASHI water
   TargetMater2  = FindMaterial(cTargetMater2);  
 
   G4double targetSizeLength2  = 0.5 * GetTargetFullLength2();    // Half length of the Target 1
@@ -485,14 +506,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4double HalfTargetHeight2  = 0.5 * GetTargetFullHeight2();
   
-  if( ND280XMLInput.GetXMLTargetdefault2() ){ // default
+  if( ND280XMLInput->GetXMLTargetdefault2() ){ // default
     G4double Target2_Z = -GetLengthForwTPC()/2. - GetTargetFullLength2()/2.;
     SetTargetPos2(0,0,Target2_Z);
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLTargetPos2_X();
-    G4double y = ND280XMLInput.GetXMLTargetPos2_Y();
-    G4double z = ND280XMLInput.GetXMLTargetPos2_Z();
+    G4double x = ND280XMLInput->GetXMLTargetPos2_X();
+    G4double y = ND280XMLInput->GetXMLTargetPos2_Y();
+    G4double z = ND280XMLInput->GetXMLTargetPos2_Z();
     SetTargetPos2(x,y,z);
   }
   
@@ -548,16 +569,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   solidSideTPCUp1 = new G4Box(cNameSolidSideTPCUp1, HalfSideTPCWidth1, HalfSideTPCHeight1, HalfSideTPCLength1); 
   logicSideTPCUp1 = new G4LogicalVolume(solidSideTPCUp1,SideTPCMater,cNameLogicSideTPCUp1,0,0,0);
   
-  if( ND280XMLInput.GetXMLSideTPCdefault1() ){ // default
+  if( ND280XMLInput->GetXMLSideTPCdefault1() ){ // default
     SetSideTPCUpPos1(0,
 		     HalfSideTPCHeight1 + HalfTargetHeight1,
 		     GetTargetPos1().z()
 		     );
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLSideTPCUpPos1_X();
-    G4double y = ND280XMLInput.GetXMLSideTPCUpPos1_Y();
-    G4double z = ND280XMLInput.GetXMLSideTPCUpPos1_Z();
+    G4double x = ND280XMLInput->GetXMLSideTPCUpPos1_X();
+    G4double y = ND280XMLInput->GetXMLSideTPCUpPos1_Y();
+    G4double z = ND280XMLInput->GetXMLSideTPCUpPos1_Z();
     SetSideTPCUpPos1(x,y,z);
   }
   
@@ -592,16 +613,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   solidSideTPCDown1 = new G4Box(cNameSolidSideTPCDown1,HalfSideTPCWidth1,HalfSideTPCHeight1,HalfSideTPCLength1); 
   logicSideTPCDown1 = new G4LogicalVolume(solidSideTPCDown1,SideTPCMater,cNameLogicSideTPCDown1,0,0,0);
   
-  if( ND280XMLInput.GetXMLSideTPCdefault1() ){ // default
+  if( ND280XMLInput->GetXMLSideTPCdefault1() ){ // default
     SetSideTPCDownPos1(0,
 		       -(HalfSideTPCHeight1 + HalfTargetHeight1),
 		       GetTargetPos1().z()
 		       );
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLSideTPCDownPos1_X();
-    G4double y = ND280XMLInput.GetXMLSideTPCDownPos1_Y();
-    G4double z = ND280XMLInput.GetXMLSideTPCDownPos1_Z();
+    G4double x = ND280XMLInput->GetXMLSideTPCDownPos1_X();
+    G4double y = ND280XMLInput->GetXMLSideTPCDownPos1_Y();
+    G4double z = ND280XMLInput->GetXMLSideTPCDownPos1_Z();
     SetSideTPCDownPos1(x,y,z);
   }
   
@@ -636,16 +657,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   solidSideTPCUp2 = new G4Box(cNameSolidSideTPCUp2, HalfSideTPCWidth2, HalfSideTPCHeight2, HalfSideTPCLength2); 
   logicSideTPCUp2 = new G4LogicalVolume(solidSideTPCUp2,SideTPCMater,cNameLogicSideTPCUp2,0,0,0);
   
-  if( ND280XMLInput.GetXMLSideTPCdefault2() ){ // default
+  if( ND280XMLInput->GetXMLSideTPCdefault2() ){ // default
     SetSideTPCUpPos2(0,
 		     HalfSideTPCHeight2 + HalfTargetHeight2,
 		     GetTargetPos2().z()
 		     );
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLSideTPCUpPos2_X();
-    G4double y = ND280XMLInput.GetXMLSideTPCUpPos2_Y();
-    G4double z = ND280XMLInput.GetXMLSideTPCUpPos2_Z();
+    G4double x = ND280XMLInput->GetXMLSideTPCUpPos2_X();
+    G4double y = ND280XMLInput->GetXMLSideTPCUpPos2_Y();
+    G4double z = ND280XMLInput->GetXMLSideTPCUpPos2_Z();
     SetSideTPCUpPos2(x,y,z);
   }
 
@@ -679,16 +700,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   solidSideTPCDown2 = new G4Box(cNameSolidSideTPCDown2,HalfSideTPCWidth2,HalfSideTPCHeight2,HalfSideTPCLength2); 
   logicSideTPCDown2 = new G4LogicalVolume(solidSideTPCDown2,SideTPCMater,cNameLogicSideTPCDown2,0,0,0);
   
-  if( ND280XMLInput.GetXMLSideTPCdefault2() ){ // default
+  if( ND280XMLInput->GetXMLSideTPCdefault2() ){ // default
     SetSideTPCDownPos2(0,
 		       -(HalfSideTPCHeight2 + HalfTargetHeight2),
 		       GetTargetPos2().z()
 		       );
   }
   else { // from XML file
-    G4double x = ND280XMLInput.GetXMLSideTPCDownPos2_X();
-    G4double y = ND280XMLInput.GetXMLSideTPCDownPos2_Y();
-    G4double z = ND280XMLInput.GetXMLSideTPCDownPos2_Z();
+    G4double x = ND280XMLInput->GetXMLSideTPCDownPos2_X();
+    G4double y = ND280XMLInput->GetXMLSideTPCDownPos2_Y();
+    G4double z = ND280XMLInput->GetXMLSideTPCDownPos2_Z();
     SetSideTPCDownPos2(x,y,z);
   }
 
@@ -772,19 +793,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   //--------- Visualization attributes ------------------------------- 
 
-  // //G4VisAttributes* BoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
   logicWorld  ->SetVisAttributes(BoxVisAtt);  
   logicBasket ->SetVisAttributes(BoxVisAtt);
   logicTracker->SetVisAttributes(BoxVisAtt);
 
-  //G4VisAttributes* TargetVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
-  //logicTarget ->SetVisAttributes(TargetVisAtt);
-  logicTarget1 ->SetVisAttributes(TargetVisAtt);
-  logicTarget2 ->SetVisAttributes(TargetVisAtt);
+  logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
+  logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
 
-  //G4VisAttributes* TPCVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
-  //logicSideTPCUp->SetVisAttributes(TPCVisAtt);
-  //logicSideTPCDown->SetVisAttributes(TPCVisAtt);
+
   logicSideTPCUp1->SetVisAttributes(TPCVisAtt);
   logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
   logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
@@ -1437,7 +1453,25 @@ void ExN02DetectorConstruction::DefineMaterials() {
   activeWater->AddMaterial(water        ,fractionmass = 86.672*perCent);
   activeWater->AddMaterial(polycarbonate,fractionmass = 13.328*perCent);
   //gMan->SetDrawAtt(activeWater,kAzure+8);// ND280 class
-    
+
+
+  
+  // WAGASHI
+  
+  //Scintillator
+  density = 1.032*g/cm3;
+  G4Material *WAGASHIScint 
+    = new G4Material(name="WAGASHIScintillator", density, nel=2);
+  WAGASHIScint->AddElement(elC, 9);
+  WAGASHIScint->AddElement(elH, 10);
+  
+  //Scintillator empty --> average density ~40% of normal one
+  density = 1.032*g/cm3 * 0.4;
+  G4Material *WAGASHIScint_Empty 
+    = new G4Material(name="WAGASHIScintillatorEmpty", density,nel=2);
+  WAGASHIScint_Empty->AddElement(elC, 9);
+  WAGASHIScint_Empty->AddElement(elH, 10);
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -3310,15 +3344,15 @@ void ExN02DetectorConstruction::DefineDimensions(){
   
   // Target 1 (plastic scintillator)
   
-  G4double targetlength1 = ND280XMLInput.GetXMLTargetlength1() * mm;
-  G4double targetwidth1  = ND280XMLInput.GetXMLTargetwidth1() * mm;
-  G4double targetheight1 = ND280XMLInput.GetXMLTargetheight1() * mm;
+  G4double targetlength1 = ND280XMLInput->GetXMLTargetlength1() * mm;
+  G4double targetwidth1  = ND280XMLInput->GetXMLTargetwidth1() * mm;
+  G4double targetheight1 = ND280XMLInput->GetXMLTargetheight1() * mm;
 
   G4double cTargetLength1 = 2000.0 * mm; //2400.0 * mm; //1560 * mm;
   G4double cTargetWidth1  = 2300.0 * mm; 
   G4double cTargetHeight1 = 303.0  * mm;   
   
-  if( !ND280XMLInput.GetXMLTargetdefault1() ){
+  if( !ND280XMLInput->GetXMLTargetdefault1() ){
     SetTargetFullLength1(targetlength1);
     SetTargetFullWidth1(targetwidth1);
     SetTargetFullHeight1(targetheight1);
@@ -3332,15 +3366,15 @@ void ExN02DetectorConstruction::DefineDimensions(){
   
   // Target 2 (water)
   
-  G4double targetlength2 = ND280XMLInput.GetXMLTargetlength2() * mm;
-  G4double targetwidth2  = ND280XMLInput.GetXMLTargetwidth2() * mm;
-  G4double targetheight2 = ND280XMLInput.GetXMLTargetheight2() * mm;
+  G4double targetlength2 = ND280XMLInput->GetXMLTargetlength2() * mm;
+  G4double targetwidth2  = ND280XMLInput->GetXMLTargetwidth2() * mm;
+  G4double targetheight2 = ND280XMLInput->GetXMLTargetheight2() * mm;
 
   G4double cTargetLength2 = 2000.0 * mm; //2400.0 * mm; //1560 * mm;
   G4double cTargetWidth2  = 2300.0 * mm; 
   G4double cTargetHeight2 = 303.0  * mm;   
   
-  if( !ND280XMLInput.GetXMLTargetdefault2() ){
+  if( !ND280XMLInput->GetXMLTargetdefault2() ){
     SetTargetFullLength2(targetlength2);
     SetTargetFullWidth2(targetwidth2);
     SetTargetFullHeight2(targetheight2);
@@ -3354,15 +3388,15 @@ void ExN02DetectorConstruction::DefineDimensions(){
 
   // Side TPCs 1
   
-  G4double sidetpclength1 = ND280XMLInput.GetXMLSideTPClength1() * mm;
-  G4double sidetpcwidth1  = ND280XMLInput.GetXMLSideTPCwidth1() * mm;
-  G4double sidetpcheight1 = ND280XMLInput.GetXMLSideTPCheight1() * mm;
+  G4double sidetpclength1 = ND280XMLInput->GetXMLSideTPClength1() * mm;
+  G4double sidetpcwidth1  = ND280XMLInput->GetXMLSideTPCwidth1() * mm;
+  G4double sidetpcheight1 = ND280XMLInput->GetXMLSideTPCheight1() * mm;
 
   G4double cSideTPCLength1 = cTargetLength1;// mm; 
   G4double cSideTPCWidth1  = cTargetWidth1; // mm;
   G4double cSideTPCHeight1 = 1000.0 * mm;  
 
-  if(!ND280XMLInput.GetXMLSideTPCdefault1()){
+  if(!ND280XMLInput->GetXMLSideTPCdefault1()){
     SetSideTPCFullLength1(sidetpclength1);
     SetSideTPCFullWidth1(sidetpcwidth1);
     SetSideTPCFullHeight1(sidetpcheight1);
@@ -3375,15 +3409,15 @@ void ExN02DetectorConstruction::DefineDimensions(){
  
   // Side TPCs 2
   
-  G4double sidetpclength2 = ND280XMLInput.GetXMLSideTPClength2() * mm;
-  G4double sidetpcwidth2  = ND280XMLInput.GetXMLSideTPCwidth2() * mm;
-  G4double sidetpcheight2 = ND280XMLInput.GetXMLSideTPCheight2() * mm;
+  G4double sidetpclength2 = ND280XMLInput->GetXMLSideTPClength2() * mm;
+  G4double sidetpcwidth2  = ND280XMLInput->GetXMLSideTPCwidth2() * mm;
+  G4double sidetpcheight2 = ND280XMLInput->GetXMLSideTPCheight2() * mm;
 
   G4double cSideTPCLength2 = cTargetLength2;// mm; 
   G4double cSideTPCWidth2  = cTargetWidth2; // mm;
   G4double cSideTPCHeight2 = 1000.0 * mm;  
 
-  if(!ND280XMLInput.GetXMLSideTPCdefault2()){
+  if(!ND280XMLInput->GetXMLSideTPCdefault2()){
     SetSideTPCFullLength2(sidetpclength2);
     SetSideTPCFullWidth2(sidetpcwidth2);
     SetSideTPCFullHeight2(sidetpcheight2);

@@ -8,7 +8,11 @@
 #include "ExN02RooTrackerKinematicsGenerator.hh"
 #include "ExN02Constants.hh"
 #include "ExN02VertexInfo.hh"
+
 #include "ExN02ND280XML.hh"
+
+//#include "ND280InputPersistencyManager.hh"
+#include "ND280RootPersistencyManager.hh"
 
 #include "globals.hh"
 
@@ -31,11 +35,26 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
   fCurrEntry = 0;
   fneutfile = 0;
   fneutree = 0;
+  
+  // Take inputs
 
-  G4String inputfile = inxml.GetXMLPathFiles();
-  inputfile.append(inxml.GetXMLGenerFileName());
+  //ND280InputPersistencyManager* InputPersistencyManager
+  //= ND280InputPersistencyManager::GetInstance();  
+  //inxml = InputPersistencyManager->GetXMLInput();
 
-  if(inxml.GetXMLGenerTypeName()=="NEUT"){
+  ND280RootPersistencyManager* InputPersistencyManager
+    = ND280RootPersistencyManager::GetInstance();
+  inxml = InputPersistencyManager->GetXMLInput();
+
+
+
+  G4int firstevent = InputPersistencyManager->GetEventFirst();
+  this->SetFirstEvent(firstevent);
+
+  G4String inputfile = inxml->GetXMLPathFiles();
+  inputfile.append(inxml->GetXMLGenerFileName());
+
+  if(inxml->GetXMLGenerTypeName()=="NEUT"){
     this->ReadNEUT(inputfile);
     
     //
@@ -46,12 +65,12 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
     G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
                 "MyCode0002",FatalException, msg);
   }
-  else if(inxml.GetXMLGenerTypeName()=="GENIE"){
+  else if(inxml->GetXMLGenerTypeName()=="GENIE"){
     this->ReadGENIE(inputfile);
   }
   else{
     G4ExceptionDescription msg;
-    msg << "The generator type "<< inxml.GetXMLGenerTypeName() << " is not available";
+    msg << "The generator type "<< inxml->GetXMLGenerTypeName() << " is not available";
     G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
                 "MyCode0002",FatalException, msg);
   }
@@ -84,7 +103,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
   G4cout << G4endl;
   G4cout << "Open a RooTracker NEUT tree from " << filename << G4endl;
 
-  fneutree = dynamic_cast<TTree*>(fneutfile->Get( inxml.GetXMLGenerTreeName() ));
+  fneutree = dynamic_cast<TTree*>(fneutfile->Get( inxml->GetXMLGenerTreeName() ));
   if (!fneutree) {
     const char *msg = "NEUT tree is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadNEUT";
@@ -149,7 +168,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
   G4cout << G4endl;
   G4cout << "Open a RooTracker GENIE tree from " << filename << G4endl;
 
-  fneutree = dynamic_cast<TTree*>(fneutfile->Get( inxml.GetXMLGenerTreeName()));
+  fneutree = dynamic_cast<TTree*>(fneutfile->Get( inxml->GetXMLGenerTreeName()));
   if (!fneutree) {
     const char *msg = "GENIE tree is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadGENIE";
@@ -235,7 +254,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
 
   G4int evtID = anEvent->GetEventID();
   G4int treeEvtID = this->GetFirstEvent()+evtID; // tree event to pick up!!!
-
+  
   G4cout << "--> Generate primary vertex from tree event: " << treeEvtID << G4endl;
 
   G4cout << "evtID = " << evtID << G4endl;
@@ -286,15 +305,15 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   theVertex->SetUserInformation(vertexInfo);
 
   // Fill the generator name
-  vertexInfo->SetName(inxml.GetXMLGenerTypeName().c_str());
+  vertexInfo->SetName(inxml->GetXMLGenerTypeName().c_str());
   
   // Fill the information fields for this vertex.
   vertexInfo->SetReaction(std::string(fEvtCode->String().Data()));
   
-  if(inxml.GetXMLGenerTypeName()=="GENIE"){
+  if(inxml->GetXMLGenerTypeName()=="GENIE"){
     vertexInfo->SetReactionNum(fEvtCodeNum);
   }
-  else if(inxml.GetXMLGenerTypeName()=="NEUT"){
+  else if(inxml->GetXMLGenerTypeName()=="NEUT"){
   }
 
   // Set the file name for this event.

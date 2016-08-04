@@ -6,6 +6,7 @@
 #include "ND280Trajectory.hh"
 #include "ND280TrajectoryPoint.hh"
 #include "ExN02VertexInfo.hh"
+#include "ExN02Constants.hh"
 
 #include <memory>
 #include <cmath>
@@ -32,7 +33,6 @@
 #include <G4StepStatus.hh>
 #include <G4TransportationManager.hh>
 #include <G4FieldManager.hh>
-#include "ExN02Constants.hh"
 
 #include <TROOT.h>
 #include <TFile.h>
@@ -47,6 +47,7 @@ TROOT root("ROOT","Root of Everything");
 ND280RootPersistencyManager::ND280RootPersistencyManager() 
     : ND280PersistencyManager(), fOutput(NULL),
       fEventTree(NULL), fND280UpEvent(NULL), 
+      fND280XMLInput(),fEventFirst(-99999),fNEvents(-99999),
       fEventsNotSaved(0) {}
 
 ND280RootPersistencyManager* ND280RootPersistencyManager::GetInstance() {
@@ -59,6 +60,7 @@ ND280RootPersistencyManager* ND280RootPersistencyManager::GetInstance() {
 
 ND280RootPersistencyManager::~ND280RootPersistencyManager() {
     if (fOutput) delete fOutput; fOutput = NULL;
+    delete fND280XMLInput; fND280XMLInput = NULL;
 }
 
 bool ND280RootPersistencyManager::IsOpen() {
@@ -69,7 +71,14 @@ bool ND280RootPersistencyManager::IsOpen() {
   return false;
 }
 
+
+void ND280RootPersistencyManager::OpenXML(G4String filename){
+  fND280XMLInput = new ExN02ND280XML(filename); 
+}
+
+
 bool ND280RootPersistencyManager::Open(G4String filename) {
+  
   if (fOutput) {
     G4cout << "ND280RootPersistencyManager::Open "
 	   << "-- Delete current file pointer" 
@@ -117,6 +126,7 @@ bool ND280RootPersistencyManager::Close() {
 
   delete fEventTree;
   delete fND280UpEvent;
+  delete fND280XMLInput; fND280XMLInput=NULL;
 
   return true;
 }
@@ -128,8 +138,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     G4Exception("ND280RootPersistencyManager::Store",
    		"ExN02Code001",FatalException, msg);
     return false;
-  }
-    
+  }  
+
   fND280UpEvent = new TND280UpEvent();
   // The event is constructed using an auto ptr since we must delete it
   // before leaving this method.                            
@@ -215,6 +225,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     ++vtxNumber;  
   }
  
+  
 
   //                                          
   // Store the track in the ND280 event 
@@ -352,6 +363,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   // output  file.  After the  data is  saved, I  reset the  the fND280Event
   // pointer (the fEventTree branch pointer).
   //fND280Event = event.get(); 
+  
   fEventTree->Fill();
   fND280UpEvent = NULL;
   delete fND280UpEvent;
@@ -363,6 +375,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //   fEventsNotSaved = 0;
   // }  
 
+  
+  //G4cout << "ND280RootPersistencyManager::Store" << G4endl;
+  //exit(1);
+  
   return true;
 }
 

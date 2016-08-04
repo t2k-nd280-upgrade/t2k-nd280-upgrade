@@ -72,14 +72,13 @@ void ExN02ActionInitialization::Build() const
   //SetUserAction(eventAction);
 
   ExN02PrimaryGeneratorAction *primgen = new ExN02PrimaryGeneratorAction;
-  primgen->SetFirstEvent(FirstEvent);
+  
   SetUserAction(primgen);
   ExN02EventAction* eventAction = new ExN02EventAction;
   SetUserAction(eventAction);
   SetUserAction(new ExN02RunAction(eventAction));
 
   SetUserAction(new ND280UserTrackingAction);
-  //SetUserAction(new TrackingAction(fDetector));
 
   //SetUserAction(new ExN02SteppingAction(fDetConstruction,eventAction));
 }

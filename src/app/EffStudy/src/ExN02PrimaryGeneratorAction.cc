@@ -87,11 +87,6 @@ ExN02PrimaryGeneratorAction::~ExN02PrimaryGeneratorAction()
 
 void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  // Pass the tree event number to RooTrackerNEUT
-
-  G4int firstevent = this->GetFirstEvent();
-  RooTrackerNEUT.SetFirstEvent(firstevent);
-
   // This function is called at the begining of event
 
   bool doGun = false;
@@ -151,9 +146,6 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     //
     // Also use current event ID from NEUT tree object, since the event is not initialized yet
     //
-
-
-
     
     // G4int CurrNEUTEvtID = RooTrackerNEUT.GetCurrNEUTevent();
     // if(CurrNEUTEvtID==0){      
@@ -172,17 +164,9 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     //   }  
     // }
 
-
     
     // Generate the primary vertex
-
-    RooTrackerNEUT.GeneratePrimaryVertex(anEvent);
-    
-    //G4PrimaryVertex* CheckVertex = anEvent->GetPrimaryVertex();
-    //G4cout << CheckVertex->GetX0() / m << " "
-    //     << CheckVertex->GetY0() / m << " "
-    //	   << CheckVertex->GetZ0() / m << " "
-    //     << G4endl;    
+    RooTrackerNEUT.GeneratePrimaryVertex(anEvent);   
   }  
 
   else{

@@ -25,3 +25,4 @@ export VGM_INSTALL_DIR=/afs/cern.ch/user/d/dsgalabe/VGM/vgm.4.3-install
 # setup t2k-nd280-upgrade
 export T2KND280UP=$1
 export T2KND280UP_SRC=$T2KND280UP/src/app/EffStudy 
+export T2KND280UP_EVT=$T2KND280UP/src/app/nd280UpEvent

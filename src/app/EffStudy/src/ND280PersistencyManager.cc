@@ -34,7 +34,7 @@
 ND280PersistencyManager::ND280PersistencyManager() 
   : G4VPersistencyManager(), fFilename("/dev/null"),
     fLengthThreshold(1*cm), // default nd280mc is 2*cm (NOT APPLIED!!!)
-    fGammaThreshold(20*MeV), // default nd280mc is 50*MeV 
+    fGammaThreshold(50*MeV), // default nd280mc is 50*MeV 
     fNeutronThreshold(50*MeV),
     fTrajectoryPointAccuracy(1*cm), 
     fSaveAllPrimaryTrajectories(true) //default nd280mc is false
@@ -185,10 +185,10 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   // Save particles that produce a signal in a sensitive detector.  This
   // doesn't automatically save, but the parents will be automatically
   // considered for saving by the next bit of code.  
-  //if (ndTraj->GetSDLength() > GetLengthThreshold()) {
-  //ndTraj->MarkTrajectory(false);
-  //return;
-  //}
+  if (ndTraj->GetSDLength() > GetLengthThreshold()) {
+    ndTraj->MarkTrajectory(false);
+    return;
+  }
   
   // For the next part, only consider particles where the children have
   // deposited energy in a sensitive detector.
@@ -212,7 +212,7 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   // Since I don't apply any cut on track length
   // I store all the tracks that were not rejected at this point.
   // Not done in nd280mc!!!
-  ndTraj->MarkTrajectory(false);
+  //ndTraj->MarkTrajectory(false);
   
 
   //
