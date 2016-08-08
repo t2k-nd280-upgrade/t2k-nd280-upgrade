@@ -17,15 +17,15 @@ const double vtx_max_z_2 = -487;  //mm
 
 void TestND280UpEvent(){
 
-  // gROOT->ProcessLine(".L /Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+");
-  // gROOT->ProcessLine(".L /Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+");
-  // gROOT->ProcessLine(".L /Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+");
-  // gROOT->ProcessLine(".L /Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+");
+  gROOT->ProcessLine(".L /Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+");
+  gROOT->ProcessLine(".L /Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+");
+  gROOT->ProcessLine(".L /Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+");
+  gROOT->ProcessLine(".L /Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+");
 
-  gROOT->ProcessLine(".L /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+");
-  gROOT->ProcessLine(".L /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+");
-  gROOT->ProcessLine(".L /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+");
-  gROOT->ProcessLine(".L /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+");
+  // gROOT->ProcessLine(".L /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+");
+  // gROOT->ProcessLine(".L /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+");
+  // gROOT->ProcessLine(".L /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+");
+  // gROOT->ProcessLine(".L /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+");
 
   // Vertex
   TH2D *hVtx_XY = new TH2D("hVtx_XY","hVtx_XY",60,-3000,3000,60,-3000,3000); // mm
@@ -154,22 +154,28 @@ void TestND280UpEvent(){
       
     } // end loop over tracks
   } // end loop over events
+  
 
-
-
-
-    TCanvas *cVtx_X = new TCanvas("cVtx_X","cVtx_X");
-    hVtx_X->GetXaxis()->SetTitle("X (mm)");
-    hVtx_X->Draw();
-    TCanvas *cVtx_Y = new TCanvas("cVtx_Y","cVtx_Y");
-    hVtx_Y->GetXaxis()->SetTitle("Y (mm)");
-    hVtx_Y->Draw();
-    TCanvas *cVtx_Z = new TCanvas("cVtx_Z","cVtx_Z");
-    hVtx_Z->GetXaxis()->SetTitle("Z (mm)");
-    hVtx_Z->Draw();
-    TCanvas *cVtx_XY = new TCanvas("cVtx_XY","cVtx_XY");
-    hVtx_XY->GetXaxis()->SetTitle("X (mm)");
-    hVtx_XY->GetYaxis()->SetTitle("Y (mm)");
-    hVtx_XY->Draw("colz");
+  // TCanvas *cVtx_X = new TCanvas("cVtx_X","cVtx_X");
+  // hVtx_X->GetXaxis()->SetTitle("X (mm)");
+  // hVtx_X->Draw();
+  // TCanvas *cVtx_Y = new TCanvas("cVtx_Y","cVtx_Y");
+  // hVtx_Y->GetXaxis()->SetTitle("Y (mm)");
+  // hVtx_Y->Draw();
+  // TCanvas *cVtx_Z = new TCanvas("cVtx_Z","cVtx_Z");
+  // hVtx_Z->GetXaxis()->SetTitle("Z (mm)");
+  // hVtx_Z->Draw();
+  // TCanvas *cVtx_XY = new TCanvas("cVtx_XY","cVtx_XY");
+  // hVtx_XY->GetXaxis()->SetTitle("X (mm)");
+  // hVtx_XY->GetYaxis()->SetTitle("Y (mm)");
+  // hVtx_XY->Draw("colz");
+  
+  TFile *out = new TFile("outfile.root","RECREATE");
+  hVtx_X->Write();
+  hVtx_Y->Write();
+  hVtx_Z->Write();
+  hVtx_XY->Write();
+  
+  
 
 }
