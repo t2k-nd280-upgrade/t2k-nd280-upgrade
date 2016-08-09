@@ -97,6 +97,6 @@ if($resource eq "UNIGE-Atlas") {
     print PBS "$command \n";
     close(PBS);
 
-    #qsub -q veryshort /atlas/users/dsgalabe/ciao.sbatch;
-    qsub -q short /atlas/users/dsgalabe/ciao.sbatch;
+    `qsub -q veryshort /atlas/users/dsgalabe/ciao.sbatch`;
+    #qsub -q short /atlas/users/dsgalabe/ciao.sbatch;
 }
