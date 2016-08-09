@@ -26,19 +26,20 @@
 #-------------------------------------------------------------------------------------------------------------------------------
 #
 
+
 use File::Path;
 
 $iarg=0;
 foreach (@ARGV) {
 
     if($iarg % 2 == 1) {$iarg++; next;}
-
+    
     ##################################### Common ########################################
     if   ($_ eq '--resource'         ) { $resource        = $ARGV[$iarg+1]; }
     elsif($_ eq '--cpu-time'         ) { $cput            = $ARGV[$iarg+1]; }
     elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
     elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
-
+    elsif($_ eq '--config'           ) { $config          = $ARGV[$iarg+1]; }
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
     elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }
     elsif($_ eq '--fmwk-dir'         ) { $fmwk_dir        = $ARGV[$iarg+1]; }
@@ -52,7 +53,7 @@ foreach (@ARGV) {
 $resource        = "interactive"               unless defined $resource;
 $tag             = "fitmarg_fc_dcp"  unless defined $tag;
 $nruns           = 1                           unless defined $nruns; 
-$config_file = ""  unless defined $config_file;
+$config_file = "configuration.xml"  unless defined $config_file;
 $arguments = "$softw_dir/";
 
 
@@ -64,47 +65,38 @@ $arguments = "$softw_dir/";
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
 
-
     $ifile_first = $first_expt + $irun * $nexpts;
     $ifile_last  = $ifile_first + $nexpts - 1; # The "last" experiment is included
     
     
-    $command = "$program $arguments";
-
-
+    #
+    # TODO:
+    # - set paths correctly: $softw_dir, $job_dir
+    #
+    $arguments = "$arguments/bin/EffStudy.exe /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/vis.mac /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/config_file.xml 0 1";
+    
+    #$command = "$program $arguments";
+    $command = "$arguments";
+    
     print "$command \n";
     
     print "\n////////////////////////////// \n\n";
+
+    $irun=$irun+1;
 }
-    
+
+
 ################################### Submit the job ##################################
 
 #
-# ETH (Monch cluster), $job_dir not used, $tag gives path/name of output file
+# UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
 #
-if($resource eq "ETH-Monch") {
-    open(PBS, ">/mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch") or die("Can not create the sbatch script");
+if($resource eq "UNIGE-Atlas") {
+    open(PBS, ">/atlas/users/dsgalabe/ciao.sbatch") or die("Can not create the sbatch script");
     print PBS "#!/bin/bash -l  \n";
-    #print PBS "#SBATCH --partition=dphys_compute_wk  \n";
-    #print PBS "#SBATCH --partition=dphys_compute  \n";
-    print PBS "#SBATCH --partition=dphys_compute --mem-per-cpu=2000  \n"; # in MB. Same as dphys_largemem default RAM    
-    #print PBS "#SBATCH --partition=dphys_largemem  \n";
-    #print PBS "#SBATCH --partition=dphys_largemem --mem-per-cpu=4000  \n";
-    print PBS "#SBATCH --nodes=1  \n";
-    print PBS "#SBATCH --ntasks-per-node=1  \n";
-    print PBS "#SBATCH --output=/mnt/lnec/davides/VALOR/outputs/out-$tag_in.%j.o  \n";
-    print PBS "#SBATCH --error=/mnt/lnec/davides/VALOR/outputs/out-$tag_in.%j.e  \n";
-    print PBS "echo \$SLURM_JOB_NODELIST \n"; # print the node  number
     print PBS "$command \n";
     close(PBS);
-    #`sbatch -t 23:59:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
-    #`sbatch -t 1-00:00:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
-    #`sbatch -t 10:00:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
-    `sbatch -t 07:00:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
-    #`sbatch -t 05:00:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
-    #`sbatch -t 00:59:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
-    #`sbatch -t 00:15:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
-    #`sbatch -t 00:02:00 /mnt/lnec/davides/VALOR/sbatch_files/run_fc-$irun.sbatch`;
+
+    #qsub -q veryshort /atlas/users/dsgalabe/ciao.sbatch;
+    qsub -q short /atlas/users/dsgalabe/ciao.sbatch;
 }
-
-
