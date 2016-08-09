@@ -32,9 +32,8 @@ public :
   G4int GetTotNEUTevents(){ return fTotEntry;};
   G4int GetCurrNEUTevent(){ return fCurrEntry;};
 
-  void SetFirstEvent(G4int evt1){FirstEvent = evt1;};
-  G4int GetFirstEvent(){return FirstEvent;};
-  G4int FirstEvent;
+  void SetFirstEvent(G4int evt1){fFirstEvent = evt1;};
+  G4int GetFirstEvent(){return fFirstEvent;};
 
 private :
 
@@ -43,8 +42,10 @@ private :
   TTree *fneutree;    // NEUT tree to read
   G4int fTotEntry;
   G4int fCurrEntry;
+
+  G4int fFirstEvent;
   
-  ExN02ND280XML inxml;
+  ExN02ND280XML *inxml;
   
   void ReadGENIE(G4String filename);
   void ReadNEUT(G4String filename);

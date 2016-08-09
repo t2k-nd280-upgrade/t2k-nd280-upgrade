@@ -77,6 +77,13 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//
+// argv[1] --> input GEANT4 macro file
+// argv[2] --> input xml configuration file
+// argv[3] --> First Event of Generator tree
+// argv[4] --> # of events to run
+// 
+
 int main(int argc,char** argv)
 {
   // User Verbose output class
@@ -89,40 +96,40 @@ int main(int argc,char** argv)
   G4RunManager * runManager = new G4RunManager;
 
  
-  // Create the persistency manager.                                              
+  // Create ROOT the persistency manager.                                              
   ND280RootPersistencyManager* persistencyManager
     = ND280RootPersistencyManager::GetInstance();
-  
-  //G4VPersistencyManager *pMan
-  //= G4VPersistencyManager::GetPersistencyManager();
-  
-  //ND280RootPersistencyManager *pND280Man;
-  //= dynamic_cast<ND280RootPersistencyManager*>
-  //(G4VPersistencyManager::GetPersistencyManager());
-  
+    
   std::string rootfilename = "ND280upgrade"; 
   persistencyManager->Open(rootfilename); 
   if(persistencyManager->IsOpen()){
-    G4cout << "The file is open" << G4endl;
+    G4cout << "The output ROOT file is open" << G4endl;
   }
   else{
-  }
+    G4Exception("ExN02DetectorConstruction",
+		"if(persistencyManager->IsOpen()",
+		FatalException,
+		"The file is not open");    
+  }  
+
+
+  //
+  // Set the input configuration file
+  //
+  G4String xmlfilename = argv[2];
+  persistencyManager->OpenXML(xmlfilename);
   
+  ExN02ND280XML *ND280XMLInput = persistencyManager->GetXMLInput();
+  
+  G4cout << "File name: " << ND280XMLInput->GetXMLFileName() << G4endl;
+  G4cout << "Generator: " << ND280XMLInput->GetXMLGenerTypeName() << G4endl;
+  G4cout << "Path to files: " << ND280XMLInput->GetXMLPathFiles() << G4endl;
+  G4cout << "Tree name: " << ND280XMLInput->GetXMLGenerTreeName() << G4endl;
+  G4cout << "File name: " << ND280XMLInput->GetXMLGenerFileName() << G4endl;
+  
+  G4String inputfile = ND280XMLInput->GetXMLPathFiles();
+  inputfile.append(ND280XMLInput->GetXMLGenerFileName());
 
-  // Set BeamOn to total # of events in the tree - first event
-
-  G4int MyFirstEvent = atoi(argv[2]);
-  G4int MyStepEvent  = atoi(argv[3]);
-
-  ExN02ND280XML ND280XMLInput;
-  G4cout << "File name: " << ND280XMLInput.GetXMLFileName() << G4endl;
-  G4cout << "Generator: " << ND280XMLInput.GetXMLGenerTypeName() << G4endl;
-  G4cout << "Path to files: " << ND280XMLInput.GetXMLPathFiles() << G4endl;
-  G4cout << "Tree name: " << ND280XMLInput.GetXMLGenerTreeName() << G4endl;
-  G4cout << "File name: " << ND280XMLInput.GetXMLGenerFileName() << G4endl;
-  //G4cout << "# of events to process: " << ND280XMLInput.GetXMLStepEvent() << G4endl;
-  G4String inputfile = ND280XMLInput.GetXMLPathFiles();
-  inputfile.append(ND280XMLInput.GetXMLGenerFileName());
   TFile *myfile = new TFile(inputfile,"READ"); 
   if (!myfile->IsOpen()) {
     const char *msg = "NEUT file is not open!";
@@ -130,7 +137,7 @@ int main(int argc,char** argv)
     const char *code = "if (!myfile->IsOpen())";
     G4Exception(origin,code,FatalException,msg);
   }
-  TTree *mytree = (TTree*)myfile->Get(ND280XMLInput.GetXMLGenerTreeName());
+  TTree *mytree = (TTree*)myfile->Get(ND280XMLInput->GetXMLGenerTreeName());
   if (!mytree) {
     const char *msg = "NEUT tree is not open!";
     const char *origin = "Main function";
@@ -138,8 +145,17 @@ int main(int argc,char** argv)
     G4Exception(origin,code,FatalException,msg);
   }    
 
-  //G4int NEvtStep = ND280XMLInput.GetXMLStepEvent();
-  //G4int NEvtTot = MyFirstEvent+NEvtStep;
+  
+  // Set BeamOn to total # of events in the tree - first event
+  
+  G4int MyFirstEvent = atoi(argv[3]);
+  G4int MyStepEvent  = atoi(argv[4]);  
+  
+  persistencyManager->SetEventFirst(MyFirstEvent);
+  persistencyManager->SetNEvents(MyStepEvent);
+  G4cout << "# of events to process: " << persistencyManager->GetNEvents() << G4endl;
+  G4cout << "# of first event: " << persistencyManager->GetEventFirst() << G4endl;
+
   G4int NEvtStep = MyStepEvent;
   G4int NEvtTot = MyFirstEvent+NEvtStep;
 
@@ -205,18 +221,20 @@ int main(int argc,char** argv)
   //G4UserSteppingAction* stepping_action = new ExN02SteppingAction; // OLD
   // //G4UserSteppingAction* stepping_action = new ExN02SteppingAction(detector,event_action); // NEW
   //runManager->SetUserAction(stepping_action);
-                                                                                                
+
+                                         
+
+
   // Initialize all User Action classes
  
-  ExN02ActionInitialization* actionInitialization = new ExN02ActionInitialization(detector);
-  actionInitialization->SetFirstEvent(MyFirstEvent); // FROM CLUSTER SCRIPT!!!
-  
+  ExN02ActionInitialization* actionInitialization = new ExN02ActionInitialization(detector);  
   runManager->SetUserInitialization(actionInitialization);
+
   
   // Initialize G4 kernel
   //                               
   runManager->Initialize();
-
+  
   
   //
       
@@ -235,14 +253,14 @@ int main(int argc,char** argv)
       G4String fileName = argv[1];
       UImanager->ApplyCommand(command+fileName);
 
+      //
       // Set number of BeamOn (events to simulate)
+      //
       //runManager->BeamOn(NEvtTot); // reset all the UImanager commands!!!
-
       G4String RunBeamOn = Form("/run/beamOn %i",NEvtStep);
       //G4cout << RunBeamOn << G4endl;
       
       UImanager->ApplyCommand(RunBeamOn);
-
     }
   else           // interactive mode : define UI session
     { 

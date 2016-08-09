@@ -36,11 +36,12 @@ void ExN02ND280XML::SetInputs(){
   ifstream myfile (fXMLFile);
   if(myfile.is_open()){    
     
+    XML2Bool("IsRandomSeed",fIsRandomSeed);
     XML2String("Generator",fGenerType);
     XML2String("Path2file",fPathFiles);
     XML2String("filename",fGenerFileName);  
     XML2String("treename",fGenerTreeName);      
-
+    
     // Forward TPCs 
     XML2Bool("forwTPCdefault" ,fForwTPCdefault);
     XML2Double("forwTPCPos1_X" ,fForwTPCPos1_X);

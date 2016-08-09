@@ -67,5 +67,6 @@
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent_cc.so: /afs/cern.ch/user/d/dsgalabe/ROOT/root/include/TMatrixFUtils.h
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent_cc.so: /afs/cern.ch/user/d/dsgalabe/ROOT/root/include/TMatrixFUtilsfwd.h
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent_cc.so: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.hh
+/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent_cc.so: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh
 /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent_cc.so: /afs/cern.ch/user/d/dsgalabe/ROOT/root/include/cintdictversion.h /afs/cern.ch/user/d/dsgalabe/ROOT/root/include/RVersion.h
 TND280UpEvent_cc__ROOTBUILDVERSION= 5.34/34

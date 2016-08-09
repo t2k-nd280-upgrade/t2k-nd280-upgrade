@@ -34,6 +34,9 @@
 #include "ExN02EventAction.hh"
 #include "ExN02Analysis.hh" // TODO
 
+#include "ND280PersistencyManager.hh"
+#include "ND280RootPersistencyManager.hh"
+
 #include "G4Run.hh"
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
@@ -47,6 +50,8 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
   : G4UserRunAction(),
     fEventAction(eventAction)
 {
+  //set the seed engine
+  CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
 
   // set printing event number per each event
   G4RunManager::GetRunManager()->SetPrintProgress(1);
@@ -322,8 +327,17 @@ void ExN02RunAction::BeginOfRunAction(const G4Run* aRun)
 {
   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
 
+  // Create ROOT the persistency manager.                                                                                                                                                            
+  ND280RootPersistencyManager* persistencyManager
+    = ND280RootPersistencyManager::GetInstance();
+  ExN02ND280XML *ND280XMLInput = persistencyManager->GetXMLInput();
+  bool IsRandomSeed = ND280XMLInput->GetXMLIsRandomSeed();
+
+  // set the Seed
+  if(IsRandomSeed) SetSeed();
+
   //inform the runManager to save random number seed  
-  //G4RunManager::GetRunManager()->SetRandomNumberStore(true);      
+  G4RunManager::GetRunManager()->SetRandomNumberStore(true);      
 
   // Get analysis manager
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
@@ -376,5 +390,26 @@ void ExN02RunAction::EndOfRunAction(const G4Run*)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void ExN02RunAction::SetSeed() {
+  //set random seed with system time
+  G4long seed = time(NULL);
+  if (seed<0) seed = -seed;
+  G4cout << "### Random seed number set to: " << seed<< G4endl;
+  CLHEP::HepRandom::setTheSeed(seed);
+}
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
 
+void ExN02RunAction::SetSeed(long seed) {
+  if (seed<0) seed = -seed;
+  G4cout << "### Random seed number set to: "<< seed << G4endl;
+  CLHEP::HepRandom::setTheSeed(seed);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
+
+long ExN02RunAction::GetSeed(void) const {
+  return CLHEP::HepRandom::getTheSeed();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  

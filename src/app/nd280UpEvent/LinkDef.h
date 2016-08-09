@@ -7,6 +7,9 @@
 #pragma link C++ class TND280UpEvent+;
 //#pragma link C++ class std::vector<TND280UpEvent>+;
 
+#pragma link C++ class TND280UpVertex+;
+#pragma link C++ class std::vector<TND280UpVertex>+;
+
 #pragma link C++ class TND280UpTrack+;
 #pragma link C++ class std::vector<TND280UpTrack>+;
 

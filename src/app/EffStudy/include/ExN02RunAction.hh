@@ -36,6 +36,11 @@
 #include "G4UserRunAction.hh"
 #include "globals.hh"
 
+#include "Randomize.hh"
+
+#include <CLHEP/Random/Random.h>
+
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
@@ -69,7 +74,15 @@ public:
   //virtual G4Run* GenerateRun();
   void BeginOfRunAction(const G4Run*);
   void EndOfRunAction(const G4Run*);
+ 
+  // Set the seed to a new value.  This takes a long since the low-level
+  // random generate expects a long seed.
+  void SetSeed();
+  void SetSeed(long);
   
+  // Get the seed that started the low level random generator.
+  long GetSeed(void) const;
+ 
 private:
   ExN02EventAction* fEventAction;
 };

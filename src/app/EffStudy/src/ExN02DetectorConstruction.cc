@@ -112,7 +112,7 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
   fDriftWidth(0.),fDriftHeight(0.),fDriftLength(0.),
   fCathodeThickness(0.),fCO2Top(0.),fCO2Sides(0.),
   fCO2Bottom(0.),fInnerBoxWall(0.),fOuterBoxWall(0.),fActiveTPCVerticalOffset(0.),
-  fShowOuterVolume(false),fSteppingLimit(0.),DebugTPCMass(false)
+  fShowOuterVolume(false),fSteppingLimit(0.),DebugTPCMass(true)
 {
   //fpMagField = new ExN02MagneticField(); // OLD
   detectorMessenger = new ExN02DetectorMessenger(this);
@@ -202,7 +202,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   solidWorld= new G4Box(cNameSolidWorld,HalfWorldWidth,HalfWorldHeight,HalfWorldLength);
   logicWorld= new G4LogicalVolume(solidWorld,WorldMater,cNameLogicWorld,0,0,0);
-
+  
   //  Must place the World Physical volume unrotated at (0,0,0).
   // 
   physiWorld = new G4PVPlacement(0,               // no rotation
@@ -219,8 +219,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << fWorldWidth/mm  << " (width) x " 
   	 << fWorldHeight/mm << " (height) x " 
   	 << fWorldLength/mm << " (length) mm^3" 
-	 << " of " << WorldMater->GetName()
-  	 << G4endl;
+	 << " of " << WorldMater->GetName() << G4endl;
+  if (DebugTPCMass) G4cout << " mass="<<logicWorld->GetMass()/kg   <<" kg";
+  G4cout << G4endl;
   
     
   //------------------------------ 
@@ -268,8 +269,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << fBasketWidth/mm  << " (width) x " 
   	 << fBasketHeight/mm << " (height) x " 
   	 << fBasketLength/mm << " (length) mm^3"
-  	 << " of " << BasketMater->GetName()
-  	 << G4endl;
+  	 << " of " << BasketMater->GetName() << G4endl;
+  if (DebugTPCMass) G4cout << " mass="<<logicBasket->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << G4endl;
 
   
   //------------------------------ 
@@ -305,8 +307,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << fTrackerWidth/mm  << " (width) x " 
   	 << fTrackerHeight/mm << " (height) x " 
   	 << fTrackerLength/mm << " (length) mm^3"
-  	 << " of " << TrackerMater->GetName()
-  	 << G4endl;
+  	 << " of " << TrackerMater->GetName() << G4endl;
+  if (DebugTPCMass) G4cout << " mass="<<logicTracker->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << G4endl;
 
 
   //------------------------------ 
@@ -480,8 +483,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << GetTargetFullWidth1()/mm  << " (width) x " 
   	 << GetTargetFullHeight1()/mm << " (height) x " 
   	 << GetTargetFullLength1()/mm << " (length) mm^3" 
-         << " of " << logicTarget1->GetMaterial()->GetName() 
-  	 << G4endl
+         << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
+  if (DebugTPCMass) G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl;  	 
+  G4cout << G4endl
 	 << " - position: ( " 
 	 << GetTargetPos1().x()/mm << ", "
 	 << GetTargetPos1().y()/mm << ", "
@@ -534,8 +538,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << GetTargetFullWidth2()/mm  << " (width) x " 
   	 << GetTargetFullHeight2()/mm << " (height) x " 
   	 << GetTargetFullLength2()/mm << " (length) mm^3" 
-         << " of " << logicTarget2->GetMaterial()->GetName() 
-  	 << G4endl
+         << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
+  if (DebugTPCMass) G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << G4endl
 	 << " - position: ( " 
 	 << GetTargetPos2().x()/mm << ", "
 	 << GetTargetPos2().y()/mm << ", "
@@ -595,8 +600,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << GetSideTPCFullWidth1()/mm  << " (width) x " 
   	 << GetSideTPCFullHeight1()/mm << " (height) x " 
   	 << GetSideTPCFullLength1()/mm << " (length) mm^3" 
-         << " of " << logicSideTPCUp1->GetMaterial()->GetName() 
-  	 << G4endl
+         << " of " << logicSideTPCUp1->GetMaterial()->GetName() << G4endl; 
+  if (DebugTPCMass) G4cout << " mass="<<logicSideTPCUp1->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << G4endl
 	 << " - position: ( " 
 	 << GetSideTPCUpPos1().x()/mm << ", "
 	 << GetSideTPCUpPos1().y()/mm << ", "
@@ -639,8 +645,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << GetSideTPCFullWidth1()/mm  << " (width) x " 
   	 << GetSideTPCFullHeight1()/mm << " (height) x " 
   	 << GetSideTPCFullLength1()/mm << " (length) mm^3" 
-         << " of " << logicSideTPCDown1->GetMaterial()->GetName() 
-  	 << G4endl
+         << " of " << logicSideTPCDown1->GetMaterial()->GetName() << G4endl;
+  if (DebugTPCMass) G4cout << " mass="<<logicSideTPCDown1->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << G4endl
 	 << " - position: ( " 
 	 << GetSideTPCDownPos1().x()/mm << ", "
 	 << GetSideTPCDownPos1().y()/mm << ", "
@@ -683,8 +690,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << GetSideTPCFullWidth2()/mm  << " (width) x " 
   	 << GetSideTPCFullHeight2()/mm << " (height) x " 
   	 << GetSideTPCFullLength2()/mm << " (length) mm^3" 
-         << " of " << logicSideTPCUp2->GetMaterial()->GetName() 
-  	 << G4endl
+         << " of " << logicSideTPCUp2->GetMaterial()->GetName() << G4endl; 
+  if (DebugTPCMass) G4cout << " mass="<<logicSideTPCUp2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << G4endl
 	 << " - position: ( " 
 	 << GetSideTPCUpPos2().x()/mm << ", "
 	 << GetSideTPCUpPos2().y()/mm << ", "
@@ -726,8 +734,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << GetSideTPCFullWidth2()/mm  << " (width) x " 
   	 << GetSideTPCFullHeight2()/mm << " (height) x " 
   	 << GetSideTPCFullLength2()/mm << " (length) mm^3" 
-         << " of " << logicSideTPCDown2->GetMaterial()->GetName() 
-  	 << G4endl
+         << " of " << logicSideTPCDown2->GetMaterial()->GetName() << G4endl;
+  if (DebugTPCMass) G4cout << " mass="<<logicSideTPCDown2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << G4endl
 	 << " - position: ( " 
 	 << GetSideTPCDownPos2().x()/mm << ", "
 	 << GetSideTPCDownPos2().y()/mm << ", "
@@ -1510,7 +1519,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
   SetWidth(2300*mm);
   SetHeight(2400*mm);
 
-  DebugTPCMass = false ; //set to true to get extra printouts on component masses
+  DebugTPCMass = true ; //set to true to get extra printouts on component masses
 
   //SetMaximumHitLength(10.*mm);
   //SetMaximumHitSagitta(0.5*mm);
@@ -1897,12 +1906,12 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
        }
      }
 
-    // if (DebugTPCMass){
-    //   ND280Log("DriftGas (2) mass="<<logHalf0->GetMass()/kg<<" kg");
-    //   ND280Log("CO2 Gap (1) mass="<<logGasGap->GetMass()/kg<<" kg");
-    //   ND280Log("MM (12) mass="<<logMM->GetMass()/kg<<" kg");
-    //   ND280Log("Sum of gases and MM :"<< (2*logHalf0->GetMass()+logGasGap->GetMass()+12*logMM->GetMass())/kg << " kg");
-    // }
+     if (DebugTPCMass){
+       G4cout << "DriftGas (2) mass="<<logHalf0->GetMass()/kg<<" kg" << G4endl;
+       G4cout << "CO2 Gap (1) mass="<<logGasGap->GetMass()/kg<<" kg" << G4endl;
+       G4cout << "MM (12) mass="<<logMM->GetMass()/kg<<" kg" << G4endl;
+       G4cout << "Sum of gases and MM :"<< (2*logHalf0->GetMass()+logGasGap->GetMass()+12*logMM->GetMass())/kg << " kg" << G4endl;
+     }
 
 
      BuildTPCCentralCathode(logDrift);
@@ -2035,12 +2044,12 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
       log_toboCon1->SetVisAttributes(G4VisAttributes::Invisible);
     }
 
-    //if (DebugTPCMass){
-    //ND280Log("CentralCathode (1) mass="<<log_middleG10RoPlate->GetMass()/kg<<" kg");
-    //ND280Log("FrBaCon1 (2) mass="<<log_frbaCon1->GetMass()/kg<<" kg");
-    //ND280Log("ToBoCon1 (2) mass="<<log_toboCon1->GetMass()/kg<<" kg");
-    //ND280Log("Sum of central cathode parts: "<<(log_middleG10RoPlate->GetMass()+2*log_frbaCon1->GetMass()+2*log_toboCon1->GetMass())/kg<<" kg");
-    //}
+    if (DebugTPCMass){
+      G4cout << "CentralCathode (1) mass="<<log_middleG10RoPlate->GetMass()/kg<<" kg" << G4endl;
+      G4cout << "FrBaCon1 (2) mass="<<log_frbaCon1->GetMass()/kg<<" kg" << G4endl;
+      G4cout << "ToBoCon1 (2) mass="<<log_toboCon1->GetMass()/kg<<" kg" << G4endl;
+      G4cout << "Sum of central cathode parts: "<<(log_middleG10RoPlate->GetMass()+2*log_frbaCon1->GetMass()+2*log_toboCon1->GetMass())/kg<<" kg" << G4endl;
+    }
 
 }
 
@@ -3185,65 +3194,65 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     else {
       log_toboCon->SetVisAttributes(G4VisAttributes::Invisible);
     }
-
-    // if (DebugTPCMass){
-    //   ND280Log("SideG10Plate        (2) mass="<<log_sideG10Plate->GetMass()/kg       <<" kg");
-    //   ND280Log("VerticalG10Frame    (4) mass="<<log_verticalG10Frame->GetMass()/kg   <<" kg");
-    //   ND280Log("HorizontallG10Frame (4) mass="<<log_horizontalG10Frame->GetMass()/kg <<" kg");
-    //   ND280Log("VerticalG10Plate    (2) mass="<<log_verticalG10Plate->GetMass()/kg   <<" kg");
-    //   ND280Log("SideAlPlate         (4) mass="<<log_sideAlPlate->GetMass()/kg        <<" kg");
-    //   ND280Log("Water Post          (4) mass="<<log_post->GetMass()/kg               <<" kg");
-    //   ND280Log("SideAlRoPlate       (2) mass="<<log_sideAlRoPlate->GetMass()/kg      <<" kg");
-    //   ND280Log("FrBaAlRoPlate       (4) mass="<<log_frbaAlRoPlate->GetMass()/kg      <<" kg");
-    //   ND280Log("ToBoAlRoPlate       (4) mass="<<log_toboAlRoPlate->GetMass()/kg      <<" kg");
-    //   ND280Log("FrBaG10RoPlate      (4) mass="<<log_frbaG10RoPlate->GetMass()/kg     <<" kg");
-    //   ND280Log("ToBoG10RoPlate      (4) mass="<<log_toboG10RoPlate->GetMass()/kg     <<" kg");
-    //   ND280Log("FrBaPiece1          (4) mass="<<log_frbaPiece1->GetMass()/kg         <<" kg");
-    //   ND280Log("FrBaPiece2          (4) mass="<<log_frbaPiece2->GetMass()/kg         <<" kg");
-    //   ND280Log("FrBaPiece3          (4) mass="<<log_frbaPiece3->GetMass()/kg         <<" kg");
-    //   ND280Log("BoPiece1            (2) mass="<<log_boPiece1->GetMass()/kg           <<" kg");
-    //   ND280Log("BoPiece2            (2) mass="<<log_boPiece2->GetMass()/kg           <<" kg");
-    //   ND280Log("BoPiece3            (2) mass="<<log_boPiece3->GetMass()/kg           <<" kg");
-    //   ND280Log("BoPiece4            (2) mass="<<log_boPiece4->GetMass()/kg           <<" kg");
-    //   ND280Log("BoPiece5            (2) mass="<<log_boPiece5->GetMass()/kg           <<" kg");
-    //   ND280Log("ToPiece1            (2) mass="<<log_toPiece1->GetMass()/kg           <<" kg");
-    //   ND280Log("ToPiece2            (2) mass="<<log_toPiece2->GetMass()/kg           <<" kg");
-    //   ND280Log("ToPiece3            (2) mass="<<log_toPiece3->GetMass()/kg           <<" kg");
-    //   ND280Log("FrBaCon2            (2) mass="<<log_frbaCon2->GetMass()/kg           <<" kg");
-    //   ND280Log("ToBoCon2            (2) mass="<<log_toboCon2->GetMass()/kg           <<" kg");
-    //   ND280Log("FrBaCon             (2) mass="<<log_frbaCon->GetMass()/kg            <<" kg");
-    //   ND280Log("ToBoCon             (2) mass="<<log_toboCon->GetMass()/kg            <<" kg");
     
-    //   ND280Log("Total TPC cage mass : "<<
-    // 	       2*log_sideG10Plate->GetMass()/kg       +
-    // 	       4*log_verticalG10Frame->GetMass()/kg   +
-    // 	       4*log_horizontalG10Frame->GetMass()/kg +
-    // 	       2*log_verticalG10Plate->GetMass()/kg   +
-    // 	       4*log_sideAlPlate->GetMass()/kg        +
-    // 	       4*log_post->GetMass()/kg               +
-    // 	       2*log_sideAlRoPlate->GetMass()/kg      +
-    // 	       4*log_frbaAlRoPlate->GetMass()/kg      +
-    // 	       4*log_toboAlRoPlate->GetMass()/kg      +
-    // 	       4*log_frbaG10RoPlate->GetMass()/kg     +
-    // 	       4*log_toboG10RoPlate->GetMass()/kg     +
-    // 	       4*log_frbaPiece1->GetMass()/kg         +
-    // 	       4*log_frbaPiece2->GetMass()/kg         +
-    // 	       4*log_frbaPiece3->GetMass()/kg         +
-    // 	       2*log_boPiece1->GetMass()/kg           +
-    // 	       2*log_boPiece2->GetMass()/kg           +
-    // 	       2*log_boPiece3->GetMass()/kg           +
-    // 	       2*log_boPiece4->GetMass()/kg           +
-    // 	       2*log_boPiece5->GetMass()/kg           +
-    // 	       2*log_toPiece1->GetMass()/kg           +
-    // 	       2*log_toPiece2->GetMass()/kg           +
-    // 	       2*log_toPiece3->GetMass()/kg           +
-    // 	       2*log_frbaCon2->GetMass()/kg           +
-    // 	       2*log_toboCon2->GetMass()/kg           +
-    // 	       2*log_frbaCon->GetMass()/kg            +
-    // 	       2*log_toboCon->GetMass()/kg            
-    // 	       <<" kg");
-    // }
-   
+    if (DebugTPCMass){
+      G4cout << "SideG10Plate        (2) mass="<<log_sideG10Plate->GetMass()/kg       <<" kg" << G4endl;
+      G4cout << "VerticalG10Frame    (4) mass="<<log_verticalG10Frame->GetMass()/kg   <<" kg" << G4endl;
+      G4cout << "HorizontallG10Frame (4) mass="<<log_horizontalG10Frame->GetMass()/kg <<" kg" << G4endl;
+      G4cout << "VerticalG10Plate    (2) mass="<<log_verticalG10Plate->GetMass()/kg   <<" kg" << G4endl;
+      G4cout << "SideAlPlate         (4) mass="<<log_sideAlPlate->GetMass()/kg        <<" kg" << G4endl;
+      G4cout << "Water Post          (4) mass="<<log_post->GetMass()/kg               <<" kg" << G4endl;
+      G4cout << "SideAlRoPlate       (2) mass="<<log_sideAlRoPlate->GetMass()/kg      <<" kg" << G4endl;
+      G4cout << "FrBaAlRoPlate       (4) mass="<<log_frbaAlRoPlate->GetMass()/kg      <<" kg" << G4endl;
+      G4cout << "ToBoAlRoPlate       (4) mass="<<log_toboAlRoPlate->GetMass()/kg      <<" kg" << G4endl;
+      G4cout << "FrBaG10RoPlate      (4) mass="<<log_frbaG10RoPlate->GetMass()/kg     <<" kg" << G4endl;
+      G4cout << "ToBoG10RoPlate      (4) mass="<<log_toboG10RoPlate->GetMass()/kg     <<" kg" << G4endl;
+      G4cout << "FrBaPiece1          (4) mass="<<log_frbaPiece1->GetMass()/kg         <<" kg" << G4endl;
+      G4cout << "FrBaPiece2          (4) mass="<<log_frbaPiece2->GetMass()/kg         <<" kg" << G4endl;
+      G4cout << "FrBaPiece3          (4) mass="<<log_frbaPiece3->GetMass()/kg         <<" kg" << G4endl;
+      G4cout << "BoPiece1            (2) mass="<<log_boPiece1->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "BoPiece2            (2) mass="<<log_boPiece2->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "BoPiece3            (2) mass="<<log_boPiece3->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "BoPiece4            (2) mass="<<log_boPiece4->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "BoPiece5            (2) mass="<<log_boPiece5->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "ToPiece1            (2) mass="<<log_toPiece1->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "ToPiece2            (2) mass="<<log_toPiece2->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "ToPiece3            (2) mass="<<log_toPiece3->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "FrBaCon2            (2) mass="<<log_frbaCon2->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "ToBoCon2            (2) mass="<<log_toboCon2->GetMass()/kg           <<" kg" << G4endl;
+      G4cout << "FrBaCon             (2) mass="<<log_frbaCon->GetMass()/kg            <<" kg" << G4endl;
+      G4cout << "ToBoCon             (2) mass="<<log_toboCon->GetMass()/kg            <<" kg" << G4endl;
+      
+      G4cout << "Total TPC cage mass : "<<
+	2*log_sideG10Plate->GetMass()/kg       +
+	4*log_verticalG10Frame->GetMass()/kg   +
+	4*log_horizontalG10Frame->GetMass()/kg +
+	2*log_verticalG10Plate->GetMass()/kg   +
+	4*log_sideAlPlate->GetMass()/kg        +
+	4*log_post->GetMass()/kg               +
+	2*log_sideAlRoPlate->GetMass()/kg      +
+	4*log_frbaAlRoPlate->GetMass()/kg      +
+	4*log_toboAlRoPlate->GetMass()/kg      +
+	4*log_frbaG10RoPlate->GetMass()/kg     +
+	4*log_toboG10RoPlate->GetMass()/kg     +
+	4*log_frbaPiece1->GetMass()/kg         +
+	4*log_frbaPiece2->GetMass()/kg         +
+	4*log_frbaPiece3->GetMass()/kg         +
+	2*log_boPiece1->GetMass()/kg           +
+	2*log_boPiece2->GetMass()/kg           +
+	2*log_boPiece3->GetMass()/kg           +
+	2*log_boPiece4->GetMass()/kg           +
+	2*log_boPiece5->GetMass()/kg           +
+	2*log_toPiece1->GetMass()/kg           +
+	2*log_toPiece2->GetMass()/kg           +
+	2*log_toPiece3->GetMass()/kg           +
+	2*log_frbaCon2->GetMass()/kg           +
+	2*log_toboCon2->GetMass()/kg           +
+	2*log_frbaCon->GetMass()/kg            +
+	2*log_toboCon->GetMass()/kg            
+	     <<" kg" << G4endl;
+    }
+    
 }
 
 

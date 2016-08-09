@@ -51,12 +51,6 @@ public:
   virtual void BuildForMaster() const;
   virtual void Build() const;
 
-
-  G4int FirstEvent;
-  void SetFirstEvent(const G4int evtid){FirstEvent = evtid;};
-  G4int GetFirstEvent(){return FirstEvent;};
-
-
 private:
   ExN02DetectorConstruction* fDetConstruction;
 };

@@ -38,6 +38,7 @@ endif (VGM_FOUND)
 
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/include) ### include GEANT4 simulation
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/BlineTracer/include) ### include GEANT4 package to visualize magnetic field
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/nd280UpEvent) ### include nd280UpEvent class
 
 message(STATUS "C flags      : " ${CMAKE_C_FLAGS})
 message(STATUS "CXX flags    : " ${CMAKE_CXX_FLAGS})

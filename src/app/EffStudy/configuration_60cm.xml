@@ -6,19 +6,19 @@
 </Main_Package>
 <Dependency_Details>
 
-
 <Dependency>
+
   <IsRandomSeed>
     0
   </IsRandomSeed>
-  
-  <Generator>      
-    GENIE  
-  </Generator>
-  <Path2file>
-    /neutrino/data7/davide/files/ 
-  </Path2file>
-  <!--
+
+   <Generator>      
+     GENIE  
+   </Generator>
+   <Path2file>
+     /neutrino/data7/davide/files/
+   </Path2file>
+   <!--
       <NEUTfilename>
 	genev_output_newgeom_O16.root
       </NEUTfileName>
@@ -28,9 +28,7 @@
       -->
    <filename>
      <!-- out.rootracker_highstat.root -->
-     <!-- highstat/out.9001.rootracker.root -->
-     <!-- upgrade/out.9001.rootracker.root --> 
-     upgrade/out.All.rootracker.root
+     highstat/out.9001.rootracker.root
    </filename>
    <treename>  
      gRooTracker

@@ -18,7 +18,6 @@ class G4PrimaryVertex;
 class G4VHitsCollection;
 
 #include "ND280PersistencyManager.hh"
-#include "ExN02ND280XML.hh"
 
 #include <TND280UpEvent.hh>
 #include <TND280UpVertex.hh>
@@ -57,30 +56,7 @@ public:
   /// database).
   virtual G4bool Open(G4String dbname);
   virtual G4bool Close(void);
-    
-  // Open input XML configuration file
-  void OpenXML(G4String filename);
-  ExN02ND280XML *GetXMLInput(){return fND280XMLInput;};
-  /////
   
-  void SetEventFirst(int first){fEventFirst=first;};
-  void SetNEvents(int num){fNEvents=num;};
-
-  int GetEventFirst(){return fEventFirst;};
-  int GetNEvents(){return fNEvents;};
-
-  ExN02ND280XML *fND280XMLInput;
-
-  G4int fEventFirst;
-  G4int fNEvents;
-
-  /////
-
-
-
-
-
-
   /// Copy the G4 Trajectories into an output event.
   //void CopyTrajectories(ND::TND280Event& dest, 
   //const G4TrajectoryContainer* src);

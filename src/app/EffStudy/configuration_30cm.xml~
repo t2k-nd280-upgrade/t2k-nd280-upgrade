@@ -6,19 +6,19 @@
 </Main_Package>
 <Dependency_Details>
 
-
 <Dependency>
+
   <IsRandomSeed>
-    0
+    1
   </IsRandomSeed>
-  
-  <Generator>      
-    GENIE  
-  </Generator>
-  <Path2file>
-    /neutrino/data7/davide/files/ 
-  </Path2file>
-  <!--
+
+   <Generator>      
+     GENIE  
+   </Generator>
+   <Path2file>
+     /neutrino/data7/davide/files/
+   </Path2file>
+   <!--
       <NEUTfilename>
 	genev_output_newgeom_O16.root
       </NEUTfileName>
@@ -28,9 +28,7 @@
       -->
    <filename>
      <!-- out.rootracker_highstat.root -->
-     <!-- highstat/out.9001.rootracker.root -->
-     <!-- upgrade/out.9001.rootracker.root --> 
-     upgrade/out.All.rootracker.root
+     highstat/out.9001.rootracker.root
    </filename>
    <treename>  
      gRooTracker
@@ -91,14 +89,14 @@
      2300
    </sideTPCwidth1>
    <sideTPCheight1> 
-     851.5  <!-- 1000 -->
+     1000
    </sideTPCheight1>
 
    <sideTPCUpPos1_X>
      0 
    </sideTPCUpPos1_X>
    <sideTPCUpPos1_Y>
-     725.75
+     651.5
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
      1487
@@ -108,7 +106,7 @@
      0
    </sideTPCDownPos1_X>
    <sideTPCDownPos1_Y>
-     -725.75
+     -651.5
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
      1487
@@ -126,14 +124,14 @@
      2300
    </sideTPCwidth2>
    <sideTPCheight2> 
-     851.5  <!-- 1000 -->
+     1000
    </sideTPCheight2>
 
    <sideTPCUpPos2_X>
      0
    </sideTPCUpPos2_X>
    <sideTPCUpPos2_Y>
-     725.75
+     651.5
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
      -1487
@@ -143,7 +141,7 @@
      0 
    </sideTPCDownPos2_X>
    <sideTPCDownPos2_Y>
-     -725.75
+     -651.5
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
      -1487
@@ -163,7 +161,7 @@
      2300
    </Targetwidth1>
    <Targetheight1> 
-     600 <!-- 303 -->
+     303 <!-- 303 -->
    </Targetheight1>
  
    <TargetPos1_X>
@@ -190,7 +188,7 @@
      2300 
    </Targetwidth2>
    <Targetheight2> 
-     600 <!-- 303 --> 
+     303 <!-- 303 --> 
    </Targetheight2>
 
    <TargetPos2_X>

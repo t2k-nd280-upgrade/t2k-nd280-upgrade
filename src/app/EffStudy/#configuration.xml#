@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+
  
 <fileStructure>
 <Main_Package>
@@ -16,7 +16,8 @@
     GENIE  
   </Generator>
   <Path2file>
-    /neutrino/data7/davide/files/ 
+    <!-- /neutrino/data7/davide/files/ -->
+    /neutrino/data6/dsgalabe/t2k-nd280-upgrade/files/
   </Path2file>
   <!--
       <NEUTfilename>
@@ -29,8 +30,7 @@
    <filename>
      <!-- out.rootracker_highstat.root -->
      <!-- highstat/out.9001.rootracker.root -->
-     <!-- upgrade/out.9001.rootracker.root --> 
-     upgrade/out.All.rootracker.root
+     upgrade/out.9001.rootracker.root 
    </filename>
    <treename>  
      gRooTracker

@@ -2,6 +2,7 @@ message(STATUS "app ...")
 
 AUX_SOURCE_DIRECTORY(EffStudy/src sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/BlineTracer/src sourcefile) ###
+AUX_SOURCE_DIRECTORY(nd280UpEvent/ sourcefile) ###
 
 message(STATUS "sourcefile ${sourcefile}") ###
 

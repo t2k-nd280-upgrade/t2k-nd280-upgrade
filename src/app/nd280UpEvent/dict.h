@@ -34,6 +34,7 @@ extern void G__set_cpp_environmentdict();
 #include "TND280UpEvent.hh"
 #include "TND280UpTrack.hh"
 #include "TND280UpTrackPoint.hh"
+#include "TND280UpVertex.hh"
 #include <algorithm>
 namespace std { }
 using namespace std;
@@ -77,7 +78,11 @@ extern G__linked_taginfo G__dictLN_TMatrixTSparseDiaglEfloatgR;
 extern G__linked_taginfo G__dictLN_TVector3;
 extern G__linked_taginfo G__dictLN_TND280UpTrackPoint;
 extern G__linked_taginfo G__dictLN_TND280UpTrack;
+extern G__linked_taginfo G__dictLN_TND280UpVertex;
 extern G__linked_taginfo G__dictLN_TND280UpEvent;
+extern G__linked_taginfo G__dictLN_vectorlETND280UpVertexcOallocatorlETND280UpVertexgRsPgR;
+extern G__linked_taginfo G__dictLN_vectorlETND280UpVertexcOallocatorlETND280UpVertexgRsPgRcLcLiterator;
+extern G__linked_taginfo G__dictLN_reverse_iteratorlEvectorlETND280UpVertexcOallocatorlETND280UpVertexgRsPgRcLcLiteratorgR;
 extern G__linked_taginfo G__dictLN_vectorlETND280UpTrackcOallocatorlETND280UpTrackgRsPgR;
 extern G__linked_taginfo G__dictLN_vectorlETND280UpTrackcOallocatorlETND280UpTrackgRsPgRcLcLiterator;
 extern G__linked_taginfo G__dictLN_reverse_iteratorlEvectorlETND280UpTrackcOallocatorlETND280UpTrackgRsPgRcLcLiteratorgR;
@@ -86,5 +91,6 @@ extern G__linked_taginfo G__dictLN_vectorlETND280UpTrackPointcOallocatorlETND280
 extern G__linked_taginfo G__dictLN_reverse_iteratorlEvectorlETND280UpTrackPointcOallocatorlETND280UpTrackPointgRsPgRcLcLiteratorgR;
 
 /* STUB derived class for protected member access */
+typedef vector<TND280UpVertex,allocator<TND280UpVertex> > G__vectorlETND280UpVertexcOallocatorlETND280UpVertexgRsPgR;
 typedef vector<TND280UpTrack,allocator<TND280UpTrack> > G__vectorlETND280UpTrackcOallocatorlETND280UpTrackgRsPgR;
 typedef vector<TND280UpTrackPoint,allocator<TND280UpTrackPoint> > G__vectorlETND280UpTrackPointcOallocatorlETND280UpTrackPointgRsPgR;

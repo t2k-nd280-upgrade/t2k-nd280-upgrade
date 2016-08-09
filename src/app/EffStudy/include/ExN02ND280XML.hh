@@ -25,10 +25,12 @@ class ExN02ND280XML
 {
 public :
 
-  ExN02ND280XML(const G4String inxmlname="../src/app/EffStudy/configuration.xml");
+  ExN02ND280XML(const G4String inxmlname="");
   ~ExN02ND280XML();
     
   G4String GetXMLFileName()     {return fXMLFile;};
+  
+  G4bool   GetXMLIsRandomSeed(){return fIsRandomSeed;};
   G4String GetXMLGenerTypeName(){return fGenerType;};
   G4String GetXMLPathFiles()    {return fPathFiles;};
   G4String GetXMLGenerTreeName(){return fGenerTreeName;};
@@ -92,7 +94,8 @@ public :
 
 private :
 
-  G4String fXMLFile; 
+  G4String fXMLFile;
+  G4bool   fIsRandomSeed;
   G4String fGenerType;
   G4String fPathFiles;
   G4String fGenerTreeName;

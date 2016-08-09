@@ -71,7 +71,7 @@ public:
   G4VPhysicalVolume* Construct();
 
   // Initialize the XML parser
-  ExN02ND280XML ND280XMLInput;
+  ExN02ND280XML *ND280XMLInput;
 
   const 
   G4VPhysicalVolume* GetTracker() {return physiTracker;};
@@ -280,7 +280,8 @@ private:
 
   // Visualization
   G4VisAttributes* BoxVisAtt;
-  G4VisAttributes* TargetVisAtt;
+  G4VisAttributes* TargetWaterVisAtt;
+  G4VisAttributes* TargetScintVisAtt;
   G4VisAttributes* TPCVisAtt;
   G4VisAttributes* TPCCO2;
   G4VisAttributes* TPCDeadMat;
