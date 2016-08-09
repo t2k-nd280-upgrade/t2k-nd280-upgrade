@@ -49,7 +49,9 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
 
 
   G4int firstevent = InputPersistencyManager->GetEventFirst();
+  G4int lastevent = InputPersistencyManager->GetNEvents() + firstevent - 1; // starts from 0
   this->SetFirstEvent(firstevent);
+  this->SetLastEvent(lastevent);
 
   G4String inputfile = inxml->GetXMLPathFiles();
   inputfile.append(inxml->GetXMLGenerFileName());
@@ -254,11 +256,13 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
 
   G4int evtID = anEvent->GetEventID();
   G4int treeEvtID = this->GetFirstEvent()+evtID; // tree event to pick up!!!
-  
+  G4int treeLastID = this->GetLastEvent(); // last tree event 
+
   G4cout << "--> Generate primary vertex from tree event: " << treeEvtID << G4endl;
 
   G4cout << "evtID = " << evtID << G4endl;
   G4cout << "treeEvtID = " << treeEvtID << G4endl;
+  G4cout << "treeLastID = " << treeLastID << G4endl;
   G4cout << "fTotEntry = " << fTotEntry << G4endl;
 
   //if(evtID > fTotEntry){
@@ -269,6 +273,13 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
     G4Exception(origin,code,FatalException,msg);
     //G4RunManager::GetRunManager()->AbortRun(true); // don't use it because the last to last event will be stored twice
     //anEvent->SetEventAborted();
+  }
+
+  if(treeLastID >= fTotEntry){
+    const char *msg = "Last event ID exceeds the number of NEUT events!";
+    const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
+    const char *code = "if(evtLastID >= fTotEntry){";
+    G4Exception(origin,code,FatalException,msg);
   }
 
   // if(evtID != fCurrEntry){

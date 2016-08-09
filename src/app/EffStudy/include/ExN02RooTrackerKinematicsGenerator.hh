@@ -35,6 +35,9 @@ public :
   void SetFirstEvent(G4int evt1){fFirstEvent = evt1;};
   G4int GetFirstEvent(){return fFirstEvent;};
 
+  void SetLastEvent(G4int evt1){fLastEvent = evt1;};
+  G4int GetLastEvent(){return fLastEvent;};
+
 private :
 
   G4String ffilename; // NEUT file name to read
@@ -44,6 +47,7 @@ private :
   G4int fCurrEntry;
 
   G4int fFirstEvent;
+  G4int fLastEvent;
   
   ExN02ND280XML *inxml;
   
