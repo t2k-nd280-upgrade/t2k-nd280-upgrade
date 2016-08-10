@@ -80,8 +80,9 @@
 //
 // argv[1] --> input GEANT4 macro file
 // argv[2] --> input xml configuration file
-// argv[3] --> First Event of Generator tree
-// argv[4] --> # of events to run
+// argv[3] --> output ROOT file name 
+// argv[4] --> First Event of Generator tree
+// argv[5] --> # of events to run
 // 
 
 int main(int argc,char** argv)
@@ -100,7 +101,7 @@ int main(int argc,char** argv)
   ND280RootPersistencyManager* persistencyManager
     = ND280RootPersistencyManager::GetInstance();
     
-  std::string rootfilename = "ND280upgrade"; 
+  std::string rootfilename = argv[3]; //"ND280upgrade"; 
   persistencyManager->Open(rootfilename); 
   if(persistencyManager->IsOpen()){
     G4cout << "The output ROOT file is open" << G4endl;
@@ -148,8 +149,8 @@ int main(int argc,char** argv)
   
   // Set BeamOn to total # of events in the tree - first event
   
-  G4int MyFirstEvent = atoi(argv[3]);
-  G4int MyStepEvent  = atoi(argv[4]);  
+  G4int MyFirstEvent = atoi(argv[4]);
+  G4int MyStepEvent  = atoi(argv[5]);  
   
   persistencyManager->SetEventFirst(MyFirstEvent);
   persistencyManager->SetNEvents(MyStepEvent);
