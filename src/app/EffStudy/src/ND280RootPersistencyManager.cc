@@ -132,6 +132,14 @@ bool ND280RootPersistencyManager::Close() {
 }
 
 bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
+ 
+  //G4cout << "ND280RootPersistencyManager::Store" << G4endl;
+  //return false;
+  //exit(1);
+  
+
+
+
   if (!fOutput) {
     G4ExceptionDescription msg;
     msg << "No Output File" << G4endl; 
@@ -159,7 +167,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       
     ExN02VertexInfo* vInfo 
       = dynamic_cast<ExN02VertexInfo*>(vtx->GetUserInformation());
-
+    
     // Loop over particles outgoing the vertex 
     for (G4int p=0; p<vtx->GetNumberOfParticle(); ++p) {
      
@@ -180,6 +188,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       
       // Fill the vertex with the outgoing track
       nd280Vertex->AddOutTrack(nd280VtxTrack);
+   
+      //delete nd280VtxTrack; 
+      //nd280VtxTrack=NULL;
     }
     
     // Get the Incoming Vertex
@@ -188,7 +199,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
     // Loop over incoming particles
     for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
-
+      
       // Define the vertex track
       TND280UpTrack *nd280VtxTrack = new TND280UpTrack();
 
@@ -206,6 +217,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
       // Fill the vertex with the ingoing track
       nd280Vertex->AddInTrack(nd280VtxTrack);
+
+      //delete nd280VtxTrack; 
+      //nd280VtxTrack=NULL;
     }
   
     //
@@ -223,6 +237,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     fND280UpEvent->AddVertex(nd280Vertex);
     
     ++vtxNumber;  
+
+    //delete nd280Vertex; 
+    //nd280Vertex=NULL;
   }
  
   
@@ -325,6 +342,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	nd280Track->AddPoint(nd280TrackPoint);
       }
       
+      //delete nd280TrackPoint; 
+      //nd280TrackPoint=NULL;
+      
     } // end loop over the points   
     
     // Mark the trajectories to save.
@@ -334,7 +354,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       nd280Track->SaveIt(true);     
       fND280UpEvent->AddTrack(nd280Track);
     }
-    
+
+
     // 
     // ND280Trajectory::ShowTrajectory()
     // and 
@@ -352,6 +373,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     //
     //ndTraj->ShowTrajectory(G4cout);
     //
+
+    //delete nd280Track; 
+    //nd280Track=NULL;
     
   } // end loop over Trajectories
   

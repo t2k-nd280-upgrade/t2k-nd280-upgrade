@@ -81,6 +81,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
     //
     // Here the numbering MUST match the one in EventAction, where Ntuple is filled!!
     //
+    /*
     analysisManager->CreateNtuple("EffStudy","Primary particle and total absorbed energy");
     analysisManager->CreateNtupleDColumn("EabsForwTPC1");      // column Id = 0
     analysisManager->CreateNtupleDColumn("EabsForwTPC2");      // column Id = 1
@@ -128,7 +129,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
     // IMPORTANT: Vector Ntuple columns must be created after the variables in order
     //            to not break the order and Ntuple ID
     //
-    
+
     analysisManager->CreateNtupleIColumn("VecTrackID" ,fEventAction->GetVecTrackID());        // column Id = 15
     analysisManager->CreateNtupleIColumn("VecParentID" ,fEventAction->GetVecParentID());        // column Id = 15
     analysisManager->CreateNtupleIColumn("VecTrackPDG",fEventAction->GetVecTrackPDG());       // column Id = 16
@@ -310,6 +311,8 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
     analysisManager->CreateNtupleDColumn("VecVtx_EvtWeight",fEventAction->GetVecVtx_EvtWeight()); // column Id = 51   
 
     analysisManager->FinishNtuple();
+
+    */
   }
 
 }

@@ -617,7 +617,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       if( fabs(pdg)==12 ||
     	  fabs(pdg)==14 ||
     	  fabs(pdg)==16  ){	
-    	fVecVtx_NuPDG.push_back(prim->GetPDGcode());
+    	//fVecVtx_NuPDG.push_back(prim->GetPDGcode());
       }
     }
     // Get the Decay Vertex
@@ -625,18 +625,19 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
     // Fill the Ntuple
     
-    fVecVtx_X.push_back(vtx->GetX0() / mm);
-    fVecVtx_Y.push_back(vtx->GetY0() / mm);
-    fVecVtx_Z.push_back(vtx->GetZ0() / mm); 
+    //fVecVtx_X.push_back(vtx->GetX0() / mm);
+    //fVecVtx_Y.push_back(vtx->GetY0() / mm);
+    //fVecVtx_Z.push_back(vtx->GetZ0() / mm); 
     
-    //fVecVtx_ReacMode .push_back(mode);
-    fVecVtx_EvtProb  .push_back(vInfo->GetWeight());
-    fVecVtx_EvtWeight.push_back(vInfo->GetProbability()); 
+    // //fVecVtx_ReacMode .push_back(mode);
+    //fVecVtx_EvtProb  .push_back(vInfo->GetWeight());
+    //fVecVtx_EvtWeight.push_back(vInfo->GetProbability()); 
   }
 
   fNVtx = vtxNumber; // get # of vertices in the event
      
   
+
 
 
   ///////////////////////////////////////////////////////
@@ -655,6 +656,12 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       return;
     }   
   
+
+  
+
+  /*
+
+
   // Get hits collections 
   ExN02TrackerHitsCollection* hHC1 
     = static_cast<ExN02TrackerHitsCollection*>(hce->GetHC(fHHC1ID));
@@ -764,25 +771,25 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        // It's the first track of event or change track or change detector
        if( (prevtrkid_TPCUp1==kBadNum) || (currtrkid_TPCUp1!=prevtrkid_TPCUp1 && prevtrkid_TPCUp1!=kBadNum) || (detname_before!=detname) ){
 	 
-	 fVecTPCUp1_TrackID.push_back(currtrkid_TPCUp1);
-	 fVecTPCUp1_ParentID.push_back(currparentid_TPCUp1);
+	 //fVecTPCUp1_TrackID.push_back(currtrkid_TPCUp1);
+	 //fVecTPCUp1_ParentID.push_back(currparentid_TPCUp1);
 	 
-	 fVecTPCUp1_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-	 fVecTPCUp1_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-	 fVecTPCUp1_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-	 fVecTPCUp1_TrackCharge.push_back(trkcharge / eplus);
-	 fVecTPCUp1_TrackPDG.push_back(trkpdg);
+	 //fVecTPCUp1_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+	 //fVecTPCUp1_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+	 //fVecTPCUp1_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+	 //fVecTPCUp1_TrackCharge.push_back(trkcharge / eplus);
+	 //fVecTPCUp1_TrackPDG.push_back(trkpdg);
 
 	 // get first step position (mm)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTPCUp1_TrackStepFirstX.push_back(x);	 	 
-	 fVecTPCUp1_TrackStepFirstY.push_back(y);	 	 
-	 fVecTPCUp1_TrackStepFirstZ.push_back(z);	 	 
+	 //fVecTPCUp1_TrackStepFirstX.push_back(x);	 	 
+	 //fVecTPCUp1_TrackStepFirstY.push_back(y);	 	 
+	 //fVecTPCUp1_TrackStepFirstZ.push_back(z);	 	 
 
 	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-	 fVecTPCUp1_TrackCosTheta.push_back(costh);
+	 //fVecTPCUp1_TrackCosTheta.push_back(costh);
 
 	 prevtrkid_TPCUp1 = currtrkid_TPCUp1;
 	 fTPCUp1_NTracks++;	
@@ -804,9 +811,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTPCUp1_TrackStepLastX.push_back(x);	 	 
-	 fVecTPCUp1_TrackStepLastY.push_back(y);	 	 
-	 fVecTPCUp1_TrackStepLastZ.push_back(z);	 	 
+	 //fVecTPCUp1_TrackStepLastX.push_back(x);	 	 
+	 //fVecTPCUp1_TrackStepLastY.push_back(y);	 	 
+	 //fVecTPCUp1_TrackStepLastZ.push_back(z);	 	 
 	 
 	 //std::cout << "Last:" << currtrkid_TPCUp1 << " --> " << aftertrkid_TPCUp1 
 	 //<< " - " << detname << " --> " << detname_after << std::endl;     
@@ -830,25 +837,25 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        // It's the first track of event or change track or change detector
        if( (prevtrkid_TPCUp2==kBadNum) || (currtrkid_TPCUp2!=prevtrkid_TPCUp2 && prevtrkid_TPCUp2!=kBadNum) || (detname_before!=detname) ){
 	 
-	 fVecTPCUp2_TrackID.push_back(currtrkid_TPCUp2);
-	 fVecTPCUp2_ParentID.push_back(currparentid_TPCUp2);
+	 //fVecTPCUp2_TrackID.push_back(currtrkid_TPCUp2);
+	 //fVecTPCUp2_ParentID.push_back(currparentid_TPCUp2);
 	 
-	 fVecTPCUp2_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-	 fVecTPCUp2_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-	 fVecTPCUp2_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-	 fVecTPCUp2_TrackCharge.push_back(trkcharge / eplus);
-	 fVecTPCUp2_TrackPDG.push_back(trkpdg);
+	 //fVecTPCUp2_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+	 //fVecTPCUp2_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+	 //fVecTPCUp2_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+	 //fVecTPCUp2_TrackCharge.push_back(trkcharge / eplus);
+	 //fVecTPCUp2_TrackPDG.push_back(trkpdg);
 
 	 // get first step position (mm)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTPCUp2_TrackStepFirstX.push_back(x);	 	 
-	 fVecTPCUp2_TrackStepFirstY.push_back(y);	 	 
-	 fVecTPCUp2_TrackStepFirstZ.push_back(z);	 	 
+	 //fVecTPCUp2_TrackStepFirstX.push_back(x);	 	 
+	 //fVecTPCUp2_TrackStepFirstY.push_back(y);	 	 
+	 //fVecTPCUp2_TrackStepFirstZ.push_back(z);	 	 
 
 	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-	 fVecTPCUp2_TrackCosTheta.push_back(costh);
+	 //fVecTPCUp2_TrackCosTheta.push_back(costh);
 
 	 prevtrkid_TPCUp2 = currtrkid_TPCUp2;
 	 fTPCUp2_NTracks++;	
@@ -870,9 +877,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTPCUp2_TrackStepLastX.push_back(x);	 	 
-	 fVecTPCUp2_TrackStepLastY.push_back(y);	 	 
-	 fVecTPCUp2_TrackStepLastZ.push_back(z);	 	 
+	 //fVecTPCUp2_TrackStepLastX.push_back(x);	 	 
+	 //fVecTPCUp2_TrackStepLastY.push_back(y);	 	 
+	 //fVecTPCUp2_TrackStepLastZ.push_back(z);	 	 
 	 
 	 //std::cout << "Last:" << currtrkid_TPCUp2 << " --> " << aftertrkid_TPCUp2 
 	 //<< " - " << detname << " --> " << detname_after << std::endl;     
@@ -894,25 +901,25 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
        if( (prevtrkid_TPCDown1==kBadNum) || (currtrkid_TPCDown1!=prevtrkid_TPCDown1 && prevtrkid_TPCDown1!=kBadNum) || (detname_before!=detname) ){
 	 
-	 fVecTPCDown1_TrackID.push_back(currtrkid_TPCDown1);
-	 fVecTPCDown1_ParentID.push_back(currparentid_TPCDown1);
+	 //fVecTPCDown1_TrackID.push_back(currtrkid_TPCDown1);
+	 //fVecTPCDown1_ParentID.push_back(currparentid_TPCDown1);
 	  
-	 fVecTPCDown1_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-	 fVecTPCDown1_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-	 fVecTPCDown1_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-	 fVecTPCDown1_TrackCharge.push_back(trkcharge / eplus);
-	 fVecTPCDown1_TrackPDG.push_back(trkpdg);
+	 //fVecTPCDown1_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+	 //fVecTPCDown1_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+	 //fVecTPCDown1_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+	 //fVecTPCDown1_TrackCharge.push_back(trkcharge / eplus);
+	 //fVecTPCDown1_TrackPDG.push_back(trkpdg);
 
 	 // get first step position (mm)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTPCDown1_TrackStepFirstX.push_back(x);	 	 
-	 fVecTPCDown1_TrackStepFirstY.push_back(y);	 	 
-	 fVecTPCDown1_TrackStepFirstZ.push_back(z);	 	 
+	 //fVecTPCDown1_TrackStepFirstX.push_back(x);	 	 
+	 //fVecTPCDown1_TrackStepFirstY.push_back(y);	 	 
+	 //fVecTPCDown1_TrackStepFirstZ.push_back(z);	 	 
 
 	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-	 fVecTPCDown1_TrackCosTheta.push_back(costh);
+	 //fVecTPCDown1_TrackCosTheta.push_back(costh);
 
 	 prevtrkid_TPCDown1 = currtrkid_TPCDown1;
 	 fTPCDown1_NTracks++;
@@ -933,9 +940,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTPCDown1_TrackStepLastX.push_back(x);	 	 
-	 fVecTPCDown1_TrackStepLastY.push_back(y);	 	 
-	 fVecTPCDown1_TrackStepLastZ.push_back(z);	 	 
+	 //fVecTPCDown1_TrackStepLastX.push_back(x);	 	 
+	 //fVecTPCDown1_TrackStepLastY.push_back(y);	 	 
+	 //fVecTPCDown1_TrackStepLastZ.push_back(z);	 	 
 	 
 	 //std::cout << "Last:" << currtrkid_TPCDown1 << " --> " << aftertrkid_TPCDown1
 	 //<< " - " << detname << " --> " << detname_after << std::endl;     
@@ -956,25 +963,25 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 
        if( (prevtrkid_TPCDown2==kBadNum) || (currtrkid_TPCDown2!=prevtrkid_TPCDown2 && prevtrkid_TPCDown2!=kBadNum) || (detname_before!=detname) ){
 	 
-	 fVecTPCDown2_TrackID.push_back(currtrkid_TPCDown2);
-	 fVecTPCDown2_ParentID.push_back(currparentid_TPCDown2);
+	 //fVecTPCDown2_TrackID.push_back(currtrkid_TPCDown2);
+	 //fVecTPCDown2_ParentID.push_back(currparentid_TPCDown2);
 	  
-	 fVecTPCDown2_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-	 fVecTPCDown2_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-	 fVecTPCDown2_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-	 fVecTPCDown2_TrackCharge.push_back(trkcharge / eplus);
-	 fVecTPCDown2_TrackPDG.push_back(trkpdg);
+	 //fVecTPCDown2_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+	 //fVecTPCDown2_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+	 //fVecTPCDown2_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+	 //fVecTPCDown2_TrackCharge.push_back(trkcharge / eplus);
+	 //fVecTPCDown2_TrackPDG.push_back(trkpdg);
 
 	 // get first step position (mm)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTPCDown2_TrackStepFirstX.push_back(x);	 	 
-	 fVecTPCDown2_TrackStepFirstY.push_back(y);	 	 
-	 fVecTPCDown2_TrackStepFirstZ.push_back(z);	 	 
+	 //fVecTPCDown2_TrackStepFirstX.push_back(x);	 	 
+	 //fVecTPCDown2_TrackStepFirstY.push_back(y);	 	 
+	 //fVecTPCDown2_TrackStepFirstZ.push_back(z);	 	 
 
 	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-	 fVecTPCDown2_TrackCosTheta.push_back(costh);
+	 //fVecTPCDown2_TrackCosTheta.push_back(costh);
 
 	 prevtrkid_TPCDown2 = currtrkid_TPCDown2;
 	 fTPCDown2_NTracks++;
@@ -995,9 +1002,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTPCDown2_TrackStepLastX.push_back(x);	 	 
-	 fVecTPCDown2_TrackStepLastY.push_back(y);	 	 
-	 fVecTPCDown2_TrackStepLastZ.push_back(z);	 	 
+	 //fVecTPCDown2_TrackStepLastX.push_back(x);	 	 
+	 //fVecTPCDown2_TrackStepLastY.push_back(y);	 	 
+	 //fVecTPCDown2_TrackStepLastZ.push_back(z);	 	 
 	 
 	 //std::cout << "Last:" << currtrkid_TPCDown2 << " --> " << aftertrkid_TPCDown2
 	 //<< " - " << detname << " --> " << detname_after << std::endl;     
@@ -1026,25 +1033,25 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        
        if( prevtrkid_Target1==kBadNum || (currtrkid_Target1!=prevtrkid_Target1 && prevtrkid_Target1!=kBadNum) || (detname_before!=detname) ){
 	 
-	 fVecTarget1_TrackID.push_back(currtrkid_Target1);
-	 fVecTarget1_ParentID.push_back(currparentid_Target1);
+	 //fVecTarget1_TrackID.push_back(currtrkid_Target1);
+	 //fVecTarget1_ParentID.push_back(currparentid_Target1);
 	 
-	 fVecTarget1_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-	 fVecTarget1_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-	 fVecTarget1_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-	 fVecTarget1_TrackCharge.push_back(trkcharge / eplus);
- 	 fVecTarget1_TrackPDG.push_back(trkpdg);
+	 //fVecTarget1_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+	 //fVecTarget1_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+	 //fVecTarget1_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+	 //fVecTarget1_TrackCharge.push_back(trkcharge / eplus);
+ 	 //fVecTarget1_TrackPDG.push_back(trkpdg);
 
 	 // get first step position (mm)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTarget1_TrackStepFirstX.push_back(x);	 	 
-	 fVecTarget1_TrackStepFirstY.push_back(y);	 	 
-	 fVecTarget1_TrackStepFirstZ.push_back(z);	 	 
+	 //fVecTarget1_TrackStepFirstX.push_back(x);	 	 
+	 //fVecTarget1_TrackStepFirstY.push_back(y);	 	 
+	 //fVecTarget1_TrackStepFirstZ.push_back(z);	 	 
 
 	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-	 fVecTarget1_TrackCosTheta.push_back(costh);
+	 //fVecTarget1_TrackCosTheta.push_back(costh);
 	 
 	 prevtrkid_Target1 = currtrkid_Target1;
 	 fTarget1_NTracks++;
@@ -1065,9 +1072,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTarget1_TrackStepLastX.push_back(x);	 	 
-	 fVecTarget1_TrackStepLastY.push_back(y);	 	 
-	 fVecTarget1_TrackStepLastZ.push_back(z);	 	 
+	 //fVecTarget1_TrackStepLastX.push_back(x);	 	 
+	 //fVecTarget1_TrackStepLastY.push_back(y);	 	 
+	 //fVecTarget1_TrackStepLastZ.push_back(z);	 	 
 	 
 	 //G4cout << "Last:" << currtrkid_Target1 << " --> " << aftertrkid_Target1 
 	 //<< " - " << detname << " --> " << detname_after << G4endl;   
@@ -1097,25 +1104,25 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        
        if( prevtrkid_Target2==kBadNum || (currtrkid_Target2!=prevtrkid_Target2 && prevtrkid_Target2!=kBadNum) || (detname_before!=detname) ){
 	 
-	 fVecTarget2_TrackID.push_back(currtrkid_Target2);
-	 fVecTarget2_ParentID.push_back(currparentid_Target2);
+	 //fVecTarget2_TrackID.push_back(currtrkid_Target2);
+	 //fVecTarget2_ParentID.push_back(currparentid_Target2);
 	 
-	 fVecTarget2_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-	 fVecTarget2_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-	 fVecTarget2_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-	 fVecTarget2_TrackCharge.push_back(trkcharge / eplus);
- 	 fVecTarget2_TrackPDG.push_back(trkpdg);
+	 //fVecTarget2_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+	 //fVecTarget2_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+	 //fVecTarget2_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+	 //fVecTarget2_TrackCharge.push_back(trkcharge / eplus);
+ 	 //fVecTarget2_TrackPDG.push_back(trkpdg);
 
 	 // get first step position (mm)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTarget2_TrackStepFirstX.push_back(x);	 	 
-	 fVecTarget2_TrackStepFirstY.push_back(y);	 	 
-	 fVecTarget2_TrackStepFirstZ.push_back(z);	 	 
+	 //fVecTarget2_TrackStepFirstX.push_back(x);	 	 
+	 //fVecTarget2_TrackStepFirstY.push_back(y);	 	 
+	 //fVecTarget2_TrackStepFirstZ.push_back(z);	 	 
 
 	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-	 fVecTarget2_TrackCosTheta.push_back(costh);
+	 //fVecTarget2_TrackCosTheta.push_back(costh);
 	 
 	 prevtrkid_Target2 = currtrkid_Target2;
 	 fTarget2_NTracks++;
@@ -1136,9 +1143,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	 double x = hit->GetPreStepPos().x() / mm;
 	 double y = hit->GetPreStepPos().y() / mm;
 	 double z = hit->GetPreStepPos().z() / mm;
-	 fVecTarget2_TrackStepLastX.push_back(x);	 	 
-	 fVecTarget2_TrackStepLastY.push_back(y);	 	 
-	 fVecTarget2_TrackStepLastZ.push_back(z);	 	 
+	 //fVecTarget2_TrackStepLastX.push_back(x);	 	 
+	 //fVecTarget2_TrackStepLastY.push_back(y);	 	 
+	 //fVecTarget2_TrackStepLastZ.push_back(z);	 	 
 	 
 	 //G4cout << "Last:" << currtrkid_Target2 << " --> " << aftertrkid_Target2 
 	 //<< " - " << detname << " --> " << detname_after << G4endl;   
@@ -1167,23 +1174,23 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        // It's the first track of event or change track or change detector
        if( (prevtrkid_ForwTPC1==kBadNum) || (currtrkid_ForwTPC1!=prevtrkid_ForwTPC1 && prevtrkid_ForwTPC1!=kBadNum) || (detname_before!=detname) ){
 	 
-     	 fVecForwTPC1_TrackID.push_back(currtrkid_ForwTPC1);
-     	 fVecForwTPC1_ParentID.push_back(currparentid_ForwTPC1);
-	 fVecForwTPC1_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-     	 fVecForwTPC1_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-     	 fVecForwTPC1_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-     	 fVecForwTPC1_TrackCharge.push_back(trkcharge / eplus);
-     	 fVecForwTPC1_TrackPDG.push_back(trkpdg);
+     	 //fVecForwTPC1_TrackID.push_back(currtrkid_ForwTPC1);
+     	 //fVecForwTPC1_ParentID.push_back(currparentid_ForwTPC1);
+	 //fVecForwTPC1_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+     	 //fVecForwTPC1_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+     	 //fVecForwTPC1_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+     	 //fVecForwTPC1_TrackCharge.push_back(trkcharge / eplus);
+     	 //fVecForwTPC1_TrackPDG.push_back(trkpdg);
 
      	 // get first step position (mm)
      	 double x = hit->GetPreStepPos().x() / mm;
      	 double y = hit->GetPreStepPos().y() / mm;
      	 double z = hit->GetPreStepPos().z() / mm;
-     	 fVecForwTPC1_TrackStepFirstX.push_back(x);	 	 
-     	 fVecForwTPC1_TrackStepFirstY.push_back(y);	 	 
-     	 fVecForwTPC1_TrackStepFirstZ.push_back(z);	 	 
+     	 //fVecForwTPC1_TrackStepFirstX.push_back(x);	 	 
+     	 //fVecForwTPC1_TrackStepFirstY.push_back(y);	 	 
+     	 //fVecForwTPC1_TrackStepFirstZ.push_back(z);	 	 
      	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-     	 fVecForwTPC1_TrackCosTheta.push_back(costh);
+     	 //fVecForwTPC1_TrackCosTheta.push_back(costh);
 
      	 prevtrkid_ForwTPC1 = currtrkid_ForwTPC1;
      	 fForwTPC1_NTracks++;	
@@ -1202,9 +1209,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
      	 double x = hit->GetPreStepPos().x() / mm;
      	 double y = hit->GetPreStepPos().y() / mm;
      	 double z = hit->GetPreStepPos().z() / mm;
-     	 fVecForwTPC1_TrackStepLastX.push_back(x);	 	 
-     	 fVecForwTPC1_TrackStepLastY.push_back(y);	 	 
-     	 fVecForwTPC1_TrackStepLastZ.push_back(z);	 	 
+     	 //fVecForwTPC1_TrackStepLastX.push_back(x);	 	 
+     	 //fVecForwTPC1_TrackStepLastY.push_back(y);	 	 
+     	 //fVecForwTPC1_TrackStepLastZ.push_back(z);	 	 
      	 //std::cout << "Last:" << currtrkid_ForwTPC1 << " --> " << aftertrkid_ForwTPC1 
      	 //<< " - " << detname << " --> " << detname_after << std::endl;     
        } // if last step of the track       
@@ -1228,23 +1235,23 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        // It's the first track of event or change track or change detector
        if( (prevtrkid_ForwTPC2==kBadNum) || (currtrkid_ForwTPC2!=prevtrkid_ForwTPC2 && prevtrkid_ForwTPC2!=kBadNum) || (detname_before!=detname) ){
 	 
-     	 fVecForwTPC2_TrackID.push_back(currtrkid_ForwTPC2);
-     	 fVecForwTPC2_ParentID.push_back(currparentid_ForwTPC2);
-	 fVecForwTPC2_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-     	 fVecForwTPC2_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-     	 fVecForwTPC2_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-     	 fVecForwTPC2_TrackCharge.push_back(trkcharge / eplus);
-     	 fVecForwTPC2_TrackPDG.push_back(trkpdg);
+     	 //fVecForwTPC2_TrackID.push_back(currtrkid_ForwTPC2);
+     	 //fVecForwTPC2_ParentID.push_back(currparentid_ForwTPC2);
+	 //fVecForwTPC2_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+     	 //fVecForwTPC2_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+     	 //fVecForwTPC2_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+     	 //fVecForwTPC2_TrackCharge.push_back(trkcharge / eplus);
+     	 //fVecForwTPC2_TrackPDG.push_back(trkpdg);
 
      	 // get first step position (mm)
      	 double x = hit->GetPreStepPos().x() / mm;
      	 double y = hit->GetPreStepPos().y() / mm;
      	 double z = hit->GetPreStepPos().z() / mm;
-     	 fVecForwTPC2_TrackStepFirstX.push_back(x);	 	 
-     	 fVecForwTPC2_TrackStepFirstY.push_back(y);	 	 
-     	 fVecForwTPC2_TrackStepFirstZ.push_back(z);	 	 
+     	 //fVecForwTPC2_TrackStepFirstX.push_back(x);	 	 
+     	 //fVecForwTPC2_TrackStepFirstY.push_back(y);	 	 
+     	 //fVecForwTPC2_TrackStepFirstZ.push_back(z);	 	 
      	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-     	 fVecForwTPC2_TrackCosTheta.push_back(costh);
+     	 //fVecForwTPC2_TrackCosTheta.push_back(costh);
 
      	 prevtrkid_ForwTPC2 = currtrkid_ForwTPC2;
      	 fForwTPC2_NTracks++;	
@@ -1263,9 +1270,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
      	 double x = hit->GetPreStepPos().x() / mm;
      	 double y = hit->GetPreStepPos().y() / mm;
      	 double z = hit->GetPreStepPos().z() / mm;
-     	 fVecForwTPC2_TrackStepLastX.push_back(x);	 	 
-     	 fVecForwTPC2_TrackStepLastY.push_back(y);	 	 
-     	 fVecForwTPC2_TrackStepLastZ.push_back(z);	 	 
+     	 //fVecForwTPC2_TrackStepLastX.push_back(x);	 	 
+     	 //fVecForwTPC2_TrackStepLastY.push_back(y);	 	 
+     	 //fVecForwTPC2_TrackStepLastZ.push_back(z);	 	 
      	 //std::cout << "Last:" << currtrkid_ForwTPC2 << " --> " << aftertrkid_ForwTPC2 
      	 //<< " - " << detname << " --> " << detname_after << std::endl;     
        } // if last step of the track       
@@ -1288,23 +1295,23 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        // It's the first track of event or change track or change detector
        if( (prevtrkid_ForwTPC3==kBadNum) || (currtrkid_ForwTPC3!=prevtrkid_ForwTPC3 && prevtrkid_ForwTPC3!=kBadNum) || (detname_before!=detname) ){
 	 
-     	 fVecForwTPC3_TrackID.push_back(currtrkid_ForwTPC3);
-     	 fVecForwTPC3_ParentID.push_back(currparentid_ForwTPC3);
-	 fVecForwTPC3_TrackMomX.push_back((G4double)trkmom.x() / MeV);
-     	 fVecForwTPC3_TrackMomY.push_back((G4double)trkmom.y() / MeV);
-     	 fVecForwTPC3_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
-     	 fVecForwTPC3_TrackCharge.push_back(trkcharge / eplus);
-     	 fVecForwTPC3_TrackPDG.push_back(trkpdg);
+     	 //fVecForwTPC3_TrackID.push_back(currtrkid_ForwTPC3);
+     	 //fVecForwTPC3_ParentID.push_back(currparentid_ForwTPC3);
+	 //fVecForwTPC3_TrackMomX.push_back((G4double)trkmom.x() / MeV);
+     	 //fVecForwTPC3_TrackMomY.push_back((G4double)trkmom.y() / MeV);
+     	 //fVecForwTPC3_TrackMomZ.push_back((G4double)trkmom.z() / MeV);
+     	 //fVecForwTPC3_TrackCharge.push_back(trkcharge / eplus);
+     	 //fVecForwTPC3_TrackPDG.push_back(trkpdg);
 
      	 // get first step position (mm)
      	 double x = hit->GetPreStepPos().x() / mm;
      	 double y = hit->GetPreStepPos().y() / mm;
      	 double z = hit->GetPreStepPos().z() / mm;
-     	 fVecForwTPC3_TrackStepFirstX.push_back(x);	 	 
-     	 fVecForwTPC3_TrackStepFirstY.push_back(y);	 	 
-     	 fVecForwTPC3_TrackStepFirstZ.push_back(z);	 	 
+     	 //fVecForwTPC3_TrackStepFirstX.push_back(x);	 	 
+     	 //fVecForwTPC3_TrackStepFirstY.push_back(y);	 	 
+     	 //fVecForwTPC3_TrackStepFirstZ.push_back(z);	 	 
      	 // get track cos(theta) from first pre-step wrt nu direction (0,0,1)
-     	 fVecForwTPC3_TrackCosTheta.push_back(costh);
+     	 //fVecForwTPC3_TrackCosTheta.push_back(costh);
 
      	 prevtrkid_ForwTPC3 = currtrkid_ForwTPC3;
      	 fForwTPC3_NTracks++;	
@@ -1323,9 +1330,9 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
      	 double x = hit->GetPreStepPos().x() / mm;
      	 double y = hit->GetPreStepPos().y() / mm;
      	 double z = hit->GetPreStepPos().z() / mm;
-     	 fVecForwTPC3_TrackStepLastX.push_back(x);	 	 
-     	 fVecForwTPC3_TrackStepLastY.push_back(y);	 	 
-     	 fVecForwTPC3_TrackStepLastZ.push_back(z);	 	 
+     	 //fVecForwTPC3_TrackStepLastX.push_back(x);	 	 
+     	 //fVecForwTPC3_TrackStepLastY.push_back(y);	 	 
+     	 //fVecForwTPC3_TrackStepLastZ.push_back(z);	 	 
      	 //std::cout << "Last:" << currtrkid_ForwTPC3 << " --> " << aftertrkid_ForwTPC3 
      	 //<< " - " << detname << " --> " << detname_after << std::endl;     
        } // if last step of the track       
@@ -1340,41 +1347,41 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
    
    // Resize the track vectors to be filled 
 
-   fVecForwTPC1_TrackLength.resize(fForwTPC1_NTracks);
-   fVecForwTPC1_TrackDeltaLyz.resize(fForwTPC1_NTracks);
-   fVecForwTPC1_TrackEdep.resize(fForwTPC1_NTracks);
+   //fVecForwTPC1_TrackLength.resize(fForwTPC1_NTracks);
+   //fVecForwTPC1_TrackDeltaLyz.resize(fForwTPC1_NTracks);
+   //fVecForwTPC1_TrackEdep.resize(fForwTPC1_NTracks);
 
-   fVecForwTPC2_TrackLength.resize(fForwTPC2_NTracks);
-   fVecForwTPC2_TrackDeltaLyz.resize(fForwTPC2_NTracks);
-   fVecForwTPC2_TrackEdep.resize(fForwTPC2_NTracks);
+   //fVecForwTPC2_TrackLength.resize(fForwTPC2_NTracks);
+   //fVecForwTPC2_TrackDeltaLyz.resize(fForwTPC2_NTracks);
+   //fVecForwTPC2_TrackEdep.resize(fForwTPC2_NTracks);
 
-   fVecForwTPC3_TrackLength.resize(fForwTPC3_NTracks);
-   fVecForwTPC3_TrackDeltaLyz.resize(fForwTPC3_NTracks);
-   fVecForwTPC3_TrackEdep.resize(fForwTPC3_NTracks);
+   //fVecForwTPC3_TrackLength.resize(fForwTPC3_NTracks);
+   //fVecForwTPC3_TrackDeltaLyz.resize(fForwTPC3_NTracks);
+   //fVecForwTPC3_TrackEdep.resize(fForwTPC3_NTracks);
       
-   fVecTPCUp1_TrackLength.resize(fTPCUp1_NTracks);
-   fVecTPCUp1_TrackDeltaLyz.resize(fTPCUp1_NTracks);
-   fVecTPCUp1_TrackEdep.resize(fTPCUp1_NTracks);
+   //fVecTPCUp1_TrackLength.resize(fTPCUp1_NTracks);
+   //fVecTPCUp1_TrackDeltaLyz.resize(fTPCUp1_NTracks);
+   //fVecTPCUp1_TrackEdep.resize(fTPCUp1_NTracks);
    
-   fVecTPCUp2_TrackLength.resize(fTPCUp2_NTracks);
-   fVecTPCUp2_TrackDeltaLyz.resize(fTPCUp2_NTracks);
-   fVecTPCUp2_TrackEdep.resize(fTPCUp2_NTracks);
+   //fVecTPCUp2_TrackLength.resize(fTPCUp2_NTracks);
+   //fVecTPCUp2_TrackDeltaLyz.resize(fTPCUp2_NTracks);
+   //fVecTPCUp2_TrackEdep.resize(fTPCUp2_NTracks);
 
-   fVecTPCDown1_TrackLength.resize(fTPCDown1_NTracks);
-   fVecTPCDown1_TrackDeltaLyz.resize(fTPCDown1_NTracks);
-   fVecTPCDown1_TrackEdep.resize(fTPCDown1_NTracks);
+   //fVecTPCDown1_TrackLength.resize(fTPCDown1_NTracks);
+   //fVecTPCDown1_TrackDeltaLyz.resize(fTPCDown1_NTracks);
+   //fVecTPCDown1_TrackEdep.resize(fTPCDown1_NTracks);
 
-   fVecTPCDown2_TrackLength.resize(fTPCDown2_NTracks);
-   fVecTPCDown2_TrackDeltaLyz.resize(fTPCDown2_NTracks);
-   fVecTPCDown2_TrackEdep.resize(fTPCDown2_NTracks);
+   //fVecTPCDown2_TrackLength.resize(fTPCDown2_NTracks);
+   //fVecTPCDown2_TrackDeltaLyz.resize(fTPCDown2_NTracks);
+   //fVecTPCDown2_TrackEdep.resize(fTPCDown2_NTracks);
    
-   fVecTarget1_TrackLength.resize(fTarget1_NTracks);
-   fVecTarget1_TrackDeltaLyz.resize(fTarget1_NTracks);
-   fVecTarget1_TrackEdep.resize(fTarget1_NTracks);
+   //fVecTarget1_TrackLength.resize(fTarget1_NTracks);
+   //fVecTarget1_TrackDeltaLyz.resize(fTarget1_NTracks);
+   //fVecTarget1_TrackEdep.resize(fTarget1_NTracks);
 
-   fVecTarget2_TrackLength.resize(fTarget2_NTracks);
-   fVecTarget2_TrackDeltaLyz.resize(fTarget2_NTracks);
-   fVecTarget2_TrackEdep.resize(fTarget2_NTracks);
+   //fVecTarget2_TrackLength.resize(fTarget2_NTracks);
+   //fVecTarget2_TrackDeltaLyz.resize(fTarget2_NTracks);
+   //fVecTarget2_TrackEdep.resize(fTarget2_NTracks);
 
    // Loop over all the steps of each track
 
@@ -1500,6 +1507,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
        } // end loop over tracks Forward TPC 3
      } // Forward TPC 3  
 
+
    } // end loop over step     
 
   
@@ -1516,37 +1524,40 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   // Fill Ntuple: be careful to the column ID. Check with RunAction where the Ntuple is created                 
   //
 
-  analysisManager->FillNtupleDColumn(0,  fEnergyAbsForwTPC1);
-  analysisManager->FillNtupleDColumn(1,  fEnergyAbsForwTPC2);
-  analysisManager->FillNtupleDColumn(2,  fEnergyAbsForwTPC3);
-  analysisManager->FillNtupleDColumn(3,  fEnergyAbsTPCup1);
-  analysisManager->FillNtupleDColumn(4,  fEnergyAbsTPCdown1);
-  analysisManager->FillNtupleDColumn(5,  fEnergyAbsTarget1);
-  analysisManager->FillNtupleDColumn(6,  fTrackLAbsForwTPC1);
-  analysisManager->FillNtupleDColumn(7,  fTrackLAbsForwTPC2);
-  analysisManager->FillNtupleDColumn(8,  fTrackLAbsForwTPC3);
-  analysisManager->FillNtupleDColumn(9,  fTrackLAbsTPCup1);
-  analysisManager->FillNtupleDColumn(10,  fTrackLAbsTPCdown1);
-  analysisManager->FillNtupleDColumn(11,  fTrackLAbsTarget1); 
-  analysisManager->FillNtupleDColumn(12,  fEnergyAbsTPCup2);
-  analysisManager->FillNtupleDColumn(13,  fEnergyAbsTPCdown2);
-  analysisManager->FillNtupleDColumn(14,  fEnergyAbsTarget2);
-  analysisManager->FillNtupleDColumn(15,  fTrackLAbsTPCup2);
-  analysisManager->FillNtupleDColumn(16,  fTrackLAbsTPCdown2);
-  analysisManager->FillNtupleDColumn(17,  fTrackLAbsTarget2); 
-  analysisManager->FillNtupleIColumn(18,  fNTracks);
-  analysisManager->FillNtupleIColumn(19,  fForwTPC1_NTracks);
-  analysisManager->FillNtupleIColumn(20,  fForwTPC2_NTracks);
-  analysisManager->FillNtupleIColumn(21,  fForwTPC3_NTracks);
-  analysisManager->FillNtupleIColumn(22,  fTPCUp1_NTracks);
-  analysisManager->FillNtupleIColumn(23,  fTPCDown1_NTracks);
-  analysisManager->FillNtupleIColumn(24,  fTarget1_NTracks);
-  analysisManager->FillNtupleIColumn(25,  fTPCUp2_NTracks);
-  analysisManager->FillNtupleIColumn(26,  fTPCDown2_NTracks);
-  analysisManager->FillNtupleIColumn(27,  fTarget2_NTracks);
-  analysisManager->FillNtupleIColumn(28, fNVtx);
-  
-  analysisManager->AddNtupleRow();
+  //analysisManager->FillNtupleDColumn(0,  fEnergyAbsForwTPC1);
+  //analysisManager->FillNtupleDColumn(1,  fEnergyAbsForwTPC2);
+  //analysisManager->FillNtupleDColumn(2,  fEnergyAbsForwTPC3);
+  //analysisManager->FillNtupleDColumn(3,  fEnergyAbsTPCup1);
+  //analysisManager->FillNtupleDColumn(4,  fEnergyAbsTPCdown1);
+  //analysisManager->FillNtupleDColumn(5,  fEnergyAbsTarget1);
+  //analysisManager->FillNtupleDColumn(6,  fTrackLAbsForwTPC1);
+  //analysisManager->FillNtupleDColumn(7,  fTrackLAbsForwTPC2);
+  //analysisManager->FillNtupleDColumn(8,  fTrackLAbsForwTPC3);
+  //analysisManager->FillNtupleDColumn(9,  fTrackLAbsTPCup1);
+  //analysisManager->FillNtupleDColumn(10,  fTrackLAbsTPCdown1);
+  //analysisManager->FillNtupleDColumn(11,  fTrackLAbsTarget1); 
+  //analysisManager->FillNtupleDColumn(12,  fEnergyAbsTPCup2);
+  //analysisManager->FillNtupleDColumn(13,  fEnergyAbsTPCdown2);
+  //analysisManager->FillNtupleDColumn(14,  fEnergyAbsTarget2);
+  //analysisManager->FillNtupleDColumn(15,  fTrackLAbsTPCup2);
+  //analysisManager->FillNtupleDColumn(16,  fTrackLAbsTPCdown2);
+  //analysisManager->FillNtupleDColumn(17,  fTrackLAbsTarget2); 
+  //analysisManager->FillNtupleIColumn(18,  fNTracks);
+  //analysisManager->FillNtupleIColumn(19,  fForwTPC1_NTracks);
+  //analysisManager->FillNtupleIColumn(20,  fForwTPC2_NTracks);
+  //analysisManager->FillNtupleIColumn(21,  fForwTPC3_NTracks);
+  //analysisManager->FillNtupleIColumn(22,  fTPCUp1_NTracks);
+  //analysisManager->FillNtupleIColumn(23,  fTPCDown1_NTracks);
+  //analysisManager->FillNtupleIColumn(24,  fTarget1_NTracks);
+  //analysisManager->FillNtupleIColumn(25,  fTPCUp2_NTracks);
+  //analysisManager->FillNtupleIColumn(26,  fTPCDown2_NTracks);
+  //analysisManager->FillNtupleIColumn(27,  fTarget2_NTracks);
+  //analysisManager->FillNtupleIColumn(28, fNVtx);
+  //analysisManager->AddNtupleRow();
+
+
+
+  */
 
 
   // Print per event (modulo n)
@@ -1599,7 +1610,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   // std::cout << std::endl;
 
 
+
+
   
+
   // get number of stored trajectories
   //
   G4TrajectoryContainer* trajectoryContainer = event->GetTrajectoryContainer();
@@ -1615,8 +1629,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   }
   G4cout << G4endl;
 
-
-
+  
 
 
 
@@ -1633,7 +1646,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   G4SDManager *sdM = G4SDManager::GetSDMpointer();
   G4HCtable *hcT = sdM->GetHCtable();
 
-  for (int i=0; i<hcT->entries(); ++i) {
+  for (int i=0; i<hcT->entries(); ++i) {                                          
+                                                                                                                  
     G4String SDname = hcT->GetSDname(i);
     G4String HCname = hcT->GetHCname(i);
     
@@ -1642,9 +1656,12 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     G4VHitsCollection* g4Hits = hce->GetHC(HCId);
     if (g4Hits->GetSize()<1) continue;
     
-    for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {
- 
-      //ND280HitSegment* g4Hit
+    G4int n_hit = g4Hits->GetSize();
+    std::cout << "# of hits = " << n_hit << std::endl;
+
+    for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {                                                                                                         
+                           
+       //ND280HitSegment* g4Hit
       //= dynamic_cast<ND280HitSegment*>(g4Hits->GetHit(h)); // used in nd280mc      
       ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));
       
@@ -1720,6 +1737,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     } // end loop over hits    
   } // end loop over hit containers
 
+  G4cout << "End of EndOfEvent" << G4endl;
+
 }
 
 
@@ -1765,28 +1784,28 @@ void ExN02EventAction::SetTrack(const G4Step *step) { // Used in SteppingAction
   //if(detname!="TPCUp1") return;
 
   if(fNTracks==0){
-    fVecTrackID .push_back(newtrkid);
-    fVecParentID.push_back(newparentid);
-    fVecTrackPDG.push_back(newtrkpdg);
-    fVecTrackE  .push_back(newtrkEtotVtx);
+    //fVecTrackID .push_back(newtrkid);
+    //fVecParentID.push_back(newparentid);
+    //fVecTrackPDG.push_back(newtrkpdg);
+    //fVecTrackE  .push_back(newtrkEtotVtx);
 
-    fVecTrackMomX.push_back(newtrkMomX);
-    fVecTrackMomY.push_back(newtrkMomY);
-    fVecTrackMomZ.push_back(newtrkMomZ);
-    fVecTrackMomMag.push_back(newtrkMomMag);
+    //fVecTrackMomX.push_back(newtrkMomX);
+    //fVecTrackMomY.push_back(newtrkMomY);
+    //fVecTrackMomZ.push_back(newtrkMomZ);
+    //fVecTrackMomMag.push_back(newtrkMomMag);
 
     fNTracks++;
    }
   else if(fNTracks>0 && newtrkid!=fVecTrackID[vecel]){ // Only the first step
-    fVecTrackID .push_back(newtrkid);
-    fVecParentID.push_back(newparentid);
-    fVecTrackPDG.push_back(newtrkpdg);
-    fVecTrackE  .push_back(newtrkEtotVtx);
+    //fVecTrackID .push_back(newtrkid);
+    //fVecParentID.push_back(newparentid);
+    //fVecTrackPDG.push_back(newtrkpdg);
+    //fVecTrackE  .push_back(newtrkEtotVtx);
 
-    fVecTrackMomX.push_back(newtrkMomX);
-    fVecTrackMomY.push_back(newtrkMomY);
-    fVecTrackMomZ.push_back(newtrkMomZ);
-    fVecTrackMomMag.push_back(newtrkMomMag);
+    //fVecTrackMomX.push_back(newtrkMomX);
+    //fVecTrackMomY.push_back(newtrkMomY);
+    //fVecTrackMomZ.push_back(newtrkMomZ);
+    //fVecTrackMomMag.push_back(newtrkMomMag);
 
     fNTracks++;
   }
