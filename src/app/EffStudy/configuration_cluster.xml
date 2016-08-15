@@ -10,11 +10,11 @@
 <Dependency>
   
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
   
   <IsRandomSeed>
-    0
+    1
   </IsRandomSeed>
   
   <Generator>      

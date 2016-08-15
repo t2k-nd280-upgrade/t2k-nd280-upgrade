@@ -31,12 +31,13 @@ public :
   G4String GetXMLFileName()     {return fXMLFile;};
   
   G4bool   GetXMLIsRandomSeed(){return fIsRandomSeed;};
+  G4bool   GetXMLStoreGeometry(){return fStoreGeometry;};
   G4String GetXMLGenerTypeName(){return fGenerType;};
   G4String GetXMLPathFiles()    {return fPathFiles;};
   G4String GetXMLGenerTreeName(){return fGenerTreeName;};
   G4String GetXMLGenerFileName(){return fGenerFileName;};
   G4int    GetXMLStepEvent()    {return fGenerStepEvent;};
-
+  
   G4bool   GetXMLForwTPCdefault(){return fForwTPCdefault;};
   G4double GetXMLForwTPCPos1_X()  {return fForwTPCPos1_X;};
   G4double GetXMLForwTPCPos1_Y()  {return fForwTPCPos1_Y;};
@@ -96,6 +97,7 @@ private :
 
   G4String fXMLFile;
   G4bool   fIsRandomSeed;
+  G4bool   fStoreGeometry;
   G4String fGenerType;
   G4String fPathFiles;
   G4String fGenerTreeName;

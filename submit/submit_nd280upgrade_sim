@@ -51,52 +51,45 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"               unless defined $resource;
-$tag             = "fitmarg_fc_dcp"  unless defined $tag;
-$nruns           = 1                           unless defined $nruns; 
-$config_file = "configuration.xml"  unless defined $config_file;
-$arguments = "$softw_dir/";
+$tag             = "g4ND280Up_6E20"            unless defined $tag;
+$config_file     = "configuration_cluster.xml" unless defined $config_file;
 
+$nruns           = 68                           unless defined $nruns;      # number of jobs
+$nexpts          = 5000                          unless defined $nexpts;     # number of events per job
+$first_expt      = 0                           unless defined $first_expt; # first event
 
-#for (( itoy=NITER_START; itoy<NITER; itoy++ ))
-#do
-#    let IDtoy=$STEPtoy*$itoy
-#    let itoylast=$STEPtoy+$IDtoy
+$queue           = "short"                     unless defined $queue;
 
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
-
-    $ifile_first = $first_expt + $irun * $nexpts;
-    $ifile_last  = $ifile_first + $nexpts - 1; # The "last" experiment is included
     
+    $evt_first = $first_expt + $irun * $nexpts;
     
-    #
-    # TODO:
-    # - set paths correctly: $softw_dir, $job_dir
-    #
-    $arguments = "$arguments/bin/EffStudy.exe /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/vis.mac /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app/EffStudy/config_file.xml 0 1";
-    
-    #$command = "$program $arguments";
+ 
+    $arguments = "$softw_dir/bin/EffStudy.exe $softw_dir/src/app/EffStudy/vis.mac $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+   
     $command = "$arguments";
     
+    print "\n";
+    print "Job $irun \n";
+    print "First event: $evt_first \n";
+    print "# of events: $nexpts \n";
     print "$command \n";
-    
     print "\n////////////////////////////// \n\n";
 
+    ################################### Submit the job ##################################
+    
+    #
+    # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
+    #
+    if($resource eq "UNIGE-Atlas") {
+	open(PBS, ">$job_dir/g4ND280Up-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	print PBS "#!/bin/bash -l  \n";
+	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
+	print PBS "$command \n";
+	close(PBS);	
+	`qsub -q $queue $job_dir/g4ND280Up-$evt_first-$nexpts.sbatch`;
+    }
+
     $irun=$irun+1;
-}
-
-
-################################### Submit the job ##################################
-
-#
-# UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
-#
-if($resource eq "UNIGE-Atlas") {
-    open(PBS, ">/atlas/users/dsgalabe/ciao.sbatch") or die("Can not create the sbatch script");
-    print PBS "#!/bin/bash -l  \n";
-    print PBS "$command \n";
-    close(PBS);
-
-    `qsub -q veryshort /atlas/users/dsgalabe/ciao.sbatch`;
-    #qsub -q short /atlas/users/dsgalabe/ciao.sbatch;
-}
+} # end loop over jobs

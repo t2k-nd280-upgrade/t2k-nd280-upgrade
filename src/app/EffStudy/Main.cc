@@ -151,15 +151,10 @@ int main(int argc,char** argv)
   
   G4int MyFirstEvent = atoi(argv[4]);
   G4int MyStepEvent  = atoi(argv[5]);  
-  
-  persistencyManager->SetEventFirst(MyFirstEvent);
-  persistencyManager->SetNEvents(MyStepEvent);
-  G4cout << "# of events to process: " << persistencyManager->GetNEvents() << G4endl;
-  G4cout << "# of first event: " << persistencyManager->GetEventFirst() << G4endl;
 
   G4int NEvtStep = MyStepEvent;
   G4int NEvtTot = MyFirstEvent+NEvtStep;
-
+  
   if(MyFirstEvent > (mytree->GetEntries()-1)){ // MyFirstEvent starts from 0
     G4cout << G4endl;
     G4cout << "MyFirstEvent = " << MyFirstEvent << G4endl;
@@ -180,12 +175,21 @@ int main(int argc,char** argv)
     const char *code = " if(NEvtTot>mytree->GetEntries())";
     //G4Exception(origin,code,FatalException,msg);
     G4Exception(origin,code,JustWarning,msg);
-
-    NEvtStep = NEvtTot - mytree->GetEntries(); 
-
-    G4cout << "Set tot # of simul events to :" << NEvtStep << G4endl;
+    
+    NEvtStep = mytree->GetEntries() - MyFirstEvent; // no -1, first event ID is 0
+    
+    G4cout << "Set tot # of simul events to: " << NEvtStep << G4endl;
+    G4cout << "First event: " << MyFirstEvent << G4endl;
+    G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
     G4cout << G4endl;
   }
+
+  persistencyManager->SetEventFirst(MyFirstEvent);
+  persistencyManager->SetNEvents(NEvtStep);
+
+  G4cout << "# of events to process: " << persistencyManager->GetNEvents() << G4endl;
+  G4cout << "# of first event: " << persistencyManager->GetEventFirst() << G4endl;
+
   
   // User Initialization classes (mandatory)
   //
@@ -253,7 +257,7 @@ int main(int argc,char** argv)
       G4String command = "/control/execute ";
       G4String fileName = argv[1];
       UImanager->ApplyCommand(command+fileName);
-
+      
       //
       // Set number of BeamOn (events to simulate)
       //

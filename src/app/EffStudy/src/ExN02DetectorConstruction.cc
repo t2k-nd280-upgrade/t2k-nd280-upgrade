@@ -842,27 +842,31 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // // fo.WriteObject(geotree, "my_geo");  
   // //--------------------------
 
+
   // // ---------------------------------------------------------------------------
   // VGM demo 
   // Export geometry in Root and save it in a file
-  //
-  // TGeoManager::Import("geometry.root");
-  // gGeoManager->GetTopVolume()->Draw();
-  //
-  // Import Geant4 geometry to VGM
-  Geant4GM::Factory g4Factory;
-  g4Factory.SetDebug(0);
-  g4Factory.Import(physiWorld);
-  // 
-  // Export VGM geometry to Root
-  RootGM::Factory rtFactory;
-  rtFactory.SetDebug(0);
-  g4Factory.Export(&rtFactory);
-  gGeoManager->CloseGeometry();
-  gGeoManager->SetName("ND280Geometry"); // TGeoManager object name must be "ND280Geometry" to be read by NEUT
-  gGeoManager->Export("geometry.root");
-  G4cout << "The geometry has been exported to: ";
-  G4cout << gGeoManager->GetName() << G4endl;
+  
+  if(ND280XMLInput->GetXMLStoreGeometry()){
+    
+    // TGeoManager::Import("geometry.root");
+    // gGeoManager->GetTopVolume()->Draw();
+
+    // Import Geant4 geometry to VGM
+    Geant4GM::Factory g4Factory;
+    g4Factory.SetDebug(0);
+    g4Factory.Import(physiWorld);
+    // 
+    // Export VGM geometry to Root
+    RootGM::Factory rtFactory;
+    rtFactory.SetDebug(0);
+    g4Factory.Export(&rtFactory);
+    gGeoManager->CloseGeometry();
+    gGeoManager->SetName("ND280Geometry"); // TGeoManager object name must be "ND280Geometry" to be read by NEUT
+    gGeoManager->Export("geometry.root");
+    G4cout << "The geometry has been exported to: ";
+    G4cout << gGeoManager->GetName() << G4endl;
+  }
   //
   // end VGM demo
   //---------------------------------------------------------------------------

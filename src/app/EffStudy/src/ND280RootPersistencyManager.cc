@@ -137,9 +137,6 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //return false;
   //exit(1);
   
-
-
-
   if (!fOutput) {
     G4ExceptionDescription msg;
     msg << "No Output File" << G4endl; 
@@ -151,10 +148,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   fND280UpEvent = new TND280UpEvent();
   // The event is constructed using an auto ptr since we must delete it
   // before leaving this method.                            
-  //std::auto_ptr<TND280UpEvent> fND280UpEvent(new TND280UpEvent());
-  
+  //std::auto_ptr<TND280UpEvent> fND280UpEvent(new TND280UpEvent());  
   fND280UpEvent->SetEventID(anEvent->GetEventID());  
-    
+
+
   //
   // Store the primary Vertices
   //
@@ -242,7 +239,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     //nd280Vertex=NULL;
   }
  
-  
+
+
 
   //                                          
   // Store the track in the ND280 event 
@@ -287,11 +285,15 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
     nd280Track->SetSDTotalEnergyDeposit(ndTraj->GetSDTotalEnergyDeposit());
     nd280Track->SetSDLength(ndTraj->GetSDLength());
-        
+
+
+
+    
+
     //
     // Store the points of the track 
     //
-    
+
     int NPoints = ndTraj->GetPointEntries();
     for(int itp=0;itp<NPoints;itp++){ // loop over all the points
       
@@ -306,6 +308,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       }
       
       TND280UpTrackPoint *nd280TrackPoint = new TND280UpTrackPoint();
+      //std::auto_ptr<TND280UpTrackPoint> nd280TrackPoint(new TND280UpTrackPoint());
       
       nd280TrackPoint->SetPointID(itp);
       nd280TrackPoint->SetTime(ndPoint->GetTime());
@@ -333,28 +336,40 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       double postY = ndPoint->GetPostPosition().y();
       double postZ = ndPoint->GetPostPosition().z();
       nd280TrackPoint->SetPostPosition(postX,postY,postZ);
-
+      
       nd280TrackPoint->SetIsOnBoundary(ndPoint->IsOnBoundary());
             
       // Mark the points 
       MarkPoint(ndPoint); 
       if(ndPoint->SavePoint()){    
 	nd280Track->AddPoint(nd280TrackPoint);
+	//nd280Track->AddPoint(nd280TrackPoint.get());
       }
       
       //delete nd280TrackPoint; 
       //nd280TrackPoint=NULL;
       
     } // end loop over the points   
+
+   
+
+
+
     
     // Mark the trajectories to save.
-    //MarkTrajectories(anEvent); // loop over all the tracks again...
+    // // MarkTrajectories(anEvent); // loop over all the tracks again... --> don't use it!!!
     MarkTrajectory(ndTraj,anEvent);
     if(ndTraj->SaveTrajectory()){
+      //if(1){
       nd280Track->SaveIt(true);     
-      fND280UpEvent->AddTrack(nd280Track);
-    }
+      
+      //G4cout << "Before fND280UpEvent->AddTrack(nd280Track)" << G4endl;
 
+      fND280UpEvent->AddTrack(nd280Track);
+
+      //G4cout << "After fND280UpEvent->AddTrack(nd280Track)" << G4endl;
+    }
+    
 
     // 
     // ND280Trajectory::ShowTrajectory()
@@ -373,10 +388,12 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     //
     //ndTraj->ShowTrajectory(G4cout);
     //
-
+    
+    //G4cout << "Before delete nd280Track" << G4endl;
     //delete nd280Track; 
     //nd280Track=NULL;
-    
+    //G4cout << "After  delete nd280Track" << G4endl;
+
   } // end loop over Trajectories
   
   
@@ -388,9 +405,15 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   // pointer (the fEventTree branch pointer).
   //fND280Event = event.get(); 
   
+  
+  //G4cout << "fEventTree->Fill();" << G4endl;
+  
   fEventTree->Fill();
-  fND280UpEvent = NULL;
+    
+  //G4cout << "delete fND280UpEvent;" << G4endl;
+
   delete fND280UpEvent;
+  fND280UpEvent = NULL;
 
   // ++fEventsNotSaved;
   // if (fEventsNotSaved>100) {
@@ -400,7 +423,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   // }  
 
   
-  //G4cout << "ND280RootPersistencyManager::Store" << G4endl;
+  G4cout << "End ND280RootPersistencyManager::Store" << G4endl;
   //exit(1);
   
   return true;

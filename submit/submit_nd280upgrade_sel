@@ -1,0 +1,135 @@
+#!/usr/bin/perl
+
+#-------------------------------------------------------------------------------------------------------------------------------
+# Submit a batch of build_marg_toys.C jobs
+#
+# Inputs
+#  --resource               : Computer resource, <ETH-Monch, RAL, Oxford, Grid, interactive>. Default: interactive.
+#  --tag                    : Tag for output files.
+#  --fit-param-list         : Fit parameter list. See FitParamList.h for allowed options.
+#  --physparam-freepar      : Free parameter
+#  --npt-freepar            : Number of points of the free parameter to scan
+#  --step-freepar           : Step of the free parameter scan
+#
+# D.Sgalaberna
+#-------------------------------------------------------------------------------------------------------------------------------
+#
+
+use File::Path;
+
+$iarg=0;
+foreach (@ARGV) {
+
+    if($iarg % 2 == 1) {$iarg++; next;}
+    
+    ##################################### Common ########################################
+    if   ($_ eq '--resource'         ) { $resource        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--inputfile'        ) { $inputfile       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--first_expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
+
+    # where to put the output files
+    elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
+    # where is the software (/t2k-nd280-upgrade)
+    elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }    
+    
+    elsif($_ eq '--docut-reac'       ) { $docut_reac      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-reac'         ) { $cut_reac        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-mater'      ) { $docut_mater     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-vertex'     ) { $docut_vertex    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-pdg'        ) { $docut_pdg       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-pdg'          ) { $cut_pdg         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-parid'      ) { $docut_parid     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-parid'        ) { $cut_parid       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-charge'     ) { $docut_charge     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-charge'       ) { $cut_charge       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-dl-target'  ) { $docut_dl_target  = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-dl-target'    ) { $cut_dl_target    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-dlyz-tpc'   ) { $docut_dlyz_tpc   = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-dlyz-tpc'     ) { $cut_dlyz_tpc     = $ARGV[$iarg+1]; }
+    
+    else {
+	print "Unrecognised argument ".$_."\n"; exit;
+    }
+    $iarg++;
+}
+
+$resource        = "interactive"                 unless defined $resource;
+$tag             = "SelND280Up_Mu"               unless defined $tag;
+$nruns           = 2                             unless defined $nruns; 
+$inputfile       = "bin/FREEZE/ND280Up_50k.root" unless defined $inputfile;
+$first_expt      = 0                             unless defined $first_expt;
+$nexpts          = 10                            unless defined $nexpts;
+
+#
+# Selection cuts
+#
+
+# 0=CCQE, 1=MEC, 2=CC1pi, 3=CCcoh, 4=CCDIS, 5=NC (see macro definition)
+$docut_reac      = 0                             unless defined $docut_reac;
+$cut_reac        = 0                             unless defined $cut_reac; 
+
+# select interactions only in target materials
+$docut_mater     = 0                             unless defined $docut_mater;
+
+# select interactions only in Fiducial Volume
+$docut_vertex    = 1                             unless defined $docut_vertex;
+
+# select track pdg: +211, +2212, +13, +211
+$docut_pdg       = 1                             unless defined $docut_pdg;
+$cut_pdg         = 13                            unless defined $cut_pdg; 
+
+# select track parent ID. If 0 --> primary particle,
+$docut_parid     = 1                             unless defined $docut_parid;
+$cut_parid       = 0                             unless defined $cut_parid; 
+
+# select track charge
+$docut_charge    = 1                             unless defined $docut_charge;
+$cut_charge      = 1                             unless defined $cut_charge; 
+
+# select track length (mm) in targets
+$docut_dl_target    = 1                          unless defined $docut_dl_target;
+$cut_dl_target      = 50                         unless defined $cut_dl_target; 
+
+# select track DeltaLyz (mm) in TPCs
+$docut_dlyz_tpc    = 1                           unless defined $docut_dlyz_tpc;
+$cut_dlyz_tpc      = 200                         unless defined $cut_dlyz_tpc; 
+
+##################################
+
+$irun = 0;
+while($irun < $nruns) { # loop over the jobs
+    
+    $evt_first = $first_expt + $irun * $nexpts;
+    
+    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$tag\",\"$softw_dir/$inputfile\",$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
+    
+    $command = "$arguments";
+    
+    print "\n";
+    print "Job $irun \n";
+    print "First event: $evt_first \n";
+    print "# of events: $nexpts \n";
+    print "$command \n";
+    print "\n////////////////////////////// \n\n";
+
+    ################################### Submit the job ##################################
+    
+    #
+    # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
+    #
+    if($resource eq "UNIGE-Atlas") {
+	open(PBS, ">$job_dir/selection-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	print PBS "#!/bin/bash -l  \n";
+	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
+	print PBS "$command \n";
+	close(PBS);	
+	`qsub -q veryshort $job_dir/selection-$evt_first-$nexpts.sbatch`;
+    }
+     
+    $irun=$irun+1; # increment job id
+    
+} # loop over jobs
+

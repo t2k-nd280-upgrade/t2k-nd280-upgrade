@@ -37,6 +37,7 @@ void ExN02ND280XML::SetInputs(){
   if(myfile.is_open()){    
     
     XML2Bool("IsRandomSeed",fIsRandomSeed);
+    XML2Bool("StoreGeometry",fStoreGeometry);
     XML2String("Generator",fGenerType);
     XML2String("Path2file",fPathFiles);
     XML2String("filename",fGenerFileName);  

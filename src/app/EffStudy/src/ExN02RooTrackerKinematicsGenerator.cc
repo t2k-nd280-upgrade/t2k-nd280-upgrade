@@ -278,7 +278,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   if(treeLastID >= fTotEntry){
     const char *msg = "Last event ID exceeds the number of NEUT events!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex";
-    const char *code = "if(evtLastID >= fTotEntry){";
+    const char *code = "if(treeLastID >= fTotEntry){";
     G4Exception(origin,code,FatalException,msg);
   }
 
