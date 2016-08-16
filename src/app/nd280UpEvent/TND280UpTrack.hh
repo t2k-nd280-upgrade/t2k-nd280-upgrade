@@ -51,6 +51,16 @@ public :
   void SaveIt(bool saveit){fSaveIt=saveit;};
   void SetSDTotalEnergyDeposit(double sdedep){fSDTotalEnergyDeposit=sdedep;};
   void SetSDLength(double length){fSDLength=length;};
+  
+  void SetLengthTarget1(double length){fLengthTarget1=length;};
+  void SetLengthTarget2(double length){fLengthTarget2=length;};
+  void SetLyzTPCUp1(double length)    {fLyzTPCUp1=length;};
+  void SetLyzTPCUp2(double length)    {fLyzTPCUp2=length;};
+  void SetLyzTPCDown1(double length)  {fLyzTPCDown1=length;};
+  void SetLyzTPCDown2(double length)  {fLyzTPCDown2=length;};
+  void SetLyzForwTPC1(double length)  {fLyzForwTPC1=length;};
+  void SetLyzForwTPC2(double length)  {fLyzForwTPC2=length;};
+  void SetLyzForwTPC3(double length)  {fLyzForwTPC3=length;};
 
   int GetTrackID() {return fTrackID;};
   int GetParentID() {return fParentID;};
@@ -65,6 +75,16 @@ public :
   double GetSDTotalEnergyDeposit(){return fSDTotalEnergyDeposit;};
   double GetSDLength(){return fSDLength;};
   
+  double GetLengthTarget1(){return fLengthTarget1;};
+  double GetLengthTarget2(){return fLengthTarget2;};
+  double GetLyzTPCUp1()    {return fLyzTPCUp1;};
+  double GetLyzTPCUp2()    {return fLyzTPCUp2;};
+  double GetLyzTPCDown1()  {return fLyzTPCDown1;};
+  double GetLyzTPCDown2()  {return fLyzTPCDown2;};
+  double GetLyzForwTPC1()  {return fLyzForwTPC1;};
+  double GetLyzForwTPC2()  {return fLyzForwTPC2;};
+  double GetLyzForwTPC3()  {return fLyzForwTPC3;};
+
   void PrintTrack();
 
 private :
@@ -85,6 +105,15 @@ private :
   bool fSaveIt;
   double fSDTotalEnergyDeposit;
   double fSDLength;
+  double fLengthTarget1;
+  double fLengthTarget2;
+  double fLyzTPCUp1;
+  double fLyzTPCUp2;
+  double fLyzTPCDown1;
+  double fLyzTPCDown2 ;
+  double fLyzForwTPC1;
+  double fLyzForwTPC2;
+  double fLyzForwTPC3;
 
   ClassDef(TND280UpTrack,2)
 };

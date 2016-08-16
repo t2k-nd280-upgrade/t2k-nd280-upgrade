@@ -52,8 +52,8 @@ ND280RootPersistencyManager::ND280RootPersistencyManager()
 
 ND280RootPersistencyManager* ND280RootPersistencyManager::GetInstance() {
     ND280RootPersistencyManager *current 
-        = dynamic_cast<ND280RootPersistencyManager*>(
-            G4VPersistencyManager::GetPersistencyManager());
+      = dynamic_cast<ND280RootPersistencyManager*>(G4VPersistencyManager::GetPersistencyManager());
+
     if (!current) current = new ND280RootPersistencyManager();
     return current;
 }
@@ -164,6 +164,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       
     ExN02VertexInfo* vInfo 
       = dynamic_cast<ExN02VertexInfo*>(vtx->GetUserInformation());
+    //= (ExN02VertexInfo*)vtx->GetUserInformation();
     
     // Loop over particles outgoing the vertex 
     for (G4int p=0; p<vtx->GetNumberOfParticle(); ++p) {
@@ -214,7 +215,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
       // Fill the vertex with the ingoing track
       nd280Vertex->AddInTrack(nd280VtxTrack);
-
+      
       //delete nd280VtxTrack; 
       //nd280VtxTrack=NULL;
     }
@@ -282,22 +283,42 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetInitCosTheta(ndTraj->GetInitialCosTheta());
     nd280Track->SetCharge(ndTraj->GetCharge());
     nd280Track->SetRange(ndTraj->GetRange());
-
+    
     nd280Track->SetSDTotalEnergyDeposit(ndTraj->GetSDTotalEnergyDeposit());
     nd280Track->SetSDLength(ndTraj->GetSDLength());
-
-
-
     
 
+    
     //
     // Store the points of the track 
+    // and calculate other track variables
     //
 
+    double LengthTarget1 = 0.;
+    double LengthTarget2 = 0.;
+    double LyzTPCUp1     = 0.;
+    double LyzTPCUp2     = 0.;
+    double LyzTPCDown1   = 0.;
+    double LyzTPCDown2   = 0.;
+    double LyzForwTPC1   = 0.;
+    double LyzForwTPC2   = 0.;
+    double LyzForwTPC3   = 0.;
+
+    G4String detname_prev = "undefined";
+    
     int NPoints = ndTraj->GetPointEntries();
     for(int itp=0;itp<NPoints;itp++){ // loop over all the points
       
+      G4String detname_curr = "undefined";
       ND280TrajectoryPoint* ndPoint = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp));
+      detname_curr = ndPoint->GetPhysVolName();
+      
+      G4String detname_aft  = "undefined";
+      ND280TrajectoryPoint* ndPointAfter; 
+      if(itp<(NPoints-1)){ // not if last point
+	ndPointAfter = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp+1));
+	detname_aft  = ndPointAfter->GetPhysVolName();
+      }
       
       if (!ndPoint) {
 	G4ExceptionDescription msg;
@@ -306,71 +327,113 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 		    "ExN02Code001", JustWarning, msg);
 	return false;
       }
-      
-      TND280UpTrackPoint *nd280TrackPoint = new TND280UpTrackPoint();
-      //std::auto_ptr<TND280UpTrackPoint> nd280TrackPoint(new TND280UpTrackPoint());
-      
-      nd280TrackPoint->SetPointID(itp);
-      nd280TrackPoint->SetTime(ndPoint->GetTime());
-      
-      // momentum 
-      double momPtX = ndPoint->GetMomentum().x();
-      double momPtY = ndPoint->GetMomentum().y();
-      double momPtZ = ndPoint->GetMomentum().z();
-      nd280TrackPoint->SetMomentum(momPtX,momPtY,momPtZ);
-      
-      nd280TrackPoint->SetEdep(ndPoint->GetEdep());
-      nd280TrackPoint->SetStepLength(ndPoint->GetStepLength());
-      nd280TrackPoint->SetStepDeltaLyz(ndPoint->GetStepDeltaLyz());
-      nd280TrackPoint->SetStepStatus(ndPoint->GetStepStatus());
-      nd280TrackPoint->SetPhysVolName(ndPoint->GetPhysVolName());
-      
-      // preStep position 
-      double prevX = ndPoint->GetPrevPosition().x();
-      double prevY = ndPoint->GetPrevPosition().y();
-      double prevZ = ndPoint->GetPrevPosition().z();
-      nd280TrackPoint->SetPrePosition(prevX,prevY,prevZ);
-      
-      // postStep position
-      double postX = ndPoint->GetPostPosition().x();
-      double postY = ndPoint->GetPostPosition().y();
-      double postZ = ndPoint->GetPostPosition().z();
-      nd280TrackPoint->SetPostPosition(postX,postY,postZ);
-      
-      nd280TrackPoint->SetIsOnBoundary(ndPoint->IsOnBoundary());
-            
-      // Mark the points 
-      MarkPoint(ndPoint); 
-      if(ndPoint->SavePoint()){    
-	nd280Track->AddPoint(nd280TrackPoint);
-	//nd280Track->AddPoint(nd280TrackPoint.get());
+
+      double steplength = ndPoint->GetStepLength();
+      double stepdeltalyz = ndPoint->GetStepDeltaLyz();      
+      if(steplength>0.){
+  	if     (detname_curr=="Target1") LengthTarget1 += steplength;
+	else if(detname_curr=="Target2") LengthTarget2 += steplength;	
+	else if(detname_curr=="TPCUp1")        LyzTPCUp1   += stepdeltalyz;
+	else if(detname_curr=="TPCUp2")        LyzTPCUp2   += stepdeltalyz;
+	else if(detname_curr=="TPCDown1")      LyzTPCDown1 += stepdeltalyz;
+	else if(detname_curr=="TPCDown2")      LyzTPCDown2 += stepdeltalyz;
+	else if(detname_curr=="ForwTPC1/Half") LyzForwTPC1 += stepdeltalyz;
+	else if(detname_curr=="ForwTPC2/Half") LyzForwTPC2 += stepdeltalyz;
+	else if(detname_curr=="ForwTPC3/Half") LyzForwTPC3 += stepdeltalyz;
       }
       
-      //delete nd280TrackPoint; 
-      //nd280TrackPoint=NULL;
+      
+
+      // Select points if first/last of the track or
+      // if first/last in a SD
+      if( detname_curr != detname_prev ||
+	  detname_curr != detname_aft  ||
+	  itp == 0                     ||
+	  itp == (NPoints-1)
+	  ){
+		
+	//G4cout << "TrajTrkId = " << TrajTrkId << " : " 
+	//<< detname_prev << " " << detname_curr << " " << detname_aft << G4endl;
+	
+	TND280UpTrackPoint *nd280TrackPoint = new TND280UpTrackPoint();
+	//std::auto_ptr<TND280UpTrackPoint> nd280TrackPoint(new TND280UpTrackPoint());
+	
+	nd280TrackPoint->SetPointID(itp);
+	nd280TrackPoint->SetTime(ndPoint->GetTime());
+	
+	// momentum 
+	double momPtX = ndPoint->GetMomentum().x();
+	double momPtY = ndPoint->GetMomentum().y();
+	double momPtZ = ndPoint->GetMomentum().z();
+	nd280TrackPoint->SetMomentum(momPtX,momPtY,momPtZ);
+	
+	nd280TrackPoint->SetEdep(ndPoint->GetEdep());
+	nd280TrackPoint->SetStepLength(ndPoint->GetStepLength());
+	nd280TrackPoint->SetStepDeltaLyz(ndPoint->GetStepDeltaLyz());
+	nd280TrackPoint->SetStepStatus(ndPoint->GetStepStatus());
+	nd280TrackPoint->SetPhysVolName(ndPoint->GetPhysVolName());
+	
+	// preStep position 
+	double prevX = ndPoint->GetPrevPosition().x();
+	double prevY = ndPoint->GetPrevPosition().y();
+	double prevZ = ndPoint->GetPrevPosition().z();
+	nd280TrackPoint->SetPrePosition(prevX,prevY,prevZ);
+	
+	// postStep position
+	double postX = ndPoint->GetPostPosition().x();
+	double postY = ndPoint->GetPostPosition().y();
+	double postZ = ndPoint->GetPostPosition().z();
+	nd280TrackPoint->SetPostPosition(postX,postY,postZ);
+	
+	nd280TrackPoint->SetIsOnBoundary(ndPoint->IsOnBoundary());
+	
+	//
+	// Store points if first/last point of the track
+	// or first/last of a SD
+	//
+	
+	// Mark the points
+	MarkPoint(ndPoint); // Store if in a SD 
+	if(ndPoint->SavePoint()){    
+	  nd280Track->AddPoint(nd280TrackPoint);
+	}	
+	else if(itp == 0           || 
+		itp == (NPoints-1)
+		){
+	  nd280Track->AddPoint(nd280TrackPoint);
+	}
+	
+	//delete nd280TrackPoint; 
+	//nd280TrackPoint=NULL;
+      }
+      
+      detname_prev = detname_curr;
       
     } // end loop over the points   
 
-   
-
-
-
+    
+    // Store the track length
+    
+    nd280Track->SetLengthTarget1(LengthTarget1);
+    nd280Track->SetLengthTarget2(LengthTarget2);
+    
+    nd280Track->SetLyzTPCUp1(LyzTPCUp1);
+    nd280Track->SetLyzTPCUp2(LyzTPCUp2);
+    nd280Track->SetLyzTPCDown1(LyzTPCDown1);
+    nd280Track->SetLyzTPCDown2(LyzTPCDown2);
+    nd280Track->SetLyzForwTPC1(LyzForwTPC1);
+    nd280Track->SetLyzForwTPC2(LyzForwTPC2);
+    nd280Track->SetLyzForwTPC3(LyzForwTPC3);
+    
     
     // Mark the trajectories to save.
     // // MarkTrajectories(anEvent); // loop over all the tracks again... --> don't use it!!!
     MarkTrajectory(ndTraj,anEvent);
     if(ndTraj->SaveTrajectory()){
-      //if(1){
       nd280Track->SaveIt(true);     
-      
-      //G4cout << "Before fND280UpEvent->AddTrack(nd280Track)" << G4endl;
-
       fND280UpEvent->AddTrack(nd280Track);
-
-      //G4cout << "After fND280UpEvent->AddTrack(nd280Track)" << G4endl;
     }
     
-
     // 
     // ND280Trajectory::ShowTrajectory()
     // and 
@@ -389,10 +452,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     //ndTraj->ShowTrajectory(G4cout);
     //
     
-    //G4cout << "Before delete nd280Track" << G4endl;
     //delete nd280Track; 
     //nd280Track=NULL;
-    //G4cout << "After  delete nd280Track" << G4endl;
 
   } // end loop over Trajectories
   
@@ -421,20 +482,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //   fEventTree->AutoSave("SaveSelf");
   //   fEventsNotSaved = 0;
   // }  
-
-  
-  G4cout << "End ND280RootPersistencyManager::Store" << G4endl;
-  //exit(1);
   
   return true;
 }
-
-
-
-
-
-
-
 
 bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
   return false;
@@ -456,6 +506,8 @@ bool ND280RootPersistencyManager::Store(const G4VPhysicalVolume* aWorld) {
   // gGeoManager->Write();
   // return true;
 }
+
+
 
 // std::vector<int>::iterator ND280RootPersistencyManager::CleanHitContributors(
 //     std::map<int,int>& parentMap,

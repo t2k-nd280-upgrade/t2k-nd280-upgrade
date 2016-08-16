@@ -32,6 +32,15 @@ TND280UpTrack::TND280UpTrack()
   fSaveIt        = true;
   fSDTotalEnergyDeposit = kUndefTrack;
   fSDLength      = kUndefTrack;
+  fLengthTarget1 = kUndefTrack;
+  fLengthTarget2 = kUndefTrack;
+  fLyzTPCUp1     = kUndefTrack;
+  fLyzTPCUp2     = kUndefTrack;
+  fLyzTPCDown1   = kUndefTrack;
+  fLyzTPCDown2   = kUndefTrack;
+  fLyzForwTPC1   = kUndefTrack;
+  fLyzForwTPC2   = kUndefTrack;
+  fLyzForwTPC3   = kUndefTrack;
 
   fNPoints = 0;
   fListOfPoints = new TList;
@@ -42,6 +51,36 @@ TND280UpTrack::TND280UpTrack()
 TND280UpTrack::~TND280UpTrack()
 {
   //delete ...;
+
+  fTrackID       = kUndefTrack;
+  fParentID      = kUndefTrack;
+  fProcessName   = "";
+  fPDG           = kUndefTrack;
+  fInitKinEnergy = kUndefTrack;
+  fInitMom.SetXYZ(kUndefTrack,
+		  kUndefTrack,
+		  kUndefTrack);
+  fInitCosTheta  = kUndefTrack;
+  fCharge        = kUndefTrack;
+  fRange         = kUndefTrack;
+  fSaveIt        = true;
+  fSDTotalEnergyDeposit = kUndefTrack;
+  fSDLength      = kUndefTrack;
+
+  fLengthTarget1 = kUndefTrack;
+  fLengthTarget2 = kUndefTrack;
+  fLyzTPCUp1     = kUndefTrack;
+  fLyzTPCUp2     = kUndefTrack;
+  fLyzTPCDown1   = kUndefTrack;
+  fLyzTPCDown2   = kUndefTrack;
+  fLyzForwTPC1   = kUndefTrack;
+  fLyzForwTPC2   = kUndefTrack;
+  fLyzForwTPC3   = kUndefTrack;
+
+  fNPoints = 0;
+
+  fListOfPoints->Delete();
+  delete fListOfPoints;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   
@@ -88,6 +127,16 @@ void TND280UpTrack::PrintTrack()
   cout << "Range: " << fRange << endl;
   cout << "SD total energy deposited: " << fSDTotalEnergyDeposit << endl;
   cout << "SD length: " << fSDLength << endl;
+  if(fLengthTarget1>0.){cout << "Length in Target1: " << fLengthTarget1 << endl;}
+  if(fLengthTarget2>0.){cout << "Length in Target2: " << fLengthTarget2 << endl;}
+  if(fLyzTPCUp1>0.){cout << "Lyz in TPCUp1: "         << fLyzTPCUp1     << endl;}
+  if(fLyzTPCUp2>0.){cout << "Lyz in TPCUp2: "         << fLyzTPCUp2     << endl;}
+  if(fLyzTPCDown1>0.){cout << "Lyz in TPCDown1: "     << fLyzTPCDown1   << endl;}
+  if(fLyzTPCDown2>0.){cout << "Lyz in TPCDown2: "     << fLyzTPCDown2   << endl;}
+  if(fLyzForwTPC1>0.){cout << "Lyz in ForwTPC1: "     << fLyzForwTPC1   << endl;}
+  if(fLyzForwTPC2>0.){cout << "Lyz in ForwTPC2: "     << fLyzForwTPC2   << endl;}
+  if(fLyzForwTPC3>0.){cout << "Lyz in ForwTPC3: "     << fLyzForwTPC3   << endl;}
+
   cout << "Save track: " << ((fSaveIt) ? "YES " : "NO") << endl;
   cout << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;

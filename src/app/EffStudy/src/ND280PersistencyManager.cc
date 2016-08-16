@@ -117,13 +117,14 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
   int NSDRootVolumes =  SDRegion->GetNumberOfRootVolumes();
   std::vector<G4LogicalVolume*>::iterator it_logicalVolumeInRegion =
     SDRegion->GetRootLogicalVolumeIterator();
-  
+
   //G4cout << "The list of SD logical volumes: " <<  G4endl;
   for(int i = 0; i < NSDRootVolumes ; i++, it_logicalVolumeInRegion++){  
     G4String SDLogVolName = (*it_logicalVolumeInRegion)->GetName();
-    if(ndPoint->GetPhysVolName() == SDLogVolName){
-      //G4cout << ndPoint->GetPhysVolName() << " "
-      //<< SDLogVolName << G4endl;
+    
+    G4String detname_curr = ndPoint->GetPhysVolName();
+   	 
+    if(detname_curr == SDLogVolName){
       ndPoint->MarkPoint();
     }
   }

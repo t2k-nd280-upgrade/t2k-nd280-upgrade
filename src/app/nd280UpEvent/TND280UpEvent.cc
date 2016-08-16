@@ -31,6 +31,14 @@ TND280UpEvent::TND280UpEvent(){
 
 TND280UpEvent::~TND280UpEvent(){
   //delete ...;
+
+  fEventID = -9999999;
+
+  fListOfTracks->Delete();
+  delete fListOfTracks;
+
+  fListOfVertices->Delete();
+  delete fListOfVertices;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   

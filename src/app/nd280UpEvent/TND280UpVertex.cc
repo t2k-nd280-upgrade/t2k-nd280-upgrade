@@ -37,6 +37,21 @@ TND280UpVertex::TND280UpVertex(string name){
 
 TND280UpVertex::~TND280UpVertex(){
   //delete ...;
+
+  fVertexID = kUndefVertex;
+  fReacMode = kUndefVertex;
+  fReacModeString = "";
+  fPosition.SetXYZ(kUndefVertex,
+                   kUndefVertex,
+                   kUndefVertex);
+
+  SetVertexName("");
+
+  fListOfInTracks->Delete();
+  delete fListOfInTracks;
+
+  fListOfOutTracks->Delete();
+  delete fListOfOutTracks;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   

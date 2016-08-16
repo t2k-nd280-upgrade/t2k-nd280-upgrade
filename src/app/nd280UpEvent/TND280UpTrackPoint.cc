@@ -40,6 +40,24 @@ TND280UpTrackPoint::TND280UpTrackPoint(){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
 TND280UpTrackPoint::~TND280UpTrackPoint(){
   //delete ...;
+
+  fPointID = kUndefTrackPoint;
+  fTime = kUndefTrackPoint;
+  fMomentum.SetXYZ(kUndefTrackPoint,
+                   kUndefTrackPoint,
+                   kUndefTrackPoint);
+  fEdep = kUndefTrackPoint;
+  fStepLength = kUndefTrackPoint;
+  fStepDeltaLyz = kUndefTrackPoint;
+  fStepStatus = kUndefTrackPoint;
+  fPhysVolName = "";
+  fPrePosition.SetXYZ(kUndefTrackPoint,
+                      kUndefTrackPoint,
+                      kUndefTrackPoint);
+  fPostPosition.SetXYZ(kUndefTrackPoint,
+                       kUndefTrackPoint,
+                       kUndefTrackPoint);
+  fSaveIt = true;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  

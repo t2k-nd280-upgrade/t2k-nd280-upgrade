@@ -57,11 +57,11 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"                 unless defined $resource;
-$tag             = "SelND280Up_Mu"               unless defined $tag;
-$nruns           = 2                             unless defined $nruns; 
-$inputfile       = "bin/FREEZE/ND280Up_50k.root" unless defined $inputfile;
+$tag             = "SelND280Up_NuMu_Prot_ParID0"           unless defined $tag;
+$nruns           = 20                             unless defined $nruns; 
+$inputfile       = "/neutrino/data7/davide/files/g4ND280Up_6E20_All_NoPoint.root"                           unless defined $inputfile;
 $first_expt      = 0                             unless defined $first_expt;
-$nexpts          = 10                            unless defined $nexpts;
+$nexpts          = 20000                          unless defined $nexpts;
 
 #
 # Selection cuts
@@ -77,9 +77,9 @@ $docut_mater     = 0                             unless defined $docut_mater;
 # select interactions only in Fiducial Volume
 $docut_vertex    = 1                             unless defined $docut_vertex;
 
-# select track pdg: +211, +2212, +13, +211
+# select track pdg: +211 (pi+), +2212 (proton), +13 (muon)
 $docut_pdg       = 1                             unless defined $docut_pdg;
-$cut_pdg         = 13                            unless defined $cut_pdg; 
+$cut_pdg         = +2212                            unless defined $cut_pdg; 
 
 # select track parent ID. If 0 --> primary particle,
 $docut_parid     = 1                             unless defined $docut_parid;
@@ -104,7 +104,7 @@ while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
-    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$tag\",\"$softw_dir/$inputfile\",$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
+    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$tag\",\"$inputfile\",$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
     
     $command = "$arguments";
     
@@ -126,7 +126,7 @@ while($irun < $nruns) { # loop over the jobs
 	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
 	print PBS "$command \n";
 	close(PBS);	
-	`qsub -q veryshort $job_dir/selection-$evt_first-$nexpts.sbatch`;
+	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/selection-$evt_first-$nexpts.sbatch`;
     }
      
     $irun=$irun+1; # increment job id
