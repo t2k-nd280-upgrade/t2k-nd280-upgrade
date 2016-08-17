@@ -39,6 +39,8 @@ foreach (@ARGV) {
     elsif($_ eq '--cut-reac'         ) { $cut_reac        = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-mater'      ) { $docut_mater     = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-vertex'     ) { $docut_vertex    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-target1'    ) { $docut_target1   = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-target2'    ) { $docut_target2   = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-pdg'        ) { $docut_pdg       = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-pdg'          ) { $cut_pdg         = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-parid'      ) { $docut_parid     = $ARGV[$iarg+1]; }
@@ -57,10 +59,13 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"                 unless defined $resource;
-$tag             = "SelND280Up_NuMu_Prot_ParID0"           unless defined $tag;
-$nruns           = 20                             unless defined $nruns; 
-$inputfile       = "/neutrino/data7/davide/files/g4ND280Up_6E20_All_NoPoint.root"                           unless defined $inputfile;
+$tag             = "SelND280Up_NuMu_6E20"           unless defined $tag;
+$inputfile       = "/neutrino/data7/davide/files/g4ND280Up_6E20_All_NoPoint.root"  unless defined $inputfile;
 $first_expt      = 0                             unless defined $first_expt;
+
+#$nruns           = 1                             unless defined $nruns; 
+#$nexpts          = 60000                          unless defined $nexpts;
+$nruns           = 17                             unless defined $nruns; 
 $nexpts          = 20000                          unless defined $nexpts;
 
 #
@@ -76,10 +81,12 @@ $docut_mater     = 0                             unless defined $docut_mater;
 
 # select interactions only in Fiducial Volume
 $docut_vertex    = 1                             unless defined $docut_vertex;
+$docut_target1   = 0                             unless defined $docut_target1;
+$docut_target2   = 1                             unless defined $docut_target2;
 
-# select track pdg: +211 (pi+), +2212 (proton), +13 (muon)
-$docut_pdg       = 1                             unless defined $docut_pdg;
-$cut_pdg         = +2212                            unless defined $cut_pdg; 
+# select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
+$docut_pdg       = 1                            unless defined $docut_pdg;
+$cut_pdg         = 2212                            unless defined $cut_pdg; 
 
 # select track parent ID. If 0 --> primary particle,
 $docut_parid     = 1                             unless defined $docut_parid;
@@ -104,7 +111,25 @@ while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
-    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$tag\",\"$inputfile\",$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
+    
+    $newtag = "$tag";
+    if($docut_vertex eq 1){
+	if($docut_target1 eq 1){ $newtag = "$newtag-Targ1";}
+	if($docut_target2 eq 1){ $newtag = "$newtag-Targ2";}
+    }
+    if($docut_pdg eq 1){
+	if($cut_pdg eq +13)  { $newtag = "$newtag-MuM";}
+	elsif($cut_pdg eq -13)  { $newtag = "$newtag-MuP";}
+	elsif($cut_pdg eq +211) { $newtag = "$newtag-PiP";}
+	elsif($cut_pdg eq -211) { $newtag = "$newtag-PiM";}
+	elsif($cut_pdg eq +2212){ $newtag = "$newtag-Prot";}
+	else{$newtag = "$newtag-PDG$cut_pdg";}
+    }
+    if($docut_parid eq 1){ $newtag = "$newtag-ParID$cut_parid";}
+    if($docut_reac eq 1){ $newtag = "$newtag-Reac$cut_reac";}
+  
+
+    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_target1,$docut_target2,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
     
     $command = "$arguments";
     
@@ -121,14 +146,17 @@ while($irun < $nruns) { # loop over the jobs
     # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
     #
     if($resource eq "UNIGE-Atlas") {
-	open(PBS, ">$job_dir/selection-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	open(PBS, ">$job_dir/selection-$newtag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
 	print PBS "#!/bin/bash -l  \n";
 	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
 	print PBS "$command \n";
 	close(PBS);	
-	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/selection-$evt_first-$nexpts.sbatch`;
+	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/selection-$newtag-$evt_first-$nexpts.sbatch`;
     }
-     
+    if($resource eq "interactive") {
+	system($command);
+    }
+    
     $irun=$irun+1; # increment job id
     
 } # loop over jobs

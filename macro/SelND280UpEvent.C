@@ -35,8 +35,8 @@ void SelND280UpEvent
  
  string infilename = "/neutrino/data7/davide/files/g4ND280Up_6E20_All_NoPoint.root",
  //string infilename = "../bin/ciao.root",
- 
- // Cut 1:  Select reaction mode
+
+ // Cut 1: Select reaction mode
  const bool doCutReac = false,
  const int cut_reac = 0, // 0=CCQE, 1=2p2h, 2=CC1pi, 3=CCcoh, 4=CCDIS, 5=NC
  
@@ -44,40 +44,46 @@ void SelND280UpEvent
  const bool doCutMater = false,
  const bool doCutVtx = true, 
  
+ const bool doCutTarget1 = true, // Select vertex in Target1
+ const bool doCutTarget2 = false, // Select vertex in Target2
+ 
  // Cut 3: Select PDG
- const bool doCutPDG = false,
- const int cut_pdg = +13, //+211, //+2212; //+13; // +211
+ const bool doCutPDG = true,
+ const int cut_pdg = 13, //+211, //+2212; //+13; // +211; //+11
  
  // Cut 4: Select parent ID (0 --> it's primary particle)
- const bool doCutParentID = false,
+ const bool doCutParentID = true,
  const int cut_parentID = 0,
 
  // Cut 5: Charge cut (TPCs and Target)  
- const bool doCutCharge = false,
+ const bool doCutCharge = true,
  const double cut_charge = 1, // absolute value 
  
  // Cut 6: Length cut (Targets) 
- const bool doCutDLTarget = false, // full length in target and dlyz in tpcs    
+ const bool doCutDLTarget = true, // full length in target and dlyz in tpcs    
  const double cut_length_target_min = 50, //mm  
  
  // Cut 7: DeltaLyz cut (TPCs)
- const bool doCutDLyzTPC = false,
+ const bool doCutDLyzTPC = true,
  const double cut_dlyz_tpc_min = 200 //mm  
  )
 {
-  // Definition of Fiducial Volume (Target 1 or 2)
+  // Definition of Fiducial Volume (Target 1 or 2)  
+  // Target 1
   const double vtx_min_x_1 = -1150;  //mm
   const double vtx_max_x_1 = +1150;  //mm
   const double vtx_min_y_1 = -300; //mm
   const double vtx_max_y_1 = +300; //mm
-  const double vtx_min_z_1 = +487;  //mm
-  const double vtx_max_z_1 = +2487;  //mm 
+  const double vtx_min_z_1 = -2487;  //mm
+  const double vtx_max_z_1 = -487;  //mm
+  // Target 2
   const double vtx_min_x_2 = -1150;  //mm
   const double vtx_max_x_2 = +1150;  //mm
   const double vtx_min_y_2 = -300; //mm
   const double vtx_max_y_2 = +300; //mm
-  const double vtx_min_z_2 = -2487;  //mm
-  const double vtx_max_z_2 = -487;  //mm
+  const double vtx_min_z_2 = +487;  //mm
+  const double vtx_max_z_2 = +2487;  //mm 
+
 
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+");
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+");
@@ -101,20 +107,40 @@ void SelND280UpEvent
     = (TH2D*) hCosThetaVsMom_FV->Clone("hCosThetaVsMom_TargetOrTPC");
   TH2D *hCosThetaVsMom_TargetAndTPC 
     = (TH2D*) hCosThetaVsMom_FV->Clone("hCosThetaVsMom_TargetAndTPC");  
-  
-  //TH2D *hCosThetaVsMom_Target_Eff;
-  //TH2D *hCosThetaVsMom_TPC_Eff; 
-  //TH2D *hCosThetaVsMom_TargetAndTPC_Eff; 
-  //TH2D *hCosThetaVsMom_TargetOrTPC_Eff;
-  
-  // 
+    
+  // FV histograms
 
-  TH1D *hLength_SD = new TH1D("hLength_SD","hLength_SD",200,0,2000);
-  TH1D *hLength_Targ = new TH1D("hLength_Targ","hLength_Targ",200,0,2000);
-  TH1D *hLyz_TPC = new TH1D("hLyz_TPC","hLyz_TPC",200,0,2000);
-  TH2D *hLengthVsMom_SD = new TH2D("hLengthVsMom","hLengthVsMom",200,0,2000,100,0,5000);  
-  TH2D *hLengthVsMom_Targ = new TH2D("hLengthVsMom_Targ","hLengthVsMom_Targ",200,0,2000,100,0,5000);  
-  TH2D *hLyzVsMom_TPC = new TH2D("hLyzVsMom_TPC","hLyzVsMom_TPC",200,0,2000,100,0,5000);
+  TH1D *hL_SD = new TH1D("hL_SD","hL_SD",200,0,2000);
+  TH1D *hL_TargAll_FV = new TH1D("hL_TargAll_FV","hL_TargAll_FV",200,0,2000);
+  TH1D *hL_Targ1_FV = new TH1D("hL_Targ1_FV","hL_Targ1_FV",200,0,2000);
+  TH1D *hL_Targ2_FV = new TH1D("hL_Targ2_FV","hL_Targ2_FV",200,0,2000);
+  TH1D *hL_TargAll_Cut = new TH1D("hL_TargAll_Cut","hL_TargAll_Cut",200,0,2000);
+  TH1D *hL_Targ1_Cut = new TH1D("hL_Targ1_Cut","hL_Targ1_Cut",200,0,2000);
+  TH1D *hL_Targ2_Cut = new TH1D("hL_Targ2_Cut","hL_Targ2_Cut",200,0,2000);
+  TH2D *hLVsMom_SD = new TH2D("hLVsMom_SD","hLVsMom_SD",200,0,2000,100,0,5000);  
+  TH2D *hLVsMom_TargAll_FV = new TH2D("hLVsMom_TargAll_FV","hLVsMom_TargAll_FV",200,0,2000,100,0,5000);  
+  TH2D *hLVsMom_Targ1_FV = new TH2D("hLVsMom_Targ1_FV","hLVsMom_Targ1_FV",200,0,2000,100,0,5000);  
+  TH2D *hLVsMom_Targ2_FV = new TH2D("hLVsMom_Targ2_FV","hLVsMom_Targ2_FV",200,0,2000,100,0,5000);  
+  TH2D *hLVsMom_TargAll_Cut = new TH2D("hLVsMom_TargAll_Cut","hLVsMom_TargAll_Cut",200,0,2000,100,0,5000);  
+  TH2D *hLVsMom_Targ1_Cut = new TH2D("hLVsMom_Targ1_Cut","hLVsMom_Targ1_Cut",200,0,2000,100,0,5000);  
+  TH2D *hLVsMom_Targ2_Cut = new TH2D("hLVsMom_Targ2_Cut","hLVsMomTarg2_Cut",200,0,2000,100,0,5000);  
+
+  TH1D *hLyz_TPCAll = new TH1D("hLyz_TPCAll","hLyz_TPCAll",200,0,2000);
+  TH1D *hLyz_TPCUp1 = new TH1D("hLyz_TPCUp1","hLyz_TPCUp1",200,0,2000);
+  TH1D *hLyz_TPCUp2 = new TH1D("hLyz_TPCUp2","hLyz_TPCUp2",200,0,2000);
+  TH1D *hLyz_TPCDown1 = new TH1D("hLyz_TPCDown1","hLyz_TPCDown1",200,0,2000);
+  TH1D *hLyz_TPCDown2 = new TH1D("hLyz_TPCDown2","hLyz_TPCDown2",200,0,2000);
+  TH1D *hLyz_ForwTPC1 = new TH1D("hLyz_ForwTPC1","hLyz_ForwTPC1",200,0,2000);
+  TH1D *hLyz_ForwTPC2 = new TH1D("hLyz_ForwTPC2","hLyz_ForwTPC2",200,0,2000);
+  TH1D *hLyz_ForwTPC3 = new TH1D("hLyz_ForwTPC3","hLyz_ForwTPC3",200,0,2000);
+  TH2D *hLyzVsMom_TPCAll = new TH2D("hLyzVsMom_TPCAll","hLyzVsMom_TPCAll",200,0,2000,100,0,5000);
+  TH2D *hLyzVsMom_TPCUp1 = new TH2D("hLyzVsMom_TPCUp1","hLyzVsMom_TPCUp1",200,0,2000,100,0,5000);
+  TH2D *hLyzVsMom_TPCUp2 = new TH2D("hLyzVsMom_TPCUp2","hLyzVsMom_TPCUp2",200,0,2000,100,0,5000);
+  TH2D *hLyzVsMom_TPCDown1 = new TH2D("hLyzVsMom_TPCDown1","hLyzVsMom_TPCDown1",200,0,2000,100,0,5000);
+  TH2D *hLyzVsMom_TPCDown2 = new TH2D("hLyzVsMom_TPCDown2","hLyzVsMom_TPCDown2",200,0,2000,100,0,5000);
+  TH2D *hLyzVsMom_ForwTPC1 = new TH2D("hLyzVsMom_ForwTPC1","hLyzVsMom_ForwTPC1",200,0,2000,100,0,5000);
+  TH2D *hLyzVsMom_ForwTPC2 = new TH2D("hLyzVsMom_ForwTPC2","hLyzVsMom_ForwTPC2",200,0,2000,100,0,5000);
+  TH2D *hLyzVsMom_ForwTPC3 = new TH2D("hLyzVsMom_ForwTPC3","hLyzVsMom_ForwTPC3",200,0,2000,100,0,5000);
   
   TH1D *hMom = new TH1D("hMom","hMom",200,0,10000); 
   TH1D *hPDG = new TH1D("hPDG","hPDG",500,-500,500);
@@ -136,8 +162,7 @@ void SelND280UpEvent
   TH1D *hDiffEtrueEvis = new TH1D("hDiffEtrueEvis","hDiffEtrueEvis",200,-2000,2000);
   TH1D *hDiffEtrueEreco = new TH1D("hDiffEtrueEreco","hDiffEtrueEreco",200,-2000,2000);
   TH2D *hEtrueVsEvis = new TH2D("hEtrueVsEvis","hEtrueVsEvis",NBins_Mom,BinEdges_Mom,NBins_Mom,BinEdges_Mom);
-  TH2D *hEtrueVsEreco = new TH2D("hEtrueVsEreco","hEtrueVsEreco",NBins_Mom,BinEdges_Mom,NBins_Mom,BinEdges_Mom);
-  
+  TH2D *hEtrueVsEreco = new TH2D("hEtrueVsEreco","hEtrueVsEreco",NBins_Mom,BinEdges_Mom,NBins_Mom,BinEdges_Mom);  
   TH1D *hNuReacFV = new TH1D("hNuReacFV","hNuReacFV",6,0,6);
   hNuReacFV->GetXaxis()->SetBinLabel(1,"CCQE");
   hNuReacFV->GetXaxis()->SetBinLabel(2,"2p2h");
@@ -145,7 +170,7 @@ void SelND280UpEvent
   hNuReacFV->GetXaxis()->SetBinLabel(4,"CCcoh");
   hNuReacFV->GetXaxis()->SetBinLabel(5,"CCDIS");
   hNuReacFV->GetXaxis()->SetBinLabel(6,"NC");
-
+  
   // Vertex
   TH2D *hVtxOut_XY = new TH2D("hVtxOut_XY","hVtxOut_XY",400,-2000,2000,400,-2000,2000); // mm 
   TH2D *hVtxOut_XZ = new TH2D("hVtxOut_XZ","hVtxOut_XZ",400,-2000,2000,800,-4000,4000); // mm  
@@ -153,7 +178,6 @@ void SelND280UpEvent
   TH1D *hVtxOut_X = new TH1D("hVtxOut_X","hVtxOut_X",400,-2000,2000); // mm  
   TH1D *hVtxOut_Y = new TH1D("hVtxOut_Y","hVtxOut_Y",400,-2000,2000); // mm    
   TH1D *hVtxOut_Z = new TH1D("hVtxOut_Z","hVtxOut_Z",800,-4000,4000); // mm 
-
   TH2D *hVtx_XY = new TH2D("hVtx_XY","hVtx_XY",400,-2000,2000,400,-2000,2000); // mm 
   TH2D *hVtx_XZ = new TH2D("hVtx_XZ","hVtx_XZ",400,-2000,2000,800,-4000,4000); // mm  
   TH2D *hVtx_YZ = new TH2D("hVtx_YZ","hVtx_YZ",400,-2000,2000,800,-4000,4000); // mm  
@@ -170,19 +194,22 @@ void SelND280UpEvent
   int NTotTrkPassLtarget = 0; // Cut 6
   int NTotTrkPassLtpc = 0; // Cut 7
   
-  //
+  // Check the inputs
+  if(!doCutTarget1 && !doCutTarget2){
+    cout << endl;
+    cout << "You are not selecting interactions in any target !!!" << endl;
+    cout << endl;
+    exit(1);
+  }
 
   TFile *finput = new TFile(infilename.c_str(),"READ");
   TTree *tinput = (TTree*) finput->Get("ND280upEvents");
   
-  TND280UpEvent *nd280UpEvent = new TND280UpEvent();
-  
+  TND280UpEvent *nd280UpEvent = new TND280UpEvent();  
   tinput->SetBranchAddress("Event",&nd280UpEvent);
   
-  int NTreeEntries = tinput->GetEntries();
-  
+  int NTreeEntries = tinput->GetEntries();  
   int evtlasttree = NTreeEntries-1;
-  
   int Nentries = -999;
 
   cout << endl;
@@ -250,12 +277,17 @@ void SelND280UpEvent
       cerr << endl;
       exit(1);
     }
-
+    
     for(int ivtx=0;ivtx<NVertices;ivtx++){
       TND280UpVertex *nd280UpVertex = nd280UpEvent->GetVertex(ivtx);
       //TND280UpVertex *nd280UpVertex = new TND280UpVertex();
       //nd280UpEvent->GetVertex(ivtx)->Copy(*nd280UpVertex);
       
+      TND280UpTrack *nd280UpVtxTrkIn1 = nd280UpVertex->GetInTrack(0);
+      TND280UpTrack *nd280UpVtxTrkIn2 = nd280UpVertex->GetInTrack(1);
+      int pdg_vtxtrk1 = nd280UpVtxTrkIn1->GetPDG();
+      int pdg_vtxtrk2 = nd280UpVtxTrkIn2->GetPDG();
+
       //
       // Cut 1: true reaction mode
       //
@@ -264,6 +296,11 @@ void SelND280UpEvent
       int reacmode_all = GetReacAll(reacmode);
       int cut_reac_all = GetReacAll(cut_reac); 
       
+      if(reacmode==2){
+	
+	cout << "reacmode = " << reacmode << " --> reacmode_all = " << reacmode_all << endl;
+      }
+
       if(doCutReac){	
 	if(reacmode_all==cut_reac){
 	  PassCutReac = true;
@@ -276,12 +313,7 @@ void SelND280UpEvent
       //
       // Cut 2: vtx in FV
       //
-      
-      TND280UpTrack *nd280UpVtxTrkIn1 = nd280UpVertex->GetInTrack(0);
-      TND280UpTrack *nd280UpVtxTrkIn2 = nd280UpVertex->GetInTrack(1);
-      int pdg_vtxtrk1 = nd280UpVtxTrkIn1->GetPDG();
-      int pdg_vtxtrk2 = nd280UpVtxTrkIn2->GetPDG();
-      
+            
       if(fabs(pdg_vtxtrk1)==12 || 
 	 fabs(pdg_vtxtrk1)==14 ||
 	 fabs(pdg_vtxtrk1)==16 
@@ -300,7 +332,7 @@ void SelND280UpEvent
 	hNuPDG->Fill(pdg_vtxtrk2);	
 	NuEtrue = mom_vtxtrk2;
       }       
-            
+      
       //
       // Cut on the target material:
       // - O16 --> 1000080160
@@ -340,17 +372,29 @@ void SelND280UpEvent
 	   (y > vtx_min_y_1 && y < vtx_max_y_1) && 
 	   (z > vtx_min_z_1 && z < vtx_max_z_1)
 	   ){
-	  PassCutVtx = true;
-	  FillVtxInFV = true;
+	  if(doCutTarget1){
+	    PassCutVtx = true;
+	    FillVtxInFV = true;
+	  }
+	  else{
+	    PassCutVtx = false;
+	    FillVtxInFV = false;
+	  }
 	}
 	
 	// Target 2 FV
 	if((x > vtx_min_x_2 && x < vtx_max_x_2) &&
 	   (y > vtx_min_y_2 && y < vtx_max_y_2) &&
 	   (z > vtx_min_z_2 && z < vtx_max_z_2)
-	   ){
-	  PassCutVtx = true;
-	  FillVtxInFV = true;
+	   ){	  
+	  if(doCutTarget2){
+	    PassCutVtx = true;
+	    FillVtxInFV = true;
+	  }
+	  else{
+	    PassCutVtx = false;
+	    FillVtxInFV = false;
+	  }
 	}
 	
 	//
@@ -371,7 +415,6 @@ void SelND280UpEvent
           hVtx_X->Fill(x);
 	  hVtx_Y->Fill(y);
 	  hVtx_Z->Fill(z);
-
 	}
       }
       
@@ -382,6 +425,7 @@ void SelND280UpEvent
       else 
 	hNuReacFV->Fill(reacmode_all);
       	  
+   
 		      
       //nd280UpVertex->PrintVertex();
 
@@ -518,31 +562,6 @@ void SelND280UpEvent
       */
       
 
-      double lyz_max = 0.;
-      if(lyz_tpcup1>lyz_max)   lyz_max = lyz_tpcup1;
-      if(lyz_tpcup2>lyz_max)   lyz_max = lyz_tpcup2;
-      if(lyz_tpcdown1>lyz_max) lyz_max = lyz_tpcdown1;
-      if(lyz_tpcdown2>lyz_max) lyz_max = lyz_tpcdown2;
-      if(lyz_forwtpc1>lyz_max) lyz_max = lyz_forwtpc1;
-      if(lyz_forwtpc2>lyz_max) lyz_max = lyz_forwtpc2;
-      if(lyz_forwtpc3>lyz_max) lyz_max = lyz_forwtpc3;
-      
-      hLyzVsMom_TPC->Fill(lyz_max,mom);
-      hLyz_TPC->Fill(lyz_max);      
-       
-      if(length_target1>length_target2){
-	if(length_target1>0.){
-	  hLengthVsMom_Targ->Fill(length_target1,mom);
-	  hLength_Targ->Fill(length_target1);
-	}
-      }
-      else{
-	if(length_target2>0.){
-	  hLengthVsMom_Targ->Fill(length_target2,mom);
-	  hLength_Targ->Fill(length_target2);
-	}
-      }
-      
       //
       // Cut 3: particle PDG
       //
@@ -560,7 +579,7 @@ void SelND280UpEvent
       }
       NTotTrkPassParentID++;
       hCut->Fill(3.);
- 
+      
       //
       // Cut 5: particle charge
       //
@@ -569,45 +588,110 @@ void SelND280UpEvent
       }
       NTotTrkPassCharge++;
       hCut->Fill(4.);
+      
+
+
+      // Fill selected particles in FV
+
+      double lyz_max = 0.;
+      if(lyz_tpcup1>lyz_max)   lyz_max = lyz_tpcup1;
+      if(lyz_tpcup2>lyz_max)   lyz_max = lyz_tpcup2;
+      if(lyz_tpcdown1>lyz_max) lyz_max = lyz_tpcdown1;
+      if(lyz_tpcdown2>lyz_max) lyz_max = lyz_tpcdown2;
+      if(lyz_forwtpc1>lyz_max) lyz_max = lyz_forwtpc1;
+      if(lyz_forwtpc2>lyz_max) lyz_max = lyz_forwtpc2;
+      if(lyz_forwtpc3>lyz_max) lyz_max = lyz_forwtpc3;
+
+      double length_target_max = 0.;
+      if(length_target1>length_target2) length_target_max = length_target1;
+      else                              length_target_max = length_target2;
+      
+      if(lyz_max>0.){
+	hLyzVsMom_TPCAll->Fill(lyz_max,mom);
+	hLyz_TPCAll->Fill(lyz_max);      
+      }
+
+      if(lyz_tpcup1>0.){
+	hLyz_TPCUp1->Fill(lyz_tpcup1);
+	hLyzVsMom_TPCUp1->Fill(lyz_tpcup1,mom);
+      }
+      if(lyz_tpcup2>0.){
+	hLyz_TPCUp2->Fill(lyz_tpcup2);
+	hLyzVsMom_TPCUp2->Fill(lyz_tpcup2,mom);
+      }
+      if(lyz_tpcdown1>0.){
+	hLyz_TPCDown1->Fill(lyz_tpcdown1);
+	hLyzVsMom_TPCDown1->Fill(lyz_tpcdown1,mom);
+      }
+      if(lyz_tpcdown2>0.){
+	hLyz_TPCDown2->Fill(lyz_tpcdown2);
+	hLyzVsMom_TPCDown2->Fill(lyz_tpcdown2,mom);
+      }      
+      if(lyz_forwtpc1>0.){
+	hLyz_ForwTPC1->Fill(lyz_forwtpc1);
+	hLyzVsMom_ForwTPC1->Fill(lyz_forwtpc1,mom);
+      }
+      if(lyz_forwtpc2>0.){
+	hLyz_ForwTPC2->Fill(lyz_forwtpc2);
+	hLyzVsMom_ForwTPC2->Fill(lyz_forwtpc2,mom);
+      }
+      if(lyz_forwtpc3>0.){
+	hLyz_ForwTPC3->Fill(lyz_forwtpc3);
+	hLyzVsMom_ForwTPC3->Fill(lyz_forwtpc3,mom);
+      }
+      
+      if(length_target1>0.){ 
+	hL_Targ1_FV->Fill(length_target1);
+	hLVsMom_Targ1_FV->Fill(length_target1,mom);
+      }
+      if(length_target2>0.){
+	hL_Targ2_FV->Fill(length_target2);
+	hLVsMom_Targ2_FV->Fill(length_target2,mom);
+      }
+      if(length_target_max>0.){
+	hL_TargAll_FV->Fill(length_target_max);
+	hLVsMom_TargAll_FV->Fill(length_target_max,mom);
+      }
 
       hCosThetaVsMom_FV->Fill(costheta,mom);
-      
+
       //
       // Cut 6 : track length in a target
       //
       bool PassCutTarget = true;
       if(doCutDLTarget){
-	if(length_target1 > cut_length_target_min ||
-	   length_target2 > cut_length_target_min){
-	  PassCutTarget = true;	  
+      	if(length_target1 > cut_length_target_min ||
+      	   length_target2 > cut_length_target_min){
+      	  PassCutTarget = true;	  
+      	}
+      	else{ 
+      	  PassCutTarget = false;
 	}
-	else 
-	  PassCutTarget = false;
       }
       else // if don't apply the cut
-	PassCutTarget = true;
-      
+      	PassCutTarget = true;
+	
       //
       // Cut 7: track dLyz in a TPC
       //
       bool PassCutTPC = true; 
       if(doCutDLyzTPC){
-	if(lyz_tpcup1 > cut_dlyz_tpc_min ||
-	   lyz_tpcup2 > cut_dlyz_tpc_min ||
-	   lyz_tpcdown1 > cut_dlyz_tpc_min ||
-	   lyz_tpcdown2 > cut_dlyz_tpc_min ||
-	   lyz_forwtpc1 > cut_dlyz_tpc_min ||
-	   lyz_forwtpc2 > cut_dlyz_tpc_min ||
-	   lyz_forwtpc3 > cut_dlyz_tpc_min
-	   ){
-	  PassCutTPC = true; 
-	}
-	else{ 
-	  PassCutTPC = false;
-	}
+      	if(lyz_tpcup1 > cut_dlyz_tpc_min ||
+      	   lyz_tpcup2 > cut_dlyz_tpc_min ||
+      	   lyz_tpcdown1 > cut_dlyz_tpc_min ||
+      	   lyz_tpcdown2 > cut_dlyz_tpc_min ||
+      	   lyz_forwtpc1 > cut_dlyz_tpc_min ||
+      	   lyz_forwtpc2 > cut_dlyz_tpc_min ||
+      	   lyz_forwtpc3 > cut_dlyz_tpc_min
+      	   ){
+      	  PassCutTPC = true; 
+      	}
+      	else{ 
+      	  PassCutTPC = false;
+      	}
       }
       else{ // if don't apply the cut
-	PassCutTPC = true;
+      	PassCutTPC = true;
       }
 
       //
@@ -618,35 +702,55 @@ void SelND280UpEvent
       
       if(PassCutTarget){
 	NTotTrkPassLtarget++;
+	
+	if(length_target_max>0.){
+	  hL_TargAll_Cut->Fill(length_target_max);
+	  hLVsMom_TargAll_Cut->Fill(length_target_max,mom);
+	}
+	if(length_target1>0.){
+	  hL_Targ1_Cut->Fill(length_target1);
+	  hLVsMom_Targ1_Cut->Fill(length_target1,mom);
+	}
+	if(length_target2>0.){
+	  hL_Targ2_Cut->Fill(length_target2);
+	  hLVsMom_Targ2_Cut->Fill(length_target2,mom);
+	}
+	
 	hCosThetaVsMom_Target->Fill(costheta,mom);
 	IsDetected = true;	
 	hCut->Fill(5.);	    
       }
+
       if(PassCutTPC){
-	NTotTrkPassLtpc++;
-	hCosThetaVsMom_TPC->Fill(costheta,mom);
-	IsDetected = true;
-	hCut->Fill(6.);
+      	NTotTrkPassLtpc++;
+      	hCosThetaVsMom_TPC->Fill(costheta,mom);
+      	IsDetected = true;
+      	hCut->Fill(6.);
       }
       if(PassCutTarget && PassCutTPC){ 
-	hCosThetaVsMom_TargetAndTPC->Fill(costheta,mom);      
-	IsDetected = true;
+      	hCosThetaVsMom_TargetAndTPC->Fill(costheta,mom);      
+      	IsDetected = true;
       }
       if(PassCutTarget || PassCutTPC){
-	hCosThetaVsMom_TargetOrTPC->Fill(costheta,mom);
-	IsDetected = true;
+      	hCosThetaVsMom_TargetOrTPC->Fill(costheta,mom);
+      	IsDetected = true;
       }
       
       //
       // Fill detected tracks
       //
       if(IsDetected){
-	hLengthVsMom_SD->Fill(SDlength,mom);
-	hLength_SD->Fill(SDlength);
-	hMom->Fill(mom);
-	hPDG->Fill(pdg);
-
-	NuEvis += ekin;
+      	hLVsMom_SD->Fill(SDlength,mom);
+      	hL_SD->Fill(SDlength);
+      	hMom->Fill(mom);
+      	hPDG->Fill(pdg);
+	
+	double mass = 0.;
+	if     (abs(pdg)==211)  mass = 139.570; // pi+-
+	else if(abs(pdg)==13)   mass = 105.658; // muon
+	else if(abs(pdg)==2212) mass = 938.272; // proton
+	else if(abs(pdg)==11)   mass = 0.511;   // electron
+      	NuEvis += ekin+mass;
       }
 
       // delete nd280UpTrack;
@@ -666,26 +770,9 @@ void SelND280UpEvent
     //delete nd280UpEvent;    
   } // end loop over events
   
-  
-  //
-  // Get plots for efficiency estimation
-  //
-  //hCosThetaVsMom_Target_Eff = 
-  //(TH2D*) hCosThetaVsMom_Target->Clone("hCosThetaVsMom_Target_Eff"); 
-  //hCosThetaVsMom_Target_Eff->Divide(hCosThetaVsMom_FV);
-  //hCosThetaVsMom_TPC_Eff = 
-  //(TH2D*) hCosThetaVsMom_TPC->Clone("hCosThetaVsMom_TPC_Eff");
-  //hCosThetaVsMom_TPC_Eff->Divide(hCosThetaVsMom_FV);
-  //hCosThetaVsMom_TargetAndTPC_Eff = 
-  //(TH2D*) hCosThetaVsMom_TargetAndTPC->Clone("hCosThetaVsMom_TargetAndTPC_Eff");
-  //hCosThetaVsMom_TargetAndTPC_Eff->Divide(hCosThetaVsMom_FV);
-  //hCosThetaVsMom_TargetOrTPC_Eff = 
-  //(TH2D*) hCosThetaVsMom_TargetOrTPC->Clone("hCosThetaVsMom_TargetOrTPC_Eff");
-  //hCosThetaVsMom_TargetOrTPC_Eff->Divide(hCosThetaVsMom_FV);
-  
+   
   // Write output file
   TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
-
   TFile *out = new TFile(outfilename.Data(),"RECREATE");
   hVtx_X->Write();
   hVtx_Y->Write();
@@ -705,22 +792,41 @@ void SelND280UpEvent
   hCosThetaVsMom_TPC->Write();
   hCosThetaVsMom_TargetAndTPC->Write();
   hCosThetaVsMom_TargetOrTPC->Write();
-  //hCosThetaVsMom_Target_Eff->Write();
-  //hCosThetaVsMom_TPC_Eff->Write();
-  //hCosThetaVsMom_TargetAndTPC_Eff->Write();
-  //hCosThetaVsMom_TargetOrTPC_Eff->Write();
   //
   hNuReacFV->Write();
   hNuMom->Write();
   hNuPDG->Write();
   hMom->Write();
   hPDG->Write();
-  hLength_SD->Write();
-  hLength_Targ->Write();
-  hLyz_TPC->Write();
-  hLengthVsMom_SD->Write();
-  hLengthVsMom_Targ->Write();
-  hLyzVsMom_TPC->Write();  
+  //
+  hL_SD->Write();
+  hL_TargAll_FV->Write();
+  hL_Targ1_FV->Write();
+  hL_Targ2_FV->Write();
+  hL_TargAll_Cut->Write();
+  hL_Targ1_Cut->Write();
+  hL_Targ2_Cut->Write();
+  hLVsMom_SD->Write();
+  hLVsMom_TargAll_FV->Write();
+  hLVsMom_Targ1_FV->Write();
+  hLVsMom_Targ2_FV->Write();
+  hLVsMom_TargAll_Cut->Write();
+  hLVsMom_Targ1_Cut->Write();
+  hLVsMom_Targ2_Cut->Write();
+  hLyz_TPCUp1->Write();
+  hLyz_TPCUp2->Write();
+  hLyz_TPCDown1->Write();
+  hLyz_TPCDown2->Write();
+  hLyz_ForwTPC1->Write();
+  hLyz_ForwTPC2->Write();
+  hLyz_ForwTPC3->Write();
+  hLyzVsMom_TPCUp1->Write();  
+  hLyzVsMom_TPCUp2->Write();  
+  hLyzVsMom_TPCDown1->Write();  
+  hLyzVsMom_TPCDown2->Write();  
+  hLyzVsMom_ForwTPC1->Write();  
+  hLyzVsMom_ForwTPC2->Write();  
+  hLyzVsMom_ForwTPC3->Write();  
   //
   hEvis->Write();
   hDiffEtrueEvis->Write();
