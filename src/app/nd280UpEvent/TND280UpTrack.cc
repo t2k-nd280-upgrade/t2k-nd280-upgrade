@@ -41,6 +41,15 @@ TND280UpTrack::TND280UpTrack()
   fLyzForwTPC1   = kUndefTrack;
   fLyzForwTPC2   = kUndefTrack;
   fLyzForwTPC3   = kUndefTrack;
+  fEdepTarget1 = kUndefTrack;
+  fEdepTarget2 = kUndefTrack;
+  fEdepTPCUp1     = kUndefTrack;
+  fEdepTPCUp2     = kUndefTrack;
+  fEdepTPCDown1   = kUndefTrack;
+  fEdepTPCDown2   = kUndefTrack;
+  fEdepForwTPC1   = kUndefTrack;
+  fEdepForwTPC2   = kUndefTrack;
+  fEdepForwTPC3   = kUndefTrack;
 
   fNPoints = 0;
   fListOfPoints = new TList;
@@ -76,6 +85,16 @@ TND280UpTrack::~TND280UpTrack()
   fLyzForwTPC1   = kUndefTrack;
   fLyzForwTPC2   = kUndefTrack;
   fLyzForwTPC3   = kUndefTrack;
+
+  fEdepTarget1 = kUndefTrack;
+  fEdepTarget2 = kUndefTrack;
+  fEdepTPCUp1     = kUndefTrack;
+  fEdepTPCUp2     = kUndefTrack;
+  fEdepTPCDown1   = kUndefTrack;
+  fEdepTPCDown2   = kUndefTrack;
+  fEdepForwTPC1   = kUndefTrack;
+  fEdepForwTPC2   = kUndefTrack;
+  fEdepForwTPC3   = kUndefTrack;
 
   fNPoints = 0;
 
@@ -136,6 +155,16 @@ void TND280UpTrack::PrintTrack()
   if(fLyzForwTPC1>0.){cout << "Lyz in ForwTPC1: "     << fLyzForwTPC1   << endl;}
   if(fLyzForwTPC2>0.){cout << "Lyz in ForwTPC2: "     << fLyzForwTPC2   << endl;}
   if(fLyzForwTPC3>0.){cout << "Lyz in ForwTPC3: "     << fLyzForwTPC3   << endl;}
+
+  if(fEdepTarget1>0.){cout << "Edep in Target1: "     << fEdepTarget1 << endl;}
+  if(fEdepTarget2>0.){cout << "Edep in Target2: "     << fEdepTarget2 << endl;}
+  if(fEdepTPCUp1>0.){cout << "Edep in TPCUp1: "       << fEdepTPCUp1     << endl;}
+  if(fEdepTPCUp2>0.){cout << "Edep in TPCUp2: "       << fEdepTPCUp2     << endl;}
+  if(fEdepTPCDown1>0.){cout << "Edep in TPCDown1: "   << fEdepTPCDown1   << endl;}
+  if(fEdepTPCDown2>0.){cout << "Edep in TPCDown2: "   << fEdepTPCDown2   << endl;}
+  if(fEdepForwTPC1>0.){cout << "Edep in ForwTPC1: "   << fEdepForwTPC1   << endl;}
+  if(fEdepForwTPC2>0.){cout << "Edep in ForwTPC2: "   << fEdepForwTPC2   << endl;}
+  if(fEdepForwTPC3>0.){cout << "Edep in ForwTPC3: "   << fEdepForwTPC3   << endl;}
 
   cout << "Save track: " << ((fSaveIt) ? "YES " : "NO") << endl;
   cout << endl;

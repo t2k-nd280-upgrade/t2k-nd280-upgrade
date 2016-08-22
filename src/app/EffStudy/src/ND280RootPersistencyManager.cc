@@ -304,6 +304,16 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double LyzForwTPC2   = 0.;
     double LyzForwTPC3   = 0.;
 
+    double EdepTarget1 = 0.;
+    double EdepTarget2 = 0.;
+    double EdepTPCUp1     = 0.;
+    double EdepTPCUp2     = 0.;
+    double EdepTPCDown1   = 0.;
+    double EdepTPCDown2   = 0.;
+    double EdepForwTPC1   = 0.;
+    double EdepForwTPC2   = 0.;
+    double EdepForwTPC3   = 0.;
+
     G4String detname_prev = "undefined";
     
     int NPoints = ndTraj->GetPointEntries();
@@ -327,19 +337,48 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 		    "ExN02Code001", JustWarning, msg);
 	return false;
       }
-
+      
       double steplength = ndPoint->GetStepLength();
-      double stepdeltalyz = ndPoint->GetStepDeltaLyz();      
+      double stepdeltalyz = ndPoint->GetStepDeltaLyz();  
+      double stepedep = ndPoint->GetEdep();
+
       if(steplength>0.){
-  	if     (detname_curr=="Target1") LengthTarget1 += steplength;
-	else if(detname_curr=="Target2") LengthTarget2 += steplength;	
-	else if(detname_curr=="TPCUp1")        LyzTPCUp1   += stepdeltalyz;
-	else if(detname_curr=="TPCUp2")        LyzTPCUp2   += stepdeltalyz;
-	else if(detname_curr=="TPCDown1")      LyzTPCDown1 += stepdeltalyz;
-	else if(detname_curr=="TPCDown2")      LyzTPCDown2 += stepdeltalyz;
-	else if(detname_curr=="ForwTPC1/Half") LyzForwTPC1 += stepdeltalyz;
-	else if(detname_curr=="ForwTPC2/Half") LyzForwTPC2 += stepdeltalyz;
-	else if(detname_curr=="ForwTPC3/Half") LyzForwTPC3 += stepdeltalyz;
+  	if     (detname_curr=="Target1"){
+	  LengthTarget1 += steplength;
+	  EdepTarget1   += stepedep;
+	}
+	else if(detname_curr=="Target2"){
+	  LengthTarget2 += steplength;	
+	  EdepTarget2   += stepedep;	
+	}
+	else if(detname_curr=="TPCUp1"){
+	  LyzTPCUp1  += stepdeltalyz;
+	  EdepTPCUp1 += stepedep;
+	}
+	else if(detname_curr=="TPCUp2"){
+	  LyzTPCUp2  += stepdeltalyz;
+	  EdepTPCUp2 += stepedep;
+	}
+	else if(detname_curr=="TPCDown1"){
+	  LyzTPCDown1  += stepdeltalyz;
+	  EdepTPCDown1 += stepedep;
+	}
+	else if(detname_curr=="TPCDown2"){
+	  LyzTPCDown2  += stepdeltalyz;
+	  EdepTPCDown2 += stepedep;
+	}
+	else if(detname_curr=="ForwTPC1/Half"){
+	  LyzForwTPC1  += stepdeltalyz;
+	  EdepForwTPC1 += stepedep;
+	}
+	else if(detname_curr=="ForwTPC2/Half"){
+	  LyzForwTPC2  += stepdeltalyz;
+	  EdepForwTPC2 += stepedep;
+	}
+	else if(detname_curr=="ForwTPC3/Half"){
+	  LyzForwTPC3  += stepdeltalyz;
+	  EdepForwTPC3 += stepedep;
+	}
       }
       
       
@@ -415,8 +454,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     // Store the track length
     
     nd280Track->SetLengthTarget1(LengthTarget1);
-    nd280Track->SetLengthTarget2(LengthTarget2);
-    
+    nd280Track->SetLengthTarget2(LengthTarget2);    
     nd280Track->SetLyzTPCUp1(LyzTPCUp1);
     nd280Track->SetLyzTPCUp2(LyzTPCUp2);
     nd280Track->SetLyzTPCDown1(LyzTPCDown1);
@@ -425,6 +463,15 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetLyzForwTPC2(LyzForwTPC2);
     nd280Track->SetLyzForwTPC3(LyzForwTPC3);
     
+    nd280Track->SetEdepTarget1(EdepTarget1);
+    nd280Track->SetEdepTarget2(EdepTarget2);    
+    nd280Track->SetEdepTPCUp1(EdepTPCUp1);
+    nd280Track->SetEdepTPCUp2(EdepTPCUp2);
+    nd280Track->SetEdepTPCDown1(EdepTPCDown1);
+    nd280Track->SetEdepTPCDown2(EdepTPCDown2);
+    nd280Track->SetEdepForwTPC1(EdepForwTPC1);
+    nd280Track->SetEdepForwTPC2(EdepForwTPC2);
+    nd280Track->SetEdepForwTPC3(EdepForwTPC3);
     
     // Mark the trajectories to save.
     // // MarkTrajectories(anEvent); // loop over all the tracks again... --> don't use it!!!

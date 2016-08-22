@@ -62,6 +62,16 @@ public :
   void SetLyzForwTPC2(double length)  {fLyzForwTPC2=length;};
   void SetLyzForwTPC3(double length)  {fLyzForwTPC3=length;};
 
+  void SetEdepTarget1(double length)  {fEdepTarget1=length;};
+  void SetEdepTarget2(double length)  {fEdepTarget2=length;};
+  void SetEdepTPCUp1(double length)   {fEdepTPCUp1=length;};
+  void SetEdepTPCUp2(double length)   {fEdepTPCUp2=length;};
+  void SetEdepTPCDown1(double length) {fEdepTPCDown1=length;};
+  void SetEdepTPCDown2(double length) {fEdepTPCDown2=length;};
+  void SetEdepForwTPC1(double length) {fEdepForwTPC1=length;};
+  void SetEdepForwTPC2(double length) {fEdepForwTPC2=length;};
+  void SetEdepForwTPC3(double length) {fEdepForwTPC3=length;};
+
   int GetTrackID() {return fTrackID;};
   int GetParentID() {return fParentID;};
   string GetProcessName(){return fProcessName;};
@@ -84,6 +94,16 @@ public :
   double GetLyzForwTPC1()  {return fLyzForwTPC1;};
   double GetLyzForwTPC2()  {return fLyzForwTPC2;};
   double GetLyzForwTPC3()  {return fLyzForwTPC3;};
+  
+  double GetEdepTarget1()  {return fEdepTarget1;};
+  double GetEdepTarget2()  {return fEdepTarget2;};
+  double GetEdepTPCUp1()   {return fEdepTPCUp1;};
+  double GetEdepTPCUp2()   {return fEdepTPCUp2;};
+  double GetEdepTPCDown1() {return fEdepTPCDown1;};
+  double GetEdepTPCDown2() {return fEdepTPCDown2;};
+  double GetEdepForwTPC1() {return fEdepForwTPC1;};
+  double GetEdepForwTPC2() {return fEdepForwTPC2;};
+  double GetEdepForwTPC3() {return fEdepForwTPC3;};
 
   void PrintTrack();
 
@@ -114,6 +134,15 @@ private :
   double fLyzForwTPC1;
   double fLyzForwTPC2;
   double fLyzForwTPC3;
+  double fEdepTarget1;
+  double fEdepTarget2;
+  double fEdepTPCUp1;
+  double fEdepTPCUp2;
+  double fEdepTPCDown1;
+  double fEdepTPCDown2 ;
+  double fEdepForwTPC1;
+  double fEdepForwTPC2;
+  double fEdepForwTPC3;
 
   ClassDef(TND280UpTrack,2)
 };

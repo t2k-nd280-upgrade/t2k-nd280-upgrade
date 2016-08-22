@@ -169,7 +169,7 @@ public:
   const G4VPhysicalVolume* GetAbsorberPV() const; // new
   const G4VPhysicalVolume* GetGapPV() const; // new
 
-  G4LogicalVolume* GetPieceTPC(G4String name);
+  G4LogicalVolume* GetPieceTPC(G4String name,G4String parentname);
   const G4VisAttributes* GetVisual(void) const;
  
 protected:

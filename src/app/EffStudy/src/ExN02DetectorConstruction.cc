@@ -74,6 +74,8 @@
 #include "TGeoManager.h"
 // end VGM demo
 
+#include "ND280RootGeometryManager.hh"
+
 //ROOT
 //#include "TROOT.h"
 //#include "TFile.h"
@@ -133,11 +135,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 {
 
   // Take inputs
-
-  //ND280InputPersistencyManager* InputPersistencyManager
-  //= ND280InputPersistencyManager::GetInstance();  
-  //ND280XMLInput = InputPersistencyManager->GetXMLInput();
-  
   ND280RootPersistencyManager* InputPersistencyManager
     = ND280RootPersistencyManager::GetInstance();
   ND280XMLInput = InputPersistencyManager->GetXMLInput();
@@ -184,9 +181,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // World
   //------------------------------ 
 
-  const G4String cNameSolidWorld = "world";
-  const G4String cNameLogicWorld = "World";
-  const G4String cNamePhysiWorld = "World";
+  const G4String cNameSolidWorld = "/world";
+  const G4String cNameLogicWorld = "/World";
+  const G4String cNamePhysiWorld = "/World";
   const G4String cWorldMater = "Air";
 
   WorldMater   = FindMaterial(cWorldMater); 
@@ -228,9 +225,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // Basket
   //------------------------------
 
-  const G4String cNameSolidBasket      = "basket";
-  const G4String cNameLogicBasket      = "Basket"; // match NEUT requirements
-  const G4String cNamePhysiBasket      = "Basket";
+  const G4String cParentNameBasket    = logicWorld->GetName();
+
+  const G4String cNameSolidBasket      = cParentNameBasket+"/basket";
+  const G4String cNameLogicBasket      = cParentNameBasket+"/Basket"; // match NEUT requirements
+  const G4String cNamePhysiBasket      = cParentNameBasket+"/Basket";
   
   const G4String cBasketMater  = "Air";
   
@@ -252,7 +251,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     }
 
   G4ThreeVector positionBasket = G4ThreeVector(0,0,0);
-
+  
   solidBasket = new G4Box(cNameSolidBasket,HalfBasketWidth,HalfBasketHeight,HalfBasketLength);
   logicBasket = new G4LogicalVolume(solidBasket,BasketMater,cNameLogicBasket,0,0,0);  
   physiBasket = new G4PVPlacement(0,                 // no rotation
@@ -278,9 +277,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // Tracker
   //------------------------------
 
-  const G4String cNameSolidTracker     = "tracker";
-  const G4String cNameLogicTracker     = "Tracker";
-  const G4String cNamePhysiTracker     = "Tracker";
+  const G4String cParentNameTracker    = logicBasket->GetName();
+  
+  const G4String cNameSolidTracker     = cParentNameTracker+"/tracker";
+  const G4String cNameLogicTracker     = cParentNameTracker+"/Tracker";
+  const G4String cNamePhysiTracker     = cParentNameTracker+"/Tracker";
 
   const G4String cTrackerMater = "Air";
 
@@ -298,7 +299,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   				   positionTracker,   // at (x,y,z)
   				   logicTracker,      // its logical volume	 
   				   cNamePhysiTracker, // its name
-  				   //logicWorld,        // its mother  volume
   				   logicBasket,        // its mother  volume
   				   false,             // no boolean operations
   				   0);                 // copy number 
@@ -315,10 +315,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //------------------------------ 
   // Forward TPC 1
   //------------------------------
-  
+
+  G4cout << "Forward TPC 1: " << endl;
+
   G4double currentZ = 0.;
 
-  G4LogicalVolume *tpc1Volume = this->GetPieceTPC("ForwTPC1");
+  G4String cParentNameTPC = logicTracker->GetName();
+
+  G4LogicalVolume *tpc1Volume = this->GetPieceTPC("ForwTPC1",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
     double upstreamedge_z = +solidTracker->GetZHalfLength();
@@ -335,24 +339,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   new G4PVPlacement(0,
 		    GetForwTPCPos1(),
   		    tpc1Volume,
-  		    "TPC1",
+  		    cParentNameTPC+"/ForwTPC1",
   		    logicTracker,
   		    false,
   		    0);
 
-  G4cout << "Forward TPC 1: " << endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetForwTPCPos1().x()/mm << ", "
 	 << GetForwTPCPos1().y()/mm << ", "
 	 << GetForwTPCPos1().z()/mm << " ) mm"  
-	 << G4endl;
+	 << G4endl << G4endl;
 
 
   //------------------------------ 
   // Forward TPC 2
   //------------------------------
 
-  G4LogicalVolume *tpc2Volume = this->GetPieceTPC("ForwTPC2");
+  G4cout << "Forward TPC 2: " << endl;
+
+  G4LogicalVolume *tpc2Volume = this->GetPieceTPC("ForwTPC2",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
     currentZ = 0.;
@@ -368,24 +373,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   new G4PVPlacement(0,
 		    GetForwTPCPos2(),
   		    tpc2Volume,
-  		    "TPC2",
+  		    cParentNameTPC+"/ForwTPC2",
   		    logicTracker,
   		    false,
   		    0);
 
-  G4cout << "Forward TPC 2: " << endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetForwTPCPos2().x()/mm << ", "
 	 << GetForwTPCPos2().y()/mm << ", "
 	 << GetForwTPCPos2().z()/mm << " ) mm"  
-	 << G4endl;
+	 << G4endl << G4endl;
   
   
   //------------------------------ 
   // Forward TPC 3
   //------------------------------
-  
-  G4LogicalVolume *tpc3Volume = this->GetPieceTPC("ForwTPC3");
+
+  G4cout << "Forward TPC 3: " << endl;
+
+  G4LogicalVolume *tpc3Volume = this->GetPieceTPC("ForwTPC3",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
     double downstreamedge_z = -solidTracker->GetZHalfLength();
@@ -402,51 +408,30 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   new G4PVPlacement(0,
 		    GetForwTPCPos3(),
   		    tpc3Volume,
-  		    "TPC3",
+  		    cParentNameTPC+"/ForwTPC3",
   		    logicTracker,
   		    false,
   		    0);
 
-  G4cout << "Forward TPC 3: " << endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetForwTPCPos3().x()/mm << ", "
 	 << GetForwTPCPos3().y()/mm << ", "
 	 << GetForwTPCPos3().z()/mm << " ) mm"  
-	 << G4endl;
-
-  // G4ThreeVector TPC3Translation = G4ThreeVector(0., 0., 0.);
-  // G4ThreeVector TPC3RotationAxis = G4ThreeVector(0., 0., 1.);
-  // G4double TPC3RotationAngle = 0.;
-  // currentZ = 0.;
-  // //totalLength += GetModuleSpace()/2;
-  // double downstreamedge_z = -solidTracker->GetZHalfLength();
-  // currentZ = downstreamedge_z + GetLengthForwTPC()/2.; 
-  // //G4cout << "currentZ = " << currentZ << G4endl;  
-  // G4RotationMatrix tpc3Rot = G4RotationMatrix(TPC3RotationAxis, TPC3RotationAngle);
-  // new G4PVPlacement(G4Transform3D(tpc3Rot,
-  // 				  G4ThreeVector(0.,0.,currentZ)+TPC3Translation+GetRotOffset(TPC3RotationAxis, TPC3RotationAngle)
-  // 				  ),
-  // 		    tpc3Volume,
-  // 		    //tpc3.GetName(),
-  // 		    "TPC3",
-  // 		    //logVolume,
-  // 		    logicTracker,
-  // 		    false,
-  // 		    0);  
-
+	 << G4endl << G4endl;
 
 
   //------------------------------ 
   // Target 1 - Upstream - Carbon 
   //------------------------------
   
-  const G4String cNameSolidTarget1     = "target1";
-  const G4String cNameLogicTarget1     = "Target1";
-  const G4String cNamePhysiTarget1     = "Target1";
+  G4String cParentNameTarget = physiTracker->GetName();
+
+  const G4String cNameSolidTarget1     = cParentNameTarget+"/target1";
+  const G4String cNameLogicTarget1     = cParentNameTarget+"/Target1";
+  const G4String cNamePhysiTarget1     = cParentNameTarget+"/Target1";
   
-  //const G4String cTargetMater1  = "FGDScintillator";  
-  const G4String cTargetMater1 = "WAGASHIScintillatorEmpty";
-  
+  //const G4String cTargetMater1  = "ActiveWater";     //fgd active water  
+  const G4String cTargetMater1 = "Water"; // WAGASHI water
   TargetMater1  = FindMaterial(cTargetMater1);  
 
   G4double targetSizeLength1  = 0.5 * GetTargetFullLength1();    // Half length of the Target 1
@@ -485,23 +470,22 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << GetTargetFullLength1()/mm << " (length) mm^3" 
          << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
   if (DebugTPCMass) G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl;  	 
-  G4cout << G4endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetTargetPos1().x()/mm << ", "
 	 << GetTargetPos1().y()/mm << ", "
 	 << GetTargetPos1().z()/mm << " ) mm"  
-	 << G4endl;
-
+	 << G4endl << G4endl;
+  
   //------------------------------ 
   // Target 2 - Upstream - Water 
   //------------------------------
 
-  const G4String cNameSolidTarget2     = "target2";
-  const G4String cNameLogicTarget2     = "Target2";
-  const G4String cNamePhysiTarget2     = "Target2";
+  const G4String cNameSolidTarget2     = cParentNameTarget+"/target2";
+  const G4String cNameLogicTarget2     = cParentNameTarget+"/Target2";
+  const G4String cNamePhysiTarget2     = cParentNameTarget+"/Target2";
   
-  //const G4String cTargetMater2  = "ActiveWater";     //fgd active water  
-  const G4String cTargetMater2 = "Water"; // WAGASHI water
+  //const G4String cTargetMater2  = "FGDScintillator";  
+  const G4String cTargetMater2 = "WAGASHIScintillatorEmpty";  
   TargetMater2  = FindMaterial(cTargetMater2);  
 
   G4double targetSizeLength2  = 0.5 * GetTargetFullLength2();    // Half length of the Target 1
@@ -540,12 +524,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << GetTargetFullLength2()/mm << " (length) mm^3" 
          << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
   if (DebugTPCMass) G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << G4endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetTargetPos2().x()/mm << ", "
 	 << GetTargetPos2().y()/mm << ", "
 	 << GetTargetPos2().z()/mm << " ) mm"  
-	 << G4endl;
+	 << G4endl << G4endl;
 
   
   //
@@ -567,9 +550,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   // TPC Up 1
 
-  const G4String cNameSolidSideTPCUp1   = "tpcup1";
-  const G4String cNameLogicSideTPCUp1   = "TPCUp1";
-  const G4String cNamePhysiSideTPCUp1   = "TPCUp1";
+  const G4String cNameSolidSideTPCUp1   = cParentNameTPC+"/tpcup1";
+  const G4String cNameLogicSideTPCUp1   = cParentNameTPC+"/TPCUp1";
+  const G4String cNamePhysiSideTPCUp1   = cParentNameTPC+"/TPCUp1";
 
   solidSideTPCUp1 = new G4Box(cNameSolidSideTPCUp1, HalfSideTPCWidth1, HalfSideTPCHeight1, HalfSideTPCLength1); 
   logicSideTPCUp1 = new G4LogicalVolume(solidSideTPCUp1,SideTPCMater,cNameLogicSideTPCUp1,0,0,0);
@@ -602,19 +585,18 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << GetSideTPCFullLength1()/mm << " (length) mm^3" 
          << " of " << logicSideTPCUp1->GetMaterial()->GetName() << G4endl; 
   if (DebugTPCMass) G4cout << " mass="<<logicSideTPCUp1->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << G4endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetSideTPCUpPos1().x()/mm << ", "
 	 << GetSideTPCUpPos1().y()/mm << ", "
 	 << GetSideTPCUpPos1().z()/mm << " ) mm"  
-	 << G4endl;
+	 << G4endl << G4endl;
 
   
   // TPC Down 1
   
-  const G4String cNameSolidSideTPCDown1 = "tpcdown1";
-  const G4String cNameLogicSideTPCDown1 = "TPCDown1";
-  const G4String cNamePhysiSideTPCDown1 = "TPCDown1";
+  const G4String cNameSolidSideTPCDown1 = cParentNameTPC+"/tpcdown1";
+  const G4String cNameLogicSideTPCDown1 = cParentNameTPC+"/TPCDown1";
+  const G4String cNamePhysiSideTPCDown1 = cParentNameTPC+"/TPCDown1";
   
   solidSideTPCDown1 = new G4Box(cNameSolidSideTPCDown1,HalfSideTPCWidth1,HalfSideTPCHeight1,HalfSideTPCLength1); 
   logicSideTPCDown1 = new G4LogicalVolume(solidSideTPCDown1,SideTPCMater,cNameLogicSideTPCDown1,0,0,0);
@@ -647,19 +629,18 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << GetSideTPCFullLength1()/mm << " (length) mm^3" 
          << " of " << logicSideTPCDown1->GetMaterial()->GetName() << G4endl;
   if (DebugTPCMass) G4cout << " mass="<<logicSideTPCDown1->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << G4endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetSideTPCDownPos1().x()/mm << ", "
 	 << GetSideTPCDownPos1().y()/mm << ", "
 	 << GetSideTPCDownPos1().z()/mm << " ) mm"  
-	 << G4endl;
+	 << G4endl << G4endl;
   
 
   // TPC Up 2
   
-  const G4String cNameSolidSideTPCUp2   = "tpcup2";
-  const G4String cNameLogicSideTPCUp2   = "TPCUp2";
-  const G4String cNamePhysiSideTPCUp2   = "TPCUp2";
+  const G4String cNameSolidSideTPCUp2   = cParentNameTPC+"/tpcup2";
+  const G4String cNameLogicSideTPCUp2   = cParentNameTPC+"/TPCUp2";
+  const G4String cNamePhysiSideTPCUp2   = cParentNameTPC+"/TPCUp2";
   
   solidSideTPCUp2 = new G4Box(cNameSolidSideTPCUp2, HalfSideTPCWidth2, HalfSideTPCHeight2, HalfSideTPCLength2); 
   logicSideTPCUp2 = new G4LogicalVolume(solidSideTPCUp2,SideTPCMater,cNameLogicSideTPCUp2,0,0,0);
@@ -692,18 +673,17 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << GetSideTPCFullLength2()/mm << " (length) mm^3" 
          << " of " << logicSideTPCUp2->GetMaterial()->GetName() << G4endl; 
   if (DebugTPCMass) G4cout << " mass="<<logicSideTPCUp2->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << G4endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetSideTPCUpPos2().x()/mm << ", "
 	 << GetSideTPCUpPos2().y()/mm << ", "
 	 << GetSideTPCUpPos2().z()/mm << " ) mm"  
-	 << G4endl;
+	 << G4endl << G4endl;
 
   // TPC Down 2
   
-  const G4String cNameSolidSideTPCDown2 = "tpcdown2";
-  const G4String cNameLogicSideTPCDown2 = "TPCDown2";
-  const G4String cNamePhysiSideTPCDown2 = "TPCDown2";
+  const G4String cNameSolidSideTPCDown2 = "/tpcdown2";
+  const G4String cNameLogicSideTPCDown2 = "/TPCDown2";
+  const G4String cNamePhysiSideTPCDown2 = "/TPCDown2";
 
   solidSideTPCDown2 = new G4Box(cNameSolidSideTPCDown2,HalfSideTPCWidth2,HalfSideTPCHeight2,HalfSideTPCLength2); 
   logicSideTPCDown2 = new G4LogicalVolume(solidSideTPCDown2,SideTPCMater,cNameLogicSideTPCDown2,0,0,0);
@@ -736,12 +716,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << GetSideTPCFullLength2()/mm << " (length) mm^3" 
          << " of " << logicSideTPCDown2->GetMaterial()->GetName() << G4endl;
   if (DebugTPCMass) G4cout << " mass="<<logicSideTPCDown2->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << G4endl
-	 << " - position: ( " 
+  G4cout << " - position: ( " 
 	 << GetSideTPCDownPos2().x()/mm << ", "
 	 << GetSideTPCDownPos2().y()/mm << ", "
 	 << GetSideTPCDownPos2().z()/mm << " ) mm"  
-	 << G4endl;
+	 << G4endl << G4endl;
 
 	 
   //------------------------------------------------ 
@@ -842,34 +821,34 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // // fo.WriteObject(geotree, "my_geo");  
   // //--------------------------
 
-
-  // // ---------------------------------------------------------------------------
-  // VGM demo 
-  // Export geometry in Root and save it in a file
   
   if(ND280XMLInput->GetXMLStoreGeometry()){
     
-    // TGeoManager::Import("geometry.root");
-    // gGeoManager->GetTopVolume()->Draw();
-
-    // Import Geant4 geometry to VGM
-    Geant4GM::Factory g4Factory;
-    g4Factory.SetDebug(0);
-    g4Factory.Import(physiWorld);
-    // 
-    // Export VGM geometry to Root
-    RootGM::Factory rtFactory;
-    rtFactory.SetDebug(0);
-    g4Factory.Export(&rtFactory);
-    gGeoManager->CloseGeometry();
-    gGeoManager->SetName("ND280Geometry"); // TGeoManager object name must be "ND280Geometry" to be read by NEUT
-    gGeoManager->Export("geometry.root");
-    G4cout << "The geometry has been exported to: ";
-    G4cout << gGeoManager->GetName() << G4endl;
+    // // ---------------------------------------------------------------------------
+    // // VGM demo 
+    // // Export geometry in Root and save it in a file
+    // // TGeoManager::Import("geometry.root");
+    // // gGeoManager->GetTopVolume()->Draw();
+    // // Import Geant4 geometry to VGM
+    // Geant4GM::Factory g4Factory;
+    // g4Factory.SetDebug(0);
+    // g4Factory.Import(physiWorld);
+    // // 
+    // // Export VGM geometry to Root
+    // RootGM::Factory rtFactory;
+    // rtFactory.SetDebug(0);
+    // g4Factory.Export(&rtFactory);
+    // gGeoManager->CloseGeometry();
+    // gGeoManager->SetName("ND280Geometry"); // TGeoManager object name must be "ND280Geometry" to be read by NEUT
+    // gGeoManager->Export("geometry_vgm.root");
+    // G4cout << "The geometry has been exported to: ";
+    // G4cout << gGeoManager->GetName() << G4endl;    
+    // // end VGM demo
+    // // ---------------------------------------------------------------------------
+    
+    ND280RootGeometryManager::Get()->Update(physiWorld,true);
+    ND280RootGeometryManager::Get()->Export("geometry.root");
   }
-  //
-  // end VGM demo
-  //---------------------------------------------------------------------------
 
   return physiWorld;
 }
@@ -941,6 +920,8 @@ void ExN02DetectorConstruction::DefineMaterials() {
 
   // Method copied from ND280 software
 
+  ND280RootGeometryManager* gMan = ND280RootGeometryManager::Get();
+  
   G4double a, density;
   G4String name, symbol;
   G4double temperature, pressure;
@@ -958,15 +939,15 @@ void ExN02DetectorConstruction::DefineMaterials() {
   G4Element* elNa = nistMan->FindOrBuildElement(11);
   G4Element* elAl = nistMan->FindOrBuildElement(13);
   G4Element* elSi = nistMan->FindOrBuildElement(14);
-  G4Element* elCl = nistMan->FindOrBuildElement(17);
+  //G4Element* elCl = nistMan->FindOrBuildElement(17);
   G4Element* elAr = nistMan->FindOrBuildElement(18);
-  G4Element* elTi = nistMan->FindOrBuildElement(22);
+  //G4Element* elTi = nistMan->FindOrBuildElement(22);
   G4Element* elFe = nistMan->FindOrBuildElement(26);
   G4Element* elCo = nistMan->FindOrBuildElement(27);
   G4Element* elCu = nistMan->FindOrBuildElement(29);
-  G4Element* elZn = nistMan->FindOrBuildElement(30);
-  G4Element* elSn = nistMan->FindOrBuildElement(50);
-  G4Element* elPb = nistMan->FindOrBuildElement(82);
+  //G4Element* elZn = nistMan->FindOrBuildElement(30);
+  //G4Element* elSn = nistMan->FindOrBuildElement(50);
+  //G4Element* elPb = nistMan->FindOrBuildElement(82);
 
 #ifdef Define_Vacuum
   //Vacuum (set as default material)
@@ -975,7 +956,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   temperature = 2.73*kelvin;
   vacuum = new G4Material(name="Vacuum", z=1., a=1.01*g/mole,
 			  density,kStateGas,temperature,pressure);
-  //gMan->SetColor(vacuum->GetName(),-1); // ND280 class
+  gMan->SetColor(vacuum->GetName(),-1); // ND280 class
 #endif
 
   //Air
@@ -988,66 +969,66 @@ void ExN02DetectorConstruction::DefineMaterials() {
   air->AddElement(elN, fractionmass = 70*perCent);
   air->AddElement(elO, fractionmass = 30*perCent);
   fDefaultMaterial = air;
-  //gMan->SetDrawAtt(air,kGray+3); // ND280 class
+  gMan->SetDrawAtt(air,kGray+3); // ND280 class
 
-  //Earth
-  density = 2.15*g/cm3;
-  G4Material* earth = new G4Material(name="Earth", density, nel=2);
-  earth->AddElement(elSi, natoms=1);
-  earth->AddElement(elO, natoms=2);
-  //gMan->SetDrawAtt(earth,49,0.2); // ND280 class
+  // //Earth
+  // density = 2.15*g/cm3;
+  // G4Material* earth = new G4Material(name="Earth", density, nel=2);
+  // earth->AddElement(elSi, natoms=1);
+  // earth->AddElement(elO, natoms=2);
+  // gMan->SetDrawAtt(earth,49,0.2); // ND280 class
     
-  //Cement
-  density = 2.5*g/cm3;
-  G4Material* cement = new G4Material(name="Cement", density, nel=2);
-  cement->AddElement(elSi, natoms=1);
-  cement->AddElement(elO, natoms=2);
-  //gMan->SetDrawAtt(cement,14,0.2); // ND280 class
+  // //Cement
+  // density = 2.5*g/cm3;
+  // G4Material* cement = new G4Material(name="Cement", density, nel=2);
+  // cement->AddElement(elSi, natoms=1);
+  // cement->AddElement(elO, natoms=2);
+  // gMan->SetDrawAtt(cement,14,0.2); // ND280 class
 
   //Water
   density = 1.0*g/cm3;
   G4Material* water = new G4Material(name="Water", density, nel=2);
   water->AddElement(elH, natoms=2);
   water->AddElement(elO, natoms=1);
-  //gMan->SetDrawAtt(water,kBlue); // ND280 class
+  gMan->SetDrawAtt(water,kBlue); // ND280 class
 
   //Aluminum
   density = 2.70*g/cm3;
   G4Material* aluminum = new G4Material(name="Aluminum",density, nel=1);
   aluminum->AddElement(elAl,100.*perCent);
-  //gMan->SetDrawAtt(aluminum,kYellow-5); // ND280 class
+  gMan->SetDrawAtt(aluminum,kYellow-5); // ND280 class
 
-  //Iron.
-  density = 7.87*g/cm3;
-  G4Material* iron = new G4Material(name="Iron",density, nel=1);
-  iron->AddElement(elFe,100.*perCent);
-  //gMan->SetDrawAtt(iron,kRed+2,0.3); // ND280 class
+  // //Iron.
+  // density = 7.87*g/cm3;
+  // G4Material* iron = new G4Material(name="Iron",density, nel=1);
+  // iron->AddElement(elFe,100.*perCent);
+  // gMan->SetDrawAtt(iron,kRed+2,0.3); // ND280 class
 
   //Copper
   density = 8.94*g/cm3;
   G4Material* copper = new G4Material(name="Copper",density, nel=1);
   copper->AddElement(elCu,100.*perCent);
-  //gMan->SetDrawAtt(copper,kRed+1,0.3);// ND280 class
+  gMan->SetDrawAtt(copper,kRed+1,0.3);// ND280 class
 
-  //Lead
-  density = 11.35*g/cm3;
-  G4Material* lead = new G4Material(name="Lead",density, nel=1);
-  lead->AddElement(elPb,100.*perCent);
-  //gMan->SetDrawAtt(lead,kGray+1);// ND280 class
+  // //Lead
+  // density = 11.35*g/cm3;
+  // G4Material* lead = new G4Material(name="Lead",density, nel=1);
+  // lead->AddElement(elPb,100.*perCent);
+  // gMan->SetDrawAtt(lead,kGray+1);// ND280 class
 
-  //Brass -- The density is from simetric.co.uk is 8400 -- 8730 gm/cm3
-  density = 8.50*g/cm3;
-  G4Material* brass = new G4Material(name="Brass", density, nel=2);
-  brass->AddElement(elCu, fractionmass = 90*perCent);
-  brass->AddElement(elZn, fractionmass = 10*perCent);
-  //gMan->SetDrawAtt(brass,kOrange-2);// ND280 class
+  // //Brass -- The density is from simetric.co.uk is 8400 -- 8730 gm/cm3
+  // density = 8.50*g/cm3;
+  // G4Material* brass = new G4Material(name="Brass", density, nel=2);
+  // brass->AddElement(elCu, fractionmass = 90*perCent);
+  // brass->AddElement(elZn, fractionmass = 10*perCent);
+  // gMan->SetDrawAtt(brass,kOrange-2);// ND280 class
 
-  //Bronze -- The density is from simetric.co.uk is 7700 -- 8920 gm/cm3
-  density = 8.5*g/cm3;
-  G4Material* bronze = new G4Material(name="Bronze", density, nel=2);
-  bronze->AddElement(elCu, fractionmass = 60*perCent);
-  bronze->AddElement(elSn, fractionmass = 40*perCent);
-  //gMan->SetDrawAtt(bronze,kOrange-3);// ND280 class
+  // //Bronze -- The density is from simetric.co.uk is 7700 -- 8920 gm/cm3
+  // density = 8.5*g/cm3;
+  // G4Material* bronze = new G4Material(name="Bronze", density, nel=2);
+  // bronze->AddElement(elCu, fractionmass = 60*perCent);
+  // bronze->AddElement(elSn, fractionmass = 40*perCent);
+  // gMan->SetDrawAtt(bronze,kOrange-3);// ND280 class
 
   //Stainless Steel.  The density is taken from average 304 grade SS.
   density = 8.0*g/cm3;
@@ -1055,7 +1036,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   steel->AddElement(elC,  fractionmass =  4*perCent);
   steel->AddElement(elFe, fractionmass = 88*perCent);
   steel->AddElement(elCo, fractionmass =  8*perCent);
-  //gMan->SetDrawAtt(steel,kBlue-10);// ND280 class
+  gMan->SetDrawAtt(steel,kBlue-10);// ND280 class
 
   //Argon
   density     = 1.66*mg/cm3;    
@@ -1065,7 +1046,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
 				      nel=1,kStateGas,temperature,
 				      pressure);
   argon->AddElement(elAr, natoms=1);
-  //gMan->SetDrawAtt(argon,kBlue-10,0.1);// ND280 class
+  gMan->SetDrawAtt(argon,kBlue-10,0.1);// ND280 class
 
   //Methane
   density     = 0.667*mg/cm3;
@@ -1076,7 +1057,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
 				       pressure);
   methane->AddElement(elC, natoms=1);
   methane->AddElement(elH, natoms=4);
-  //gMan->SetDrawAtt(methane,kBlue-10,0.1);// ND280 class
+  gMan->SetDrawAtt(methane,kBlue-10,0.1);// ND280 class
 
   //Argon + 10% Methane
   density     = 2.33*mg/cm3;
@@ -1084,7 +1065,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
     = new G4Material(name="GasMixture", density, ncomponents=2);
   gasMixture->AddMaterial(argon, fractionmass = 90*perCent);
   gasMixture->AddMaterial(methane, fractionmass = 10*perCent);
-  //gMan->SetDrawAtt(gasMixture,kBlue-10,0.1);// ND280 class
+  gMan->SetDrawAtt(gasMixture,kBlue-10,0.1);// ND280 class
 
   // CarbonDioxide
   density     = 1.828*mg/cm3;
@@ -1095,7 +1076,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
 				   pressure);
   CO2->AddElement(elC, natoms=1);
   CO2->AddElement(elO, natoms=2);
-  //gMan->SetDrawAtt(CO2,kBlue-10,0.1);// ND280 class
+  gMan->SetDrawAtt(CO2,kBlue-10,0.1);// ND280 class
 
   // CarbonTetrafluoride
   density     = 3.66*mg/cm3;
@@ -1106,7 +1087,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
 				   pressure);
   CF4->AddElement(elC, natoms=1);
   CF4->AddElement(elF, natoms=4);
-  //gMan->SetDrawAtt(CF4,kBlue-10,0.1);// ND280 class
+  gMan->SetDrawAtt(CF4,kBlue-10,0.1);// ND280 class
 
   // Isobutane
   density     = 2.47*mg/cm3;
@@ -1117,15 +1098,15 @@ void ExN02DetectorConstruction::DefineMaterials() {
                                      pressure);
   C4H10->AddElement(elC, natoms=4);
   C4H10->AddElement(elH, natoms=10);
-  //gMan->SetDrawAtt(C4H10,kBlue-10,0.1);// ND280 class
+  gMan->SetDrawAtt(C4H10,kBlue-10,0.1);// ND280 class
 
-  // Ar-CO2
-  density     = 1.958*mg/cm3;
-  G4Material* gasMixtureArCO2
-    = new G4Material(name="GasMixtureArCO2", density, ncomponents=2);
-  gasMixtureArCO2->AddMaterial(argon, fractionmass = 90*perCent);
-  gasMixtureArCO2->AddMaterial(CO2, fractionmass = 10*perCent);
-  //gMan->SetDrawAtt(gasMixtureArCO2,kBlue-10,0.1);// ND280 class
+  // // Ar-CO2
+  // density     = 1.958*mg/cm3;
+  // G4Material* gasMixtureArCO2
+  //   = new G4Material(name="GasMixtureArCO2", density, ncomponents=2);
+  // gasMixtureArCO2->AddMaterial(argon, fractionmass = 90*perCent);
+  // gasMixtureArCO2->AddMaterial(CO2, fractionmass = 10*perCent);
+  // gMan->SetDrawAtt(gasMixtureArCO2,kBlue-10,0.1);// ND280 class
 
   // TPC Gas
 #ifdef OLD_TPC_DENSITY
@@ -1141,7 +1122,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gasMixtureTPC->AddMaterial(argon, fractionmass = 95*perCent);
   gasMixtureTPC->AddMaterial(CF4, fractionmass = 3*perCent);
   gasMixtureTPC->AddMaterial(C4H10, fractionmass = 2*perCent);
-  //gMan->SetDrawAtt(gasMixtureTPC,kBlue-10,0.1);// ND280 class
+  gMan->SetDrawAtt(gasMixtureTPC,kBlue-10,0.1);// ND280 class
 
   // Water-SSteel-Air Mixture
   density     = 2.646*g/cm3;
@@ -1150,21 +1131,21 @@ void ExN02DetectorConstruction::DefineMaterials() {
   waterSystem->AddMaterial(water, fractionmass = 18*perCent);
   waterSystem->AddMaterial(steel, fractionmass = 32*perCent);
   waterSystem->AddMaterial(CO2, fractionmass = 50*perCent);
-  //gMan->SetDrawAtt(waterSystem,kBlue-7);// ND280 class
+  gMan->SetDrawAtt(waterSystem,kBlue-7);// ND280 class
     
   // add TPC field cage mixture NB rough guesses !!!!
   density = 0.221*g/cm3; // this gives 1.4 10-2 X0 for 2.2 cm
   a = 16.*g/mole;
   G4Material* tpcFieldCage 
     = new G4Material(name="TPCWallMaterial",8,a,density);
-  //gMan->SetDrawAtt(tpcFieldCage,kYellow-7);// ND280 class
+  gMan->SetDrawAtt(tpcFieldCage,kYellow-7);// ND280 class
     
-  // Titanium Dioxide -- Used in coextruded scintillator.
-  density     = 4.26*g/cm3;
-  G4Material* TIO2 = new G4Material(name="TIO2", density, nel=2);
-  TIO2->AddElement(elTi, natoms=1);
-  TIO2->AddElement(elO , natoms=2);
-  //gMan->SetDrawAtt(TIO2,kWhite);// ND280 class
+  // // Titanium Dioxide -- Used in coextruded scintillator.
+  // density     = 4.26*g/cm3;
+  // G4Material* TIO2 = new G4Material(name="TIO2", density, nel=2);
+  // TIO2->AddElement(elTi, natoms=1);
+  // TIO2->AddElement(elO , natoms=2);
+  // gMan->SetDrawAtt(TIO2,kWhite);// ND280 class
     
   // Polystyrene -- This is polystyrene defined in the PDG C6H5CH=CH2 (this
   // is a net C8H8)
@@ -1173,7 +1154,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
     = new G4Material(name="Polystyrene", density, nel=2);
   polystyrene->AddElement(elC, 8);
   polystyrene->AddElement(elH, 8);
-  //gMan->SetDrawAtt(polystyrene,kGray+3);// ND280 class
+  gMan->SetDrawAtt(polystyrene,kGray+3);// ND280 class
     
   // Scintillator -- This is the average polystyrene plastic scintillator as
   // defined in the PDG C6H5CH=CH2 (this is a net C8H8).  The SMRD and ECal
@@ -1184,101 +1165,101 @@ void ExN02DetectorConstruction::DefineMaterials() {
     = new G4Material(name="Scintillator", density, nel=2);
   scintillator->AddElement(elC, 8);
   scintillator->AddElement(elH, 8);
-  //gMan->SetDrawAtt(scintillator,kGreen);// ND280 class
+  gMan->SetDrawAtt(scintillator,kGreen);// ND280 class
 
-  // P0D Scintillator -- This has the average polystyrene plastic
-  // scintillator composition as defined in the PDG C6H5CH=CH2 (this is a
-  // net C8H8).  The density of the P0D scintillator is taken from the assay
-  // of the MINERvA scintillator which is manufactured on the same equipment
-  // as the P0D scintillator and is chemically the same.  The measured
-  // density of the MINERvA strips are 1.058 +- 0.003, including the Ti02
-  // coating.  This corresponds to a scintillator density of 1.0506, which
-  // has been rounded to 1.051
-  density = 1.051*g/cm3; 
-  G4Material* p0dScintillator 
-    = new G4Material(name="P0DScintillator", density, nel=2);
-  p0dScintillator->AddElement(elC, 8);
-  p0dScintillator->AddElement(elH, 8);
-  //gMan->SetDrawAtt(p0dScintillator,kGreen);// ND280 class
+  // // P0D Scintillator -- This has the average polystyrene plastic
+  // // scintillator composition as defined in the PDG C6H5CH=CH2 (this is a
+  // // net C8H8).  The density of the P0D scintillator is taken from the assay
+  // // of the MINERvA scintillator which is manufactured on the same equipment
+  // // as the P0D scintillator and is chemically the same.  The measured
+  // // density of the MINERvA strips are 1.058 +- 0.003, including the Ti02
+  // // coating.  This corresponds to a scintillator density of 1.0506, which
+  // // has been rounded to 1.051
+  // density = 1.051*g/cm3; 
+  // G4Material* p0dScintillator 
+  //   = new G4Material(name="P0DScintillator", density, nel=2);
+  // p0dScintillator->AddElement(elC, 8);
+  // p0dScintillator->AddElement(elH, 8);
+  // gMan->SetDrawAtt(p0dScintillator,kGreen);// ND280 class
 
-  // FGD Scintillator -- This is the average polystyrene scintillator for
-  // the FGD.  The FGD density is based on our measurements of individual
-  // bars, in combination with the measurements of the cross-sectional area
-  // of the bars.
-  density = 1.032*g/cm3; 
-  G4Material* fgdScintillator 
-    = new G4Material(name="FGDScintillator", density, nel=2);
-  fgdScintillator->AddElement(elC, 8);
-  fgdScintillator->AddElement(elH, 8);
-  //gMan->SetDrawAtt(fgdScintillator,kGreen);// ND280 class
+  // // FGD Scintillator -- This is the average polystyrene scintillator for
+  // // the FGD.  The FGD density is based on our measurements of individual
+  // // bars, in combination with the measurements of the cross-sectional area
+  // // of the bars.
+  // density = 1.032*g/cm3; 
+  // G4Material* fgdScintillator 
+  //   = new G4Material(name="FGDScintillator", density, nel=2);
+  // fgdScintillator->AddElement(elC, 8);
+  // fgdScintillator->AddElement(elH, 8);
+  // gMan->SetDrawAtt(fgdScintillator,kGreen);// ND280 class
 
-  // Scintillator coating.  This is the coating that goes around the average
-  // plastic scintillator. It is 15% TiO2 and 85% polystyrene by weight.
-  // rho = (m_Sc + m_Ti) / (V_Sc + V_Ti)
-  //     = (0.85 + 0.15) / ( 0.85/1.032 + 0.15/4.26 )
-  //     = 1.164 g/cm^3
-  density = 1.164*g/cm3;
-  G4Material* scintillatorCoating
-    = new G4Material(name="ScintillatorCoating", density, ncomponents=2);
-  scintillatorCoating->AddMaterial(TIO2        ,fractionmass = 15*perCent);
-  scintillatorCoating->AddMaterial(scintillator,fractionmass = 85*perCent);
-  //gMan->SetDrawAtt(scintillatorCoating,kGreen);// ND280 class
+  // // Scintillator coating.  This is the coating that goes around the average
+  // // plastic scintillator. It is 15% TiO2 and 85% polystyrene by weight.
+  // // rho = (m_Sc + m_Ti) / (V_Sc + V_Ti)
+  // //     = (0.85 + 0.15) / ( 0.85/1.032 + 0.15/4.26 )
+  // //     = 1.164 g/cm^3
+  // density = 1.164*g/cm3;
+  // G4Material* scintillatorCoating
+  //   = new G4Material(name="ScintillatorCoating", density, ncomponents=2);
+  // scintillatorCoating->AddMaterial(TIO2        ,fractionmass = 15*perCent);
+  // scintillatorCoating->AddMaterial(scintillator,fractionmass = 85*perCent);
+  // gMan->SetDrawAtt(scintillatorCoating,kGreen);// ND280 class
     
-  // PVC -- Polyvinyl Chloride CH2=CHCl = C3H3Cl
-  density = 1.38*g/cm3;
-  G4Material* pvc
-    = new G4Material(name="PVC", density, nel=3);
-  pvc->AddElement(elC, 3);
-  pvc->AddElement(elH, 3);
-  pvc->AddElement(elCl, 1);
-  //gMan->SetDrawAtt(pvc,kGray+1);// ND280 class
+  // // PVC -- Polyvinyl Chloride CH2=CHCl = C3H3Cl
+  // density = 1.38*g/cm3;
+  // G4Material* pvc
+  //   = new G4Material(name="PVC", density, nel=3);
+  // pvc->AddElement(elC, 3);
+  // pvc->AddElement(elH, 3);
+  // pvc->AddElement(elCl, 1);
+  // gMan->SetDrawAtt(pvc,kGray+1);// ND280 class
 
-  // HDPE -- High Density Polyethylene used in P0D water bag
-  density = 0.94*g/cm3;
-  G4Material* hdpe
-    = new G4Material(name="HDPE", density, nel=2);
-  hdpe->AddElement(elC, natoms=1);
-  hdpe->AddElement(elH, natoms=2);
-  //gMan->SetDrawAtt(hdpe,kCyan-10);// ND280 class
+  // // HDPE -- High Density Polyethylene used in P0D water bag
+  // density = 0.94*g/cm3;
+  // G4Material* hdpe
+  //   = new G4Material(name="HDPE", density, nel=2);
+  // hdpe->AddElement(elC, natoms=1);
+  // hdpe->AddElement(elH, natoms=2);
+  // gMan->SetDrawAtt(hdpe,kCyan-10);// ND280 class
     
-  // P0DuleEpoxy -- The Epoxy used to hold the P0Dule together.  Density is
-  // from the Henkel Hysol data sheet.
-  density = 1.36*g/cm3;
-  G4Material* p0duleEpoxy
-    = new G4Material(name="P0DuleEpoxy", density, nel=3);
-  p0duleEpoxy->AddElement(elC, 3);
-  p0duleEpoxy->AddElement(elH, 3);
-  p0duleEpoxy->AddElement(elCl, 1);
-  //gMan->SetDrawAtt(p0duleEpoxy,kBlue+4);// ND280 class
+  // // P0DuleEpoxy -- The Epoxy used to hold the P0Dule together.  Density is
+  // // from the Henkel Hysol data sheet.
+  // density = 1.36*g/cm3;
+  // G4Material* p0duleEpoxy
+  //   = new G4Material(name="P0DuleEpoxy", density, nel=3);
+  // p0duleEpoxy->AddElement(elC, 3);
+  // p0duleEpoxy->AddElement(elH, 3);
+  // p0duleEpoxy->AddElement(elCl, 1);
+  // gMan->SetDrawAtt(p0duleEpoxy,kBlue+4);// ND280 class
     
-  // FGD Glue
-  density = 1.365*g/cm3;
-  G4Material* fgdGlue
-    = new G4Material(name="FGDGlue", density, nel=4);
-  fgdGlue->AddElement(elO,fractionmass=62.5*perCent);
-  fgdGlue->AddElement(elC,fractionmass=27.9*perCent);
-  fgdGlue->AddElement(elH,fractionmass= 8.4*perCent);
-  fgdGlue->AddElement(elN,fractionmass= 1.2*perCent);
-  //gMan->SetDrawAtt(fgdGlue,kOrange);// ND280 class
+  // // FGD Glue
+  // density = 1.365*g/cm3;
+  // G4Material* fgdGlue
+  //   = new G4Material(name="FGDGlue", density, nel=4);
+  // fgdGlue->AddElement(elO,fractionmass=62.5*perCent);
+  // fgdGlue->AddElement(elC,fractionmass=27.9*perCent);
+  // fgdGlue->AddElement(elH,fractionmass= 8.4*perCent);
+  // fgdGlue->AddElement(elN,fractionmass= 1.2*perCent);
+  // gMan->SetDrawAtt(fgdGlue,kOrange);// ND280 class
     
-  // FGD Water Module Epoxy
-  density = 0.6573*g/cm3;
-  G4Material* fgdWaterModuleEpoxy
-    = new G4Material(name="FGDWaterModuleEpoxy", density, nel=4);
-  fgdWaterModuleEpoxy->AddElement(elO,fractionmass=62.5*perCent);
-  fgdWaterModuleEpoxy->AddElement(elC,fractionmass=27.9*perCent);
-  fgdWaterModuleEpoxy->AddElement(elH,fractionmass= 8.4*perCent);
-  fgdWaterModuleEpoxy->AddElement(elN,fractionmass= 1.2*perCent);
-  //gMan->SetDrawAtt(fgdWaterModuleEpoxy,kOrange);// ND280 class
+  // // FGD Water Module Epoxy
+  // density = 0.6573*g/cm3;
+  // G4Material* fgdWaterModuleEpoxy
+  //   = new G4Material(name="FGDWaterModuleEpoxy", density, nel=4);
+  // fgdWaterModuleEpoxy->AddElement(elO,fractionmass=62.5*perCent);
+  // fgdWaterModuleEpoxy->AddElement(elC,fractionmass=27.9*perCent);
+  // fgdWaterModuleEpoxy->AddElement(elH,fractionmass= 8.4*perCent);
+  // fgdWaterModuleEpoxy->AddElement(elN,fractionmass= 1.2*perCent);
+  // gMan->SetDrawAtt(fgdWaterModuleEpoxy,kOrange);// ND280 class
      
     
-  // Polypropylene
-  density = 0.9*g/cm3;
-  G4Material* polypropylene
-    = new G4Material(name="Polypropylene", density, nel=2);
-  polypropylene->AddElement(elC, 3);
-  polypropylene->AddElement(elH, 6);
-  //gMan->SetDrawAtt(polypropylene,kYellow-5);// ND280 class
+  // // Polypropylene
+  // density = 0.9*g/cm3;
+  // G4Material* polypropylene
+  //   = new G4Material(name="Polypropylene", density, nel=2);
+  // polypropylene->AddElement(elC, 3);
+  // polypropylene->AddElement(elH, 6);
+  // gMan->SetDrawAtt(polypropylene,kYellow-5);// ND280 class
 
   // Polycarbonate
   density = 1.2*g/cm3;
@@ -1287,16 +1268,16 @@ void ExN02DetectorConstruction::DefineMaterials() {
   polycarbonate->AddElement(elH,fractionmass= 5.5491*perCent);
   polycarbonate->AddElement(elC,fractionmass=75.5751*perCent);
   polycarbonate->AddElement(elO,fractionmass=18.8758*perCent);
-  //gMan->SetDrawAtt(polycarbonate,kYellow-2);// ND280 class
+  gMan->SetDrawAtt(polycarbonate,kYellow-2);// ND280 class
 
-  //carbon fibre
-  // NB : chemical composition may not be completely right but  close 
-  density = 1.75*g/cm3;
-  G4Material* carbonFibre
-    = new G4Material(name="CarbonFibre", density, nel=2);
-  carbonFibre->AddElement(elC,6);
-  carbonFibre->AddElement(elO,1);
-  //gMan->SetDrawAtt(carbonFibre,kGray+3);// ND280 class
+  // //carbon fibre
+  // // NB : chemical composition may not be completely right but  close 
+  // density = 1.75*g/cm3;
+  // G4Material* carbonFibre
+  //   = new G4Material(name="CarbonFibre", density, nel=2);
+  // carbonFibre->AddElement(elC,6);
+  // carbonFibre->AddElement(elO,1);
+  // gMan->SetDrawAtt(carbonFibre,kGray+3);// ND280 class
 
   // G10 - by volume 57% glass, 43% epoxy (CH2)
   density = 1.70*g/cm3;
@@ -1308,7 +1289,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   g10->AddElement(elSi,21.9*perCent);
   g10->AddElement(elB,2.2*perCent);
   g10->AddElement(elNa,2.2*perCent);
-  //gMan->SetDrawAtt(g10,kGreen+3);// ND280 class
+  gMan->SetDrawAtt(g10,kGreen+3);// ND280 class
 
   // Diluted G10-FGD1
   density = 0.365*g/cm3;
@@ -1320,19 +1301,19 @@ void ExN02DetectorConstruction::DefineMaterials() {
   g10fgd1->AddElement(elSi,21.9*perCent);
   g10fgd1->AddElement(elB,2.2*perCent);
   g10fgd1->AddElement(elNa,2.2*perCent);
-  //gMan->SetDrawAtt(g10fgd1,kGreen+3);// ND280 class
+  gMan->SetDrawAtt(g10fgd1,kGreen+3);// ND280 class
 
-  // Diluted G10-FGD2
-  density = 0.171*g/cm3;
-  G4Material* g10fgd2
-    = new G4Material(name="G10FGD2", density, nel=6);
-  g10fgd2->AddElement(elH,6.2*perCent);
-  g10fgd2->AddElement(elC,36.8*perCent);
-  g10fgd2->AddElement(elO,30.7*perCent);
-  g10fgd2->AddElement(elSi,21.9*perCent);
-  g10fgd2->AddElement(elB,2.2*perCent);
-  g10fgd2->AddElement(elNa,2.2*perCent);
-  //gMan->SetDrawAtt(g10fgd2,kGreen+3);// ND280 class
+  // // Diluted G10-FGD2
+  // density = 0.171*g/cm3;
+  // G4Material* g10fgd2
+  //   = new G4Material(name="G10FGD2", density, nel=6);
+  // g10fgd2->AddElement(elH,6.2*perCent);
+  // g10fgd2->AddElement(elC,36.8*perCent);
+  // g10fgd2->AddElement(elO,30.7*perCent);
+  // g10fgd2->AddElement(elSi,21.9*perCent);
+  // g10fgd2->AddElement(elB,2.2*perCent);
+  // g10fgd2->AddElement(elNa,2.2*perCent);
+  // gMan->SetDrawAtt(g10fgd2,kGreen+3);// ND280 class
 
   // Rohacell (polymethacrylimide, chemical formula to be confirmed from 
   // "Polymethyl methacrylate" C5O2H8)
@@ -1343,7 +1324,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   rohacell->AddElement(elC,5);
   rohacell->AddElement(elH,8);
   rohacell->AddElement(elO,2);
-  //gMan->SetDrawAtt(rohacell,kGreen-9);// ND280 class
+  gMan->SetDrawAtt(rohacell,kGreen-9);// ND280 class
     
   // add Al/Rohacell TPC cage wall material
   // Outer box 15.2mm Al / Roha Panels (2 x 0.76mm Al, and 13.68mm Rohacell)
@@ -1368,7 +1349,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   //       = 0.1477
   alroha->AddMaterial(aluminum, fractionmass = 85.23*perCent);
   alroha->AddMaterial(rohacell, fractionmass = 14.77*perCent);
-  //gMan->SetDrawAtt(alroha,kGreen-9);// ND280 class
+  gMan->SetDrawAtt(alroha,kGreen-9);// ND280 class
 
   // add Al/Rohacell TPC cage wall material
   // (same as above but only 13.2mm thick)
@@ -1379,7 +1360,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
 
   alroha2->AddMaterial(aluminum, fractionmass = 87.11*perCent);
   alroha2->AddMaterial(rohacell, fractionmass = 12.89*perCent);
-  //gMan->SetDrawAtt(alroha2,kGreen-9);// ND280 class
+  gMan->SetDrawAtt(alroha2,kGreen-9);// ND280 class
 
   // G10/Roha/Cu TPC cage wall material
   //
@@ -1413,7 +1394,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   g10roha->AddMaterial(g10, fractionmass = 67.69*perCent);  
   g10roha->AddMaterial(rohacell, fractionmass = 15.91*perCent);
   g10roha->AddMaterial(copper, fractionmass = 16.40*perCent);
-  //gMan->SetDrawAtt(g10roha,kGreen-9);// ND280 class
+  gMan->SetDrawAtt(g10roha,kGreen-9);// ND280 class
 
   // FGD Electronics card (95mm x 252mm x 8mm) with total mass of 400g. The
   // composition is 50% Al and 50% G10 by weight.  -> density =
@@ -1425,7 +1406,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
 
   alg10->AddMaterial(aluminum, fractionmass = 50.0*perCent);
   alg10->AddMaterial(g10, fractionmass = 50.0*perCent);
-  //gMan->SetDrawAtt(alg10,kGreen-9);// ND280 class
+  gMan->SetDrawAtt(alg10,kGreen-9);// ND280 class
 
   // Material for the fiber core.
   density = 1.05*g/cm3;
@@ -1433,7 +1414,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
     = new G4Material(name="FiberCore", density, nel=2);
   fiberCore->AddElement(elC, 9);
   fiberCore->AddElement(elH, 10);
-  //gMan->SetDrawAtt(fiberCore,kCyan-4);// ND280 class
+  gMan->SetDrawAtt(fiberCore,kCyan-4);// ND280 class
     
   // Material for the fiber cladding
   density = 1.19*g/cm3;
@@ -1442,7 +1423,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   fiberCladding->AddElement(elH,8);
   fiberCladding->AddElement(elC,5);
   fiberCladding->AddElement(elO,2);
-  //gMan->SetDrawAtt(fiberCladding,kBlue);// ND280 class
+  gMan->SetDrawAtt(fiberCladding,kBlue);// ND280 class
 
   // Fluorinated fiber cladding
   density = 1.43*g/cm3;
@@ -1450,23 +1431,22 @@ void ExN02DetectorConstruction::DefineMaterials() {
     = new G4Material(name="FiberCladdingFluor", density, nel=2);
   fiberCladdingFluor->AddElement(elH,4);
   fiberCladdingFluor->AddElement(elC,2);
-  //gMan->SetDrawAtt(fiberCladdingFluor,kBlue);// ND280 class
+  gMan->SetDrawAtt(fiberCladdingFluor,kBlue);// ND280 class
     
-  // ActiveWater for the FGD.
-  //
-  // It is not necessarily activated, it is just a combination of water and
-  // polycarbonate that holds the water in place.  Daniel's document says
-  // the panel is 342mg/cm2 of PC (for most of the panels), and 2.2226 g/cm2
-  // of water (average of the 6 deployed panels).  water+PC layer by mass is
-  // 0.342/(0.342+2.2226)=0.1335 polycarbonate, so rho = 1 / (0.1335/1.2 +
-  // 0.8666/1.0) = 1.0226 g/cm^3
-  density = 1.0226*g/cm3;
-  G4Material* activeWater 
-    = new G4Material("ActiveWater", density, ncomponents=2);
-  activeWater->AddMaterial(water        ,fractionmass = 86.672*perCent);
-  activeWater->AddMaterial(polycarbonate,fractionmass = 13.328*perCent);
-  //gMan->SetDrawAtt(activeWater,kAzure+8);// ND280 class
-
+  // // ActiveWater for the FGD.
+  // //
+  // // It is not necessarily activated, it is just a combination of water and
+  // // polycarbonate that holds the water in place.  Daniel's document says
+  // // the panel is 342mg/cm2 of PC (for most of the panels), and 2.2226 g/cm2
+  // // of water (average of the 6 deployed panels).  water+PC layer by mass is
+  // // 0.342/(0.342+2.2226)=0.1335 polycarbonate, so rho = 1 / (0.1335/1.2 +
+  // // 0.8666/1.0) = 1.0226 g/cm^3
+  // density = 1.0226*g/cm3;
+  // G4Material* activeWater 
+  //   = new G4Material("ActiveWater", density, ncomponents=2);
+  // activeWater->AddMaterial(water        ,fractionmass = 86.672*perCent);
+  // activeWater->AddMaterial(polycarbonate,fractionmass = 13.328*perCent);
+  // gMan->SetDrawAtt(activeWater,kAzure+8);// ND280 class
 
   
   // WAGASHI
@@ -1477,13 +1457,15 @@ void ExN02DetectorConstruction::DefineMaterials() {
     = new G4Material(name="WAGASHIScintillator", density, nel=2);
   WAGASHIScint->AddElement(elC, 9);
   WAGASHIScint->AddElement(elH, 10);
-  
+  gMan->SetDrawAtt(WAGASHIScint,kAzure+8);//ND280 class
+
   //Scintillator empty --> average density ~40% of normal one
   density = 1.032*g/cm3 * 0.4;
   G4Material *WAGASHIScint_Empty 
     = new G4Material(name="WAGASHIScintillatorEmpty", density,nel=2);
   WAGASHIScint_Empty->AddElement(elC, 9);
   WAGASHIScint_Empty->AddElement(elH, 10);
+  gMan->SetDrawAtt(WAGASHIScint_Empty,kGreen);//ND280 class
   
 }
 
@@ -1496,25 +1478,7 @@ G4Material* ExN02DetectorConstruction::FindMaterial(G4String name) {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void SetRegions(){
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
+G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String parentname) {
 
   //
   // FROM INIT nd280mc
@@ -1537,7 +1501,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
   SetCO2Bottom(117.8*mm);   
   SetInnerBoxWall(13.2*mm); 
   SetOuterBoxWall(15.2*mm);  
-
+  
   SetShowOuterVolume(false);
   SetSteppingLimit(1.*mm);
 
@@ -1581,7 +1545,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
 			  FindMaterial("GasMixtureTPC"),
 			  //GetName()+"/Drift");
 			  //"TPC1/Drift");
-			  name+"/Drift");
+			  parentname+"/"+name+"/Drift");
   
   logDrift->SetVisAttributes(TPCVisAtt);
   //logDrift->SetVisAttributes(G4VisAttributes::Invisible);
@@ -1617,7 +1581,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
 			  FindMaterial("CO2"),
 			  //GetName()+"/GasGap");
 			  //"TPC1/GasGap");
-			  name+"/GasGap");
+			  parentname+"/"+name+"/GasGap");
 
   logGasGap->SetVisAttributes(TPCCO2);
   logGasGap->SetVisAttributes(G4VisAttributes::Invisible);
@@ -1641,7 +1605,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
     = new G4LogicalVolume(new G4Box(
 				    //GetName(),
 				    //"TPC1",
-				    name,
+				    parentname+"/"+name,
 				    GetWidthForwTPC()/2.,
 				    GetHeightForwTPC()/2.,
 				    GetLengthForwTPC()/2.),
@@ -1651,7 +1615,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
 			  FindMaterial("Air"),
 			  //GetName()
 			  //"TPC1"
-			  name
+			  parentname+"/"+name
 			  );
   
   logVolume->SetVisAttributes(TPCDeadMat);
@@ -1679,7 +1643,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
 		    logDrift,
 		    //GetName()+"/Drift",
 		    //"TPC1/Drift",
-		    name+"/Drift",
+		    parentname+"/"+name+"/Drift",
 		    logGasGap,
 		    false,
 		    0);
@@ -1690,17 +1654,16 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
 		    logGasGap,
 		    //GetName()+"/GasGap",
 		    //"TPC1/GasGap",
-		    name+"/GasGap",
+		    parentname+"/"+name+"/GasGap",
 		    logVolume,
 		    false,
 		    0);
   //fCheckOverlaps);
+
   
   // Divide drift volume into two halves (readout planes)
   // Make 2 separate halves (instead of 2 copies), so that each of 24 MM can be modified.
-  
-  //G4cout << "Divide drift volume into two halves (readout planes)" << G4endl;
-  
+    
   width  = GetDriftWidth()/2.;
   height = GetDriftHeight()/2.;
   length = GetDriftLength()/2.;
@@ -1721,13 +1684,13 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
                               FindMaterial("GasMixtureTPC"),
                               //GetName()+"/Half");
                               //"TPC1/Half");
-			      name+"/Half");
+			      parentname+"/"+name+"/Half");
     G4LogicalVolume* logHalf1
         = new G4LogicalVolume(innerHalf,
                               FindMaterial("GasMixtureTPC"),
                               //GetName()+"/Half");
                               //"TPC1/Half");
-			      name+"/Half");
+			      parentname+"/"+name+"/Half");
     logHalf0->SetVisAttributes(TPCVisAtt); //TPCDeadMat);
     logHalf1->SetVisAttributes(TPCVisAtt); //TPCDeadMat);
     //logHalf0->SetVisAttributes(G4VisAttributes::Invisible);
@@ -1791,7 +1754,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
                       logHalf0,
                       //GetName()+"/Half",
                       //"TPC1/Half",
-		      name+"/Half",
+		      parentname+"/"+name+"/Half",
                       logDrift,
                       false,
                       0);
@@ -1803,7 +1766,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
                       logHalf1,
                       //GetName()+"/Half",
                       //"TPC1/Half",
-		      name+"/Half",
+		      parentname+"/"+name+"/Half",
                       logDrift,
                       false,
                       1);
@@ -1825,7 +1788,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
 			    FindMaterial("GasMixtureTPC"),
 			    //GetName()+"/MM");
 			    //"TPC1/MM");
-			    name+"/MM");
+			    parentname+"/"+name+"/MM");
     
     //if (GetVisible() && !GetShowOuterVolume()) {
     G4VisAttributes* visual = new G4VisAttributes();
@@ -1864,7 +1827,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
      			  logMM,
      			  //GetName()+"/MM",
      			  //"TPC1/MM",
-			  name+"/MM",
+			  parentname+"/"+name+"/MM",
      			  logHalf0,
      			  false,
      			  imod);
@@ -1876,7 +1839,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
      			  logMM,
      			  //GetName()+"/MM",
      			  //"TPC1/MM",
-			  name+"/MM",
+			  parentname+"/"+name+"/MM",
      			  logHalf0,
      			  false,
      			  imod);
@@ -1891,7 +1854,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
 			   logMM,
 			   //GetName()+"/MM",
 			   //"TPC1/MM",
-			   name+"/MM",
+			   parentname+"/"+name+"/MM",
 			   logHalf1,
 			   false,
 			   imod);
@@ -1903,7 +1866,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name) {
      			  logMM,
      			  //GetName()+"/MM",
      			  //"TPC1/MM",
-			  name+"/MM",
+			  parentname+"/"+name+"/MM",
      			  logHalf1,
      			  false,
      			  imod);
@@ -1930,11 +1893,13 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
 
     double y, z;
 
+    G4String parentname = logVolume->GetName();
+
     // (red) G10/Roha composite middle plane (central cathode)
 
     //ND280BeamConstructor& middleG10RoPlate = 
     //Get<ND280BeamConstructor>("CentralCathode");
-    ND280BeamConstructor middleG10RoPlate("CentralCathode");
+    ND280BeamConstructor middleG10RoPlate(parentname+"/CentralCathode");
     middleG10RoPlate.SetWidth(GetCathodeThickness());
     middleG10RoPlate.SetHeight(2*1061.0*mm);
     middleG10RoPlate.SetLength(2*373.0*mm);
@@ -1972,7 +1937,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     //ND280BeamConstructor& frbaCon1 =
     //Get<ND280BeamConstructor>("FrBaCon1");
 
-    ND280BeamConstructor frbaCon1("FrBaCon1");
+    ND280BeamConstructor frbaCon1(parentname+"/FrBaCon1");
     frbaCon1.SetWidth(GetCathodeThickness());
     frbaCon1.SetHeight(2*1074.0*mm);
     frbaCon1.SetLength(386.0*mm - 373.0*mm);
@@ -2012,7 +1977,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     //ND280BeamConstructor& toboCon1 =
     //Get<ND280BeamConstructor>("ToBoCon1");
 
-    ND280BeamConstructor toboCon1("ToBoCon1");
+    ND280BeamConstructor toboCon1(parentname+"/ToBoCon1");
 
     toboCon1.SetWidth(GetCathodeThickness());
     toboCon1.SetHeight(386.0*mm - 373.0*mm);
@@ -2066,11 +2031,13 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
   
     double x, y, z;
 
+    G4String parentname = logVolume->GetName();
+
     // (green) solid G10 side plates
 
     //ND280BeamConstructor& sideG10Plate = 
     //Get<ND280BeamConstructor>("SideG10Plate");
-    ND280BeamConstructor sideG10Plate("SideG10Plate");
+    ND280BeamConstructor sideG10Plate(parentname+"/SideG10Plate");
     
     // was sideG10Plate.SetWidth(27.0*mm) - change suggested by Doug Storey
     sideG10Plate.SetWidth(47.29*mm);
@@ -2116,7 +2083,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& verticalG10Frame =
     //Get<ND280BeamConstructor>("VerticalG10Frame");
-    ND280BeamConstructor verticalG10Frame("VerticalG10Frame");
+    ND280BeamConstructor verticalG10Frame(parentname+"/VerticalG10Frame");
 
     verticalG10Frame.SetWidth(35.0*mm);
     verticalG10Frame.SetHeight(2*(1074.0*mm + 47.6*mm));
@@ -2163,7 +2130,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //ND280BeamConstructor& horizontalG10Frame =
     //Get<ND280BeamConstructor>("HorizontalG10Frame");
 
-    ND280BeamConstructor horizontalG10Frame("HorizontalG10Frame");
+    ND280BeamConstructor horizontalG10Frame(parentname+"/HorizontalG10Frame");
     horizontalG10Frame.SetWidth(35.0*mm);
     horizontalG10Frame.SetHeight(47.6*mm);
     horizontalG10Frame.SetLength(2*386.0*mm);
@@ -2208,7 +2175,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //ND280BeamConstructor& verticalG10Plate =
     //Get<ND280BeamConstructor>("VerticalG10Plate");
 
-    ND280BeamConstructor verticalG10Plate("VerticalG10Plate"); 
+    ND280BeamConstructor verticalG10Plate(parentname+"/VerticalG10Plate"); 
 
     verticalG10Plate.SetWidth(160.0*mm);
     verticalG10Plate.SetHeight(2*1085.6*mm);
@@ -2250,7 +2217,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& sideAlPlate =
     //Get<ND280BeamConstructor>("SideAlPlate");
-    ND280BeamConstructor sideAlPlate("SideAlPlate");
+    ND280BeamConstructor sideAlPlate(parentname+"/SideAlPlate");
 
     // was sideAlPlate.SetWidth(20.0*mm) change suggested by Doug Storey
     sideAlPlate.SetWidth(4.84*mm);
@@ -2294,7 +2261,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     // (yellow) Water System Posts
 
     //ND280BeamConstructor& post = Get<ND280BeamConstructor>("Post");
-    ND280BeamConstructor post("Post");
+    ND280BeamConstructor post(parentname+"/Post");
 
     post.SetWidth(50.0*mm);
     post.SetHeight(1068.2*mm + 1149.5*mm);
@@ -2340,7 +2307,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& sideAlRoPlate =
     //Get<ND280BeamConstructor>("SideAlRoPlate");
-    ND280BeamConstructor sideAlRoPlate("SideAlRoPlate");
+    ND280BeamConstructor sideAlRoPlate(parentname+"/SideAlRoPlate");
 
     sideAlRoPlate.SetWidth(13.2*mm);
     sideAlRoPlate.SetHeight(1146.8*mm + 1149.5*mm + 47.3*mm);
@@ -2382,7 +2349,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& frbaAlRoPlate =
     //Get<ND280BeamConstructor>("FrBaAlRoPlate");
-    ND280BeamConstructor frbaAlRoPlate("FrBaAlRoPlate");
+    ND280BeamConstructor frbaAlRoPlate(parentname+"/FrBaAlRoPlate");
 
     frbaAlRoPlate.SetWidth(895.3*mm-18.0*mm);
     frbaAlRoPlate.SetHeight(1155.0*mm + 15.2*mm + 1205.0*mm + 15.2*mm);
@@ -2430,7 +2397,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& toboAlRoPlate =
     //Get<ND280BeamConstructor>("ToBoAlRoPlate");
-    ND280BeamConstructor toboAlRoPlate("ToBoAlRoPlate");
+    ND280BeamConstructor toboAlRoPlate(parentname+"/ToBoAlRoPlate");
 
     toboAlRoPlate.SetWidth(895.3*mm - 18.0*mm);
     toboAlRoPlate.SetHeight(15.2*mm);
@@ -2486,7 +2453,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& frbaG10RoPlate =
     //Get<ND280BeamConstructor>("FrBaG10RoPlate");
-    ND280BeamConstructor frbaG10RoPlate("FrBaG10RoPlate");
+    ND280BeamConstructor frbaG10RoPlate(parentname+"/FrBaG10RoPlate");
     
     frbaG10RoPlate.SetWidth(869.1*mm - 18.1*mm);
     frbaG10RoPlate.SetHeight(2*(1061.0*mm + 13.2*mm));
@@ -2531,7 +2498,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toboG10RoPlate =
     //Get<ND280BeamConstructor>("ToBoG10RoPlate");
-    ND280BeamConstructor toboG10RoPlate("ToBoG10RoPlate");
+    ND280BeamConstructor toboG10RoPlate(parentname+"/ToBoG10RoPlate");
 
     toboG10RoPlate.SetWidth(869.1*mm - 18.1*mm);
     toboG10RoPlate.SetHeight(13.2*mm);
@@ -2575,7 +2542,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& frbaPiece1 =
     //Get<ND280BeamConstructor>("FrBaPiece1");
-    ND280BeamConstructor frbaPiece1("FrBaPiece1");
+    ND280BeamConstructor frbaPiece1(parentname+"/FrBaPiece1");
 
     frbaPiece1.SetWidth(40.7*mm);
     frbaPiece1.SetHeight(1130.0*mm + 45.0*mm + 1149.5*mm + 30.5*mm + 45.0*mm);
@@ -2620,7 +2587,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& frbaPiece2 =
     //Get<ND280BeamConstructor>("FrBaPiece2");
-    ND280BeamConstructor frbaPiece2("FrBaPiece2");
+    ND280BeamConstructor frbaPiece2(parentname+"/FrBaPiece2");
 
     frbaPiece2.SetWidth(29.7*mm);
     frbaPiece2.SetHeight(1170*mm + 1220.0*mm);
@@ -2665,7 +2632,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& frbaPiece3 =
     //Get<ND280BeamConstructor>("FrBaPiece3");
-    ND280BeamConstructor frbaPiece3("FrBaPiece3");
+    ND280BeamConstructor frbaPiece3(parentname+"/FrBaPiece3");
 
     frbaPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
     frbaPiece3.SetHeight(1146.8*mm + 7.9*mm + 1149.5*mm + 7.9*mm);
@@ -2711,7 +2678,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece1 =
     //Get<ND280BeamConstructor>("BoPiece1");
-    ND280BeamConstructor boPiece1("BoPiece1");
+    ND280BeamConstructor boPiece1(parentname+"/BoPiece1");
     
     boPiece1.SetWidth(40.7*mm);
     boPiece1.SetHeight(45.0*mm);
@@ -2751,7 +2718,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece2 =
     //Get<ND280BeamConstructor>("BoPiece2");
-    ND280BeamConstructor boPiece2("BoPiece2");
+    ND280BeamConstructor boPiece2(parentname+"/BoPiece2");
     
     boPiece2.SetWidth(29.7*mm);
     boPiece2.SetHeight(23.2*mm);
@@ -2791,7 +2758,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece3 =
     //Get<ND280BeamConstructor>("BoPiece3");
-    ND280BeamConstructor boPiece3("BoPiece3");
+    ND280BeamConstructor boPiece3(parentname+"/BoPiece3");
 
     boPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
     boPiece3.SetHeight(7.9*mm);
@@ -2831,7 +2798,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece4 =
     //Get<ND280BeamConstructor>("BoPiece4");
-    ND280BeamConstructor boPiece4("BoPiece4");
+    ND280BeamConstructor boPiece4(parentname+"/BoPiece4");
 
     boPiece4.SetWidth(9.5*mm);
     boPiece4.SetHeight(30.5*mm);
@@ -2871,7 +2838,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece5 =
     //Get<ND280BeamConstructor>("BoPiece5");
-    ND280BeamConstructor boPiece5("BoPiece5");
+    ND280BeamConstructor boPiece5(parentname+"/BoPiece5");
 
     boPiece5.SetWidth(16.5*mm);
     boPiece5.SetHeight(47.3*mm);
@@ -2913,7 +2880,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toPiece1 =
     //Get<ND280BeamConstructor>("ToPiece1");
-    ND280BeamConstructor toPiece1("ToPiece");
+    ND280BeamConstructor toPiece1(parentname+"/ToPiece");
 
     toPiece1.SetWidth(40.7*mm);
     toPiece1.SetHeight(45.0*mm);
@@ -2953,7 +2920,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toPiece2 =
     //Get<ND280BeamConstructor>("ToPiece2");
-    ND280BeamConstructor toPiece2("ToPiece2");
+    ND280BeamConstructor toPiece2(parentname+"/ToPiece2");
     
     toPiece2.SetWidth(29.7*mm);
     toPiece2.SetHeight(1170.0*mm - 1146.8*mm);
@@ -2993,7 +2960,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toPiece3 =
     //Get<ND280BeamConstructor>("ToPiece3");
-    ND280BeamConstructor toPiece3("ToPiece3");
+    ND280BeamConstructor toPiece3(parentname+"/ToPiece3");
 
     toPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
     toPiece3.SetHeight(7.9*mm);
@@ -3035,7 +3002,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& frbaCon2 =
     //Get<ND280BeamConstructor>("FrBaCon2");
-    ND280BeamConstructor frbaCon2("FrBaCon2");
+    ND280BeamConstructor frbaCon2(parentname+"/FrBaCon2");
 
     frbaCon2.SetWidth(2*18.1*mm);
     frbaCon2.SetHeight(2*(1074.0*mm + 13.2*mm));
@@ -3074,7 +3041,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& toboCon2 =
     //Get<ND280BeamConstructor>("ToBoCon2");
-    ND280BeamConstructor toboCon2("ToBoCon2");
+    ND280BeamConstructor toboCon2(parentname+"/ToBoCon2");
     
     toboCon2.SetWidth(2*18.1*mm);
     toboCon2.SetHeight(13.2*mm);
@@ -3114,7 +3081,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& frbaCon =
     //Get<ND280BeamConstructor>("FrBaCon");
-    ND280BeamConstructor frbaCon("FrBaCon");
+    ND280BeamConstructor frbaCon(parentname+"/FrBaCon");
 
     frbaCon.SetWidth(2*18.0*mm);
     frbaCon.SetHeight(1155.0*mm + 15.2*mm + 1205.0*mm + 15.2*mm);
@@ -3154,7 +3121,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toboCon =
     //Get<ND280BeamConstructor>("ToBoCon");
-    ND280BeamConstructor toboCon("ToBoCon");
+    ND280BeamConstructor toboCon(parentname+"/ToBoCon");
 
     toboCon.SetWidth(2*18.0*mm);
     toboCon.SetHeight(15.2*mm);
