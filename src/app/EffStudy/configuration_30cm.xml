@@ -8,6 +8,10 @@
 
 <Dependency>
 
+  <StoreGeometry>
+    1
+  </StoreGeometry>
+
   <IsRandomSeed>
     0
   </IsRandomSeed>
@@ -15,21 +19,15 @@
    <Generator>      
      GENIE  
    </Generator>
+
    <Path2file>
-     /neutrino/data7/davide/files/
+     /neutrino/data7/davide/files/ND280Upgrade/
    </Path2file>
-   <!--
-      <NEUTfilename>
-	genev_output_newgeom_O16.root
-      </NEUTfileName>
-      <NEUTtreename>
-	nRooTracker
-      </NEUTtreename>
-      -->
+
    <filename>
-     <!-- out.rootracker_highstat.root -->
-     highstat/out.9001.rootracker.root
+     GENIE/GENIE_nd280mc_target30cm_6E20POT.root
    </filename>
+   
    <treename>  
      gRooTracker
    </treename>
@@ -51,7 +49,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     2978
+     -2978
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -71,7 +69,7 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     -2978
+     +2978
    </forwTPCPos3_Z>
 
 
@@ -99,7 +97,7 @@
      651.5
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     1487
+     -1487
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
@@ -109,7 +107,7 @@
      -651.5
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     1487
+     -1487
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
@@ -134,7 +132,7 @@
      651.5
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
-     -1487
+     +1487
    </sideTPCUpPos2_Z>
    
    <sideTPCDownPos2_X>
@@ -144,7 +142,7 @@
      -651.5
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
-     -1487
+     +1487
    </sideTPCDownPos2_Z>
 
 
@@ -171,7 +169,7 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     1487
+     -1487
    </TargetPos1_Z>
 
    
@@ -198,7 +196,7 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     -1487
+     +1487
    </TargetPos2_Z>
 
    

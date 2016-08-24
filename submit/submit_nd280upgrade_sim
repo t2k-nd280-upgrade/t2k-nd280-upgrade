@@ -52,15 +52,19 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"               unless defined $resource;
-$tag             = "g4ND280Up_6E20"            unless defined $tag;
-$config_file     = "configuration_cluster.xml" unless defined $config_file;
+$tag             = "g4ND280Up_6E20_Cluster"    unless defined $tag;
+#$config_file     = "configuration_cluster.xml" unless defined $config_file;
+$config_file     = "configuration_cluster_30cm.xml" unless defined $config_file;
 $vis_file        = "vis_cluster.mac"           unless defined $vis_file;
+
+#$nruns           = 1                          unless defined $nruns;      # number of jobs
+#$nexpts          = 10                        unless defined $nexpts;     # number of events per job
 
 $nruns           = 68                          unless defined $nruns;      # number of jobs
 $nexpts          = 5000                        unless defined $nexpts;     # number of events per job
 $first_expt      = 0                           unless defined $first_expt; # first event
 
-$queue           = "very short"                     unless defined $queue;
+$queue           = "veryshort"                unless defined $queue;
 
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
@@ -68,7 +72,7 @@ while($irun < $nruns) { # loop over the jobs
     $evt_first = $first_expt + $irun * $nexpts;
     
  
-    $arguments = "time $softw_dir/bin/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+    $arguments = "$softw_dir/bin/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
    
     $command = "$arguments";
     
@@ -88,9 +92,18 @@ while($irun < $nruns) { # loop over the jobs
 	open(PBS, ">$job_dir/g4ND280Up-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
 	print PBS "#!/bin/bash -l  \n";
 	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
+	print PBS "\n";
+	print PBS "env \n";
+	print PBS "\n";
+	print PBS "uname -n \n";
+	print PBS "\n";
 	print PBS "$command \n";
 	close(PBS);	
 	`qsub -q $queue -l mem=6000mb -l vmem=6000mb $job_dir/g4ND280Up-$evt_first-$nexpts.sbatch`;
+	#`qsub -q $queue -l mem=6000mb -l vmem=6000mb -l nodes=atlas079+atlas075+atlas063+atlas063+atlas054+atlas040 $job_dir/g4ND280Up-$evt_first-$nexpts.sbatch`;
+    }
+    if($resource eq "interactive") {
+	system($command);
     }
 
     $irun=$irun+1;

@@ -60,7 +60,8 @@ foreach (@ARGV) {
 
 $resource        = "interactive"                 unless defined $resource;
 $tag             = "SelND280Up_NuMu_6E20"           unless defined $tag;
-$inputfile       = "/neutrino/data7/davide/files/g4ND280Up_6E20_All_NoPoint.root"  unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_right_units_All.root"  unless defined $inputfile;
+$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_right_units_30cm_All.root"  unless defined $inputfile;
 $first_expt      = 0                             unless defined $first_expt;
 
 #$nruns           = 1                             unless defined $nruns; 
@@ -81,12 +82,12 @@ $docut_mater     = 0                             unless defined $docut_mater;
 
 # select interactions only in Fiducial Volume
 $docut_vertex    = 1                             unless defined $docut_vertex;
-$docut_target1   = 0                             unless defined $docut_target1;
-$docut_target2   = 1                             unless defined $docut_target2;
+$docut_target1   = 1                             unless defined $docut_target1;
+$docut_target2   = 0                             unless defined $docut_target2;
 
 # select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
 $docut_pdg       = 1                            unless defined $docut_pdg;
-$cut_pdg         = 2212                            unless defined $cut_pdg; 
+$cut_pdg         = 13                            unless defined $cut_pdg; 
 
 # select track parent ID. If 0 --> primary particle,
 $docut_parid     = 1                             unless defined $docut_parid;

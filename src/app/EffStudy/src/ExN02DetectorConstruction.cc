@@ -217,7 +217,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	 << fWorldHeight/mm << " (height) x " 
   	 << fWorldLength/mm << " (length) mm^3" 
 	 << " of " << WorldMater->GetName() << G4endl;
-  if (DebugTPCMass) G4cout << " mass="<<logicWorld->GetMass()/kg   <<" kg";
+  G4cout << " mass="<<logicWorld->GetMass()/kg   <<" kg";
+  G4cout << " name: " << logicWorld->GetName() << G4endl;
   G4cout << G4endl;
   
     
@@ -264,12 +265,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   				  );
   //fCheckOverlaps);   // checking overlaps     				 
   
-  G4cout << "Basket is " 
+  G4cout << "Basket is: " << G4endl
   	 << fBasketWidth/mm  << " (width) x " 
   	 << fBasketHeight/mm << " (height) x " 
   	 << fBasketLength/mm << " (length) mm^3"
   	 << " of " << BasketMater->GetName() << G4endl;
-  if (DebugTPCMass) G4cout << " mass="<<logicBasket->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " mass="<<logicBasket->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " name: " << logicBasket->GetName() << G4endl;
   G4cout << G4endl;
 
   
@@ -303,12 +305,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   				   false,             // no boolean operations
   				   0);                 // copy number 
  
-  G4cout << "Tracker is " 
-  	 << fTrackerWidth/mm  << " (width) x " 
+  G4cout << "Tracker is " << G4endl
+	 << fTrackerWidth/mm  << " (width) x " 
   	 << fTrackerHeight/mm << " (height) x " 
   	 << fTrackerLength/mm << " (length) mm^3"
   	 << " of " << TrackerMater->GetName() << G4endl;
-  if (DebugTPCMass) G4cout << " mass="<<logicTracker->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " mass="<<logicTracker->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " name: " << logicTracker->GetName() << G4endl;
   G4cout << G4endl;
 
 
@@ -339,11 +342,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   new G4PVPlacement(0,
 		    GetForwTPCPos1(),
   		    tpc1Volume,
-  		    cParentNameTPC+"/ForwTPC1",
+  		    //cParentNameTPC+"/ForwTPC1",
+		    tpc1Volume->GetName(),
   		    logicTracker,
   		    false,
   		    0);
 
+  G4cout << " - name: " << tpc1Volume->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos1().x()/mm << ", "
 	 << GetForwTPCPos1().y()/mm << ", "
@@ -373,11 +378,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   new G4PVPlacement(0,
 		    GetForwTPCPos2(),
   		    tpc2Volume,
-  		    cParentNameTPC+"/ForwTPC2",
+  		    //cParentNameTPC+"/ForwTPC2",
+		    tpc2Volume->GetName(),
   		    logicTracker,
   		    false,
   		    0);
 
+  G4cout << " - name: " << tpc2Volume->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos2().x()/mm << ", "
 	 << GetForwTPCPos2().y()/mm << ", "
@@ -408,11 +415,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   new G4PVPlacement(0,
 		    GetForwTPCPos3(),
   		    tpc3Volume,
-  		    cParentNameTPC+"/ForwTPC3",
+  		    //cParentNameTPC+"/ForwTPC3",
+		    tpc3Volume->GetName(),
   		    logicTracker,
   		    false,
   		    0);
 
+  G4cout << " - name: " << tpc3Volume->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos3().x()/mm << ", "
 	 << GetForwTPCPos3().y()/mm << ", "
@@ -463,13 +472,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				   0);                 // copy number 
   //fCheckOverlaps);   
 
-  G4cout << "Target 1: " << endl
+  G4cout << "Target 1: " << G4endl
 	 << " - dimensions: "
 	 << GetTargetFullWidth1()/mm  << " (width) x " 
   	 << GetTargetFullHeight1()/mm << " (height) x " 
   	 << GetTargetFullLength1()/mm << " (length) mm^3" 
          << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-  if (DebugTPCMass) G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl;  	 
+  G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl; 
+  G4cout << " name: " << logicTarget1->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetTargetPos1().x()/mm << ", "
 	 << GetTargetPos1().y()/mm << ", "
@@ -517,13 +527,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				   0);                 // copy number 
     //fCheckOverlaps);   
 
-  G4cout << "Target 2: " << endl
+  G4cout << "Target 2: " << G4endl
 	 << " - dimensions: "
 	 << GetTargetFullWidth2()/mm  << " (width) x " 
   	 << GetTargetFullHeight2()/mm << " (height) x " 
   	 << GetTargetFullLength2()/mm << " (length) mm^3" 
          << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
-  if (DebugTPCMass) G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " name: " << logicTarget2->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetTargetPos2().x()/mm << ", "
 	 << GetTargetPos2().y()/mm << ", "
@@ -578,13 +589,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				      false,               // no boolean operations
 				      0);                   // copy number 
   
-  G4cout << "Side TPC Up 1: " << endl
+  G4cout << "Side TPC Up 1: " << G4endl
 	 << " - dimensions: "
 	 << GetSideTPCFullWidth1()/mm  << " (width) x " 
   	 << GetSideTPCFullHeight1()/mm << " (height) x " 
   	 << GetSideTPCFullLength1()/mm << " (length) mm^3" 
          << " of " << logicSideTPCUp1->GetMaterial()->GetName() << G4endl; 
-  if (DebugTPCMass) G4cout << " mass="<<logicSideTPCUp1->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " mass="<<logicSideTPCUp1->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " name: " << logicSideTPCUp1->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetSideTPCUpPos1().x()/mm << ", "
 	 << GetSideTPCUpPos1().y()/mm << ", "
@@ -622,13 +634,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 					false,           // no boolean operations
 					0);              // copy number 
 
-  G4cout << "Side TPC Down 1: " << endl
+  G4cout << "Side TPC Down 1: " << G4endl
 	 << " - dimensions: "
 	 << GetSideTPCFullWidth1()/mm  << " (width) x " 
   	 << GetSideTPCFullHeight1()/mm << " (height) x " 
   	 << GetSideTPCFullLength1()/mm << " (length) mm^3" 
          << " of " << logicSideTPCDown1->GetMaterial()->GetName() << G4endl;
-  if (DebugTPCMass) G4cout << " mass="<<logicSideTPCDown1->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " mass="<<logicSideTPCDown1->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " name: " << logicSideTPCDown1->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetSideTPCDownPos1().x()/mm << ", "
 	 << GetSideTPCDownPos1().y()/mm << ", "
@@ -666,13 +679,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				      false,               // no boolean operations
 				      0);                   // copy number 
 
-  G4cout << "Side TPC Up 2: " << endl
+  G4cout << "Side TPC Up 2: " << G4endl
 	 << " - dimensions: "
 	 << GetSideTPCFullWidth2()/mm  << " (width) x " 
   	 << GetSideTPCFullHeight2()/mm << " (height) x " 
   	 << GetSideTPCFullLength2()/mm << " (length) mm^3" 
          << " of " << logicSideTPCUp2->GetMaterial()->GetName() << G4endl; 
-  if (DebugTPCMass) G4cout << " mass="<<logicSideTPCUp2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " mass="<<logicSideTPCUp2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " name: " << logicSideTPCUp2->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetSideTPCUpPos2().x()/mm << ", "
 	 << GetSideTPCUpPos2().y()/mm << ", "
@@ -681,9 +695,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   // TPC Down 2
   
-  const G4String cNameSolidSideTPCDown2 = "/tpcdown2";
-  const G4String cNameLogicSideTPCDown2 = "/TPCDown2";
-  const G4String cNamePhysiSideTPCDown2 = "/TPCDown2";
+  const G4String cNameSolidSideTPCDown2 = cParentNameTPC+"/tpcdown2";
+  const G4String cNameLogicSideTPCDown2 = cParentNameTPC+"/TPCDown2";
+  const G4String cNamePhysiSideTPCDown2 = cParentNameTPC+"/TPCDown2";
 
   solidSideTPCDown2 = new G4Box(cNameSolidSideTPCDown2,HalfSideTPCWidth2,HalfSideTPCHeight2,HalfSideTPCLength2); 
   logicSideTPCDown2 = new G4LogicalVolume(solidSideTPCDown2,SideTPCMater,cNameLogicSideTPCDown2,0,0,0);
@@ -709,13 +723,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 					false,           // no boolean operations
 					0);              // copy number 
   
-  G4cout << "Side TPC Down 2: " << endl
+  G4cout << "Side TPC Down 2: " << G4endl
 	 << " - dimensions: "
 	 << GetSideTPCFullWidth2()/mm  << " (width) x " 
   	 << GetSideTPCFullHeight2()/mm << " (height) x " 
   	 << GetSideTPCFullLength2()/mm << " (length) mm^3" 
          << " of " << logicSideTPCDown2->GetMaterial()->GetName() << G4endl;
-  if (DebugTPCMass) G4cout << " mass="<<logicSideTPCDown2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " mass="<<logicSideTPCDown2->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << " name: " << logicSideTPCDown2->GetName() << G4endl;
   G4cout << " - position: ( " 
 	 << GetSideTPCDownPos2().x()/mm << ", "
 	 << GetSideTPCDownPos2().y()/mm << ", "
@@ -743,6 +758,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   }
 #endif
   
+  // Region to get track of all the sensitive detectors
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
   if (SDRegion) {
@@ -758,8 +774,19 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4Exception("ExN02DetectorConstruction::Construct",
 		"MyCode0002",FatalException, msg);
   }
-  
 
+  G4cout << G4endl;
+  G4cout << "The sensitive detectors (logicalVolume) are: " << G4endl;
+  int NSDRootVolumes =  SDRegion->GetNumberOfRootVolumes();
+  std::vector<G4LogicalVolume*>::iterator it_logicalVolumeInRegion =
+    SDRegion->GetRootLogicalVolumeIterator();
+  for(int i = 0; i < NSDRootVolumes ; i++, it_logicalVolumeInRegion++){
+    G4String SDLogVolName = (*it_logicalVolumeInRegion)->GetName();
+    G4cout << SDLogVolName << G4endl;
+  }
+  G4cout << G4endl;
+
+   
   //------------------------------------------------ 
   // Sensitive detectors
   //------------------------------------------------ 
@@ -787,7 +814,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
-
 
   logicSideTPCUp1->SetVisAttributes(TPCVisAtt);
   logicSideTPCUp2->SetVisAttributes(TPCVisAtt);

@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <stdlib.h>
 
 #include "TND280UpVertex.hh"
 
