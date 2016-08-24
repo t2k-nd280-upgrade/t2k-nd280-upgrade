@@ -1,7 +1,9 @@
 
 void DrawSelND280UpEvent
 ( 
- string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-MuM-ParID0_All.root"
+ string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-MuM-ParID0_30cm_All.root"
+
+ //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-MuM-ParID0_All.root "
  //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ2-MuM-ParID0_All.root"
  
  //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-PiM-ParID0_All.root"
@@ -13,7 +15,7 @@ void DrawSelND280UpEvent
  //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-Prot-ParID0_All.root"
  //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ2-Prot-ParID0_All.root"
  
- //string infilename = "../../../files/SelND280Up_NuMu_6E20_NuEvis-Targ1-Targ2_All.root"
+ //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-Targ2_All.root"
  )
 {
   gROOT->SetStyle("T2K");                  
@@ -390,7 +392,6 @@ void DrawSelND280UpEvent
   hMom_TargetAndTPC_Eff->DrawClone("");
   cMom_TargetAndTPC_Eff->Print("cMom_TargetAndTPC_Eff.pdf");
   TCanvas *cCosTheta_TargetAndTPC_Eff = new TCanvas("hCosTheta_TargetAndTPC_Eff","hCosTheta_TargetAndTPC_Eff");
-  hCosTheta_TargetAndTPC_Eff->GetXaxis()->SetRangeUser(0,2000.);
   hCosTheta_TargetAndTPC_Eff->GetYaxis()->SetRangeUser(0,1.1);
   hCosTheta_TargetAndTPC_Eff->GetXaxis()->SetTitle("True cos #theta");
   hCosTheta_TargetAndTPC_Eff->SetStats(0);
@@ -417,6 +418,11 @@ void DrawSelND280UpEvent
   hCosTheta_FV->SetStats(0);
   hCosTheta_FV->DrawClone();
   cCosTheta_FV->Print("cCosTheta_FV.pdf");
+
+  TCanvas *cPDG = new TCanvas("cPDG","cPDG");
+  hPDG->GetXaxis()->SetTitle("Track PDG");
+  hPDG->DrawClone();
+  cPDG->Print("cPDG");
 
   return;
 }
