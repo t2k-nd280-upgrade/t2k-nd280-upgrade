@@ -33,8 +33,8 @@ void SelND280UpEvent
  
  string tag = "outputs/prova",
  
- string infilename = "/neutrino/data7/davide/files/g4ND280Up_6E20_All_NoPoint.root",
- //string infilename = "../bin/ciao.root",
+ //string infilename = "/neutrino/data7/davide/files/g4ND280Up_6E20_All_NoPoint.root",
+ string infilename = "../bin/ciao.root",
 
  // Cut 1: Select reaction mode
  const bool doCutReac = false,
@@ -66,6 +66,7 @@ void SelND280UpEvent
  // Cut 7: DeltaLyz cut (TPCs)
  const bool doCutDLyzTPC = true,
  const double cut_dlyz_tpc_min = 200 //mm  
+ 
  )
 {
   // Definition of Fiducial Volume (Target 1 or 2)  
@@ -143,7 +144,7 @@ void SelND280UpEvent
   TH2D *hLyzVsMom_ForwTPC3 = new TH2D("hLyzVsMom_ForwTPC3","hLyzVsMom_ForwTPC3",200,0,2000,100,0,5000);
   
   TH1D *hMom = new TH1D("hMom","hMom",200,0,10000); 
-  TH1D *hPDG = new TH1D("hPDG","hPDG",500,-500,500);
+  TH1D *hPDG = new TH1D("hPDG","hPDG",3000,-500,2500);
 
   TH1D *hCut = new TH1D("hCut","hCut",10,0,10);
   hCut->GetXaxis()->SetBinLabel(1,"Evt Mode");
@@ -295,11 +296,6 @@ void SelND280UpEvent
       int reacmode = abs(nd280UpVertex->GetReacMode());
       int reacmode_all = GetReacAll(reacmode);
       int cut_reac_all = GetReacAll(cut_reac); 
-      
-      if(reacmode==2){
-	
-	cout << "reacmode = " << reacmode << " --> reacmode_all = " << reacmode_all << endl;
-      }
 
       if(doCutReac){	
 	if(reacmode_all==cut_reac){
@@ -368,34 +364,29 @@ void SelND280UpEvent
 	double z = nd280UpVertex->GetPosition().Z();
 	
 	// Target 1 FV
-	if((x > vtx_min_x_1 && x < vtx_max_x_1) && 
-	   (y > vtx_min_y_1 && y < vtx_max_y_1) && 
-	   (z > vtx_min_z_1 && z < vtx_max_z_1)
-	   ){
-	  if(doCutTarget1){
+	if(doCutTarget1){
+	  if((x > vtx_min_x_1 && x < vtx_max_x_1) && 
+	     (y > vtx_min_y_1 && y < vtx_max_y_1) && 
+	     (z > vtx_min_z_1 && z < vtx_max_z_1)
+	     ){
 	    PassCutVtx = true;
 	    FillVtxInFV = true;
 	  }
-	  else{
-	    PassCutVtx = false;
-	    FillVtxInFV = false;
-	  }
-	}
-	
+	}	
 	// Target 2 FV
-	if((x > vtx_min_x_2 && x < vtx_max_x_2) &&
-	   (y > vtx_min_y_2 && y < vtx_max_y_2) &&
-	   (z > vtx_min_z_2 && z < vtx_max_z_2)
-	   ){	  
-	  if(doCutTarget2){
+	if(doCutTarget2){
+	  if((x > vtx_min_x_2 && x < vtx_max_x_2) &&
+	     (y > vtx_min_y_2 && y < vtx_max_y_2) &&
+	     (z > vtx_min_z_2 && z < vtx_max_z_2)
+	     ){	  
 	    PassCutVtx = true;
 	    FillVtxInFV = true;
 	  }
-	  else{
-	    PassCutVtx = false;
-	    FillVtxInFV = false;
-	  }
 	}
+	//else{
+	//PassCutVtx = false;
+	//FillVtxInFV = false;
+	//}
 	
 	//
 	// Fill this way because only 1 vertex per event!!!
@@ -424,7 +415,7 @@ void SelND280UpEvent
       }
       else 
 	hNuReacFV->Fill(reacmode_all);
-      	  
+      
    
 		      
       //nd280UpVertex->PrintVertex();
@@ -438,14 +429,14 @@ void SelND280UpEvent
     if(doCutReac && !PassCutReac) continue;
     NTotVtxReac++;
     hCut->Fill(0.);
-
+    
     if(doCutVtx && !PassCutVtx) continue;
     NTotEvtFV++; // Pass Cut 2: at least 1 vertex in FV + reaction mode
     hCut->Fill(1.);   
     
     int NTracks = nd280UpEvent->GetNTracks();
     //cout << "# of tracks = " << NTracks << " --> PDG: ";
-
+    
     for(int itrk=0;itrk<NTracks;itrk++){
       TND280UpTrack *nd280UpTrack = nd280UpEvent->GetTrack(itrk);
            
@@ -466,102 +457,17 @@ void SelND280UpEvent
       
       double length_target1 = nd280UpTrack->GetLengthTarget1();
       double length_target2 = nd280UpTrack->GetLengthTarget2();
+      
+      //cout << length_target1 << " " << length_target2 << endl;
+
       double lyz_tpcup1     = nd280UpTrack->GetLyzTPCUp1();
       double lyz_tpcup2     = nd280UpTrack->GetLyzTPCUp2();
       double lyz_tpcdown1   = nd280UpTrack->GetLyzTPCDown1();
       double lyz_tpcdown2   = nd280UpTrack->GetLyzTPCDown2();
       double lyz_forwtpc1   = nd280UpTrack->GetLyzForwTPC1();
       double lyz_forwtpc2   = nd280UpTrack->GetLyzForwTPC2();
-      double lyz_forwtpc3   = nd280UpTrack->GetLyzForwTPC3();
-
+      double lyz_forwtpc3   = nd280UpTrack->GetLyzForwTPC3();      
       
-      /*
-	// Not storing all the points of the track any longer!!!
-      double length_target1_loop = 0.;
-      double length_target2_loop = 0.;
-      double lyz_tpcup1_loop = 0.;
-      double lyz_tpcup2_loop = 0.;
-      double lyz_tpcdown1_loop = 0.;
-      double lyz_tpcdown2_loop = 0.;
-      double lyz_forwtpc1_loop = 0.;
-      double lyz_forwtpc2_loop = 0.;
-      double lyz_forwtpc3_loop = 0.;
-      int NPoints = nd280UpTrack->GetNPoints();
-      //cout << endl;
-      //cout << "Track ID = " << trkID << " --> NPoints = " << NPoints << " : " << endl;
-      for(int ipt=0;ipt<NPoints;ipt++){
-	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);
-	//nd280UpTrackPoint->PrintTrackPoint();
-	string detname = nd280UpTrackPoint->GetPhysVolName();
-	double stepedep = nd280UpTrackPoint->GetEdep();
-	double steplength = nd280UpTrackPoint->GetStepLength();
-	double stepDeltaLyz = nd280UpTrackPoint->GetStepDeltaLyz();
-	//cout << " - ptID = " << ipt << " " << detname << endl;
-	if     (detname=="Target1")       length_target1_loop += steplength;
-	else if(detname=="Target2")       length_target2_loop += steplength;
-	else if(detname=="TPCUp1")        lyz_tpcup1_loop     += stepDeltaLyz;
-	else if(detname=="TPCDown1")      lyz_tpcdown1_loop   += stepDeltaLyz;
-	else if(detname=="TPCUp2")        lyz_tpcup2_loop     += stepDeltaLyz;
-	else if(detname=="TPCDown2")      lyz_tpcdown2_loop   += stepDeltaLyz;
-	else if(detname=="ForwTPC1/Half") lyz_forwtpc1_loop   += stepDeltaLyz;
-	else if(detname=="ForwTPC2/Half") lyz_forwtpc2_loop   += stepDeltaLyz;
-	else if(detname=="ForwTPC3/Half") lyz_forwtpc3_loop   += stepDeltaLyz;	
-	if(steplength<0.){
-	  cout << "steplength = " << steplength << " !!!" << endl;
-	  exit(1);
-	}
-	if(stepDeltaLyz<0.){
-	  cout << "stepDeltaLyz = " << stepDeltaLyz << " !!!" << endl;
-	}		
-      } 
-      if(length_target1_loop != length_target1){
-	cout << "length_target1 = " << length_target1
-	     << " length_target1_loop = " << length_target1_loop
-	     << endl;	
-      }
-      if(length_target2_loop != length_target2){
-	cout << "length_target2 = " << length_target2
-	     << " length_target2_loop = " << length_target2_loop
-	     << endl;
-      }
-      if(lyz_tpcup1_loop != lyz_tpcup1){
-	cout << "lyz_tpcup1 = " << lyz_tpcup1
-	     << " lyz_tpcup1_loop = " << lyz_tpcup1_loop
-	     << endl;
-      }
-      if(lyz_tpcup2_loop != lyz_tpcup2){
-	cout << "lyz_tpcup2 = " << lyz_tpcup2
-	     << " lyz_tpcup2_loop = " << lyz_tpcup2_loop
-	     << endl;
-      }
-      if(lyz_tpcdown1_loop != lyz_tpcdown1){
-	cout << "lyz_tpcdown1 = " << lyz_tpcdown1
-	     << " lyz_tpcdown1_loop = " << lyz_tpcdown1_loop
-	     << endl;
-      }
-      if(lyz_tpcdown2_loop != lyz_tpcdown2){
-	cout << "lyz_tpcdown2 = " << lyz_tpcdown2
-	     << " lyz_tpcdown2_loop = " << lyz_tpcdown2_loop
-	     << endl;
-      }
-      if(lyz_forwtpc1_loop != lyz_forwtpc1){
-	cout << "lyz_forwtpc1 = " << lyz_forwtpc1
-	     << " lyz_forwtpc1_loop = " << lyz_forwtpc1_loop
-	     << endl;
-      }
-      if(lyz_forwtpc2_loop != lyz_forwtpc2){
-	cout << "lyz_forwtpc2 = " << lyz_forwtpc2
-	     << " lyz_forwtpc2_loop = " << lyz_forwtpc2_loop
-	     << endl;
-      }
-      if(lyz_forwtpc3_loop != lyz_forwtpc3){
-	cout << "lyz_forwtpc3 = " << lyz_forwtpc3
-	     << " lyz_forwtpc3_loop = " << lyz_forwtpc3_loop
-	     << endl;
-      }
-      */
-      
-
       //
       // Cut 3: particle PDG
       //
@@ -589,6 +495,17 @@ void SelND280UpEvent
       NTotTrkPassCharge++;
       hCut->Fill(4.);
       
+
+      // cout << length_target1 << ", " 
+      // 	   << length_target2 << ", "
+      // 	   << lyz_tpcup1 << ", "
+      // 	   << lyz_tpcdown1 << ", "
+      // 	   << lyz_tpcup2 << ", "
+      // 	   << lyz_tpcdown2 << ", "
+      // 	   << lyz_forwtpc1 << ", "
+      // 	   << lyz_forwtpc2 << ", "
+      // 	   << lyz_forwtpc3 
+      // 	   << endl;
 
 
       // Fill selected particles in FV
@@ -648,25 +565,28 @@ void SelND280UpEvent
 	hL_Targ2_FV->Fill(length_target2);
 	hLVsMom_Targ2_FV->Fill(length_target2,mom);
       }
-      if(length_target_max>0.){
-	hL_TargAll_FV->Fill(length_target_max);
-	hLVsMom_TargAll_FV->Fill(length_target_max,mom);
-      }
+      //if(length_target_max>0.){
+      //hL_TargAll_FV->Fill(length_target_max);
+      //hLVsMom_TargAll_FV->Fill(length_target_max,mom);
+      //}
 
       hCosThetaVsMom_FV->Fill(costheta,mom);
 
       //
       // Cut 6 : track length in a target
       //
-      bool PassCutTarget = true;
+      bool PassCutTarget = false;
       if(doCutDLTarget){
-      	if(length_target1 > cut_length_target_min ||
-      	   length_target2 > cut_length_target_min){
-      	  PassCutTarget = true;	  
-      	}
-      	else{ 
-      	  PassCutTarget = false;
-	}
+      	if(doCutTarget1 && 
+	   (length_target1 > cut_length_target_min))
+	  {
+	    PassCutTarget = true;	  
+	  }
+     	if(doCutTarget2 && 
+	   (length_target2 > cut_length_target_min))
+	  {
+	    PassCutTarget = true;	  
+	  }
       }
       else // if don't apply the cut
       	PassCutTarget = true;
@@ -674,6 +594,11 @@ void SelND280UpEvent
       //
       // Cut 7: track dLyz in a TPC
       //
+
+      //
+      // Add matching with target adjacent to right Target!!!
+      //
+
       bool PassCutTPC = true; 
       if(doCutDLyzTPC){
       	if(lyz_tpcup1 > cut_dlyz_tpc_min ||
@@ -748,9 +673,13 @@ void SelND280UpEvent
 	double mass = 0.;
 	if     (abs(pdg)==211)  mass = 139.570; // pi+-
 	else if(abs(pdg)==13)   mass = 105.658; // muon
-	else if(abs(pdg)==2212) mass = 938.272; // proton
+	//else if(abs(pdg)==2212) mass = 938.272; // proton
 	else if(abs(pdg)==11)   mass = 0.511;   // electron
-      	NuEvis += ekin+mass;
+      	if( abs(pdg)==211 ||
+	    abs(pdg)==13  ||
+	    abs(pdg)==11  ){
+	  NuEvis += ekin+mass;
+	}
       }
 
       // delete nd280UpTrack;

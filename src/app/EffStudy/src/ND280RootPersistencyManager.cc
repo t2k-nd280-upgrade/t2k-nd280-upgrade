@@ -343,39 +343,39 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       double stepedep = ndPoint->GetEdep();
 
       if(steplength>0.){
-  	if     (detname_curr=="Target1"){
+  	if     (detname_curr=="/World/Basket/Tracker/Target1"){
 	  LengthTarget1 += steplength;
 	  EdepTarget1   += stepedep;
 	}
-	else if(detname_curr=="Target2"){
+	else if(detname_curr=="/World/Basket/Tracker/Target2"){
 	  LengthTarget2 += steplength;	
 	  EdepTarget2   += stepedep;	
 	}
-	else if(detname_curr=="TPCUp1"){
+	else if(detname_curr=="/World/Basket/Tracker/TPCUp1"){
 	  LyzTPCUp1  += stepdeltalyz;
 	  EdepTPCUp1 += stepedep;
 	}
-	else if(detname_curr=="TPCUp2"){
+	else if(detname_curr=="/World/Basket/Tracker/TPCUp2"){
 	  LyzTPCUp2  += stepdeltalyz;
 	  EdepTPCUp2 += stepedep;
 	}
-	else if(detname_curr=="TPCDown1"){
+	else if(detname_curr=="/World/Basket/Tracker/TPCDown1"){
 	  LyzTPCDown1  += stepdeltalyz;
 	  EdepTPCDown1 += stepedep;
 	}
-	else if(detname_curr=="TPCDown2"){
+	else if(detname_curr=="/World/Basket/Tracker/TPCDown2"){
 	  LyzTPCDown2  += stepdeltalyz;
 	  EdepTPCDown2 += stepedep;
 	}
-	else if(detname_curr=="ForwTPC1/Half"){
+	else if(detname_curr=="/World/Basket/Tracker/ForwTPC1/Half"){
 	  LyzForwTPC1  += stepdeltalyz;
 	  EdepForwTPC1 += stepedep;
 	}
-	else if(detname_curr=="ForwTPC2/Half"){
+	else if(detname_curr=="/World/Basket/Tracker/ForwTPC2/Half"){
 	  LyzForwTPC2  += stepdeltalyz;
 	  EdepForwTPC2 += stepedep;
 	}
-	else if(detname_curr=="ForwTPC3/Half"){
+	else if(detname_curr=="/World/Basket/Tracker/ForwTPC3/Half"){
 	  LyzForwTPC3  += stepdeltalyz;
 	  EdepForwTPC3 += stepedep;
 	}
@@ -453,6 +453,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
     // Store the track length
     
+    //G4cout << "Target track length: " 
+    //<< LengthTarget1 << ", "
+    //<< LengthTarget2 
+    //<< G4endl;
+
     nd280Track->SetLengthTarget1(LengthTarget1);
     nd280Track->SetLengthTarget2(LengthTarget2);    
     nd280Track->SetLyzTPCUp1(LyzTPCUp1);

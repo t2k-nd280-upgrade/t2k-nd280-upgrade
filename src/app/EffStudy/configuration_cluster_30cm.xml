@@ -19,12 +19,13 @@
    <Generator>      
      GENIE  
    </Generator>
+
    <Path2file>
-     /neutrino/data7/davide/files/
+     /neutrino/data7/davide/files/ND280Upgrade/
    </Path2file>
 
    <filename>
-     out.upgradeAll.rootracker.root
+     GENIE/GENIE_nd280mc_target30cm_6E20POT.root
    </filename>
    
    <treename>  
