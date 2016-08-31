@@ -22,6 +22,7 @@ export LD_LIBRARY_PATH=$XERCESC_INSTALL_DIR/lib:$LD_LIBRARY_PATH # Xerces-C++
 # setup CLHEP
 export CLHEP_INC_DIR=/atlas/users/dsgalabe/CLHEP/clhep_install/include
 export CLHEP_LIB_DIR=/atlas/users/dsgalabe/CLHEP/clhep_install/lib
+export LD_LIBRARY_PATH=$CLHEP_INC_DIR:$CLHEP_LIB_DIR:$LD_LIBRARY_PATH        
 
 # setup VGM
 export VGM_INSTALL_DIR=/atlas/users/dsgalabe/VGM/vgm.4.3-install
