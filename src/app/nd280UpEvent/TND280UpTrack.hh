@@ -52,8 +52,16 @@ public :
   void SetSDTotalEnergyDeposit(double sdedep){fSDTotalEnergyDeposit=sdedep;};
   void SetSDLength(double length){fSDLength=length;};
   
-  void SetLengthTarget1(double length){fLengthTarget1=length;};
-  void SetLengthTarget2(double length){fLengthTarget2=length;};
+  void SetLengthTarget1(double length) {fLengthTarget1=length;};
+  void SetLengthTarget2(double length) {fLengthTarget2=length;};
+  void SetLengthTPCUp1(double length)  {fLengthTPCUp1=length;};
+  void SetLengthTPCUp2(double length)  {fLengthTPCUp2=length;};
+  void SetLengthTPCDown1(double length){fLengthTPCDown1=length;};
+  void SetLengthTPCDown2(double length){fLengthTPCDown2=length;};
+  void SetLengthForwTPC1(double length){fLengthForwTPC1=length;};
+  void SetLengthForwTPC2(double length){fLengthForwTPC2=length;};
+  void SetLengthForwTPC3(double length){fLengthForwTPC3=length;};
+
   void SetLyzTPCUp1(double length)    {fLyzTPCUp1=length;};
   void SetLyzTPCUp2(double length)    {fLyzTPCUp2=length;};
   void SetLyzTPCDown1(double length)  {fLyzTPCDown1=length;};
@@ -85,8 +93,16 @@ public :
   double GetSDTotalEnergyDeposit(){return fSDTotalEnergyDeposit;};
   double GetSDLength(){return fSDLength;};
   
-  double GetLengthTarget1(){return fLengthTarget1;};
-  double GetLengthTarget2(){return fLengthTarget2;};
+  double GetLengthTarget1() {return fLengthTarget1;};
+  double GetLengthTarget2() {return fLengthTarget2;};
+  double GetLengthTPCUp1()  {return fLengthTPCUp1;};
+  double GetLengthTPCUp2()  {return fLengthTPCUp2;};
+  double GetLengthTPCDown1(){return fLengthTPCDown1;};
+  double GetLengthTPCDown2(){return fLengthTPCDown2;};
+  double GetLengthForwTPC1(){return fLengthForwTPC1;};
+  double GetLengthForwTPC2(){return fLengthForwTPC2;};
+  double GetLengthForwTPC3(){return fLengthForwTPC3;};
+
   double GetLyzTPCUp1()    {return fLyzTPCUp1;};
   double GetLyzTPCUp2()    {return fLyzTPCUp2;};
   double GetLyzTPCDown1()  {return fLyzTPCDown1;};
@@ -127,6 +143,13 @@ private :
   double fSDLength;
   double fLengthTarget1;
   double fLengthTarget2;
+  double fLengthTPCUp1;
+  double fLengthTPCUp2;
+  double fLengthTPCDown1;
+  double fLengthTPCDown2 ;
+  double fLengthForwTPC1;
+  double fLengthForwTPC2;
+  double fLengthForwTPC3;
   double fLyzTPCUp1;
   double fLyzTPCUp2;
   double fLyzTPCDown1;

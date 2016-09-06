@@ -1506,12 +1506,15 @@ G4Material* ExN02DetectorConstruction::FindMaterial(G4String name) {
 
 G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String parentname) {
 
+  G4Region* SDRegion = G4RegionStore::GetInstance()->
+    GetRegion("SDRegion",false);
+
   //
   // FROM INIT nd280mc
   //
   
-  SetWidth(2300*mm);
-  SetHeight(2400*mm);
+  SetWidth(2300*mm);  // Full TPC width
+  SetHeight(2400*mm); // Full TPC height
 
   DebugTPCMass = true ; //set to true to get extra printouts on component masses
 
@@ -1576,25 +1579,29 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   logDrift->SetVisAttributes(TPCVisAtt);
   //logDrift->SetVisAttributes(G4VisAttributes::Invisible);
 
-
   //if (GetVisible() && !GetShowOuterVolume()) {
   //logDrift->SetVisAttributes(GetVisual());
   //}
   //else {
   //logDrift->SetVisAttributes(G4VisAttributes::Invisible);
   //}
-  
   if (GetSensitiveDetector()) {
     logDrift->SetSensitiveDetector(GetSensitiveDetector());
-  }
-  
+  }  
   //logDrift->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
   
-
+  if (SDRegion) {
+    SDRegion->AddRootLogicalVolume(logDrift);
+  } 
+  else {
+    G4ExceptionDescription msg;
+    msg << "The SD region does not exist" << G4endl;
+    G4Exception("ExN02DetectorConstruction::GetPieceTPC",
+		"MyCode0002",FatalException, msg);
+  }
+  
 
   // CO2 space
-
-  //G4cout << "CO2 space" << G4endl;
 
   width  = 1150.0*mm;
   height = (1149.5*mm + 30.5*mm + 45.0*mm + 1130.0*mm + 45.0*mm)/2.;
@@ -1622,8 +1629,6 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   /// Create the inactive volume around the TPC.
   
-  //G4cout << "Create the inactive volume around the TPC" << G4endl;
-
   SetLength(2*(442.0*mm+45.0*mm));
   //double length_inact = (2*(442.0*mm+45.0*mm));
   
@@ -1646,7 +1651,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   logVolume->SetVisAttributes(TPCDeadMat);
   logVolume->SetVisAttributes(G4VisAttributes::Invisible);
-
+  
   //if (GetVisible() && GetShowOuterVolume()) {
   //logVolume->SetVisAttributes(GetVisual());
   //}
@@ -1654,10 +1659,10 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //logVolume->SetVisAttributes(G4VisAttributes::Invisible);
   //}
   
+
+
   // Now do all envelope volume placements
   
-  //G4cout << "Now do all envelope volume placements" << G4endl;
-
   double CO2Top = 67.8*mm;
   double CO2Bottom = 117.8*mm;
   
@@ -1686,6 +1691,9 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
 		    0);
   //fCheckOverlaps);
 
+
+  
+  
   
   // Divide drift volume into two halves (readout planes)
   // Make 2 separate halves (instead of 2 copies), so that each of 24 MM can be modified.
@@ -1697,220 +1705,222 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //height = DriftHeight/2.;
   //length = DriftLength/2.;
   
-    width -= GetCathodeThickness()/2.;
-    //double CathodeThickness = 13.2*mm;
-    //width -= CathodeThickness/2.;
-    width /= 2.;
+  width -= GetCathodeThickness()/2.;
+  //double CathodeThickness = 13.2*mm;
+  //width -= CathodeThickness/2.;
+  width /= 2.;
+  
+  G4VSolid* innerHalf= new G4Box("InnerHalf",length,height,width);
+  
+  
+  G4LogicalVolume* logHalf0
+    = new G4LogicalVolume(innerHalf,
+			  FindMaterial("GasMixtureTPC"),
+			  //GetName()+"/Half");
+			  //"TPC1/Half");
+			  parentname+"/"+name+"/Half");
+  G4LogicalVolume* logHalf1
+    = new G4LogicalVolume(innerHalf,
+			  FindMaterial("GasMixtureTPC"),
+			  //GetName()+"/Half");
+			  //"TPC1/Half");
+			  parentname+"/"+name+"/Half");
+  logHalf0->SetVisAttributes(TPCVisAtt); //TPCDeadMat);
+  logHalf1->SetVisAttributes(TPCVisAtt); //TPCDeadMat);
+  //logHalf0->SetVisAttributes(G4VisAttributes::Invisible);
+  //logHalf1->SetVisAttributes(G4VisAttributes::Invisible);   
+  
 
-    G4VSolid* innerHalf= new G4Box("InnerHalf",length,height,width);
-     
-   
-    G4LogicalVolume* logHalf0
-        = new G4LogicalVolume(innerHalf,
-                              FindMaterial("GasMixtureTPC"),
-                              //GetName()+"/Half");
-                              //"TPC1/Half");
-			      parentname+"/"+name+"/Half");
-    G4LogicalVolume* logHalf1
-        = new G4LogicalVolume(innerHalf,
-                              FindMaterial("GasMixtureTPC"),
-                              //GetName()+"/Half");
-                              //"TPC1/Half");
-			      parentname+"/"+name+"/Half");
-    logHalf0->SetVisAttributes(TPCVisAtt); //TPCDeadMat);
-    logHalf1->SetVisAttributes(TPCVisAtt); //TPCDeadMat);
-    //logHalf0->SetVisAttributes(G4VisAttributes::Invisible);
-    //logHalf1->SetVisAttributes(G4VisAttributes::Invisible);   
-
-
-    // if (GetVisible() && !GetShowOuterVolume()) {
-    //    logHalf0->SetVisAttributes(GetVisual());
-    //    logHalf1->SetVisAttributes(GetVisual());
-    // }
-    // else {
-    //    logHalf0->SetVisAttributes(G4VisAttributes::Invisible);
-    //    logHalf1->SetVisAttributes(G4VisAttributes::Invisible);
-    // }
-
-    if (GetSensitiveDetector()) {
-      logHalf0->SetSensitiveDetector(GetSensitiveDetector());
-      logHalf1->SetSensitiveDetector(GetSensitiveDetector());
-
-      G4Region* SDRegion = G4RegionStore::GetInstance()->
-	GetRegion("SDRegion",false);
-      if (SDRegion) {
-	SDRegion->AddRootLogicalVolume(logHalf0);
-	SDRegion->AddRootLogicalVolume(logHalf1);
-      } else {
-	G4ExceptionDescription msg;
-	msg << "The SD region does not exist" << G4endl;
-	G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-		    "MyCode0002",FatalException, msg);
-      }
-
+  // if (GetVisible() && !GetShowOuterVolume()) {
+  //    logHalf0->SetVisAttributes(GetVisual());
+  //    logHalf1->SetVisAttributes(GetVisual());
+  // }
+  // else {
+  //    logHalf0->SetVisAttributes(G4VisAttributes::Invisible);
+  //    logHalf1->SetVisAttributes(G4VisAttributes::Invisible);
+  // }
+  
+  if (GetSensitiveDetector()) {
+    logHalf0->SetSensitiveDetector(GetSensitiveDetector());
+    logHalf1->SetSensitiveDetector(GetSensitiveDetector());
+    
+    if (SDRegion) {
+      SDRegion->AddRootLogicalVolume(logHalf0);
+      SDRegion->AddRootLogicalVolume(logHalf1);
+    } 
+    else {
+      G4ExceptionDescription msg;
+      msg << "The SD region does not exist" << G4endl;
+      G4Exception("ExN02DetectorConstruction::GetPieceTPC",
+		  "MyCode0002",FatalException, msg);
+    }
+    
 #ifdef USE_PAI
-      G4Region* driftRegion = G4RegionStore::GetInstance()->
-	GetRegion("driftRegion",false);
-      if (driftRegion) {
+    G4Region* driftRegion = G4RegionStore::GetInstance()->
+      GetRegion("driftRegion",false);
+    if (driftRegion) {
 	driftRegion->AddRootLogicalVolume(logHalf0);
 	driftRegion->AddRootLogicalVolume(logHalf1);
-      } else {
-	G4ExceptionDescription msg;
-	msg << "The drift region does not exist" << G4endl;
-	G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-		    "MyCode0002",FatalException, msg);
-      }
-#endif
+    } else {
+      G4ExceptionDescription msg;
+      msg << "The drift region does not exist" << G4endl;
+      G4Exception("ExN02DetectorConstruction::GetPieceTPC",
+		  "MyCode0002",FatalException, msg);
     }
-
+#endif
+  }
+  
+  //logHalf0->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
+  //logHalf1->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
     
-    //logHalf0->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
-    //logHalf1->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
+  
+  double delta = width + GetCathodeThickness()/2.;
+  //double delta = width + CathodeThickness/2.;
+  
+  G4RotationMatrix rm;
+  rm.rotateY(90.0*deg);
+  
+  new G4PVPlacement(G4Transform3D(rm,G4ThreeVector(-delta,0,0)),
+		    logHalf0,
+		    //GetName()+"/Half",
+		    //"TPC1/Half",
+		    parentname+"/"+name+"/Half",
+		    logDrift,
+		    false,
+		    0);
+  //fCheckOverlaps);
+  
+  rm.rotateY(180.0*deg);    
+  
+  new G4PVPlacement(G4Transform3D(rm,G4ThreeVector(delta,0,0)),
+		    logHalf1,
+		    //GetName()+"/Half",
+		    //"TPC1/Half",
+		    parentname+"/"+name+"/Half",
+		    logDrift,
+		    false,
+		    1);
+  //fCheckOverlaps);
 
-
-
-
-    double delta = width + GetCathodeThickness()/2.;
-    //double delta = width + CathodeThickness/2.;
+  
+  // add 12 Micromegas Modules to readout-plane
     
-    G4RotationMatrix rm;
-    rm.rotateY(90.0*deg);
+  double mmWidth  = 35.29*cm;
+  double mmHeight = 33.61*cm;
+  double mmLength = 2.*width;
+  
+  G4LogicalVolume* logMM
+    = new G4LogicalVolume(new G4Box("MicromegasModule",
+				    mmWidth/2.,
+				    mmHeight/2.,
+				    mmLength/2.),
+			  FindMaterial("GasMixtureTPC"),
+			  //GetName()+"/MM");
+			  //"TPC1/MM");
+			  parentname+"/"+name+"/MM");
+  
+  //if (GetVisible() && !GetShowOuterVolume()) {
+  G4VisAttributes* visual = new G4VisAttributes();
+  visual->SetColor(0.1,0.6,0.1,1);
+  logMM->SetVisAttributes(visual);
+  //}
+  //else {
+  //logMM->SetVisAttributes(G4VisAttributes::Invisible);
+  //}  
+  //logMM->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
+  
+  if (GetSensitiveDetector()) {
+    logMM->SetSensitiveDetector(GetSensitiveDetector());
+  }
+  if (SDRegion) {
+    SDRegion->AddRootLogicalVolume(logMM);
+    SDRegion->AddRootLogicalVolume(logMM);
+  } 
+  else {
+    G4ExceptionDescription msg;
+    msg << "The SD region does not exist" << G4endl;
+    G4Exception("ExN02DetectorConstruction::GetPieceTPC",
+		"MyCode0002",FatalException, msg);
+  }
 
-    new G4PVPlacement(G4Transform3D(rm,G4ThreeVector(-delta,0,0)),
-                      logHalf0,
-                      //GetName()+"/Half",
-                      //"TPC1/Half",
-		      parentname+"/"+name+"/Half",
-                      logDrift,
-                      false,
-                      0);
-    //fCheckOverlaps);
-
-    rm.rotateY(180.0*deg);    
- 
-    new G4PVPlacement(G4Transform3D(rm,G4ThreeVector(delta,0,0)),
-                      logHalf1,
-                      //GetName()+"/Half",
-                      //"TPC1/Half",
-		      parentname+"/"+name+"/Half",
-                      logDrift,
-                      false,
-                      1);
-    //fCheckOverlaps);
-
-    // add 12 Micromegas Modules to readout-plane
-
-    //G4cout << "add 12 Micromegas Modules to readout-plane" << G4endl;
-
-    double mmWidth  = 35.29*cm;
-    double mmHeight = 33.61*cm;
-    double mmLength = 2.*width;
-
-    G4LogicalVolume* logMM
-      = new G4LogicalVolume(new G4Box("MicromegasModule",
-				      mmWidth/2.,
-				      mmHeight/2.,
-				      mmLength/2.),
-			    FindMaterial("GasMixtureTPC"),
-			    //GetName()+"/MM");
-			    //"TPC1/MM");
-			    parentname+"/"+name+"/MM");
+  int nmod = 12;  
+  double xmod[12] = {  189.65*mm ,  189.65*mm ,  189.65*mm ,
+		       189.65*mm ,  189.65*mm ,  189.65*mm ,
+		       -189.65*mm , -189.65*mm , -189.65*mm ,
+		       -189.65*mm , -189.65*mm , -189.65*mm  };
+  
+  double ymod[12] = {  881.65*mm ,  538.05*mm ,  194.45*mm ,
+		       -149.15*mm , -492.75*mm , -836.35*mm ,
+		       836.35*mm ,  492.75*mm ,  149.15*mm ,
+		       -194.45*mm , -538.05*mm , -881.65*mm  };
+  
+  // Translations and rotations get applied in this version
+  // Placement in first readout plane
+  for (int imod=0; imod<nmod; imod++ ) {
     
-    //if (GetVisible() && !GetShowOuterVolume()) {
-    G4VisAttributes* visual = new G4VisAttributes();
-    visual->SetColor(0.1,0.6,0.1,1);
-    logMM->SetVisAttributes(visual);
-    //}
-    //else {
-    //logMM->SetVisAttributes(G4VisAttributes::Invisible);
-    //}
-
-    //if (GetSensitiveDetector()) {
-    //logMM->SetSensitiveDetector(GetSensitiveDetector());
-    //}
-
-    // //logMM->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
+    if ( imod < 6 ) {
+      new G4PVPlacement(tpcMMRot[0][imod],
+			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(), 0.),
+			logMM,
+			//GetName()+"/MM",
+			//"TPC1/MM",
+			parentname+"/"+name+"/MM",
+			logHalf0,
+			false,
+			imod);
+    }
+    else {
+      tpcMMRot[0][imod]->rotateZ(180.0*deg);
+      new G4PVPlacement(tpcMMRot[0][imod],
+			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(),0.),
+			logMM,
+			//GetName()+"/MM",
+			//"TPC1/MM",
+			parentname+"/"+name+"/MM",
+			logHalf0,
+			false,
+			imod);
+    }
+  }
+  // Placement in second readout plane
+  for (int imod=0; imod<nmod; imod++ ) {
     
-    int nmod = 12;
-
-     double xmod[12] = {  189.65*mm ,  189.65*mm ,  189.65*mm ,
-                          189.65*mm ,  189.65*mm ,  189.65*mm ,
-                         -189.65*mm , -189.65*mm , -189.65*mm ,
-                         -189.65*mm , -189.65*mm , -189.65*mm  };
-
-     double ymod[12] = {  881.65*mm ,  538.05*mm ,  194.45*mm ,
-                         -149.15*mm , -492.75*mm , -836.35*mm ,
-                          836.35*mm ,  492.75*mm ,  149.15*mm ,
-                         -194.45*mm , -538.05*mm , -881.65*mm  };
-
-     // Translations and rotations get applied in this version
-     // Placement in first readout plane
-     for (int imod=0; imod<nmod; imod++ ) {
-      
-       if ( imod < 6 ) {
-     	new G4PVPlacement(tpcMMRot[0][imod],
-     			  G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(), 0.),
-     			  logMM,
-     			  //GetName()+"/MM",
-     			  //"TPC1/MM",
-			  parentname+"/"+name+"/MM",
-     			  logHalf0,
-     			  false,
-     			  imod);
-       }
-       else {
-     	tpcMMRot[0][imod]->rotateZ(180.0*deg);
-     	new G4PVPlacement(tpcMMRot[0][imod],
-     			  G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(),0.),
-     			  logMM,
-     			  //GetName()+"/MM",
-     			  //"TPC1/MM",
-			  parentname+"/"+name+"/MM",
-     			  logHalf0,
-     			  false,
-     			  imod);
-       }
-     }
-     // Placement in second readout plane
-     for (int imod=0; imod<nmod; imod++ ) {
-      
-       if ( imod < 6 ) {
-	 new G4PVPlacement(tpcMMRot[1][imod],
-			   G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
-			   logMM,
-			   //GetName()+"/MM",
-			   //"TPC1/MM",
-			   parentname+"/"+name+"/MM",
-			   logHalf1,
-			   false,
-			   imod);
-       }
-       else {
-     	tpcMMRot[1][imod]->rotateZ(180.0*deg);
-     	new G4PVPlacement(tpcMMRot[1][imod],
-     			  G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
-     			  logMM,
-     			  //GetName()+"/MM",
-     			  //"TPC1/MM",
-			  parentname+"/"+name+"/MM",
-     			  logHalf1,
-     			  false,
-     			  imod);
-       }
-     }
-
-     if (DebugTPCMass){
-       G4cout << "DriftGas (2) mass="<<logHalf0->GetMass()/kg<<" kg" << G4endl;
-       G4cout << "CO2 Gap (1) mass="<<logGasGap->GetMass()/kg<<" kg" << G4endl;
-       G4cout << "MM (12) mass="<<logMM->GetMass()/kg<<" kg" << G4endl;
-       G4cout << "Sum of gases and MM :"<< (2*logHalf0->GetMass()+logGasGap->GetMass()+12*logMM->GetMass())/kg << " kg" << G4endl;
-     }
-
-
-     BuildTPCCentralCathode(logDrift);
-     BuildTPCCages(logGasGap);
-
-    return logVolume;
+    if ( imod < 6 ) {
+      new G4PVPlacement(tpcMMRot[1][imod],
+			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
+			logMM,
+			//GetName()+"/MM",
+			//"TPC1/MM",
+			parentname+"/"+name+"/MM",
+			logHalf1,
+			false,
+			imod);
+    }
+    else {
+      tpcMMRot[1][imod]->rotateZ(180.0*deg);
+      new G4PVPlacement(tpcMMRot[1][imod],
+			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
+			logMM,
+			//GetName()+"/MM",
+			//"TPC1/MM",
+			parentname+"/"+name+"/MM",
+			logHalf1,
+			false,
+			imod);
+    }
+  }
+  
+  if (DebugTPCMass){
+    G4cout << "DriftGas (2) mass="<<logHalf0->GetMass()/kg<<" kg" << G4endl;
+    G4cout << "CO2 Gap (1) mass="<<logGasGap->GetMass()/kg<<" kg" << G4endl;
+    G4cout << "MM (12) mass="<<logMM->GetMass()/kg<<" kg" << G4endl;
+    G4cout << "Sum of gases and MM :"<< (2*logHalf0->GetMass()+logGasGap->GetMass()+12*logMM->GetMass())/kg << " kg" << G4endl;
+  }
+    
+  BuildTPCCentralCathode(logDrift);
+  BuildTPCCages(logGasGap);
+  
+  return logVolume;
 }
 
 
