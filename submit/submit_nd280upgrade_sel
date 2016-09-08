@@ -64,10 +64,10 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"                 unless defined $resource;
-$tag             = "SelND280Up_NuMu_6E20"           unless defined $tag;
+$tag             = "SelND280Up_NuMu_6E20_30cm"           unless defined $tag;
 
-$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_60cm_All_7_9_16.root"  unless defined $inputfile;
-#$inputfile       = "/atlas/users/dsgalabe/t2k-nd280-upgrade/submit/run/PROVA/g4ND280Up_6E20_Cluster-Exp0-Nexpt2000.root"  unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_60cm_All_7_9_16.root"  unless defined $inputfile;
+$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_30cm_All_8_9_16.root"  unless defined $inputfile;
 
 $first_expt      = 0                             unless defined $first_expt;
 
@@ -93,10 +93,17 @@ $docut_target1   = 1                             unless defined $docut_target1;
 $docut_target2   = 0                             unless defined $docut_target2;
 
 # select range of Z vertex position
-$docut_vtxZ      = 0                             unless defined $docut_vtxZ;
-$cut_zmin        = -2487                         unless defined $docut_zmin;
-$cut_zmax        = $cut_zmin + 300               unless defined $docut_zmax;
-
+$docut_vtxZ      = 1                             unless defined $docut_vtxZ;
+# 30cm downstream
+# $cut_zmin        = -2487                         unless defined $docut_zmin;
+# $cut_zmax        = -2487 + 300                   unless defined $docut_zmax;
+# 30cm upstream
+# $cut_zmin        = -487 - 300                    unless defined $docut_zmin;
+# $cut_zmax        = -487                          unless defined $docut_zmax;
+# 140cm middle
+$cut_zmin        = -2487 + 300                   unless defined $docut_zmin;
+$cut_zmax        = -487 - 300                    unless defined $docut_zmax;
+ 
 # select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
 $docut_pdg       = 1                            unless defined $docut_pdg;
 $cut_pdg         = 13                            unless defined $cut_pdg; 
