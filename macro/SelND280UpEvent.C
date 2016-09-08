@@ -17,14 +17,34 @@
 #include <TROOT.h>
 #include <TTree.h>
 #include <TFile.h>
+#include <TMath.h>
 
 #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.hh"
 #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.hh"
 #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
 #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
 
+// Definition of Fiducial Volume (mm)  
+// Target 1
+const double vtx_min_x_1 = -1150;  
+const double vtx_max_x_1 = +1150;  
+const double vtx_min_y_1 = -300; 
+const double vtx_max_y_1 = +300; 
+const double vtx_min_z_1 = -2487;  
+const double vtx_max_z_1 = -487;  
+// Target 2
+const double vtx_min_x_2 = -1150;  
+const double vtx_max_x_2 = +1150;  
+const double vtx_min_y_2 = -300; 
+const double vtx_max_y_2 = +300; 
+const double vtx_min_z_2 = +487;  
+const double vtx_max_z_2 = +2487;  
+//
+
+
 int GetReacAll(int neut_reaction_mode);
 string StringReacAll(int neut_reaction_mode);
+bool IsTargetIn(int targetID,double x,double y,double z);
 
 void SelND280UpEvent
 (
@@ -33,7 +53,6 @@ void SelND280UpEvent
  
  string tag = "outputs/prova",
  
- //string infilename = "/neutrino/data7/davide/files/g4ND280Up_6E20_All_NoPoint.root",
  string infilename = "../bin/ciao.root",
 
  // Cut 1: Select reaction mode
@@ -46,6 +65,10 @@ void SelND280UpEvent
  
  const bool doCutTarget1 = true, // Select vertex in Target1
  const bool doCutTarget2 = false, // Select vertex in Target2
+ 
+ const bool doCutVtzZ = false,
+ const double cut_zmin = vtx_min_z_1,
+ const double cut_zmax = vtx_min_z_1 + 300,
  
  // Cut 3: Select PDG
  const bool doCutPDG = true,
@@ -69,28 +92,11 @@ void SelND280UpEvent
  
  )
 {
-  // Definition of Fiducial Volume (Target 1 or 2)  
-  // Target 1
-  const double vtx_min_x_1 = -1150;  //mm
-  const double vtx_max_x_1 = +1150;  //mm
-  const double vtx_min_y_1 = -300; //mm
-  const double vtx_max_y_1 = +300; //mm
-  const double vtx_min_z_1 = -2487;  //mm
-  const double vtx_max_z_1 = -487;  //mm
-  // Target 2
-  const double vtx_min_x_2 = -1150;  //mm
-  const double vtx_max_x_2 = +1150;  //mm
-  const double vtx_min_y_2 = -300; //mm
-  const double vtx_max_y_2 = +300; //mm
-  const double vtx_min_z_2 = +487;  //mm
-  const double vtx_max_z_2 = +2487;  //mm 
-
-
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+");
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+");
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+");
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+");
-   
+  
   // Efficiency
 
   const int NBins_Mom = 33;
@@ -98,6 +104,17 @@ void SelND280UpEvent
 				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,10000};
   const int NBins_CosTh = 20;
   double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+  
+  const int NBins_Phi = 20;
+  double BinEdges_Phi[NBins_CosTh+1];
+  double phi_width = 2*TMath::Pi() / NBins_Phi;
+  for(int iphi = 0;iphi<NBins_Phi+1;iphi++){
+    BinEdges_Phi[iphi] = -TMath::Pi() + iphi*phi_width;
+    //cout << BinEdges_Phi[iphi] << ", ";
+  }
+  
+  TH1D *hPhi_FV = new TH1D("hPhi_FV","hPhi_FV",40,-4,4);
+  TH1D *hTheta_FV = new TH1D("hTheta_FV","hTheta_FV",40,-4,4);
   
   TH2D *hCosThetaVsMom_FV = new TH2D("hCosThetaVsMom_FV","hCosThetaVsMom_FV",NBins_CosTh,BinEdges_CosTh,NBins_Mom,BinEdges_Mom);
   TH2D *hCosThetaVsMom_Target       
@@ -109,22 +126,70 @@ void SelND280UpEvent
   TH2D *hCosThetaVsMom_TargetAndTPC 
     = (TH2D*) hCosThetaVsMom_FV->Clone("hCosThetaVsMom_TargetAndTPC");  
     
+  TH2D *hPhiVsMom_FV = new TH2D("hPhiVsMom_FV","hPhiVsMom_FV",NBins_Phi,BinEdges_Phi,NBins_Mom,BinEdges_Mom);
+  TH2D *hPhiVsMom_Target       
+    = (TH2D*) hPhiVsMom_FV->Clone("hPhiVsMom_Target");
+  TH2D *hPhiVsMom_TPC          
+    = (TH2D*) hPhiVsMom_FV->Clone("hPhiVsMom_TPC");
+  TH2D *hPhiVsMom_TargetOrTPC  
+    = (TH2D*) hPhiVsMom_FV->Clone("hPhiVsMom_TargetOrTPC");
+  TH2D *hPhiVsMom_TargetAndTPC 
+    = (TH2D*) hPhiVsMom_FV->Clone("hPhiVsMom_TargetAndTPC");  
+
+  TH2D *hThetaVsPhi_FV = new TH2D("hThetaVsPhi_FV","hCosThetaVsMom_FV",NBins_Phi,BinEdges_Phi,NBins_Phi,BinEdges_Phi);
+  TH2D *hThetaVsPhi_Target       
+    = (TH2D*) hThetaVsPhi_FV->Clone("hThetaVsPhi_Target");
+  TH2D *hThetaVsPhi_TPC          
+    = (TH2D*) hThetaVsPhi_FV->Clone("hThetaVsPhi_TPC");
+  TH2D *hThetaVsPhi_TargetOrTPC  
+    = (TH2D*) hThetaVsPhi_FV->Clone("hThetaVsPhi_TargetOrTPC");
+  TH2D *hThetaVsPhi_TargetAndTPC 
+    = (TH2D*) hThetaVsPhi_FV->Clone("hThetaVsPhi_TargetAndTPC");  
+    
   // FV histograms
 
   TH1D *hL_SD = new TH1D("hL_SD","hL_SD",200,0,2000);
-  TH1D *hL_TargAll_FV = new TH1D("hL_TargAll_FV","hL_TargAll_FV",200,0,2000);
+  TH2D *hLVsMom_SD = new TH2D("hLVsMom_SD","hLVsMom_SD",200,0,2000,100,0,5000);  
+
   TH1D *hL_Targ1_FV = new TH1D("hL_Targ1_FV","hL_Targ1_FV",200,0,2000);
   TH1D *hL_Targ2_FV = new TH1D("hL_Targ2_FV","hL_Targ2_FV",200,0,2000);
-  TH1D *hL_TargAll_Cut = new TH1D("hL_TargAll_Cut","hL_TargAll_Cut",200,0,2000);
+  TH1D *hL_TPCUp1_FV = new TH1D("hL_TPCUp1_FV","hL_TPCUp1_FV",200,0,2000);
+  TH1D *hL_TPCUp2_FV = new TH1D("hL_TPCUp2_FV","hL_TPCUp2_FV",200,0,2000);
+  TH1D *hL_TPCDown1_FV = new TH1D("hL_TPCDown1_FV","hL_TPCDown1_FV",200,0,2000);
+  TH1D *hL_TPCDown2_FV = new TH1D("hL_TPCDown2_FV","hL_TPCDown2_FV",200,0,2000);
+  TH1D *hL_ForwTPC1_FV = new TH1D("hL_ForwTPC1_FV","hL_ForwTPC1_FV",200,0,2000);
+  TH1D *hL_ForwTPC2_FV = new TH1D("hL_ForwTPC2_FV","hL_ForwTPC2_FV",200,0,2000);
+  TH1D *hL_ForwTPC3_FV = new TH1D("hL_ForwTPC3_FV","hL_ForwTPC3_FV",200,0,2000);
+
   TH1D *hL_Targ1_Cut = new TH1D("hL_Targ1_Cut","hL_Targ1_Cut",200,0,2000);
   TH1D *hL_Targ2_Cut = new TH1D("hL_Targ2_Cut","hL_Targ2_Cut",200,0,2000);
-  TH2D *hLVsMom_SD = new TH2D("hLVsMom_SD","hLVsMom_SD",200,0,2000,100,0,5000);  
-  TH2D *hLVsMom_TargAll_FV = new TH2D("hLVsMom_TargAll_FV","hLVsMom_TargAll_FV",200,0,2000,100,0,5000);  
+  TH1D *hL_TPCUp1_Cut = new TH1D("hL_TPCUp1_Cut","hL_TPCUp1_Cut",200,0,2000);
+  TH1D *hL_TPCUp2_Cut = new TH1D("hL_TPCUp2_Cut","hL_TPCUp2_Cut",200,0,2000);
+  TH1D *hL_TPCDown1_Cut = new TH1D("hL_TPCDown1_Cut","hL_TPCDown1_Cut",200,0,2000);
+  TH1D *hL_TPCDown2_Cut = new TH1D("hL_TPCDown2_Cut","hL_TPCDown2_Cut",200,0,2000);
+  TH1D *hL_ForwTPC1_Cut = new TH1D("hL_ForwTPC1_Cut","hL_ForwTPC1_Cut",200,0,2000);
+  TH1D *hL_ForwTPC2_Cut = new TH1D("hL_ForwTPC2_Cut","hL_ForwTPC2_Cut",200,0,2000);
+  TH1D *hL_ForwTPC3_Cut = new TH1D("hL_ForwTPC3_Cut","hL_ForwTPC3_Cut",200,0,2000);
+
   TH2D *hLVsMom_Targ1_FV = new TH2D("hLVsMom_Targ1_FV","hLVsMom_Targ1_FV",200,0,2000,100,0,5000);  
   TH2D *hLVsMom_Targ2_FV = new TH2D("hLVsMom_Targ2_FV","hLVsMom_Targ2_FV",200,0,2000,100,0,5000);  
-  TH2D *hLVsMom_TargAll_Cut = new TH2D("hLVsMom_TargAll_Cut","hLVsMom_TargAll_Cut",200,0,2000,100,0,5000);  
+  TH2D *hLVsMom_TPCUp1_FV = new TH2D("hLVsMom_TPCUp1_FV","hLVsMom_TPCUp1_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_TPCUp2_FV = new TH2D("hLVsMom_TPCUp2_FV","hLVsMom_TPCUp2_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_TPCDown1_FV = new TH2D("hLVsMom_TPCDown1_FV","hLVsMom_TPCDown1_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_TPCDown2_FV = new TH2D("hLVsMom_TPCDown2_FV","hLVsMom_TPCDown2_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_ForwTPC1_FV = new TH2D("hLVsMom_ForwTPC1_FV","hLVsMom_ForwTPC1_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_ForwTPC2_FV = new TH2D("hLVsMom_ForwTPC2_FV","hLVsMom_ForwTPC2_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_ForwTPC3_FV = new TH2D("hLVsMom_ForwTPC3_FV","hLVsMom_ForwTPC3_FV",200,0,2000,100,0,5000);
+
   TH2D *hLVsMom_Targ1_Cut = new TH2D("hLVsMom_Targ1_Cut","hLVsMom_Targ1_Cut",200,0,2000,100,0,5000);  
   TH2D *hLVsMom_Targ2_Cut = new TH2D("hLVsMom_Targ2_Cut","hLVsMomTarg2_Cut",200,0,2000,100,0,5000);  
+  TH2D *hLVsMom_TPCUp1_Cut = new TH2D("hLVsMom_TPCUp1_Cut","hLVsMom_TPCUp1_Cut",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_TPCUp2_Cut = new TH2D("hLVsMom_TPCUp2_Cut","hLVsMom_TPCUp2_Cut",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_TPCDown1_Cut = new TH2D("hLVsMom_TPCDown1_Cut","hLVsMom_TPCDown1_Cut",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_TPCDown2_Cut = new TH2D("hLVsMom_TPCDown2_Cut","hLVsMom_TPCDown2_Cut",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_ForwTPC1_Cut = new TH2D("hLVsMom_ForwTPC1_Cut","hLVsMom_ForwTPC1_Cut",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_ForwTPC2_Cut = new TH2D("hLVsMom_ForwTPC2_Cut","hLVsMom_ForwTPC2_Cut",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_ForwTPC3_Cut = new TH2D("hLVsMom_ForwTPC3_Cut","hLVsMom_ForwTPC3_Cut",200,0,2000,100,0,5000);
 
   TH1D *hLyz_TPCAll = new TH1D("hLyz_TPCAll","hLyz_TPCAll",200,0,2000);
   TH1D *hLyz_TPCUp1 = new TH1D("hLyz_TPCUp1","hLyz_TPCUp1",200,0,2000);
@@ -185,7 +250,59 @@ void SelND280UpEvent
   TH1D *hVtx_X = new TH1D("hVtx_X","hVtx_X",400,-2000,2000); // mm  
   TH1D *hVtx_Y = new TH1D("hVtx_Y","hVtx_Y",400,-2000,2000); // mm    
   TH1D *hVtx_Z = new TH1D("hVtx_Z","hVtx_Z",800,-4000,4000); // mm 
+
+  // Track Point
+  TH2D *hLastPt_Target_PhiVsZ = new TH2D("hLastPt_Target_PhiVsZ","hLastPt_Target_PhiVsZ",40,-4,+4,800,-4000,+4000);
+  TH2D *hLastPt_Target_ThetaVsZ = new TH2D("hLastPt_Target_ThetaVsZ","hLastPt_Target_ThetaVsZ",40,-4,+4,800,-4000,+4000);
+  TH1D *hLastPt_Target_Z = new TH1D("hLastPt_Target_Z","hLastPt_Target_Z",800,-4000,+4000);
+  TH2D *hLastPt_Target_XY = new TH2D("hLastPt_Target_XY","hLastPt_Target_XY",800,-4000,+4000,800,-4000,+4000);
+  TH2D *hLastPt_Target_YZ = new TH2D("hLastPt_Target_YZ","hLastPt_Target_YZ",800,-4000,+4000,800,-4000,+4000);
+  TH2D *hLastPt_Target_XZ = new TH2D("hLastPt_Target_XZ","hLastPt_Target_XZ",800,-4000,+4000,800,-4000,+4000);
+
+  TH2D *hLastPt_Oth_PhiVsZ = new TH2D("hLastPt_Oth_PhiVsZ","hLastPt_Oth_PhiVsZ",40,-4,+4,800,-4000,+4000);
+  TH2D *hLastPt_Oth_ThetaVsZ = new TH2D("hLastPt_Oth_ThetaVsZ","hLastPt_Oth_ThetaVsZ",40,-4,+4,800,-4000,+4000);
+  TH1D *hLastPt_Oth_Z = new TH1D("hLastPt_Oth_Z","hLastPt_Oth_Z",800,-4000,+4000);
+  TH2D *hLastPt_Oth_XY = new TH2D("hLastPt_Oth_XY","hLastPt_Oth_XY",800,-4000,+4000,800,-4000,+4000);
+  TH2D *hLastPt_Oth_YZ = new TH2D("hLastPt_Oth_YZ","hLastPt_Oth_YZ",800,-4000,+4000,800,-4000,+4000);
+  TH2D *hLastPt_Oth_XZ = new TH2D("hLastPt_Oth_XZ","hLastPt_Oth_XZ",800,-4000,+4000,800,-4000,+4000);
   
+  // TH1D *hEdgePt_ForwTPC1_Z = new TH1D("hEdgePt_ForwTPC1_Z","hEdgePt_ForwTPC1_Z",800,-4000,+4000);
+  // TH1D *hEdgePt_ForwTPC2_Z = new TH1D("hEdgePt_ForwTPC2_Z","hEdgePt_ForwTPC2_Z",800,-4000,+4000);
+  // TH1D *hEdgePt_ForwTPC3_Z = new TH1D("hEdgePt_ForwTPC3_Z","hEdgePt_ForwTPC3_Z",800,-4000,+4000);
+  // TH1D *hFirstPt_ForwTPC1_Z = new TH1D("hFirstPt_ForwTPC1_Z","hFirstPt_ForwTPC1_Z",800,-4000,+4000);
+  // TH1D *hFirstPt_ForwTPC2_Z = new TH1D("hFirstPt_ForwTPC2_Z","hFirstPt_ForwTPC2_Z",800,-4000,+4000);
+  // TH1D *hFirstPt_ForwTPC3_Z = new TH1D("hFirstPt_ForwTPC3_Z","hFirstPt_ForwTPC3_Z",800,-4000,+4000);  
+  // TH1D *hLastPt_ForwTPC1_Z = new TH1D("hLastPt_ForwTPC1_Z","hLastPt_ForwTPC1_Z",800,-4000,+4000);
+  // TH1D *hLastPt_ForwTPC2_Z = new TH1D("hLastPt_ForwTPC2_Z","hLastPt_ForwTPC2_Z",800,-4000,+4000);
+  // TH1D *hLastPt_ForwTPC3_Z = new TH1D("hLastPt_ForwTPC3_Z","hLastPt_ForwTPC3_Z",800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC1_XY = new TH2D("hEdgePt_ForwTPC1_XY","hEdgePt_ForwTPC1_XY",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC2_XY = new TH2D("hEdgePt_ForwTPC2_XY","hEdgePt_ForwTPC2_XY",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC3_XY = new TH2D("hEdgePt_ForwTPC3_XY","hEdgePt_ForwTPC3_XY",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC1_XY = new TH2D("hFirstPt_ForwTPC1_XY","hFirstPt_ForwTPC1_XY",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC2_XY = new TH2D("hFirstPt_ForwTPC2_XY","hFirstPt_ForwTPC2_XY",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC3_XY = new TH2D("hFirstPt_ForwTPC3_XY","hFirstPt_ForwTPC3_XY",800,-4000,+4000,800,-4000,+4000);  
+  // TH2D *hLastPt_ForwTPC1_XY = new TH2D("hLastPt_ForwTPC1_XY","hLastPt_ForwTPC1_XY",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hLastPt_ForwTPC2_XY = new TH2D("hLastPt_ForwTPC2_XY","hLastPt_ForwTPC2_XY",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hLastPt_ForwTPC3_XY = new TH2D("hLastPt_ForwTPC3_XY","hLastPt_ForwTPC3_XY",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC1_YZ = new TH2D("hEdgePt_ForwTPC1_YZ","hEdgePt_ForwTPC1_YZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC2_YZ = new TH2D("hEdgePt_ForwTPC2_YZ","hEdgePt_ForwTPC2_YZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC3_YZ = new TH2D("hEdgePt_ForwTPC3_YZ","hEdgePt_ForwTPC3_YZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC1_YZ = new TH2D("hFirstPt_ForwTPC1_YZ","hFirstPt_ForwTPC1_YZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC2_YZ = new TH2D("hFirstPt_ForwTPC2_YZ","hFirstPt_ForwTPC2_YZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC3_YZ = new TH2D("hFirstPt_ForwTPC3_YZ","hFirstPt_ForwTPC3_YZ",800,-4000,+4000,800,-4000,+4000);  
+  // TH2D *hLastPt_ForwTPC1_YZ = new TH2D("hLastPt_ForwTPC1_YZ","hLastPt_ForwTPC1_YZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hLastPt_ForwTPC2_YZ = new TH2D("hLastPt_ForwTPC2_YZ","hLastPt_ForwTPC2_YZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hLastPt_ForwTPC3_YZ = new TH2D("hLastPt_ForwTPC3_YZ","hLastPt_ForwTPC3_YZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC1_XZ = new TH2D("hEdgePt_ForwTPC1_XZ","hEdgePt_ForwTPC1_XZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC2_XZ = new TH2D("hEdgePt_ForwTPC2_XZ","hEdgePt_ForwTPC2_XZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hEdgePt_ForwTPC3_XZ = new TH2D("hEdgePt_ForwTPC3_XZ","hEdgePt_ForwTPC3_XZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC1_XZ = new TH2D("hFirstPt_ForwTPC1_XZ","hFirstPt_ForwTPC1_XZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC2_XZ = new TH2D("hFirstPt_ForwTPC2_XZ","hFirstPt_ForwTPC2_XZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hFirstPt_ForwTPC3_XZ = new TH2D("hFirstPt_ForwTPC3_XZ","hFirstPt_ForwTPC3_XZ",800,-4000,+4000,800,-4000,+4000);  
+  // TH2D *hLastPt_ForwTPC1_XZ = new TH2D("hLastPt_ForwTPC1_XZ","hLastPt_ForwTPC1_XZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hLastPt_ForwTPC2_XZ = new TH2D("hLastPt_ForwTPC2_XZ","hLastPt_ForwTPC2_XZ",800,-4000,+4000,800,-4000,+4000);
+  // TH2D *hLastPt_ForwTPC3_XZ = new TH2D("hLastPt_ForwTPC3_XZ","hLastPt_ForwTPC3_XZ",800,-4000,+4000,800,-4000,+4000);
+
   // # of events after each cut  
   int NTotVtxReac = 0; // Cut 1
   int NTotEvtFV = 0; // Cut 2
@@ -287,8 +404,8 @@ void SelND280UpEvent
       TND280UpTrack *nd280UpVtxTrkIn1 = nd280UpVertex->GetInTrack(0);
       TND280UpTrack *nd280UpVtxTrkIn2 = nd280UpVertex->GetInTrack(1);
       int pdg_vtxtrk1 = nd280UpVtxTrkIn1->GetPDG();
-      int pdg_vtxtrk2 = nd280UpVtxTrkIn2->GetPDG();
-
+      int pdg_vtxtrk2 = nd280UpVtxTrkIn2->GetPDG();      
+      
       //
       // Cut 1: true reaction mode
       //
@@ -359,53 +476,48 @@ void SelND280UpEvent
 	
 	bool FillVtxInFV = false;
 	
-	double x = nd280UpVertex->GetPosition().X();
-	double y = nd280UpVertex->GetPosition().Y();
-	double z = nd280UpVertex->GetPosition().Z();
-	
+	double VtxX = nd280UpVertex->GetPosition().X();
+	double VtxY = nd280UpVertex->GetPosition().Y();
+	double VtxZ = nd280UpVertex->GetPosition().Z();
+
 	// Target 1 FV
 	if(doCutTarget1){
-	  if((x > vtx_min_x_1 && x < vtx_max_x_1) && 
-	     (y > vtx_min_y_1 && y < vtx_max_y_1) && 
-	     (z > vtx_min_z_1 && z < vtx_max_z_1)
-	     ){
-	    PassCutVtx = true;
-	    FillVtxInFV = true;
-	  }
+	  PassCutVtx = IsTargetIn(1,VtxX,VtxY,VtxZ);
+	  FillVtxInFV = PassCutVtx;
 	}	
 	// Target 2 FV
 	if(doCutTarget2){
-	  if((x > vtx_min_x_2 && x < vtx_max_x_2) &&
-	     (y > vtx_min_y_2 && y < vtx_max_y_2) &&
-	     (z > vtx_min_z_2 && z < vtx_max_z_2)
-	     ){	  
-	    PassCutVtx = true;
-	    FillVtxInFV = true;
+	  PassCutVtx = IsTargetIn(2,VtxX,VtxY,VtxZ);
+	  FillVtxInFV = PassCutVtx;
+	}
+
+	// Cut on Z vertex position
+	if(doCutVtzZ){
+	  if( VtxZ < cut_zmin || 
+	      VtxZ > cut_zmax ){
+	    continue;
 	  }
 	}
-	//else{
-	//PassCutVtx = false;
-	//FillVtxInFV = false;
-	//}
+	
 	
 	//
 	// Fill this way because only 1 vertex per event!!!
 	//
 	if(!FillVtxInFV){
-	  hVtxOut_XY->Fill(x,y);
-	  hVtxOut_XZ->Fill(x,z);
-	  hVtxOut_YZ->Fill(y,z);
-	  hVtxOut_X->Fill(x);
-	  hVtxOut_Y->Fill(y);
-	  hVtxOut_Z->Fill(z);
+	  hVtxOut_XY->Fill(VtxZ,VtxY);
+	  hVtxOut_XZ->Fill(VtxX,VtxZ);
+	  hVtxOut_YZ->Fill(VtxY,VtxZ);
+	  hVtxOut_X->Fill(VtxX);
+	  hVtxOut_Y->Fill(VtxY);
+	  hVtxOut_Z->Fill(VtxZ);
 	}
 	else{
-          hVtx_XY->Fill(x,y);
-          hVtx_XZ->Fill(x,z);
-	  hVtx_YZ->Fill(y,z);
-          hVtx_X->Fill(x);
-	  hVtx_Y->Fill(y);
-	  hVtx_Z->Fill(z);
+          hVtx_XY->Fill(VtxX,VtxY);
+          hVtx_XZ->Fill(VtxX,VtxZ);
+	  hVtx_YZ->Fill(VtxY,VtxZ);
+          hVtx_X->Fill(VtxX);
+	  hVtx_Y->Fill(VtxY);
+	  hVtx_Z->Fill(VtxZ);
 	}
       }
       
@@ -439,7 +551,6 @@ void SelND280UpEvent
     
     for(int itrk=0;itrk<NTracks;itrk++){
       TND280UpTrack *nd280UpTrack = nd280UpEvent->GetTrack(itrk);
-           
       //nd280UpTrack->PrintTrack();
       
       int trkID = nd280UpTrack->GetTrackID();
@@ -448,15 +559,45 @@ void SelND280UpEvent
       double charge = nd280UpTrack->GetCharge();
       double ekin = nd280UpTrack->GetInitKinEnergy();
       double mom = nd280UpTrack->GetInitMom().Mag(); 
-      double costheta = nd280UpTrack->GetInitCosTheta();
+      
+      double dirX = nd280UpTrack->GetInitMom().X() / mom;
+      double dirY = nd280UpTrack->GetInitMom().Y() / mom;
+      double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
+      double phi = atan2(dirY,dirX);
+      //double phi = atan(dirY/dirX);
+      double cosphi = cos(phi);
+      //double cosphi = dirY;
+      //double phi = acos(cosphi); 
+      if(cosphi<-1 || cosphi>+1){
+	cerr << endl;
+	cerr << "cosphi = " << cosphi << " !!!" << endl;
+	cerr << endl;
+	exit(1);
+      }
+      double costheta = dirZ;
+      double theta = acos(costheta);
+      if(costheta<-1 || costheta>+1){
+	cerr << endl;
+	cerr << "costheta = " << costheta << " !!!" << endl;
+	cerr << endl;
+	exit(1);
+      }
+
       double SDlength = nd280UpTrack->GetSDLength();      
       if(SDlength<0.){ 
 	cout << "SDlength = " << SDlength << " !!!" << endl;
 	exit(1);
       }
       
-      double length_target1 = nd280UpTrack->GetLengthTarget1();
-      double length_target2 = nd280UpTrack->GetLengthTarget2();
+      double length_target1  = nd280UpTrack->GetLengthTarget1();
+      double length_target2  = nd280UpTrack->GetLengthTarget2();
+      double length_tpcup1   = nd280UpTrack->GetLengthTPCUp1();
+      double length_tpcup2   = nd280UpTrack->GetLengthTPCUp2();
+      double length_tpcdown1 = nd280UpTrack->GetLengthTPCDown1();
+      double length_tpcdown2 = nd280UpTrack->GetLengthTPCDown2();
+      double length_forwtpc1 = nd280UpTrack->GetLengthForwTPC1();
+      double length_forwtpc2 = nd280UpTrack->GetLengthForwTPC2();
+      double length_forwtpc3 = nd280UpTrack->GetLengthForwTPC3();      
       
       //cout << length_target1 << " " << length_target2 << endl;
 
@@ -467,7 +608,7 @@ void SelND280UpEvent
       double lyz_forwtpc1   = nd280UpTrack->GetLyzForwTPC1();
       double lyz_forwtpc2   = nd280UpTrack->GetLyzForwTPC2();
       double lyz_forwtpc3   = nd280UpTrack->GetLyzForwTPC3();      
-      
+
       //
       // Cut 3: particle PDG
       //
@@ -496,37 +637,103 @@ void SelND280UpEvent
       hCut->Fill(4.);
       
 
-      // cout << length_target1 << ", " 
-      // 	   << length_target2 << ", "
-      // 	   << lyz_tpcup1 << ", "
-      // 	   << lyz_tpcdown1 << ", "
-      // 	   << lyz_tpcup2 << ", "
-      // 	   << lyz_tpcdown2 << ", "
-      // 	   << lyz_forwtpc1 << ", "
-      // 	   << lyz_forwtpc2 << ", "
-      // 	   << lyz_forwtpc3 
-      // 	   << endl;
+      // Loop over the track points
+
+      int NPoints = nd280UpTrack->GetNPoints();    
+      //cout << "NPoints = " << NPoints << endl;
+    
+      int NPoints_ForwTPC1 = 0;
+      int NPoints_ForwTPC2 = 0;
+      int NPoints_ForwTPC3 = 0;
+      
+      for(int ipt=0;ipt<NPoints;ipt++){
+	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);
+	
+	double length = nd280UpTrackPoint->GetStepLength();
+	double PtX = nd280UpTrackPoint->GetPostPosition().X();
+	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
+	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();
+	
+	string volname = nd280UpTrackPoint->GetPhysVolName();
+	
+	// //if(volname=="/World/Basket/Tracker/ForwTPC1/Drift"){
+	// if( volname=="/World/Basket/Tracker/ForwTPC1/Half" ||
+	//     volname=="/World/Basket/Tracker/ForwTPC1/MM"
+	//     ){
+	//   NPoints_ForwTPC1++;
+	//   hEdgePt_ForwTPC1_Z->Fill(PtZ);	  
+	//   hEdgePt_ForwTPC1_XY->Fill(PtX,PtY);
+	//   hEdgePt_ForwTPC1_YZ->Fill(PtY,PtZ);
+	//   hEdgePt_ForwTPC1_XZ->Fill(PtX,PtZ);
+	//   if(NPoints_ForwTPC1==1){
+	//     hFirstPt_ForwTPC1_Z->Fill(PtZ);
+	//     hFirstPt_ForwTPC1_XY->Fill(PtX,PtY);
+	//     hFirstPt_ForwTPC1_YZ->Fill(PtY,PtZ);
+	//     hFirstPt_ForwTPC1_XZ->Fill(PtX,PtZ);
+	//   }
+	//   //else if(NPoints_ForwTPC1==2){
+	//   else{
+	//     hLastPt_ForwTPC1_Z->Fill(PtZ);
+	//     hLastPt_ForwTPC1_XY->Fill(PtX,PtY);
+	//     hLastPt_ForwTPC1_YZ->Fill(PtY,PtZ);
+	//     hLastPt_ForwTPC1_XZ->Fill(PtX,PtZ);
+	//   }
+	// }	
+	// //else if(volname=="/World/Basket/Tracker/ForwTPC2/Drift"){
+	// else if( volname=="/World/Basket/Tracker/ForwTPC2/Half" ||
+	// 	 volname=="/World/Basket/Tracker/ForwTPC2/MM"
+	// 	 ){
+	//   NPoints_ForwTPC2++;
+	//   hEdgePt_ForwTPC2_Z->Fill(PtZ);
+	//   hEdgePt_ForwTPC2_XY->Fill(PtX,PtY);
+	//   hEdgePt_ForwTPC2_YZ->Fill(PtY,PtZ);
+	//   hEdgePt_ForwTPC2_XZ->Fill(PtX,PtZ);
+	//   if(NPoints_ForwTPC2==1){
+	//     hFirstPt_ForwTPC2_Z->Fill(PtZ);
+	//     hFirstPt_ForwTPC2_XY->Fill(PtX,PtY);
+	//     hFirstPt_ForwTPC2_YZ->Fill(PtY,PtZ);
+	//     hFirstPt_ForwTPC2_XZ->Fill(PtX,PtZ);
+	//   }
+	//   //else if(NPoints_ForwTPC2==2){
+	//   else{
+	//     hLastPt_ForwTPC2_Z->Fill(PtZ);
+	//     hLastPt_ForwTPC2_XY->Fill(PtX,PtY);
+	//     hLastPt_ForwTPC2_YZ->Fill(PtY,PtZ);
+	//     hLastPt_ForwTPC2_XZ->Fill(PtX,PtZ);
+	//   }
+	//   //else{ 
+	//   //cerr << "# of points in " << volname << " is " << NPoints_ForwTPC2 << " !!!" << endl;
+	//   //exit(1);
+	//   //}
+	// }
+	// //else if(volname=="/World/Basket/Tracker/ForwTPC3/Drift"){
+	// else if( volname=="/World/Basket/Tracker/ForwTPC3/Half" ||
+	// 	 volname=="/World/Basket/Tracker/ForwTPC3/MM"
+	// 	 ){
+	//   NPoints_ForwTPC3++;
+	//   hEdgePt_ForwTPC3_Z->Fill(PtZ);
+	//   hEdgePt_ForwTPC3_XY->Fill(PtX,PtY);
+	//   hEdgePt_ForwTPC3_YZ->Fill(PtY,PtZ);
+	//   hEdgePt_ForwTPC3_XZ->Fill(PtX,PtZ);
+	//   if(NPoints_ForwTPC3==1){
+	//     hFirstPt_ForwTPC3_Z->Fill(PtZ);
+	//     hFirstPt_ForwTPC3_XY->Fill(PtX,PtY);
+	//     hFirstPt_ForwTPC3_YZ->Fill(PtY,PtZ);
+	//     hFirstPt_ForwTPC3_XZ->Fill(PtX,PtZ);
+	//   }
+	//   //else if(NPoints_ForwTPC3==2){
+	//   else{
+	//     hLastPt_ForwTPC3_Z->Fill(PtZ);
+	//     hLastPt_ForwTPC3_XY->Fill(PtX,PtY);
+	//     hLastPt_ForwTPC3_YZ->Fill(PtY,PtZ);
+	//     hLastPt_ForwTPC3_XZ->Fill(PtX,PtZ);
+	//   }
+	// }
+	
+      } // loop over points
 
 
       // Fill selected particles in FV
-
-      double lyz_max = 0.;
-      if(lyz_tpcup1>lyz_max)   lyz_max = lyz_tpcup1;
-      if(lyz_tpcup2>lyz_max)   lyz_max = lyz_tpcup2;
-      if(lyz_tpcdown1>lyz_max) lyz_max = lyz_tpcdown1;
-      if(lyz_tpcdown2>lyz_max) lyz_max = lyz_tpcdown2;
-      if(lyz_forwtpc1>lyz_max) lyz_max = lyz_forwtpc1;
-      if(lyz_forwtpc2>lyz_max) lyz_max = lyz_forwtpc2;
-      if(lyz_forwtpc3>lyz_max) lyz_max = lyz_forwtpc3;
-
-      double length_target_max = 0.;
-      if(length_target1>length_target2) length_target_max = length_target1;
-      else                              length_target_max = length_target2;
-      
-      if(lyz_max>0.){
-	hLyzVsMom_TPCAll->Fill(lyz_max,mom);
-	hLyz_TPCAll->Fill(lyz_max);      
-      }
 
       if(lyz_tpcup1>0.){
 	hLyz_TPCUp1->Fill(lyz_tpcup1);
@@ -565,13 +772,41 @@ void SelND280UpEvent
 	hL_Targ2_FV->Fill(length_target2);
 	hLVsMom_Targ2_FV->Fill(length_target2,mom);
       }
-      //if(length_target_max>0.){
-      //hL_TargAll_FV->Fill(length_target_max);
-      //hLVsMom_TargAll_FV->Fill(length_target_max,mom);
-      //}
-
+      if(length_tpcup1>0.){ 
+	hL_TPCUp1_FV->Fill(length_tpcup1);
+	hLVsMom_TPCUp1_FV->Fill(length_tpcup1,mom);
+      }
+      if(length_tpcup2>0.){ 
+	hL_TPCUp2_FV->Fill(length_tpcup2);
+	hLVsMom_TPCUp2_FV->Fill(length_tpcup2,mom);
+      }
+      if(length_tpcdown1>0.){ 
+	hL_TPCDown1_FV->Fill(length_tpcdown1);
+	hLVsMom_TPCDown1_FV->Fill(length_tpcdown1,mom);
+      }
+      if(length_tpcdown2>0.){ 
+	hL_TPCDown2_FV->Fill(length_tpcdown2);
+	hLVsMom_TPCDown2_FV->Fill(length_tpcdown2,mom);
+      }      
+      if(length_forwtpc1>0.){ 
+	hL_ForwTPC1_FV->Fill(length_forwtpc1);
+	hLVsMom_ForwTPC1_FV->Fill(length_forwtpc1,mom);
+      }
+      if(length_forwtpc2>0.){ 
+	hL_ForwTPC2_FV->Fill(length_forwtpc2);
+	hLVsMom_ForwTPC2_FV->Fill(length_forwtpc2,mom);
+      }
+      if(length_forwtpc3>0.){ 
+	hL_ForwTPC3_FV->Fill(length_forwtpc3);
+	hLVsMom_ForwTPC3_FV->Fill(length_forwtpc3,mom);
+      }
+    
+      hPhi_FV->Fill(phi);
+      hTheta_FV->Fill(theta);
       hCosThetaVsMom_FV->Fill(costheta,mom);
-
+      hThetaVsPhi_FV->Fill(theta,phi);
+      hPhiVsMom_FV->Fill(phi,mom);
+      
       //
       // Cut 6 : track length in a target
       //
@@ -618,7 +853,7 @@ void SelND280UpEvent
       else{ // if don't apply the cut
       	PassCutTPC = true;
       }
-
+    
       //
       // Define when particle is detected
       //
@@ -628,10 +863,6 @@ void SelND280UpEvent
       if(PassCutTarget){
 	NTotTrkPassLtarget++;
 	
-	if(length_target_max>0.){
-	  hL_TargAll_Cut->Fill(length_target_max);
-	  hLVsMom_TargAll_Cut->Fill(length_target_max,mom);
-	}
 	if(length_target1>0.){
 	  hL_Targ1_Cut->Fill(length_target1);
 	  hLVsMom_Targ1_Cut->Fill(length_target1,mom);
@@ -640,27 +871,96 @@ void SelND280UpEvent
 	  hL_Targ2_Cut->Fill(length_target2);
 	  hLVsMom_Targ2_Cut->Fill(length_target2,mom);
 	}
+	if(length_tpcup1>0.){ 
+	  hL_TPCUp1_Cut->Fill(length_tpcup1);
+	  hLVsMom_TPCUp1_Cut->Fill(length_tpcup1,mom);
+	}
+	if(length_tpcup2>0.){ 
+	  hL_TPCUp2_Cut->Fill(length_tpcup2);
+	  hLVsMom_TPCUp2_Cut->Fill(length_tpcup2,mom);
+	}
+	if(length_tpcdown1>0.){ 
+	  hL_TPCDown1_Cut->Fill(length_tpcdown1);
+	  hLVsMom_TPCDown1_Cut->Fill(length_tpcdown1,mom);
+	}
+	if(length_tpcdown2>0.){ 
+	  hL_TPCDown2_Cut->Fill(length_tpcdown2);
+	  hLVsMom_TPCDown2_Cut->Fill(length_tpcdown2,mom);
+	}
+	if(length_forwtpc1>0.){ 
+	  hL_ForwTPC1_Cut->Fill(length_forwtpc1);
+	  hLVsMom_ForwTPC1_Cut->Fill(length_forwtpc1,mom);
+	}
+	if(length_forwtpc2>0.){ 
+	  hL_ForwTPC2_Cut->Fill(length_forwtpc2);
+	  hLVsMom_ForwTPC2_Cut->Fill(length_forwtpc2,mom);
+	}
+	if(length_forwtpc3>0.){ 
+	  hL_ForwTPC3_Cut->Fill(length_forwtpc3);
+	  hLVsMom_ForwTPC3_Cut->Fill(length_forwtpc3,mom);
+	}
 	
 	hCosThetaVsMom_Target->Fill(costheta,mom);
+	hThetaVsPhi_Target->Fill(theta,phi);
+	hPhiVsMom_Target->Fill(phi,mom);
 	IsDetected = true;	
 	hCut->Fill(5.);	    
       }
-
+      
       if(PassCutTPC){
       	NTotTrkPassLtpc++;
       	hCosThetaVsMom_TPC->Fill(costheta,mom);
+      	hThetaVsPhi_TPC->Fill(theta,phi);
+      	hPhiVsMom_TPC->Fill(phi,mom);
       	IsDetected = true;
       	hCut->Fill(6.);
       }
       if(PassCutTarget && PassCutTPC){ 
       	hCosThetaVsMom_TargetAndTPC->Fill(costheta,mom);      
+      	hThetaVsPhi_TargetAndTPC->Fill(theta,phi);      
+      	hPhiVsMom_TargetAndTPC->Fill(phi,mom);      
       	IsDetected = true;
       }
       if(PassCutTarget || PassCutTPC){
       	hCosThetaVsMom_TargetOrTPC->Fill(costheta,mom);
+      	hThetaVsPhi_TargetOrTPC->Fill(theta,phi);
+      	hPhiVsMom_TargetOrTPC->Fill(phi,mom);
       	IsDetected = true;
       }
-      
+
+      if(!PassCutTPC){
+	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(NPoints-1);
+	double PtX = nd280UpTrackPoint->GetPostPosition().X();
+	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
+	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();
+	
+	double dirX = nd280UpTrack->GetInitMom().X() / mom;
+	double dirY = nd280UpTrack->GetInitMom().Y() / mom;
+	double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
+	double phi = atan2(dirY,dirX);
+	double cosphi = cos(phi);
+	double costheta = dirZ;
+	double theta = acos(costheta);
+
+	if( IsTargetIn(1,PtX,PtY,PtZ) ||
+	    IsTargetIn(2,PtX,PtY,PtZ) ){
+	  hLastPt_Target_Z->Fill(PtZ);
+	  hLastPt_Target_XY->Fill(PtX,PtY);
+	  hLastPt_Target_YZ->Fill(PtY,PtZ);
+	  hLastPt_Target_XZ->Fill(PtX,PtZ);
+	  hLastPt_Target_PhiVsZ->Fill(phi,PtZ);
+	  hLastPt_Target_ThetaVsZ->Fill(theta,PtZ);
+	}
+	else{
+	  hLastPt_Oth_Z->Fill(PtZ);
+	  hLastPt_Oth_XY->Fill(PtX,PtY);
+	  hLastPt_Oth_YZ->Fill(PtY,PtZ);
+	  hLastPt_Oth_XZ->Fill(PtX,PtZ);
+	  hLastPt_Oth_PhiVsZ->Fill(phi,PtZ);
+	  hLastPt_Oth_ThetaVsZ->Fill(theta,PtZ);
+	}
+      }
+
       //
       // Fill detected tracks
       //
@@ -695,7 +995,7 @@ void SelND280UpEvent
     //hDiffEtrueEreco->Fill();
     //hEtrueVsEreco->Fill();
     //hDiffEtrueEreco->Fill();
-
+    
     //delete nd280UpEvent;    
   } // end loop over events
   
@@ -716,11 +1016,23 @@ void SelND280UpEvent
   hVtxOut_XZ->Write();
   hVtxOut_YZ->Write();  
   //
+  hPhi_FV->Write();
+  hTheta_FV->Write();
   hCosThetaVsMom_FV->Write();
   hCosThetaVsMom_Target->Write();
   hCosThetaVsMom_TPC->Write();
   hCosThetaVsMom_TargetAndTPC->Write();
   hCosThetaVsMom_TargetOrTPC->Write();
+  hPhiVsMom_FV->Write();
+  hPhiVsMom_Target->Write();
+  hPhiVsMom_TPC->Write();
+  hPhiVsMom_TargetAndTPC->Write();
+  hPhiVsMom_TargetOrTPC->Write();
+  hThetaVsPhi_FV->Write();
+  hThetaVsPhi_Target->Write();
+  hThetaVsPhi_TPC->Write();
+  hThetaVsPhi_TargetAndTPC->Write();
+  hThetaVsPhi_TargetOrTPC->Write();
   //
   hNuReacFV->Write();
   hNuMom->Write();
@@ -728,20 +1040,99 @@ void SelND280UpEvent
   hMom->Write();
   hPDG->Write();
   //
+  hLastPt_Target_PhiVsZ->Write();
+  hLastPt_Target_ThetaVsZ->Write();
+  hLastPt_Target_Z->Write();
+  hLastPt_Target_XY->Write();
+  hLastPt_Target_YZ->Write();
+  hLastPt_Target_XZ->Write();
+  hLastPt_Oth_PhiVsZ->Write();
+  hLastPt_Oth_ThetaVsZ->Write();
+  hLastPt_Oth_Z->Write();
+  hLastPt_Oth_XY->Write();
+  hLastPt_Oth_YZ->Write();
+  hLastPt_Oth_XZ->Write();
+  //
+  // hEdgePt_ForwTPC1_Z->Write();
+  // hEdgePt_ForwTPC2_Z->Write();
+  // hEdgePt_ForwTPC3_Z->Write();
+  // hFirstPt_ForwTPC1_Z->Write();
+  // hFirstPt_ForwTPC2_Z->Write();
+  // hFirstPt_ForwTPC3_Z->Write();
+  // hLastPt_ForwTPC1_Z->Write();
+  // hLastPt_ForwTPC2_Z->Write();
+  // hLastPt_ForwTPC3_Z->Write();
+  // hEdgePt_ForwTPC1_XY->Write();
+  // hEdgePt_ForwTPC2_XY->Write();
+  // hEdgePt_ForwTPC3_XY->Write();
+  // hFirstPt_ForwTPC1_XY->Write();
+  // hFirstPt_ForwTPC2_XY->Write();
+  // hFirstPt_ForwTPC3_XY->Write();
+  // hLastPt_ForwTPC1_XY->Write();
+  // hLastPt_ForwTPC2_XY->Write();
+  // hLastPt_ForwTPC3_XY->Write();
+  // hEdgePt_ForwTPC1_XZ->Write();
+  // hEdgePt_ForwTPC2_XZ->Write();
+  // hEdgePt_ForwTPC3_XZ->Write();
+  // hFirstPt_ForwTPC1_XZ->Write();
+  // hFirstPt_ForwTPC2_XZ->Write();
+  // hFirstPt_ForwTPC3_XZ->Write();
+  // hLastPt_ForwTPC1_XZ->Write();
+  // hLastPt_ForwTPC2_XZ->Write();
+  // hLastPt_ForwTPC3_XZ->Write();
+  // hEdgePt_ForwTPC1_YZ->Write();
+  // hEdgePt_ForwTPC2_YZ->Write();
+  // hEdgePt_ForwTPC3_YZ->Write();
+  // hFirstPt_ForwTPC1_YZ->Write();
+  // hFirstPt_ForwTPC2_YZ->Write();
+  // hFirstPt_ForwTPC3_YZ->Write();
+  // hLastPt_ForwTPC1_YZ->Write();
+  // hLastPt_ForwTPC2_YZ->Write();
+  // hLastPt_ForwTPC3_YZ->Write();
+  //
   hL_SD->Write();
-  hL_TargAll_FV->Write();
+  hLVsMom_SD->Write();
+  //
   hL_Targ1_FV->Write();
   hL_Targ2_FV->Write();
-  hL_TargAll_Cut->Write();
+  hL_TPCUp1_FV->Write();
+  hL_TPCUp2_FV->Write();
+  hL_TPCDown1_FV->Write();
+  hL_TPCDown2_FV->Write();
+  hL_ForwTPC1_FV->Write();
+  hL_ForwTPC2_FV->Write();
+  hL_ForwTPC3_FV->Write();
+  //
   hL_Targ1_Cut->Write();
   hL_Targ2_Cut->Write();
-  hLVsMom_SD->Write();
-  hLVsMom_TargAll_FV->Write();
+  hL_TPCUp1_Cut->Write();
+  hL_TPCUp2_Cut->Write();
+  hL_TPCDown1_Cut->Write();
+  hL_TPCDown2_Cut->Write();
+  hL_ForwTPC1_Cut->Write();
+  hL_ForwTPC2_Cut->Write();
+  hL_ForwTPC3_Cut->Write();
+  //
   hLVsMom_Targ1_FV->Write();
   hLVsMom_Targ2_FV->Write();
-  hLVsMom_TargAll_Cut->Write();
+  hLVsMom_TPCUp1_FV->Write();
+  hLVsMom_TPCUp2_FV->Write();
+  hLVsMom_TPCDown1_FV->Write();
+  hLVsMom_TPCDown2_FV->Write();
+  hLVsMom_ForwTPC1_FV->Write();
+  hLVsMom_ForwTPC2_FV->Write();
+  hLVsMom_ForwTPC3_FV->Write();
+  //
   hLVsMom_Targ1_Cut->Write();
   hLVsMom_Targ2_Cut->Write();
+  hLVsMom_TPCUp1_Cut->Write();
+  hLVsMom_TPCUp2_Cut->Write();
+  hLVsMom_TPCDown1_Cut->Write();
+  hLVsMom_TPCDown2_Cut->Write();
+  hLVsMom_ForwTPC1_Cut->Write();
+  hLVsMom_ForwTPC2_Cut->Write();
+  hLVsMom_ForwTPC3_Cut->Write();
+  //
   hLyz_TPCUp1->Write();
   hLyz_TPCUp2->Write();
   hLyz_TPCDown1->Write();
@@ -885,6 +1276,41 @@ string StringReacAll(int reaction_mode_all){
   else {
     cerr << "No Reac mode" << endl;
     cerr << "reaction_mode_all = " << reaction_mode_all << endl;
+    exit(1);
+  }
+}
+//___________________________________________________________________________ 
+bool IsTargetIn(int targetID,double x,double y,double z){
+  
+  // Target 1 FV
+  if(targetID==1){
+    if((x > vtx_min_x_1 && x < vtx_max_x_1) && 
+       (y > vtx_min_y_1 && y < vtx_max_y_1) && 
+       (z > vtx_min_z_1 && z < vtx_max_z_1)
+       ){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }	
+  // Target 2 FV
+  if(targetID==2){
+    if((x > vtx_min_x_2 && x < vtx_max_x_2) &&
+       (y > vtx_min_y_2 && y < vtx_max_y_2) &&
+       (z > vtx_min_z_2 && z < vtx_max_z_2)
+       ){	  
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  else{
+    cerr << endl;
+    cerr << "Target ID = " << targetID << " is wrong" << endl;
+    cerr << "You can choose between 1 and 2" << endl;
+    cerr << endl;
     exit(1);
   }
 }
