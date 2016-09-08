@@ -1,21 +1,23 @@
 
 void DrawSelND280UpEvent
 ( 
- string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-MuM-ParID0_30cm_All.root"
 
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-MuM-ParID0_All.root "
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ2-MuM-ParID0_All.root"
+ //string infilename = "../../../files/studies/SelND280Up_NuMu_6E20-Targ1-MuM-ParID0_All.root"
+ string infilename = "../../../files/studies/SelND280Up_NuMu_6E20-Targ1-MuM-ParID0_All_Last30cm.root"
  
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-PiM-ParID0_All.root"
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ2-PiM-ParID0_All.root"
+ //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-MuM-ParID0_All_7_9_16.root"
+ //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ2-MuM-ParID0_All_7_9_16.root"
  
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-PiP-ParID0_All.root"
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ2-PiP-ParID0_All.root"
+ //string infilename = "../../../files/"
+ //string infilename = "../../../files/"
  
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-Prot-ParID0_All.root"
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ2-Prot-ParID0_All.root"
+ //string infilename = "../../../files/"
+ //string infilename = "../../../files/"
  
- //string infilename = "../../../files/SelND280Up_NuMu_6E20-Targ1-Targ2_All.root"
+ //string infilename = "../../../files/"
+ //string infilename = "../../../files/"
+ 
+ //string infilename = "../../../files/"
  )
 {
   gROOT->SetStyle("T2K");                  
@@ -34,11 +36,9 @@ void DrawSelND280UpEvent
   TH2D *hCosThetaVsMom_TargetAndTPC = (TH2D*)infile->Get("hCosThetaVsMom_TargetAndTPC"); 
   // Track
   TH1D *hL_SD = (TH1D*)infile->Get("hL_SD");
-  TH1D *hL_TargAll_FV = (TH1D*)infile->Get("hL_TargAll_FV");
   TH1D *hL_Targ1_FV = (TH1D*)infile->Get("hL_Targ1_FV");
   TH1D *hL_Targ2_FV = (TH1D*)infile->Get("hL_Targ2_FV");
   //
-  TH1D *hL_TargAll_Cut = (TH1D*)infile->Get("hL_TargAll_Cut");
   TH1D *hL_Targ1_Cut = (TH1D*)infile->Get("hL_Targ1_Cut");
   TH1D *hL_Targ2_Cut = (TH1D*)infile->Get("hL_Targ2_Cut");
   //
@@ -269,40 +269,40 @@ void DrawSelND280UpEvent
   cLTarg2->Print("cLTarg2.pdf");
     
   TCanvas *cLyz_TPCUp1 = new TCanvas("cLyz_TPCUp1","cLyz_TPCUp1");
-  hLyz_TPCUp1->GetXaxis()->SetTitle("TPCUp1 track Length (mm)");
+  hLyz_TPCUp1->GetXaxis()->SetTitle("TPCUp1 track Length YZ (mm)");
   hLyz_TPCUp1->SetStats(0);
   hLyz_TPCUp1->DrawClone();
   cLyz_TPCUp1->Print("cLyz_TPCUp1.pdf");
   TCanvas *cLyz_TPCUp2 = new TCanvas("cLyz_TPCUp2","cLyz_TPCUp2");
-  hLyz_TPCUp2->GetXaxis()->SetTitle("TPCUp2 track Length (mm)");
+  hLyz_TPCUp2->GetXaxis()->SetTitle("TPCUp2 track Length YZ (mm)");
   hLyz_TPCUp2->SetStats(0);
   hLyz_TPCUp2->DrawClone();
   cLyz_TPCUp2->Print("cLyz_TPCUp2.pdf");
   TCanvas *cLyz_TPCDown1 = new TCanvas("cLyz_TPCDown1","cLyz_TPCDown1");
-  hLyz_TPCDown1->GetXaxis()->SetTitle("TPCDown1 track Length (mm)");
+  hLyz_TPCDown1->GetXaxis()->SetTitle("TPCDown1 track Length YZ (mm)");
   hLyz_TPCDown1->SetStats(0);
   hLyz_TPCDown1->DrawClone();
   cLyz_TPCDown1->Print("cLyz_TPCDown1.pdf");
   TCanvas *cLyz_TPCDown2 = new TCanvas("cLyz_TPCDown2","cLyz_TPCDown2");
-  hLyz_TPCDown2->GetXaxis()->SetTitle("TPCDown2 track Length (mm)");
+  hLyz_TPCDown2->GetXaxis()->SetTitle("TPCDown2 track Length YZ (mm)");
   hLyz_TPCDown2->SetStats(0);
   hLyz_TPCDown2->DrawClone();
   cLyz_TPCDown2->Print("cLyz_TPCDown2.pdf");
   TCanvas *cLyz_ForwTPC1 = new TCanvas("cLyz_ForwTPC1","cLyz_ForwTPC1");
-  hLyz_ForwTPC1->GetXaxis()->SetRangeUser(0,600);
-  hLyz_ForwTPC1->GetXaxis()->SetTitle("ForwTPC1 track Length (mm)");
+  hLyz_ForwTPC1->GetXaxis()->SetRangeUser(0,2000);
+  hLyz_ForwTPC1->GetXaxis()->SetTitle("ForwTPC1 track Length YZ (mm)");
   hLyz_ForwTPC1->SetStats(0);
   hLyz_ForwTPC1->DrawClone();
   cLyz_ForwTPC1->Print("cLyz_ForwTPC1.pdf");
   TCanvas *cLyz_ForwTPC2 = new TCanvas("cLyz_ForwTPC2","cLyz_ForwTPC2");
-  hLyz_ForwTPC2->GetXaxis()->SetRangeUser(0,600);
-  hLyz_ForwTPC2->GetXaxis()->SetTitle("ForwTPC2 track Length (mm)");
+  hLyz_ForwTPC2->GetXaxis()->SetRangeUser(0,2000);
+  hLyz_ForwTPC2->GetXaxis()->SetTitle("ForwTPC2 track Length YZ (mm)");
   hLyz_ForwTPC2->SetStats(0);
   hLyz_ForwTPC2->DrawClone();
   cLyz_ForwTPC2->Print("cLyz_ForwTPC2.pdf");
   TCanvas *cLyz_ForwTPC3 = new TCanvas("cLyz_ForwTPC3","cLyz_ForwTPC3");
-  hLyz_ForwTPC3->GetXaxis()->SetRangeUser(0,600);
-  hLyz_ForwTPC3->GetXaxis()->SetTitle("ForwTPC3 track Length (mm)");
+  hLyz_ForwTPC3->GetXaxis()->SetRangeUser(0,2000);
+  hLyz_ForwTPC3->GetXaxis()->SetTitle("ForwTPC3 track Length YZ (mm)");
   hLyz_ForwTPC3->SetStats(0);
   hLyz_ForwTPC3->DrawClone();
   cLyz_ForwTPC3->Print("cLyz_ForwTPC3.pdf");
@@ -422,7 +422,7 @@ void DrawSelND280UpEvent
   TCanvas *cPDG = new TCanvas("cPDG","cPDG");
   hPDG->GetXaxis()->SetTitle("Track PDG");
   hPDG->DrawClone();
-  cPDG->Print("cPDG");
+  cPDG->Print("cPDG.pdf");
 
   return;
 }
