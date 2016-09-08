@@ -8,5 +8,6 @@ echo "Remove ROOT dictionary"
 
 cd $T2KND280UP_EVT
 rm dict.*
+rm *_cc*
 
 cd $T2KND280UP/build

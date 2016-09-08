@@ -41,6 +41,11 @@ foreach (@ARGV) {
     elsif($_ eq '--docut-vertex'     ) { $docut_vertex    = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-target1'    ) { $docut_target1   = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-target2'    ) { $docut_target2   = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--docut-vtxZ'       ) { $docut_vtxZ      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-zmin'         ) { $cut_zmin        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-zmax'         ) { $cut_zmax        = $ARGV[$iarg+1]; }
+    
     elsif($_ eq '--docut-pdg'        ) { $docut_pdg       = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-pdg'          ) { $cut_pdg         = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-parid'      ) { $docut_parid     = $ARGV[$iarg+1]; }
@@ -60,8 +65,10 @@ foreach (@ARGV) {
 
 $resource        = "interactive"                 unless defined $resource;
 $tag             = "SelND280Up_NuMu_6E20"           unless defined $tag;
-#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_right_units_All.root"  unless defined $inputfile;
-$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_right_units_30cm_All.root"  unless defined $inputfile;
+
+$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_60cm_All_7_9_16.root"  unless defined $inputfile;
+#$inputfile       = "/atlas/users/dsgalabe/t2k-nd280-upgrade/submit/run/PROVA/g4ND280Up_6E20_Cluster-Exp0-Nexpt2000.root"  unless defined $inputfile;
+
 $first_expt      = 0                             unless defined $first_expt;
 
 #$nruns           = 1                             unless defined $nruns; 
@@ -84,6 +91,11 @@ $docut_mater     = 0                             unless defined $docut_mater;
 $docut_vertex    = 1                             unless defined $docut_vertex;
 $docut_target1   = 1                             unless defined $docut_target1;
 $docut_target2   = 0                             unless defined $docut_target2;
+
+# select range of Z vertex position
+$docut_vtxZ      = 0                             unless defined $docut_vtxZ;
+$cut_zmin        = -2487                         unless defined $docut_zmin;
+$cut_zmax        = $cut_zmin + 300               unless defined $docut_zmax;
 
 # select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
 $docut_pdg       = 1                            unless defined $docut_pdg;
@@ -127,10 +139,10 @@ while($irun < $nruns) { # loop over the jobs
 	else{$newtag = "$newtag-PDG$cut_pdg";}
     }
     if($docut_parid eq 1){ $newtag = "$newtag-ParID$cut_parid";}
-    if($docut_reac eq 1){ $newtag = "$newtag-Reac$cut_reac";}
-  
+    if($docut_reac  eq 1){ $newtag = "$newtag-Reac$cut_reac";}
+    if($docut_vtxZ  eq 1){ $newtag = "$newtag-Zrange[$cut_zmin,$cut_zmax]";}
 
-    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_target1,$docut_target2,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
+    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_target1,$docut_target2,$docut_vtxZ,$cut_zmin,$cut_zmax,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
     
     $command = "$arguments";
     

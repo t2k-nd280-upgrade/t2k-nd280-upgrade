@@ -296,6 +296,14 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
     double LengthTarget1 = 0.;
     double LengthTarget2 = 0.;
+    double LengthTPCUp1     = 0.;
+    double LengthTPCUp2     = 0.;
+    double LengthTPCDown1   = 0.;
+    double LengthTPCDown2   = 0.;
+    double LengthForwTPC1   = 0.;
+    double LengthForwTPC2   = 0.;
+    double LengthForwTPC3   = 0.;
+
     double LyzTPCUp1     = 0.;
     double LyzTPCUp2     = 0.;
     double LyzTPCDown1   = 0.;
@@ -323,6 +331,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       ND280TrajectoryPoint* ndPoint = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp));
       detname_curr = ndPoint->GetPhysVolName();
       
+      //G4cout << detname_curr << G4endl;
+
       G4String detname_aft  = "undefined";
       ND280TrajectoryPoint* ndPointAfter; 
       if(itp<(NPoints-1)){ // not if last point
@@ -352,45 +362,61 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	  EdepTarget2   += stepedep;	
 	}
 	else if(detname_curr=="/World/Basket/Tracker/TPCUp1"){
-	  LyzTPCUp1  += stepdeltalyz;
-	  EdepTPCUp1 += stepedep;
+	  LengthTPCUp1 += steplength;	
+	  LyzTPCUp1    += stepdeltalyz;
+	  EdepTPCUp1   += stepedep;
 	}
 	else if(detname_curr=="/World/Basket/Tracker/TPCUp2"){
-	  LyzTPCUp2  += stepdeltalyz;
-	  EdepTPCUp2 += stepedep;
+	  LengthTPCUp2 += steplength;	
+	  LyzTPCUp2    += stepdeltalyz;
+	  EdepTPCUp2   += stepedep;
 	}
 	else if(detname_curr=="/World/Basket/Tracker/TPCDown1"){
-	  LyzTPCDown1  += stepdeltalyz;
-	  EdepTPCDown1 += stepedep;
+	  LengthTPCDown1 += steplength;	
+	  LyzTPCDown1    += stepdeltalyz;
+	  EdepTPCDown1   += stepedep;
 	}
 	else if(detname_curr=="/World/Basket/Tracker/TPCDown2"){
-	  LyzTPCDown2  += stepdeltalyz;
-	  EdepTPCDown2 += stepedep;
+	  LengthTPCDown2 += steplength;	
+	  LyzTPCDown2    += stepdeltalyz;
+	  EdepTPCDown2   += stepedep;
 	}
-	else if(detname_curr=="/World/Basket/Tracker/ForwTPC1/Half"){
-	  LyzForwTPC1  += stepdeltalyz;
-	  EdepForwTPC1 += stepedep;
+	//else if(detname_curr=="/World/Basket/Tracker/ForwTPC1/Drift"){
+	else if( detname_curr=="/World/Basket/Tracker/ForwTPC1/Half" ||
+		 detname_curr=="/World/Basket/Tracker/ForwTPC1/MM"
+		 ){
+	  LengthForwTPC1 += steplength;	
+	  LyzForwTPC1    += stepdeltalyz;
+	  EdepForwTPC1   += stepedep;
 	}
-	else if(detname_curr=="/World/Basket/Tracker/ForwTPC2/Half"){
-	  LyzForwTPC2  += stepdeltalyz;
-	  EdepForwTPC2 += stepedep;
+	//else if(detname_curr=="/World/Basket/Tracker/ForwTPC2/Drift"){
+	else if( detname_curr=="/World/Basket/Tracker/ForwTPC2/Half" ||
+		 detname_curr=="/World/Basket/Tracker/ForwTPC2/MM"
+		 ){
+	  LengthForwTPC2 += steplength;	
+	  LyzForwTPC2    += stepdeltalyz;
+	  EdepForwTPC2   += stepedep;
 	}
-	else if(detname_curr=="/World/Basket/Tracker/ForwTPC3/Half"){
-	  LyzForwTPC3  += stepdeltalyz;
-	  EdepForwTPC3 += stepedep;
+	//else if(detname_curr=="/World/Basket/Tracker/ForwTPC3/Drift"){
+	else if( detname_curr=="/World/Basket/Tracker/ForwTPC3/Half" ||
+		 detname_curr=="/World/Basket/Tracker/ForwTPC3/MM"
+		 ){
+	  LengthForwTPC3 += steplength;	
+	  LyzForwTPC3    += stepdeltalyz;
+	  EdepForwTPC3   += stepedep;
 	}
       }
-      
-      
+            
 
       // Select points if first/last of the track or
       // if first/last in a SD
+
       if( detname_curr != detname_prev ||
-	  detname_curr != detname_aft  ||
-	  itp == 0                     ||
-	  itp == (NPoints-1)
-	  ){
-		
+      	  detname_curr != detname_aft  ||
+      	  itp == 0                     ||
+      	  itp == (NPoints-1)
+      	  ){
+	
 	//G4cout << "TrajTrkId = " << TrajTrkId << " : " 
 	//<< detname_prev << " " << detname_curr << " " << detname_aft << G4endl;
 	
@@ -441,7 +467,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 		){
 	  nd280Track->AddPoint(nd280TrackPoint);
 	}
-	
+
 	//delete nd280TrackPoint; 
 	//nd280TrackPoint=NULL;
       }
@@ -451,15 +477,22 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     } // end loop over the points   
 
     
-    // Store the track length
-    
+    // Store the track length    
     //G4cout << "Target track length: " 
     //<< LengthTarget1 << ", "
     //<< LengthTarget2 
     //<< G4endl;
 
     nd280Track->SetLengthTarget1(LengthTarget1);
-    nd280Track->SetLengthTarget2(LengthTarget2);    
+    nd280Track->SetLengthTarget2(LengthTarget2); 
+    nd280Track->SetLengthTPCUp1(LengthTPCUp1);
+    nd280Track->SetLengthTPCUp2(LengthTPCUp2);
+    nd280Track->SetLengthTPCDown1(LengthTPCDown1);
+    nd280Track->SetLengthTPCDown2(LengthTPCDown2);
+    nd280Track->SetLengthForwTPC1(LengthForwTPC1);
+    nd280Track->SetLengthForwTPC2(LengthForwTPC2);
+    nd280Track->SetLengthForwTPC3(LengthForwTPC3);
+   
     nd280Track->SetLyzTPCUp1(LyzTPCUp1);
     nd280Track->SetLyzTPCUp2(LyzTPCUp2);
     nd280Track->SetLyzTPCDown1(LyzTPCDown1);

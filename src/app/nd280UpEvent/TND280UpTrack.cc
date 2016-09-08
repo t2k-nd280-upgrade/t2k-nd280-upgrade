@@ -32,9 +32,18 @@ TND280UpTrack::TND280UpTrack()
   fRange         = kUndefTrack;
   fSaveIt        = true;
   fSDTotalEnergyDeposit = kUndefTrack;
-  fSDLength      = kUndefTrack;
-  fLengthTarget1 = kUndefTrack;
-  fLengthTarget2 = kUndefTrack;
+  fSDLength       = kUndefTrack;
+
+  fLengthTarget1  = kUndefTrack;
+  fLengthTarget2  = kUndefTrack;
+  fLengthTPCUp1   = kUndefTrack;
+  fLengthTPCUp2   = kUndefTrack;
+  fLengthTPCDown1 = kUndefTrack;
+  fLengthTPCDown2 = kUndefTrack;
+  fLengthForwTPC1 = kUndefTrack;
+  fLengthForwTPC2 = kUndefTrack;
+  fLengthForwTPC3 = kUndefTrack;
+
   fLyzTPCUp1     = kUndefTrack;
   fLyzTPCUp2     = kUndefTrack;
   fLyzTPCDown1   = kUndefTrack;
@@ -42,6 +51,7 @@ TND280UpTrack::TND280UpTrack()
   fLyzForwTPC1   = kUndefTrack;
   fLyzForwTPC2   = kUndefTrack;
   fLyzForwTPC3   = kUndefTrack;
+
   fEdepTarget1 = kUndefTrack;
   fEdepTarget2 = kUndefTrack;
   fEdepTPCUp1     = kUndefTrack;
@@ -147,8 +157,17 @@ void TND280UpTrack::PrintTrack()
   cout << "Range: " << fRange << endl;
   cout << "SD total energy deposited: " << fSDTotalEnergyDeposit << endl;
   cout << "SD length: " << fSDLength << endl;
-  if(fLengthTarget1>0.){cout << "Length in Target1: " << fLengthTarget1 << endl;}
-  if(fLengthTarget2>0.){cout << "Length in Target2: " << fLengthTarget2 << endl;}
+
+  if(fLengthTarget1>0.){cout << "Length in Target1: "   << fLengthTarget1 << endl;}
+  if(fLengthTarget2>0.){cout << "Length in Target2: "   << fLengthTarget2 << endl;}
+  if(fLengthTPCUp1>0.){cout << "Length in TPCUp1: "     << fLengthTPCUp1     << endl;}
+  if(fLengthTPCUp2>0.){cout << "Length in TPCUp2: "     << fLengthTPCUp2     << endl;}
+  if(fLengthTPCDown1>0.){cout << "Length in TPCDown1: " << fLengthTPCDown1   << endl;}
+  if(fLengthTPCDown2>0.){cout << "Length in TPCDown2: " << fLengthTPCDown2   << endl;}
+  if(fLengthForwTPC1>0.){cout << "Length in ForwTPC1: " << fLengthForwTPC1   << endl;}
+  if(fLengthForwTPC2>0.){cout << "Length in ForwTPC2: " << fLengthForwTPC2   << endl;}
+  if(fLengthForwTPC3>0.){cout << "Length in ForwTPC3: " << fLengthForwTPC3   << endl;}
+
   if(fLyzTPCUp1>0.){cout << "Lyz in TPCUp1: "         << fLyzTPCUp1     << endl;}
   if(fLyzTPCUp2>0.){cout << "Lyz in TPCUp2: "         << fLyzTPCUp2     << endl;}
   if(fLyzTPCDown1>0.){cout << "Lyz in TPCDown1: "     << fLyzTPCDown1   << endl;}

@@ -52,10 +52,14 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"               unless defined $resource;
-$tag             = "g4ND280Up_6E20_Cluster"    unless defined $tag;
+$tag             = "g4ND280Up_6E20_30cm_Cluster"    unless defined $tag;
+
+#$config_file     = "configuration_30cm.xml" unless defined $config_file;
 #$config_file     = "configuration_cluster.xml" unless defined $config_file;
 $config_file     = "configuration_cluster_30cm.xml" unless defined $config_file;
+
 $vis_file        = "vis_cluster.mac"           unless defined $vis_file;
+#$vis_file        = "vis.mac"           unless defined $vis_file;
 
 #$nruns           = 1                          unless defined $nruns;      # number of jobs
 #$nexpts          = 10                        unless defined $nexpts;     # number of events per job
