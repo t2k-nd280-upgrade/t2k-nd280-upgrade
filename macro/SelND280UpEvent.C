@@ -19,10 +19,15 @@
 #include <TFile.h>
 #include <TMath.h>
 
-#include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.hh"
-#include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.hh"
-#include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
-#include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
+// #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.hh"
+// #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.hh"
+// #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
+// #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
+
+#include "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.hh"
+#include "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.hh"
+#include "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
+#include "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
 
 // Definition of Fiducial Volume (mm)  
 // Target 1
@@ -113,8 +118,8 @@ void SelND280UpEvent
     //cout << BinEdges_Phi[iphi] << ", ";
   }
   
-  TH1D *hPhi_FV = new TH1D("hPhi_FV","hPhi_FV",40,-4,4);
-  TH1D *hTheta_FV = new TH1D("hTheta_FV","hTheta_FV",40,-4,4);
+  TH1D *hPhi = new TH1D("hPhi","hPhi",40,-4,4);
+  TH1D *hTheta = new TH1D("hTheta","hTheta",40,-4,4);
   
   TH2D *hCosThetaVsMom_FV = new TH2D("hCosThetaVsMom_FV","hCosThetaVsMom_FV",NBins_CosTh,BinEdges_CosTh,NBins_Mom,BinEdges_Mom);
   TH2D *hCosThetaVsMom_Target       
@@ -191,22 +196,22 @@ void SelND280UpEvent
   TH2D *hLVsMom_ForwTPC2_Cut = new TH2D("hLVsMom_ForwTPC2_Cut","hLVsMom_ForwTPC2_Cut",200,0,2000,100,0,5000);
   TH2D *hLVsMom_ForwTPC3_Cut = new TH2D("hLVsMom_ForwTPC3_Cut","hLVsMom_ForwTPC3_Cut",200,0,2000,100,0,5000);
 
-  TH1D *hLyz_TPCAll = new TH1D("hLyz_TPCAll","hLyz_TPCAll",200,0,2000);
-  TH1D *hLyz_TPCUp1 = new TH1D("hLyz_TPCUp1","hLyz_TPCUp1",200,0,2000);
-  TH1D *hLyz_TPCUp2 = new TH1D("hLyz_TPCUp2","hLyz_TPCUp2",200,0,2000);
-  TH1D *hLyz_TPCDown1 = new TH1D("hLyz_TPCDown1","hLyz_TPCDown1",200,0,2000);
-  TH1D *hLyz_TPCDown2 = new TH1D("hLyz_TPCDown2","hLyz_TPCDown2",200,0,2000);
-  TH1D *hLyz_ForwTPC1 = new TH1D("hLyz_ForwTPC1","hLyz_ForwTPC1",200,0,2000);
-  TH1D *hLyz_ForwTPC2 = new TH1D("hLyz_ForwTPC2","hLyz_ForwTPC2",200,0,2000);
-  TH1D *hLyz_ForwTPC3 = new TH1D("hLyz_ForwTPC3","hLyz_ForwTPC3",200,0,2000);
-  TH2D *hLyzVsMom_TPCAll = new TH2D("hLyzVsMom_TPCAll","hLyzVsMom_TPCAll",200,0,2000,100,0,5000);
-  TH2D *hLyzVsMom_TPCUp1 = new TH2D("hLyzVsMom_TPCUp1","hLyzVsMom_TPCUp1",200,0,2000,100,0,5000);
-  TH2D *hLyzVsMom_TPCUp2 = new TH2D("hLyzVsMom_TPCUp2","hLyzVsMom_TPCUp2",200,0,2000,100,0,5000);
-  TH2D *hLyzVsMom_TPCDown1 = new TH2D("hLyzVsMom_TPCDown1","hLyzVsMom_TPCDown1",200,0,2000,100,0,5000);
-  TH2D *hLyzVsMom_TPCDown2 = new TH2D("hLyzVsMom_TPCDown2","hLyzVsMom_TPCDown2",200,0,2000,100,0,5000);
-  TH2D *hLyzVsMom_ForwTPC1 = new TH2D("hLyzVsMom_ForwTPC1","hLyzVsMom_ForwTPC1",200,0,2000,100,0,5000);
-  TH2D *hLyzVsMom_ForwTPC2 = new TH2D("hLyzVsMom_ForwTPC2","hLyzVsMom_ForwTPC2",200,0,2000,100,0,5000);
-  TH2D *hLyzVsMom_ForwTPC3 = new TH2D("hLyzVsMom_ForwTPC3","hLyzVsMom_ForwTPC3",200,0,2000,100,0,5000);
+  TH1D *hLyz_TPCAll = new TH1D("hLyz_TPCAll","hLyz_TPCAll",200,0,4000);
+  TH1D *hLyz_TPCUp1 = new TH1D("hLyz_TPCUp1","hLyz_TPCUp1",200,0,4000);
+  TH1D *hLyz_TPCUp2 = new TH1D("hLyz_TPCUp2","hLyz_TPCUp2",200,0,4000);
+  TH1D *hLyz_TPCDown1 = new TH1D("hLyz_TPCDown1","hLyz_TPCDown1",200,0,4000);
+  TH1D *hLyz_TPCDown2 = new TH1D("hLyz_TPCDown2","hLyz_TPCDown2",200,0,4000);
+  TH1D *hLyz_ForwTPC1 = new TH1D("hLyz_ForwTPC1","hLyz_ForwTPC1",200,0,4000);
+  TH1D *hLyz_ForwTPC2 = new TH1D("hLyz_ForwTPC2","hLyz_ForwTPC2",200,0,4000);
+  TH1D *hLyz_ForwTPC3 = new TH1D("hLyz_ForwTPC3","hLyz_ForwTPC3",200,0,4000);
+  TH2D *hLyzVsMom_TPCAll = new TH2D("hLyzVsMom_TPCAll","hLyzVsMom_TPCAll",200,0,4000,100,0,5000);
+  TH2D *hLyzVsMom_TPCUp1 = new TH2D("hLyzVsMom_TPCUp1","hLyzVsMom_TPCUp1",200,0,4000,100,0,5000);
+  TH2D *hLyzVsMom_TPCUp2 = new TH2D("hLyzVsMom_TPCUp2","hLyzVsMom_TPCUp2",200,0,4000,100,0,5000);
+  TH2D *hLyzVsMom_TPCDown1 = new TH2D("hLyzVsMom_TPCDown1","hLyzVsMom_TPCDown1",200,0,4000,100,0,5000);
+  TH2D *hLyzVsMom_TPCDown2 = new TH2D("hLyzVsMom_TPCDown2","hLyzVsMom_TPCDown2",200,0,4000,100,0,5000);
+  TH2D *hLyzVsMom_ForwTPC1 = new TH2D("hLyzVsMom_ForwTPC1","hLyzVsMom_ForwTPC1",200,0,4000,100,0,5000);
+  TH2D *hLyzVsMom_ForwTPC2 = new TH2D("hLyzVsMom_ForwTPC2","hLyzVsMom_ForwTPC2",200,0,4000,100,0,5000);
+  TH2D *hLyzVsMom_ForwTPC3 = new TH2D("hLyzVsMom_ForwTPC3","hLyzVsMom_ForwTPC3",200,0,4000,100,0,5000);
   
   TH1D *hMom = new TH1D("hMom","hMom",200,0,10000); 
   TH1D *hPDG = new TH1D("hPDG","hPDG",3000,-500,2500);
@@ -495,7 +500,8 @@ void SelND280UpEvent
 	if(doCutVtzZ){
 	  if( VtxZ < cut_zmin || 
 	      VtxZ > cut_zmax ){
-	    continue;
+	    PassCutVtx = false;
+	    FillVtxInFV = false;
 	  }
 	}
 	
@@ -504,7 +510,7 @@ void SelND280UpEvent
 	// Fill this way because only 1 vertex per event!!!
 	//
 	if(!FillVtxInFV){
-	  hVtxOut_XY->Fill(VtxZ,VtxY);
+	  hVtxOut_XY->Fill(VtxX,VtxY);
 	  hVtxOut_XZ->Fill(VtxX,VtxZ);
 	  hVtxOut_YZ->Fill(VtxY,VtxZ);
 	  hVtxOut_X->Fill(VtxX);
@@ -559,13 +565,13 @@ void SelND280UpEvent
       double charge = nd280UpTrack->GetCharge();
       double ekin = nd280UpTrack->GetInitKinEnergy();
       double mom = nd280UpTrack->GetInitMom().Mag(); 
-      
+    
       double dirX = nd280UpTrack->GetInitMom().X() / mom;
       double dirY = nd280UpTrack->GetInitMom().Y() / mom;
       double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
       double phi = atan2(dirY,dirX);
-      //double phi = atan(dirY/dirX);
       double cosphi = cos(phi);
+      //double phi = atan(dirY/dirX);
       //double cosphi = dirY;
       //double phi = acos(cosphi); 
       if(cosphi<-1 || cosphi>+1){
@@ -801,8 +807,8 @@ void SelND280UpEvent
 	hLVsMom_ForwTPC3_FV->Fill(length_forwtpc3,mom);
       }
     
-      hPhi_FV->Fill(phi);
-      hTheta_FV->Fill(theta);
+      hPhi->Fill(phi);
+      hTheta->Fill(theta);
       hCosThetaVsMom_FV->Fill(costheta,mom);
       hThetaVsPhi_FV->Fill(theta,phi);
       hPhiVsMom_FV->Fill(phi,mom);
@@ -928,19 +934,20 @@ void SelND280UpEvent
       	IsDetected = true;
       }
 
+    
       if(!PassCutTPC){
-	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(NPoints-1);
-	double PtX = nd280UpTrackPoint->GetPostPosition().X();
-	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
-	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();
-	
-	double dirX = nd280UpTrack->GetInitMom().X() / mom;
-	double dirY = nd280UpTrack->GetInitMom().Y() / mom;
-	double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
-	double phi = atan2(dirY,dirX);
-	double cosphi = cos(phi);
-	double costheta = dirZ;
-	double theta = acos(costheta);
+	TND280UpTrackPoint *nd280UpLastPoint = nd280UpTrack->GetPoint(NPoints-1);
+	double PtX = nd280UpLastPoint->GetPostPosition().X();
+	double PtY = nd280UpLastPoint->GetPostPosition().Y();
+	double PtZ = nd280UpLastPoint->GetPostPosition().Z();
+      
+	//double dirX = nd280UpTrack->GetInitMom().X() / mom;
+	//double dirY = nd280UpTrack->GetInitMom().Y() / mom;
+	//double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
+	//double phi = atan2(dirY,dirX);
+	//double cosphi = cos(phi);
+	//double costheta = dirZ;
+	//double theta = acos(costheta);
 
 	if( IsTargetIn(1,PtX,PtY,PtZ) ||
 	    IsTargetIn(2,PtX,PtY,PtZ) ){
@@ -1016,8 +1023,6 @@ void SelND280UpEvent
   hVtxOut_XZ->Write();
   hVtxOut_YZ->Write();  
   //
-  hPhi_FV->Write();
-  hTheta_FV->Write();
   hCosThetaVsMom_FV->Write();
   hCosThetaVsMom_Target->Write();
   hCosThetaVsMom_TPC->Write();
@@ -1033,13 +1038,20 @@ void SelND280UpEvent
   hThetaVsPhi_TPC->Write();
   hThetaVsPhi_TargetAndTPC->Write();
   hThetaVsPhi_TargetOrTPC->Write();
-  //
+  // Neutrino
   hNuReacFV->Write();
   hNuMom->Write();
   hNuPDG->Write();
+  hEvis->Write();
+  hDiffEtrueEvis->Write();
+  hEtrueVsEvis->Write();
+  // Track
   hMom->Write();
   hPDG->Write();
-  //
+  hCut->Write();
+  hPhi->Write();
+  hTheta->Write();
+  // Last Pt Track
   hLastPt_Target_PhiVsZ->Write();
   hLastPt_Target_ThetaVsZ->Write();
   hLastPt_Target_Z->Write();
@@ -1092,7 +1104,6 @@ void SelND280UpEvent
   //
   hL_SD->Write();
   hLVsMom_SD->Write();
-  //
   hL_Targ1_FV->Write();
   hL_Targ2_FV->Write();
   hL_TPCUp1_FV->Write();
@@ -1148,11 +1159,6 @@ void SelND280UpEvent
   hLyzVsMom_ForwTPC2->Write();  
   hLyzVsMom_ForwTPC3->Write();  
   //
-  hEvis->Write();
-  hDiffEtrueEvis->Write();
-  hEtrueVsEvis->Write();
-  //
-  hCut->Write();
   out->Close();
   
   // Print output
