@@ -74,6 +74,9 @@ void SelND280UpEvent
  const double vtx_min_z_2 = +487,  
  const double vtx_max_z_2 = +2487,  
 
+ // Cut 0: Select only CC mode
+ const bool doCutCC = true,
+
  // Cut 1: Select reaction mode
  const bool doCutReac = false,
  const int cut_reac = 0, // 0=CCQE, 1=2p2h, 2=CC1pi, 3=CCcoh, 4=CCDIS, 5=NC
@@ -121,15 +124,37 @@ void SelND280UpEvent
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+");
   
   // Efficiency
-
-  const int NBins_Mom = 33;
-  double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1200,1400,
-				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,10000};
-  const int NBins_CosTh = 20;
-  double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
   
+  // My
+  // const int NBins_Mom = 33;
+  // double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1200,1400,
+  // 				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,10000};
+  // const int NBins_CosTh = 20;
+  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+
+  // // Simon - BANFF
+  // const int NBins_Mom = 36;
+  // double BinEdges_Mom[NBins_Mom+1] = {0.,50.,100.,150.,200.,250.,300.,350.,400.,450.,500.,550.,600.,650.,700.,750.,800.,850.,900.,950.,1000.,1050.,
+  // 				      1100.,1150.,1250.,1350.,1500.,1750.,2000.,2500.,3000.,4000.,5000.,7500.,10000.,20000.,30000.};
+  // const int NBins_CosTh = 26;
+  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.7,-0.5,-0.2,-0.1,0.,0.1,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.92,0.94,0.98,0.99,1};
+
+  // // Final - Muons
+  // const int NBins_Mom = 33;
+  // double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1200,1400,
+  //  				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
+  // const int NBins_CosTh = 10;
+  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
+
+  // Final - Pions
+  const int NBins_Mom = 21;
+  double BinEdges_Mom[NBins_Mom+1] = {0,100,200,300,400,500,600,700,800,900,1000,1400,
+   				      1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
+  const int NBins_CosTh = 10;
+  double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
+
   const int NBins_Phi = 20;
-  double BinEdges_Phi[NBins_CosTh+1];
+  double BinEdges_Phi[NBins_Phi+1];
   double phi_width = 2*TMath::Pi() / NBins_Phi;
   for(int iphi = 0;iphi<NBins_Phi+1;iphi++){
     BinEdges_Phi[iphi] = -TMath::Pi() + iphi*phi_width;
@@ -142,13 +167,13 @@ void SelND280UpEvent
   TH2D *hCosThetaVsMom_FV = new TH2D("hCosThetaVsMom_FV","hCosThetaVsMom_FV",NBins_CosTh,BinEdges_CosTh,NBins_Mom,BinEdges_Mom);
   TH2D *hCosThetaVsMom_Target       
     = (TH2D*) hCosThetaVsMom_FV->Clone("hCosThetaVsMom_Target");
-  TH2D *hCosThetaVsMom_TPC          
+  TH2D *hCosThetaVsMom_TPC
     = (TH2D*) hCosThetaVsMom_FV->Clone("hCosThetaVsMom_TPC");
   TH2D *hCosThetaVsMom_TargetOrTPC  
     = (TH2D*) hCosThetaVsMom_FV->Clone("hCosThetaVsMom_TargetOrTPC");
   TH2D *hCosThetaVsMom_TargetAndTPC 
     = (TH2D*) hCosThetaVsMom_FV->Clone("hCosThetaVsMom_TargetAndTPC");  
-    
+  
   TH2D *hPhiVsMom_FV = new TH2D("hPhiVsMom_FV","hPhiVsMom_FV",NBins_Phi,BinEdges_Phi,NBins_Mom,BinEdges_Mom);
   TH2D *hPhiVsMom_Target       
     = (TH2D*) hPhiVsMom_FV->Clone("hPhiVsMom_Target");
@@ -159,6 +184,8 @@ void SelND280UpEvent
   TH2D *hPhiVsMom_TargetAndTPC 
     = (TH2D*) hPhiVsMom_FV->Clone("hPhiVsMom_TargetAndTPC");  
 
+  
+
   TH2D *hThetaVsPhi_FV = new TH2D("hThetaVsPhi_FV","hCosThetaVsMom_FV",NBins_Phi,BinEdges_Phi,NBins_Phi,BinEdges_Phi);
   TH2D *hThetaVsPhi_Target       
     = (TH2D*) hThetaVsPhi_FV->Clone("hThetaVsPhi_Target");
@@ -168,7 +195,12 @@ void SelND280UpEvent
     = (TH2D*) hThetaVsPhi_FV->Clone("hThetaVsPhi_TargetOrTPC");
   TH2D *hThetaVsPhi_TargetAndTPC 
     = (TH2D*) hThetaVsPhi_FV->Clone("hThetaVsPhi_TargetAndTPC");  
-    
+
+
+
+
+
+
   // FV histograms
 
   TH1D *hL_SD = new TH1D("hL_SD","hL_SD",200,0,2000);
@@ -262,13 +294,15 @@ void SelND280UpEvent
   TH1D *hPDG = new TH1D("hPDG","hPDG",3000,-500,2500);
 
   TH1D *hCut = new TH1D("hCut","hCut",10,0,10);
-  hCut->GetXaxis()->SetBinLabel(1,"Evt Mode");
-  hCut->GetXaxis()->SetBinLabel(2,"Evt FV");
-  hCut->GetXaxis()->SetBinLabel(3,"Trk PDG");
-  hCut->GetXaxis()->SetBinLabel(4,"Trk ParID");
-  hCut->GetXaxis()->SetBinLabel(5,"Trk Charge");
-  hCut->GetXaxis()->SetBinLabel(6,"Trk L(Targ)");
-  hCut->GetXaxis()->SetBinLabel(7,"Trk Lyz(TPC)");
+  hCut->GetXaxis()->SetBinLabel(1,"Evt gener");
+  hCut->GetXaxis()->SetBinLabel(2,"Evt CC");
+  hCut->GetXaxis()->SetBinLabel(3,"Evt Mode");
+  hCut->GetXaxis()->SetBinLabel(4,"Evt FV");
+  hCut->GetXaxis()->SetBinLabel(5,"Trk PDG");
+  hCut->GetXaxis()->SetBinLabel(6,"Trk ParID");
+  hCut->GetXaxis()->SetBinLabel(7,"Trk Charge");
+  hCut->GetXaxis()->SetBinLabel(8,"Trk L(Targ)");
+  hCut->GetXaxis()->SetBinLabel(9,"Trk Lyz(TPC)");
 
   // Neutrino 
   TH1D *hNuMom = new TH1D("hNuMom","hNuMom",200,0,10000); 
@@ -354,6 +388,7 @@ void SelND280UpEvent
   // TH2D *hLastPt_ForwTPC3_XZ = new TH2D("hLastPt_ForwTPC3_XZ","hLastPt_ForwTPC3_XZ",800,-4000,+4000,800,-4000,+4000);
 
   // # of events after each cut  
+  int NTotCC = 0; // Cut 1
   int NTotVtxReac = 0; // Cut 1
   int NTotEvtFV = 0; // Cut 2
   int NTotTrkPassPDG = 0; // Cut 3
@@ -432,7 +467,8 @@ void SelND280UpEvent
     //nd280UpEvent->PrintEvent();
 
     bool PassCutVtx = false; // if at least 1 vertex does it
-    bool PassCutReac = false; // if at least 1 vertex does it
+    bool PassCutReac = false; // cut on reaction mode
+    bool PassCutCC = false;  // reject NC
 
     double NuEtrue = 0.;
     double NuEvis = 0.;
@@ -445,7 +481,7 @@ void SelND280UpEvent
       cerr << endl;
       exit(1);
     }
-    
+
     for(int ivtx=0;ivtx<NVertices;ivtx++){
       TND280UpVertex *nd280UpVertex = nd280UpEvent->GetVertex(ivtx);
       //TND280UpVertex *nd280UpVertex = new TND280UpVertex();
@@ -455,24 +491,25 @@ void SelND280UpEvent
       TND280UpTrack *nd280UpVtxTrkIn2 = nd280UpVertex->GetInTrack(1);
       int pdg_vtxtrk1 = nd280UpVtxTrkIn1->GetPDG();
       int pdg_vtxtrk2 = nd280UpVtxTrkIn2->GetPDG();      
-      
-      //
-      // Cut 1: true reaction mode
-      //
 
       int reacmode = abs(nd280UpVertex->GetReacMode());
       int reacmode_all = GetReacAll(reacmode);
       int cut_reac_all = GetReacAll(cut_reac); 
 
-      if(doCutReac){	
-	if(reacmode_all==cut_reac){
-	  PassCutReac = true;
-	}
-      }
-      else{ // if not applied
-	PassCutReac = true;
-      }
-      
+      //
+      // Cut 0: don't consider NC events
+      //
+
+      if(doCutCC && reacmode_all==5) PassCutCC = false; 
+      else PassCutCC = true;
+
+      //
+      // Cut 1: true reaction mode
+      //
+
+      if(doCutReac && reacmode_all==cut_reac) PassCutReac = true;
+      else PassCutReac = true;
+      	
       //
       // Cut 2: vtx in FV
       //
@@ -570,7 +607,20 @@ void SelND280UpEvent
 				   );
 	  FillVtxInFV = PassCutVtx;
 	}
+	// don't apply this cut
+	if(!doCutTarget1 && !doCutTarget2){
+	  PassCutVtx = true;
+	  FillVtxInFV = true;
+	}
 
+	// Cut on X vertex position
+	if(doCutVtxX){
+	  if( VtxX < cut_xmin || 
+	      VtxX > cut_xmax ){
+	    PassCutVtx = false;
+	    FillVtxInFV = false;
+	  }
+	}	  
 	// Cut on Z vertex position
 	if(doCutVtxZ){
 	  if( VtxZ < cut_zmin || 
@@ -579,15 +629,7 @@ void SelND280UpEvent
 	    FillVtxInFV = false;
 	  }
 	}
-	// Cut on Z vertex position
-	if(doCutVtxX){
-	  if( VtxX < cut_xmin || 
-	      VtxX > cut_xmax ){
-	    PassCutVtx = false;
-	    FillVtxInFV = false;
-	  }
-	}	
-	
+		
 	//
 	// Fill this way because only 1 vertex per event!!!
 	//
@@ -615,24 +657,27 @@ void SelND280UpEvent
       }
       else 
 	hNuReacFV->Fill(reacmode_all);
-      
-   
-		      
-      //nd280UpVertex->PrintVertex();
 
+      //nd280UpVertex->PrintVertex();
       //delete nd280UpVtxTrkIn1;
       //delete nd280UpVtxTrkIn2;
       //delete nd280UpVertex;
 
     } // end loop over vertices
+
+    hCut->Fill(0.);
+    
+    if(doCutCC && !PassCutCC) continue;
+    NTotCC++;
+    hCut->Fill(1.);
     
     if(doCutReac && !PassCutReac) continue;
     NTotVtxReac++;
-    hCut->Fill(0.);
+    hCut->Fill(2.);
     
     if(doCutVtx && !PassCutVtx) continue;
     NTotEvtFV++; // Pass Cut 2: at least 1 vertex in FV + reaction mode
-    hCut->Fill(1.);   
+    hCut->Fill(3.);   
     
     int NTracks = nd280UpEvent->GetNTracks();
     //cout << "# of tracks = " << NTracks << " --> PDG: ";
@@ -704,7 +749,7 @@ void SelND280UpEvent
 	if(pdg!=cut_pdg) continue;
       }
       NTotTrkPassPDG++;
-      hCut->Fill(2.);
+      hCut->Fill(4.);
       
       //
       // Cut 4: parent ID = 0
@@ -713,7 +758,7 @@ void SelND280UpEvent
 	if(parentID!=cut_parentID) continue;
       }
       NTotTrkPassParentID++;
-      hCut->Fill(3.);
+      hCut->Fill(5.);
       
       //
       // Cut 5: particle charge
@@ -722,7 +767,7 @@ void SelND280UpEvent
 	if(abs(charge)!=cut_charge) continue;
       }
       NTotTrkPassCharge++;
-      hCut->Fill(4.);
+      hCut->Fill(6.);
       
 
       // Loop over the track points
@@ -935,7 +980,7 @@ void SelND280UpEvent
       // Add matching with target adjacent to right Target!!!
       //
 
-      bool PassCutTPC = true; 
+      bool PassCutTPC = false; 
       if(doCutDLyzTPC){
       	if(lyz_tpcup1 > cut_dlyz_tpc_min ||
       	   lyz_tpcup2 > cut_dlyz_tpc_min ||
@@ -946,9 +991,6 @@ void SelND280UpEvent
       	   lyz_forwtpc3 > cut_dlyz_tpc_min
       	   ){
       	  PassCutTPC = true; 
-      	}
-      	else{ 
-      	  PassCutTPC = false;
       	}
       }
       else{ // if don't apply the cut
@@ -1005,7 +1047,7 @@ void SelND280UpEvent
 	hThetaVsPhi_Target->Fill(theta,phi);
 	hPhiVsMom_Target->Fill(phi,mom);
 	IsDetected = true;	
-	hCut->Fill(5.);	    
+	hCut->Fill(7.);	    
       }
       
       if(PassCutTPC){
@@ -1014,7 +1056,7 @@ void SelND280UpEvent
       	hThetaVsPhi_TPC->Fill(theta,phi);
       	hPhiVsMom_TPC->Fill(phi,mom);
       	IsDetected = true;
-      	hCut->Fill(6.);
+      	hCut->Fill(8.);
       }
       if(PassCutTarget && PassCutTPC){ 
       	hCosThetaVsMom_TargetAndTPC->Fill(costheta,mom);      
@@ -1340,14 +1382,16 @@ void SelND280UpEvent
   cout << "Total # of Tree events: " << NTreeEntries << endl;
   cout << "Total # of simulated events: " << Nentries << endl;
   cout << "Select: " << endl;
-  if(doCutPDG) cout << " - PDG = " << cut_pdg << endl;
+  if(doCutCC) cout << " - Select CC events" << endl;
   if(doCutReac) cout << " - Reac = " << StringReacAll(cut_reac) << endl;
+  if(doCutPDG) cout << " - PDG = " << cut_pdg << endl;
   if(doCutCharge) cout << " - Charge = " << cut_charge << endl;
   if(doCutDLTarget)
     cout << " - length Target > " << cut_length_target_min << " mm" << endl; 
   if(doCutDLyzTPC)
     cout << " - dLyz TPC > " << cut_dlyz_tpc_min << " mm" << endl;
   cout << endl;
+  cout << "Total # of vtx after CC cut = " << NTotCC << endl;
   cout << "Total # of vtx after reaction mode cut = " << NTotVtxReac << endl;
   cout << "Total # of events in FV = " << NTotEvtFV << endl;
   cout << "Total # of tracks after PDG cut = " << NTotTrkPassPDG << endl;
