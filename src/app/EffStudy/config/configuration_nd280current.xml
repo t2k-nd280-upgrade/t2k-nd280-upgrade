@@ -9,15 +9,15 @@
 <Dependency>
   
   <StoreGeometry>
-    0
+    1
   </StoreGeometry>
   
   <IsRandomSeed>
-    1
+    0
   </IsRandomSeed>
   
   <Generator>      
-  GENIE
+    GENIE  
   </Generator>
 
   <Path2file>
@@ -25,13 +25,12 @@
   </Path2file>
 
   <filename>
-    GENIE/GENIE_nd280mc_thick60cm_width1807mm_6E20POT.root
+    GENIE/GENIE_nd280mc_23_8_16_6E20POT.root
   </filename>
 
   <treename>  
     gRooTracker
   </treename>
-
   
    <!--                        -->
    <!-- Detector configuration -->
@@ -40,22 +39,22 @@
    <!-- Include detectors -->
 
    <UseTPCDown1>
-     true
+     false
    </UseTPCDown1>
    <UseTPCDown2>
-     true
+     false
    </UseTPCDown2>
    <UseTPCUp1>
-     true
+     false
    </UseTPCUp1>
    <UseTPCUp2>
-     true
+     false
    </UseTPCUp2>
-
+   
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     false
+     true
    </forwTPCdefault>
 
    <forwTPCPos1_X>
@@ -65,7 +64,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -2978
+     -1277
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -85,7 +84,7 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     +2978
+     +1277
    </forwTPCPos3_Z>
 
 
@@ -95,7 +94,7 @@
    <sideTPCdefault1>
      false
    </sideTPCdefault1>
-
+   
    <sideTPClength1>
      2000  
    </sideTPClength1>
@@ -131,6 +130,7 @@
    <sideTPCdefault2>
      false
    </sideTPCdefault2>
+   
    <sideTPClength2>
      2000
    </sideTPClength2>
@@ -165,17 +165,17 @@
    <!-- Target 1 -->
 
    <Targetdefault1>
-     false
+     true
    </Targetdefault1>
    
    <Targetlength1>
-     2000
+     303
    </Targetlength1>
    <Targetwidth1>  
-     1807
+     1864.3
    </Targetwidth1>
    <Targetheight1> 
-     600 <!-- 303 -->
+     1864.3
    </Targetheight1>
  
    <TargetPos1_X>
@@ -185,24 +185,24 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1487
+     -638.5
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     false
+     true
    </Targetdefault2>
 
    <Targetlength2>
-     2000 
+     303
    </Targetlength2>
    <Targetwidth2>  
-     1807
+     1864.3
    </Targetwidth2>
    <Targetheight2> 
-     600 <!-- 303 --> 
+     1864.3  
    </Targetheight2>
 
    <TargetPos2_X>
@@ -212,7 +212,7 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1487
+     +638.5
    </TargetPos2_Z>
 
    

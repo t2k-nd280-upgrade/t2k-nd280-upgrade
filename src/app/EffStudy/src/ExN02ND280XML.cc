@@ -66,7 +66,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("sideTPCDownPos1_X" ,fSideTPCDownPos1_X);
     XML2Double("sideTPCDownPos1_Y" ,fSideTPCDownPos1_Y);
     XML2Double("sideTPCDownPos1_Z" ,fSideTPCDownPos1_Z);
-
+	
     // Side TPCs 2
     XML2Bool("sideTPCdefault2" ,fSideTPCdefault2);
     XML2Double("sideTPClength2",fSideTPClength2);
@@ -78,6 +78,12 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("sideTPCDownPos2_X" ,fSideTPCDownPos2_X);
     XML2Double("sideTPCDownPos2_Y" ,fSideTPCDownPos2_Y);
     XML2Double("sideTPCDownPos2_Z" ,fSideTPCDownPos2_Z);
+
+    // Use side TPCs
+    XML2Bool("UseTPCDown1" ,fUseTPCDown1);
+    XML2Bool("UseTPCUp1"   ,fUseTPCUp1);
+    XML2Bool("UseTPCDown2" ,fUseTPCDown2);
+    XML2Bool("UseTPCUp2"   ,fUseTPCUp2);
 
     // Target 1
     XML2Bool("Targetdefault1" ,fTargetdefault1);

@@ -7,37 +7,34 @@
 <Dependency_Details>
 
 <Dependency>
-  
+
   <StoreGeometry>
-    0
-  </StoreGeometry>
-  
-  <IsRandomSeed>
     1
+  </StoreGeometry>
+
+  <IsRandomSeed>
+    0
   </IsRandomSeed>
-  
-  <Generator>      
-  GENIE
-  </Generator>
 
-  <Path2file>
-    /neutrino/data7/davide/files/ND280Upgrade/ 
-  </Path2file>
+   <Generator>      
+     GENIE  
+   </Generator>
 
-  <filename>
-    GENIE/GENIE_nd280mc_thick60cm_width1807mm_6E20POT.root
-  </filename>
+   <Path2file>
+     /neutrino/data7/davide/files/ND280Upgrade/
+   </Path2file>
 
-  <treename>  
-    gRooTracker
-  </treename>
+   <filename>
+     GENIE/GENIE_nd280mc_thick30cm_width1807mm_6E20POT.root
+   </filename>
+   
+   <treename>  
+     gRooTracker
+   </treename>
 
-  
    <!--                        -->
    <!-- Detector configuration -->
    <!--                        -->
-
-   <!-- Include detectors -->
 
    <UseTPCDown1>
      true
@@ -49,7 +46,7 @@
      true
    </UseTPCUp1>
    <UseTPCUp2>
-     true
+    true
    </UseTPCUp2>
 
    <!-- Forward TPCs positions -->
@@ -103,14 +100,14 @@
      2300
    </sideTPCwidth1>
    <sideTPCheight1> 
-     851.5  <!-- 1000 -->
+     1000
    </sideTPCheight1>
 
    <sideTPCUpPos1_X>
      0 
    </sideTPCUpPos1_X>
    <sideTPCUpPos1_Y>
-     725.75
+     651.5
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
      -1487
@@ -120,7 +117,7 @@
      0
    </sideTPCDownPos1_X>
    <sideTPCDownPos1_Y>
-     -725.75
+     -651.5
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
      -1487
@@ -138,14 +135,14 @@
      2300
    </sideTPCwidth2>
    <sideTPCheight2> 
-     851.5  <!-- 1000 -->
+     1000
    </sideTPCheight2>
 
    <sideTPCUpPos2_X>
      0
    </sideTPCUpPos2_X>
    <sideTPCUpPos2_Y>
-     725.75
+     651.5
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
      +1487
@@ -155,7 +152,7 @@
      0 
    </sideTPCDownPos2_X>
    <sideTPCDownPos2_Y>
-     -725.75
+     -651.5
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
      +1487
@@ -175,7 +172,7 @@
      1807
    </Targetwidth1>
    <Targetheight1> 
-     600 <!-- 303 -->
+     303 <!-- 303 -->
    </Targetheight1>
  
    <TargetPos1_X>
@@ -202,7 +199,7 @@
      1807
    </Targetwidth2>
    <Targetheight2> 
-     600 <!-- 303 --> 
+     303 <!-- 303 --> 
    </Targetheight2>
 
    <TargetPos2_X>

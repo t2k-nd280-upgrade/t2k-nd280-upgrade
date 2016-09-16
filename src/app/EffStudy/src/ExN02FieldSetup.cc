@@ -243,6 +243,9 @@ void ExN02FieldSetup::SetFieldValue(G4ThreeVector fieldVector)
 {
   // Set the value of the Global Field
 
+  G4cout << " ExN02FieldSetup: magnetic field set to Uniform( "
+         << fieldVector / tesla << " ) T" << G4endl;
+
   if (fMagneticField) delete fMagneticField;
  
   if (fieldVector != G4ThreeVector(0.,0.,0.))

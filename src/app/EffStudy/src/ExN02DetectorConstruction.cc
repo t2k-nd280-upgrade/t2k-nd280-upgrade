@@ -318,7 +318,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //------------------------------ 
   // Forward TPC 1
   //------------------------------
-
+   
   G4cout << "Forward TPC 1: " << endl;
 
   G4double currentZ = 0.;
@@ -328,8 +328,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4LogicalVolume *tpc1Volume = this->GetPieceTPC("ForwTPC1",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
-    double upstreamedge_z = +solidTracker->GetZHalfLength();
-    currentZ = upstreamedge_z - GetLengthForwTPC()/2.; 
+    // position = - (half TPC2 + Full Target + half TPC1)
+    currentZ = - (GetLengthForwTPC()/2. + GetTargetFullLength1() + GetLengthForwTPC()/2.); 
+    //double downstreamedge_z = -solidTracker->GetZHalfLength();
+    //currentZ = downstreamedge_z + GetLengthForwTPC()/2.; 
     SetForwTPCPos1(0,0,currentZ);
   }
   else { // from XML file
@@ -349,12 +351,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    0);
 
   G4cout << " - name: " << tpc1Volume->GetName() << G4endl;
+  G4cout << " - length: " << GetLengthForwTPC() << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos1().x()/mm << ", "
 	 << GetForwTPCPos1().y()/mm << ", "
 	 << GetForwTPCPos1().z()/mm << " ) mm"  
 	 << G4endl << G4endl;
-
+ 
 
   //------------------------------ 
   // Forward TPC 2
@@ -385,6 +388,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    0);
 
   G4cout << " - name: " << tpc2Volume->GetName() << G4endl;
+  G4cout << " - length: " << GetLengthForwTPC() << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos2().x()/mm << ", "
 	 << GetForwTPCPos2().y()/mm << ", "
@@ -401,8 +405,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4LogicalVolume *tpc3Volume = this->GetPieceTPC("ForwTPC3",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
-    double downstreamedge_z = -solidTracker->GetZHalfLength();
-    currentZ = downstreamedge_z + GetLengthForwTPC()/2.; 
+    // position = + (half TPC2 + Full Target + half TPC1)
+    currentZ = + (GetLengthForwTPC()/2. + GetTargetFullLength1() + GetLengthForwTPC()/2.); 
+    //double upstreamedge_z = +solidTracker->GetZHalfLength();
+    //currentZ = upstreamedge_z - GetLengthForwTPC()/2.; 
     SetForwTPCPos3(0,0,currentZ);
   }
   else { // from XML file
@@ -422,6 +428,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    0);
 
   G4cout << " - name: " << tpc3Volume->GetName() << G4endl;
+  G4cout << " - length: " << GetLengthForwTPC() << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos3().x()/mm << ", "
 	 << GetForwTPCPos3().y()/mm << ", "
@@ -450,7 +457,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4double HalfTargetHeight1  = 0.5 * GetTargetFullHeight1();
     
   if( ND280XMLInput->GetXMLTargetdefault1() ){ // default
-    G4double Target1_Z = GetLengthForwTPC()/2. + GetTargetFullLength1()/2.;
+    G4double Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.);
     SetTargetPos1(0,0,Target1_Z);
   }
   else { // from XML file
@@ -505,7 +512,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4double HalfTargetHeight2  = 0.5 * GetTargetFullHeight2();
   
   if( ND280XMLInput->GetXMLTargetdefault2() ){ // default
-    G4double Target2_Z = -GetLengthForwTPC()/2. - GetTargetFullLength2()/2.;
+    G4double Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
     SetTargetPos2(0,0,Target2_Z);
   }
   else { // from XML file
@@ -547,197 +554,210 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // Side TPCs 
   //------------------------------
   // 
-
+      
   const G4String cSideTPCMater = "GasMixtureTPC"; // gas mixture of ND280 TPCs
   SideTPCMater = FindMaterial(cSideTPCMater);
   
   G4double HalfSideTPCLength1 = 0.5 * GetSideTPCFullLength1(); 
   G4double HalfSideTPCWidth1  = 0.5 * GetSideTPCFullWidth1(); 
   G4double HalfSideTPCHeight1 = 0.5 * GetSideTPCFullHeight1(); 
-
+  
   G4double HalfSideTPCLength2 = 0.5 * GetSideTPCFullLength2(); 
   G4double HalfSideTPCWidth2  = 0.5 * GetSideTPCFullWidth2(); 
   G4double HalfSideTPCHeight2 = 0.5 * GetSideTPCFullHeight2(); 
-  
+    
   // TPC Up 1
-
-  const G4String cNameSolidSideTPCUp1   = cParentNameTPC+"/tpcup1";
-  const G4String cNameLogicSideTPCUp1   = cParentNameTPC+"/TPCUp1";
-  const G4String cNamePhysiSideTPCUp1   = cParentNameTPC+"/TPCUp1";
-
-  solidSideTPCUp1 = new G4Box(cNameSolidSideTPCUp1, HalfSideTPCWidth1, HalfSideTPCHeight1, HalfSideTPCLength1); 
-  logicSideTPCUp1 = new G4LogicalVolume(solidSideTPCUp1,SideTPCMater,cNameLogicSideTPCUp1,0,0,0);
   
-  if( ND280XMLInput->GetXMLSideTPCdefault1() ){ // default
-    SetSideTPCUpPos1(0,
-		     HalfSideTPCHeight1 + HalfTargetHeight1,
-		     GetTargetPos1().z()
-		     );
+  if( ND280XMLInput->GetXMLUseTPCUp1() ){ // default
+    
+    const G4String cNameSolidSideTPCUp1   = cParentNameTPC+"/tpcup1";
+    const G4String cNameLogicSideTPCUp1   = cParentNameTPC+"/TPCUp1";
+    const G4String cNamePhysiSideTPCUp1   = cParentNameTPC+"/TPCUp1";
+    
+    solidSideTPCUp1 = new G4Box(cNameSolidSideTPCUp1, HalfSideTPCWidth1, HalfSideTPCHeight1, HalfSideTPCLength1); 
+    logicSideTPCUp1 = new G4LogicalVolume(solidSideTPCUp1,SideTPCMater,cNameLogicSideTPCUp1,0,0,0);
+    
+    if( ND280XMLInput->GetXMLSideTPCdefault1() ){ // default
+      SetSideTPCUpPos1(0,
+		       HalfSideTPCHeight1 + HalfTargetHeight1,
+		       GetTargetPos1().z()
+		       );
+    }
+    else { // from XML file
+      G4double x = ND280XMLInput->GetXMLSideTPCUpPos1_X();
+      G4double y = ND280XMLInput->GetXMLSideTPCUpPos1_Y();
+      G4double z = ND280XMLInput->GetXMLSideTPCUpPos1_Z();
+      SetSideTPCUpPos1(x,y,z);
+    }
+    
+    physiSideTPCUp1 = new G4PVPlacement(0,                   // no rotation
+					GetSideTPCUpPos1(),   // at (x,y,z)
+					logicSideTPCUp1,      // its logical volume 
+					cNamePhysiSideTPCUp1, // its name
+					logicTracker,        // its mother  volume
+					false,               // no boolean operations
+					0);                   // copy number 
+    
+    G4cout << "Side TPC Up 1: " << G4endl
+	   << " - dimensions: "
+	   << GetSideTPCFullWidth1()/mm  << " (width) x " 
+	   << GetSideTPCFullHeight1()/mm << " (height) x " 
+	   << GetSideTPCFullLength1()/mm << " (length) mm^3" 
+	   << " of " << logicSideTPCUp1->GetMaterial()->GetName() << G4endl; 
+    G4cout << " mass="<<logicSideTPCUp1->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicSideTPCUp1->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << GetSideTPCUpPos1().x()/mm << ", "
+	   << GetSideTPCUpPos1().y()/mm << ", "
+	   << GetSideTPCUpPos1().z()/mm << " ) mm"  
+	   << G4endl << G4endl;
   }
-  else { // from XML file
-    G4double x = ND280XMLInput->GetXMLSideTPCUpPos1_X();
-    G4double y = ND280XMLInput->GetXMLSideTPCUpPos1_Y();
-    G4double z = ND280XMLInput->GetXMLSideTPCUpPos1_Z();
-    SetSideTPCUpPos1(x,y,z);
-  }
-  
-  physiSideTPCUp1 = new G4PVPlacement(0,                   // no rotation
-				      GetSideTPCUpPos1(),   // at (x,y,z)
-				      logicSideTPCUp1,      // its logical volume 
-				      cNamePhysiSideTPCUp1, // its name
-				      logicTracker,        // its mother  volume
-				      false,               // no boolean operations
-				      0);                   // copy number 
-  
-  G4cout << "Side TPC Up 1: " << G4endl
-	 << " - dimensions: "
-	 << GetSideTPCFullWidth1()/mm  << " (width) x " 
-  	 << GetSideTPCFullHeight1()/mm << " (height) x " 
-  	 << GetSideTPCFullLength1()/mm << " (length) mm^3" 
-         << " of " << logicSideTPCUp1->GetMaterial()->GetName() << G4endl; 
-  G4cout << " mass="<<logicSideTPCUp1->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << " name: " << logicSideTPCUp1->GetName() << G4endl;
-  G4cout << " - position: ( " 
-	 << GetSideTPCUpPos1().x()/mm << ", "
-	 << GetSideTPCUpPos1().y()/mm << ", "
-	 << GetSideTPCUpPos1().z()/mm << " ) mm"  
-	 << G4endl << G4endl;
-
   
   // TPC Down 1
   
-  const G4String cNameSolidSideTPCDown1 = cParentNameTPC+"/tpcdown1";
-  const G4String cNameLogicSideTPCDown1 = cParentNameTPC+"/TPCDown1";
-  const G4String cNamePhysiSideTPCDown1 = cParentNameTPC+"/TPCDown1";
-  
-  solidSideTPCDown1 = new G4Box(cNameSolidSideTPCDown1,HalfSideTPCWidth1,HalfSideTPCHeight1,HalfSideTPCLength1); 
-  logicSideTPCDown1 = new G4LogicalVolume(solidSideTPCDown1,SideTPCMater,cNameLogicSideTPCDown1,0,0,0);
-  
-  if( ND280XMLInput->GetXMLSideTPCdefault1() ){ // default
-    SetSideTPCDownPos1(0,
-		       -(HalfSideTPCHeight1 + HalfTargetHeight1),
-		       GetTargetPos1().z()
-		       );
-  }
-  else { // from XML file
-    G4double x = ND280XMLInput->GetXMLSideTPCDownPos1_X();
-    G4double y = ND280XMLInput->GetXMLSideTPCDownPos1_Y();
-    G4double z = ND280XMLInput->GetXMLSideTPCDownPos1_Z();
-    SetSideTPCDownPos1(x,y,z);
-  }
-  
-  physiSideTPCDown1 = new G4PVPlacement(0,              // no rotation
-					GetSideTPCDownPos1(),   // at (x,y,z)
-					logicSideTPCDown1,      // its logical volume
-					cNamePhysiSideTPCDown1, // its name
-					logicTracker,      // its mother  volume
-					false,           // no boolean operations
-					0);              // copy number 
+  if( ND280XMLInput->GetXMLUseTPCDown1() ){ // default
 
-  G4cout << "Side TPC Down 1: " << G4endl
-	 << " - dimensions: "
-	 << GetSideTPCFullWidth1()/mm  << " (width) x " 
-  	 << GetSideTPCFullHeight1()/mm << " (height) x " 
-  	 << GetSideTPCFullLength1()/mm << " (length) mm^3" 
-         << " of " << logicSideTPCDown1->GetMaterial()->GetName() << G4endl;
-  G4cout << " mass="<<logicSideTPCDown1->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << " name: " << logicSideTPCDown1->GetName() << G4endl;
-  G4cout << " - position: ( " 
-	 << GetSideTPCDownPos1().x()/mm << ", "
-	 << GetSideTPCDownPos1().y()/mm << ", "
-	 << GetSideTPCDownPos1().z()/mm << " ) mm"  
-	 << G4endl << G4endl;
+    const G4String cNameSolidSideTPCDown1 = cParentNameTPC+"/tpcdown1";
+    const G4String cNameLogicSideTPCDown1 = cParentNameTPC+"/TPCDown1";
+    const G4String cNamePhysiSideTPCDown1 = cParentNameTPC+"/TPCDown1";
+    
+    solidSideTPCDown1 = new G4Box(cNameSolidSideTPCDown1,HalfSideTPCWidth1,HalfSideTPCHeight1,HalfSideTPCLength1); 
+    logicSideTPCDown1 = new G4LogicalVolume(solidSideTPCDown1,SideTPCMater,cNameLogicSideTPCDown1,0,0,0);
+    
+    if( ND280XMLInput->GetXMLSideTPCdefault1() ){ // default
+      SetSideTPCDownPos1(0,
+			 -(HalfSideTPCHeight1 + HalfTargetHeight1),
+			 GetTargetPos1().z()
+			 );
+    }
+    else { // from XML file
+      G4double x = ND280XMLInput->GetXMLSideTPCDownPos1_X();
+      G4double y = ND280XMLInput->GetXMLSideTPCDownPos1_Y();
+      G4double z = ND280XMLInput->GetXMLSideTPCDownPos1_Z();
+      SetSideTPCDownPos1(x,y,z);
+    }
+    
+    physiSideTPCDown1 = new G4PVPlacement(0,              // no rotation
+					  GetSideTPCDownPos1(),   // at (x,y,z)
+					  logicSideTPCDown1,      // its logical volume
+					  cNamePhysiSideTPCDown1, // its name
+					  logicTracker,      // its mother  volume
+					  false,           // no boolean operations
+					  0);              // copy number 
+    
+    G4cout << "Side TPC Down 1: " << G4endl
+	   << " - dimensions: "
+	   << GetSideTPCFullWidth1()/mm  << " (width) x " 
+	   << GetSideTPCFullHeight1()/mm << " (height) x " 
+	   << GetSideTPCFullLength1()/mm << " (length) mm^3" 
+	   << " of " << logicSideTPCDown1->GetMaterial()->GetName() << G4endl;
+    G4cout << " mass="<<logicSideTPCDown1->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicSideTPCDown1->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << GetSideTPCDownPos1().x()/mm << ", "
+	   << GetSideTPCDownPos1().y()/mm << ", "
+	   << GetSideTPCDownPos1().z()/mm << " ) mm"  
+	   << G4endl << G4endl;
+  }
   
-
   // TPC Up 2
-  
-  const G4String cNameSolidSideTPCUp2   = cParentNameTPC+"/tpcup2";
-  const G4String cNameLogicSideTPCUp2   = cParentNameTPC+"/TPCUp2";
-  const G4String cNamePhysiSideTPCUp2   = cParentNameTPC+"/TPCUp2";
-  
-  solidSideTPCUp2 = new G4Box(cNameSolidSideTPCUp2, HalfSideTPCWidth2, HalfSideTPCHeight2, HalfSideTPCLength2); 
-  logicSideTPCUp2 = new G4LogicalVolume(solidSideTPCUp2,SideTPCMater,cNameLogicSideTPCUp2,0,0,0);
-  
-  if( ND280XMLInput->GetXMLSideTPCdefault2() ){ // default
-    SetSideTPCUpPos2(0,
-		     HalfSideTPCHeight2 + HalfTargetHeight2,
-		     GetTargetPos2().z()
-		     );
-  }
-  else { // from XML file
-    G4double x = ND280XMLInput->GetXMLSideTPCUpPos2_X();
-    G4double y = ND280XMLInput->GetXMLSideTPCUpPos2_Y();
-    G4double z = ND280XMLInput->GetXMLSideTPCUpPos2_Z();
-    SetSideTPCUpPos2(x,y,z);
-  }
 
-  physiSideTPCUp2 = new G4PVPlacement(0,                   // no rotation
-				      GetSideTPCUpPos2(),   // at (x,y,z)
-				      logicSideTPCUp2,      // its logical volume
-				      cNamePhysiSideTPCUp2, // its name
-				      logicTracker,        // its mother  volume
-				      false,               // no boolean operations
-				      0);                   // copy number 
+  if( ND280XMLInput->GetXMLUseTPCUp2() ){ // default
 
-  G4cout << "Side TPC Up 2: " << G4endl
-	 << " - dimensions: "
-	 << GetSideTPCFullWidth2()/mm  << " (width) x " 
-  	 << GetSideTPCFullHeight2()/mm << " (height) x " 
-  	 << GetSideTPCFullLength2()/mm << " (length) mm^3" 
-         << " of " << logicSideTPCUp2->GetMaterial()->GetName() << G4endl; 
-  G4cout << " mass="<<logicSideTPCUp2->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << " name: " << logicSideTPCUp2->GetName() << G4endl;
-  G4cout << " - position: ( " 
-	 << GetSideTPCUpPos2().x()/mm << ", "
-	 << GetSideTPCUpPos2().y()/mm << ", "
-	 << GetSideTPCUpPos2().z()/mm << " ) mm"  
-	 << G4endl << G4endl;
-
-  // TPC Down 2
-  
-  const G4String cNameSolidSideTPCDown2 = cParentNameTPC+"/tpcdown2";
-  const G4String cNameLogicSideTPCDown2 = cParentNameTPC+"/TPCDown2";
-  const G4String cNamePhysiSideTPCDown2 = cParentNameTPC+"/TPCDown2";
-
-  solidSideTPCDown2 = new G4Box(cNameSolidSideTPCDown2,HalfSideTPCWidth2,HalfSideTPCHeight2,HalfSideTPCLength2); 
-  logicSideTPCDown2 = new G4LogicalVolume(solidSideTPCDown2,SideTPCMater,cNameLogicSideTPCDown2,0,0,0);
-  
-  if( ND280XMLInput->GetXMLSideTPCdefault2() ){ // default
-    SetSideTPCDownPos2(0,
-		       -(HalfSideTPCHeight2 + HalfTargetHeight2),
+    const G4String cNameSolidSideTPCUp2   = cParentNameTPC+"/tpcup2";
+    const G4String cNameLogicSideTPCUp2   = cParentNameTPC+"/TPCUp2";
+    const G4String cNamePhysiSideTPCUp2   = cParentNameTPC+"/TPCUp2";
+    
+    solidSideTPCUp2 = new G4Box(cNameSolidSideTPCUp2, HalfSideTPCWidth2, HalfSideTPCHeight2, HalfSideTPCLength2); 
+    logicSideTPCUp2 = new G4LogicalVolume(solidSideTPCUp2,SideTPCMater,cNameLogicSideTPCUp2,0,0,0);
+    
+    if( ND280XMLInput->GetXMLSideTPCdefault2() ){ // default
+      SetSideTPCUpPos2(0,
+		       HalfSideTPCHeight2 + HalfTargetHeight2,
 		       GetTargetPos2().z()
 		       );
-  }
-  else { // from XML file
-    G4double x = ND280XMLInput->GetXMLSideTPCDownPos2_X();
-    G4double y = ND280XMLInput->GetXMLSideTPCDownPos2_Y();
-    G4double z = ND280XMLInput->GetXMLSideTPCDownPos2_Z();
-    SetSideTPCDownPos2(x,y,z);
-  }
+    }
+    else { // from XML file
+      G4double x = ND280XMLInput->GetXMLSideTPCUpPos2_X();
+      G4double y = ND280XMLInput->GetXMLSideTPCUpPos2_Y();
+      G4double z = ND280XMLInput->GetXMLSideTPCUpPos2_Z();
+      SetSideTPCUpPos2(x,y,z);
+    }
+    
+    physiSideTPCUp2 = new G4PVPlacement(0,                   // no rotation
+					GetSideTPCUpPos2(),   // at (x,y,z)
+					logicSideTPCUp2,      // its logical volume
+					cNamePhysiSideTPCUp2, // its name
+					logicTracker,        // its mother  volume
+					false,               // no boolean operations
+					0);                   // copy number 
+    
+    G4cout << "Side TPC Up 2: " << G4endl
+	   << " - dimensions: "
+	   << GetSideTPCFullWidth2()/mm  << " (width) x " 
+	   << GetSideTPCFullHeight2()/mm << " (height) x " 
+	   << GetSideTPCFullLength2()/mm << " (length) mm^3" 
+	   << " of " << logicSideTPCUp2->GetMaterial()->GetName() << G4endl; 
+    G4cout << " mass="<<logicSideTPCUp2->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicSideTPCUp2->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << GetSideTPCUpPos2().x()/mm << ", "
+	   << GetSideTPCUpPos2().y()/mm << ", "
+	   << GetSideTPCUpPos2().z()/mm << " ) mm"  
+	   << G4endl << G4endl;
 
-  physiSideTPCDown2 = new G4PVPlacement(0,              // no rotation
-					GetSideTPCDownPos2(), // at (x,y,z)
-					logicSideTPCDown2,    // its logical volume
-					cNamePhysiSideTPCDown2,       // its name
-					logicTracker,      // its mother  volume
-					false,           // no boolean operations
-					0);              // copy number 
+  }
   
-  G4cout << "Side TPC Down 2: " << G4endl
-	 << " - dimensions: "
-	 << GetSideTPCFullWidth2()/mm  << " (width) x " 
-  	 << GetSideTPCFullHeight2()/mm << " (height) x " 
-  	 << GetSideTPCFullLength2()/mm << " (length) mm^3" 
-         << " of " << logicSideTPCDown2->GetMaterial()->GetName() << G4endl;
-  G4cout << " mass="<<logicSideTPCDown2->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << " name: " << logicSideTPCDown2->GetName() << G4endl;
-  G4cout << " - position: ( " 
-	 << GetSideTPCDownPos2().x()/mm << ", "
-	 << GetSideTPCDownPos2().y()/mm << ", "
-	 << GetSideTPCDownPos2().z()/mm << " ) mm"  
-	 << G4endl << G4endl;
+  // TPC Down 2
+  
+  if( ND280XMLInput->GetXMLUseTPCDown2() ){ // default
 
-	 
+    const G4String cNameSolidSideTPCDown2 = cParentNameTPC+"/tpcdown2";
+    const G4String cNameLogicSideTPCDown2 = cParentNameTPC+"/TPCDown2";
+    const G4String cNamePhysiSideTPCDown2 = cParentNameTPC+"/TPCDown2";
+    
+    solidSideTPCDown2 = new G4Box(cNameSolidSideTPCDown2,HalfSideTPCWidth2,HalfSideTPCHeight2,HalfSideTPCLength2); 
+    logicSideTPCDown2 = new G4LogicalVolume(solidSideTPCDown2,SideTPCMater,cNameLogicSideTPCDown2,0,0,0);
+    
+    if( ND280XMLInput->GetXMLSideTPCdefault2() ){ // default
+      SetSideTPCDownPos2(0,
+			 -(HalfSideTPCHeight2 + HalfTargetHeight2),
+			 GetTargetPos2().z()
+			 );
+    }
+    else { // from XML file
+      G4double x = ND280XMLInput->GetXMLSideTPCDownPos2_X();
+      G4double y = ND280XMLInput->GetXMLSideTPCDownPos2_Y();
+      G4double z = ND280XMLInput->GetXMLSideTPCDownPos2_Z();
+      SetSideTPCDownPos2(x,y,z);
+    }
+    
+    physiSideTPCDown2 = new G4PVPlacement(0,              // no rotation
+					  GetSideTPCDownPos2(), // at (x,y,z)
+					  logicSideTPCDown2,    // its logical volume
+					  cNamePhysiSideTPCDown2,       // its name
+					  logicTracker,      // its mother  volume
+					  false,           // no boolean operations
+					  0);              // copy number 
+    
+    G4cout << "Side TPC Down 2: " << G4endl
+	   << " - dimensions: "
+	   << GetSideTPCFullWidth2()/mm  << " (width) x " 
+	   << GetSideTPCFullHeight2()/mm << " (height) x " 
+	   << GetSideTPCFullLength2()/mm << " (length) mm^3" 
+	   << " of " << logicSideTPCDown2->GetMaterial()->GetName() << G4endl;
+    G4cout << " mass="<<logicSideTPCDown2->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicSideTPCDown2->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << GetSideTPCDownPos2().x()/mm << ", "
+	   << GetSideTPCDownPos2().y()/mm << ", "
+	   << GetSideTPCDownPos2().z()/mm << " ) mm"  
+	   << G4endl << G4endl;
+  }
+
+
+
+    
   //------------------------------------------------ 
   // Set regions
   //------------------------------------------------ 
@@ -746,10 +766,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4Region* driftRegion = G4RegionStore::GetInstance()->
     GetRegion("driftRegion",false);
   if (driftRegion) {
-    driftRegion->AddRootLogicalVolume(logicSideTPCUp1);
-    driftRegion->AddRootLogicalVolume(logicSideTPCUp2);
-    driftRegion->AddRootLogicalVolume(logicSideTPCDown1);
-    driftRegion->AddRootLogicalVolume(logicSideTPCDown2);
+    if( ND280XMLInput->GetXMLUseTPCUp1() )   driftRegion->AddRootLogicalVolume(logicSideTPCUp1);
+    if( ND280XMLInput->GetXMLUseTPCUp2() )   driftRegion->AddRootLogicalVolume(logicSideTPCUp2);
+    if( ND280XMLInput->GetXMLUseTPCDown1() ) driftRegion->AddRootLogicalVolume(logicSideTPCDown1);
+    if( ND280XMLInput->GetXMLUseTPCDown2() ) driftRegion->AddRootLogicalVolume(logicSideTPCDown2); 
   } else {
     G4ExceptionDescription msg;
     msg << "The drift region does not exist" << G4endl;
@@ -762,10 +782,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
   if (SDRegion) {
-    SDRegion->AddRootLogicalVolume(logicSideTPCUp1);
-    SDRegion->AddRootLogicalVolume(logicSideTPCUp2);
-    SDRegion->AddRootLogicalVolume(logicSideTPCDown1);
-    SDRegion->AddRootLogicalVolume(logicSideTPCDown2);
+    if( ND280XMLInput->GetXMLUseTPCUp1() )   SDRegion->AddRootLogicalVolume(logicSideTPCUp1);
+    if( ND280XMLInput->GetXMLUseTPCUp2() )   SDRegion->AddRootLogicalVolume(logicSideTPCUp2);
+    if( ND280XMLInput->GetXMLUseTPCDown1() ) SDRegion->AddRootLogicalVolume(logicSideTPCDown1);
+    if( ND280XMLInput->GetXMLUseTPCDown2() ) SDRegion->AddRootLogicalVolume(logicSideTPCDown2);
     SDRegion->AddRootLogicalVolume(logicTarget1);
     SDRegion->AddRootLogicalVolume(logicTarget2);
   } else {
@@ -791,10 +811,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // Sensitive detectors
   //------------------------------------------------ 
   
-  logicSideTPCUp1->SetSensitiveDetector( GetSensitiveDetector() );
-  logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
-  logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
-  logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
+  if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetSensitiveDetector( GetSensitiveDetector() );
+  if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
+  if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
+  if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
   logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
   logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
   
@@ -811,15 +831,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   logicWorld  ->SetVisAttributes(BoxVisAtt);  
   logicBasket ->SetVisAttributes(BoxVisAtt);
   logicTracker->SetVisAttributes(BoxVisAtt);
-
   logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
-
-  logicSideTPCUp1->SetVisAttributes(TPCVisAtt);
-  logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
-  logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
-  logicSideTPCDown2->SetVisAttributes(TPCVisAtt);
-
+  if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetVisAttributes(TPCVisAtt);
+  if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
+  if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
+  if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetVisAttributes(TPCVisAtt);
 
   // //--------- Set Step Limiter -------------------------------
   // //
@@ -911,21 +928,31 @@ void ExN02DetectorConstruction::setMaterial_Target2(G4String materialName)
 
 void ExN02DetectorConstruction::setMaterial_SideTPC(G4String materialName)
 {
+  if( !ND280XMLInput->GetXMLUseTPCUp1() &&
+      !ND280XMLInput->GetXMLUseTPCUp2() &&
+      !ND280XMLInput->GetXMLUseTPCDown1() &&
+      !ND280XMLInput->GetXMLUseTPCDown2() ){
+    G4ExceptionDescription msg;
+    msg << "Side TPCs are not used" << G4endl;
+    G4Exception("ExN02DetectorConstruction::Construct",
+		"MyCode0002",FatalException, msg);
+  }
+
   // search the material by its name 
   G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
-  if (pttoMaterial)
-    {SideTPCMater = pttoMaterial;
-      logicSideTPCUp1->SetMaterial(pttoMaterial); 
-      logicSideTPCUp2->SetMaterial(pttoMaterial); 
-      logicSideTPCDown1->SetMaterial(pttoMaterial); 
-      logicSideTPCDown2->SetMaterial(pttoMaterial); 
-      G4cout << "\n----> The side TPCs are " << GetSideTPCFullWidth1()/mm << " mm of "
-             << materialName << G4endl;
-      G4cout << "\n---->              and " << GetSideTPCFullWidth2()/mm << " mm of "
-             << materialName << G4endl;
-    }             
+  if (pttoMaterial){
+    SideTPCMater = pttoMaterial;
+    if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetMaterial(pttoMaterial); 
+    if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetMaterial(pttoMaterial); 
+    if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetMaterial(pttoMaterial); 
+    if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetMaterial(pttoMaterial); 
+    G4cout << "\n----> The side TPCs are " << GetSideTPCFullWidth1()/mm << " mm of "
+	   << materialName << G4endl;
+    G4cout << "\n---->              and " << GetSideTPCFullWidth2()/mm << " mm of "
+	   << materialName << G4endl;
+  }
 }
- 
+  
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
 //void ExN02DetectorConstruction::SetMagField(G4double fieldValue) // OLD
@@ -1208,16 +1235,16 @@ void ExN02DetectorConstruction::DefineMaterials() {
   // p0dScintillator->AddElement(elH, 8);
   // gMan->SetDrawAtt(p0dScintillator,kGreen);// ND280 class
 
-  // // FGD Scintillator -- This is the average polystyrene scintillator for
-  // // the FGD.  The FGD density is based on our measurements of individual
-  // // bars, in combination with the measurements of the cross-sectional area
-  // // of the bars.
-  // density = 1.032*g/cm3; 
-  // G4Material* fgdScintillator 
-  //   = new G4Material(name="FGDScintillator", density, nel=2);
-  // fgdScintillator->AddElement(elC, 8);
-  // fgdScintillator->AddElement(elH, 8);
-  // gMan->SetDrawAtt(fgdScintillator,kGreen);// ND280 class
+  // FGD Scintillator -- This is the average polystyrene scintillator for
+  // the FGD.  The FGD density is based on our measurements of individual
+  // bars, in combination with the measurements of the cross-sectional area
+  // of the bars.
+  density = 1.032*g/cm3; 
+  G4Material* fgdScintillator 
+    = new G4Material(name="FGDScintillator", density, nel=2);
+  fgdScintillator->AddElement(elC, 8);
+  fgdScintillator->AddElement(elH, 8);
+  gMan->SetDrawAtt(fgdScintillator,kGreen);// ND280 class
 
   // // Scintillator coating.  This is the coating that goes around the average
   // // plastic scintillator. It is 15% TiO2 and 85% polystyrene by weight.
@@ -1459,22 +1486,38 @@ void ExN02DetectorConstruction::DefineMaterials() {
   fiberCladdingFluor->AddElement(elC,2);
   gMan->SetDrawAtt(fiberCladdingFluor,kBlue);// ND280 class
     
-  // // ActiveWater for the FGD.
-  // //
-  // // It is not necessarily activated, it is just a combination of water and
-  // // polycarbonate that holds the water in place.  Daniel's document says
-  // // the panel is 342mg/cm2 of PC (for most of the panels), and 2.2226 g/cm2
-  // // of water (average of the 6 deployed panels).  water+PC layer by mass is
-  // // 0.342/(0.342+2.2226)=0.1335 polycarbonate, so rho = 1 / (0.1335/1.2 +
-  // // 0.8666/1.0) = 1.0226 g/cm^3
-  // density = 1.0226*g/cm3;
-  // G4Material* activeWater 
-  //   = new G4Material("ActiveWater", density, ncomponents=2);
-  // activeWater->AddMaterial(water        ,fractionmass = 86.672*perCent);
-  // activeWater->AddMaterial(polycarbonate,fractionmass = 13.328*perCent);
-  // gMan->SetDrawAtt(activeWater,kAzure+8);// ND280 class
+  // ActiveWater for the FGD.
+  //
+  // It is not necessarily activated, it is just a combination of water and
+  // polycarbonate that holds the water in place.  Daniel's document says
+  // the panel is 342mg/cm2 of PC (for most of the panels), and 2.2226 g/cm2
+  // of water (average of the 6 deployed panels).  water+PC layer by mass is
+  // 0.342/(0.342+2.2226)=0.1335 polycarbonate, so rho = 1 / (0.1335/1.2 +
+  // 0.8666/1.0) = 1.0226 g/cm^3
+  density = 1.0226*g/cm3;
+  G4Material* activeWater 
+    = new G4Material("ActiveWater", density, ncomponents=2);
+  activeWater->AddMaterial(water        ,fractionmass = 86.672*perCent);
+  activeWater->AddMaterial(polycarbonate,fractionmass = 13.328*perCent);
+  gMan->SetDrawAtt(activeWater,kAzure+8);// ND280 class
 
-  
+  // Uniform material for the FGD2 
+  // 
+  // 7 layers of 2.02cm of FGDScintillator + 6 layers of 2.5cm of ActiveWater
+  // density for ActiveWater = 1.0226*g/cm3
+  // density for FGDScintillator = 1.032*g/cm3
+  // length ActiveWater = 6 (layers) * 2.5cm (thickness) (NIM-FGD)
+  // length FGDScintillator = 7 (layers) * 2.02cm (thickness) (NIM-FGD)
+  // rho = (1.0226*6*2.5 + 1.032*7*2.02) / (6*2.5 + 7*2.02) = 1.027 g/cm3
+  // fractionmass (ActiveWater) = 51.247%
+  // fractionmass (FGDScintillator) = 48.753%
+  density = 1.027*g/cm3;
+  G4Material *FGD2Uniform 
+    = new G4Material("FGD2Uniform",  density, ncomponents=2);
+  FGD2Uniform->AddMaterial(activeWater,    fractionmass = 51.247*perCent);
+  FGD2Uniform->AddMaterial(fgdScintillator,fractionmass = 48.753*perCent);
+  gMan->SetDrawAtt(FGD2Uniform,kAzure+8);
+
   // WAGASHI
   
   //Scintillator
@@ -3368,16 +3411,16 @@ void ExN02DetectorConstruction::DefineDimensions(){
   G4double cTargetWidth1  = 2300.0 * mm; 
   G4double cTargetHeight1 = 303.0  * mm;   
   
-  if( !ND280XMLInput->GetXMLTargetdefault1() ){
-    SetTargetFullLength1(targetlength1);
-    SetTargetFullWidth1(targetwidth1);
-    SetTargetFullHeight1(targetheight1);
-  }
-  else{
-    SetTargetFullLength1(cTargetLength1);
-    SetTargetFullWidth1(cTargetWidth1);
-    SetTargetFullHeight1(cTargetHeight1);
-  }
+  //if( !ND280XMLInput->GetXMLTargetdefault1() ){
+  SetTargetFullLength1(targetlength1);
+  SetTargetFullWidth1(targetwidth1);
+  SetTargetFullHeight1(targetheight1);
+  //}
+  //else{
+  //SetTargetFullLength1(cTargetLength1);
+  //SetTargetFullWidth1(cTargetWidth1);
+  //SetTargetFullHeight1(cTargetHeight1);
+  //}
 
   
   // Target 2 (water)
@@ -3390,16 +3433,16 @@ void ExN02DetectorConstruction::DefineDimensions(){
   G4double cTargetWidth2  = 2300.0 * mm; 
   G4double cTargetHeight2 = 303.0  * mm;   
   
-  if( !ND280XMLInput->GetXMLTargetdefault2() ){
-    SetTargetFullLength2(targetlength2);
-    SetTargetFullWidth2(targetwidth2);
-    SetTargetFullHeight2(targetheight2);
-  }
-  else{
-    SetTargetFullLength2(cTargetLength2);
-    SetTargetFullWidth2(cTargetWidth2);
-    SetTargetFullHeight2(cTargetHeight2);
-  }
+  //if( !ND280XMLInput->GetXMLTargetdefault2() ){
+  SetTargetFullLength2(targetlength2);
+  SetTargetFullWidth2(targetwidth2);
+  SetTargetFullHeight2(targetheight2);
+  //}
+  //else{
+  //SetTargetFullLength2(cTargetLength2);
+  //SetTargetFullWidth2(cTargetWidth2);
+  //SetTargetFullHeight2(cTargetHeight2);
+  //}
   
 
   // Side TPCs 1
@@ -3412,16 +3455,16 @@ void ExN02DetectorConstruction::DefineDimensions(){
   G4double cSideTPCWidth1  = cTargetWidth1; // mm;
   G4double cSideTPCHeight1 = 1000.0 * mm;  
 
-  if(!ND280XMLInput->GetXMLSideTPCdefault1()){
-    SetSideTPCFullLength1(sidetpclength1);
-    SetSideTPCFullWidth1(sidetpcwidth1);
-    SetSideTPCFullHeight1(sidetpcheight1);
-  }
-  else{
-    SetSideTPCFullLength1(cSideTPCLength1);
-    SetSideTPCFullWidth1(cSideTPCWidth1);
-    SetSideTPCFullHeight1(cSideTPCHeight1);
-  }
+  //if(!ND280XMLInput->GetXMLSideTPCdefault1()){
+  SetSideTPCFullLength1(sidetpclength1);
+  SetSideTPCFullWidth1(sidetpcwidth1);
+  SetSideTPCFullHeight1(sidetpcheight1);
+  //}
+  //else{
+  //SetSideTPCFullLength1(cSideTPCLength1);
+  //SetSideTPCFullWidth1(cSideTPCWidth1);
+  //SetSideTPCFullHeight1(cSideTPCHeight1);
+  //}
  
   // Side TPCs 2
   
@@ -3433,15 +3476,15 @@ void ExN02DetectorConstruction::DefineDimensions(){
   G4double cSideTPCWidth2  = cTargetWidth2; // mm;
   G4double cSideTPCHeight2 = 1000.0 * mm;  
 
-  if(!ND280XMLInput->GetXMLSideTPCdefault2()){
-    SetSideTPCFullLength2(sidetpclength2);
-    SetSideTPCFullWidth2(sidetpcwidth2);
-    SetSideTPCFullHeight2(sidetpcheight2);
-  }
-  else{ // default
-    SetSideTPCFullLength2(cSideTPCLength2);
-    SetSideTPCFullWidth2(cSideTPCWidth2);
-    SetSideTPCFullHeight2(cSideTPCHeight2);
-  }
+  //if(!ND280XMLInput->GetXMLSideTPCdefault2()){
+  SetSideTPCFullLength2(sidetpclength2);
+  SetSideTPCFullWidth2(sidetpcwidth2);
+  SetSideTPCFullHeight2(sidetpcheight2);
+  //}
+  //else{ // default
+  //SetSideTPCFullLength2(cSideTPCLength2);
+  //SetSideTPCFullWidth2(cSideTPCWidth2);
+  //SetSideTPCFullHeight2(cSideTPCHeight2);
+  //}
 
 }

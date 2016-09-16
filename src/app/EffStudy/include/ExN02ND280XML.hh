@@ -57,6 +57,7 @@ public :
   G4double GetXMLSideTPCUpPos1_X()  {return fSideTPCUpPos1_X;};
   G4double GetXMLSideTPCUpPos1_Y()  {return fSideTPCUpPos1_Y;};
   G4double GetXMLSideTPCUpPos1_Z()  {return fSideTPCUpPos1_Z;};
+
   G4double GetXMLSideTPCDownPos1_X(){return fSideTPCDownPos1_X;};
   G4double GetXMLSideTPCDownPos1_Y(){return fSideTPCDownPos1_Y;};
   G4double GetXMLSideTPCDownPos1_Z(){return fSideTPCDownPos1_Z;};
@@ -69,6 +70,7 @@ public :
   G4double GetXMLSideTPCUpPos2_X()  {return fSideTPCUpPos2_X;};
   G4double GetXMLSideTPCUpPos2_Y()  {return fSideTPCUpPos2_Y;};
   G4double GetXMLSideTPCUpPos2_Z()  {return fSideTPCUpPos2_Z;};
+
   G4double GetXMLSideTPCDownPos2_X(){return fSideTPCDownPos2_X;};
   G4double GetXMLSideTPCDownPos2_Y(){return fSideTPCDownPos2_Y;};
   G4double GetXMLSideTPCDownPos2_Z(){return fSideTPCDownPos2_Z;};
@@ -91,6 +93,11 @@ public :
   G4double GetXMLTargetPos2_Y()  {return fTargetPos2_Y;};
   G4double GetXMLTargetPos2_Z()  {return fTargetPos2_Z;};
 
+  G4bool   GetXMLUseTPCUp1()        {return fUseTPCUp1;};
+  G4bool   GetXMLUseTPCDown1()      {return fUseTPCDown1;};
+  G4bool   GetXMLUseTPCUp2()        {return fUseTPCUp2;};
+  G4bool   GetXMLUseTPCDown2()      {return fUseTPCDown2;};
+  
   void SetInputs();
 
 private :
@@ -152,6 +159,11 @@ private :
   G4double fTargetPos2_X;
   G4double fTargetPos2_Y;
   G4double fTargetPos2_Z;
+
+  G4bool fUseTPCUp1;
+  G4bool fUseTPCDown1;
+  G4bool fUseTPCUp2;
+  G4bool fUseTPCDown2;
 
   void XML2String(string tmp_app,string &dest);
   void XML2Double(string tmp_app,double &dest);
