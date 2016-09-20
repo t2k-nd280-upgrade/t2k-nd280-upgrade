@@ -150,7 +150,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   // before leaving this method.                            
   //std::auto_ptr<TND280UpEvent> fND280UpEvent(new TND280UpEvent());  
   fND280UpEvent->SetEventID(anEvent->GetEventID());  
-
+  
 
   //
   // Store the primary Vertices
@@ -158,14 +158,14 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   
   G4int vtxNumber=0;
   for (G4PrimaryVertex* vtx = anEvent->GetPrimaryVertex();vtx;vtx = vtx->GetNext()) {
-
+    
     TND280UpVertex *nd280Vertex = new TND280UpVertex("PrimaryVertex");
     nd280Vertex->SetVertexID(vtxNumber);
       
     ExN02VertexInfo* vInfo 
       = dynamic_cast<ExN02VertexInfo*>(vtx->GetUserInformation());
     //= (ExN02VertexInfo*)vtx->GetUserInformation();
-    
+          
     // Loop over particles outgoing the vertex 
     for (G4int p=0; p<vtx->GetNumberOfParticle(); ++p) {
      
@@ -193,49 +193,53 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
     // Get the Incoming Vertex
     
-    const G4PrimaryVertex *incvtx = vInfo->GetInformationalVertex();
-    
-    // Loop over incoming particles
-    for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
+    if(vInfo){
       
-      // Define the vertex track
-      TND280UpTrack *nd280VtxTrack = new TND280UpTrack();
-
-      G4PrimaryParticle* prim = incvtx->GetPrimary(nu);
-      G4ParticleDefinition* partDef = prim->GetG4code();
-      G4ThreeVector dir = prim->GetMomentum().unit();
-
-      double momX = prim->GetMomentum().x();
-      double momY = prim->GetMomentum().y();
-      double momZ = prim->GetMomentum().z();
-      nd280VtxTrack->SetInitMom(momX,momY,momZ);
+      const G4PrimaryVertex *incvtx = vInfo->GetInformationalVertex();
       
-      int pdg = prim->GetPDGcode();    
-      nd280VtxTrack->SetPDG(pdg);
-
-      // Fill the vertex with the ingoing track
-      nd280Vertex->AddInTrack(nd280VtxTrack);
+      // Loop over incoming particles
+      for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
+	
+	// Define the vertex track
+	TND280UpTrack *nd280VtxTrack = new TND280UpTrack();
+	
+	G4PrimaryParticle* prim = incvtx->GetPrimary(nu);
+	G4ParticleDefinition* partDef = prim->GetG4code();
+	G4ThreeVector dir = prim->GetMomentum().unit();
+	
+	double momX = prim->GetMomentum().x();
+	double momY = prim->GetMomentum().y();
+	double momZ = prim->GetMomentum().z();
+	nd280VtxTrack->SetInitMom(momX,momY,momZ);
+	
+	int pdg = prim->GetPDGcode();    
+	nd280VtxTrack->SetPDG(pdg);
+	
+	// Fill the vertex with the ingoing track
+	nd280Vertex->AddInTrack(nd280VtxTrack);
+	
+	//delete nd280VtxTrack; 
+	//nd280VtxTrack=NULL;
+      }
       
-      //delete nd280VtxTrack; 
-      //nd280VtxTrack=NULL;
+      //
+      // TODO: define reaction mode when NEUT is used
+      //
+      nd280Vertex->SetReacMode(vInfo->GetReactionNum());
+      nd280Vertex->SetReacModeString(vInfo->GetReaction());
+      
+      nd280Vertex->SetPosition(vtx->GetX0()/mm,
+			       vtx->GetY0()/mm,
+			       vtx->GetZ0()/mm);
+      nd280Vertex->SetTime(vtx->GetT0()/second);
+      
+      // Add the vertex to the event
+      fND280UpEvent->AddVertex(nd280Vertex);
+      
     }
-  
-    //
-    // TODO: define reaction mode when NEUT is used
-    //
-    nd280Vertex->SetReacMode(vInfo->GetReactionNum());
-    nd280Vertex->SetReacModeString(vInfo->GetReaction());
-    
-    nd280Vertex->SetPosition(vtx->GetX0()/mm,
-			     vtx->GetY0()/mm,
-			     vtx->GetZ0()/mm);
-    nd280Vertex->SetTime(vtx->GetT0()/second);
-        
-    // Add the vertex to the event
-    fND280UpEvent->AddVertex(nd280Vertex);
     
     ++vtxNumber;  
-
+      
     //delete nd280Vertex; 
     //nd280Vertex=NULL;
   }

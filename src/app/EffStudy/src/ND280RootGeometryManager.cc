@@ -555,9 +555,9 @@ bool ND280RootGeometryManager::CreateEnvelope(
     // created in this function.
     TGeoVolume* theVolume = NULL; 
     G4LogicalVolume* theLog = theG4PhysVol->GetLogicalVolume();
-
-    if (PrintMass(theG4PhysVol)) {
-    //if(1){
+    
+    //if (PrintMass(theG4PhysVol)) {
+    if(1){
       //ND280Log("%%% Mass: " << theLog->GetMass(true)/kg/1000.0 << " ton"
       //<< " Volume: " << theG4PhysVol->GetName());
       G4cout << "%%% Mass: " << theLog->GetMass(true)/kg/1000.0 << " ton"

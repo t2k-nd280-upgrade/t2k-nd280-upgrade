@@ -75,23 +75,39 @@ public :
   G4double GetXMLSideTPCDownPos2_Y(){return fSideTPCDownPos2_Y;};
   G4double GetXMLSideTPCDownPos2_Z(){return fSideTPCDownPos2_Z;};
 
-  G4bool   GetXMLTargetdefault1(){return fTargetdefault1;};
-  G4double GetXMLTargetlength1() {return fTargetlength1;};
-  G4double GetXMLTargetwidth1()  {return fTargetwidth1;};
-  G4double GetXMLTargetheight1() {return fTargetheight1;};
+  G4bool   GetXMLTargetdefault1() {return fTargetdefault1;};
+  G4String GetXMLTargetMaterial1(){return fTargetMaterial1;};
+  G4double GetXMLTargetlength1()  {return fTargetlength1;};
+  G4double GetXMLTargetwidth1()   {return fTargetwidth1;};
+  G4double GetXMLTargetheight1()  {return fTargetheight1;};
+  G4double GetXMLTargetPos1_X()   {return fTargetPos1_X;};
+  G4double GetXMLTargetPos1_Y()   {return fTargetPos1_Y;};
+  G4double GetXMLTargetPos1_Z()   {return fTargetPos1_Z;};
 
-  G4double GetXMLTargetPos1_X()  {return fTargetPos1_X;};
-  G4double GetXMLTargetPos1_Y()  {return fTargetPos1_Y;};
-  G4double GetXMLTargetPos1_Z()  {return fTargetPos1_Z;};
+  G4bool   GetXMLTargetdefault2() {return fTargetdefault2;};
+  G4String GetXMLTargetMaterial2(){return fTargetMaterial2;};
+  G4double GetXMLTargetlength2()  {return fTargetlength2;};
+  G4double GetXMLTargetwidth2()   {return fTargetwidth2;};
+  G4double GetXMLTargetheight2()  {return fTargetheight2;};
+  G4double GetXMLTargetPos2_X()   {return fTargetPos2_X;};
+  G4double GetXMLTargetPos2_Y()   {return fTargetPos2_Y;};
+  G4double GetXMLTargetPos2_Z()   {return fTargetPos2_Z;};
 
-  G4bool   GetXMLTargetdefault2(){return fTargetdefault2;};
-  G4double GetXMLTargetlength2() {return fTargetlength2;};
-  G4double GetXMLTargetwidth2()  {return fTargetwidth2;};
-  G4double GetXMLTargetheight2() {return fTargetheight2;};
+  G4bool   GetXMLFGDdefault1()   {return fFGDdefault1;};
+  G4double GetXMLFGDlength1()    {return fFGDlength1;};
+  G4double GetXMLFGDwidth1()     {return fFGDwidth1;};
+  G4double GetXMLFGDheight1()    {return fFGDheight1;};
+  G4double GetXMLFGDPos1_X()     {return fFGDPos1_X;};
+  G4double GetXMLFGDPos1_Y()     {return fFGDPos1_Y;};
+  G4double GetXMLFGDPos1_Z()     {return fFGDPos1_Z;};
 
-  G4double GetXMLTargetPos2_X()  {return fTargetPos2_X;};
-  G4double GetXMLTargetPos2_Y()  {return fTargetPos2_Y;};
-  G4double GetXMLTargetPos2_Z()  {return fTargetPos2_Z;};
+  G4bool   GetXMLFGDdefault2()   {return fFGDdefault2;};
+  G4double GetXMLFGDlength2()    {return fFGDlength2;};
+  G4double GetXMLFGDwidth2()     {return fFGDwidth2;};
+  G4double GetXMLFGDheight2()    {return fFGDheight2;};
+  G4double GetXMLFGDPos2_X()     {return fFGDPos2_X;};
+  G4double GetXMLFGDPos2_Y()     {return fFGDPos2_Y;};
+  G4double GetXMLFGDPos2_Z()     {return fFGDPos2_Z;};
 
   G4bool   GetXMLUseTPCUp1()        {return fUseTPCUp1;};
   G4bool   GetXMLUseTPCDown1()      {return fUseTPCDown1;};
@@ -145,6 +161,7 @@ private :
   G4double fSideTPCDownPos2_Z;
 
   G4bool   fTargetdefault1;
+  G4String fTargetMaterial1;
   G4double fTargetlength1;
   G4double fTargetwidth1;
   G4double fTargetheight1;
@@ -153,12 +170,29 @@ private :
   G4double fTargetPos1_Z;
 
   G4bool   fTargetdefault2;
+  G4String fTargetMaterial2;
   G4double fTargetlength2;
   G4double fTargetwidth2;
   G4double fTargetheight2;
   G4double fTargetPos2_X;
   G4double fTargetPos2_Y;
   G4double fTargetPos2_Z;
+
+  G4bool   fFGDdefault1;
+  G4double fFGDlength1;
+  G4double fFGDwidth1;
+  G4double fFGDheight1;
+  G4double fFGDPos1_X;
+  G4double fFGDPos1_Y;
+  G4double fFGDPos1_Z;
+
+  G4bool   fFGDdefault2;
+  G4double fFGDlength2;
+  G4double fFGDwidth2;
+  G4double fFGDheight2;
+  G4double fFGDPos2_X;
+  G4double fFGDPos2_Y;
+  G4double fFGDPos2_Z;
 
   G4bool fUseTPCUp1;
   G4bool fUseTPCDown1;

@@ -84,24 +84,49 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseTPCUp1"   ,fUseTPCUp1);
     XML2Bool("UseTPCDown2" ,fUseTPCDown2);
     XML2Bool("UseTPCUp2"   ,fUseTPCUp2);
-
+    
     // Target 1
-    XML2Bool("Targetdefault1" ,fTargetdefault1);
-    XML2Double("Targetlength1",fTargetlength1);
-    XML2Double("Targetwidth1" ,fTargetwidth1);
-    XML2Double("Targetheight1",fTargetheight1);
-    XML2Double("TargetPos1_X" ,fTargetPos1_X);
-    XML2Double("TargetPos1_Y" ,fTargetPos1_Y);
-    XML2Double("TargetPos1_Z" ,fTargetPos1_Z);
+    XML2Bool("Targetdefault1"   ,fTargetdefault1);
+    XML2String("TargetMaterial1",fTargetMaterial1);
+    XML2Double("Targetlength1"  ,fTargetlength1);
+    XML2Double("Targetwidth1"   ,fTargetwidth1);
+    XML2Double("Targetheight1"  ,fTargetheight1);
+    XML2Double("TargetPos1_X"   ,fTargetPos1_X);
+    XML2Double("TargetPos1_Y"   ,fTargetPos1_Y);
+    XML2Double("TargetPos1_Z"   ,fTargetPos1_Z);
     
     // Target 2
-    XML2Bool("Targetdefault2",fTargetdefault2);
-    XML2Double("Targetlength2",fTargetlength2);
-    XML2Double("Targetwidth2", fTargetwidth2);
-    XML2Double("Targetheight2",fTargetheight2);
-    XML2Double("TargetPos2_X" ,fTargetPos2_X);
-    XML2Double("TargetPos2_Y" ,fTargetPos2_Y);
-    XML2Double("TargetPos2_Z" ,fTargetPos2_Z);
+    XML2Bool("Targetdefault2"   ,fTargetdefault2);
+    XML2String("TargetMaterial2",fTargetMaterial2);
+    XML2Double("Targetlength2"  ,fTargetlength2);
+    XML2Double("Targetwidth2"   ,fTargetwidth2);
+    XML2Double("Targetheight2"  ,fTargetheight2);
+    XML2Double("TargetPos2_X"   ,fTargetPos2_X);
+    XML2Double("TargetPos2_Y"   ,fTargetPos2_Y);
+    XML2Double("TargetPos2_Z"   ,fTargetPos2_Z);
+
+    // // FGD 1
+    // XML2Bool("FGDdefault1" ,fFGDdefault1);
+    // XML2Double("FGDlength1",fFGDlength1);
+    // XML2Double("FGDwidth1" ,fFGDwidth1);
+    // XML2Double("FGDheight1",fFGDheight1);
+    // XML2Double("FGDPos1_X" ,fFGDPos1_X);
+    // XML2Double("FGDPos1_Y" ,fFGDPos1_Y);
+    // XML2Double("FGDPos1_Z" ,fFGDPos1_Z);
+    
+    // // FGD 2
+    // XML2Bool("FGDdefault2",fFGDdefault2);
+    // XML2Double("FGDlength2",fFGDlength2);
+    // XML2Double("FGDwidth2", fFGDwidth2);
+    // XML2Double("FGDheight2",fFGDheight2);
+    // XML2Double("FGDPos2_X" ,fFGDPos2_X);
+    // XML2Double("FGDPos2_Y" ,fFGDPos2_Y);
+    // XML2Double("FGDPos2_Z" ,fFGDPos2_Z);
+    
+    // // Use FGDs
+    // XML2Bool("UseFGD1",fUseFGD1);
+    // XML2Bool("UseFGD2",fUseFGD2);
+
     
     myfile.close();
   }

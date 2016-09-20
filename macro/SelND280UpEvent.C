@@ -126,11 +126,11 @@ void SelND280UpEvent
   // Efficiency
   
   // My
-  // const int NBins_Mom = 33;
-  // double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1200,1400,
-  // 				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,10000};
-  // const int NBins_CosTh = 20;
-  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+  const int NBins_Mom = 33;
+  double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1200,1400,
+  				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,10000};
+  const int NBins_CosTh = 20;
+  double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
 
   // // Simon - BANFF
   // const int NBins_Mom = 36;
@@ -139,19 +139,26 @@ void SelND280UpEvent
   // const int NBins_CosTh = 26;
   // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.7,-0.5,-0.2,-0.1,0.,0.1,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.92,0.94,0.98,0.99,1};
 
-  // // Final - Muons
+  // // Final - Muons (Numu)
   // const int NBins_Mom = 33;
   // double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1200,1400,
   //  				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
   // const int NBins_CosTh = 10;
   // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
 
-  // Final - Pions
-  const int NBins_Mom = 21;
-  double BinEdges_Mom[NBins_Mom+1] = {0,100,200,300,400,500,600,700,800,900,1000,1400,
-   				      1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
-  const int NBins_CosTh = 10;
-  double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
+  // // Final - Pions (Numu)
+  // const int NBins_Mom = 21;
+  // double BinEdges_Mom[NBins_Mom+1] = {0,100,200,300,400,500,600,700,800,900,1000,1400,
+  //  				      1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
+  // const int NBins_CosTh = 10;
+  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
+
+  // // Final - Muons (NumuBar)
+  // const int NBins_Mom = 21;
+  // double BinEdges_Mom[NBins_Mom+1] = {0,100,200,300,400,500,600,700,800,900,1000,1400,
+  //  				      1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
+  // const int NBins_CosTh = 8;
+  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.6,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
 
   const int NBins_Phi = 20;
   double BinEdges_Phi[NBins_Phi+1];
@@ -513,7 +520,7 @@ void SelND280UpEvent
       //
       // Cut 2: vtx in FV
       //
-            
+      
       if(fabs(pdg_vtxtrk1)==12 || 
 	 fabs(pdg_vtxtrk1)==14 ||
 	 fabs(pdg_vtxtrk1)==16 

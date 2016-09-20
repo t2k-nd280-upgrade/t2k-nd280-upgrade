@@ -168,6 +168,10 @@
      false
    </Targetdefault1>
    
+   <TargetMaterial1>
+     Water
+   </TargetMaterial1>
+
    <Targetlength1>
      2000
    </Targetlength1>
@@ -194,6 +198,10 @@
    <Targetdefault2> 
      false
    </Targetdefault2>
+
+   <TargetMaterial2>
+     WAGASHIScintillatorEmpty
+   </TargetMaterial2>
 
    <Targetlength2>
      2000 

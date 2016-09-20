@@ -52,19 +52,30 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"               unless defined $resource;
-$tag             = "g4ND280Up_6E20_30cm_Cluster"    unless defined $tag;
+#$tag             = "g4ND280Up_6E20_30cm_width1807mm_numubar_Cluster"    unless defined $tag;
+$tag             = "g4ND280Up_6E20_nd280current_numu_Cluster"    unless defined $tag;
 
-#$config_file     = "configuration_30cm.xml" unless defined $config_file;
-#$config_file     = "configuration_cluster.xml" unless defined $config_file;
-$config_file     = "configuration_cluster_30cm.xml" unless defined $config_file;
+#$config_file     = "config/configuration.xml" unless defined $config_file;
+#$config_file     = "config/configuration_30cm.xml" unless defined $config_file;
+#$config_file     = "config/configuration_width1807mm.xml" unless defined $config_file;
+#$config_file     = "config/configuration_30cm_width1807mm.xml" unless defined $config_file;
+$config_file     = "config/configuration_nd280current.xml" unless defined $config_file;
 
-$vis_file        = "vis_cluster.mac"           unless defined $vis_file;
-#$vis_file        = "vis.mac"           unless defined $vis_file;
+#$config_file     = "config/configuration_cluster.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_30cm.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_width1807mm.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_30cm_width1807mm.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_nd280current.xml" unless defined $config_file;
 
-#$nruns           = 1                          unless defined $nruns;      # number of jobs
-#$nexpts          = 10                        unless defined $nexpts;     # number of events per job
 
-$nruns           = 68                          unless defined $nruns;      # number of jobs
+$vis_file        = "mac/vis.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_nd280current.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_cluster_nd280current.mac"           unless defined $vis_file;
+
+#$nruns           = 68                          unless defined $nruns;      # number of jobs (6E20POT - thick=30cm, width=230cm - default)
+#$nruns           = 44                          unless defined $nruns;      # number of jobs (6E20POT - thick=30cm, width=180cm)
+$nruns           = 41                          unless defined $nruns;      # number of jobs (6E20POT - nd280 current)
 $nexpts          = 5000                        unless defined $nexpts;     # number of events per job
 $first_expt      = 0                           unless defined $first_expt; # first event
 

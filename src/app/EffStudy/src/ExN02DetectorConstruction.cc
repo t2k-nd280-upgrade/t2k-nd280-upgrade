@@ -328,10 +328,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4LogicalVolume *tpc1Volume = this->GetPieceTPC("ForwTPC1",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
-    // position = - (half TPC2 + Full Target + half TPC1)
     currentZ = - (GetLengthForwTPC()/2. + GetTargetFullLength1() + GetLengthForwTPC()/2.); 
-    //double downstreamedge_z = -solidTracker->GetZHalfLength();
-    //currentZ = downstreamedge_z + GetLengthForwTPC()/2.; 
     SetForwTPCPos1(0,0,currentZ);
   }
   else { // from XML file
@@ -405,10 +402,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4LogicalVolume *tpc3Volume = this->GetPieceTPC("ForwTPC3",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
-    // position = + (half TPC2 + Full Target + half TPC1)
     currentZ = + (GetLengthForwTPC()/2. + GetTargetFullLength1() + GetLengthForwTPC()/2.); 
-    //double upstreamedge_z = +solidTracker->GetZHalfLength();
-    //currentZ = upstreamedge_z - GetLengthForwTPC()/2.; 
     SetForwTPCPos3(0,0,currentZ);
   }
   else { // from XML file
@@ -436,6 +430,140 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << G4endl << G4endl;
 
 
+
+
+
+
+
+
+
+
+  // //------------------------------ 
+  // // FGD 1 - Downstream 
+  // //------------------------------
+  
+  // if( ND280XMLInput->GetXMLUseFGD1() ){ 
+    
+  //   G4String cParentNameFGD = physiTracker->GetName();
+    
+  //   const G4String cNameSolidFGD1     = cParentNameFGD+"/fgd1";
+  //   const G4String cNameLogicFGD1     = cParentNameFGD+"/FGD1";
+  //   const G4String cNamePhysiFGD1     = cParentNameFGD+"/FGD1";
+    
+  //   const G4String cFGDMater1 = "FGDScintillator"; 
+  //   FGDMater1  = FindMaterial(cFGDMater1);  
+    
+  //   G4double FGDSizeLength1  = 0.5 * GetFGDFullLength1();    // Half length of the FGD 1
+  //   G4double FGDSizeWidth1   = 0.5 * GetFGDFullWidth1();     // Half width of the FGD 1
+  //   G4double FGDSizeHeight1  = 0.5 * GetFGDFullHeight1();    // Half height of the FGD 1
+    
+  //   G4double HalfFGDHeight1  = 0.5 * GetFGDFullHeight1();
+    
+  //   if( ND280XMLInput->GetXMLFGDdefault1() ){ // default
+  //     G4double FGD1_Z = - (GetLengthForwTPC()/2. + GetFGDFullLength1()/2.);
+  //     SetFGDPos1(0,0,FGD1_Z);
+  //   }
+  //   else { // from XML file
+  //     G4double x = ND280XMLInput->GetXMLFGDPos1_X();
+  //     G4double y = ND280XMLInput->GetXMLFGDPos1_Y();
+  //     G4double z = ND280XMLInput->GetXMLFGDPos1_Z();
+  //     SetFGDPos1(x,y,z);
+  //   }
+    
+  //   solidFGD1 = new G4Box(cNameSolidFGD1,FGDSizeWidth1,FGDSizeHeight1,FGDSizeLength1);
+  //   logicFGD1 = new G4LogicalVolume(solidFGD1,FGDMater1,cNameLogicFGD1,0,0,0);
+  //   physiFGD1 = new G4PVPlacement(0,                 // no rotation
+  // 				  GetFGDPos1(),    // at (x,y,z)
+  // 				  logicFGD1,       // its logical volume  	  
+  // 				  cNamePhysiFGD1,  // its name
+  // 				  logicTracker,      // its mother  volume
+  // 				  //logicWorld,      // its mother  volume
+  // 				  false,             // no boolean operations
+  // 				  0);                 // copy number 
+  //   //fCheckOverlaps);   
+    
+  //   G4cout << "FGD 1: " << G4endl
+  // 	   << " - dimensions: "
+  // 	   << GetFGDFullWidth1()/mm  << " (width) x " 
+  // 	   << GetFGDFullHeight1()/mm << " (height) x " 
+  // 	   << GetFGDFullLength1()/mm << " (length) mm^3" 
+  // 	   << " of " << logicFGD1->GetMaterial()->GetName() << G4endl; 
+  //   G4cout << " mass="<<logicFGD1->GetMass()/kg   <<" kg" << G4endl; 
+  //   G4cout << " name: " << logicFGD1->GetName() << G4endl;
+  //   G4cout << " - position: ( " 
+  // 	   << GetFGDPos1().x()/mm << ", "
+  // 	   << GetFGDPos1().y()/mm << ", "
+  // 	   << GetFGDPos1().z()/mm << " ) mm"  
+  // 	   << G4endl << G4endl;
+  // }
+
+  // //------------------------------ 
+  // // FGD 2 - Upstream 
+  // //------------------------------
+
+  // if( ND280XMLInput->GetXMLUseFGD2() ){ 
+
+  //   const G4String cNameSolidFGD2     = cParentNameFGD+"/fgd2";
+  //   const G4String cNameLogicFGD2     = cParentNameFGD+"/FGD2";
+  //   const G4String cNamePhysiFGD2     = cParentNameFGD+"/FGD2";
+    
+  //   const G4String cFGDMater2 = "ActiveWater";  
+  //   FGDMater2  = FindMaterial(cFGDMater2);  
+    
+  //   G4double FGDSizeLength2  = 0.5 * GetFGDFullLength2();    // Half length of the FGD 1
+  //   G4double FGDSizeWidth2   = 0.5 * GetFGDFullWidth2();     // Half width of the FGD 1
+  //   G4double FGDSizeHeight2  = 0.5 * GetFGDFullHeight2();    // Half height of the FGD 1
+    
+  //   G4double HalfFGDHeight2  = 0.5 * GetFGDFullHeight2();
+    
+  //   if( ND280XMLInput->GetXMLFGDdefault2() ){ // default
+  //     G4double FGD2_Z = GetLengthForwTPC()/2. + GetFGDFullLength2()/2.;
+  //     SetFGDPos2(0,0,FGD2_Z);
+  //   }
+  //   else { // from XML file
+  //     G4double x = ND280XMLInput->GetXMLFGDPos2_X();
+  //     G4double y = ND280XMLInput->GetXMLFGDPos2_Y();
+  //     G4double z = ND280XMLInput->GetXMLFGDPos2_Z();
+  //     SetFGDPos2(x,y,z);
+  //   }
+    
+  //   solidFGD2 = new G4Box(cNameSolidFGD2,FGDSizeWidth2,FGDSizeHeight2,FGDSizeLength2);
+  //   logicFGD2 = new G4LogicalVolume(solidFGD2,FGDMater2,cNameLogicFGD2,0,0,0);
+  //   physiFGD2 = new G4PVPlacement(0,                 // no rotation
+  // 				  GetFGDPos2(),    // at (x,y,z)
+  // 				  logicFGD2,       // its logical volume  	  
+  // 				  cNamePhysiFGD2,  // its name
+  // 				  logicTracker,      // its mother  volume
+  // 				  //logicWorld,      // its mother  volume
+  // 				  false,             // no boolean operations
+  // 				  0);                 // copy number 
+  //   //fCheckOverlaps);   
+    
+  //   G4cout << "FGD 2: " << G4endl
+  // 	   << " - dimensions: "
+  // 	   << GetFGDFullWidth2()/mm  << " (width) x " 
+  // 	   << GetFGDFullHeight2()/mm << " (height) x " 
+  // 	   << GetFGDFullLength2()/mm << " (length) mm^3" 
+  // 	   << " of " << logicFGD2->GetMaterial()->GetName() << G4endl; 
+  //   G4cout << " mass="<<logicFGD2->GetMass()/kg   <<" kg" << G4endl;
+  //   G4cout << " name: " << logicFGD2->GetName() << G4endl;
+  //   G4cout << " - position: ( " 
+  // 	   << GetFGDPos2().x()/mm << ", "
+  // 	   << GetFGDPos2().y()/mm << ", "
+  // 	   << GetFGDPos2().z()/mm << " ) mm"  
+  // 	   << G4endl << G4endl;
+  // }
+
+
+
+
+
+
+
+
+
+
+
   //------------------------------ 
   // Target 1 - Upstream - Carbon 
   //------------------------------
@@ -447,7 +575,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   const G4String cNamePhysiTarget1     = cParentNameTarget+"/Target1";
   
   //const G4String cTargetMater1  = "ActiveWater";     //fgd active water  
-  const G4String cTargetMater1 = "Water"; // WAGASHI water
+  //const G4String cTargetMater1 = "Water"; // WAGASHI water
+  //const G4String cTargetMater1 = "FGDScintillator"; 
+  const G4String cTargetMater1 = ND280XMLInput->GetXMLTargetMaterial1();
   TargetMater1  = FindMaterial(cTargetMater1);  
 
   G4double targetSizeLength1  = 0.5 * GetTargetFullLength1();    // Half length of the Target 1
@@ -502,9 +632,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   const G4String cNamePhysiTarget2     = cParentNameTarget+"/Target2";
   
   //const G4String cTargetMater2  = "FGDScintillator";  
-  const G4String cTargetMater2 = "WAGASHIScintillatorEmpty";  
+  //const G4String cTargetMater2 = "WAGASHIScintillatorEmpty"; 
+  //const G4String cTargetMater2 = "Water";  
+  //const G4String cTargetMater2 = "FGD2Uniform";  
+  const G4String cTargetMater2 = ND280XMLInput->GetXMLTargetMaterial2(); 
   TargetMater2  = FindMaterial(cTargetMater2);  
-
+  
   G4double targetSizeLength2  = 0.5 * GetTargetFullLength2();    // Half length of the Target 1
   G4double targetSizeWidth2   = 0.5 * GetTargetFullWidth2();     // Half width of the Target 1
   G4double targetSizeHeight2  = 0.5 * GetTargetFullHeight2();    // Half height of the Target 1
@@ -532,8 +665,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				   //logicWorld,      // its mother  volume
 				   false,             // no boolean operations
 				   0);                 // copy number 
-    //fCheckOverlaps);   
-
+  //fCheckOverlaps);   
+  
   G4cout << "Target 2: " << G4endl
 	 << " - dimensions: "
 	 << GetTargetFullWidth2()/mm  << " (width) x " 
@@ -547,7 +680,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	 << GetTargetPos2().y()/mm << ", "
 	 << GetTargetPos2().z()/mm << " ) mm"  
 	 << G4endl << G4endl;
-
   
   //
   //------------------------------ 
@@ -905,8 +1037,24 @@ void ExN02DetectorConstruction::setMaterial_Target1(G4String materialName)
   if (pttoMaterial)
     {TargetMater1 = pttoMaterial;
       logicTarget1->SetMaterial(pttoMaterial); 
-      G4cout << "\n----> The target 1 is " << GetTargetFullLength1()/mm << " mm of "
-             << materialName << G4endl;
+      
+      //G4cout << "\n----> The target 1 is " << GetTargetFullLength1()/mm << " mm of "
+      //<< materialName << G4endl;
+      
+      G4cout << "Target 1: " << G4endl
+	     << " - dimensions: "
+	     << GetTargetFullWidth1()/mm  << " (width) x " 
+	     << GetTargetFullHeight1()/mm << " (height) x " 
+	     << GetTargetFullLength1()/mm << " (length) mm^3" 
+	     << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
+      G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl; 
+      G4cout << " name: " << logicTarget1->GetName() << G4endl;
+      G4cout << " - position: ( " 
+	     << GetTargetPos1().x()/mm << ", "
+	     << GetTargetPos1().y()/mm << ", "
+	     << GetTargetPos1().z()/mm << " ) mm"  
+	     << G4endl << G4endl;
+      
     }             
 }
 
@@ -919,8 +1067,23 @@ void ExN02DetectorConstruction::setMaterial_Target2(G4String materialName)
   if (pttoMaterial)
     {TargetMater2 = pttoMaterial;
       logicTarget2->SetMaterial(pttoMaterial); 
-      G4cout << "\n----> The target 2 is " << GetTargetFullLength2()/mm << " mm of "
-             << materialName << G4endl;
+      
+      //G4cout << "\n----> The target 2 is " << GetTargetFullLength2()/mm << " mm of "
+      //<< materialName << G4endl;
+
+      G4cout << "Target 2: " << G4endl
+	     << " - dimensions: "
+	     << GetTargetFullWidth2()/mm  << " (width) x " 
+	     << GetTargetFullHeight2()/mm << " (height) x " 
+	     << GetTargetFullLength2()/mm << " (length) mm^3" 
+	     << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
+      G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl; 
+      G4cout << " name: " << logicTarget2->GetName() << G4endl;
+      G4cout << " - position: ( " 
+	     << GetTargetPos2().x()/mm << ", "
+	     << GetTargetPos2().y()/mm << ", "
+	     << GetTargetPos2().z()/mm << " ) mm"  
+	     << G4endl << G4endl;
     }             
 }
  
@@ -1517,7 +1680,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   FGD2Uniform->AddMaterial(activeWater,    fractionmass = 51.247*perCent);
   FGD2Uniform->AddMaterial(fgdScintillator,fractionmass = 48.753*perCent);
   gMan->SetDrawAtt(FGD2Uniform,kAzure+8);
-
+  
   // WAGASHI
   
   //Scintillator

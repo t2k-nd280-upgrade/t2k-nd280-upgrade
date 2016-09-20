@@ -102,7 +102,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4double targetYHalfLength = 0;
     
     G4LogicalVolume* worlLV
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
+      = G4LogicalVolumeStore::GetInstance()->GetVolume("/World");
     G4Box* worldBox = 0;
     if ( worlLV) worldBox = dynamic_cast< G4Box*>(worlLV->GetSolid()); 
     if ( worldBox ) {
@@ -118,7 +118,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     } 
     
     G4LogicalVolume* targetLV
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("Target");
+      = G4LogicalVolumeStore::GetInstance()->GetVolume("/World/Basket/Tracker/Target1");
     G4Box* targetBox = 0;
     if ( targetLV) targetBox = dynamic_cast< G4Box*>(targetLV->GetSolid()); 
     if ( targetBox ) {

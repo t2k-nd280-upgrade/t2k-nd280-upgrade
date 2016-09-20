@@ -22,8 +22,8 @@
 
 
 # Set geometry
-/N02/det/setTargetMate1 FGDScintillator
-/N02/det/setTargetMate2 FGD2Uniform #ActiveWater
+#/N02/det/setTargetMate1 FGDScintillator
+#/N02/det/setTargetMate2 FGD2Uniform #ActiveWater
 
 # Test geometry (overlaps...)	
 /geometry/test/run
@@ -31,6 +31,7 @@
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
 /generator/type Generator
+#/generator/type ParticleGun
 		
 # Set the particle gun 
 /gun/particle mu-

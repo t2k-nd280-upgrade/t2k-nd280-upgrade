@@ -582,47 +582,51 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     }
    
     // Get the Incoming Vertex
-    G4cout << "Incoming Vertex:" << vtxNumber << G4endl;
-    
-    const G4PrimaryVertex *incvtx = vInfo->GetInformationalVertex();
 
-    G4cout << " w/ " << incvtx->GetNumberOfParticle() << " primaries" 
-  	   << " at " 
-  	   // << " (" << G4BestUnit(vtx->GetX0(),"Length") 
-  	   // << ", " << G4BestUnit(vtx->GetY0(),"Length") 
-  	   // << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
-  	   // << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
-  	   << " (" << incvtx->GetX0() / mm
-  	   << ", " << incvtx->GetY0() / mm
-  	   << ", " << incvtx->GetZ0() / mm 
-  	   << ", " << incvtx->GetT0() / second << ")"
-  	   << G4endl;
-
-    for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
-      G4PrimaryParticle* prim = incvtx->GetPrimary(nu);
-      G4ParticleDefinition* partDef = prim->GetG4code();
-      G4ThreeVector dir = prim->GetMomentum().unit();
-      G4cout << "  " << partDef->GetParticleName() << " "
-    	     << prim->GetPDGcode()
-    	     << " w/ "
-    	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
-    	     << "  Direction: (" << dir.x()
-    	     << ", " << dir.y()
-    	     << ", " << dir.z() << ")"
-    	     << G4endl;	
-      G4int pdg = prim->GetPDGcode();
-    
-      //G4cout << pdg << " " << fabs(pdg) << G4endl;
+    if(vInfo){
       
-      if( fabs(pdg)==12 ||
-    	  fabs(pdg)==14 ||
-    	  fabs(pdg)==16  ){	
-    	//fVecVtx_NuPDG.push_back(prim->GetPDGcode());
+      G4cout << "Incoming Vertex:" << vtxNumber << G4endl;
+      
+      const G4PrimaryVertex *incvtx = vInfo->GetInformationalVertex();
+      
+      G4cout << " w/ " << incvtx->GetNumberOfParticle() << " primaries" 
+	     << " at " 
+	// << " (" << G4BestUnit(vtx->GetX0(),"Length") 
+	// << ", " << G4BestUnit(vtx->GetY0(),"Length") 
+	// << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
+	// << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
+	     << " (" << incvtx->GetX0() / mm
+	     << ", " << incvtx->GetY0() / mm
+	     << ", " << incvtx->GetZ0() / mm 
+	     << ", " << incvtx->GetT0() / second << ")"
+	     << G4endl;
+      
+      for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
+	G4PrimaryParticle* prim = incvtx->GetPrimary(nu);
+	G4ParticleDefinition* partDef = prim->GetG4code();
+	G4ThreeVector dir = prim->GetMomentum().unit();
+	G4cout << "  " << partDef->GetParticleName() << " "
+	       << prim->GetPDGcode()
+	       << " w/ "
+	       << G4BestUnit(prim->GetMomentum().mag(),"Energy")
+	       << "  Direction: (" << dir.x()
+	       << ", " << dir.y()
+	       << ", " << dir.z() << ")"
+	       << G4endl;	
+	G4int pdg = prim->GetPDGcode();
+	
+	//G4cout << pdg << " " << fabs(pdg) << G4endl;
+	
+	if( fabs(pdg)==12 ||
+	    fabs(pdg)==14 ||
+	    fabs(pdg)==16  ){	
+	  //fVecVtx_NuPDG.push_back(prim->GetPDGcode());
+	}
       }
     }
     // Get the Decay Vertex
     // Get the Production Vertex
-
+    
     // Fill the Ntuple
     
     //fVecVtx_X.push_back(vtx->GetX0() / mm);
@@ -633,7 +637,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     //fVecVtx_EvtProb  .push_back(vInfo->GetWeight());
     //fVecVtx_EvtWeight.push_back(vInfo->GetProbability()); 
   }
-
+  
   fNVtx = vtxNumber; // get # of vertices in the event
      
   

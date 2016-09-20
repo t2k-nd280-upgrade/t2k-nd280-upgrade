@@ -30,12 +30,13 @@
 
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
-/generator/type Generator
+#/generator/type Generator
+/generator/type ParticleGun
 		
 # Set the particle gun 
 /gun/particle mu-
 /gun/energy 600 MeV  # kinetic energy
-/gun/direction 0 1 0 # momentum direction
+/gun/direction 0 0 1 # momentum direction
 /gun/position 0 0 0  # starting position
 /gun/number   1      # number of particles
 
@@ -77,7 +78,8 @@
 #/vis/viewer/set/style wireframe
 
 # Draw coordinate axes:
-/vis/scene/add/axes 1 1 1 1 m
+#/vis/scene/add/axes 0 0 0 1 m auto true
+/vis/scene/add/axes
 
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:

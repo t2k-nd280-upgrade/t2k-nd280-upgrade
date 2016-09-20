@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/GENIE_nd280mc_23_8_16_6E20POT.root
+    GENIE/GENIE_nd280mc_ndcurrent_6E20POT.root
   </filename>
 
   <treename>  
@@ -167,6 +167,10 @@
    <Targetdefault1>
      true
    </Targetdefault1>
+
+   <TargetMaterial1>
+     FGDScintillator
+   </TargetMaterial1>
    
    <Targetlength1>
      303
@@ -194,6 +198,10 @@
    <Targetdefault2> 
      true
    </Targetdefault2>
+
+   <TargetMaterial2>
+     FGD2Uniform
+   </TargetMaterial2>
 
    <Targetlength2>
      303

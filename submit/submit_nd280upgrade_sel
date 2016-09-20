@@ -82,50 +82,82 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"                 unless defined $resource;
-$tag             = "SelND280Up_NuMu_6E20_30cm_width1807mm_newBin"           unless defined $tag;
+$tag             = "SelND280Up_NuMuBar_6E20_30cm_width1807mm_newBin"           unless defined $tag;
 
 #$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_60cm_All_7_9_16.root"  unless defined $inputfile;
 #$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_60cm_width1807mm_All_13_9_16.root"  unless defined $inputfile;
 #$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_30cm_All_8_9_16.root"  unless defined $inputfile;
-$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_30cm_width1807mm_All_13_9_16.root"  unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_30cm_width1807mm_All_13_9_16.root"  unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_30cm_width1807mm_numubar_All_16_9_16.root" unless defined $inputfile;
+$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_nd280current_numu_All_19_9_16.root" unless defined $inputfile;
 
 $first_expt      = 0                             unless defined $first_expt;
 
-#$nruns           = 1                             unless defined $nruns; 
-#$nexpts          = 60000                          unless defined $nexpts;
+# Numu Beam
 $nruns           = 17                             unless defined $nruns; 
 $nexpts          = 20000                          unless defined $nexpts;
+# NumuBar beam
+#$nruns           = 3                             unless defined $nruns; 
+#$nexpts          = 20000                          unless defined $nexpts;
 
 #
 # Selection cuts
 #
 
-# Fiducial Volume Target 1
-#$cut_fv1_minX    = -1150                      unless defined $cut_fv1_minX;
-#$cut_fv1_maxX    = +1150                      unless defined $cut_fv1_maxX;
-$cut_fv1_minX    = -903.5                      unless defined $cut_fv1_minX;
-$cut_fv1_maxX    = +903.5                      unless defined $cut_fv1_maxX;
 #
-$cut_fv1_minY    = -151.5                       unless defined $cut_fv1_minY;
-$cut_fv1_maxY    = +151.5                       unless defined $cut_fv1_maxY;
-#$cut_fv1_minY    = -300                       unless defined $cut_fv1_minY;
-#$cut_fv1_maxY    = +300                       unless defined $cut_fv1_maxY;
+# Horizontal Targets (ND280 upgrade)
 #
-$cut_fv1_minZ    = -2487                      unless defined $cut_fv1_minZ;
+# # Fiducial Volume Target 1
+# #$cut_fv1_minX    = -1150                      unless defined $cut_fv1_minX;
+# #$cut_fv1_maxX    = +1150                      unless defined $cut_fv1_maxX;
+# $cut_fv1_minX    = -903.5                      unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +903.5                      unless defined $cut_fv1_maxX;
+# #
+# $cut_fv1_minY    = -151.5                       unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +151.5                       unless defined $cut_fv1_maxY;
+# #$cut_fv1_minY    = -300                       unless defined $cut_fv1_minY;
+# #$cut_fv1_maxY    = +300                       unless defined $cut_fv1_maxY;
+# #
+# $cut_fv1_minZ    = -2487                      unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = -487                       unless defined $cut_fv1_maxZ;
+# # Fiducial Volume Target 2
+# #$cut_fv2_minX    = -1150                      unless defined $cut_fv2_minX;
+# #$cut_fv2_maxX    = +1150                      unless defined $cut_fv2_maxX;
+# $cut_fv2_minX    = -903.5                      unless defined $cut_fv2_minX;
+# $cut_fv2_maxX    = +903.5                      unless defined $cut_fv2_maxX;
+# #
+# $cut_fv2_minY    = -151.5                       unless defined $cut_fv2_minY;
+# $cut_fv2_maxY    = +151.5                       unless defined $cut_fv2_maxY;
+# #$cut_fv2_minY    = -300                       unless defined $cut_fv2_minY;
+# #$cut_fv2_maxY    = +300                       unless defined $cut_fv2_maxY;
+# #
+# $cut_fv2_minZ    = +487                       unless defined $cut_fv2_minZ;
+# $cut_fv2_maxZ    = +2487                      unless defined $cut_fv2_maxZ;
+
+
+#
+# Vertical Targets (Current ND280)
+#
+# Fiducial FGD 1
+$cut_fv1_minX    = -932.15                      unless defined $cut_fv1_minX;
+$cut_fv1_maxX    = +932.15                      unless defined $cut_fv1_maxX;
+#
+$cut_fv1_minY    = -932.15                       unless defined $cut_fv1_minY;
+$cut_fv1_maxY    = +932.15                       unless defined $cut_fv1_maxY;
+#
+$cut_fv1_minZ    = -790                      unless defined $cut_fv1_minZ;
 $cut_fv1_maxZ    = -487                       unless defined $cut_fv1_maxZ;
-# Fiducial Volume Target 2
-#$cut_fv2_minX    = -1150                      unless defined $cut_fv2_minX;
-#$cut_fv2_maxX    = +1150                      unless defined $cut_fv2_maxX;
-$cut_fv2_minX    = -903.5                      unless defined $cut_fv2_minX;
-$cut_fv2_maxX    = +903.5                      unless defined $cut_fv2_maxX;
+# Fiducial FGD 2
+$cut_fv2_minX    = -932.15                      unless defined $cut_fv2_minX;
+$cut_fv2_maxX    = +932.15                      unless defined $cut_fv2_maxX;
 #
-$cut_fv2_minY    = -151.5                       unless defined $cut_fv2_minY;
-$cut_fv2_maxY    = +151.5                       unless defined $cut_fv2_maxY;
-#$cut_fv2_minY    = -300                       unless defined $cut_fv2_minY;
-#$cut_fv2_maxY    = +300                       unless defined $cut_fv2_maxY;
+$cut_fv2_minY    = -932.15                       unless defined $cut_fv2_minY;
+$cut_fv2_maxY    = +932.15                       unless defined $cut_fv2_maxY;
 #
 $cut_fv2_minZ    = +487                       unless defined $cut_fv2_minZ;
-$cut_fv2_maxZ    = +2487                      unless defined $cut_fv2_maxZ;
+$cut_fv2_maxZ    = +790                      unless defined $cut_fv2_maxZ;
+
+
 
 # Reject all NC and don't account for them in the efficiencies
 $docut_cc        = 1                             unless defined $docut_cc;
@@ -139,7 +171,7 @@ $docut_mater     = 0                             unless defined $docut_mater;
 
 # select interactions only in Fiducial Volume
 $docut_vertex    = 1                             unless defined $docut_vertex;
-$docut_target1   = 0                             unless defined $docut_target1;
+$docut_target1   = 0                            unless defined $docut_target1;
 $docut_target2   = 1                             unless defined $docut_target2;
 
 # select range of X vertex position
@@ -160,8 +192,8 @@ $cut_zmin        = -2487 + 300                   unless defined $docut_zmin;
 $cut_zmax        = -487 - 300                    unless defined $docut_zmax;
  
 # select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
-$docut_pdg       = 1                            unless defined $docut_pdg;
-$cut_pdg         = +211                            unless defined $cut_pdg; 
+$docut_pdg       = 1                             unless defined $docut_pdg;
+$cut_pdg         = +13                           unless defined $cut_pdg; 
 
 # select track parent ID. If 0 --> primary particle,
 $docut_parid     = 1                             unless defined $docut_parid;

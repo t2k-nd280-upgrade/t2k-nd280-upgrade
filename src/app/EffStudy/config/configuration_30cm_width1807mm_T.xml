@@ -7,54 +7,52 @@
 <Dependency_Details>
 
 <Dependency>
-  
+
   <StoreGeometry>
     1
   </StoreGeometry>
-  
+
   <IsRandomSeed>
     0
   </IsRandomSeed>
-  
-  <Generator>      
-    GENIE  
-  </Generator>
 
-  <Path2file>
-    /neutrino/data7/davide/files/ND280Upgrade/ 
-  </Path2file>
+   <Generator>      
+     GENIE  
+   </Generator>
 
-  <filename>
-    GENIE/GENIE_nd280mc_ndcurrent_6E20POT.root
-  </filename>
+   <Path2file>
+     /neutrino/data7/davide/files/ND280Upgrade/
+   </Path2file>
 
-  <treename>  
-    gRooTracker
-  </treename>
-  
-  <!--                        -->
-  <!-- Detector configuration -->
-  <!--                        -->
-  
-   <!-- Include detectors -->
+   <filename>
+     GENIE/GENIE_nd280mc_thick30cm_width1807mm_6E20POT.root
+   </filename>
    
+   <treename>  
+     gRooTracker
+   </treename>
+
+   <!--                        -->
+   <!-- Detector configuration -->
+   <!--                        -->
+
    <UseTPCDown1>
-     false
+     true
    </UseTPCDown1>
    <UseTPCDown2>
-     false
+     true
    </UseTPCDown2>
    <UseTPCUp1>
-     false
+     true
    </UseTPCUp1>
    <UseTPCUp2>
-     false
+    true
    </UseTPCUp2>
-   
+
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     true
+     false
    </forwTPCdefault>
 
    <forwTPCPos1_X>
@@ -64,7 +62,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -1277
+     -2978
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -84,7 +82,7 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     +1277
+     +2978
    </forwTPCPos3_Z>
 
 
@@ -94,7 +92,7 @@
    <sideTPCdefault1>
      false
    </sideTPCdefault1>
-   
+
    <sideTPClength1>
      2000  
    </sideTPClength1>
@@ -102,14 +100,14 @@
      2300
    </sideTPCwidth1>
    <sideTPCheight1> 
-     851.5  <!-- 1000 -->
+     1000
    </sideTPCheight1>
 
    <sideTPCUpPos1_X>
      0 
    </sideTPCUpPos1_X>
    <sideTPCUpPos1_Y>
-     725.75
+     651.5
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
      -1487
@@ -119,7 +117,7 @@
      0
    </sideTPCDownPos1_X>
    <sideTPCDownPos1_Y>
-     -725.75
+     -651.5
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
      -1487
@@ -130,7 +128,6 @@
    <sideTPCdefault2>
      false
    </sideTPCdefault2>
-   
    <sideTPClength2>
      2000
    </sideTPClength2>
@@ -138,14 +135,14 @@
      2300
    </sideTPCwidth2>
    <sideTPCheight2> 
-     851.5  <!-- 1000 -->
+     1000
    </sideTPCheight2>
 
    <sideTPCUpPos2_X>
      0
    </sideTPCUpPos2_X>
    <sideTPCUpPos2_Y>
-     725.75
+     651.5
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
      +1487
@@ -155,7 +152,7 @@
      0 
    </sideTPCDownPos2_X>
    <sideTPCDownPos2_Y>
-     -725.75
+     -651.5
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
      +1487
@@ -165,21 +162,21 @@
    <!-- Target 1 -->
 
    <Targetdefault1>
-     true
+     false
    </Targetdefault1>
-
-   <TargetMaterial1>
-     FGDScintillator
-   </TargetMaterial1>
    
+   <TargetMaterial1>
+     Water
+   </TargetMaterial1>
+
    <Targetlength1>
-     303
+     2000
    </Targetlength1>
    <Targetwidth1>  
-     1864.3
+     1807
    </Targetwidth1>
    <Targetheight1> 
-     1864.3
+     303 <!-- 303 -->
    </Targetheight1>
  
    <TargetPos1_X>
@@ -189,28 +186,28 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -638.5
+     -1487
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     true
+     false
    </Targetdefault2>
 
    <TargetMaterial2>
-     FGD2Uniform
+     WAGASHIScintillatorEmpty
    </TargetMaterial2>
 
    <Targetlength2>
-     303
+     2000 
    </Targetlength2>
    <Targetwidth2>  
-     1864.3
+     1807
    </Targetwidth2>
    <Targetheight2> 
-     1864.3  
+     303 <!-- 303 --> 
    </Targetheight2>
 
    <TargetPos2_X>
@@ -220,8 +217,64 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +638.5
+     +1487
    </TargetPos2_Z>
+
+
+
+   <!-- FGD 1 -->
+
+   <FGDdefault1>
+     false
+   </FGDdefault1>
+   
+   <FGDlength1>
+     2000
+   </FGDlength1>
+   <FGDwidth1>  
+     1807
+   </FGDwidth1>
+   <FGDheight1> 
+     303 <!-- 303 -->
+   </FGDheight1>
+ 
+   <FGDPos1_X>
+     0
+   </FGDPos1_X>
+   <FGDPos1_Y>
+     0
+   </FGDPos1_Y>
+   <FGDPos1_Z>
+     -1487
+   </FGDPos1_Z>
+
+   
+   <!-- FGD 2 -->
+
+   <FGDdefault2> 
+     false
+   </FGDdefault2>
+
+   <FGDlength2>
+     2000 
+   </FGDlength2>
+   <FGDwidth2>  
+     1807
+   </FGDwidth2>
+   <FGDheight2> 
+     303 <!-- 303 --> 
+   </FGDheight2>
+
+   <FGDPos2_X>
+     0
+   </FGDPos2_X>
+   <FGDPos2_Y>
+     0
+   </FGDPos2_Y>
+   <FGDPos2_Z>
+     +1487
+   </FGDPos2_Z>
+
 
    
 </Dependency>
