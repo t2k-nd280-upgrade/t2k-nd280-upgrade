@@ -1,0 +1,12 @@
+--- Cut levels --------
+ < highlandCorrections.mom_corrections.sigma_x = 0.800 >   // minimum accum level to save the event
+ < highlandCorrections.mom_corrections.B = 0.2 >   // minimum accum level to save the event
+
+
+--- Event Weights ------------
+
+Enable/disable configurations with a single systematic (when EnableSingleWeightSystConfigurations = 1)
+and enable systematics in the "all_syst" configuration (when EnableAllSystematics = 1)
+
+ < highlandCorrections.mom_corrections.x0           = 115.103 >	
+

@@ -1,0 +1,45 @@
+package highlandUP/highlandIO
+version v0r0
+
+manager Anselmo Cervera <anselmo.cervera@cern.ch>
+author nd280-software@mailman.t2k.org
+
+branches cmt src doc app
+
+
+use psycheCore       * psyche
+use highlandEventModel * highlandUP
+use psycheEventModel * highlandUP
+use psycheNDUPUtils * highlandUP
+use ndupEvent * highlandUP
+
+# Build methods to include.
+document doxygen doxygen -group=documentation src/*.hxx src/*.cxx ../doc/*.dox
+document rootcint dictionary *_LinkDef.h
+
+# Build information used by packages that use this one.
+macro highlandIO_cppflags " -DHIGHLANDIO_USED -fPIC"
+macro highlandIO_linkopts "-L$(HIGHLANDIOROOT)/$(highlandIO_tag) -lhighlandIO -lCore"
+macro highlandIO_stamps " $(HIGHLANDIOROOT)/$(highlandIO_tag)/highlandIO.stamp"
+
+# The paths to find this library.
+path_remove PATH "$(HIGHLANDIOROOT)"
+path_prepend PATH "$(HIGHLANDIOROOT)/$(highlandIO_tag)"
+path_remove LD_LIBRARY_PATH "$(HIGHLANDIOROOT)"
+path_prepend LD_LIBRARY_PATH "$(HIGHLANDIOROOT)/$(highlandIO_tag)"
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "$(HIGHLANDIOROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+	     Darwin	       "$(HIGHLANDIOROOT)/$(highlandIO_tag)"
+
+
+# The library to build
+library highlandIO *.cxx ../dict/*.cxx 
+
+#application RunCreateMiniTree ../app/RunCreateMiniTree.cxx
+
+
+# tests
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
+
+

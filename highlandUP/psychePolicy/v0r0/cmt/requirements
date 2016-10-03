@@ -1,0 +1,85 @@
+package highlandUP/psychePolicy
+version v0r0
+
+manager Anselmo Cervera <anselmo.cervera@cern.ch>
+manager Alexander Izmaylov <izmaylov@inr.ru> 
+author nd280-software@mailman.t2k.org
+
+# Never use an installation area.  In the future, we may wish to override
+# this to help make gridification a bit easier.
+build_strategy without_install_area
+
+# The default policy used to compile psyche code.  This overrides the CMT
+#  default policy
+macro cppflags        "" \
+      alpha           "-nocompress -std arm -msg_quiet" \
+      OSF1            "-fpic" \
+      hp9000s780      "+Z" \
+      hp700_ux101     "-fpic" \
+      HP-UX           "+Z -Wc,-ansi_for_scope,on" \
+      hp_ux102        "-z +p -Wc,-ansi_for_scope,on +O2 +Onoinitcheck" \
+      Linux           "-g -pipe -O -Wall -ansi -Wctor-dtor-privacy -Wnon-virtual-dtor -fpic -Woverloaded-virtual " \
+      SunOS           "-KPIC" \
+      VisualC         '/nologo /DWIN32 /MD /W3 $(includes) /c' \
+      Darwin	      "-g -pipe -W -Wall -fsigned-char -fno-common -flat_namespace"
+
+macro cpp             "g++" \
+      insure          "insure" \
+      alpha           "cxx" \
+      OSF1            "g++" \
+      HP-UX           "aCC" \
+      hp700_ux101     "g++" \
+      hp_ux102        "aCC" \
+      AIX             "xlC" \
+      Linux           "g++" \
+      SunOS           "CC" \
+      VisualC         "cl.exe" \
+      Darwin	      "g++"
+
+macro cpplinkflags    "" \	
+      Linux           "-Wl,--no-as-needed" \
+      Darwin          " -bind_at_load"
+
+path_remove PATH "$(PSYCHEPOLICYROOT)"
+path_prepend PATH "$(PSYCHEPOLICYROOT)/scripts"
+
+#############################################################
+# Set up a make fragment to build the $(package)_version.hxx file.
+make_fragment version -header=version_header -trailer=version_trailer
+make_fragment doxygen -header=doxygen_header
+
+# Build the local documentation.
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
+
+#
+# Provide a default pattern for adding the package to the LD_LIBRARY_PATH 
+# To use  this a package needs
+# apply_pattern ld_library_path
+# in its requirements file
+#
+pattern ld_library_path \
+  path_remove LD_LIBRARY_PATH "/<package>/" ; \
+  path_append LD_LIBRARY_PATH ${<PACKAGE>ROOT}/${CMTCONFIG}
+#
+# Addition to take advantage of parallel builds added below by Alex Finch
+# 1/5/2014
+#
+# make sure that libraries are not built until rootcint has been run
+# and register is not run until version has been run
+# this assumes libraries have the same name as the package, which is usually the 
+# case
+pattern -global standard_register   macro_append register_dependencies " version " 
+#pattern -global standard_rootcint   macro_append rootcint_dependencies " register " 
+#pattern -global standard_library    macro_append <package>_dependencies " rootcint " 
+# for the one case where library name is not the same as package!
+#pattern         non_standard_library    macro_append <name>_dependencies " rootcint " 
+#
+# make sure that applications are not built until the library has been built
+#
+# Ss we can not deduce the application name, this needs applying explicitly for
+# each application by doing
+# apply_pattern standard_application name=MyApp 
+# for application MyApp
+#
+pattern standard_application      macro_append <name>_dependencies " <package> " 
+

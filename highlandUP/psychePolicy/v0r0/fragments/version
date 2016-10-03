@@ -1,0 +1,11 @@
+# -*- makefile -*-
+#
+# A fragment used by CMT to build the version include file.
+#
+
+ifneq ($(src)$(package)_version.h,${FULLNAME})
+$(${CONSTITUENT}stamp) :: ${FULLNAME}
+	@echo $(src)$(package)_version.h depends on ${FULLNAME}
+	@touch $(${CONSTITUENT}stamp)
+endif
+

@@ -1,0 +1,33 @@
+/*! \page checkingPackageVersion Checking Package Version
+
+The nd280Policy "version" fragment generates an include file for each
+package that contains the package version, release, and patch number.  This
+can then be used by any subsequent package to check that a particular
+version is being used.  The "version" fragment also generates a couple of
+utility macros to make it easier to check if you are using a particular
+version or later.  The definitions are generated as follows
+
+\code
+#define $(package)_MAJOR_VERSION  <a number>
+#define $(package)_MINOR_VERSION  <a number>
+#define $(package)_PATCH_VERSION  <a number>
+#define BEFORE_$(package)(v,r,p)  (<a complicated macro>)
+#define EQUALS_$(package)(v,r,p)  (<a complicated macro>)
+\endcode
+
+As a specific example, this could be used in oaGeomInfo to check for a
+particular version of oaEvent
+
+\code
+#if ! BEFORE_oaEvent(8,2,0)
+    ClearGeometryCallback();
+#endif
+\endcode
+
+This will only include the ClearGeometryCallback() call if using an oaEvent
+version of 8.2.0 or later (this include 8.2.1).  In general, you should
+check "! BEFORE_$(package)(version,release,patch)" against the package
+version where the feature was added.  
+
+*/
+

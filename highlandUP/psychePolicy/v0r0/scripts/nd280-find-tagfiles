@@ -1,0 +1,92 @@
+#!/usr/bin/python
+#
+#  Used internally by the doxygen fragment.  This must be run in the cmt
+# directory.
+
+import optparse
+import commands
+import re
+import os.path
+import sys
+
+def CommandOutput(command, forcerun=False):
+    return commands.getoutput(command)
+
+def CMTPackage():
+    """Return the current package name."""
+    output = CommandOutput("cmt show macro package")
+    match = re.search(r"(?m)^package='([\w]*)'$",output)
+    return match.group(1)
+def createTag(file):
+#
+# output the route to the tag file in the correct format for doxygen
+# first the actual route to the file, then how it should appear
+# from the web viewpoint
+        tokens = file.split()
+        package=tokens[0]
+        version=tokens[1]
+#        sys.stderr.write("createTage "+package+" "+version+"\n")
+
+#
+# There can be varying numbers of /../ at the start of the path
+# when working with multiple sublevels, e.g. in highland and
+# monitory
+#
+        inFile='../../../'+package+'/'+version+'/dox/'+package+'_'+version+'.tag'
+        url='../../../'+package+'/'+version+'/dox'
+#        sys.stderr.write("Looking for "+inFile+"\n")
+        if not (os.path.exists(inFile)) :
+#        	sys.stderr.write("NOT found\n")
+        	inFile='../../../*/'+package+'/'+version+'/dox/'+package+'_'+version+'.tag'
+#print " try deeper "
+# See if we can find it one layer deeper?
+#        	sys.stderr.write("Looking for "+inFile+"\n")
+
+        	inFile = CommandOutput("ls "+inFile)
+        	if not (os.path.exists(inFile)) :
+#        		sys.stderr.write("NOT found\n")
+        		inFile='../../../../*/'+package+'/'+version+'/dox/'+package+'_'+version+'.tag'
+# See if we can find it one layer deeper?
+        		inFile='../../../../*/'+package+'/'+version+'/dox/'+package+'_'+version+'.tag'
+#                        sys.stderr.write("Looking for "+inFile+"\n")
+        		inFile = CommandOutput("ls "+inFile)
+
+        		if not (os.path.exists(inFile)) :
+        			sys.stderr.write(" nd280-find-tagfiles could not find package "+package+" ,version "+version)
+        			return
+        		elements = inFile.split("/")
+        		url='../../../../'+elements[4]+'/'+package+'/'+version+'/dox'
+                else :
+#			sys.stderr.write("Found it\n")
+        		elements = inFile.split("/")
+#print elements
+        		url='../../../'+elements[3]+'/'+package+'/'+version+'/dox'
+        print inFile+'='+url
+
+# Generate and run the CMT command to find all of the doxygen tag files.
+#  The output with the files is tagged with "%%%%%".
+#sys.stderr.write(" nd280-find-tagfiles running\n")
+cmd = "cmt broadcast '("
+cmd += "if [ -x ../dox ];"
+cmd += "then echo %%%%% "
+cmd += "<package> <version> ;"
+cmd += "fi"
+cmd += ")'"
+output = CommandOutput(cmd)
+#sys.stderr.write(output)
+#sys.stderr.write("\n")
+# Find the tag files in the output of the CMT command.
+matchs = re.findall(r"(?m)^%%%%% (.*)$",output)
+# Find the name of the current package.
+# old version  package = "/" + CMTPackage() + "/"
+# new  version as of 7/7/14
+package = CMTPackage()
+# Remove the current package from the tag file list and dump the rest
+# to standard output.
+for i in matchs:
+    match = re.search(package,i)
+#    sys.stderr.write(i)
+#    sys.stderr.write("\n")
+    if match == None:
+        createTag(i)
+

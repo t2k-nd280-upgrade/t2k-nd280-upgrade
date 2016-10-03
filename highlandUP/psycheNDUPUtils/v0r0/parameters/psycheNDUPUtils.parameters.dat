@@ -1,0 +1,9 @@
+
+ < psycheNDUPUtils.cututils.tpcLYZCut            = 200 >	
+ < psycheNDUPUtils.cututils.targetLYZCut            = 50 >	
+
+  < psycheNDUPUtils.mom_corrections.sigma_x = 0.800 >  
+ < psycheNDUPUtils.mom_corrections.B = 0.2 >   
+
+ < psycheNDUPUtils.mom_corrections.x0           = 115.103 >	
+

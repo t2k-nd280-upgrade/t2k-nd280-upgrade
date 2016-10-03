@@ -1,0 +1,38 @@
+package highlandUP/highlandCorrections
+version v2r2
+
+manager Anselmo Cervera <anselmo.cervera@cern.ch>
+author nd280-software@mailman.t2k.org
+
+branches cmt src doc
+
+use highlandUtils * highlandUP
+#use psycheSystematics * psyche
+#use highlandRecPack * highland2
+
+# Build methods to include.
+document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
+
+# Build information used by packages that use this one.
+macro highlandCorrections_cppflags " -DHIGHLANDCORRECTIONS_USED"
+macro highlandCorrections_linkopts " -L$(HIGHLANDCORRECTIONSROOT)/$(highlandCorrections_tag) -lhighlandCorrections "
+macro highlandCorrections_stamps " $(HIGHLANDCORRECTIONSROOT)/$(highlandCorrections_tag)/highlandCorrections.stamp"
+
+# The paths to find this library.
+path_remove PATH "$(HIGHLANDCORRECTIONSROOT)"
+path_prepend PATH "$(HIGHLANDCORRECTIONSROOT)/$(highlandCorrections_tag)"
+path_remove LD_LIBRARY_PATH "$(HIGHLANDCORRECTIONSROOT)"
+path_prepend LD_LIBRARY_PATH "$(HIGHLANDCORRECTIONSROOT)/$(highlandCorrections_tag)"
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "$(HIGHLANDCORRECTIONSROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+	     Darwin	       "$(HIGHLANDCORRECTIONSROOT)/$(highlandCorrections_tag)"
+
+
+# The library to build
+library highlandCorrections *.cxx ../dict/*.cxx
+
+
+# tests
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
+

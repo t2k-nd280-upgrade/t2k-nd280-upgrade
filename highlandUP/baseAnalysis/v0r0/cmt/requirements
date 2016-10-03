@@ -1,0 +1,44 @@
+package highlandUP/baseAnalysis
+version v0r0
+
+manager Anselmo Cervera <anselmo.cervera@cern.ch>
+author nd280-software@mailman.t2k.org
+
+branches cmt src doc app
+
+use highlandIO          * highlandUP
+use highlandCorrections * highlandUP
+use psycheSelections    * highlandUP
+use psycheNDUPUtils    * highlandUP
+
+#use psycheSystematics   * psyche
+
+# this dependency is added to allow users to use the tools from inside their analysis packages (rootmap stuff)
+use highlandTools       * highlandUP
+
+# Build methods to include.
+document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
+
+# Build information used by packages that use this one.
+macro baseAnalysis_cppflags " -DBASEANALYSIS_USED"
+macro baseAnalysis_linkopts " -L$(BASEANALYSISROOT)/$(baseAnalysis_tag) -lbaseAnalysis "
+macro baseAnalysis_stamps " $(BASEANALYSISROOT)/$(baseAnalysis_tag)/baseAnalysis.stamp"
+
+# The paths to find this library.
+path_remove PATH "$(BASEANALYSISROOT)"
+path_prepend PATH "$(BASEANALYSISROOT)/$(baseAnalysis_tag)"
+path_remove LD_LIBRARY_PATH "$(BASEANALYSISROOT)"
+path_prepend LD_LIBRARY_PATH "$(BASEANALYSISROOT)/$(baseAnalysis_tag)"
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "$(BASEANALYSISROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+	     Darwin	       "$(BASEANALYSISROOT)/$(baseAnalysis_tag)"
+
+
+# The library to build
+library baseAnalysis *.cxx ../dict/*.cxx
+
+
+# tests
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
+

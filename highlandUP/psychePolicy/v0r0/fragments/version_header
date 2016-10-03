@@ -1,0 +1,11 @@
+# -*- makefile -*-
+# 
+# A fragment used by CMT to build the library version file
+#
+
+${CONSTITUENT}_output = $(src)
+${CONSTITUENT}stamp = $(bin)${CONSTITUENT}.stamp
+
+${CONSTITUENT} :: $(src)$(package)_version.h
+	@echo "------> Update $(src)$(package)_version.h"
+

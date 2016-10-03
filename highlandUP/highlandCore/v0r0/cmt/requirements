@@ -1,0 +1,41 @@
+package highlandUP/highlandCore
+version v0r0
+
+manager Anselmo Cervera <anselmo.cervera@cern.ch>
+author nd280-software@mailman.t2k.org
+
+branches cmt src doc dict
+
+use psycheCore          * highlandUP
+
+# Build methods to include.
+make_fragment doxygen -header=doxygen_header 
+document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
+document rootcint dictionary *_LinkDef.h
+
+# Build information used by packages that use this one.
+macro highlandCore_cppflags "-DHIGHLANDCORE_USED -fPIC"
+macro highlandCore_linkopts "-L$(HIGHLANDCOREROOT)/$(highlandCore_tag) -lhighlandCore "
+macro highlandCore_stamps " $(HIGHLANDCOREROOT)/$(highlandCore_tag)/highlandCore.stamp"
+macro cpplinkflags "" \
+      Linux "-Wl,--no-as-needed"
+
+# The paths to find this library.
+path_remove PATH "$(HIGHLANDCOREROOT)"
+path_prepend PATH "$(HIGHLANDCOREROOT)/$(highlandCore_tag)"
+path_remove LD_LIBRARY_PATH "$(HIGHLANDCOREROOT)"
+path_prepend LD_LIBRARY_PATH "$(HIGHLANDCOREROOT)/$(highlandCore_tag)"
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "$(HIGHLANDCOREROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+	     Darwin	       "$(HIGHLANDCOREROOT)/$(highlandCore_tag)"
+
+
+# The library to build
+library highlandCore *.cxx  ../dict/*.cxx
+
+# tests
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
+
+# Setup the ROOT magic that means we can use the DrawingTools etc. without having to load any libraries.
+setup_script rootmap_setup

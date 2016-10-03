@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+#  A shell script to automatically get the list of missing packages.
+#This gets the HEAD version of each package. 
+
+usage () {
+    echo "usage:" `basename $0` -r
+    echo "  This will get any missing CMT packages that are referenced in the "
+    echo "  package requirements file.   It must be run in a cmt directory "
+    echo "  that was checked out of a CVS repository."
+    exit
+}
+
+get_version() {
+    package=`echo $1 | sed s/\;.*//`
+    version=`echo $1 | sed s/.*\;//`
+    if [ "$version" == "*" ]; then
+	version="HEAD"
+    fi
+    echo Get $package version $version
+    if [ $version = HEAD ]; then
+	(cd ../../../ ; cmt checkout $package)
+    else
+	(cd ../../../ ; cmt checkout -r $version $package)
+    fi
+}
+
+if [ "x$1" != "x" ]; then
+    usage
+fi
+
+if [ ! -f ./requirements ]; then
+    echo "ERROR: Missing the requirements file"
+    echo
+    usage
+fi
+
+if [ ! -f ./CVS/Root ]; then
+    echo "ERROR: Cannot find the CVS repository."
+    echo
+    usage
+fi
+
+export CMTPATH=`(cd ../../..; echo $PWD)`:${CMTPATH}
+export CVSROOT=`cat ./CVS/Root`
+
+for i in `cmt show uses 2>&1 > /dev/null | awk '{printf("%s;%s\n",$4,$5)}'`; do
+    get_version $i
+done
+
+

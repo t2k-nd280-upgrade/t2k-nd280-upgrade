@@ -1,0 +1,7 @@
+# -*- makefile -*-
+#
+# A fragment used by CMT to build the doxygen documentation.
+#
+
+$(${CONSTITUENT}stamp) :: ${FULLNAME}
+	@touch $(${CONSTITUENT}stamp)

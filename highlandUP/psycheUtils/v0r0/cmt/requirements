@@ -1,0 +1,36 @@
+package highlandUP/psycheUtils
+version v3r8
+
+manager Anselmo Cervera <anselmo.cervera@cern.ch>
+author nd280-software@mailman.t2k.org
+
+branches cmt src doc
+
+use psycheEventModel * highlandUP
+
+# Build methods to include.
+document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
+
+# Build information used by packages that use this one.
+macro psycheUtils_cppflags " -DPSYCHEUTILS_USED"
+macro psycheUtils_linkopts " -L$(PSYCHEUTILSROOT)/$(psycheUtils_tag) -lpsycheUtils "
+macro psycheUtils_stamps " $(PSYCHEUTILSROOT)/$(psycheUtils_tag)/psycheUtils.stamp"
+
+# The paths to find this library.
+path_remove PATH "$(PSYCHEUTILSROOT)"
+path_prepend PATH "$(PSYCHEUTILSROOT)/$(psycheUtils_tag)"
+path_remove LD_LIBRARY_PATH "$(PSYCHEUTILSROOT)"
+path_prepend LD_LIBRARY_PATH "$(PSYCHEUTILSROOT)/$(psycheUtils_tag)"
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "$(PSYCHEUTILSROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+	     Darwin	       "$(PSYCHEUTILSROOT)/$(psycheUtils_tag)"
+
+
+# The library to build
+library psycheUtils *.cxx  ../dict/*.cxx
+
+# tests
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
+
+
