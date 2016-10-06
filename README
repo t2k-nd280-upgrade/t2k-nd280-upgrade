@@ -18,8 +18,8 @@ cd /PATH/TO/OUTPUT/DIRECTORY
 
 $T2KND280UP/submit/submit_nd280upgrade_sim --softw-dir $T2KND280UP --job-dir $PWD --resource interactive --nexpts 1 --nruns 1
 
+It runs the executable file in $T2KND280UP/bin
 Depending on the options chosen in submit_nd280upgrade_sim The following output files are produced:
-
 - EffStudy.root: root file containing the GEANT4 output tree
 - g4_*.wrl: VRML files with event display
 - geometry.root: root file containing the detector geometry
@@ -28,7 +28,11 @@ Then also the simplified selection on the primary tracks can be run as following
 
 $T2KND280UP/submit/submit_nd280upgrade_sel --softw-dir $T2KND280UP --job-dir $PWD --resource interactive --nexpts 1 --nruns 1
 
-Both scripts can be run on cluster to parallelize jobs
+It's a simple ROOT macro in $T2KND280UP/macro that is run through a bash scripts.
+Both scripts can be run on cluster to parallelize jobs.
+
+All the macros (e.g. read submit_nd280upgrade_sel output) are in $T2KND280UP/macros
+
 
 3.) Add packages
 
