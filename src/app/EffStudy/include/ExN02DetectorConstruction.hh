@@ -98,6 +98,16 @@ public:
   void SetTargetFullHeight2(G4double height)  {fTargetHeight2 = height;};
   void SetTargetPos2(G4double x,G4double y,G4double z) {fTargetPos2 = G4ThreeVector(x,y,z);};
 
+  void SetFGDFullLength1(G4double length)  {fFGDLength1 = length;};
+  void SetFGDFullWidth1(G4double width)   {fFGDWidth1 = width;};
+  void SetFGDFullHeight1(G4double height)  {fFGDHeight1 = height;};
+  void SetFGDPos1(G4double x,G4double y,G4double z) {fFGDPos1 = G4ThreeVector(x,y,z);};
+
+  void SetFGDFullLength2(G4double length)  {fFGDLength2 = length;};
+  void SetFGDFullWidth2(G4double width)   {fFGDWidth2 = width;};
+  void SetFGDFullHeight2(G4double height)  {fFGDHeight2 = height;};
+  void SetFGDPos2(G4double x,G4double y,G4double z) {fFGDPos2 = G4ThreeVector(x,y,z);};
+
   void SetForwTPCPos1(G4double x,G4double y,G4double z) {fForwTPCPos1 = G4ThreeVector(x,y,z);};
   void SetForwTPCPos2(G4double x,G4double y,G4double z) {fForwTPCPos2 = G4ThreeVector(x,y,z);};
   void SetForwTPCPos3(G4double x,G4double y,G4double z) {fForwTPCPos3 = G4ThreeVector(x,y,z);};
@@ -137,6 +147,19 @@ public:
   G4double GetTargetFullHeight2()  {return fTargetHeight2;};
   G4ThreeVector GetTargetPos2()    {return fTargetPos2;};
 
+
+  G4double GetFGDFullLength1()  {return fFGDLength1;};
+  G4double GetFGDFullWidth1()   {return fFGDWidth1;};
+  G4double GetFGDFullHeight1()  {return fFGDHeight1;};
+  G4ThreeVector GetFGDPos1()    {return fFGDPos1;};
+
+  G4double GetFGDFullLength2()  {return fFGDLength2;};
+  G4double GetFGDFullWidth2()   {return fFGDWidth2;};
+  G4double GetFGDFullHeight2()  {return fFGDHeight2;};
+  G4ThreeVector GetFGDPos2()    {return fFGDPos2;};
+
+
+
   G4ThreeVector GetForwTPCPos1()  {return fForwTPCPos1;};
   G4ThreeVector GetForwTPCPos2()  {return fForwTPCPos2;};
   G4ThreeVector GetForwTPCPos3()  {return fForwTPCPos3;};
@@ -160,6 +183,8 @@ public:
   void setMaterial_Target (G4String);
   void setMaterial_Target1 (G4String);
   void setMaterial_Target2 (G4String);
+  void setMaterial_FGD1 (G4String);
+  void setMaterial_FGD2 (G4String);
   void setMaterial_SideTPC(G4String);
   void SetMagField(G4double);
   void SetMaxStep (G4double);     
@@ -188,9 +213,9 @@ private:
   G4LogicalVolume*   logicBasket;  // pointer to the logical Basket
   G4VPhysicalVolume* physiBasket;  // pointer to the physical Basket
 
-  G4Box*             solidTarget;   // pointer to the solid Target
-  G4LogicalVolume*   logicTarget;   // pointer to the logical Target
-  G4VPhysicalVolume* physiTarget;   // pointer to the physical Target
+  // G4Box*             solidTarget;   // pointer to the solid Target
+  // G4LogicalVolume*   logicTarget;   // pointer to the logical Target
+  // G4VPhysicalVolume* physiTarget;   // pointer to the physical Target
                
   G4Box*             solidTarget1;   // pointer to the solid Target       
   G4LogicalVolume*   logicTarget1;   // pointer to the logical Target      
@@ -199,6 +224,14 @@ private:
   G4Box*             solidTarget2;   // pointer to the solid Target 
   G4LogicalVolume*   logicTarget2;   // pointer to the logical Target 
   G4VPhysicalVolume* physiTarget2;   // pointer to the physical Target 
+
+  G4Box*             solidFGD1;   // pointer to the solid FGD       
+  G4LogicalVolume*   logicFGD1;   // pointer to the logical FGD      
+  G4VPhysicalVolume* physiFGD1;   // pointer to the physical FGD
+
+  G4Box*             solidFGD2;   // pointer to the solid FGD 
+  G4LogicalVolume*   logicFGD2;   // pointer to the logical FGD 
+  G4VPhysicalVolume* physiFGD2;   // pointer to the physical FGD 
 
   G4Box*             solidTracker;  // pointer to the solid Tracker
   G4LogicalVolume*   logicTracker;  // pointer to the logical Tracker
@@ -225,6 +258,9 @@ private:
   G4Material* TrackerMater;  // pointer to the tracker  material
   G4Material* TargetMater1;  // pointer to the target  material
   G4Material* TargetMater2;  // pointer to the target  material
+  G4Material* FGDMater1;  // pointer to the target  material
+  G4Material* FGDMater2;  // pointer to the target  material
+
   G4Material* SideTPCMater; // pointer to the side tpc material                  
   G4Material* fDefaultMaterial;   /// The default material.       
 
@@ -253,6 +289,16 @@ private:
   G4double fTargetWidth2;            // Full Width of Target 2
   G4double fTargetHeight2;           // Full Height of Target 2
   G4ThreeVector fTargetPos2;         // Position of Target 2
+
+  G4double fFGDLength1;              // Full length of FGD 1
+  G4double fFGDWidth1;               // Full Width of FGD 1
+  G4double fFGDHeight1;              // Full Height of FGD 1
+  G4ThreeVector fFGDPos1;            // Position of FGD 1
+
+  G4double fFGDLength2;              // Full length of FGD 2
+  G4double fFGDWidth2;               // Full Width of FGD 2
+  G4double fFGDHeight2;              // Full Height of FGD 2
+  G4ThreeVector fFGDPos2;            // Position of FGD 2
  
   G4double fTrackerLength;          // Full length of Tracker
   G4double fTrackerWidth;           // Full width of Tracker
@@ -282,6 +328,8 @@ private:
   G4VisAttributes* BoxVisAtt;
   G4VisAttributes* TargetWaterVisAtt;
   G4VisAttributes* TargetScintVisAtt;
+  G4VisAttributes* FGDWaterVisAtt;
+  G4VisAttributes* FGDScintVisAtt;
   G4VisAttributes* TPCVisAtt;
   G4VisAttributes* TPCCO2;
   G4VisAttributes* TPCDeadMat;

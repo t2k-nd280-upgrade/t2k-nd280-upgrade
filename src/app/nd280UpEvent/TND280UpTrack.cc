@@ -36,6 +36,8 @@ TND280UpTrack::TND280UpTrack()
 
   fLengthTarget1  = kUndefTrack;
   fLengthTarget2  = kUndefTrack;
+  fLengthFGD1     = kUndefTrack;
+  fLengthFGD2  = kUndefTrack;
   fLengthTPCUp1   = kUndefTrack;
   fLengthTPCUp2   = kUndefTrack;
   fLengthTPCDown1 = kUndefTrack;
@@ -51,9 +53,10 @@ TND280UpTrack::TND280UpTrack()
   fLyzForwTPC1   = kUndefTrack;
   fLyzForwTPC2   = kUndefTrack;
   fLyzForwTPC3   = kUndefTrack;
-
-  fEdepTarget1 = kUndefTrack;
-  fEdepTarget2 = kUndefTrack;
+  fEdepTarget1   = kUndefTrack;
+  fEdepTarget2   = kUndefTrack;
+  fEdepFGD1      = kUndefTrack;
+  fEdepFGD2      = kUndefTrack;
   fEdepTPCUp1     = kUndefTrack;
   fEdepTPCUp2     = kUndefTrack;
   fEdepTPCDown1   = kUndefTrack;
@@ -89,6 +92,8 @@ TND280UpTrack::~TND280UpTrack()
 
   fLengthTarget1 = kUndefTrack;
   fLengthTarget2 = kUndefTrack;
+  fLengthFGD1    = kUndefTrack;
+  fLengthFGD2    = kUndefTrack;
   fLyzTPCUp1     = kUndefTrack;
   fLyzTPCUp2     = kUndefTrack;
   fLyzTPCDown1   = kUndefTrack;
@@ -99,6 +104,8 @@ TND280UpTrack::~TND280UpTrack()
 
   fEdepTarget1 = kUndefTrack;
   fEdepTarget2 = kUndefTrack;
+  fEdepFGD1    = kUndefTrack;
+  fEdepFGD2    = kUndefTrack;
   fEdepTPCUp1     = kUndefTrack;
   fEdepTPCUp2     = kUndefTrack;
   fEdepTPCDown1   = kUndefTrack;
@@ -160,6 +167,9 @@ void TND280UpTrack::PrintTrack()
 
   if(fLengthTarget1>0.){cout << "Length in Target1: "   << fLengthTarget1 << endl;}
   if(fLengthTarget2>0.){cout << "Length in Target2: "   << fLengthTarget2 << endl;}
+  if(fLengthFGD1>0.){cout << "Length in FGD1: "   << fLengthFGD1 << endl;}
+  if(fLengthFGD2>0.){cout << "Length in FGD2: "   << fLengthFGD2 << endl;}
+
   if(fLengthTPCUp1>0.){cout << "Length in TPCUp1: "     << fLengthTPCUp1     << endl;}
   if(fLengthTPCUp2>0.){cout << "Length in TPCUp2: "     << fLengthTPCUp2     << endl;}
   if(fLengthTPCDown1>0.){cout << "Length in TPCDown1: " << fLengthTPCDown1   << endl;}
@@ -178,6 +188,9 @@ void TND280UpTrack::PrintTrack()
 
   if(fEdepTarget1>0.){cout << "Edep in Target1: "     << fEdepTarget1 << endl;}
   if(fEdepTarget2>0.){cout << "Edep in Target2: "     << fEdepTarget2 << endl;}
+  if(fEdepFGD1>0.){cout << "Edep in FGD1: "     << fEdepFGD1 << endl;}
+  if(fEdepFGD2>0.){cout << "Edep in FGD2: "     << fEdepFGD2 << endl;}
+
   if(fEdepTPCUp1>0.){cout << "Edep in TPCUp1: "       << fEdepTPCUp1     << endl;}
   if(fEdepTPCUp2>0.){cout << "Edep in TPCUp2: "       << fEdepTPCUp2     << endl;}
   if(fEdepTPCDown1>0.){cout << "Edep in TPCDown1: "   << fEdepTPCDown1   << endl;}

@@ -59,6 +59,16 @@ ExN02DetectorMessenger::ExN02DetectorMessenger(ExN02DetectorConstruction* myDet)
   Targ2MatCmd->SetGuidance("Select Material of the Target 2.");
   Targ2MatCmd->SetParameterName("choice",false);
   Targ2MatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  FGD1MatCmd = new G4UIcmdWithAString("/N02/det/setFGDMate1",this);
+  FGD1MatCmd->SetGuidance("Select Material of the FGD 1.");
+  FGD1MatCmd->SetParameterName("choice",false);
+  FGD1MatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  FGD2MatCmd = new G4UIcmdWithAString("/N02/det/setFGDMate2",this);
+  FGD2MatCmd->SetGuidance("Select Material of the FGD 2.");
+  FGD2MatCmd->SetParameterName("choice",false);
+  FGD2MatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
   SideTPCMatCmd = new G4UIcmdWithAString("/N02/det/setSideTPCMate",this);
   SideTPCMatCmd->SetGuidance("Select Material of the Side TPCs.");
@@ -101,6 +111,12 @@ void ExN02DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
  
   if( command == Targ2MatCmd )
     { myDetector->setMaterial_Target2(newValue);}
+
+  if( command == FGD1MatCmd )
+    { myDetector->setMaterial_FGD1(newValue); }
+ 
+  if( command == FGD2MatCmd )
+    { myDetector->setMaterial_FGD2(newValue);}
   
   if( command == SideTPCMatCmd )
     { myDetector->setMaterial_SideTPC(newValue);}  

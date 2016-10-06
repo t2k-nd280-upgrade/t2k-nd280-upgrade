@@ -54,6 +54,8 @@ public :
   
   void SetLengthTarget1(double length) {fLengthTarget1=length;};
   void SetLengthTarget2(double length) {fLengthTarget2=length;};
+  void SetLengthFGD1(double length)    {fLengthFGD1=length;};
+  void SetLengthFGD2(double length)    {fLengthFGD2=length;};
   void SetLengthTPCUp1(double length)  {fLengthTPCUp1=length;};
   void SetLengthTPCUp2(double length)  {fLengthTPCUp2=length;};
   void SetLengthTPCDown1(double length){fLengthTPCDown1=length;};
@@ -72,6 +74,8 @@ public :
 
   void SetEdepTarget1(double length)  {fEdepTarget1=length;};
   void SetEdepTarget2(double length)  {fEdepTarget2=length;};
+  void SetEdepFGD1(double length)     {fEdepFGD1=length;};
+  void SetEdepFGD2(double length)     {fEdepFGD2=length;};
   void SetEdepTPCUp1(double length)   {fEdepTPCUp1=length;};
   void SetEdepTPCUp2(double length)   {fEdepTPCUp2=length;};
   void SetEdepTPCDown1(double length) {fEdepTPCDown1=length;};
@@ -95,6 +99,8 @@ public :
   
   double GetLengthTarget1() {return fLengthTarget1;};
   double GetLengthTarget2() {return fLengthTarget2;};
+  double GetLengthFGD1()    {return fLengthFGD1;};
+  double GetLengthFGD2()    {return fLengthFGD2;};
   double GetLengthTPCUp1()  {return fLengthTPCUp1;};
   double GetLengthTPCUp2()  {return fLengthTPCUp2;};
   double GetLengthTPCDown1(){return fLengthTPCDown1;};
@@ -113,6 +119,8 @@ public :
   
   double GetEdepTarget1()  {return fEdepTarget1;};
   double GetEdepTarget2()  {return fEdepTarget2;};
+  double GetEdepFGD1()     {return fEdepFGD1;};
+  double GetEdepFGD2()     {return fEdepFGD2;};
   double GetEdepTPCUp1()   {return fEdepTPCUp1;};
   double GetEdepTPCUp2()   {return fEdepTPCUp2;};
   double GetEdepTPCDown1() {return fEdepTPCDown1;};
@@ -143,6 +151,8 @@ private :
   double fSDLength;
   double fLengthTarget1;
   double fLengthTarget2;
+  double fLengthFGD1;
+  double fLengthFGD2;
   double fLengthTPCUp1;
   double fLengthTPCUp2;
   double fLengthTPCDown1;
@@ -159,6 +169,8 @@ private :
   double fLyzForwTPC3;
   double fEdepTarget1;
   double fEdepTarget2;
+  double fEdepFGD1;
+  double fEdepFGD2;
   double fEdepTPCUp1;
   double fEdepTPCUp2;
   double fEdepTPCDown1;

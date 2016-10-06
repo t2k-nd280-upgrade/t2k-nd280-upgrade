@@ -25,7 +25,7 @@
    </Path2file>
 
    <filename>
-     GENIE/GENIE_nd280mc_thick30cm_width1807mm_6E20POT.root
+     GENIE/GENIE_nd280mc_ndT_6E20POT.root
    </filename>
    
    <treename>  
@@ -36,23 +36,10 @@
    <!-- Detector configuration -->
    <!--                        -->
 
-   <UseTPCDown1>
-     true
-   </UseTPCDown1>
-   <UseTPCDown2>
-     true
-   </UseTPCDown2>
-   <UseTPCUp1>
-     true
-   </UseTPCUp1>
-   <UseTPCUp2>
-    true
-   </UseTPCUp2>
-
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     false
+     true
    </forwTPCdefault>
 
    <forwTPCPos1_X>
@@ -90,11 +77,11 @@
    <!-- Side TPCs 1 -->
 
    <sideTPCdefault1>
-     false
+     true
    </sideTPCdefault1>
 
    <sideTPClength1>
-     2000  
+     1697
    </sideTPClength1>
    <sideTPCwidth1>  
      2300
@@ -110,7 +97,7 @@
      651.5
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     -1487
+     -1457 <!-- -1487 -->
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
@@ -120,16 +107,16 @@
      -651.5
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     -1487
+     -1457 <!-- -1487 -->
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
 
    <sideTPCdefault2>
-     false
+     true
    </sideTPCdefault2>
    <sideTPClength2>
-     2000
+     1697
    </sideTPClength2>
    <sideTPCwidth2>  
      2300
@@ -145,7 +132,7 @@
      651.5
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
-     +1487
+     +1517 <!-- +1487 -->
    </sideTPCUpPos2_Z>
    
    <sideTPCDownPos2_X>
@@ -155,14 +142,14 @@
      -651.5
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
-     +1487
+     +1517 <!-- +1487 -->
    </sideTPCDownPos2_Z>
 
 
    <!-- Target 1 -->
 
    <Targetdefault1>
-     false
+     true
    </Targetdefault1>
    
    <TargetMaterial1>
@@ -170,13 +157,13 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     2000
+     1697
    </Targetlength1>
    <Targetwidth1>  
      1807
    </Targetwidth1>
    <Targetheight1> 
-     303 <!-- 303 -->
+     303 
    </Targetheight1>
  
    <TargetPos1_X>
@@ -186,14 +173,14 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1487
+     -1457 <!-- -1487 -->
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     false
+     true
    </Targetdefault2>
 
    <TargetMaterial2>
@@ -201,7 +188,7 @@
    </TargetMaterial2>
 
    <Targetlength2>
-     2000 
+     1697
    </Targetlength2>
    <Targetwidth2>  
      1807
@@ -217,7 +204,7 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1487
+     +1517 <!-- +1487 -->
    </TargetPos2_Z>
 
 
@@ -225,17 +212,21 @@
    <!-- FGD 1 -->
 
    <FGDdefault1>
-     false
+     true
    </FGDdefault1>
+
+   <FGDMaterial1>
+     FGD2Uniform
+   </FGDMaterial1>
    
    <FGDlength1>
-     2000
+     303
    </FGDlength1>
    <FGDwidth1>  
-     1807
+     1864.3
    </FGDwidth1>
    <FGDheight1> 
-     303 <!-- 303 -->
+     1864.3
    </FGDheight1>
  
    <FGDPos1_X>
@@ -245,24 +236,28 @@
      0
    </FGDPos1_Y>
    <FGDPos1_Z>
-     -1487
+     -2588.5
    </FGDPos1_Z>
 
    
    <!-- FGD 2 -->
 
    <FGDdefault2> 
-     false
+     true
    </FGDdefault2>
 
+   <FGDMaterial2>
+     FGDScintillator
+   </FGDMaterial2>
+
    <FGDlength2>
-     2000 
+     303
    </FGDlength2>
    <FGDwidth2>  
-     1807
+     1864.3
    </FGDwidth2>
    <FGDheight2> 
-     303 <!-- 303 --> 
+     1864.3
    </FGDheight2>
 
    <FGDPos2_X>
@@ -272,10 +267,29 @@
      0
    </FGDPos2_Y>
    <FGDPos2_Z>
-     +1487
+     +2648.5
    </FGDPos2_Z>
 
+   <!-- Use detectors -->
 
+   <UseTPCDown1>
+     true
+   </UseTPCDown1>
+   <UseTPCDown2>
+     true
+   </UseTPCDown2>
+   <UseTPCUp1>
+     true
+   </UseTPCUp1>
+   <UseTPCUp2>
+    true
+   </UseTPCUp2>
+   <UseFGD1>
+    true
+   </UseFGD1>
+   <UseFGD2>
+    true
+   </UseFGD2>
    
 </Dependency>
 

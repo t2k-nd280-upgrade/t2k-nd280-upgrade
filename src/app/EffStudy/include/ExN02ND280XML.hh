@@ -94,6 +94,7 @@ public :
   G4double GetXMLTargetPos2_Z()   {return fTargetPos2_Z;};
 
   G4bool   GetXMLFGDdefault1()   {return fFGDdefault1;};
+  G4String GetXMLFGDMaterial1()  {return fFGDMaterial1;};
   G4double GetXMLFGDlength1()    {return fFGDlength1;};
   G4double GetXMLFGDwidth1()     {return fFGDwidth1;};
   G4double GetXMLFGDheight1()    {return fFGDheight1;};
@@ -102,6 +103,7 @@ public :
   G4double GetXMLFGDPos1_Z()     {return fFGDPos1_Z;};
 
   G4bool   GetXMLFGDdefault2()   {return fFGDdefault2;};
+  G4String GetXMLFGDMaterial2()  {return fFGDMaterial2;};
   G4double GetXMLFGDlength2()    {return fFGDlength2;};
   G4double GetXMLFGDwidth2()     {return fFGDwidth2;};
   G4double GetXMLFGDheight2()    {return fFGDheight2;};
@@ -109,10 +111,15 @@ public :
   G4double GetXMLFGDPos2_Y()     {return fFGDPos2_Y;};
   G4double GetXMLFGDPos2_Z()     {return fFGDPos2_Z;};
 
-  G4bool   GetXMLUseTPCUp1()        {return fUseTPCUp1;};
-  G4bool   GetXMLUseTPCDown1()      {return fUseTPCDown1;};
-  G4bool   GetXMLUseTPCUp2()        {return fUseTPCUp2;};
-  G4bool   GetXMLUseTPCDown2()      {return fUseTPCDown2;};
+  G4bool   GetXMLUseTPCUp1()     {return fUseTPCUp1;};
+  G4bool   GetXMLUseTPCDown1()   {return fUseTPCDown1;};
+  G4bool   GetXMLUseTPCUp2()     {return fUseTPCUp2;};
+  G4bool   GetXMLUseTPCDown2()   {return fUseTPCDown2;};
+
+  G4bool   GetXMLUseFGD1()       {return fUseFGD1;};
+  G4bool   GetXMLUseFGD2()       {return fUseFGD2;};
+  G4bool   GetXMLUseTarget1()    {return fUseTarget1;};
+  G4bool   GetXMLUseTarget2()    {return fUseTarget2;};
   
   void SetInputs();
 
@@ -179,6 +186,7 @@ private :
   G4double fTargetPos2_Z;
 
   G4bool   fFGDdefault1;
+  G4String fFGDMaterial1;
   G4double fFGDlength1;
   G4double fFGDwidth1;
   G4double fFGDheight1;
@@ -187,6 +195,7 @@ private :
   G4double fFGDPos1_Z;
 
   G4bool   fFGDdefault2;
+  G4String fFGDMaterial2;
   G4double fFGDlength2;
   G4double fFGDwidth2;
   G4double fFGDheight2;
@@ -198,6 +207,11 @@ private :
   G4bool fUseTPCDown1;
   G4bool fUseTPCUp2;
   G4bool fUseTPCDown2;
+
+  G4bool fUseFGD1;
+  G4bool fUseFGD2;
+  G4bool fUseTarget1;
+  G4bool fUseTarget2;
 
   void XML2String(string tmp_app,string &dest);
   void XML2Double(string tmp_app,double &dest);

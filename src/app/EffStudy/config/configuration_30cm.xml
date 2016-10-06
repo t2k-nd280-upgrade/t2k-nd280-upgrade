@@ -36,21 +36,6 @@
    <!-- Detector configuration -->
    <!--                        -->
 
-   <!-- Include detectors -->
-
-   <UseTPCDown1>
-     true
-   </UseTPCDown1>
-   <UseTPCDown2>
-     true
-   </UseTPCDown2>
-   <UseTPCUp1>
-     true
-   </UseTPCUp1>
-   <UseTPCUp2>
-     true
-   </UseTPCUp2>
- 
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
@@ -222,7 +207,60 @@
      +1487
    </TargetPos2_Z>
 
-   
+
+   <!-- FGD 2 -->
+
+   <FGDdefault2> 
+     true
+   </FGDdefault2>
+
+   <FGDMaterial2>
+     FGD2Uniform
+   </FGDMaterial2>
+
+   <FGDlength2>
+     303
+   </FGDlength2>
+   <FGDwidth2>  
+     1864.3
+   </FGDwidth2>
+   <FGDheight2> 
+     1864.3
+   </FGDheight2>
+
+   <FGDPos2_X>
+     0
+   </FGDPos2_X>
+   <FGDPos2_Y>
+     0
+   </FGDPos2_Y>
+   <FGDPos2_Z>
+     +2648.5
+   </FGDPos2_Z>
+
+
+   <!-- Include detectors -->
+
+   <UseTPCDown1>
+     true
+   </UseTPCDown1>
+   <UseTPCDown2>
+     true
+   </UseTPCDown2>
+   <UseTPCUp1>
+     true
+   </UseTPCUp1>
+   <UseTPCUp2>
+     true
+   </UseTPCUp2>
+   <UseFGD1>
+    false
+   </UseFGD1>
+   <UseFGD2>
+    false
+   </UseFGD2>
+
+    
 </Dependency>
 
 </Dependency_Details>
