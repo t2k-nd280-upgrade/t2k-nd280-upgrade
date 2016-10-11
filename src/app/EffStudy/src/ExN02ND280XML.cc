@@ -78,12 +78,6 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("sideTPCDownPos2_X" ,fSideTPCDownPos2_X);
     XML2Double("sideTPCDownPos2_Y" ,fSideTPCDownPos2_Y);
     XML2Double("sideTPCDownPos2_Z" ,fSideTPCDownPos2_Z);
-
-    // Use side TPCs
-    XML2Bool("UseTPCDown1" ,fUseTPCDown1);
-    XML2Bool("UseTPCUp1"   ,fUseTPCUp1);
-    XML2Bool("UseTPCDown2" ,fUseTPCDown2);
-    XML2Bool("UseTPCUp2"   ,fUseTPCUp2);
     
     // Target 1
     XML2Bool("Targetdefault1"   ,fTargetdefault1);
@@ -105,27 +99,35 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("TargetPos2_Y"   ,fTargetPos2_Y);
     XML2Double("TargetPos2_Z"   ,fTargetPos2_Z);
 
-    // // FGD 1
-    // XML2Bool("FGDdefault1" ,fFGDdefault1);
-    // XML2Double("FGDlength1",fFGDlength1);
-    // XML2Double("FGDwidth1" ,fFGDwidth1);
-    // XML2Double("FGDheight1",fFGDheight1);
-    // XML2Double("FGDPos1_X" ,fFGDPos1_X);
-    // XML2Double("FGDPos1_Y" ,fFGDPos1_Y);
-    // XML2Double("FGDPos1_Z" ,fFGDPos1_Z);
+    // FGD 1
+    XML2Bool("FGDdefault1"   ,fFGDdefault1);
+    XML2String("FGDMaterial1",fFGDMaterial1);
+    XML2Double("FGDlength1"  ,fFGDlength1);
+    XML2Double("FGDwidth1"   ,fFGDwidth1);
+    XML2Double("FGDheight1"  ,fFGDheight1);
+    XML2Double("FGDPos1_X"   ,fFGDPos1_X);
+    XML2Double("FGDPos1_Y"   ,fFGDPos1_Y);
+    XML2Double("FGDPos1_Z"   ,fFGDPos1_Z);
     
-    // // FGD 2
-    // XML2Bool("FGDdefault2",fFGDdefault2);
-    // XML2Double("FGDlength2",fFGDlength2);
-    // XML2Double("FGDwidth2", fFGDwidth2);
-    // XML2Double("FGDheight2",fFGDheight2);
-    // XML2Double("FGDPos2_X" ,fFGDPos2_X);
-    // XML2Double("FGDPos2_Y" ,fFGDPos2_Y);
-    // XML2Double("FGDPos2_Z" ,fFGDPos2_Z);
+    // FGD 2
+    XML2Bool("FGDdefault2"   ,fFGDdefault2);
+    XML2String("FGDMaterial2",fFGDMaterial2);
+    XML2Double("FGDlength2"  ,fFGDlength2);
+    XML2Double("FGDwidth2"   ,fFGDwidth2);
+    XML2Double("FGDheight2"  ,fFGDheight2);
+    XML2Double("FGDPos2_X"   ,fFGDPos2_X);
+    XML2Double("FGDPos2_Y"   ,fFGDPos2_Y);
+    XML2Double("FGDPos2_Z"   ,fFGDPos2_Z);
+
+    // Use side TPCs
+    XML2Bool("UseTPCDown1" ,fUseTPCDown1);
+    XML2Bool("UseTPCUp1"   ,fUseTPCUp1);
+    XML2Bool("UseTPCDown2" ,fUseTPCDown2);
+    XML2Bool("UseTPCUp2"   ,fUseTPCUp2);
     
-    // // Use FGDs
-    // XML2Bool("UseFGD1",fUseFGD1);
-    // XML2Bool("UseFGD2",fUseFGD2);
+    // Use FGDs
+    XML2Bool("UseFGD1",fUseFGD1);
+    XML2Bool("UseFGD2",fUseFGD2);
 
     
     myfile.close();

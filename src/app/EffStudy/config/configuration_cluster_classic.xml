@@ -9,11 +9,11 @@
 <Dependency>
   
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
   
   <IsRandomSeed>
-    0
+    1
   </IsRandomSeed>
   
   <Generator>      
@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/GENIE_nd280mc_thick60cm_width1807mm_6E20POT.root
+    GENIE/GENIE_nd280mc_upclassic_6E20POT.root
   </filename>
 
   <treename>  
@@ -39,7 +39,7 @@
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     false
+     true
    </forwTPCdefault>
 
    <forwTPCPos1_X>
@@ -77,17 +77,17 @@
    <!-- Side TPCs 1 -->
 
    <sideTPCdefault1>
-     false
+     true
    </sideTPCdefault1>
 
    <sideTPClength1>
-     2000  
+     1300  
    </sideTPClength1>
    <sideTPCwidth1>  
      2300
    </sideTPCwidth1>
    <sideTPCheight1> 
-     851.5  <!-- 1000 -->
+     851.5 
    </sideTPCheight1>
 
    <sideTPCUpPos1_X>
@@ -113,16 +113,16 @@
    <!-- Side TPCs 2 -->
 
    <sideTPCdefault2>
-     false
+     true
    </sideTPCdefault2>
    <sideTPClength2>
-     2000
+     1300
    </sideTPClength2>
    <sideTPCwidth2>  
      2300
    </sideTPCwidth2>
    <sideTPCheight2> 
-     851.5  <!-- 1000 -->
+     851.5
    </sideTPCheight2>
 
    <sideTPCUpPos2_X>
@@ -149,7 +149,7 @@
    <!-- Target 1 -->
 
    <Targetdefault1>
-     false
+     true
    </Targetdefault1>
    
    <TargetMaterial1>
@@ -157,13 +157,13 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     2000
+     1300
    </Targetlength1>
    <Targetwidth1>  
-     1807
+     1864
    </Targetwidth1>
    <Targetheight1> 
-     600 <!-- 303 -->
+     600
    </Targetheight1>
  
    <TargetPos1_X>
@@ -180,7 +180,7 @@
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     false
+     true
    </Targetdefault2>
 
    <TargetMaterial2>
@@ -188,13 +188,13 @@
    </TargetMaterial2>
 
    <Targetlength2>
-     2000 
+     1300 
    </Targetlength2>
    <Targetwidth2>  
-     1807 
+     1864 
    </Targetwidth2>
    <Targetheight2> 
-     600 <!-- 303 --> 
+     600 
    </Targetheight2>
 
    <TargetPos2_X>

@@ -31,23 +31,21 @@
 int GetReacAll(int neut_reaction_mode);
 string StringReacAll(int neut_reaction_mode);
 //bool IsTargetIn(int targetID,double x,double y,double z);
-
-//bool IsTargetIn(int targetID,double x,double y,double z,
-bool IsTargetIn(double x,double y,double z,
+bool IsTargetIn(int targetID,double x,double y,double z,
 		// Target 1
 		double vtx_min_x_1,
 		double vtx_max_x_1,  
 		double vtx_min_y_1, 
 		double vtx_max_y_1, 
 		double vtx_min_z_1,  
-		double vtx_max_z_1 
+		double vtx_max_z_1, 
 		// Target 2
-		//double vtx_min_x_2,  
-		//double vtx_max_x_2,  
-		//double vtx_min_y_2, 
-		//double vtx_max_y_2,  
-		//double vtx_min_z_2,
-		//double vtx_max_z_2  
+		double vtx_min_x_2,  
+		double vtx_max_x_2,  
+		double vtx_min_y_2, 
+		double vtx_max_y_2,  
+		double vtx_min_z_2,
+		double vtx_max_z_2  
 		);
 
 //bool IsFGDIn(int fgdID,double x,double y,double z,
@@ -67,7 +65,7 @@ bool IsTargetIn(double x,double y,double z,
 //              double vtx_max_z_2
 //              );
 
-void SelND280UpEvent
+void SelND280UpEvent_old
 (
  const int evtfirst = 0,
  const int nevents = 1,
@@ -85,27 +83,12 @@ void SelND280UpEvent
  const double vtx_min_z_1 = -2487,  
  const double vtx_max_z_1 = -487, 
  // Target 2
- //const double vtx_min_x_2 = -1150,  
- //const double vtx_max_x_2 = +1150,  
- //const double vtx_min_y_2 = -300, 
- //const double vtx_max_y_2 = +300, 
- //const double vtx_min_z_2 = +487,  
- //const double vtx_max_z_2 = +2487,  
- // FGD 1        
- //const double vtx_min_x_fgd1 = -1150,
- //const double vtx_max_x_fgd1 = +1150,
- //const double vtx_min_y_fgd1 = -300,
- //const double vtx_max_y_fgd1 = +300,
- //const double vtx_min_z_fgd1 = -2487,
- //const double vtx_max_z_fgd1 = -487,
- // FGD 2
- //const double vtx_min_x_fgd2 = -1150,
- //const double vtx_max_x_fgd2 = +1150,
- //const double vtx_min_y_fgd2 = -300,
- //const double vtx_max_y_fgd2 = +300,
- //const double vtx_min_z_fgd2 = +487,
- //const double vtx_max_z_fgd2 = +2487,
-
+ const double vtx_min_x_2 = -1150,  
+ const double vtx_max_x_2 = +1150,  
+ const double vtx_min_y_2 = -300, 
+ const double vtx_max_y_2 = +300, 
+ const double vtx_min_z_2 = +487,  
+ const double vtx_max_z_2 = +2487,  
 
  // Cut 0: Select only CC mode
  const bool doCutCC = true,
@@ -114,14 +97,12 @@ void SelND280UpEvent
  const bool doCutReac = false,
  const int cut_reac = 0, // 0=CCQE, 1=2p2h, 2=CC1pi, 3=CCcoh, 4=CCDIS, 5=NC
  
- // Cut 2: Vertex cut (inside the Targets and FGDs)
+ // Cut 2: Vertex cut (inside the Target)
  const bool doCutMater = false,
  const bool doCutVtx = true, 
  
  const bool doCutTarget1 = true, // Select vertex in Target1
  const bool doCutTarget2 = false, // Select vertex in Target2
- const bool doCutFGD1 = true, // Select vertex in FGD1
- const bool doCutFGD2 = false, // Select vertex in FGD2 
 
  const bool doCutVtxX = false, // width
  const double cut_xmin = 0,
@@ -158,28 +139,6 @@ void SelND280UpEvent
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+");
   //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+");
   
-
-  // // Cut 0: Select only CC mode                                                                                                                          
-  //const bool doCutCC = true;
-  // Cut 1: Select reaction mode                                                                                                                                                             
-  //const bool doCutReac = false;                                                                                                                                                        
-  //const int cut_reac = 0; // 0=CCQE, 1=2p2h, 2=CC1pi, 3=CCcoh, 4=CCDIS, 5=NC                                                                                                        
-  // Cut 2: Vertex cut (inside the Targets and FGDs)                                                                                                                             
-  //const bool doCutMater = false;                                                                                                                                                            
-  //const bool doCutVtx = true;                                                                                                                                                                     
-   
-  //const bool doCutVtxX = false; // width                                                                                                                           
-  //const double cut_xmin = 0;
-  //const double cut_xmax = 0;
-  //const bool doCutVtxZ = false; // length                                                                                                                          
-  //const double cut_zmin = 0;
-  //const double cut_zmax = 0;
-
-  // Cut 5: Charge cut (TPCs and Target)                                                                                                                                                                  
-  //const bool doCutCharge = true;
-  //const double cut_charge = 1; // absolute value                                                                                                                                                             
-
- 
   // Efficiency
   
   // My
@@ -248,6 +207,8 @@ void SelND280UpEvent
   TH2D *hPhiVsMom_TargetAndTPC 
     = (TH2D*) hPhiVsMom_FV->Clone("hPhiVsMom_TargetAndTPC");  
 
+  
+
   TH2D *hThetaVsPhi_FV = new TH2D("hThetaVsPhi_FV","hCosThetaVsMom_FV",NBins_Phi,BinEdges_Phi,NBins_Phi,BinEdges_Phi);
   TH2D *hThetaVsPhi_Target       
     = (TH2D*) hThetaVsPhi_FV->Clone("hThetaVsPhi_Target");
@@ -270,8 +231,6 @@ void SelND280UpEvent
 
   TH1D *hL_Targ1_FV = new TH1D("hL_Targ1_FV","hL_Targ1_FV",200,0,2000);
   TH1D *hL_Targ2_FV = new TH1D("hL_Targ2_FV","hL_Targ2_FV",200,0,2000);
-  TH1D *hL_FGD1_FV = new TH1D("hL_FGD1_FV","hL_FGD1_FV",200,0,2000);
-  TH1D *hL_FGD2_FV = new TH1D("hL_FGD2_FV","hL_FGD2_FV",200,0,2000);
   TH1D *hL_TPCUp1_FV = new TH1D("hL_TPCUp1_FV","hL_TPCUp1_FV",200,0,2000);
   TH1D *hL_TPCUp2_FV = new TH1D("hL_TPCUp2_FV","hL_TPCUp2_FV",200,0,2000);
   TH1D *hL_TPCDown1_FV = new TH1D("hL_TPCDown1_FV","hL_TPCDown1_FV",200,0,2000);
@@ -282,8 +241,6 @@ void SelND280UpEvent
   
   TH1D *hL_Targ1_Cut = new TH1D("hL_Targ1_Cut","hL_Targ1_Cut",200,0,2000);
   TH1D *hL_Targ2_Cut = new TH1D("hL_Targ2_Cut","hL_Targ2_Cut",200,0,2000);
-  TH1D *hL_FGD1_Cut = new TH1D("hL_FGD1_Cut","hL_FGD1_Cut",200,0,2000);
-  TH1D *hL_FGD2_Cut = new TH1D("hL_FGD2_Cut","hL_FGD2_Cut",200,0,2000);
   TH1D *hL_TPCUp1_Cut = new TH1D("hL_TPCUp1_Cut","hL_TPCUp1_Cut",200,0,2000);
   TH1D *hL_TPCUp2_Cut = new TH1D("hL_TPCUp2_Cut","hL_TPCUp2_Cut",200,0,2000);
   TH1D *hL_TPCDown1_Cut = new TH1D("hL_TPCDown1_Cut","hL_TPCDown1_Cut",200,0,2000);
@@ -294,8 +251,6 @@ void SelND280UpEvent
 
   TH2D *hLVsMom_Targ1_FV = new TH2D("hLVsMom_Targ1_FV","hLVsMom_Targ1_FV",200,0,2000,100,0,5000);  
   TH2D *hLVsMom_Targ2_FV = new TH2D("hLVsMom_Targ2_FV","hLVsMom_Targ2_FV",200,0,2000,100,0,5000);  
-  TH2D *hLVsMom_FGD1_FV = new TH2D("hLVsMom_FGD1_FV","hLVsMom_FGD1_FV",200,0,2000,100,0,5000);
-  TH2D *hLVsMom_FGD2_FV = new TH2D("hLVsMom_FGD2_FV","hLVsMom_FGD2_FV",200,0,2000,100,0,5000);
   TH2D *hLVsMom_TPCUp1_FV = new TH2D("hLVsMom_TPCUp1_FV","hLVsMom_TPCUp1_FV",200,0,2000,100,0,5000);
   TH2D *hLVsMom_TPCUp2_FV = new TH2D("hLVsMom_TPCUp2_FV","hLVsMom_TPCUp2_FV",200,0,2000,100,0,5000);
   TH2D *hLVsMom_TPCDown1_FV = new TH2D("hLVsMom_TPCDown1_FV","hLVsMom_TPCDown1_FV",200,0,2000,100,0,5000);
@@ -305,9 +260,7 @@ void SelND280UpEvent
   TH2D *hLVsMom_ForwTPC3_FV = new TH2D("hLVsMom_ForwTPC3_FV","hLVsMom_ForwTPC3_FV",200,0,2000,100,0,5000);
 
   TH2D *hLVsMom_Targ1_Cut = new TH2D("hLVsMom_Targ1_Cut","hLVsMom_Targ1_Cut",200,0,2000,100,0,5000);  
-  TH2D *hLVsMom_Targ2_Cut = new TH2D("hLVsMom_Targ2_Cut","hLVsMom_Targ2_Cut",200,0,2000,100,0,5000);  
-  TH2D *hLVsMom_FGD1_Cut = new TH2D("hLVsMom_FGD1_Cut","hLVsMom_FGD1_Cut",200,0,2000,100,0,5000);
-  TH2D *hLVsMom_FGD2_Cut = new TH2D("hLVsMom_FGD2_Cut","hLVsMom_FGD2_Cut",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_Targ2_Cut = new TH2D("hLVsMom_Targ2_Cut","hLVsMomTarg2_Cut",200,0,2000,100,0,5000);  
   TH2D *hLVsMom_TPCUp1_Cut = new TH2D("hLVsMom_TPCUp1_Cut","hLVsMom_TPCUp1_Cut",200,0,2000,100,0,5000);
   TH2D *hLVsMom_TPCUp2_Cut = new TH2D("hLVsMom_TPCUp2_Cut","hLVsMom_TPCUp2_Cut",200,0,2000,100,0,5000);
   TH2D *hLVsMom_TPCDown1_Cut = new TH2D("hLVsMom_TPCDown1_Cut","hLVsMom_TPCDown1_Cut",200,0,2000,100,0,5000);
@@ -468,7 +421,7 @@ void SelND280UpEvent
   int NTotTrkPassLtpc = 0; // Cut 7
   
   // Check the inputs
-  if(!doCutTarget1 && !doCutTarget2 && !doCutFGD1 && !doCutFGD2){
+  if(!doCutTarget1 && !doCutTarget2){
     cout << endl;
     cout << "You are not selecting interactions in any target !!!" << endl;
     cout << endl;
@@ -637,44 +590,52 @@ void SelND280UpEvent
 	double VtxY = nd280UpVertex->GetPosition().Y();
 	double VtxZ = nd280UpVertex->GetPosition().Z();
 
-	// Require only 1 target as FV
-	int NumOfFVTargets = 0;
-	if(doCutTarget1) NumOfFVTargets++;
-	if(doCutTarget2) NumOfFVTargets++;
-	if(doCutFGD1)    NumOfFVTargets++;
-	if(doCutFGD2)    NumOfFVTargets++;
-	if(NumOfFVTargets!=1){
-	  cerr << endl;
-	  cerr << "More than one target are FV!!!" << endl;
-	  cerr << endl;
-	  exit(1);
-	}
-
 	// Target 1 FV
-	if(doCutTarget1 || doCutTarget2 || doCutFGD1 || doCutFGD2 ){
-	  PassCutVtx = IsTargetIn(VtxX,VtxY,VtxZ,
+	if(doCutTarget1){
+	  PassCutVtx = IsTargetIn(1,VtxX,VtxY,VtxZ,
 				  // Target 1
 				  vtx_min_x_1,
 				  vtx_max_x_1,  
 				  vtx_min_y_1, 
 				  vtx_max_y_1, 
 				  vtx_min_z_1,  
-				  vtx_max_z_1 
+				  vtx_max_z_1, 
+				  // Target 2
+				  vtx_min_x_2,  
+				  vtx_max_x_2,  
+				  vtx_min_y_2, 
+				  vtx_max_y_2,  
+				  vtx_min_z_2,
+				  vtx_max_z_2  
 				  );
 	  FillVtxInFV = PassCutVtx;
+	}	
+	// Target 2 FV
+	if(doCutTarget2){
+	  PassCutVtx = 	IsTargetIn(2,VtxX,VtxY,VtxZ,
+				   // Target 1
+				   vtx_min_x_1,
+				   vtx_max_x_1,  
+				   vtx_min_y_1, 
+				   vtx_max_y_1, 
+				   vtx_min_z_1,  
+				   vtx_max_z_1, 
+				   // Target 2
+				   vtx_min_x_2,  
+				   vtx_max_x_2,  
+				   vtx_min_y_2, 
+				   vtx_max_y_2,  
+				   vtx_min_z_2,
+				   vtx_max_z_2  
+				   );
+	  FillVtxInFV = PassCutVtx;
 	}
-       	// don't apply this cut
-	else if(!doCutTarget1){ // && !doCutTarget2 && !doCutFGD1 && !doCutFGD2){
+	// don't apply this cut
+	if(!doCutTarget1 && !doCutTarget2){
 	  PassCutVtx = true;
 	  FillVtxInFV = true;
 	}
-	else{
-          cerr << endl;
-          cerr << "You can select only 1 target/fgd at a time!!!" << endl;
-          cerr << endl;
-          exit(1);
-        }
-	
+
 	// Cut on X vertex position
 	if(doCutVtxX){
 	  if( VtxX < cut_xmin || 
@@ -783,11 +744,9 @@ void SelND280UpEvent
 	cout << "SDlength = " << SDlength << " !!!" << endl;
 	exit(1);
       }
-   
+      
       double length_target1  = nd280UpTrack->GetLengthTarget1();
       double length_target2  = nd280UpTrack->GetLengthTarget2();
-      double length_fgd1     = nd280UpTrack->GetLengthFGD1();
-      double length_fgd2     = nd280UpTrack->GetLengthFGD2();
       double length_tpcup1   = nd280UpTrack->GetLengthTPCUp1();
       double length_tpcup2   = nd280UpTrack->GetLengthTPCUp2();
       double length_tpcdown1 = nd280UpTrack->GetLengthTPCDown1();
@@ -852,7 +811,7 @@ void SelND280UpEvent
 	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();
 	
 	string volname = nd280UpTrackPoint->GetPhysVolName();
-
+	
 	// //if(volname=="/World/Basket/Tracker/ForwTPC1/Drift"){
 	// if( volname=="/World/Basket/Tracker/ForwTPC1/Half" ||
 	//     volname=="/World/Basket/Tracker/ForwTPC1/MM"
@@ -982,14 +941,6 @@ void SelND280UpEvent
 	hL_Targ2_FV->Fill(length_target2);
 	hLVsMom_Targ2_FV->Fill(length_target2,mom);
       }
-      if(length_fgd1>0.){
-        hL_FGD1_FV->Fill(length_fgd1);
-        hLVsMom_FGD1_FV->Fill(length_fgd1,mom);
-      }
-      if(length_fgd2>0.){
-        hL_FGD2_FV->Fill(length_fgd2);
-        hLVsMom_FGD2_FV->Fill(length_fgd2,mom);
-      }
       if(length_tpcup1>0.){ 
 	hL_TPCUp1_FV->Fill(length_tpcup1);
 	hLVsMom_TPCUp1_FV->Fill(length_tpcup1,mom);
@@ -1040,16 +991,6 @@ void SelND280UpEvent
 	  {
 	    PassCutTarget = true;	  
 	  }
-        if(doCutFGD1 &&
-           (length_fgd1 > cut_length_target_min))
-          {
-            PassCutTarget = true;
-          }
-        if(doCutFGD2 &&
-           (length_fgd2 > cut_length_target_min))
-          {
-            PassCutTarget = true;
-          }
       }
       else // if don't apply the cut
       	PassCutTarget = true;
@@ -1096,14 +1037,6 @@ void SelND280UpEvent
 	  hL_Targ2_Cut->Fill(length_target2);
 	  hLVsMom_Targ2_Cut->Fill(length_target2,mom);
 	}
-        if(length_fgd1>0.){
-          hL_FGD1_Cut->Fill(length_fgd1);
-          hLVsMom_FGD1_Cut->Fill(length_fgd1,mom);
-        }
-        if(length_fgd2>0.){
-          hL_FGD2_Cut->Fill(length_fgd2);
-          hLVsMom_FGD2_Cut->Fill(length_fgd2,mom);
-        }
 	if(length_tpcup1>0.){ 
 	  hL_TPCUp1_Cut->Fill(length_tpcup1);
 	  hLVsMom_TPCUp1_Cut->Fill(length_tpcup1,mom);
@@ -1177,24 +1110,48 @@ void SelND280UpEvent
 	//double theta = acos(costheta);
 
 
-	bool FlagIsTargetIn1 = IsTargetIn(PtX,PtY,PtZ,
-					  // Target 1
-					  vtx_min_x_1,
-					  vtx_max_x_1,  
-					  vtx_min_y_1, 
-					  vtx_max_y_1, 
-					  vtx_min_z_1,  
-					  vtx_max_z_1 
-					  );
-	
-	if( FlagIsTargetIn1 ){ 
+	bool FlagIsTargetIn1 = IsTargetIn(1,PtX,PtY,PtZ,
+					 // Target 1
+					 vtx_min_x_1,
+					 vtx_max_x_1,  
+					 vtx_min_y_1, 
+					 vtx_max_y_1, 
+					 vtx_min_z_1,  
+					 vtx_max_z_1, 
+					 // Target 2
+					 vtx_min_x_2,  
+					 vtx_max_x_2,  
+					 vtx_min_y_2, 
+					 vtx_max_y_2,  
+					 vtx_min_z_2,
+					 vtx_max_z_2  
+					 );
+
+	bool FlagIsTargetIn2 = IsTargetIn(2,PtX,PtY,PtZ,
+					 // Target 1
+					 vtx_min_x_1,
+					 vtx_max_x_1,  
+					 vtx_min_y_1, 
+					 vtx_max_y_1, 
+					 vtx_min_z_1,  
+					 vtx_max_z_1, 
+					 // Target 2
+					 vtx_min_x_2,  
+					 vtx_max_x_2,  
+					 vtx_min_y_2, 
+					 vtx_max_y_2,  
+					 vtx_min_z_2,
+					 vtx_max_z_2  
+					 );
+
+	if( FlagIsTargetIn1 || FlagIsTargetIn2 ){
 	  hLastPt_Target_Z->Fill(PtZ);
 	  hLastPt_Target_XY->Fill(PtX,PtY);
 	  hLastPt_Target_YZ->Fill(PtY,PtZ);
 	  hLastPt_Target_XZ->Fill(PtX,PtZ);
 	  hLastPt_Target_PhiVsZ->Fill(phi,PtZ);
 	  hLastPt_Target_ThetaVsZ->Fill(theta,PtZ);
-       	}
+	}
 	else{
 	  hLastPt_Oth_Z->Fill(PtZ);
 	  hLastPt_Oth_XY->Fill(PtX,PtY);
@@ -1359,8 +1316,6 @@ void SelND280UpEvent
   hLVsMom_SD->Write();
   hL_Targ1_FV->Write();
   hL_Targ2_FV->Write();
-  hL_FGD1_FV->Write();
-  hL_FGD2_FV->Write();
   hL_TPCUp1_FV->Write();
   hL_TPCUp2_FV->Write();
   hL_TPCDown1_FV->Write();
@@ -1371,8 +1326,6 @@ void SelND280UpEvent
   //
   hL_Targ1_Cut->Write();
   hL_Targ2_Cut->Write();
-  hL_FGD1_Cut->Write();
-  hL_FGD2_Cut->Write();
   hL_TPCUp1_Cut->Write();
   hL_TPCUp2_Cut->Write();
   hL_TPCDown1_Cut->Write();
@@ -1383,8 +1336,6 @@ void SelND280UpEvent
   //
   hLVsMom_Targ1_FV->Write();
   hLVsMom_Targ2_FV->Write();
-  hLVsMom_FGD1_FV->Write();
-  hLVsMom_FGD2_FV->Write();
   hLVsMom_TPCUp1_FV->Write();
   hLVsMom_TPCUp2_FV->Write();
   hLVsMom_TPCDown1_FV->Write();
@@ -1395,8 +1346,6 @@ void SelND280UpEvent
   //
   hLVsMom_Targ1_Cut->Write();
   hLVsMom_Targ2_Cut->Write();
-  hLVsMom_FGD1_Cut->Write();
-  hLVsMom_FGD2_Cut->Write();
   hLVsMom_TPCUp1_Cut->Write();
   hLVsMom_TPCUp2_Cut->Write();
   hLVsMom_TPCDown1_Cut->Write();
@@ -1578,55 +1527,54 @@ string StringReacAll(int reaction_mode_all){
   }
 }
 //___________________________________________________________________________ 
-//bool IsTargetIn(int targetID,double x,double y,double z,
-bool IsTargetIn(double x,double y,double z,
+bool IsTargetIn(int targetID,double x,double y,double z,
 		// Target 1
 		double vtx_min_x_1,
 		double vtx_max_x_1,  
 		double vtx_min_y_1, 
 		double vtx_max_y_1, 
 		double vtx_min_z_1,  
-		double vtx_max_z_1 
+		double vtx_max_z_1, 
 		// Target 2
-		//double vtx_min_x_2,  
-		//double vtx_max_x_2,  
-		//double vtx_min_y_2, 
-		//double vtx_max_y_2,  
-		//double vtx_min_z_2,
-		//double vtx_max_z_2  
+		double vtx_min_x_2,  
+		double vtx_max_x_2,  
+		double vtx_min_y_2, 
+		double vtx_max_y_2,  
+		double vtx_min_z_2,
+		double vtx_max_z_2  
 ){
   
   // Target 1 FV
-  //if(targetID==1){
-  if((x > vtx_min_x_1 && x < vtx_max_x_1) && 
-     (y > vtx_min_y_1 && y < vtx_max_y_1) && 
-     (z > vtx_min_z_1 && z < vtx_max_z_1)
-     ){
-    return true;
+  if(targetID==1){
+    if((x > vtx_min_x_1 && x < vtx_max_x_1) && 
+       (y > vtx_min_y_1 && y < vtx_max_y_1) && 
+       (z > vtx_min_z_1 && z < vtx_max_z_1)
+       ){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }	
+  // Target 2 FV
+  if(targetID==2){
+    if((x > vtx_min_x_2 && x < vtx_max_x_2) &&
+       (y > vtx_min_y_2 && y < vtx_max_y_2) &&
+       (z > vtx_min_z_2 && z < vtx_max_z_2)
+       ){	  
+      return true;
+    }
+    else{
+      return false;
+    }
   }
   else{
-    return false;
+    cerr << endl;
+    cerr << "Target ID = " << targetID << " is wrong" << endl;
+    cerr << "You can choose between 1 and 2" << endl;
+    cerr << endl;
+    exit(1);
   }
-  //}	
-  // Target 2 FV
-  //if(targetID==2){
-  //if((x > vtx_min_x_2 && x < vtx_max_x_2) &&
-  //(y > vtx_min_y_2 && y < vtx_max_y_2) &&
-  //(z > vtx_min_z_2 && z < vtx_max_z_2)
-  //){	  
-  //return true;
-  //}
-  //else{
-  //return false;
-  //}
-  //}
-  //else{
-  //cerr << endl;
-  //cerr << "Target ID = " << targetID << " is wrong" << endl;
-  //cerr << "You can choose between 1 and 2" << endl;
-  //cerr << endl;
-  //exit(1);
-  //}
 }
 //___________________________________________________________________________                                                                                                                           
 //bool IsTargetIn(int targetID,double x,double y,double z,

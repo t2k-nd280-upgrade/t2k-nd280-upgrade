@@ -84,23 +84,30 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
 
   G4String namedet = prestep->GetTouchableHandle()->GetVolume()->GetName();        
   fEventAction->AddAbsTot(edep,stepLength);    
-  if(namedet=="TPCUp1")
+  if(namedet=="/World/Basket/Tracker/TPCUp1")
     fEventAction->AddAbsTPCup1(edep,stepLength);
-  else if(namedet=="TPCUp2")
+  else if(namedet=="/World/Basket/Tracker/TPCUp2")
     fEventAction->AddAbsTPCup2(edep,stepLength);
-  else if(namedet=="TPCDown1")
+  else if(namedet=="/World/Basket/Tracker/TPCDown1")
     fEventAction->AddAbsTPCdown1(edep,stepLength);
-  else if(namedet=="TPCDown2")
+  else if(namedet=="/World/Basket/Tracker/TPCDown2")
     fEventAction->AddAbsTPCdown2(edep,stepLength);
-  else if(namedet=="Target1") 
+  else if(namedet=="/World/Basket/Tracker/Target1") 
     fEventAction->AddAbsTarget1(edep,stepLength);
-  else if(namedet=="Target2") 
+  else if(namedet=="/World/Basket/Tracker/Target2") 
     fEventAction->AddAbsTarget2(edep,stepLength);
-  else if(namedet=="ForwTPC1/Half") 
+  else if(namedet=="/World/Basket/Tracker/FGD1") 
+    fEventAction->AddAbsFGD1(edep,stepLength);
+  else if(namedet=="/World/Basket/Tracker/FGD2") 
+    fEventAction->AddAbsFGD2(edep,stepLength);
+  else if( namedet=="/World/Basket/Tracker/ForwTPC1/Half" || 
+	   namedet=="/World/Basket/Tracker/ForwTPC1/MM" ) 
     fEventAction->AddAbsForwTPC1(edep,stepLength);
-  else if(namedet=="ForwTPC2/Half") 
+  else if( namedet=="/World/Basket/Tracker/ForwTPC2/Half" || 
+	   namedet=="/World/Basket/Tracker/ForwTPC2/MM" ) 
     fEventAction->AddAbsForwTPC2(edep,stepLength);
-  else if(namedet=="ForwTPC3/Half") 
+  else if( namedet=="/World/Basket/Tracker/ForwTPC3/Half" || 
+	   namedet=="/World/Basket/Tracker/ForwTPC3/MM" ) 
     fEventAction->AddAbsForwTPC3(edep,stepLength);
   
   //if(namedet=="ForwTPC1/Half")

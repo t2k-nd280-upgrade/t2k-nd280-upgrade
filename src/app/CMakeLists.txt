@@ -10,13 +10,17 @@ ADD_EXECUTABLE(EffStudy.exe          EffStudy/Main.cc ${sourcefile}) ###
 
 message(STATUS "root libraries ${ROOT_LIBRARIES}") 
 message(STATUS "geant4 libraries ${GEANT4_LIBRARIES}") 
-message(STATUS "xerces libraries ${XERCES_LIBRARIES}") 
-message(STATUS "vgm libraries ${VGM_LIBRARIES}") 
+#message(STATUS "xerces libraries ${XERCESC_LIBRARIES}") 
+#message(STATUS "vgm libraries ${VGM_LIBRARIES}") 
+message(STATUS "clhep libraries ${CLHEP_LIBRARIES}") 
+
+#message("XERCESC_LIBRARIES : ${XERCESC_LIBRARIES}  ")
 
 TARGET_LINK_LIBRARIES(EffStudy.exe   ${ROOT_LIBRARIES}
                                          ${GEANT4_LIBRARIES}
-                                         #${XERCES_LIBRARIES}
-                                         ${VGM_LIBRARIES}
+                                         #${XERCESC_LIBRARIES}
+                                         #${VGM_LIBRARIES}
+					 ${CLHEP_LIBRARIES}
 					 #BaseVGM
                                          #ClhepVGM 
                                          #Geant4GM

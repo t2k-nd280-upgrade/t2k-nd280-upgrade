@@ -63,9 +63,11 @@ public:
   void AddAbsTPCup1(G4double de, G4double dl);
   void AddAbsTPCdown1(G4double de, G4double dl);
   void AddAbsTarget1(G4double de, G4double dl);
+  void AddAbsFGD1(G4double de, G4double dl);
   void AddAbsTPCup2(G4double de, G4double dl);
   void AddAbsTPCdown2(G4double de, G4double dl);
   void AddAbsTarget2(G4double de, G4double dl);
+  void AddAbsFGD2(G4double de, G4double dl);
   void AddAbsTot(G4double de, G4double dl);
   
   void SetTrack(const G4Step *step);
@@ -287,9 +289,11 @@ private:
   G4double  fEnergyAbsTPCup1;   // Total energy absorbed by TPC up 1
   G4double  fEnergyAbsTPCdown1; // Total energy absorbed by TPC down 1
   G4double  fEnergyAbsTarget1;  // Total energy absorbed by Target 1
+  G4double  fEnergyAbsFGD1;  // Total energy absorbed by FGD 1
   G4double  fEnergyAbsTPCup2;   // Total energy absorbed by TPC up 2
   G4double  fEnergyAbsTPCdown2; // Total energy absorbed by TPC down 2
   G4double  fEnergyAbsTarget2;  // Total energy absorbed by Target 2
+  G4double  fEnergyAbsFGD2;  // Total energy absorbed by FGD 2
   G4double  fEnergyAbsTot;     // Total energy absorbed in the detector
   G4double  fTrackLAbsForwTPC1;   // Length of track absorbed in Forward TPC 1
   G4double  fTrackLAbsForwTPC2;   // Length of track absorbed in Forward TPC 2
@@ -297,9 +301,11 @@ private:
   G4double  fTrackLAbsTPCup1;   // Length of track absorbed in TPC up 1
   G4double  fTrackLAbsTPCdown1; // Length of track absorbed in TPC down 1
   G4double  fTrackLAbsTarget1;  // Length of track absorbed in Target 1
+  G4double  fTrackLAbsFGD1;  // Length of track absorbed in FGD 1
   G4double  fTrackLAbsTPCup2;   // Length of track absorbed in TPC up 2
   G4double  fTrackLAbsTPCdown2; // Length of track absorbed in TPC down 2
   G4double  fTrackLAbsTarget2;  // Length of track absorbed in Target 2
+  G4double  fTrackLAbsFGD2;  // Length of track absorbed in FGD 2
   G4double  fTrackLAbsTot;     // Total length of track absorbed in the detector
   G4int     fNTracks;          // # of tracks in the event
   
@@ -532,6 +538,10 @@ inline void ExN02EventAction::AddAbsTPCdown1(G4double de, G4double dl) {
 inline void ExN02EventAction::AddAbsTarget1(G4double de, G4double dl) {
   fEnergyAbsTarget1 += de;
   fTrackLAbsTarget1 += dl;
+
+}inline void ExN02EventAction::AddAbsFGD1(G4double de, G4double dl) {
+  fEnergyAbsFGD1 += de;
+  fTrackLAbsFGD1 += dl;
 }
 
 inline void ExN02EventAction::AddAbsTPCup2(G4double de, G4double dl) {
@@ -545,6 +555,10 @@ inline void ExN02EventAction::AddAbsTPCdown2(G4double de, G4double dl) {
 inline void ExN02EventAction::AddAbsTarget2(G4double de, G4double dl) {
   fEnergyAbsTarget2 += de;
   fTrackLAbsTarget2 += dl;
+}
+inline void ExN02EventAction::AddAbsFGD2(G4double de, G4double dl) {
+  fEnergyAbsFGD2 += de;
+  fTrackLAbsFGD2 += dl;
 }
 
 inline void ExN02EventAction::AddAbsTot(G4double de, G4double dl) {

@@ -300,6 +300,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
     double LengthTarget1 = 0.;
     double LengthTarget2 = 0.;
+    double LengthFGD1 = 0.;
+    double LengthFGD2 = 0.;
     double LengthTPCUp1     = 0.;
     double LengthTPCUp2     = 0.;
     double LengthTPCDown1   = 0.;
@@ -318,6 +320,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
     double EdepTarget1 = 0.;
     double EdepTarget2 = 0.;
+    double EdepFGD1 = 0.;
+    double EdepFGD2 = 0.;
     double EdepTPCUp1     = 0.;
     double EdepTPCUp2     = 0.;
     double EdepTPCDown1   = 0.;
@@ -364,6 +368,14 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	else if(detname_curr=="/World/Basket/Tracker/Target2"){
 	  LengthTarget2 += steplength;	
 	  EdepTarget2   += stepedep;	
+	}
+ 	else if(detname_curr=="/World/Basket/Tracker/FGD1"){
+	  LengthFGD1 += steplength;
+	  EdepFGD1   += stepedep;
+	}
+	else if(detname_curr=="/World/Basket/Tracker/FGD2"){
+	  LengthFGD2 += steplength;	
+	  EdepFGD2   += stepedep;	
 	}
 	else if(detname_curr=="/World/Basket/Tracker/TPCUp1"){
 	  LengthTPCUp1 += steplength;	
@@ -489,6 +501,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
     nd280Track->SetLengthTarget1(LengthTarget1);
     nd280Track->SetLengthTarget2(LengthTarget2); 
+    nd280Track->SetLengthFGD1(LengthFGD1);
+    nd280Track->SetLengthFGD2(LengthFGD2); 
     nd280Track->SetLengthTPCUp1(LengthTPCUp1);
     nd280Track->SetLengthTPCUp2(LengthTPCUp2);
     nd280Track->SetLengthTPCDown1(LengthTPCDown1);
@@ -507,6 +521,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
     nd280Track->SetEdepTarget1(EdepTarget1);
     nd280Track->SetEdepTarget2(EdepTarget2);    
+    nd280Track->SetEdepFGD1(EdepFGD1);
+    nd280Track->SetEdepFGD2(EdepFGD2);    
     nd280Track->SetEdepTPCUp1(EdepTPCUp1);
     nd280Track->SetEdepTPCUp2(EdepTPCUp2);
     nd280Track->SetEdepTPCDown1(EdepTPCDown1);
