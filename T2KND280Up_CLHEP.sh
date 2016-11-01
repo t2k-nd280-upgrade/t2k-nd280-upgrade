@@ -15,6 +15,9 @@ source /atlas/users/dsgalabe/ROOT/root/bin/thisroot.sh
 source /atlas/users/dsgalabe/CMT/setup.sh
 export CMTPATH=$PWD
 
+# setup highlandUp
+source /atlas/users/dsgalabe/t2k-nd280-upgrade/highlandUP/ndupAnalysis/v0r0/cmt/setup.sh
+
 # setup gcc-xml
 #export PATH=/afs/cern.ch/user/d/dsgalabe/GCCXML/gccxml-install/bin:$PATH # gcc-xml
 

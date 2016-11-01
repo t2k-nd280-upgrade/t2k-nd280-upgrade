@@ -71,7 +71,7 @@ void boxUtils::FillTracksWithTPC(AnaEventB& event, SubDetId::SubDetEnum det){
 
     if (track->nTPCSegments==0){
       std::cout << "Warning. This track has no TPC segments" << std::endl;
-      continue;
+      //continue;
     }
 
     if (processTPC){
