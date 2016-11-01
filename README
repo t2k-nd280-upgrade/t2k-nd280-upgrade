@@ -68,3 +68,30 @@ cmake -DCMAKE_INSTALL_PREFIX=/atlas/users/dsgalabe/GEANT4/geant4.10.01.p03-insta
 # Without GDML --> don't need Xerces-c (RECOMMENDED)
 cmake -DCMAKE_INSTALL_PREFIX=/atlas/users/dsgalabe/GEANT4/geant4.10.01.p03-install -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_SYSTEM_CLHEP=ON -DCLHEP_ROOT_DIR=/atlas/users/dsgalabe/CLHEP/clhep_install/ /atlas/users/dsgalabe/GEANT4/geant4.10.01.p03
 
+
+
+
+
+
+
+6.) Running NEUT (using 5.3.6 version)
+
+cd /path_to_neut/src/neutgeom
+source setup.sh
+
+./event_rate -f /neutrino/data7/davide/files/ND280Upgrade/JNUBEAM/RHC_fluxfiles/nd5/hadd/nu.nd5_flukain.0-0.root -g /neutrino/data7/davide/files/ND280Upgrade/G4geometry/geometry_classic.root -v +Basket -o /atlas/users/dsgalabe/STUFF_T2KREWEIGHT/NEUT/neut_5.3.6/src/neutgeom/setup_output.root -d 5
+
+./genev -j /neutrino/data7/davide/files/ND280Upgrade/JNUBEAM/RHC_fluxfiles/nd5/hadd/nu.nd5_flukain.0-0.root -g /neutrino/data7/davide/files/ND280Upgrade/G4geometry/geometry_classic.root -v +Basket -o genev_output.root -i /atlas/users/dsgalabe/STUFF_T2KREWEIGHT/NEUT/neut_5.3.6/src/neutgeom/setup_output.root -f rootracker
+
+More detailed instructions can be found at http://www.t2k.org/asg/xsec/niwgdocs/neut/neut_nd280
+
+
+
+
+7.) Running highlandUp 
+
+see instruction at the following link:
+
+http://www.t2k.org/nd280/physics/xsec/meetings/2016/pre-collaboration-meeting-workshop/highland/view
+
+and the README.txt file in /highlandUp
