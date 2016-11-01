@@ -44,7 +44,6 @@ AnaTargetParticleB::~AnaTargetParticleB(){
 AnaTPCParticleB::AnaTPCParticleB():AnaParticleMomB() {
 //********************************************************************
 
-    MomentumError  = -999;
     EFieldRefitMomentum  = -999;
 
     dEdxMeas        = -999;
@@ -65,7 +64,6 @@ AnaTPCParticleB::AnaTPCParticleB():AnaParticleMomB() {
 AnaTPCParticleB::AnaTPCParticleB(const AnaTPCParticleB& seg):AnaParticleMomB(seg){
 //********************************************************************
 
-    MomentumError  = seg.MomentumError;
     EFieldRefitMomentum       = seg.EFieldRefitMomentum;
 
     dEdxMeas      = seg.dEdxMeas; 
@@ -105,6 +103,7 @@ AnaTPCParticleB::~AnaTPCParticleB(){
 AnaParticleMomE::AnaParticleMomE(){
 //********************************************************************
     SmearedMomentum  = -999;
+    MomentumError  = -999;
 
     Charge            = -999;
     Momentum          = -999;
@@ -121,6 +120,7 @@ AnaParticleMomE::~AnaParticleMomE(){
 AnaParticleMomE::AnaParticleMomE(const AnaParticleMomE& part){
 //********************************************************************
     SmearedMomentum  = part.SmearedMomentum;
+    MomentumError  = part.MomentumError;
 
     Charge            = part.Charge;
     Momentum          = part.Momentum;
@@ -131,6 +131,8 @@ AnaParticleMomE::AnaParticleMomE(const AnaParticleMomE& part){
 void AnaParticleMomE::Print() const{
 //********************************************************************
     std::cout << "SmearedMomentum       " <<SmearedMomentum     <<std::endl; 
+    std::cout << "MomentumError       " <<MomentumError     <<std::endl; 
+ 
     std::cout << "Charge:               " << Charge             << std::endl;
     std::cout << "Momentum:             " << Momentum           << std::endl;
     std::cout << "MomentumEnd:          " << MomentumEnd        << std::endl;
@@ -195,7 +197,7 @@ AnaParticleB::AnaParticleB(): AnaRecObjectC(){
 //********************************************************************
 
     NHits             = -999;
-    Detectors             = -999;
+    Detectors             = 0;
 
 
     anaUtils::ReserveArray(DirectionStart, 3);
@@ -416,7 +418,7 @@ AnaTrueParticleB::AnaTrueParticleB():AnaTrueObjectC(){
     ParentID      = 0; // These are 0 as it has a special meaning
     ParentPDG     = 0; // These are 0 as it has a special meaning
     GParentPDG    = 0;
-
+    stopped =-999;
     anaUtils::ReserveArray(Position, 4);
     anaUtils::ReserveArray(PositionEnd, 4);
     anaUtils::ReserveArray(Direction, 3);
@@ -464,7 +466,7 @@ AnaTrueParticleB::AnaTrueParticleB(const AnaTrueParticleB& truePart):AnaTrueObje
     ParentID   = truePart.ParentID;
     ParentPDG  = truePart.ParentPDG;
     GParentPDG = truePart.GParentPDG;
-
+    stopped=truePart.stopped;
     anaUtils::CopyArray(truePart.Position, Position, 4);
     anaUtils::CopyArray(truePart.PositionEnd, PositionEnd, 4);
     anaUtils::CopyArray(truePart.Direction, Direction, 3);

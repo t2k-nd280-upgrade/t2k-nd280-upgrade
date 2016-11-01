@@ -2,7 +2,6 @@
 #define ndupAnalysis_h
 
 #include "baseAnalysis.hxx"
-//#include "ND280AnalysisUtils.hxx"
 #include "ToyBoxNDUP.hxx"
 
 class ndupAnalysis: public baseAnalysis {
@@ -120,6 +119,7 @@ public:
     true_Edep,
     true_mom,
     true_costheta,
+    true_phi,
     true_charge,
     true_ekin,
     true_part,
@@ -167,7 +167,12 @@ public:
     muon_LYZTPC,
     muon_LYZTPCUp1,
     muon_LYZTPCForw2,
- 
+    muon_pidlikelihood1,
+    muon_pidlikelihood2,
+    muon_pidlikelihood3,
+    muon_pidlikelihood4,
+    mip_pidlikelihood,
+
     muon_tpc_de_dx,
     muon_tpc_momentum,
     muon_cosphi,

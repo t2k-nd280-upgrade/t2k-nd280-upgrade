@@ -10,6 +10,7 @@
 #include "MomRangeCorrection.hxx"
 #include "TruthUtils.hxx"
 #include "PIDCorrection.hxx"
+#include "PIDUtils.hxx"
 //********************************************************************
 ndupAnalysis::ndupAnalysis(AnalysisAlgorithm* ana) : baseAnalysis(ana) {
 //********************************************************************
@@ -100,6 +101,11 @@ void ndupAnalysis::DefineMicroTrees(bool addBase) {
   AddVarF(output(), muon_cosphi,         "muon cosphi");
   AddVarF(output(), muon_theta,         "muon theta");
   AddVarF(output(), muon_phi,         "muon phi");
+  AddVarF(output(), muon_pidlikelihood1,         "muon_pidlikelihood1");
+  AddVarF(output(), muon_pidlikelihood2,         "muon_pidlikelihood2");
+  AddVarF(output(), muon_pidlikelihood3,         "muon_pidlikelihood3");
+  AddVarF(output(), muon_pidlikelihood4,         "muon_pidlikelihood4");
+ AddVarF(output(), mip_pidlikelihood,         "mip_pidlikelihood");
 
   AddVarF(output(), muon_charge,         "muon charge");
   AddVarF(output(), muon_ekin,         "muon kinetic energy");
@@ -276,70 +282,16 @@ void ndupAnalysis::DefineTruthTree() {
   AddVarI(output(), true_reaction_code,         "reaction_code");
   AddVar4VF(output(), true_vertex_position,         "vertex position");
 
-  AddVarVI(output(), true_parentID,         "  true_parentID",                               true_part);
+  AddVarI(output(), true_parentID,         "  true_parentID");                  
 
-  AddVarVI(output(), true_pdg,         "  pdg",                               true_part);
-  AddVarVF(output(), true_SDlength,  " SD length  ",       true_part);
-  AddVarVF(output(), true_Edep,  " Edeposite  ",       true_part);
-  AddVarVF(output(), true_mom,         " mom", true_part);
-  AddVarVF(output(), true_costheta,         " costheta", true_part);
-  AddVarVF(output(), true_charge,         " charge", true_part);
-  AddVarVF(output(), true_ekin,         " kinetic energy", true_part);
-
-  AddVarVI(output(), true_tpcup1_det,         "  TPC number",  true_part);
-  AddVarVF(output(), true_tpcup1_Edep,  " Edeposite  in each TPC",       true_part);
-  AddVarVF(output(), true_tpcup1_DeltaLYZ,  " true deltaLYZ  in each TPC",       true_part);
-
-  AddVarVI(output(), true_tpcup2_det,         "  TPC number",  true_part);
-  AddVarVF(output(), true_tpcup2_Edep,  " Edeposite  in each TPC",       true_part);
-  AddVarVF(output(), true_tpcup2_DeltaLYZ,  " true deltaLYZ  in each TPC",       true_part);
-
-  AddVarVI(output(), true_tpcdown1_det,         "  TPC number",  true_part);
-  AddVarVF(output(), true_tpcdown1_Edep,  " Edeposite  in each TPC",       true_part);
-  AddVarVF(output(), true_tpcdown1_DeltaLYZ,  " true deltaLYZ  in each TPC",       true_part);
-
-  AddVarVI(output(), true_tpcdown2_det,         "  TPC number",  true_part);
-  AddVarVF(output(), true_tpcdown2_Edep,  " Edeposite  in each TPC",       true_part);
-  AddVarVF(output(), true_tpcdown2_DeltaLYZ,  " true deltaLYZ  in each TPC",       true_part);
-
-  AddVarVI(output(), true_forwtpc1_det,         "  TPC number",  true_part);
-  AddVarVF(output(), true_forwtpc1_Edep,  " Edeposite  in each TPC",       true_part);
-  AddVarVF(output(), true_forwtpc1_DeltaLYZ,  " true deltaLYZ  in each TPC",       true_part);
-
-  AddVarVI(output(), true_forwtpc2_det,         "  TPC number",  true_part);
-  AddVarVF(output(), true_forwtpc2_Edep,  " Edeposite  in each TPC",       true_part);
-  AddVarVF(output(), true_forwtpc2_DeltaLYZ,  " true deltaLYZ  in each TPC",       true_part);
-
-  AddVarVI(output(), true_forwtpc3_det,         "  TPC number",  true_part);
-  AddVarVF(output(), true_forwtpc3_Edep,  " Edeposite  in each TPC",       true_part);
-  AddVarVF(output(), true_forwtpc3_DeltaLYZ,  " true deltaLYZ  in each TPC",       true_part);
-  AddVarMF(output(), true_tpc_de_dx,  " true length  in each TPC",       true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_momentum,  " true momentum  in each TPC",       true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_exitmomentum,  " true momentum  in each TPC",       true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_length,         "tpc_length", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_pull_muon,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_pull_proton,         "true_tpc_pull_proton", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_pull_pion,         "true_tpc_pull_pion", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_pull_electron,         "true_tpc_pull_electron", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_sigdedx_muon,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_sigdedx_pion,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_sigdedx_ele,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_sigdedx_proton,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_dedx_muon,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_dedx_pion,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_dedx_ele,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), true_tpc_dedx_proton,         "true_tpc_pull_muon", true_part, -4000, 7);
-
-// AddVarVF(output(), true_tpc_sigma,  " true tpc  in each TPC",       true_ntpcs);
-
-  AddVarVI(output(), true_target1_det,         " target det number",                               true_part);
-  AddVarVF(output(), true_target1_length,  "  length  in each target",       true_part);
-  AddVarVF(output(), true_target1_Edep,  "  Edeposite  in each target",       true_part);
-
-  AddVarVI(output(), true_target2_det,         " target det number",                               true_part);
-  AddVarVF(output(), true_target2_length,  "  length  in each target",       true_part);
-  AddVarVF(output(), true_target2_Edep,  "  Edeposite  in each target",       true_part);
-
+  AddVarI(output(), true_pdg,         "  pdg");
+  AddVarF(output(), true_SDlength,  " SD length  ");
+  AddVarF(output(), true_Edep,  " Edeposite  ");
+  AddVarF(output(), true_mom,         " mom");
+  AddVarF(output(), true_costheta,         " costheta");
+  AddVarF(output(), true_phi,         " phi");
+  AddVarF(output(), true_charge,         " charge");
+  AddVarF(output(), true_ekin,         " kinetic energy");
 
 }
 
@@ -360,284 +312,85 @@ void ndupAnalysis::FillMicroTrees(bool addBase) {
     output().FillVar(reaction_code, vtx->ReacCode);
     output().FillVar(current_code, anaUtils::GetReacAll(vtx->ReacCode));
     output().FillVectorVarFromArray(vertex_position, (box().Vertex)->Position, 4);
-
+  }
 // Muon information
-    if (box().HMT) {
-      AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(box().HMT->GetTrueParticle());
-      output().FillVar(muon_pdg, trueP->PDG);
-      output().FillVar(muon_charge, trueP->Charge);
-      output().FillVar(muon_mom, box().HMT->Momentum);
-      output().FillVar(muon_costheta, (box().HMT)->DirectionStart[2]);
-      output().FillVar(muon_theta, (float)acos((box().HMT)->DirectionStart[2]));
-      output().FillVar(muon_istpccut, cutUtils::DeltaLYZTPCCut(*box().HMT));
-      output().FillVar(muon_istarget1, (int)cutUtils::DeltaLYZTargetCut(*box().HMT, SubDetId::kTarget1));
-      output().FillVar(muon_istarget2, (int)cutUtils::DeltaLYZTargetCut(*box().HMT, SubDetId::kTarget2));
+  if (box().MainTrack) {
+    AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(box().MainTrack->GetTrueParticle());
+    output().FillVar(muon_pdg, trueP->PDG);
+    output().FillVar(muon_charge, trueP->Charge);
+    output().FillVar(muon_mom, box().MainTrack->SmearedMomentum);
+    output().FillVar(muon_costheta, (box().MainTrack)->DirectionStart[2]);
+    output().FillVar(muon_theta, (float)acos((box().MainTrack)->DirectionStart[2]));
+    output().FillVar(muon_istpccut, cutUtils::DeltaLYZTPCCut(*box().MainTrack));
+    output().FillVar(muon_istarget1, (int)cutUtils::DeltaLYZTargetCut(*box().MainTrack, SubDetId::kTarget1));
+    output().FillVar(muon_istarget2, (int)cutUtils::DeltaLYZTargetCut(*box().MainTrack, SubDetId::kTarget2));
 
 
-      float phi = atan2((box().HMT)->DirectionStart[1], (box().HMT)->DirectionStart[0]);
-      float cosphi = cos(phi);
+    float phi = atan2((box().MainTrack)->DirectionStart[1], (box().MainTrack)->DirectionStart[0]);
+    float cosphi = cos(phi);
 
-      output().FillVar(muon_cosphi, cosphi);
-      output().FillVar(muon_phi, phi);
+    output().FillVar(muon_cosphi, cosphi);
+    output().FillVar(muon_phi, phi);
 
-      AnaTrack *track = dynamic_cast<AnaTrack*>(box().HMT);
-      output().FillVar(muon_ekin, (box().HMT)->EKin);
-      output().FillVar(muon_SDLength, track->Length);
-      Float_t pulls[4];
-      for (int subdet = 0; subdet < 7; subdet++) {
-        AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *box().HMT, static_cast<SubDetId::SubDetEnum >(subdet)));
-        if (TPCSegment) {
-          output().FillVectorVar(muon_tpc_det, subdet);
-          output().FillVectorVar(muon_LYZTPC, TPCSegment->DeltaLYZ);
-          output().FillVectorVar(muon_tpc_EDep, TPCSegment->EDeposit);
-          output().FillVectorVar(muon_tpc_length, TPCSegment->SegLength);
-          output().FillVectorVar(muon_tpc_smeared_momentum, TPCSegment->SmearedMomentum);
-           output().FillVectorVar(muon_tpc_momentum, TPCSegment->Momentum);
+    AnaTrack *track = dynamic_cast<AnaTrack*>(box().MainTrack);
+    Float_t PIDLikelihood[4];
+    anaUtils::GetPIDLikelihood(*box().MainTrack, PIDLikelihood, 0);
+    output().FillVar (mip_pidlikelihood, (PIDLikelihood[0] + PIDLikelihood[3]) / (1 - PIDLikelihood[2]));
+    output().FillVar(muon_pidlikelihood1, PIDLikelihood[0]);
+    output().FillVar(muon_pidlikelihood2, PIDLikelihood[1]);
+    output().FillVar(muon_pidlikelihood3, PIDLikelihood[2]);
+    output().FillVar(muon_pidlikelihood4, PIDLikelihood[3]);
 
-          output().FillVectorVar(muon_tpc_momentum_error, TPCSegment->MomentumError);
+    output().FillVar(muon_ekin, (box().MainTrack)->EKin);
+    output().FillVar(muon_SDLength, track->Length);
+    Float_t pulls[4];
+    for (int subdet = 0; subdet < 7; subdet++) {
+      AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *box().MainTrack, static_cast<SubDetId::SubDetEnum >(subdet)));
+      if (TPCSegment) {
+        output().FillVectorVar(muon_tpc_det, subdet);
+        output().FillVectorVar(muon_LYZTPC, TPCSegment->DeltaLYZ);
+        output().FillVectorVar(muon_tpc_EDep, TPCSegment->EDeposit);
+        output().FillVectorVar(muon_tpc_length, TPCSegment->SegLength);
+        output().FillVectorVar(muon_tpc_smeared_momentum, TPCSegment->SmearedMomentum);
+        output().FillVectorVar(muon_tpc_momentum, TPCSegment->Momentum);
+
+        output().FillVectorVar(muon_tpc_momentum_error, TPCSegment->MomentumError);
         //  anaUtils::ComputeTPCPull(*TPCSegment, *box().HMT);
 
-          anaUtils::ComputeTPCPull(*TPCSegment, pulls);
-          output().FillVectorVar(tpc_pull_muon, pulls[0]);
+        anaUtils::ComputeTPCPull(*TPCSegment, pulls);
+        output().FillVectorVar(tpc_pull_muon, pulls[0]);
 
-          output().FillMatrixVarFromArray(muon_tpc_entrancepos,    TPCSegment->PositionStart, 4);
-          output().FillMatrixVarFromArray(muon_tpc_exitpos,    TPCSegment->PositionEnd, 4);
-          output().IncrementCounterForVar(muon_tpc_det);
-
-        }
-
-      }
-
-      AnaTargetParticleB* TargetSegment1 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().HMT, SubDetId::kTarget1));
-      if (TargetSegment1) {
-        output().FillVar(muon_LTarget1, TargetSegment1->DeltaLYZ);
-        output().FillVar(muon_EDep_Target1, TargetSegment1->EDeposit);
-        output().FillVectorVarFromArray(muon_target1_entrancepos,    TargetSegment1->PositionStart, 4);
-        output().FillVectorVarFromArray(muon_target1_exitpos,    TargetSegment1->PositionEnd, 4);
-        output().FillVar(muon_isLastinTarget1, (int)cutUtils::FiducialCut((box().HMT)->PositionEnd, SubDetId::kTarget1) );
-
-
-      }
-      AnaTargetParticleB* TargetSegment2 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().HMT, SubDetId::kTarget2));
-      if (TargetSegment2) {
-        output().FillVar(muon_LTarget2, TargetSegment2->DeltaLYZ);
-        output().FillVar(muon_EDep_Target2, TargetSegment2->EDeposit);
-        output().FillVectorVarFromArray(muon_target2_entrancepos,    TargetSegment2->PositionStart, 4);
-        output().FillVectorVarFromArray(muon_target2_exitpos,    TargetSegment2->PositionEnd, 4);
-        output().FillVar(muon_isLastinTarget2, (int)cutUtils::FiducialCut((box().HMT)->PositionEnd, SubDetId::kTarget2) );
+        output().FillMatrixVarFromArray(muon_tpc_entrancepos,    TPCSegment->PositionStart, 4);
+        output().FillMatrixVarFromArray(muon_tpc_exitpos,    TPCSegment->PositionEnd, 4);
+        output().IncrementCounterForVar(muon_tpc_det);
 
       }
 
     }
 
-// Minus Pion information
-    if (box().HMinusPionT) {
+    AnaTargetParticleB* TargetSegment1 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().MainTrack, SubDetId::kTarget1));
+    if (TargetSegment1) {
+      output().FillVar(muon_LTarget1, TargetSegment1->DeltaLYZ);
+      output().FillVar(muon_EDep_Target1, TargetSegment1->EDeposit);
+      output().FillVectorVarFromArray(muon_target1_entrancepos,    TargetSegment1->PositionStart, 4);
+      output().FillVectorVarFromArray(muon_target1_exitpos,    TargetSegment1->PositionEnd, 4);
+      output().FillVar(muon_isLastinTarget1, (int)cutUtils::FiducialCut((box().MainTrack)->PositionEnd, SubDetId::kTarget1) );
 
-      AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(box().HMinusPionT->GetTrueParticle());
-      output().FillVar(mpion_pdg, trueP->PDG);
-      output().FillVar(mpion_charge, trueP->Charge);
-      output().FillVar(mpion_mom, box().HMinusPionT->Momentum);
-      output().FillVar(mpion_costheta, (box().HMinusPionT)->DirectionStart[2]);
-      output().FillVar(mpion_theta, (float)acos((box().HMinusPionT)->DirectionStart[2]));
-      output().FillVar(mpion_istpccut, cutUtils::DeltaLYZTPCCut(*box().HMinusPionT));
-      output().FillVar(mpion_istarget1, cutUtils::DeltaLYZTargetCut(*box().HMinusPionT, SubDetId::kTarget1));
-      output().FillVar(mpion_istarget2, cutUtils::DeltaLYZTargetCut(*box().HMinusPionT, SubDetId::kTarget2));
-
-      float phi = atan2((box().HMinusPionT)->DirectionStart[1], (box().HMinusPionT)->DirectionStart[0]);
-      float cosphi = cos(phi);
-
-      output().FillVar(mpion_cosphi, cosphi);
-      output().FillVar(mpion_phi, phi);
-
-      AnaTrack *track = dynamic_cast<AnaTrack*>(box().HMinusPionT);
-      output().FillVar(mpion_ekin, (box().HMinusPionT)->EKin);
-      output().FillVar(mpion_SDLength, track->Length);
-      Float_t pulls[4];
-
-      for (int subdet = 0; subdet < 7; subdet++) {
-        AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *box().HMinusPionT, static_cast<SubDetId::SubDetEnum >(subdet)));
-        if (TPCSegment) {
-          output().FillVectorVar(mpion_tpc_det, subdet);
-          output().FillVectorVar(mpion_LYZTPC, TPCSegment->DeltaLYZ);
-          output().FillVectorVar(mpion_tpc_EDep, TPCSegment->EDeposit);
-          output().FillVectorVar(mpion_tpc_length, TPCSegment->SegLength);
-          output().FillMatrixVarFromArray(mpion_tpc_entrancepos,    TPCSegment->PositionStart, 4);
-          output().FillMatrixVarFromArray(mpion_tpc_exitpos,    TPCSegment->PositionEnd, 4);
-          output().FillVectorVar(mpion_tpc_smeared_momentum, TPCSegment->SmearedMomentum);
-          output().FillVectorVar(mpion_tpc_momentum_error, TPCSegment->MomentumError);
-           output().FillVectorVar(mpion_tpc_momentum, TPCSegment->Momentum);
-
-          output().IncrementCounterForVar(mpion_tpc_det);
-
-        }
-      }
-
-      AnaTargetParticleB* TargetSegment1 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().HMinusPionT, SubDetId::kTarget1));
-      if (TargetSegment1) {
-        output().FillVar(mpion_LTarget1, TargetSegment1->DeltaLYZ);
-        output().FillVar(mpion_EDep_Target1, TargetSegment1->EDeposit);
-        output().FillVectorVarFromArray(mpion_target1_entrancepos,    TargetSegment1->PositionStart, 4);
-        output().FillVectorVarFromArray(mpion_target1_exitpos,    TargetSegment1->PositionEnd, 4);
-        output().FillVar(mpion_isLastinTarget1, (int)cutUtils::FiducialCut((box().HMinusPionT)->PositionEnd, SubDetId::kTarget1) );
-
-
-      }
-      AnaTargetParticleB* TargetSegment2 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().HMinusPionT, SubDetId::kTarget2));
-      if (TargetSegment2) {
-        output().FillVar(mpion_LTarget2, TargetSegment2->DeltaLYZ);
-        output().FillVar(mpion_EDep_Target2, TargetSegment2->EDeposit);
-        output().FillVectorVarFromArray(mpion_target2_entrancepos,    TargetSegment2->PositionStart, 4);
-        output().FillVectorVarFromArray(mpion_target2_exitpos,    TargetSegment2->PositionEnd, 4);
-        output().FillVar(mpion_isLastinTarget2, (int)cutUtils::FiducialCut((box().HMinusPionT)->PositionEnd, SubDetId::kTarget2) );
-
-      }
 
     }
-
-// Pion information
-    if (box().HPlusPionT) {
-
-      AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(box().HPlusPionT->GetTrueParticle());
-      output().FillVar(ppion_pdg, trueP->PDG);
-      output().FillVar(ppion_charge, trueP->Charge);
-      output().FillVar(ppion_mom, box().HPlusPionT->Momentum);
-      output().FillVar(ppion_costheta, (box().HPlusPionT)->DirectionStart[2]);
-      output().FillVar(ppion_theta, (float)acos((box().HPlusPionT)->DirectionStart[2]));
-      output().FillVar(ppion_istpccut, cutUtils::DeltaLYZTPCCut(*box().HPlusPionT));
-      output().FillVar(ppion_istarget1, cutUtils::DeltaLYZTargetCut(*box().HPlusPionT, SubDetId::kTarget1));
-      output().FillVar(ppion_istarget2, cutUtils::DeltaLYZTargetCut(*box().HPlusPionT, SubDetId::kTarget2));
-
-
-      float phi = atan2((box().HPlusPionT)->DirectionStart[1], (box().HPlusPionT)->DirectionStart[0]);
-      float cosphi = cos(phi);
-
-      output().FillVar(ppion_cosphi, cosphi);
-      output().FillVar(ppion_phi, phi);
-
-      AnaTrack *track = dynamic_cast<AnaTrack*>(box().HPlusPionT);
-      output().FillVar(ppion_ekin, (box().HPlusPionT)->EKin);
-      output().FillVar(ppion_SDLength, track->Length);
-      Float_t pulls[4];
-
-      for (int subdet = 0; subdet < 7; subdet++) {
-        AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *box().HPlusPionT, static_cast<SubDetId::SubDetEnum >(subdet)));
-        if (TPCSegment) {
-
-          output().FillVectorVar(ppion_tpc_det, subdet);
-          output().FillVectorVar(ppion_LYZTPC, TPCSegment->DeltaLYZ);
-          output().FillVectorVar(ppion_tpc_EDep, TPCSegment->EDeposit);
-          output().FillVectorVar(ppion_tpc_length, TPCSegment->SegLength);
-          output().FillMatrixVarFromArray(ppion_tpc_entrancepos,    TPCSegment->PositionStart, 4);
-          output().FillMatrixVarFromArray(ppion_tpc_exitpos,    TPCSegment->PositionEnd, 4);
-          output().FillVectorVar(ppion_tpc_smeared_momentum, TPCSegment->SmearedMomentum);
-          output().FillVectorVar(ppion_tpc_momentum_error, TPCSegment->MomentumError);
-        //  anaUtils::ComputeTPCPull(*TPCSegment, *box().HPlusPionT);
-           output().FillVectorVar(ppion_tpc_momentum, TPCSegment->Momentum);
-
-          anaUtils::ComputeTPCPull(*TPCSegment, pulls);
-          output().FillVectorVar(tpc_pull_pion, pulls[3]);
-
-          output().IncrementCounterForVar(ppion_tpc_c);
-
-
-        }
-      }
-
-
-
-      AnaTargetParticleB* TargetSegment1 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().HPlusPionT, SubDetId::kTarget1));
-      if (TargetSegment1) {
-        output().FillVar(ppion_LTarget1, TargetSegment1->DeltaLYZ);
-        output().FillVar(ppion_EDep_Target1, TargetSegment1->EDeposit);
-        output().FillVectorVarFromArray(ppion_target1_entrancepos,    TargetSegment1->PositionStart, 4);
-        output().FillVectorVarFromArray(ppion_target1_exitpos,    TargetSegment1->PositionEnd, 4);
-        // output().FillVar(ppion_isLastinTarget1, (int)cutUtils::FiducialCut(*box().HPlusPionT->PositionEnd) );
-        output().FillVar(ppion_isLastinTarget1, (int)cutUtils::FiducialCut((box().HPlusPionT)->PositionEnd, SubDetId::kTarget1) );
-
-
-      }
-      AnaTargetParticleB* TargetSegment2 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().HPlusPionT, SubDetId::kTarget2));
-      if (TargetSegment2) {
-        output().FillVar(ppion_LTarget2, TargetSegment2->DeltaLYZ);
-        output().FillVar(ppion_EDep_Target2, TargetSegment2->EDeposit);
-        output().FillVectorVarFromArray(ppion_target2_entrancepos,    TargetSegment2->PositionStart, 4);
-        output().FillVectorVarFromArray(ppion_target2_exitpos,    TargetSegment2->PositionEnd, 4);
-        output().FillVar(ppion_isLastinTarget2, (int)cutUtils::FiducialCut((box().HPlusPionT)->PositionEnd, SubDetId::kTarget2) );
-
-      }
-
-    }
-
-// Proton information
-    if (box().HProtonT) {
-
-      AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(box().HProtonT->GetTrueParticle());
-      output().FillVar(proton_pdg, trueP->PDG);
-      output().FillVar(proton_charge, trueP->Charge);
-      output().FillVar(proton_mom, box().HProtonT->Momentum);
-      output().FillVar(proton_costheta, (box().HProtonT)->DirectionStart[2]);
-      output().FillVar(proton_theta, (float)acos((box().HProtonT)->DirectionStart[2]));
-      output().FillVar(proton_istpccut, cutUtils::DeltaLYZTPCCut(*box().HProtonT));
-      output().FillVar(proton_istarget1, cutUtils::DeltaLYZTargetCut(*box().HProtonT, SubDetId::kTarget1));
-      output().FillVar(proton_istarget2, cutUtils::DeltaLYZTargetCut(*box().HProtonT, SubDetId::kTarget2));
-
-      float phi = atan2((box().HProtonT)->DirectionStart[1], (box().HProtonT)->DirectionStart[0]);
-      float cosphi = cos(phi);
-
-      output().FillVar(proton_cosphi, cosphi);
-      output().FillVar(proton_phi, phi);
-
-      AnaTrack *track = dynamic_cast<AnaTrack*>(box().HProtonT);
-      output().FillVar(proton_ekin, (box().HProtonT)->EKin);
-      output().FillVar(proton_SDLength, track->Length);
-      Float_t pulls[4];
-      for (int subdet = 0; subdet < 7; subdet++) {
-        AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *box().HProtonT, static_cast<SubDetId::SubDetEnum >(subdet)));
-        if (TPCSegment) {
-          output().FillVectorVar(proton_tpc_det, subdet);
-          output().FillVectorVar(proton_LYZTPC, TPCSegment->DeltaLYZ);
-          output().FillVectorVar(proton_tpc_EDep, TPCSegment->EDeposit);
-          output().FillVectorVar(proton_tpc_length, TPCSegment->SegLength);
-          output().FillMatrixVarFromArray(proton_tpc_entrancepos,    TPCSegment->PositionStart, 4);
-          output().FillMatrixVarFromArray(proton_tpc_exitpos,    TPCSegment->PositionEnd, 4);
-          output().FillVectorVar(proton_tpc_smeared_momentum, TPCSegment->SmearedMomentum);
-          output().FillVectorVar(proton_tpc_momentum_error, TPCSegment->MomentumError);
-        //  anaUtils::ComputeTPCPull(*TPCSegment, *box().HProtonT);
-           output().FillVectorVar(proton_tpc_momentum, TPCSegment->Momentum);
-
-          anaUtils::ComputeTPCPull(*TPCSegment, pulls);
-          output().FillVectorVar(tpc_pull_proton, pulls[2]);
-
-          output().IncrementCounterForVar(proton_tpc_det);
-
-        }
-      }
-
-
-
-      AnaTargetParticleB* TargetSegment1 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().HProtonT, SubDetId::kTarget1));
-      if (TargetSegment1) {
-        output().FillVar(proton_LTarget1, TargetSegment1->DeltaLYZ);
-        output().FillVar(proton_EDep_Target1, TargetSegment1->EDeposit);
-        output().FillVectorVarFromArray(proton_target1_entrancepos,    TargetSegment1->PositionStart, 4);
-        output().FillVectorVarFromArray(proton_target1_exitpos,    TargetSegment1->PositionEnd, 4);
-        output().FillVar(proton_isLastinTarget1, (int)cutUtils::FiducialCut((box().HProtonT)->PositionEnd, SubDetId::kTarget1) );
-
-
-      }
-      AnaTargetParticleB* TargetSegment2 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().HProtonT, SubDetId::kTarget2));
-      if (TargetSegment2) {
-        output().FillVar(proton_LTarget2, TargetSegment2->DeltaLYZ);
-        output().FillVar(proton_EDep_Target2, TargetSegment2->EDeposit);
-        output().FillVectorVarFromArray(proton_target2_entrancepos,    TargetSegment2->PositionStart, 4);
-        output().FillVectorVarFromArray(proton_target2_exitpos,    TargetSegment2->PositionEnd, 4);
-        output().FillVar(proton_isLastinTarget2, (int)cutUtils::FiducialCut((box().HProtonT)->PositionEnd, SubDetId::kTarget2) );
-
-      }
+    AnaTargetParticleB* TargetSegment2 = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( *box().MainTrack, SubDetId::kTarget2));
+    if (TargetSegment2) {
+      output().FillVar(muon_LTarget2, TargetSegment2->DeltaLYZ);
+      output().FillVar(muon_EDep_Target2, TargetSegment2->EDeposit);
+      output().FillVectorVarFromArray(muon_target2_entrancepos,    TargetSegment2->PositionStart, 4);
+      output().FillVectorVarFromArray(muon_target2_exitpos,    TargetSegment2->PositionEnd, 4);
+      output().FillVar(muon_isLastinTarget2, (int)cutUtils::FiducialCut((box().MainTrack)->PositionEnd, SubDetId::kTarget2) );
 
     }
 
   }
+
+
 }
 
 //********************************************************************
@@ -672,159 +425,29 @@ void ndupAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
 
   output().FillVar(true_reaction_code, vtx.ReacCode);
   output().FillVectorVarFromArray(true_vertex_position, vtx.Position, 4);
-/*
+  AnaTrueParticleB* trueTrack=NULL;
   for (Int_t i = 0; i < TrueParticles.size(); i++) {
-
-    AnaTrueParticleB* trueTrack = dynamic_cast<AnaTrueParticleB*>(TrueParticles[i]);
-    output().FillVectorVar(true_parentID, TrueParticles[i]->ParentID);
-    output().FillVectorVar(true_pdg, trueTrack->PDG);
-    output().FillVectorVar(true_mom, trueTrack->Momentum);
-    output().FillVectorVar(true_Edep, trueTrack->EDeposit);
-    output().FillVectorVar(true_SDlength, trueTrack->Length);
-    output().FillVectorVar(true_costheta, trueTrack->CosTheta);
-    output().FillVectorVar(true_ekin, trueTrack->EKin);
-    output().FillVectorVar(true_charge, trueTrack->Charge);
-    Float_t pulls[4];
-
-    for (int i = 0; i < trueTrack->DetCrossingsVect.size(); i++) {
-
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTarget1)   ) {
-
-        output().FillVectorVar(true_target1_det, SubDetId::GetTarget(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_target1_length,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        output().FillVectorVar(true_target1_Edep, trueTrack->DetCrossingsVect[i]->EDeposit);
-        // output().IncrementCounterForVar(true_target1_det);
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTarget2)) {
-
-        output().FillVectorVar(true_target2_det, SubDetId::GetTarget(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_target2_length,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        output().FillVectorVar(true_target2_Edep, trueTrack->DetCrossingsVect[i]->EDeposit);
-        // output().IncrementCounterForVar(true_target2_det);
-      }
-
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1)) {
-        output().FillVectorVar(true_tpcup1_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_tpcup1_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 0);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 0);
-
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 0);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 0);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 0);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 0);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 0);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 0);
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2)) {
-        output().FillVectorVar(true_tpcup2_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_tpcup2_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 1);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 1);
-
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 1);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 1);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 1);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 1);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 1);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 1);
-
-
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1)) {
-        output().FillVectorVar(true_tpcdown1_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_tpcdown1_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 2);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 2);
-
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 2);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 2);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 2);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 2);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 2);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 2);
-
-
-
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2)) {
-        output().FillVectorVar(true_tpcdown2_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_tpcdown2_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 3);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 3);
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 3);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 3);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 3);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 3);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 3);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 3);
-
-
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1)) {
-        output().FillVectorVar(true_forwtpc1_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_forwtpc1_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 4);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 4);
-
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 4);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 4);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 4);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 4);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 4);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 4);
-
-
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2)) {
-        output().FillVectorVar(true_forwtpc2_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_forwtpc2_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 5);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 5);
-
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 5);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 5);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 5);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 5);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 5);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 5);
-
-
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)) {
-        output().FillVectorVar(true_forwtpc3_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_forwtpc3_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 6);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 6);
-
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 6);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 6);
-
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 6);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 6);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 6);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 6);
-
-      }
-
+    if (TrueParticles[i]->PDG == 13) {
+      trueTrack = dynamic_cast<AnaTrueParticleB*>(TrueParticles[i]);
     }
-    output().IncrementCounterForVar(true_parentID);
+  }
+  if (trueTrack) {
+    output().FillVar(true_parentID, trueTrack->ParentID);
+    output().FillVar(true_pdg, trueTrack->PDG);
+    output().FillVar(true_mom, trueTrack->Momentum);
+    output().FillVar(true_Edep, trueTrack->EDeposit);
+    output().FillVar(true_SDlength, trueTrack->Length);
+    output().FillVar(true_costheta, trueTrack->CosTheta);
+    output().FillVar(true_ekin, trueTrack->EKin);
+    output().FillVar(true_charge, trueTrack->Charge);
 
-  }*/
+    float phi = atan2(trueTrack->Direction[1], trueTrack->Direction[0]);
+    float cosphi = cos(phi);
+
+    output().FillVar(true_phi, phi);
+
+
+  }
   return FillTruthTreeBase(vtx, IsAntinu);
 }
 

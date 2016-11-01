@@ -7,7 +7,7 @@ author nd280-software@mailman.t2k.org
 branches cmt src doc app
 
 
-use psycheCore       * psyche
+use psycheCore       * highlandUP
 use highlandEventModel * highlandUP
 use psycheEventModel * highlandUP
 use psycheNDUPUtils * highlandUP

@@ -6,8 +6,12 @@
 
 namespace cutUtils{
 
-  /// Whether the closest Subdet2 segment has > 18 nodes.
-  bool TrackQualityCut(const AnaParticleB& part);
+  /// Whether the closest TPC segment has > 18 nodes.
+  bool TrackQualityCut(const AnaTrackB& track);
+  bool TrackQualityCut(AnaTrackB& track);
+
+  /// Whether the TPC segment has > 18 nodes.
+  bool TPCTrackQualityCut(const AnaTPCParticleB& tpcSeg);
 
   /// Whether the track starts in the specified fiducial volume. FGD, TPCUp1_1, TPCUp1_2
   /// and P0D fiducial volumes are supported, as well as TrECal and DsECal active 
@@ -18,7 +22,7 @@ namespace cutUtils{
   bool FiducialCut(const Float_t* pos, const SubDetId::SubDetEnum det = SubDetId::kTPCUp1);
 
   /// Whether the track is muon-like, as defined for the NuMu analysis.
-  bool MuonPIDCut(const AnaParticleB& part);
+  bool MuonPIDCut(const AnaTrackB& track, bool prod5Cut = 0);
 
   /// Whether the track is proton-like
   bool ProtonPIDCut(const AnaParticleB& part);

@@ -1,5 +1,6 @@
 --- Cut levels --------
  < ndupAnalysis.MinAccumLevelToSave = 0 >   // minimum accum level to save the event
+ < testAnalysis.MinAccumLevelToSave = 0 >   // minimum accum level to save the event
 
 
 --- Event Weights ------------
@@ -8,6 +9,7 @@ Enable/disable configurations with a single systematic (when EnableSingleWeightS
 and enable systematics in the "all_syst" configuration (when EnableAllSystematics = 1)
 
  < ndupAnalysis.Weights.EnableDetectorMass            = 1 >	
+ < testAnalysis.Weights.EnableDetectorMass            = 1 >	
 
 
 --- Event Variations ------------
@@ -19,4 +21,9 @@ need to be enabled in baseAnalysis parameter file
  < ndupAnalysis.Variations.EnabledEdx            = 1 >	
  < ndupAnalysis.tpcLYZCut            = 200 >	
  < ndupAnalysis.targetLYZCut            = 50 >	
+ < ndupAnalysis.target            = 1 >	
+ < testAnalysis.Variations.EnabledEdx            = 1 >	
+ < testAnalysis.tpcLYZCut            = 200 >	
+ < testAnalysis.targetLYZCut            = 50 >	
+ < testAnalysis.target            = 1 >	
  

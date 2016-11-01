@@ -179,25 +179,6 @@ Float_t anaUtils::ExpecteddEdx(Float_t mom, ParticleId::ParticleEnum partID) {
     Float_t ExpecteddEP3 = 2.052;
     Float_t ExpecteddEP4 = 0.5104;
 
-  /* Float_t ExpecteddEP0 = 2.57616;
-    Float_t ExpecteddEP1 = 0.226844;
-    Float_t ExpecteddEP2 = -0.765909;
-    Float_t ExpecteddEP3 = 0.857942;
-    Float_t ExpecteddEP4 = 0.0138356;*/
-/*    fa1->SetParameter(0, 2.51547);
-    fa1->SetParameter(1, 0.149169);
-    fa1->SetParameter(2, -0.746853);
-    fa1->SetParameter(3, 0.820637);
-    fa1->SetParameter(4, 0.018912);
-*/
-   /* if (versionUtils::prod6_corrections) {
-        // for production 6
-        ExpecteddEP0 = 53.87;
-        ExpecteddEP1 = 5.551;
-        ExpecteddEP2 = 0.001913;
-        ExpecteddEP3 = 2.283;
-        ExpecteddEP4 = 1.249;
-    }*/
     Float_t mass = anaUtils::GetParticleMass(partID);
     if (mass < 0) {
         std::cout << "Tried to compute dEdx for invalid particle hypothesis" << std::endl;
@@ -240,114 +221,116 @@ double anaUtils::SmearMomentum(  AnaDetCrossingB &track, int pdg,double sigma){
   return prob;
 }
 
-/*s
+
 //********************************************************************
-void anaUtils::GetPIDLikelihood(const AnaTrackB& track, Float_t* hypo) {
+void anaUtils::GetPIDLikelihood(const AnaTrackB& track, Float_t* hypo, bool prod5Cut){
 //********************************************************************
 
     UInt_t itrk = track.Index;
 
-    if ( itrk >= NMAXPARTICLESWITHTPC ) return; // Protection against values out of the vector.
+//   if( itrk >= NMAXPARTICLESWITHTPC ) return; // Protection against values out of the vector. 
 
-    Double_t prob[4] = {1, 1, 1, 1};
-    Double_t tmp_prob[3][4];
-    Double_t total_prob = 0;
-    bool found = false;
+    Double_t prob[4]={1,1,1,1};
+    Double_t tmp_prob[7][4];
+    Double_t total_prob=0;
+    bool found=false;
 
-    AnaTPCParticleB* segmentsInTPC[3];
-    for (int i = 0; i < 3; ++i) {
+    AnaTPCParticleB* segmentsInTPC[7];
+    for(int i = 0; i < 7; ++i){
         segmentsInTPC[i] = NULL;
-        for (Int_t j = 0; j < 4; j++) {
-            hypo[j] = -1;
+        for (Int_t j=0;j<4;j++){
+            hypo[j]=-1;
             tmp_prob[i][j] = 1;
         }
     }
-    // Get the closest Subdet2. We should make sure that at least the segment in that Subdet2 has the proper PID info
+  
+    // Get the closest TPC. We should make sure that at least the segment in that TPC has the proper PID info
     SubDetId::SubDetEnum closesttpc = anaUtils::GetClosestTPC(track);
-
-    // Loop over Subdet2 segments
-    for (int j = 0; j < track.nTPCSegments; ++j) {
+    // Loop over TPC segments
+    for (int j = 0; j < track.nTPCSegments; ++j){      
         AnaTPCParticleB* TPCSegment = track.TPCSegments[j];
         if (!TPCSegment) continue;
 
-        // Only segments passing the Subdet2 track quality cut will contribute to the likelihood
+        // Only segments passing the TPC track quality cut will contribute to the likelihood
         // Was not applied for production 5 BANFF analysis
-        //        if(!prod5Cut) if (!cutUtils::Subdet2TrackQualityCut(*Subdet2Segment)) continue;
+        if(!prod5Cut) if (!cutUtils::TPCTrackQualityCut(*TPCSegment)) continue;
 
         // Require valid values for all quantities involved
-        if ( TPCSegment->dEdxexpMuon == -0xABCDEF || TPCSegment->dEdxexpEle == -0xABCDEF || TPCSegment->dEdxexpPion == -0xABCDEF || TPCSegment->dEdxexpProton == -0xABCDEF) continue;
-        if ( TPCSegment->dEdxMeas == -0xABCDEF ) continue;
-        if ( TPCSegment->dEdxexpMuon == -99999 || TPCSegment->dEdxexpEle == -99999 || TPCSegment->dEdxexpPion == -99999 || TPCSegment->dEdxexpProton == -99999) continue;
-        if ( TPCSegment->dEdxMeas == -99999 ) continue;
+        if( TPCSegment->dEdxexpMuon==-0xABCDEF || TPCSegment->dEdxexpEle==-0xABCDEF || TPCSegment->dEdxexpPion==-0xABCDEF || TPCSegment->dEdxexpProton==-0xABCDEF) continue;
+        if( TPCSegment->dEdxMeas ==-0xABCDEF ) continue; 
+        if( TPCSegment->dEdxexpMuon==-99999 || TPCSegment->dEdxexpEle==-99999 || TPCSegment->dEdxexpPion==-99999 || TPCSegment->dEdxexpProton==-99999) continue;
+        if( TPCSegment->dEdxMeas ==-99999 ) continue; 
 
         Float_t pulls[4];
         // Pulls in order: Muon, Electron, Proton, Pion
-        anaUtils::ComputeTPCPull(*TPCSegment, pulls);
+        anaUtils::ComputeTPCPull(*TPCSegment,pulls);
         Float_t pullmu  = pulls[0];
         Float_t pullp   = pulls[2];
         Float_t pullele = pulls[1];
         Float_t pullpi  = pulls[3];
-
         if (!TMath::Finite(pullmu) || !TMath::Finite(pullele) || !TMath::Finite(pullp) || !TMath::Finite(pullpi)) continue;
         if (pullmu  != pullmu || pullele != pullele || pullp   != pullp || pullpi  != pullpi) continue;
+  
+        SubDetId::SubDetEnum det = SubDetId::GetSubdetectorEnum(TPCSegment->Detectors);
+  
+        // To avoid mismatching between FlatTree and oaAnalysis we allow only one segment per TPC to be included in the likelihood, the one with more nodes
+        if (segmentsInTPC[det]){
 
-        SubDetId::SubDetEnum det = SubDetId::GetSubdetectorEnum(TPCSegment->Detector);
+            if (TPCSegment->DeltaLYZ > segmentsInTPC[det]->DeltaLYZ){
+                segmentsInTPC[det] = TPCSegment;
+                tmp_prob[det][0] = exp(-(pullmu*pullmu)/2);
+                tmp_prob[det][1] = exp(-(pullele*pullele)/2);
+                tmp_prob[det][2] = exp(-(pullp*pullp)/2);
+                tmp_prob[det][3] = exp(-(pullpi*pullpi)/2);
+            }            
+        }
+        else{
 
-        /*  // To avoid mismatching between FlatTree and oaAnalysis we allow only one segment per TPC to be included in the likelihood, the one with more nodes
-          if (segmentsInTPC[det-2]){
-              if (TPCSegment->NHits > segmentsInTPC[det-2]->NHits){
-                  segmentsInTPC[det-2] = TPCSegment;
-                  tmp_prob[det-2][0] = exp(-(pullmu*pullmu)/2);
-                  tmp_prob[det-2][1] = exp(-(pullele*pullele)/2);
-                  tmp_prob[det-2][2] = exp(-(pullp*pullp)/2);
-                  tmp_prob[det-2][3] = exp(-(pullpi*pullpi)/2);
-              }
-          }
-          else{
-              segmentsInTPC[det-2] = TPCSegment;
-              tmp_prob[det-2][0] = exp(-(pullmu*pullmu)/2);
-              tmp_prob[det-2][1] = exp(-(pullele*pullele)/2);
-              tmp_prob[det-2][2] = exp(-(pullp*pullp)/2);
-              tmp_prob[det-2][3] = exp(-(pullpi*pullpi)/2);
-          }*/
-  /*  }
+            segmentsInTPC[det] = TPCSegment;  
+            tmp_prob[det][0] = exp(-(pullmu*pullmu)/2);  
+            tmp_prob[det][1] = exp(-(pullele*pullele)/2);
+            tmp_prob[det][2] = exp(-(pullp*pullp)/2);    
+            tmp_prob[det][3] = exp(-(pullpi*pullpi)/2);  
+        }
+    }
 
     // Loop over all segments contributing to the likelihood and compute it
-    for (int tpc = 0; tpc < 3; tpc++) {
-        if (segmentsInTPC[tpc]) {
+    for (int tpc=0;tpc<7;tpc++){
+        if (segmentsInTPC[tpc]){
             // The pull should be already corrected by all corrections (CT and CT expected)
-            prob[0] *= tmp_prob[tpc][0];
+            prob[0] *= tmp_prob[tpc][0]; 
             prob[1] *= tmp_prob[tpc][1];
             prob[2] *= tmp_prob[tpc][2];
             prob[3] *= tmp_prob[tpc][3];
 
-            if (SubDetId::GetDetectorUsed(segmentsInTPC[tpc]->Detector, closesttpc)) found = true;
+            if (SubDetId::GetDetectorUsed(segmentsInTPC[tpc]->Detectors, closesttpc)) found = true;
         }
     }
 
     // If at least the segment in the closest TPC has a  valid PID info
-    if (found) {
-        for (int h = 0; h < 4; h++) {
+    if (found){
+        for (int h=0;h<4;h++){
             total_prob += prob[h] ;
         }
 
-        if (total_prob > 0) {
-            for (int h = 0; h < 4; h++) {
-                hypo[h] = prob[h] / total_prob ;
+        if (total_prob>0){
+            for (int h=0;h<4;h++){
+                hypo[h] = prob[h]/total_prob ;
             }
         }
     }
+
     return;
 }
 
 //********************************************************************
-Float_t anaUtils::GetPIDLikelihood(const AnaTrackB& track, Int_t hypo) {
+Float_t anaUtils::GetPIDLikelihood(const AnaTrackB& track, Int_t hypo, bool prod5Cut){
 //********************************************************************
 
-    if ( hypo >= 4 ) return -1.e+6;
+    if( hypo >= 4 ) return -1.e+6; 
 
     Float_t Likelihood[4];
-    GetPIDLikelihood(track, Likelihood);
+    GetPIDLikelihood(track,Likelihood,prod5Cut);
     return Likelihood[hypo];
 }
 
@@ -356,38 +339,37 @@ Float_t anaUtils::GetPIDLikelihoodMIP(const AnaTrackB &track) {
 //********************************************************************
 
     Float_t Likelihood[4];
-    GetPIDLikelihood(track, Likelihood);
+    GetPIDLikelihood(track,Likelihood);
 
     Float_t likemu = Likelihood[0];
     Float_t likepi = Likelihood[3];
     Float_t likep  = Likelihood[2];
 
-    return (likemu + likepi) / (1 - likep);
+    return (likemu+likepi)/(1-likep); 
 }
 
 //********************************************************************
-Float_t anaUtils::GetPIDPrior(const AnaTrackB& track, Int_t hypo) {
+Float_t anaUtils::GetPIDPrior(const AnaTrackB& track, Int_t hypo){
 //********************************************************************
 
     // This function is not used yet
 
     Float_t xbins[18] = {0., 100., 200., 300., 400., 500., 600., 700, 800, 1000., 1200., 1400., 1700, 2000., 2500., 3000., 4000., 5000.};
 
-    Float_t eprior[17] = {800., 250., 100,  40,    30,  25,   10,    5,    0,   0,     0,     0,     0,     0,     0,     0,     0};
+    Float_t eprior[17] = {800., 250., 100,  40,    30,  25,   10,    5,    0,   0,     0,     0,     0,     0,     0,     0,     0}; 
 
-    for (Int_t i = 0; i < 17; i++) {
-        eprior[i] /= 400.;
+    for (Int_t i=0;i<17;i++){
+        eprior[i] /=400.;
     }
 
     Int_t pbin = 16;
-    for (Int_t i = 0; i < 17; i++) {
-        pbin = i - 1;
-        if (track.Momentum > 0 && track.Momentum < xbins[i]) break;
+    for (Int_t i=0;i<17;i++){
+        pbin = i-1;
+        if (track.Momentum>0 && track.Momentum < xbins[i]) break;
     }
 
 
-    if (hypo == 1)  return eprior[pbin];
+    if (hypo==1)  return eprior[pbin];
     else return 1.;
 
 }
-*/

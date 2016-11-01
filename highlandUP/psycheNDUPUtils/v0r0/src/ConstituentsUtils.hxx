@@ -54,21 +54,18 @@ namespace anaUtils{
 
     bool HasTrackUsingTarget(const AnaEventB& event);
 
-    /// Get all the true traj. in the bunch that are charged and crosses the Target 
+    int GetAllChargedTrajInTPCInBunch(const AnaEventB& event, AnaTrueParticleB* traj[]);
+    /// Get all the true traj. in the bunch that are charged and crosses the FGD
     /// Returns the number of entries in the input array, the number of tracks found
-    int GetAllChargedTrajInTargetInBunch(const AnaEventB& event, AnaTrueParticleB* traj[]);
-    /// Get all the true traj. in the bunch that are charged and crosses the TPC
-    /// Returns the number of entries in the input array, the number of tracks found
-    int GetAllChargedTrajInTPCInBunch(const AnaEventB& event, AnaTrueParticleB* traj[],SubDetId::SubDetEnum det);
-    /// Get all the true traj. in the bunch that are charged and crosses the Target with a length > 1/4 of the Target 
-    /// Returns the number of entries in the input array, the number of tracks found
-    int GetAllBigEnoughChargedTrajInTargetInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]);
+    int GetAllChargedTrajInTargetInBunch(const AnaEventB& event, AnaTrueParticleB* traj[],SubDetId::SubDetEnum det);
+
+    int GetAllBigEnoughChargedTrajInTPCInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]);
     /// Get all the true traj. in the bunch that are charged and crosses the Target and the TPC (Target_1-TPC_1, TPC_1-Target_2, Target_2-TPC_2, TPC_2-Target_3)
     /// Returns the number of entries in the input array, the number of tracks found
-    int GetAllChargedTrajInTargetTPCInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]);
+    int GetAllChargedTrajInTPCTargetInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]);
     /// Get all the true traj. in the bunch that are charged and crosses the the TPC but not the Target
     /// Returns the number of entries in the input array, the number of tracks found
-    int GetAllChargedTrajInTPCAndNoTargetInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[],SubDetId::SubDetEnum det);
+    int GetAllChargedTrajInTargetAndNoTPCInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[],SubDetId::SubDetEnum det);
 
     /// Get all the tracks using a specific detector.
     /// See SubDetId::SubDetEnum for the detector numbering convention.
@@ -96,10 +93,10 @@ namespace anaUtils{
 
     /// Access function to get all the tracks in the bunch that use the TPC and no Target, sorted by decreasing NHits.
     /// Returns the number of entries in the input array, the number of tracks found
-    int GetAllTracksUsingTPCAndNoTarget(const AnaEventB& event, AnaTrackB* selTracks[],SubDetId::SubDetEnum fgddet);
+    int GetAllTracksUsingTargetAndNoTPC(const AnaEventB& event, AnaTrackB* selTracks[],SubDetId::SubDetEnum fgddet);
 
     /// Returns the number of tracks using both the Target and the subdetector 'det'.
-    int GetNTracksUsingTargetAndDet(const AnaEventB& event, SubDetId::SubDetEnum det);
+    int GetNTracksUsingTPCAndDet(const AnaEventB& event, SubDetId::SubDetEnum det);
 
     /// Return an integer corresponding to the array index of the track in the old local detector enumeration
     int GetLocalDetEnum(SubDetId::SubDetEnum det, int i);

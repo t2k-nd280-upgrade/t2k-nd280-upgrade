@@ -7,7 +7,7 @@ author nd280-software@mailman.t2k.org
 branches cmt src doc dict
 
 use psycheCore * highlandUP
-
+use psycheNDUPUtils * highlandUP
 
 # Build methods to include.
 make_fragment doxygen -header=doxygen_header 

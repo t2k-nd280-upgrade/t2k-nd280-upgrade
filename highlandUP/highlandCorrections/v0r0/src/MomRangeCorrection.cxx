@@ -1,6 +1,6 @@
 #include "MomRangeCorrection.hxx"
 #include "CutUtils.hxx"
-
+#include "BaseDataClasses.hxx"
 #include "Parameters.hxx"
 #include <TRandom.h>
 #include "Units.hxx"
@@ -31,17 +31,21 @@ void MomRangeCorrection::Apply(AnaSpillC& spillBB) {
       // Check whether a track is relevant to apply the correction
       //if (!IsRelevantTrack(*track)) continue;
     AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
-
+      double length=0.;  
       for (int subdet = 0; subdet < 7; subdet++) {
         AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *track, static_cast<SubDetId::SubDetEnum >(subdet)));
         if (TPCSegment) {
-
           double smearedMomentum = SmearMomentum(TPCSegment,trueP->PDG);
           TPCSegment->SmearedMomentum = smearedMomentum;
- 
+          if(TPCSegment->DeltaLYZ>length){
+            double Momentum_dif=track->Momentum-TPCSegment->Momentum;
+            track->SmearedMomentum=smearedMomentum+Momentum_dif;
+            track->MomentumError=TPCSegment->MomentumError;
+
+          }
         }
       }
-
+  
     }
   }
 }

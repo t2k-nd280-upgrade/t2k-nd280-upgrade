@@ -31,6 +31,10 @@ class EventBox:public EventBoxB{
   enum TrueObjectGroupEnum{
     kTrueParticlesUnassigned=0,
     kTrueParticlesChargedInTPCInBunch,
+    kTrueParticlesChargedInTarget1AndNoTPCInBunch,
+    kTrueParticlesChargedInTarget2AndNoTPCInBunch,
+    kTrueParticlesChargedInTPCorTargetInBunch, 
+
   };
 
   EventBox();

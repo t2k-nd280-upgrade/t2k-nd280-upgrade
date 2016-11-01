@@ -7,25 +7,65 @@
 #include <iostream>
 #include <math.h>
 #include "Parameters.hxx"
+#include "ConstituentsUtils.hxx"
 
 //**************************************************
-bool cutUtils::TrackQualityCut(const AnaParticleB& part){
+bool cutUtils::TrackQualityCut(AnaTrackB& track){
 //**************************************************
 
-  if (part.NHits > 100) return true;
-  else return false;
-  
+    if(track.TPCQualityCut > -1){
+        return track.TPCQualityCut;
+    }
+    // Gets all segments in the closest TPC
+    AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentWithMostNodesInClosestTPC(track));
+
+    if (TPCSegment){
+        bool passed = TPCTrackQualityCut(*TPCSegment);
+
+        track.TPCQualityCut = passed;
+        return passed;
+    }
+    else{
+        track.TPCQualityCut = 0;
+        return false;
+    }
+}
+
+
+//**************************************************
+bool cutUtils::TrackQualityCut(const AnaTrackB& track){
+//**************************************************
+
+    // Gets all segments in the closest TPC
+    AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentWithMostNodesInClosestTPC(track));
+
+    if (TPCSegment){
+        bool passed = TPCTrackQualityCut(*TPCSegment);
+
+        return passed;
+    }
+    else{
+        return false;
+    }
 }
 
 //**************************************************
-bool cutUtils::MuonPIDCut(const AnaParticleB& part){
+bool cutUtils::TPCTrackQualityCut(const AnaTPCParticleB& tpcSeg){
 //**************************************************
 
-  (void)part;
-  return true;
-/*
+    Float_t cut = 200;  
+    if (tpcSeg.DeltaLYZ > cut) 
+        return true;
+    else
+        return false;
+}
+
+//**************************************************
+bool cutUtils::MuonPIDCut(const AnaTrackB& track, bool prod5Cut){
+//**************************************************
+
     Float_t cut1 = 0.8;
-    Float_t cut2 = 0.05;
+    Float_t cut2 = 0.25;
     Float_t pcut = 500;
 
     Float_t PIDLikelihood[4];
@@ -36,7 +76,6 @@ bool cutUtils::MuonPIDCut(const AnaParticleB& part){
     }
 
     return false;
-*/
 }
 //**************************************************
 bool cutUtils::ProtonPIDCut(const AnaParticleB& part){
@@ -55,7 +94,7 @@ bool cutUtils::ProtonPIDCut(const AnaParticleB& part){
 //**************************************************
 bool cutUtils::FiducialCut(const AnaParticleB& track, const SubDetId::SubDetEnum det){
 //**************************************************
-    if (!SubDetId::GetDetectorUsed(track.Detector, det)) return false;
+    if (!SubDetId::GetDetectorUsed(track.Detectors, det)) return false;
     return FiducialCut(track.PositionStart, det);
 }
 

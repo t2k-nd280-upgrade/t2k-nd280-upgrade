@@ -51,21 +51,17 @@ class TrackQualityFiducialCut: public StepBase{
 };
 
 
-class DeltaLYZTPCCut: public StepBase{
+class MuonPIDCut: public StepBase{
  public:
-          DeltaLYZTPCCut(){
-            tpcLYZCut = ND::params().GetParameterD("ndupAnalysis.tpcLYZCut");
-
-        }
-
-        double tpcLYZCut;
-
-
+  MuonPIDCut(){
+      _prod5Cut = 0;
+  }
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new DeltaLYZTPCCut();}
+  StepBase* MakeClone(){return new MuonPIDCut();}
+ private:
+  bool _prod5Cut;
 };
-
 
 class DeltaLYZTarget1Cut: public StepBase{
  public:
@@ -79,34 +75,6 @@ class DeltaLYZTarget1Cut: public StepBase{
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new DeltaLYZTarget1Cut();}
 };
-class DeltaLYZTarget2Cut: public StepBase{
- public:
-          DeltaLYZTarget2Cut(){
-            targetLYZCut = ND::params().GetParameterD("ndupAnalysis.targetLYZCut");
-        }
-
-        double targetLYZCut;
-
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new DeltaLYZTarget2Cut();}
-};
-class DeltaLYZTargetORTPCCut: public StepBase {
-public:
-  DeltaLYZTargetORTPCCut() {
-
-    targetLYZCut = ND::params().GetParameterD("ndupAnalysis.targetLYZCut");
-    tpcLYZCut = ND::params().GetParameterD("ndupAnalysis.tpcLYZCut");
-
-  }
-          double targetLYZCut;
-          double tpcLYZCut;
-
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone() {return new DeltaLYZTargetORTPCCut();}
-};
-
 
 class FiducialCut: public StepBase{
  public:
@@ -131,16 +99,15 @@ class FindLeadingTracksAction: public StepBase{
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new FindLeadingTracksAction();}
-};
-/*
-  /// Find the Vertex. For the moment it's just the Star position of the longest track
+};  /// Find the Vertex. For the moment it's just the Star position of the HM track
 class FindVertexAction: public StepBase{
  public:
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new FindVertexAction();}
 };
-*/
+
+
   /// Find the Vertex. For the moment it's just the Star position of the longest track
 class VertexInTarget1Cut: public StepBase{
  public:
@@ -154,6 +121,14 @@ class VertexInTarget2Cut: public StepBase{
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new VertexInTarget2Cut();}
+};
+
+  /// Find the Vertex. For the moment it's just the Star position of the longest track
+class TrueVertexInTarget1Cut: public StepBase{
+ public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& box) const;
+  StepBase* MakeClone(){return new TrueVertexInTarget1Cut();}
 };
 
   /// Find the True Vertex. For the moment it's just start position of the true particle associated to the longest track

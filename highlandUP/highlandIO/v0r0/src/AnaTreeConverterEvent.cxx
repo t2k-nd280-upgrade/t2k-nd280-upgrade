@@ -215,6 +215,7 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
       AnaTrueParticleB* truePart = MakeTrueParticle();
       FillTrueParticleInfo(nd280UpVertex, nd280UpTrack, truePart);
       spill->TrueParticles.push_back(truePart);
+      truePart->TrueVertex=trueVertex;
       trueVertex->TrueParticlesVect.push_back(truePart);
 
     }
@@ -264,6 +265,7 @@ void AnaTreeConverterEvent::FillBunchInfo(std::vector<AnaTrueVertexB*>& TrueVert
 
         Fill_Tracks_Recon_From_True((*itp), part);
         bunch->Particles.push_back(part);
+
       }
     }
 
@@ -318,13 +320,36 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
   truePart->PDG = upTrack->GetPDG();
   truePart->ParentID = upTrack->GetParentID();
   truePart->CosTheta=upTrack->GetInitCosTheta();
+double tmpp=-9999;
+double tmpd=9999;
+int ti=-1;
+int td=-1;
   if (upTrack->GetNPoints() > 0) {
-    anaUtils::VectorToArray(upTrack->GetPoint(0)->GetPostPosition(), truePart->Position);
-    anaUtils::VectorToArray(upTrack->GetPoint((upTrack->GetNPoints() - 1))->GetPostPosition(), truePart->PositionEnd);
-    truePart->PositionEnd[3]=upTrack->GetPoint((upTrack->GetNPoints() - 1))->GetTime();
-    truePart->Position[3]=upTrack->GetPoint(0)->GetTime();
+    for (int ipt = 0; ipt < upTrack->GetNPoints(); ipt++) {
 
+      if (upTrack->GetPoint(ipt)->GetTime() > tmpp ){
+        ti=ipt;
+        tmpp=upTrack->GetPoint(ipt)->GetTime();
+      }
+      if (upTrack->GetPoint(ipt)->GetTime() < tmpd) {
+        td=ipt;
+        tmpd=upTrack->GetPoint(ipt)->GetTime();
+      }
+    }
   }
+  if(ti>=0 && td>=0){
+  anaUtils::VectorToArray(upTrack->GetPoint(td)->GetPostPosition(), truePart->Position);
+
+    anaUtils::VectorToArray(upTrack->GetPoint(ti)->GetPostPosition(), truePart->PositionEnd);
+    truePart->PositionEnd[3]=upTrack->GetPoint(ti)->GetTime();
+    truePart->Position[3]=upTrack->GetPoint(td)->GetTime();
+    if(upTrack->GetPoint(ti)->GetMomentum().Mag()>0){
+      truePart->stopped=0;
+    }else{
+      truePart->stopped=1;
+    }
+  }
+  //}
   truePart->Momentum = upTrack->GetInitMom().Mag();
   double mass = 0.;
   if     (abs(upTrack->GetPDG())==211)  mass = 139.570; // pi+-
@@ -339,6 +364,7 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
   truePart->EDeposit=upTrack->GetSDTotalEnergyDeposit();
   truePart->EKin=mass+upTrack->GetInitKinEnergy();
   FindSegments(upTrack,truePart);
+
   
 }
 void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB* truePart){
@@ -811,8 +837,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   anaUtils::CopyArray(trueParticle->Direction, reconParticle->DirectionStart, 3);
   anaUtils::CopyArray(trueParticle->Position,  reconParticle->PositionStart, 4);
   anaUtils::CopyArray(trueParticle->PositionEnd,   reconParticle->PositionEnd, 4);
-
-
   reconParticle->MomentumEle = -10000;
   reconParticle->MomentumMuon = -10000;
   reconParticle->MomentumProton = -10000;
@@ -822,7 +846,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   reconParticle->nTargetSegments = 0;
   reconParticle->nTPCSegments = 0;
   reconParticle->TrueObject=dynamic_cast<AnaTrueObjectC*>(trueParticle);
-
   for (int i = 0; i < trueParticle->DetCrossingsVect.size(); i++) {
 
     if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)) {
@@ -833,15 +856,18 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
+ 
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
-      SubDetId::SetDetectorUsed(seg->Detectors, dsub);
+ 
+      seg->Detectors=trueParticle->DetCrossingsVect[i]->Detector;
+ 
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       seg->Momentum = mom;
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       anaUtils::ComputeTPCPull(*seg,*reconParticle);
       reconParticle->TPCSegments[reconParticle->nTPCSegments++] = seg;
-
+ 
 
     }
     if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTarget2)) {
@@ -852,14 +878,16 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
-   
+
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
-      SubDetId::SetDetectorUsed(seg->Detectors, dsub);
+ 
+      seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
       seg->IsReconstructed = GetEfficiency(seg->DeltaLYZ, trueParticle->CosTheta);
       reconParticle->TargetSegments[reconParticle->nTargetSegments++] = seg;
 
     }
   }
+    
 }

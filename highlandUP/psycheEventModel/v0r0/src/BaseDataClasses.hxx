@@ -190,6 +190,7 @@ class AnaTrueParticleB: public AnaTrueObjectC{
 
   /// The initial momentum of the true particle.
   Float_t Momentum;
+  int stopped;
 
   /// The true charge of the particle.
   Float_t Charge;
@@ -260,7 +261,7 @@ class AnaParticleB: public AnaRecObjectC{
   Float_t EDeposit;
 
   Float_t CosTheta;
-  int unsigned long Detectors;
+  unsigned long Detectors;
   /// Objects can be manipulated by input variations (which apply corrections
   /// and systematics). There are three copies of each spill and this member
   /// provides links between the different versions of this object. The link
@@ -286,6 +287,9 @@ class AnaParticleMomE{
   AnaParticleMomE(const AnaParticleMomE& part);
 
  public:
+    /// Error of the momentum at the start of the segment.
+  Float_t MomentumError;
+
   Float_t SmearedMomentum;
   /// The reconstructed charge of the particle.
   Float_t Charge;
@@ -375,8 +379,6 @@ class AnaTPCParticleB:public AnaParticleMomB {
 
  public:
 
-  /// Error of the momentum at the start of the segment.
-  Float_t MomentumError;
 
 
   /// Reconstructed momentum with the E-field distortion corrections

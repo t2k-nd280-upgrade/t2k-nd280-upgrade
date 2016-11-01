@@ -7,7 +7,6 @@ ClassImp(SelectionBase)
 //********************************************************************
 SelectionBase::SelectionBase(bool forceBreak, EventBoxId_h eventBoxId){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     _initialized=false;
     _name="";
@@ -59,7 +58,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 bool SelectionBase::HasBranch(Int_t ibranch, const std::string& fromMethod) const{
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   if (ibranch<0 || ibranch>=(Int_t)GetNBranches()){
     std::cout << "ERROR. SelectionBase::" <<  fromMethod << "() Unknown branch " << ibranch 
@@ -72,7 +70,6 @@ bool SelectionBase::HasBranch(Int_t ibranch, const std::string& fromMethod) cons
 //********************************************************************
 void SelectionBase::SetDetectorFV(SubDetId_h det, Int_t ibranch) {
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   if (ibranch==-1){
     for (UInt_t b = 0; b<GetNBranches();b++) 
@@ -87,7 +84,6 @@ void SelectionBase::SetDetectorFV(SubDetId_h det, Int_t ibranch) {
 //********************************************************************
 SubDetId_h SelectionBase::GetDetectorFV(Int_t ibranch) const {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   if (!HasBranch(ibranch,"GetDetectorFV")) exit(1);
   return _detectorFV[ibranch];
@@ -96,7 +92,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::Initialize(){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   // Don't do anything when the selection is already initialized
   if (_initialized) return;
@@ -117,7 +112,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::Validate() const{
 //********************************************************************
-  std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   std::cout << "SelectionBase::Validate(). Validating selection '" << _name << "' of type " << typeid(*this).name() << " .....";
 
@@ -139,7 +133,6 @@ void SelectionBase::Validate() const{
 //********************************************************************
 void SelectionBase::CreateToyBoxArray(Int_t nevents){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
 #ifndef MULTITHREAD
   nevents=1;
@@ -168,7 +161,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::FinalizeEvent(const AnaEventC& event){
 //********************************************************************
-  std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   Int_t uniqueID = 0;
 
@@ -215,7 +207,6 @@ const ToyBoxB& SelectionBase::GetPreviousToyBox() const{
 //********************************************************************
 bool SelectionBase::Apply(AnaEventC& event, bool& redo){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     //------ This function is called for each event and toy experiment ----------
 
@@ -290,7 +281,6 @@ void SelectionBase::PrintStatistics() const{
 //********************************************************************
 void SelectionBase::PrintStatistics(UInt_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
 #ifndef MULTITHREAD
     std::cout << "branch '" << GetBranchAlias(ID) << "' --> # events = " << _nEventsPassed[ID] << std::endl;
@@ -313,7 +303,6 @@ void SelectionBase::PrintStatistics(const std::string& name) const{
 //********************************************************************
 void SelectionBase::InitializeCutLevels(){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     int nBranches = GetNBranches();
 
@@ -324,7 +313,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 bool SelectionBase::ApplyStep(AnaEventC& event, ToyBoxB& ToyBox, const StepBase& step, Int_t branch) {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   bool passed = step.Apply(event, ToyBox);  
   // If the step is not a cut it should return always true
@@ -339,7 +327,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 bool SelectionBase::ApplyStepRecursive(AnaEventC& event, ToyBoxB& ToyBox, const StepBase& step, Int_t firstStepToApply) {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // This function applies all steps recursively provided the first step
 
@@ -379,7 +366,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 bool SelectionBase::ApplySteps(AnaEventC& event, ToyBoxB& ToyBox, const std::string& branch, Int_t ifirst, Int_t ilast) {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // This function applies steps in a given branch from step ifirst to step ilast
 
@@ -414,7 +400,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 bool SelectionBase::ApplySteps(AnaEventC& event, ToyBoxB& ToyBox, Int_t firstStepToApply) {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // This function applies all steps in all branches
 
@@ -442,7 +427,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 bool SelectionBase::CutPassed(bool ok, const StepBase& step, ToyBoxB& box) {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // if the step is not a cut it's allways passed
     if (step.Type() != StepBase::kCut) return true;
@@ -464,7 +448,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 bool SelectionBase::CutPassed(bool ok, Int_t branch, ToyBoxB& box) {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     if (ok){
         // The event has passed all previous cuts and this one
@@ -501,7 +484,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 bool SelectionBase::PreSelectionPassed(const AnaEventC& event){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   return (GetPreviousToyBox(event).MaxAccumLevel >= _presel_accum_cut_level);
 }
@@ -509,7 +491,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 UInt_t SelectionBase::GetNMaxCuts() const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     /// Return the number of cuts of the branch with more cuts 
 
@@ -523,7 +504,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 UInt_t SelectionBase::GetNCuts(Int_t ibranch) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     /// Return the number of cuts that have been added for a given branch
     if (!HasBranch(ibranch,"GetNCuts")) return 0;
@@ -533,7 +513,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::DumpSteps(const std::string& name, bool onlycuts) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     if (_branchAlias.size() ==0){
         std::cout << "ERROR. SelectionBase::DumpSteps(). Cannot dump steps before setting the branch aliases" << std::endl;
@@ -554,7 +533,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::DumpSteps(Int_t ID, bool onlycuts) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   if (ID==-1){
     std::vector<std::string>::const_iterator it;
@@ -617,7 +595,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::DumpBranches() const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   std::cout << "-------------------------------------------------------------------" << std::endl;
   std::cout << "       Branches for selection '" << _name << "' " << std::endl;
@@ -644,7 +621,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::DisableStep(const std::string& title, Int_t ID) {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   Int_t ID2 = ID;
   if (ID==-1) ID2=0;
@@ -674,7 +650,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::RemoveStep(const std::string& title, Int_t ID) {
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   Int_t ID2 = ID;
   if (ID==-1) ID2=0;
@@ -739,7 +714,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::InsertStep(const std::string& previous_title, Int_t ID, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   (void) previous_title;
   (void) ID;
@@ -763,7 +737,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::ReplaceStep(const std::string& old_title, Int_t ID, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   // Remove the step old_title in branch ID
   RemoveStep(old_title,ID);
@@ -781,7 +754,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, Int_t b7, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1,b2,b3,b4,b5,b6,b7);
     AddStep(branch, type, title, step, cut_break);
@@ -790,7 +762,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1,b2,b3,b4,b5,b6);
     AddStep(branch, type, title, step, cut_break);
@@ -799,7 +770,6 @@ void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, In
 //********************************************************************
 void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1,b2,b3,b4,b5);
     AddStep(branch, type, title, step, cut_break);
@@ -808,7 +778,6 @@ void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, In
 //********************************************************************
 void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1,b2,b3,b4);
     AddStep(branch, type, title, step, cut_break);
@@ -817,7 +786,6 @@ void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, St
 //********************************************************************
 void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1,b2,b3);
     AddStep(branch, type, title, step, cut_break);
@@ -826,7 +794,6 @@ void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, Int_t b3, StepBase::Ty
 //********************************************************************
 void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1,b2);
     AddStep(branch, type, title, step, cut_break);
@@ -835,7 +802,6 @@ void SelectionBase::AddStep(Int_t b0, Int_t b1, Int_t b2, StepBase::TypeEnum typ
 //********************************************************************
 void SelectionBase::AddStep(Int_t b0, Int_t b1, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1);
     AddStep(branch, type, title, step, cut_break);
@@ -843,7 +809,6 @@ void SelectionBase::AddStep(Int_t b0, Int_t b1, StepBase::TypeEnum type, const s
 
 //********************************************************************
 void SelectionBase::AddStep(Int_t b0, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0);
     AddStep(branch, type, title, step, cut_break);
@@ -852,7 +817,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddStep(StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
- std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch();
     AddStep(branch, type, title, step, cut_break);
@@ -861,7 +825,6 @@ void SelectionBase::AddStep(StepBase::TypeEnum type, const std::string& title, S
 //********************************************************************
 void SelectionBase::AddStep(const std::vector<UInt_t>& branch, StepBase::TypeEnum type, const std::string& title, StepBase* step, bool cut_break){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // Check that no step exist in the same branch with this title
     std::vector<StepBase*> steps = GetStepsInBranchWithDummy(branch);
@@ -890,7 +853,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddStep(const std::vector<UInt_t>& branch, StepBase* step){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     Int_t index=0;
 
@@ -924,7 +886,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddSteps(const std::vector<UInt_t>& branch, const std::vector<StepBase*>& steps){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     for (std::vector<StepBase*>::const_iterator it= steps.begin(); it!=steps.end();it++){
         AddStep(branch, *it);
@@ -934,7 +895,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddSplit(UInt_t nbranches, Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, Int_t b7){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1,b2,b3,b4,b5,b6,b7);
     AddSplit(nbranches,branch);
@@ -943,7 +903,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddSplit(UInt_t nbranches, const std::vector<UInt_t>& branch_seq){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // When there are no steps yet we should add a dummy one such that NULL steps can be added to this when doing AddSplit
     if (_firstSteps.size() ==0){
@@ -973,7 +932,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<StepBase*> SelectionBase::GetStepsInBranch(const std::vector<UInt_t>& branch, UInt_t first, UInt_t last) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<StepBase*> steps = GetStepsInBranchWithDummy(branch, first, last);  
     if ((*steps.begin())->Title()=="dummy")
@@ -1070,7 +1028,6 @@ std::vector<StepBase*> SelectionBase::GetStepsInBranchWithDummy(const std::vecto
 //********************************************************************
 std::vector<StepBase*> SelectionBase::GetStepsInBranch(const std::string& name, UInt_t first, UInt_t last) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = GetBranchSequence(name);
     return GetStepsInBranch(branch,first,last);
@@ -1079,7 +1036,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<StepBase*> SelectionBase::GetStepsInBranch(UInt_t ID, UInt_t first, UInt_t last) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = GetBranchSequence(ID);
     return GetStepsInBranch(branch,first,last);
@@ -1088,7 +1044,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<StepBase*> SelectionBase::GetCutsInBranch(UInt_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<StepBase*> cuts;
     std::vector<StepBase*> steps = GetStepsInBranch(ID);
@@ -1102,7 +1057,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<StepBase*> SelectionBase::GetCutsInBranch(const std::string& name) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     UInt_t ID = GetBranchUniqueID(name);
     return GetCutsInBranch(ID);
@@ -1111,7 +1065,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 StepBase* SelectionBase::GetLastStepInBranch(const std::vector<UInt_t>& branch) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // get the vector of steps in this branch sequence
     std::vector<StepBase*> steps = GetStepsInBranchWithDummy(branch);
@@ -1127,7 +1080,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 StepBase* SelectionBase::GetLastStepInBranch(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, Int_t b7) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = ConvertBranch(b0,b1,b2,b3,b4,b5,b6,b7);
     return GetLastStepInBranch(branch);
@@ -1136,7 +1088,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 StepBase* SelectionBase::GetLastStepInBranch(const std::string& name) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch = GetBranchSequence(name);
     return GetLastStepInBranch(branch);
@@ -1146,7 +1097,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 StepBase* SelectionBase::GetStepInBranch(const std::vector<UInt_t>& branch, UInt_t index) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   std::vector<StepBase*> steps = GetStepsInBranch(branch, index, index);
   if (steps.size()!=0)
@@ -1159,7 +1109,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 StepBase* SelectionBase::GetStepInBranch(const std::string& name, UInt_t index) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   std::vector<StepBase*> steps = GetStepsInBranch(name, index, index);
   if (steps.size()!=0)
@@ -1172,7 +1121,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 StepBase* SelectionBase::GetStepInBranch(UInt_t ID, UInt_t index) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   std::vector<StepBase*> steps = GetStepsInBranch(ID, index, index);
   if (steps.size()!=0)
@@ -1185,7 +1133,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<UInt_t> SelectionBase::ConvertBranch(Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, Int_t b7) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<UInt_t> branch;
     if (b0>=0) branch.push_back(b0);
@@ -1203,7 +1150,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::string SelectionBase::ConvertBranchToString(const std::vector<UInt_t>& branch, Int_t upToSplit) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     if (branch.size()==0) return "'trunk'";
 
@@ -1232,7 +1178,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddBranch(Int_t ibranch, const std::vector<UInt_t>& branch_seq, const std::string& alias){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // associate the branch unique ID with the branch alias (branch1, branch2, ...)
     // This is just a default name, that can be changed later
@@ -1264,7 +1209,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::SetBranchAlias(Int_t ID, const std::string& name, Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, Int_t b7){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     /*
         A full branch is defined by a branching sequence, that is the branch to be taken in each split. 
@@ -1311,7 +1255,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::AddBranchUniqueID(std::vector<StepBase*>& steps, UInt_t ID){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<StepBase*>::iterator it;
     for (it=steps.begin();it!=steps.end();it++){
@@ -1322,7 +1265,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<UInt_t> SelectionBase::GetBranchSequence(Int_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     if (ID<0 || ID >= (Int_t)_branchSequence.size()){
         std::cout << "ERROR. SelectionBase::GetBranchSequence(). Branch with index " << ID << " does not exist in selection '"<< _name <<"' !!!" << std::endl; 
@@ -1334,7 +1276,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<UInt_t> SelectionBase::GetBranchSequence(const std::string& name) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     Int_t  ID = GetBranchUniqueID(name);
     return GetBranchSequence(ID);
@@ -1343,7 +1284,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 Int_t SelectionBase::GetBranchUniqueID(const std::string& name) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     Int_t ID = 0;
     for (std::vector<std::string>::const_iterator it=_branchAlias.begin();it!=_branchAlias.end();it++, ID++){
@@ -1359,7 +1299,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::string SelectionBase::GetBranchAlias(Int_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     if (ID<0 || ID >= (Int_t)_branchAlias.size()) return "";
     return _branchAlias[ID];
@@ -1368,7 +1307,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<std::string> SelectionBase::GetCutNames(Int_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<std::string> cut_names;
     std::vector<StepBase*> steps = GetStepsInBranch(ID);
@@ -1381,7 +1319,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 std::vector<std::string> SelectionBase::GetStepNames(Int_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<std::string> step_names;
     std::vector<StepBase*> steps = GetStepsInBranch(ID);
@@ -1395,7 +1332,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 Int_t SelectionBase::GetCutNumber(const std::string& title, Int_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     Int_t icut=-1;
     std::vector<StepBase*> steps = GetStepsInBranch(ID);
@@ -1409,7 +1345,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 Int_t SelectionBase::GetStepNumber(const std::string& title, Int_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   StepBase* step = GetStep(title,ID);
   if (step) return step->Index();
@@ -1422,7 +1357,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 StepBase* SelectionBase::GetStep(const std::string& title, Int_t ID) const{
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     std::vector<StepBase*> steps = GetStepsInBranch(ID);
     for (std::vector<StepBase*>::iterator it=steps.begin();it!=steps.end();it++){
@@ -1434,7 +1368,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::CopySteps(SelectionBase& sel1, UInt_t branchID1, UInt_t first, UInt_t last, const std::vector<UInt_t>& branch2){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // Initialize the input selection
     sel1.Initialize();
@@ -1459,7 +1392,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::CopySteps(SelectionBase& sel1, UInt_t branchID1, UInt_t first, UInt_t last, Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, Int_t b7){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   CopySteps(sel1, branchID1, first, last, ConvertBranch(b0,b1,b2,b3,b4,b5,b6,b7));
 
@@ -1468,7 +1400,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::CopySteps(SelectionBase& sel1, const std::string& sbranch1, UInt_t first, UInt_t last, Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, Int_t b7){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   // Initialize the input selection
   sel1.Initialize();
@@ -1479,7 +1410,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::CopySteps(SelectionBase& sel1, const std::string& sbranch1){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
   // Initialize the input selection
   sel1.Initialize();
@@ -1498,7 +1428,6 @@ std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<_
 //********************************************************************
 void SelectionBase::CopyStep(SelectionBase& sel1, const std::string& sbranch1, UInt_t istep, Int_t b0, Int_t b1, Int_t b2, Int_t b3, Int_t b4, Int_t b5, Int_t b6, Int_t b7){
 //********************************************************************
-std::cout<<" Now running func "<<__func__<<" at line "<<__LINE__<<" of file "<<__FILE__<<std::endl;
 
     // Copy only one step
   CopySteps(sel1,sbranch1,istep,istep,b0,b1,b2,b3,b4,b5,b6,b7);

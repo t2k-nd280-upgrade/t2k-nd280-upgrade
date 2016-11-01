@@ -20,20 +20,20 @@ Int_t anaUtils::GetOneSegmentPerTPC(AnaTPCParticleB* in[], Int_t nseg_in, AnaTPC
 
   // This method takes as input all TPC segments in a track and returns an array with only one segment per TPC, the one with more nodes
 
-    Int_t nhits_max[3]={0,0,0};
-    Int_t itrack_nhits_max[3]={-1,-1,-1};
+    Int_t DeltaLYZ_max[7]={0,0,0,0,0,0,0};
+    Int_t itrack_DeltaLYZ_max[7]={-1,-1,-1,-1,-1,-1,-1};
     for(Int_t iseg=0; iseg< nseg_in; iseg++){
       Int_t TPC = SubDetId::GetTPC(in[iseg]->Detectors)-1;
-      if (in[iseg]->NHits > nhits_max[TPC]){
-        nhits_max[TPC] = in[iseg]->NHits;
-        itrack_nhits_max[TPC]=iseg;
+      if (in[iseg]->DeltaLYZ > DeltaLYZ_max[TPC]){
+        DeltaLYZ_max[TPC] = in[iseg]->DeltaLYZ;
+        itrack_DeltaLYZ_max[TPC]=iseg;
       }      
     }
 
     int nseg_out = 0;    
-    for(Int_t i=0;i< 3;i++){
-      if (itrack_nhits_max[i]!=-1)
-        out[nseg_out++]=in[itrack_nhits_max[i]];
+    for(Int_t i=0;i< 7;i++){
+      if (itrack_DeltaLYZ_max[i]!=-1)
+        out[nseg_out++]=in[itrack_DeltaLYZ_max[i]];
     }
     
     return nseg_out;
@@ -112,10 +112,10 @@ AnaParticleB* anaUtils::GetSegmentWithMostNodesInClosestTPC(const AnaTrackB& tra
     int TPC_closest = SubDetId::kInvalid;
     int TPC = SubDetId::kInvalid;
 
-    AnaParticleB* subtrack[3] = {NULL, NULL, NULL};
+    AnaParticleB* subtrack[7] = {NULL, NULL, NULL,NULL,NULL, NULL,NULL};
 
     Float_t dist = 9999999.;
-    int nHits[3] = {0,0,0};
+    int DeltaLYZ[7] = {0,0,0,0,0,0,0};
 
     for(int i = 0; i < track.nTPCSegments; ++i){
         AnaTPCParticleB* TPC_track = track.TPCSegments[i];
@@ -130,8 +130,8 @@ AnaParticleB* anaUtils::GetSegmentWithMostNodesInClosestTPC(const AnaTrackB& tra
             TPC_closest = TPC;
         }
         // TPC number is not zero ordered
-        if(TPC_track->NHits > nHits[TPC-1]){
-            nHits[TPC-1] = TPC_track->NHits;
+        if(TPC_track->DeltaLYZ > DeltaLYZ[TPC-1]){
+            DeltaLYZ[TPC-1] = TPC_track->DeltaLYZ;
             subtrack[TPC-1] = TPC_track;
         }
     }
@@ -152,15 +152,15 @@ AnaParticleB* anaUtils::GetSegmentWithMostNodesInDet(const AnaTrackB& track, Sub
         return NULL;
     }
 
-    int nHits = 0;
+    int DeltaLYZ = 0;
     AnaParticleB* subtrack = NULL;
 
     switch(det){
         case SubDetId::kTarget :
             for(int i = 0; i < track.nTargetSegments; ++i){
                 AnaTargetParticleB* Target_track = track.TargetSegments[i];
-                if(Target_track->NHits > nHits){
-                    nHits = Target_track->NHits;
+                if(Target_track->DeltaLYZ > DeltaLYZ){
+                    DeltaLYZ = Target_track->DeltaLYZ;
                     subtrack = Target_track;
                 }
             }
@@ -169,8 +169,8 @@ AnaParticleB* anaUtils::GetSegmentWithMostNodesInDet(const AnaTrackB& track, Sub
         case SubDetId::kTPC :
             for(int i = 0; i < track.nTPCSegments; ++i){
                 AnaTPCParticleB* TPC_track = track.TPCSegments[i];
-                if(TPC_track->NHits > nHits){
-                    nHits = TPC_track->NHits;
+                if(TPC_track->DeltaLYZ > DeltaLYZ){
+                    DeltaLYZ = TPC_track->DeltaLYZ;
                     subtrack = TPC_track;
                 }
             }
@@ -181,8 +181,8 @@ AnaParticleB* anaUtils::GetSegmentWithMostNodesInDet(const AnaTrackB& track, Sub
                 for(int i = 0; i < track.nTargetSegments; ++i){
                     AnaTargetParticleB* Target_track = track.TargetSegments[i];
                     if(SubDetId::GetDetectorUsed(Target_track->Detectors, det)){
-                        if(Target_track->NHits > nHits){
-                            nHits = Target_track->NHits;
+                        if(Target_track->DeltaLYZ > DeltaLYZ){
+                            DeltaLYZ = Target_track->DeltaLYZ;
                             subtrack = Target_track;
                         }
                     }
@@ -193,8 +193,8 @@ AnaParticleB* anaUtils::GetSegmentWithMostNodesInDet(const AnaTrackB& track, Sub
                 for(int i = 0; i < track.nTPCSegments; ++i){
                     AnaTPCParticleB* TPC_track = track.TPCSegments[i];
                     if(SubDetId::GetDetectorUsed(TPC_track->Detectors, det)){
-                        if(TPC_track->NHits > nHits){
-                            nHits = TPC_track->NHits;
+                        if(TPC_track->DeltaLYZ > DeltaLYZ){
+                            DeltaLYZ = TPC_track->DeltaLYZ;
                             subtrack = TPC_track;
                         }
                     }
@@ -208,6 +208,7 @@ AnaParticleB* anaUtils::GetSegmentWithMostNodesInDet(const AnaTrackB& track, Sub
 //**************************************************
 AnaParticleB* anaUtils::GetSegmentInDet(const AnaTrackB& track, SubDetId::SubDetEnum det){
 //**************************************************
+ 
     if(SubDetId::IsTPC(det)){
         for(int i = 0; i < track.nTPCSegments; ++i){
             AnaTPCParticleB* TPC_track = track.TPCSegments[i];
@@ -219,6 +220,7 @@ AnaParticleB* anaUtils::GetSegmentInDet(const AnaTrackB& track, SubDetId::SubDet
     if(SubDetId::IsTarget(det)){
         for(int i = 0; i < track.nTargetSegments; ++i){
             AnaTargetParticleB* Target_track = track.TargetSegments[i];
+ 
             if(SubDetId::GetDetectorUsed(Target_track->Detectors, det)){
                 return Target_track;
             }
@@ -242,7 +244,7 @@ SubDetId::SubDetEnum anaUtils::GetDetector(const Float_t* pos){
 bool anaUtils::InDetVolume(SubDetId::SubDetEnum det, const Float_t* pos){
 //**************************************************
 
-    Float_t null[3] = {0.,0.,0.};
+    Float_t null[7] = {0.,0.,0.,0.,0.,0.,0.};
  
     //account for a case when a "general" volume is provided
     switch(det){
@@ -298,7 +300,7 @@ bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos){
     
 
 
-    Float_t null[3] = {0.,0.,0.};
+    Float_t null[7] = {0.,0.,0.,0.,0.,0.,0.};
     switch(det){
         case SubDetId::kTPC:
             return (InFiducialVolume(SubDetId::kTPCUp1,pos) || InFiducialVolume(SubDetId::kTPCUp2,pos) || InFiducialVolume(SubDetId::kForwTPC1,pos) || InFiducialVolume(SubDetId::kForwTPC2,pos) || InFiducialVolume(SubDetId::kForwTPC3,pos) || InFiducialVolume(SubDetId::kTPCDown1,pos) || InFiducialVolume(SubDetId::kTPCDown2,pos));
@@ -418,8 +420,6 @@ bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos, co
                     pos[1] < DetDef::Target1max[1] &&
                     pos[2] > DetDef::Target1min[2] &&
                     pos[2] < DetDef::Target1max[2]){
-                                std::cout<<" pas target1 fv"<<std::endl;
-
                 return true;
                   }
             break;
@@ -431,7 +431,7 @@ bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos, co
                     pos[2] > DetDef::Target2min[2] &&
                     pos[2] < DetDef::Target2max[2])
             {
-                std::cout<<" pas target2 fv"<<std::endl;
+
                 return true;}
             break;
 
@@ -444,9 +444,8 @@ bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos, co
 
 }
 
-
 //**************************************************
-int anaUtils::GetAllChargedTrajInTargetInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]) {
+int anaUtils::GetAllChargedTrajInTPCInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]) {
 //**************************************************
     int count = 0;
     for(Int_t i=0;i< event.nTrueParticles;i++){
@@ -455,32 +454,32 @@ int anaUtils::GetAllChargedTrajInTargetInBunch(const AnaEventB& event, AnaTruePa
       if(event.TrueParticles[i]->Charge==0)continue;
       Float_t dist=-9999999;
         for(Int_t idet=0;idet<event.TrueParticles[i]->nDetCrossings;idet++){
-            //i.e crossing the active part of the subdet2
-            if(SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTarget) && event.TrueParticles[i]->DetCrossings[idet]->InActive) {
+            //i.e crossing the active part of the tpc
+            if(SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTPC) && event.TrueParticles[i]->DetCrossings[idet]->InActive) {
                 Float_t sep = GetSeparationSquared(event.TrueParticles[i]->DetCrossings[idet]->EntrancePosition, event.TrueParticles[i]->DetCrossings[idet]->ExitPosition);
                 if(sep>dist) dist=sep;
             }
         }
         // 30* 30 originally
-        if((dist)>900 && event.TrueParticles[i]->Momentum>5){//bigger than 3 Subdet2 hits (30*30 is faster that sqrt(dist)), and momentum > 5 MeV 
-	  chargedtrajInBunch[count] = event.TrueParticles[i];
-	  ++count;
+        if((dist)>900 && event.TrueParticles[i]->Momentum>5){//bigger than 3 TPC hits (30*30 is faster that sqrt(dist)), and momentum > 5 MeV 
+      chargedtrajInBunch[count] = event.TrueParticles[i];
+      ++count;
         }
     }
     return count;
 }
 
 //**************************************************
-int anaUtils::GetAllChargedTrajInTPCInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[],SubDetId::SubDetEnum det){
+int anaUtils::GetAllChargedTrajInTargetInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[],SubDetId::SubDetEnum det){
 //**************************************************
     /* 
-     * we need here to select in-Subdet1 tracks that potentially should have been reconstruced
-     * by Subdet1 iso recon (the function name is confusing);
+     * we need here to select in-Target tracks that potentially should have been reconstruced
+     * by Target iso recon (the function name is confusing);
      * this involves putting some min requirements for the true tracks:
-     * since Subdet1 iso recon requires a track to extend for at least 4 Z layers (i.e. having hits in five consequitive layers)
+     * since Target iso recon requires a track to extend for at least 4 Z layers (i.e. having hits in five consequitive layers)
      * in order to be reconstruced this requirement should be applied for the true tracks as well.
      * In principle one can use the geometry info to retrieve layers that true entrance and exit point correspond to
-     * but it can be time taking,  so we use an approximation: a true trajectory should have a length in Z at least of the one of 4 Subdet1 layers:
+     * but it can be time taking,  so we use an approximation: a true trajectory should have a length in Z at least of the one of 4 Target layers:
      * so 4 cm
 
      */
@@ -492,17 +491,17 @@ int anaUtils::GetAllChargedTrajInTPCInBunch(const AnaEventB& event, AnaTrueParti
     if(event.TrueParticles[i]->Charge==0)continue;
     Float_t dist = -9999999;
     for (Int_t idet = 0; idet < event.TrueParticles[i]->nDetCrossings; idet++) {
-      // i.e crossing the active part of the Subdet1
-      if (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTPC)){
+      // i.e crossing the active part of the Target
+      if (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTarget)){
         if (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, det) && event.TrueParticles[i]->DetCrossings[idet]->InActive) {
-          //the separation should be done using the z position, since the subdet1 is separated by layer in z,
+          //the separation should be done using the z position, since the Target is separated by layer in z,
           //making the z position the reconstructed quantity to be cut on
           Float_t sep = fabs(event.TrueParticles[i]->DetCrossings[idet]->EntrancePosition[2] - event.TrueParticles[i]->DetCrossings[idet]->ExitPosition[2]);
           if(sep>dist) dist=sep;
         }
       }
     }
-    // apply the cut (this cut is only valid for Subdet1!)
+    // apply the cut (this cut is only valid for Target!)
     if (dist > 40){
       chargedtrajInBunch[count] = event.TrueParticles[i];
       ++count;
@@ -512,31 +511,32 @@ int anaUtils::GetAllChargedTrajInTPCInBunch(const AnaEventB& event, AnaTrueParti
   return count;
 }
 
+
 //**************************************************
-int anaUtils::GetAllChargedTrajInTPCAndNoTargetInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[],SubDetId::SubDetEnum det){
+int anaUtils::GetAllChargedTrajInTargetAndNoTPCInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[],SubDetId::SubDetEnum det){
 //**************************************************  
-    AnaTrueParticleB* trajInBunchInTPCx[NMAXTRUEPARTICLES];
-    Int_t ntrajInBunchInTPCx = anaUtils::GetAllChargedTrajInTPCInBunch(event, trajInBunchInTPCx,det);
+    AnaTrueParticleB* trajInBunchInTargetx[NMAXTRUEPARTICLES];
+    Int_t ntrajInBunchInTargetx = anaUtils::GetAllChargedTrajInTargetInBunch(event, trajInBunchInTargetx,det);
 
     Int_t count = 0;
-    for (Int_t i = 0; i < ntrajInBunchInTPCx; i++) {
+    for (Int_t i = 0; i < ntrajInBunchInTargetx; i++) {
       Float_t dist=-999999.;
-      for(Int_t idet=0;idet<trajInBunchInTPCx[i]->nDetCrossings;idet++){
-        //i.e crossing the active part of the subdet2
-        if(SubDetId::GetDetectorUsed(trajInBunchInTPCx[i]->DetCrossings[idet]->Detector, SubDetId::kTarget) && trajInBunchInTPCx[i]->DetCrossings[idet]->InActive) {
-          Float_t sep = GetSeparationSquared(trajInBunchInTPCx[i]->DetCrossings[idet]->EntrancePosition, trajInBunchInTPCx[i]->DetCrossings[idet]->ExitPosition);
+      for(Int_t idet=0;idet<trajInBunchInTargetx[i]->nDetCrossings;idet++){
+        //i.e crossing the active part of the tpc
+        if(SubDetId::GetDetectorUsed(trajInBunchInTargetx[i]->DetCrossings[idet]->Detector, SubDetId::kTPC) && trajInBunchInTargetx[i]->DetCrossings[idet]->InActive) {
+          Float_t sep = GetSeparationSquared(trajInBunchInTargetx[i]->DetCrossings[idet]->EntrancePosition, trajInBunchInTargetx[i]->DetCrossings[idet]->ExitPosition);
           
           if(sep>dist) dist=sep;
         }
       }
       
-      bool cross_Target = false;
+      bool cross_tpc = false;
       // 250*250 originally
-      if(dist>62500)//bigger than the ~1/4 of the width of the Subdet2
-        cross_Target = true;
+      if(dist>62500)//bigger than the ~1/4 of the width of the TPC
+        cross_tpc = true;
       
-      if (!cross_Target){
-        chargedtrajInBunch[count] = trajInBunchInTPCx[i];
+      if (!cross_tpc){
+        chargedtrajInBunch[count] = trajInBunchInTargetx[i];
         ++count;
       }
     }
@@ -545,7 +545,7 @@ int anaUtils::GetAllChargedTrajInTPCAndNoTargetInBunch(const AnaEventB& event, A
 }
 
 //**************************************************
-int anaUtils::GetAllChargedTrajInTargetTPCInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]){
+int anaUtils::GetAllChargedTrajInTPCTargetInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]){
 //**************************************************
 
     int count = 0;
@@ -557,31 +557,19 @@ int anaUtils::GetAllChargedTrajInTargetTPCInBunch(const AnaEventB& event, AnaTru
 
         Float_t dist=-9999999;
         for(Int_t idet=0;idet<event.TrueParticles[i]->nDetCrossings;idet++){
-            //i.e crossing the active part of one of the TPCs
-          if(SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTPC)){
+            //i.e crossing the active part of one of the Targets
+          if(SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTarget)){
             for(Int_t idet1=0;idet1<event.TrueParticles[i]->nDetCrossings;idet1++){
-              //look for Subdet2_1-Subdet1_1, Subdet1_1-Subdet2_2, Subdet2_2-Subdet1_2, Subdet1_2-Subdet2_3 trajectories
-                    if ((SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTPCUp1) &&
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget2))) ||
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTPCUp2) &&
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget2))) ||
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTPCDown1) &&
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget2))) ||
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTPCDown2) &&
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget2))) ||
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kForwTPC1) &&
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget2))) ||
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kForwTPC1) &&
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget2))) ||
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kForwTPC2) &&
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget2))) ||
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kForwTPC3) &&
-                    (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTarget2))))
-                    {
-                        Float_t sep = GetSeparationSquared(event.TrueParticles[i]->DetCrossings[idet1]->EntrancePosition, event.TrueParticles[i]->DetCrossings[idet1]->ExitPosition);
-                        if (sep > dist) dist = sep;
-                    }
+              //look for TPC1-Target1, Target1-TPC2, TPC2-Target2, Target2-TPC3 trajectories
+              if((SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTarget1) && 
+                  (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTPCDown1) ||SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kForwTPC1))) || 
+                 (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTarget2) && 
+                  (SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTPCDown2) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kTPCUp2) || SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet1]->Detector, SubDetId::kForwTPC3)))) 
+                {
+                  Float_t sep = GetSeparationSquared(event.TrueParticles[i]->DetCrossings[idet1]->EntrancePosition, event.TrueParticles[i]->DetCrossings[idet1]->ExitPosition);
+                  if(sep>dist) dist=sep;
                 }
+            }
           }
         }
         
@@ -597,7 +585,7 @@ int anaUtils::GetAllChargedTrajInTargetTPCInBunch(const AnaEventB& event, AnaTru
 }
 
 //**************************************************
-int anaUtils::GetAllBigEnoughChargedTrajInTargetInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]){
+int anaUtils::GetAllBigEnoughChargedTrajInTPCInBunch(const AnaEventB& event, AnaTrueParticleB* chargedtrajInBunch[]){
 //**************************************************
 
     int count = 0;
@@ -609,58 +597,19 @@ int anaUtils::GetAllBigEnoughChargedTrajInTargetInBunch(const AnaEventB& event, 
 
       Float_t dist=0;
         for(Int_t idet=0;idet<event.TrueParticles[i]->nDetCrossings;idet++){
-            //i.e crossing the active part of the subdet2
-            if(SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTarget) && event.TrueParticles[i]->DetCrossings[idet]->InActive) {
+            //i.e crossing the active part of the tpc
+            if(SubDetId::GetDetectorUsed(event.TrueParticles[i]->DetCrossings[idet]->Detector, SubDetId::kTPC) && event.TrueParticles[i]->DetCrossings[idet]->InActive) {
                 Float_t sep = GetSeparationSquared(event.TrueParticles[i]->DetCrossings[idet]->EntrancePosition, event.TrueParticles[i]->DetCrossings[idet]->ExitPosition);
                 if(sep>dist) dist=sep;
             }
         }
         //250*250 originally 
-        if(dist>62500){//bigger than the ~1/4 of the width of the Subdet2
+        if(dist>62500){//bigger than the ~1/4 of the width of the TPC
             chargedtrajInBunch[count] = event.TrueParticles[i];
             ++count;
         }
 
     }
-    return count;
-}
-
-//**************************************************
-int anaUtils::GetAllTracksUsingTPCAndNoTarget(const AnaEventB& event, AnaTrackB* selTracks[],SubDetId::SubDetEnum TPCdet) {
-//**************************************************
-
-    int count = 0;
-    for (int it = 0; it < event.nParticles; it++) {
-        AnaTrackB* track = static_cast<AnaTrackB*>(event.Particles[it]);
-        if (!SubDetId::GetDetectorUsed(track->Detectors, SubDetId::kTarget) && SubDetId::GetDetectorUsed(track->Detectors, TPCdet)) {
-            selTracks[count] = track;
-            ++count;
-        }
-    }
-
-    // Sort by decreasing number of hits
-    std::sort(&selTracks[0], &selTracks[count], AnaParticleB::CompareNHits);
-
-    return count;
-}
-
-
-//**************************************************
-int anaUtils::GetAllTracksUsingTPCorTarget(const AnaEventB& event, AnaTrackB* selTracks[]) {
-//**************************************************
-
-    int count = 0;
-    for (int it = 0; it < event.nParticles; it++) {
-        AnaTrackB* track = static_cast<AnaTrackB*>(event.Particles[it]);
-        if (SubDetId::GetDetectorUsed(track->Detectors, SubDetId::kTarget) || SubDetId::GetDetectorUsed(track->Detectors, SubDetId::kTPC)) {
-            selTracks[count] = track;
-            ++count;
-        }
-    }
-
-    // Sort by decreasing number of hits
-    std::sort(&selTracks[0], &selTracks[count], AnaParticleB::CompareNHits);
-
     return count;
 }
 
@@ -683,13 +632,13 @@ int anaUtils::GetAllTracksUsingTarget(const AnaEventB& event, AnaTrackB* selTrac
 }
 
 //**************************************************
-int anaUtils::GetNTracksUsingTargetAndDet(const AnaEventB& event, SubDetId::SubDetEnum det) {
+int anaUtils::GetNTracksUsingTPCAndDet(const AnaEventB& event, SubDetId::SubDetEnum det) {
 //**************************************************
 
     int count = 0;
 
     SubDetId::SubDetEnum dets[2];
-    dets[0] = SubDetId::kTarget;
+    dets[0] = SubDetId::kTPC;
     dets[1] = det;
 
     // Loop over all tracks
@@ -702,3 +651,4 @@ int anaUtils::GetNTracksUsingTargetAndDet(const AnaEventB& event, SubDetId::SubD
 
     return count;
 }
+

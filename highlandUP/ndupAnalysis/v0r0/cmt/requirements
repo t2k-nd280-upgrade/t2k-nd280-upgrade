@@ -33,6 +33,7 @@ path_prepend DYLD_LIBRARY_PATH "" \
 library ndupAnalysis *.cxx  ../dict/*.cxx
 
 application RunNDUpAnalysis ../app/RunNDUPAnalysis*.cxx
+#application RunTestAnalysis ../app/RunTestAnalysis*.cxx
 
 # tests
 document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox

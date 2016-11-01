@@ -3,7 +3,7 @@
 #include "ToyBoxNDUP.hxx"
 
 //********************************************************************
-bool SelUtils::FindLeadingTracks(AnaEventC& eventBB, ToyBoxB& boxB){
+bool SelUtils::FindLeadingTracks(AnaEventC& event, ToyBoxB& boxB){
 //********************************************************************
 
     // Get the highest momentum track (HM),
@@ -15,69 +15,97 @@ bool SelUtils::FindLeadingTracks(AnaEventC& eventBB, ToyBoxB& boxB){
 
     // Cast the ToyBox to the appropriate type
     ToyBoxNDUP& box = *static_cast<ToyBoxNDUP*>(&boxB); 
-    AnaEventB& event = *static_cast<AnaEventB*>(&eventBB); 
 
-    //    SubDetId::SubDetEnum det = static_cast<SubDetId::SubDetEnum>(box.DetectorFV);
+    SubDetId::SubDetEnum det = static_cast<SubDetId::SubDetEnum>(box.DetectorFV);
 
-    EventBox::RecObjectGroupEnum groupID = EventBox::kLongTracks;
+    EventBox::RecObjectGroupEnum groupID;
+    if   (det == SubDetId::kTarget1)
+      groupID = EventBox::kTracksWithGoodQualityTPCInTarget1FV;
+    else if (det == SubDetId::kTarget2)
+      groupID = EventBox::kTracksWithGoodQualityTPCInTarget2FV;
+    else 
+      return false;
 
-    // Retrieve the EventBoxDUNE
-    EventBoxB* EventBoxNDUP = event.EventBoxes[EventBoxId::kEventBoxNDUP];
-
-    AnaRecObjectC** selTracks = EventBoxNDUP->RecObjectsInGroup[groupID];
-    int nTracks=EventBoxNDUP->nRecObjectsInGroup[groupID];
-    // Reset to NULL all pointers
-//    std::cout<<nTracks<<std::endl;
-    box.HMT = box.HPlusPionT = box.HProtonT =box.HMinusPionT = NULL;
-
-    Float_t mom_delta=0;
-    Float_t pmmom_delta=0;
-    Float_t protonmom_delta=0;
-    Float_t ppmom_delta=0;
-
-    for (Int_t i=0;i<event.nVertices;i++){
+    // Retrieve the EventBoxNDUP
+    EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+    AnaRecObjectC** selTracks = EventBox->RecObjectsInGroup[groupID];
+    int nTPC=EventBox->nRecObjectsInGroup[groupID];
   
-      AnaVertexB* vertex = static_cast<AnaVertexB*>(event.Vertices[i]);
-      box.Vertex=vertex->Clone();
-    }
-   
-  for (Int_t i = 0; i < nTracks; ++i) {
-    AnaTrack* track = static_cast<AnaTrack*>(selTracks[i]);
-    //     std::cout<<"track->Length"<<track->Length<<std::endl;
-    if (track->GetTrueParticle()->ParentID == 0) {
-      // Find the Longest and second longest tracks
-      if (track->GetTrueParticle()->PDG == 13) {
-        if (track->Momentum > mom_delta || !box.HMT) {
-          // if (box.Ltrack){
-          // box.SLtrack = box.Ltrack;
-          // l_delta=track->Length;
+    box.nNegativeTPCtracks=0;
+//    if (box.NegativeTPCtracks) delete [] box.NegativeTPCtracks;
+ 
+    anaUtils::CreateArray(box.NegativeTPCtracks, nTPC);
 
-          //}
-          box.HMT = track;
-          mom_delta = track->Momentum;
+    box.nPositiveTPCtracks=0;
+  //  if (box.PositiveTPCtracks) delete [] box.PositiveTPCtracks;
+    anaUtils::CreateArray(box.PositiveTPCtracks, nTPC);
+
+    // Reset to NULL all pointers
+    box.HMNtrack = box.HMPtrack = box.SHMNtrack = box.SHMPtrack = box.SHMtrack = box.HMtrack = NULL;
+
+    Float_t hm_mom=0;
+    Float_t shm_mom=0;
+    Float_t hmn_mom=0;
+    Float_t shmn_mom=0;
+    Float_t hmp_mom=0;
+    Float_t shmp_mom=0;
+
+    for (Int_t i=0;i<nTPC; ++i){
+      AnaTrackB* track = dynamic_cast<AnaTrackB*>(selTracks[i]);
+      // Find the HM and SHM tracks
+      if (track->Momentum > hm_mom){
+
+        if (box.HMtrack){
+          box.SHMtrack = box.HMtrack;
+          shm_mom= hm_mom;
         }
-      } else      if (track->GetTrueParticle()->PDG == -211) {
-
-        if (track->Momentum > pmmom_delta || !box.HMinusPionT) {
-          box.HMinusPionT = track;
-          pmmom_delta = track->Momentum;
+        box.HMtrack = track;
+        hm_mom= track->Momentum;
+      }
+      else if (track->Momentum >shm_mom || !box.SHMtrack){
+        box.SHMtrack = track;
+        shm_mom= track->Momentum;
+      }
+      
+      // Find the HMN and SHMN tracks
+      if (track->Charge == -1){
+        box.NegativeTPCtracks[box.nNegativeTPCtracks++] = track;
+        
+        if (track->Momentum > hmn_mom){
+          if (box.HMNtrack){
+            box.SHMNtrack = box.HMNtrack;
+            shmn_mom= hmn_mom;
+          }
+          box.HMNtrack = track;
+          hmn_mom= track->Momentum;
+          
         }
-      }  else      if (track->GetTrueParticle()->PDG == 2212) {
-
-        if (track->Momentum > protonmom_delta || !box.HProtonT) {
-          box.HProtonT = track;
-          protonmom_delta = track->Momentum;
+        else if (track->Momentum >shmn_mom){
+          box.SHMNtrack = track;
+          shmn_mom= track->Momentum;
         }
-      } else      if (track->GetTrueParticle()->PDG == 211) {
-
-        if (track->Momentum > ppmom_delta || !box.HPlusPionT) {
-          box.HPlusPionT = track;
-          ppmom_delta = track->Momentum;
+      }
+      // Find the HMP and SHMP tracks
+      else if (track->Charge == +1){
+        box.PositiveTPCtracks[box.nPositiveTPCtracks++] = track;
+        
+        if (track->Momentum > hmp_mom){
+          if (box.HMPtrack){
+            box.SHMPtrack = box.HMPtrack;
+            shmp_mom= hmp_mom;
+          }
+          box.HMPtrack = track;
+          hmp_mom= track->Momentum;
+        }
+        else if (track->Momentum >shmp_mom || !box.SHMPtrack){
+          box.SHMPtrack = track;
+          shmp_mom= track->Momentum;
         }
       }
     }
-  }
 
-//    box.Ltrack->Print();
-    return (box.HMT);  
+    // Resize the arrays
+    anaUtils::ResizeArray(box.NegativeTPCtracks, box.nNegativeTPCtracks);
+    anaUtils::ResizeArray(box.PositiveTPCtracks, box.nPositiveTPCtracks);
+     return (box.HMtrack);  
 }

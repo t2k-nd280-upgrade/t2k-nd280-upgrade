@@ -43,16 +43,16 @@ namespace anaUtils{
     /// * 1 - electron
     /// * 2 - proton
     /// * 3 - pion
-  /*  Float_t GetPIDLikelihood(const AnaTrackB& track, Int_t hypo);
+    Float_t GetPIDLikelihood(const AnaTrackB& track, Int_t hypo, bool prod5Cut = 0);
 
     /// Get all likelihoods
-    void GetPIDLikelihood(const AnaTrackB&, Float_t* hypo);
+    void GetPIDLikelihood(const AnaTrackB&, Float_t* hypo, bool prod5Cut = 0);
 
     /// Get the likelihood for MIP: (like_mu+like_pi)/(1-like_p)
     Float_t GetPIDLikelihoodMIP(const AnaTrackB &track);
 
     /// A function that is not currently used, and will be documented when it is.
-    Float_t GetPIDPrior(const AnaTrackB& track, Int_t hypo);*/
+    Float_t GetPIDPrior(const AnaTrackB& track, Int_t hypo);
     Float_t ComputedEdxSigma(AnaTPCParticleB &track, int pdg);
 //    void Fill_Tracks_Recon_From_True(AnaTrueParticleB* trueParticle, AnaTrackB* reconParticle);
 
