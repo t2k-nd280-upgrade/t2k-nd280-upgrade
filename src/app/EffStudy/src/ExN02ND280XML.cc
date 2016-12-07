@@ -118,18 +118,42 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("FGDPos2_X"   ,fFGDPos2_X);
     XML2Double("FGDPos2_Y"   ,fFGDPos2_Y);
     XML2Double("FGDPos2_Z"   ,fFGDPos2_Z);
-
+    
+    //
+    // Set detectors used in the simulation
+    //
     // Use side TPCs
     XML2Bool("UseTPCDown1" ,fUseTPCDown1);
     XML2Bool("UseTPCUp1"   ,fUseTPCUp1);
     XML2Bool("UseTPCDown2" ,fUseTPCDown2);
     XML2Bool("UseTPCUp2"   ,fUseTPCUp2);
-    
     // Use FGDs
     XML2Bool("UseFGD1",fUseFGD1);
     XML2Bool("UseFGD2",fUseFGD2);
-
+    // Use Magnet
+    XML2Bool("UseMagnet",fUseMagnet);
+    //XML2Bool("UseSMRD",  fUseSMRD);
+    // Use Basket
+    XML2Bool("UseBasket",fUseBasket);
+    // Use ECals
+    XML2Bool("UseDsECal", fUseDsECal);
+    XML2Bool("UseBrlECal",fUseBrlECal);
+    XML2Bool("UseP0DECal",fUseP0DECal);
     
+    // Set invisible detectors 
+    XML2Bool("InvisTPCDown1" ,fInvisTPCDown1);
+    XML2Bool("InvisTPCUp1"   ,fInvisTPCUp1);
+    XML2Bool("InvisTPCDown2" ,fInvisTPCDown2);
+    XML2Bool("InvisTPCUp2"   ,fInvisTPCUp2);
+    XML2Bool("InvisFGD1"     ,fInvisFGD1);
+    XML2Bool("InvisFGD2"     ,fInvisFGD2);
+    XML2Bool("InvisMagnet"   ,fInvisMagnet);
+    XML2Bool("InvisSMRD"     ,fInvisSMRD);
+    XML2Bool("InvisBasket"   ,fInvisBasket);
+    XML2Bool("InvisDsECal"   ,fInvisDsECal);
+    XML2Bool("InvisBrlECal"  ,fInvisBrlECal);
+    XML2Bool("InvisP0DECal"  ,fInvisP0DECal);
+
     myfile.close();
   }
   else cout << "Unable to open file"; 

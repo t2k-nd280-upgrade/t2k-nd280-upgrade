@@ -21,6 +21,22 @@
 
 
 
+### NEW
+# Set nd280mc visible detectors 
+#/t2k/Basket/DsECal/visible 1
+#/t2k/Basket/DsECal/visibleDaughters 1
+#/t2k/Basket/DsECal/Module/Active/ScintHoriz/Bar/visible 1
+#/t2k/Basket/DsECal/Module/Active/ScintHoriz/Bar/visibleDaughters 1
+#/t2k/Basket/DsECal/Module/Active/ScintHoriz/visible 1
+#/t2k/Basket/DsECal/Module/Active/ScintHoriz/visibleDaughters 1
+#/t2k/Basket/DsECal/Module/Active/ScintVert/Bar/visible 1
+#/t2k/Basket/DsECal/Module/Active/ScintVert/Bar/visibleDaughters 1
+#/t2k/Basket/DsECal/Module/Active/ScintVert/visible 1
+#/t2k/Basket/DsECal/Module/Active/ScintVert/visibleDaughters 1
+####
+
+
+
 # Set geometry
 #/N02/det/setTargetMate1 WAGASHIScintEmpty #FGDScintillator
 #/N02/det/setTargetMate2 Water #ActiveWater

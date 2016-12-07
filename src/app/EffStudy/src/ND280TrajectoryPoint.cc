@@ -21,7 +21,9 @@ G4Allocator<ND280TrajectoryPoint> aND280TrajPointAllocator;
 ND280TrajectoryPoint::ND280TrajectoryPoint()
   : fTime(0.), fMomentum(0.,0.,0.), fEdep(0), fStepLength(0),
     fStepDeltaLyz(0), fStepStatus(fUndefined), fIsOnBoundary(false), 
-    fPhysVolName("OutofWorld"), fPrevPosition(0,0,0),
+    fPhysVolName("OutofWorld"), 
+    fLogVolName("OutofWorld"), 
+    fPrevPosition(0,0,0),
     fPostPosition(0,0,0), fSavePoint(false) { }
 
 // This is the one used --> See ND280Trajectory::AppendStep(G4Step)
@@ -54,12 +56,14 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
   // Use postStep convention, though the SDManager refers to the preStep detector
   if (aStep->GetPostStepPoint()->GetPhysicalVolume()) {
     fPhysVolName = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+    fLogVolName = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetName();
   }
   //if (aStep->GetPreStepPoint()->GetPhysicalVolume()) {
   //fPhysVolName = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
   //}
   else {
     fPhysVolName == "OutOfWorld";
+    fLogVolName == "OutOfWorld";
   }
   
   if(aStep->GetPostStepPoint()->GetStepStatus()==fGeomBoundary)
@@ -86,11 +90,15 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Track* aTrack)
     fStepStatus = fUndefined;  
     //
     
-    if (aTrack->GetVolume())
+    if (aTrack->GetVolume()){
       fPhysVolName = aTrack->GetVolume()->GetName();
-    else
+      fLogVolName = aTrack->GetVolume()->GetLogicalVolume()->GetName();
+    }
+    else{
       fPhysVolName == "OutOfWorld";
-   
+      fLogVolName == "OutOfWorld";
+    }
+    
     fPrevPosition = aTrack->GetPosition();
     fPostPosition = aTrack->GetPosition(); // in the first point pre=post
 
@@ -108,6 +116,7 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const ND280TrajectoryPoint &right)
     fStepDeltaLyz = right.fStepDeltaLyz;
     fStepStatus = right.fStepStatus;
     fPhysVolName = right.fPhysVolName;
+    fLogVolName = right.fLogVolName;
     fPrevPosition = right.fPrevPosition;
     fPostPosition = right.fPostPosition;
     fIsOnBoundary = right.fIsOnBoundary;
@@ -188,6 +197,8 @@ std::vector<G4AttValue>* ND280TrajectoryPoint::CreateAttValues() const {
     values->push_back(G4AttValue("StepStatus",fStepStatus,""));
 
     values->push_back(G4AttValue("PhysVolName",fPhysVolName,""));
+
+    values->push_back(G4AttValue("LogVolName",fLogVolName,""));
 
     //#ifdef G4ATTDEBUG
     //ND280Info(G4AttCheck(values,GetAttDefs()));

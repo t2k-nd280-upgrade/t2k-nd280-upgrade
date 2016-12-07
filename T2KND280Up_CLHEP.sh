@@ -11,12 +11,13 @@ export GEANT4_LIBRARY=/atlas/users/dsgalabe/GEANT4/geant4.10.01.p03-install/lib6
 # setup ROOT
 source /atlas/users/dsgalabe/ROOT/root/bin/thisroot.sh
 
-# setup CMT
-source /atlas/users/dsgalabe/CMT/setup.sh
-export CMTPATH=$PWD
+# # setup CMT
+# source /atlas/users/dsgalabe/CMT/setup.sh
+# export CMTPATH=$1
 
-# setup highlandUp
-source /atlas/users/dsgalabe/t2k-nd280-upgrade/highlandUP/ndupAnalysis/v0r0/cmt/setup.sh
+# # setup highlandUp
+# source /atlas/users/dsgalabe/t2k-nd280-upgrade/highlandUP/ndupAnalysis/v0r0/cmt/setup.sh
+# source /atlas/users/dsgalabe/t2k-nd280-upgrade/highlandUP/highlandTools/v0r0/cmt/setup.sh 
 
 # setup gcc-xml
 #export PATH=/afs/cern.ch/user/d/dsgalabe/GCCXML/gccxml-install/bin:$PATH # gcc-xml
@@ -34,8 +35,8 @@ export CLHEP_INCLUDE_DIR=/atlas/users/dsgalabe/CLHEP/clhep_install/include
 export CLHEP_LIBRARY_DIR=/atlas/users/dsgalabe/CLHEP/clhep_install/lib
 export LD_LIBRARY_PATH=$CLHEP_INCLUDE_DIR:$CLHEP_LIBRARY_DIR:$LD_LIBRARY_PATH        
 
-# setup VGM
-export VGM_INSTALL_DIR=/atlas/users/dsgalabe/VGM/vgm.4.3-install
+# # setup VGM
+# export VGM_INSTALL_DIR=/atlas/users/dsgalabe/VGM/vgm.4.3-install
 
 # setup t2k-nd280-upgrade
 export T2KND280UP=$1

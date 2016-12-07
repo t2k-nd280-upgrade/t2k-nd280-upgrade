@@ -235,7 +235,6 @@ int main(int argc,char** argv)
   ExN02ActionInitialization* actionInitialization = new ExN02ActionInitialization(detector);  
   runManager->SetUserInitialization(actionInitialization);
 
-  
   // Initialize G4 kernel
   //                               
   runManager->Initialize();

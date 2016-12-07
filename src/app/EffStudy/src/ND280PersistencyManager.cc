@@ -118,14 +118,28 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
   std::vector<G4LogicalVolume*>::iterator it_logicalVolumeInRegion =
     SDRegion->GetRootLogicalVolumeIterator();
 
-  //G4cout << "The list of SD logical volumes: " <<  G4endl;
+  //G4String detname_curr = ndPoint->GetPhysVolName();
+  G4String detname_curr = ndPoint->GetLogVolName();
+
+  // G4cout << "Point in Phys Vol: " << detname_curr 
+  // 	 << " --> Log Vol: " << ndPoint->GetLogVolName()
+  // 	 << G4endl;
+  // // G4cout << "     Eloss = " << ndPoint->GetEdep() / MeV << G4endl;
+  
   for(int i = 0; i < NSDRootVolumes ; i++, it_logicalVolumeInRegion++){  
-    G4String SDLogVolName = (*it_logicalVolumeInRegion)->GetName();
+    G4LogicalVolume *logVolumeCurr = (*it_logicalVolumeInRegion);
+    G4String SDLogVolName = logVolumeCurr->GetName();
     
-    G4String detname_curr = ndPoint->GetPhysVolName();
-   	 
-    if(detname_curr == SDLogVolName){
+    //
+    // Names of Physical and Logical volumes contained in the SDRegion
+    // are identical --> the check is done in ExN02DetectorConstruction!!!
+    //
+    
+    //if(detname_curr == SDLogVolName){
+    if(detname_curr.contains(SDLogVolName)){	  
+      //G4cout << " --> SDLogVolName = " << SDLogVolName << G4endl;
       ndPoint->MarkPoint();
+      break;
     }
   }
 }
@@ -371,11 +385,14 @@ void ND280PersistencyManager::SelectTrajectoryPoints(
     // detectors.
     ND280TrajectoryPoint* nd280Point 
         = dynamic_cast<ND280TrajectoryPoint*>(g4Traj->GetPoint(0));
+    
     G4String prevVolumeName = nd280Point->GetPhysVolName();
+    
     for (int tp = 1; tp < lastIndex; ++tp) {
         nd280Point = dynamic_cast<ND280TrajectoryPoint*>(g4Traj->GetPoint(tp));
-        G4String volumeName = nd280Point->GetPhysVolName();
-
+        
+	G4String volumeName = nd280Point->GetPhysVolName();
+	
         // Save the point on a boundary crossing for volumes where we are
         // saving the entry and exit points.
         if (SaveTrajectoryBoundary(g4Traj,nd280Point->GetStepStatus(),

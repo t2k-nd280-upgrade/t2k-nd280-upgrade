@@ -90,6 +90,27 @@ ND280RootGeometryManager::ND280RootGeometryManager() {
   // ShouldPrintMass("/t2k/OA/Magnet/Basket/Tracker/TPC2");
   // ShouldPrintMass("/t2k/OA/Magnet/Basket/Tracker/TPC3");
   // ShouldPrintMass("/t2k/OA/Magnet/Basket/DsECal");
+  
+  ShouldPrintMass("/t2k");
+  ShouldPrintMass("/t2k/OA");
+  ShouldPrintMass("/t2k/OA/Magnet");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC1");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC2");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC3");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/Target1");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/Target2");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCUp1");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCUp2");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCDown1");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCDown2");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/FGD1");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/FGD2");  
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/DsECal");
+  ShouldPrintMass("/t2k/OA/Magnet/LeftClam/P0DECal");
+  ShouldPrintMass("/t2k/OA/Magnet/RightClam/P0DECal");
+  ShouldPrintMass("/t2k/OA/Magnet/LeftClam/BrlECal");
+  ShouldPrintMass("/t2k/OA/Magnet/RightClam/BrlECal");
 }
 
 ND280RootGeometryManager* ND280RootGeometryManager::Get() {
@@ -408,7 +429,7 @@ bool ND280RootGeometryManager::IgnoreVolume(const G4VPhysicalVolume* theVol) {
     std::string theFullName = theVol->GetName();
     std::string theShortName = theFullName;
     theShortName.erase(0,theShortName.rfind("/")+1);
-
+    
     // Don't save the internal structure of extruded scintillating bars.  This
     // is required to make sure that hits get assigned to the right geometry
     // volume in the ROOT geometry.
@@ -550,18 +571,31 @@ bool ND280RootGeometryManager::CreateEnvelope(
     TGeoVolume* theMother) {
     
     if (IgnoreVolume(theG4PhysVol)) return true;
-
+    
     // The new volume that will be added to the mother volume.  This is
     // created in this function.
     TGeoVolume* theVolume = NULL; 
     G4LogicalVolume* theLog = theG4PhysVol->GetLogicalVolume();
-    
-    //if (PrintMass(theG4PhysVol)) {
-    if(1){
+
+    if (PrintMass(theG4PhysVol)) {
       //ND280Log("%%% Mass: " << theLog->GetMass(true)/kg/1000.0 << " ton"
       //<< " Volume: " << theG4PhysVol->GetName());
+
       G4cout << "%%% Mass: " << theLog->GetMass(true)/kg/1000.0 << " ton"
 	     << " Volume: " << theG4PhysVol->GetName() << G4endl;
+
+      //double missingMass = 0.0;
+      //for (int child = 0;
+      //child < theLog->GetNoDaughters();
+      //++child) {
+      //G4VPhysicalVolume* theChild = theLog->GetDaughter(child);
+      //if (CreateEnvelope(theChild, theEnvelope, theVolume)) {
+      //G4LogicalVolume *skippedVolume = theChild->GetLogicalVolume();
+      //missingMass += skippedVolume->GetMass(true);
+      //}
+      //}
+
+
     }
     
     // Get the name of the expected name of the volume.
@@ -675,14 +709,15 @@ bool ND280RootGeometryManager::CreateEnvelope(
 	//<< theMedium->GetMaterial()->GetDensity()/(g/cm3)
 	//<< " g/cm3 to " << totalDensity/(g/cm3) << " g/cm3");
 	
-	G4cout << "ROOTGeom: Skipping sub-volumes. Correct " << G4endl;
-	G4cout << theMedium->GetName() << " density " << G4endl;
-	G4cout << theMedium->GetMaterial()->GetDensity()/(g/cm3) << G4endl;
-	G4cout << " g/cm3 to " << totalDensity/(g/cm3) << " g/cm3" << G4endl;
-	G4cout << G4endl;
-	
-	//	G4cout << theMedium->GetName() << G4endl;
+	//G4cout << "ROOTGeom: Skipping sub-volumes. Correct " << G4endl;
+	//G4cout << theMedium->GetName() << " density " << G4endl;
+	//G4cout << theMedium->GetMaterial()->GetDensity()/(g/cm3) << G4endl;
+	//G4cout << " g/cm3 to " << totalDensity/(g/cm3) << " g/cm3" << G4endl;
+	//G4cout << G4endl;
 
+	//G4cout << "ROOTGeom: Skipping sub-volumes. Correct --> " 
+	//<< theMedium->GetName() << G4endl;
+	
 	TGeoMedium *avgMedium = AverageMaterial(theG4PhysVol);
         if (avgMedium) theVolume->SetMedium(avgMedium);
     }

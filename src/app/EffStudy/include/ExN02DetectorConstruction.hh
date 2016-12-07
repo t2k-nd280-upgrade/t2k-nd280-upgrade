@@ -57,6 +57,16 @@ class ExN02DetectorMessenger;
 class ExN02FieldSetup;
 
 
+
+///// AS IN nd280mc /////
+#include "ExN02DetectorMessenger.hh"
+class ND280Constructor; 
+
+#include "ND280Constructor.hh"
+/////////////////////////
+
+
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class ExN02DetectorConstruction : public G4VUserDetectorConstruction
@@ -78,6 +88,11 @@ public:
   
   ExN02TrackerSD *GetSensitiveDetector() {return aTrackerSD;};
   
+  /// Return the detector construction messenger
+  virtual ExN02DetectorMessenger* GetMessenger(void) {
+    return detectorMessenger;
+  };
+
   void DefineDimensions();
 
   void SetBasketFullLength(G4double length) {fBasketLength = length;};
@@ -195,8 +210,13 @@ public:
   const G4VPhysicalVolume* GetGapPV() const; // new
 
   G4LogicalVolume* GetPieceTPC(G4String name,G4String parentname);
+  
+  //G4LogicalVolume* GetPieceDSECal(G4String name,G4String parentname);
+
   const G4VisAttributes* GetVisual(void) const;
- 
+
+  bool SDLoopOverDaughter(const G4LogicalVolume* SDLog, const G4VPhysicalVolume *theG4PhysVol);
+    
 protected:
   
   G4Material* FindMaterial(G4String m);
@@ -334,12 +354,32 @@ private:
   G4VisAttributes* TPCCO2;
   G4VisAttributes* TPCDeadMat;
 
+  // DsECal (not from nd280mc
+  ND280Constructor *fND280MCConstructor;
 
   ////////////////////////////////
   //                            //
   //        FROM nd280mc        //
   //                            //
   ////////////////////////////////
+  
+  // DsECal
+  
+  /// The position of the DSECal along the Z axis of the interior part of
+  /// the UA1 Magnet.
+  G4double fDsECalPosition;
+  
+  /// The position of the DSECal relative to the centerline of the basket.
+  G4double fDsECalVerticalPosition;
+  
+  /// DsECal transformation variables
+  G4ThreeVector fDsECalTrans;
+  G4ThreeVector fDsECalRotAxis;
+  double fDsECalRotAng;
+
+
+
+
 
   /// Variables to transform TPC MM modules
   G4ThreeVector tpcMMTrans[2][12];
@@ -458,8 +498,6 @@ inline const G4VPhysicalVolume* ExN02DetectorConstruction::GetAbsorberPV() const
 inline const G4VPhysicalVolume* ExN02DetectorConstruction::GetGapPV() const  {
   return fGapPV;
 }
-
-
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
 

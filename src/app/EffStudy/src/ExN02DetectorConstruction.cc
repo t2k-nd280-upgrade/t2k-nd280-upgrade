@@ -36,8 +36,6 @@
 //#include "ExN02MagneticField.hh" // OLD
 #include "ExN02TrackerSD.hh"
 #include "ExN02Constants.hh"
-#include "ND280BeamConstructor.hh"
-#include "ExN02ND280XML.hh"
 
 //#include "ND280InputPersistencyManager.hh"
 #include "ND280RootPersistencyManager.hh"
@@ -58,6 +56,16 @@
 #include "G4ios.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4AutoDelete.hh"
+
+// nd280mc - TPC
+#include "MyND280BeamConstructor.hh" // modified version for ND280upgrade
+
+// nd280mc - ECal 
+//#include "ecal/ND280DsECalConstructor.hh"
+#include "ND280BasketConstructor.hh"
+#include "ND280OffAxisConstructor.hh"
+
+
 
 //#ifdef USE_PAI
 #include <G4Region.hh> // used also to keep a list of SD logical volumes
@@ -122,6 +130,7 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
 {
   //fpMagField = new ExN02MagneticField(); // OLD
   detectorMessenger = new ExN02DetectorMessenger(this);
+      
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -142,7 +151,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   ND280RootPersistencyManager* InputPersistencyManager
     = ND280RootPersistencyManager::GetInstance();
   ND280XMLInput = InputPersistencyManager->GetXMLInput();
-
   //
   
   BoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
@@ -188,9 +196,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // World
   //------------------------------ 
 
-  const G4String cNameSolidWorld = "/world";
-  const G4String cNameLogicWorld = "/World";
-  const G4String cNamePhysiWorld = "/World";
+  const G4String cNameSolidWorld = "/t2k";
+  const G4String cNameLogicWorld = "/t2k";
+  const G4String cNamePhysiWorld = "/t2k";
   const G4String cWorldMater = "Air";
 
   WorldMater   = FindMaterial(cWorldMater); 
@@ -229,6 +237,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4cout << G4endl;
   
     
+
+
+
+
+  /*
+
   //------------------------------ 
   // Basket
   //------------------------------
@@ -281,12 +295,106 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4cout << " name: " << logicBasket->GetName() << G4endl;
   G4cout << G4endl;
 
+  */
+
+
+
+
+
+
+
+
+
+
+
+  //---------------------------------------------------------------
+  // ND280MC constructor: Off-Axis detector. It contains the Magnet
+  //---------------------------------------------------------------
+
+  fND280MCConstructor = new ND280OffAxisConstructor(cNameSolidWorld+"/OA",this);
+  G4String nameND280MC = fND280MCConstructor->GetName();
+  G4LogicalVolume *logicND280MC = fND280MCConstructor->GetPiece();
+
+  G4VPhysicalVolume* physiND280MC 
+    = new G4PVPlacement(0,               // no rotation
+  			G4ThreeVector(), // position (0,0,0)
+  			logicND280MC,// logical volume
+  			nameND280MC, // name
+  			logicWorld,               // mother  volume
+  			false,           // no boolean operations
+  			0);
+
   
+  //
+  //---------------------------------------------------------------
+  // Basket constructor: encapsulate the Tracker
+  //---------------------------------------------------------------
+  //
+  // Take Basket logical volume to encapsulate the Tracker: TPCs and Targets
+  // - if not done, TPCs and Targets are fully encapsulated in /t2k/OA/Magnet 
+  //   at the same level:
+  //
+  // -------- WWWW ------- G4Exception-START -------- WWWW -------
+  // *** G4Exception : GeomVol1002
+  //       issued by : G4PVPlacement::CheckOverlaps()
+  // Overlap with volume already placed !
+  //        Overlap is detected for volume /t2k/OA/Magnet
+  //        apparently fully encapsulating volume /t2k/OA/ForwTPC1
+  //        at the same level !
+  // *** This is just a warning message. ***
+  // -------- WWWW -------- G4Exception-END --------- WWWW -------
+  //
+  //---------------------------------------------------------------
+  //
+
+  G4VPhysicalVolume *physiMagnet = logicND280MC->GetDaughter(0); 
+  G4LogicalVolume *logicMagnet = physiMagnet->GetLogicalVolume();
+  physiBasket = logicMagnet->GetDaughter(0); 
+  logicBasket = physiBasket->GetLogicalVolume(); 
+  G4String nameBasket = physiBasket->GetName();
+  if(nameBasket!="/t2k/OA/Magnet/Basket"){
+    G4Exception("ExN02DetectorConstruction::Construct",
+		"MyCode0002",FatalException,
+		"The Basket logical volume is not the right one!");
+  }
+
+
+
+
+
+  ////////////////////////////////////////////////////////////////////////
+  //
+  // DON'T NEED IT ANY LONGER --> ALREADY INSIDE ND280OFFAXISCONSTRUCTOR
+  //
+  // //------------------------------ 
+  // // ND280MC constructor: DsECal
+  // //------------------------------
+  // fND280MCConstructor = new ND280BasketConstructor(cNameSolidWorld+"/Basket",this);
+  // G4String nameND280MC = fND280MCConstructor->GetName();
+  // G4LogicalVolume *logicND280MC = fND280MCConstructor->GetPiece();
+  // G4VPhysicalVolume* physiND280MC 
+  //   = new G4PVPlacement(0,               // no rotation
+  // 			G4ThreeVector(), // position (0,0,0)
+  // 			logicND280MC,// logical volume
+  // 			nameND280MC, // name
+  // 			logicWorld,               // mother  volume
+  // 			false,           // no boolean operations
+  // 			0);
+  //
+  ////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+  /*
+      
   //------------------------------ 
   // Tracker
   //------------------------------
 
-  const G4String cParentNameTracker    = logicBasket->GetName();
+  //const G4String cParentNameTracker    = logicBasket->GetName();
+  const G4String cParentNameTracker    = logicND280MC->GetName();
   
   const G4String cNameSolidTracker     = cParentNameTracker+"/tracker";
   const G4String cNameLogicTracker     = cParentNameTracker+"/Tracker";
@@ -308,7 +416,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   				   positionTracker,   // at (x,y,z)
   				   logicTracker,      // its logical volume	 
   				   cNamePhysiTracker, // its name
-  				   logicBasket,        // its mother  volume
+  				   //logicBasket,        // its mother  volume
+  				   logicND280MC,        // its mother  volume
   				   false,             // no boolean operations
   				   0);                 // copy number 
  
@@ -321,6 +430,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4cout << " name: " << logicTracker->GetName() << G4endl;
   G4cout << G4endl;
 
+  */
+
+
+
+
+
+
+
+
+
 
   //------------------------------ 
   // Forward TPC 1
@@ -330,19 +449,17 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4double currentZ = 0.;
 
-  G4String cParentNameTPC = logicTracker->GetName();
-
+  //G4String cParentNameTPC = logicTracker->GetName();
+  G4String cParentNameTPC = logicBasket->GetName();
+  
   G4LogicalVolume *tpc1Volume = this->GetPieceTPC("ForwTPC1",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
 
     //if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
     //}
-    if(0){}
-    else{
-      currentZ = - (GetLengthForwTPC()/2. +  GetFGDFullLength1() + GetTargetFullLength1() + GetLengthForwTPC()/2.); 
-      SetForwTPCPos1(0,0,currentZ);
-    }
+    currentZ = - (GetLengthForwTPC()/2. +  GetFGDFullLength1() + GetTargetFullLength1() + GetLengthForwTPC()/2.); 
+    SetForwTPCPos1(0,0,currentZ);
   }
   else { // from XML file
     G4double x = ND280XMLInput->GetXMLForwTPCPos1_X();
@@ -356,7 +473,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    tpc1Volume,
   		    //cParentNameTPC+"/ForwTPC1",
 		    tpc1Volume->GetName(),
-  		    logicTracker,
+  		    //logicTracker,
+  		    //logicND280MC,
+  		    logicBasket,
   		    false,
   		    0);
 
@@ -393,8 +512,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    tpc2Volume,
   		    //cParentNameTPC+"/ForwTPC2",
 		    tpc2Volume->GetName(),
-  		    logicTracker,
-  		    false,
+  		    //logicTracker,
+  		    //logicND280MC,
+		    logicBasket,
+		    false,
   		    0);
 
   G4cout << " - name: " << tpc2Volume->GetName() << G4endl;
@@ -430,8 +551,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    tpc3Volume,
   		    //cParentNameTPC+"/ForwTPC3",
 		    tpc3Volume->GetName(),
-  		    logicTracker,
-  		    false,
+  		    //logicTracker,
+  		    //logicND280MC,
+		    logicBasket,
+		    false,
   		    0);
 
   G4cout << " - name: " << tpc3Volume->GetName() << G4endl;
@@ -455,12 +578,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // FGD 1 - Downstream 
   //------------------------------
 
-  G4String cParentNameFGD = physiTracker->GetName();
-  
+  //G4String cParentNameFGD = physiTracker->GetName();
+  G4String cParentNameFGD = logicBasket->GetName(); 
+ 
   if( ND280XMLInput->GetXMLUseFGD1() ){ 
-    
-    G4String cParentNameFGD = physiTracker->GetName();
-    
+        
     const G4String cNameSolidFGD1     = cParentNameFGD+"/fgd1";
     const G4String cNameLogicFGD1     = cParentNameFGD+"/FGD1";
     const G4String cNamePhysiFGD1     = cParentNameFGD+"/FGD1";
@@ -492,9 +614,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   				  GetFGDPos1(),    // at (x,y,z)
   				  logicFGD1,       // its logical volume  	  
   				  cNamePhysiFGD1,  // its name
-  				  logicTracker,      // its mother  volume
-  				  //logicWorld,      // its mother  volume
-  				  false,             // no boolean operations
+  				  //logicTracker,      // its mother  volume
+  				  //logicND280MC,      // its mother  volume
+  				  logicBasket,
+				  false,             // no boolean operations
   				  0);                 // copy number 
     //fCheckOverlaps);   
     
@@ -550,9 +673,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   				  GetFGDPos2(),    // at (x,y,z)
   				  logicFGD2,       // its logical volume  	  
   				  cNamePhysiFGD2,  // its name
-  				  logicTracker,      // its mother  volume
-  				  //logicWorld,      // its mother  volume
-  				  false,             // no boolean operations
+  				  //logicTracker,      // its mother  volume
+  				  //logicND280MC,      // its mother  volume
+  				  logicBasket,
+				  false,             // no boolean operations
   				  0);                 // copy number 
     //fCheckOverlaps);   
     
@@ -585,7 +709,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // Target 1 - Upstream - Carbon 
   //------------------------------
   
-  G4String cParentNameTarget = physiTracker->GetName();
+  //G4String cParentNameTarget = physiTracker->GetName();
+  G4String cParentNameTarget = logicBasket->GetName();
 
   const G4String cNameSolidTarget1     = cParentNameTarget+"/target1";
   const G4String cNameLogicTarget1     = cParentNameTarget+"/Target1";
@@ -626,8 +751,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				   GetTargetPos1(),    // at (x,y,z)
 				   logicTarget1,       // its logical volume  	  
 				   cNamePhysiTarget1,  // its name
-				   logicTracker,      // its mother  volume
-				   //logicWorld,      // its mother  volume
+				   //logicTracker,      // its mother  volume
+				   //logicND280MC,      // its mother  volume
+				   logicBasket,
 				   false,             // no boolean operations
 				   0);                 // copy number 
   //fCheckOverlaps);   
@@ -692,8 +818,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				   GetTargetPos2(),    // at (x,y,z)
 				   logicTarget2,       // its logical volume  	  
 				   cNamePhysiTarget2,  // its name
-				   logicTracker,      // its mother  volume
-				   //logicWorld,      // its mother  volume
+				   //logicTracker,      // its mother  volume
+				   //logicND280MC,      // its mother  volume
+				   logicBasket,
 				   false,             // no boolean operations
 				   0);                 // copy number 
   //fCheckOverlaps);   
@@ -757,7 +884,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 					GetSideTPCUpPos1(),   // at (x,y,z)
 					logicSideTPCUp1,      // its logical volume 
 					cNamePhysiSideTPCUp1, // its name
-					logicTracker,        // its mother  volume
+					//logicTracker,        // its mother  volume
+					//logicND280MC,        // its mother  volume
+					logicBasket,
 					false,               // no boolean operations
 					0);                   // copy number 
     
@@ -804,7 +933,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 					  GetSideTPCDownPos1(),   // at (x,y,z)
 					  logicSideTPCDown1,      // its logical volume
 					  cNamePhysiSideTPCDown1, // its name
-					  logicTracker,      // its mother  volume
+					  //logicTracker,      // its mother  volume
+					  //logicND280MC,      // its mother  volume
+					  logicBasket,
 					  false,           // no boolean operations
 					  0);              // copy number 
     
@@ -851,7 +982,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 					GetSideTPCUpPos2(),   // at (x,y,z)
 					logicSideTPCUp2,      // its logical volume
 					cNamePhysiSideTPCUp2, // its name
-					logicTracker,        // its mother  volume
+					//logicTracker,        // its mother  volume
+					//logicND280MC,        // its mother  volume
+					logicBasket,
 					false,               // no boolean operations
 					0);                   // copy number 
     
@@ -899,7 +1032,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 					  GetSideTPCDownPos2(), // at (x,y,z)
 					  logicSideTPCDown2,    // its logical volume
 					  cNamePhysiSideTPCDown2,       // its name
-					  logicTracker,      // its mother  volume
+					  //logicTracker,      // its mother  volume
+					  //logicND280MC,      // its mother  volume
+					  logicBasket,
 					  false,           // no boolean operations
 					  0);              // copy number 
     
@@ -960,18 +1095,39 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 		"MyCode0002",FatalException, msg);
   }
 
+  
+
+  //
+  // Check the logical / physical volumes contained in the SDRegion:
+  // - the physical and logical volumes must have the same name --> needed in ND280PersistencyManager::MarkPoint()
+  //
+
   G4cout << G4endl;
-  G4cout << "The sensitive detectors (logicalVolume) are: " << G4endl;
+  G4cout << "The G4LogicalVolumes (and embedded G4PhysicalVolumes) in the SDRegion are:" << G4endl;
+  G4cout << G4endl;
   int NSDRootVolumes =  SDRegion->GetNumberOfRootVolumes();
   std::vector<G4LogicalVolume*>::iterator it_logicalVolumeInRegion =
     SDRegion->GetRootLogicalVolumeIterator();
   for(int i = 0; i < NSDRootVolumes ; i++, it_logicalVolumeInRegion++){
-    G4String SDLogVolName = (*it_logicalVolumeInRegion)->GetName();
-    G4cout << SDLogVolName << G4endl;
+    
+    G4LogicalVolume *SDLogVolume = (*it_logicalVolumeInRegion);
+    G4String SDLogVolName = SDLogVolume->GetName();
+    
+    G4cout << SDLogVolName << " --> ";
+    
+    bool isSDLogIncluded = SDLoopOverDaughter(SDLogVolume,physiWorld);
+    if(isSDLogIncluded){
+      G4cout << "Included and same name as corresponding physical volume" << G4endl;
+    }
+    else{
+      G4cout << "Not included or not same name as physical volume!!!" << G4endl;
+      G4Exception("ExN02DetectorConstruction::Construct",
+		  "MyCode0002",FatalException,
+		  "SDLogical volume has not a counterpart in Physical volume with same name ");
+    }
   }
   G4cout << G4endl;
 
-   
   //------------------------------------------------ 
   // Sensitive detectors
   //------------------------------------------------ 
@@ -995,9 +1151,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   //--------- Visualization attributes ------------------------------- 
 
-  logicWorld  ->SetVisAttributes(BoxVisAtt);  
-  logicBasket ->SetVisAttributes(BoxVisAtt);
-  logicTracker->SetVisAttributes(BoxVisAtt);
+  //logicWorld  ->SetVisAttributes(BoxVisAtt);  
+  logicWorld->SetVisAttributes(G4VisAttributes::Invisible);
+  //logicTracker->SetVisAttributes(BoxVisAtt);
+  //logicBasket ->SetVisAttributes(BoxVisAtt);
+  //logicND280MC ->SetVisAttributes(G4VisAttributes::Invisible);
   if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetVisAttributes(TPCVisAtt);
   if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
   if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
@@ -1006,6 +1164,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
   if( ND280XMLInput->GetXMLUseFGD1() ) logicFGD1->SetVisAttributes(FGDScintVisAtt);
   if( ND280XMLInput->GetXMLUseFGD2() ) logicFGD2->SetVisAttributes(FGDWaterVisAtt);
+
 
   // //--------- Set Step Limiter -------------------------------
   // //
@@ -1017,24 +1176,22 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // //logicSideTPCDown->SetUserLimits(new G4UserLimits(cStepLimit));
 
 
-
-  // //------------------------------------------------------------------
-  // // // writing the geometry to a ROOT file
-  // // // initialize ROOT
-  // // TSystem ts;
-  // // gSystem->Load("libExN02ClassesDict");  
-  // // //  ROOT::Cintex::Cintex::SetDebug(2);
-  // // ROOT::Cintex::Cintex::Enable();
-  // // //  gDebug = 1;
-  // // const G4ElementTable* eltab = G4Element::GetElementTable();
-  // // const G4MaterialTable* mattab = G4Material::GetMaterialTable();
-  // // ExN02GeoTree* geotree = new ExN02GeoTree(fExperimentalHall_phys, eltab, mattab);
-  // // TFile fo("geo.root","RECREATE");
-  // // fo.WriteObject(geotree, "my_geo");  
-  // //--------------------------
-
-  
   if(ND280XMLInput->GetXMLStoreGeometry()){
+
+    // //------------------------------------------------------------------
+    // // // writing the geometry to a ROOT file
+    // // // initialize ROOT
+    // // TSystem ts;
+    // // gSystem->Load("libExN02ClassesDict");  
+    // // //  ROOT::Cintex::Cintex::SetDebug(2);
+    // // ROOT::Cintex::Cintex::Enable();
+    // // //  gDebug = 1;
+    // // const G4ElementTable* eltab = G4Element::GetElementTable();
+    // // const G4MaterialTable* mattab = G4Material::GetMaterialTable();
+    // // ExN02GeoTree* geotree = new ExN02GeoTree(fExperimentalHall_phys, eltab, mattab);
+    // // TFile fo("geo.root","RECREATE");
+    // // fo.WriteObject(geotree, "my_geo");  
+    // //--------------------------
     
     // // ---------------------------------------------------------------------------
     // // VGM demo 
@@ -1060,7 +1217,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     ND280RootGeometryManager::Get()->Update(physiWorld,true);
     ND280RootGeometryManager::Get()->Export("geometry.root");
-  }
+  } 
 
   return physiWorld;
 }
@@ -1266,15 +1423,15 @@ void ExN02DetectorConstruction::DefineMaterials() {
   G4Element* elNa = nistMan->FindOrBuildElement(11);
   G4Element* elAl = nistMan->FindOrBuildElement(13);
   G4Element* elSi = nistMan->FindOrBuildElement(14);
-  //G4Element* elCl = nistMan->FindOrBuildElement(17);
+  G4Element* elCl = nistMan->FindOrBuildElement(17);
   G4Element* elAr = nistMan->FindOrBuildElement(18);
-  //G4Element* elTi = nistMan->FindOrBuildElement(22);
+  G4Element* elTi = nistMan->FindOrBuildElement(22);
   G4Element* elFe = nistMan->FindOrBuildElement(26);
   G4Element* elCo = nistMan->FindOrBuildElement(27);
   G4Element* elCu = nistMan->FindOrBuildElement(29);
-  //G4Element* elZn = nistMan->FindOrBuildElement(30);
-  //G4Element* elSn = nistMan->FindOrBuildElement(50);
-  //G4Element* elPb = nistMan->FindOrBuildElement(82);
+  G4Element* elZn = nistMan->FindOrBuildElement(30);
+  G4Element* elSn = nistMan->FindOrBuildElement(50);
+  G4Element* elPb = nistMan->FindOrBuildElement(82);
 
 #ifdef Define_Vacuum
   //Vacuum (set as default material)
@@ -1325,11 +1482,11 @@ void ExN02DetectorConstruction::DefineMaterials() {
   aluminum->AddElement(elAl,100.*perCent);
   gMan->SetDrawAtt(aluminum,kYellow-5); // ND280 class
 
-  // //Iron.
-  // density = 7.87*g/cm3;
-  // G4Material* iron = new G4Material(name="Iron",density, nel=1);
-  // iron->AddElement(elFe,100.*perCent);
-  // gMan->SetDrawAtt(iron,kRed+2,0.3); // ND280 class
+  //Iron.
+  density = 7.87*g/cm3;
+  G4Material* iron = new G4Material(name="Iron",density, nel=1);
+  iron->AddElement(elFe,100.*perCent);
+  gMan->SetDrawAtt(iron,kRed+2,0.3); // ND280 class
 
   //Copper
   density = 8.94*g/cm3;
@@ -1337,11 +1494,11 @@ void ExN02DetectorConstruction::DefineMaterials() {
   copper->AddElement(elCu,100.*perCent);
   gMan->SetDrawAtt(copper,kRed+1,0.3);// ND280 class
 
-  // //Lead
-  // density = 11.35*g/cm3;
-  // G4Material* lead = new G4Material(name="Lead",density, nel=1);
-  // lead->AddElement(elPb,100.*perCent);
-  // gMan->SetDrawAtt(lead,kGray+1);// ND280 class
+  //Lead
+  density = 11.35*g/cm3;
+  G4Material* lead = new G4Material(name="Lead",density, nel=1);
+  lead->AddElement(elPb,100.*perCent);
+  gMan->SetDrawAtt(lead,kGray+1);// ND280 class
 
   // //Brass -- The density is from simetric.co.uk is 8400 -- 8730 gm/cm3
   // density = 8.50*g/cm3;
@@ -1467,12 +1624,12 @@ void ExN02DetectorConstruction::DefineMaterials() {
     = new G4Material(name="TPCWallMaterial",8,a,density);
   gMan->SetDrawAtt(tpcFieldCage,kYellow-7);// ND280 class
     
-  // // Titanium Dioxide -- Used in coextruded scintillator.
-  // density     = 4.26*g/cm3;
-  // G4Material* TIO2 = new G4Material(name="TIO2", density, nel=2);
-  // TIO2->AddElement(elTi, natoms=1);
-  // TIO2->AddElement(elO , natoms=2);
-  // gMan->SetDrawAtt(TIO2,kWhite);// ND280 class
+  // Titanium Dioxide -- Used in coextruded scintillator.
+  density     = 4.26*g/cm3;
+  G4Material* TIO2 = new G4Material(name="TIO2", density, nel=2);
+  TIO2->AddElement(elTi, natoms=1);
+  TIO2->AddElement(elO , natoms=2);
+  gMan->SetDrawAtt(TIO2,kWhite);// ND280 class
     
   // Polystyrene -- This is polystyrene defined in the PDG C6H5CH=CH2 (this
   // is a net C8H8)
@@ -1520,17 +1677,17 @@ void ExN02DetectorConstruction::DefineMaterials() {
   fgdScintillator->AddElement(elH, 8);
   gMan->SetDrawAtt(fgdScintillator,kGreen);// ND280 class
 
-  // // Scintillator coating.  This is the coating that goes around the average
-  // // plastic scintillator. It is 15% TiO2 and 85% polystyrene by weight.
-  // // rho = (m_Sc + m_Ti) / (V_Sc + V_Ti)
-  // //     = (0.85 + 0.15) / ( 0.85/1.032 + 0.15/4.26 )
-  // //     = 1.164 g/cm^3
-  // density = 1.164*g/cm3;
-  // G4Material* scintillatorCoating
-  //   = new G4Material(name="ScintillatorCoating", density, ncomponents=2);
-  // scintillatorCoating->AddMaterial(TIO2        ,fractionmass = 15*perCent);
-  // scintillatorCoating->AddMaterial(scintillator,fractionmass = 85*perCent);
-  // gMan->SetDrawAtt(scintillatorCoating,kGreen);// ND280 class
+  // Scintillator coating.  This is the coating that goes around the average
+  // plastic scintillator. It is 15% TiO2 and 85% polystyrene by weight.
+  // rho = (m_Sc + m_Ti) / (V_Sc + V_Ti)
+  //     = (0.85 + 0.15) / ( 0.85/1.032 + 0.15/4.26 )
+  //     = 1.164 g/cm^3
+  density = 1.164*g/cm3;
+  G4Material* scintillatorCoating
+    = new G4Material(name="ScintillatorCoating", density, ncomponents=2);
+  scintillatorCoating->AddMaterial(TIO2        ,fractionmass = 15*perCent);
+  scintillatorCoating->AddMaterial(scintillator,fractionmass = 85*perCent);
+  gMan->SetDrawAtt(scintillatorCoating,kGreen);// ND280 class
     
   // // PVC -- Polyvinyl Chloride CH2=CHCl = C3H3Cl
   // density = 1.38*g/cm3;
@@ -1597,14 +1754,14 @@ void ExN02DetectorConstruction::DefineMaterials() {
   polycarbonate->AddElement(elO,fractionmass=18.8758*perCent);
   gMan->SetDrawAtt(polycarbonate,kYellow-2);// ND280 class
 
-  // //carbon fibre
-  // // NB : chemical composition may not be completely right but  close 
-  // density = 1.75*g/cm3;
-  // G4Material* carbonFibre
-  //   = new G4Material(name="CarbonFibre", density, nel=2);
-  // carbonFibre->AddElement(elC,6);
-  // carbonFibre->AddElement(elO,1);
-  // gMan->SetDrawAtt(carbonFibre,kGray+3);// ND280 class
+  //carbon fibre
+  // NB : chemical composition may not be completely right but  close 
+  density = 1.75*g/cm3;
+  G4Material* carbonFibre
+    = new G4Material(name="CarbonFibre", density, nel=2);
+  carbonFibre->AddElement(elC,6);
+  carbonFibre->AddElement(elO,1);
+  gMan->SetDrawAtt(carbonFibre,kGray+3);// ND280 class
 
   // G10 - by volume 57% glass, 43% epoxy (CH2)
   density = 1.70*g/cm3;
@@ -1902,20 +2059,25 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //else {
   //logDrift->SetVisAttributes(G4VisAttributes::Invisible);
   //}
-  if (GetSensitiveDetector()) {
-    logDrift->SetSensitiveDetector(GetSensitiveDetector());
-  }  
-  //logDrift->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
+
+  //
+  // Don't set the logDrift as sensitive region because it contains also the 
+  // other pieces like the cathode...
+  //
+  // if (GetSensitiveDetector()) {
+  //   logDrift->SetSensitiveDetector(GetSensitiveDetector());
+  // }  
+  // //logDrift->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
   
-  if (SDRegion) {
-    SDRegion->AddRootLogicalVolume(logDrift);
-  } 
-  else {
-    G4ExceptionDescription msg;
-    msg << "The SD region does not exist" << G4endl;
-    G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-		"MyCode0002",FatalException, msg);
-  }
+  // if (SDRegion) {
+  //   SDRegion->AddRootLogicalVolume(logDrift);
+  // } 
+  // else {
+  //   G4ExceptionDescription msg;
+  //   msg << "The SD region does not exist" << G4endl;
+  //   G4Exception("ExN02DetectorConstruction::GetPieceTPC",
+  // 		"MyCode0002",FatalException, msg);
+  // }
   
 
   // CO2 space
@@ -1987,14 +2149,14 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //fActiveTPCVerticalOffset = (CO2Bottom - CO2Top)/2;
   
   new G4PVPlacement(0,
-		    G4ThreeVector(0,fActiveTPCVerticalOffset,0),
-		    logDrift,
-		    //GetName()+"/Drift",
-		    //"TPC1/Drift",
-		    parentname+"/"+name+"/Drift",
-		    logGasGap,
-		    false,
-		    0);
+  		    G4ThreeVector(0,fActiveTPCVerticalOffset,0),
+  		    logDrift,
+  		    //GetName()+"/Drift",
+  		    //"TPC1/Drift",
+  		    parentname+"/"+name+"/Drift",
+  		    logGasGap,
+  		    false,
+  		    0);
   //fCheckOverlaps);
 
   new G4PVPlacement(0,
@@ -2149,8 +2311,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   if (GetSensitiveDetector()) {
     logMM->SetSensitiveDetector(GetSensitiveDetector());
   }
+  
   if (SDRegion) {
-    SDRegion->AddRootLogicalVolume(logMM);
     SDRegion->AddRootLogicalVolume(logMM);
   } 
   else {
@@ -2233,7 +2395,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
     G4cout << "MM (12) mass="<<logMM->GetMass()/kg<<" kg" << G4endl;
     G4cout << "Sum of gases and MM :"<< (2*logHalf0->GetMass()+logGasGap->GetMass()+12*logMM->GetMass())/kg << " kg" << G4endl;
   }
-    
+  
   BuildTPCCentralCathode(logDrift);
   BuildTPCCages(logGasGap);
   
@@ -2252,7 +2414,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
 
     //ND280BeamConstructor& middleG10RoPlate = 
     //Get<ND280BeamConstructor>("CentralCathode");
-    ND280BeamConstructor middleG10RoPlate(parentname+"/CentralCathode");
+    MyND280BeamConstructor middleG10RoPlate(parentname+"/CentralCathode");
     middleG10RoPlate.SetWidth(GetCathodeThickness());
     middleG10RoPlate.SetHeight(2*1061.0*mm);
     middleG10RoPlate.SetLength(2*373.0*mm);
@@ -2289,8 +2451,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
 
     //ND280BeamConstructor& frbaCon1 =
     //Get<ND280BeamConstructor>("FrBaCon1");
-
-    ND280BeamConstructor frbaCon1(parentname+"/FrBaCon1");
+    MyND280BeamConstructor frbaCon1(parentname+"/FrBaCon1");
     frbaCon1.SetWidth(GetCathodeThickness());
     frbaCon1.SetHeight(2*1074.0*mm);
     frbaCon1.SetLength(386.0*mm - 373.0*mm);
@@ -2329,8 +2490,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
 
     //ND280BeamConstructor& toboCon1 =
     //Get<ND280BeamConstructor>("ToBoCon1");
-
-    ND280BeamConstructor toboCon1(parentname+"/ToBoCon1");
+    MyND280BeamConstructor toboCon1(parentname+"/ToBoCon1");
 
     toboCon1.SetWidth(GetCathodeThickness());
     toboCon1.SetHeight(386.0*mm - 373.0*mm);
@@ -2387,16 +2547,16 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     G4String parentname = logVolume->GetName();
 
     // (green) solid G10 side plates
-
+    
     //ND280BeamConstructor& sideG10Plate = 
     //Get<ND280BeamConstructor>("SideG10Plate");
-    ND280BeamConstructor sideG10Plate(parentname+"/SideG10Plate");
+    MyND280BeamConstructor sideG10Plate(parentname+"/SideG10Plate");
     
     // was sideG10Plate.SetWidth(27.0*mm) - change suggested by Doug Storey
     sideG10Plate.SetWidth(47.29*mm);
     sideG10Plate.SetHeight(2*1085.6*mm);
     sideG10Plate.SetLength(2*397.6*mm);
-
+    
     //sideG10Plate.SetMaterialName("G10");
     sideG10Plate.SetMaterial(FindMaterial("G10"));
 
@@ -2436,7 +2596,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& verticalG10Frame =
     //Get<ND280BeamConstructor>("VerticalG10Frame");
-    ND280BeamConstructor verticalG10Frame(parentname+"/VerticalG10Frame");
+    MyND280BeamConstructor verticalG10Frame(parentname+"/VerticalG10Frame");
 
     verticalG10Frame.SetWidth(35.0*mm);
     verticalG10Frame.SetHeight(2*(1074.0*mm + 47.6*mm));
@@ -2483,7 +2643,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //ND280BeamConstructor& horizontalG10Frame =
     //Get<ND280BeamConstructor>("HorizontalG10Frame");
 
-    ND280BeamConstructor horizontalG10Frame(parentname+"/HorizontalG10Frame");
+    MyND280BeamConstructor horizontalG10Frame(parentname+"/HorizontalG10Frame");
     horizontalG10Frame.SetWidth(35.0*mm);
     horizontalG10Frame.SetHeight(47.6*mm);
     horizontalG10Frame.SetLength(2*386.0*mm);
@@ -2528,7 +2688,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //ND280BeamConstructor& verticalG10Plate =
     //Get<ND280BeamConstructor>("VerticalG10Plate");
 
-    ND280BeamConstructor verticalG10Plate(parentname+"/VerticalG10Plate"); 
+    MyND280BeamConstructor verticalG10Plate(parentname+"/VerticalG10Plate"); 
 
     verticalG10Plate.SetWidth(160.0*mm);
     verticalG10Plate.SetHeight(2*1085.6*mm);
@@ -2570,7 +2730,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& sideAlPlate =
     //Get<ND280BeamConstructor>("SideAlPlate");
-    ND280BeamConstructor sideAlPlate(parentname+"/SideAlPlate");
+    MyND280BeamConstructor sideAlPlate(parentname+"/SideAlPlate");
 
     // was sideAlPlate.SetWidth(20.0*mm) change suggested by Doug Storey
     sideAlPlate.SetWidth(4.84*mm);
@@ -2614,7 +2774,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     // (yellow) Water System Posts
 
     //ND280BeamConstructor& post = Get<ND280BeamConstructor>("Post");
-    ND280BeamConstructor post(parentname+"/Post");
+    MyND280BeamConstructor post(parentname+"/Post");
 
     post.SetWidth(50.0*mm);
     post.SetHeight(1068.2*mm + 1149.5*mm);
@@ -2660,7 +2820,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& sideAlRoPlate =
     //Get<ND280BeamConstructor>("SideAlRoPlate");
-    ND280BeamConstructor sideAlRoPlate(parentname+"/SideAlRoPlate");
+    MyND280BeamConstructor sideAlRoPlate(parentname+"/SideAlRoPlate");
 
     sideAlRoPlate.SetWidth(13.2*mm);
     sideAlRoPlate.SetHeight(1146.8*mm + 1149.5*mm + 47.3*mm);
@@ -2702,7 +2862,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& frbaAlRoPlate =
     //Get<ND280BeamConstructor>("FrBaAlRoPlate");
-    ND280BeamConstructor frbaAlRoPlate(parentname+"/FrBaAlRoPlate");
+    MyND280BeamConstructor frbaAlRoPlate(parentname+"/FrBaAlRoPlate");
 
     frbaAlRoPlate.SetWidth(895.3*mm-18.0*mm);
     frbaAlRoPlate.SetHeight(1155.0*mm + 15.2*mm + 1205.0*mm + 15.2*mm);
@@ -2750,7 +2910,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& toboAlRoPlate =
     //Get<ND280BeamConstructor>("ToBoAlRoPlate");
-    ND280BeamConstructor toboAlRoPlate(parentname+"/ToBoAlRoPlate");
+    MyND280BeamConstructor toboAlRoPlate(parentname+"/ToBoAlRoPlate");
 
     toboAlRoPlate.SetWidth(895.3*mm - 18.0*mm);
     toboAlRoPlate.SetHeight(15.2*mm);
@@ -2806,7 +2966,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& frbaG10RoPlate =
     //Get<ND280BeamConstructor>("FrBaG10RoPlate");
-    ND280BeamConstructor frbaG10RoPlate(parentname+"/FrBaG10RoPlate");
+    MyND280BeamConstructor frbaG10RoPlate(parentname+"/FrBaG10RoPlate");
     
     frbaG10RoPlate.SetWidth(869.1*mm - 18.1*mm);
     frbaG10RoPlate.SetHeight(2*(1061.0*mm + 13.2*mm));
@@ -2851,7 +3011,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toboG10RoPlate =
     //Get<ND280BeamConstructor>("ToBoG10RoPlate");
-    ND280BeamConstructor toboG10RoPlate(parentname+"/ToBoG10RoPlate");
+    MyND280BeamConstructor toboG10RoPlate(parentname+"/ToBoG10RoPlate");
 
     toboG10RoPlate.SetWidth(869.1*mm - 18.1*mm);
     toboG10RoPlate.SetHeight(13.2*mm);
@@ -2895,7 +3055,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& frbaPiece1 =
     //Get<ND280BeamConstructor>("FrBaPiece1");
-    ND280BeamConstructor frbaPiece1(parentname+"/FrBaPiece1");
+    MyND280BeamConstructor frbaPiece1(parentname+"/FrBaPiece1");
 
     frbaPiece1.SetWidth(40.7*mm);
     frbaPiece1.SetHeight(1130.0*mm + 45.0*mm + 1149.5*mm + 30.5*mm + 45.0*mm);
@@ -2940,7 +3100,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& frbaPiece2 =
     //Get<ND280BeamConstructor>("FrBaPiece2");
-    ND280BeamConstructor frbaPiece2(parentname+"/FrBaPiece2");
+    MyND280BeamConstructor frbaPiece2(parentname+"/FrBaPiece2");
 
     frbaPiece2.SetWidth(29.7*mm);
     frbaPiece2.SetHeight(1170*mm + 1220.0*mm);
@@ -2985,7 +3145,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& frbaPiece3 =
     //Get<ND280BeamConstructor>("FrBaPiece3");
-    ND280BeamConstructor frbaPiece3(parentname+"/FrBaPiece3");
+    MyND280BeamConstructor frbaPiece3(parentname+"/FrBaPiece3");
 
     frbaPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
     frbaPiece3.SetHeight(1146.8*mm + 7.9*mm + 1149.5*mm + 7.9*mm);
@@ -3031,7 +3191,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece1 =
     //Get<ND280BeamConstructor>("BoPiece1");
-    ND280BeamConstructor boPiece1(parentname+"/BoPiece1");
+    MyND280BeamConstructor boPiece1(parentname+"/BoPiece1");
     
     boPiece1.SetWidth(40.7*mm);
     boPiece1.SetHeight(45.0*mm);
@@ -3071,7 +3231,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece2 =
     //Get<ND280BeamConstructor>("BoPiece2");
-    ND280BeamConstructor boPiece2(parentname+"/BoPiece2");
+    MyND280BeamConstructor boPiece2(parentname+"/BoPiece2");
     
     boPiece2.SetWidth(29.7*mm);
     boPiece2.SetHeight(23.2*mm);
@@ -3111,7 +3271,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece3 =
     //Get<ND280BeamConstructor>("BoPiece3");
-    ND280BeamConstructor boPiece3(parentname+"/BoPiece3");
+    MyND280BeamConstructor boPiece3(parentname+"/BoPiece3");
 
     boPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
     boPiece3.SetHeight(7.9*mm);
@@ -3151,7 +3311,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece4 =
     //Get<ND280BeamConstructor>("BoPiece4");
-    ND280BeamConstructor boPiece4(parentname+"/BoPiece4");
+    MyND280BeamConstructor boPiece4(parentname+"/BoPiece4");
 
     boPiece4.SetWidth(9.5*mm);
     boPiece4.SetHeight(30.5*mm);
@@ -3191,7 +3351,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& boPiece5 =
     //Get<ND280BeamConstructor>("BoPiece5");
-    ND280BeamConstructor boPiece5(parentname+"/BoPiece5");
+    MyND280BeamConstructor boPiece5(parentname+"/BoPiece5");
 
     boPiece5.SetWidth(16.5*mm);
     boPiece5.SetHeight(47.3*mm);
@@ -3233,7 +3393,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toPiece1 =
     //Get<ND280BeamConstructor>("ToPiece1");
-    ND280BeamConstructor toPiece1(parentname+"/ToPiece");
+    MyND280BeamConstructor toPiece1(parentname+"/ToPiece");
 
     toPiece1.SetWidth(40.7*mm);
     toPiece1.SetHeight(45.0*mm);
@@ -3273,7 +3433,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toPiece2 =
     //Get<ND280BeamConstructor>("ToPiece2");
-    ND280BeamConstructor toPiece2(parentname+"/ToPiece2");
+    MyND280BeamConstructor toPiece2(parentname+"/ToPiece2");
     
     toPiece2.SetWidth(29.7*mm);
     toPiece2.SetHeight(1170.0*mm - 1146.8*mm);
@@ -3313,7 +3473,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toPiece3 =
     //Get<ND280BeamConstructor>("ToPiece3");
-    ND280BeamConstructor toPiece3(parentname+"/ToPiece3");
+    MyND280BeamConstructor toPiece3(parentname+"/ToPiece3");
 
     toPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
     toPiece3.SetHeight(7.9*mm);
@@ -3355,7 +3515,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& frbaCon2 =
     //Get<ND280BeamConstructor>("FrBaCon2");
-    ND280BeamConstructor frbaCon2(parentname+"/FrBaCon2");
+    MyND280BeamConstructor frbaCon2(parentname+"/FrBaCon2");
 
     frbaCon2.SetWidth(2*18.1*mm);
     frbaCon2.SetHeight(2*(1074.0*mm + 13.2*mm));
@@ -3394,7 +3554,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& toboCon2 =
     //Get<ND280BeamConstructor>("ToBoCon2");
-    ND280BeamConstructor toboCon2(parentname+"/ToBoCon2");
+    MyND280BeamConstructor toboCon2(parentname+"/ToBoCon2");
     
     toboCon2.SetWidth(2*18.1*mm);
     toboCon2.SetHeight(13.2*mm);
@@ -3434,7 +3594,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     
     //ND280BeamConstructor& frbaCon =
     //Get<ND280BeamConstructor>("FrBaCon");
-    ND280BeamConstructor frbaCon(parentname+"/FrBaCon");
+    MyND280BeamConstructor frbaCon(parentname+"/FrBaCon");
 
     frbaCon.SetWidth(2*18.0*mm);
     frbaCon.SetHeight(1155.0*mm + 15.2*mm + 1205.0*mm + 15.2*mm);
@@ -3474,7 +3634,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     //ND280BeamConstructor& toboCon =
     //Get<ND280BeamConstructor>("ToBoCon");
-    ND280BeamConstructor toboCon(parentname+"/ToBoCon");
+    MyND280BeamConstructor toboCon(parentname+"/ToBoCon");
 
     toboCon.SetWidth(2*18.0*mm);
     toboCon.SetHeight(15.2*mm);
@@ -3616,6 +3776,37 @@ const G4VisAttributes* ExN02DetectorConstruction::GetVisual(void) const {
 }
 
 
+
+bool ExN02DetectorConstruction::SDLoopOverDaughter(const G4LogicalVolume* SDLog, const G4VPhysicalVolume *theG4PhysVol){
+  
+  G4LogicalVolume* theLog = theG4PhysVol->GetLogicalVolume(); // The mother volume
+  
+  G4String SDLogName = (G4String) SDLog->GetName();
+  G4String PhysVolName = (G4String) theG4PhysVol->GetName();
+  G4String LogVolName = (G4String) theLog->GetName();
+
+  if(SDLogName == PhysVolName && 
+     LogVolName == PhysVolName
+     ){
+    //G4cout << "   --> PhysVolName=" << PhysVolName << G4endl;
+    //G4cout << "It's mother volume" << G4endl;
+    return true;
+  }
+  
+  // Recurse through the children.
+  G4int Ndaughters = theLog->GetNoDaughters();
+  for (int child = 0;child < Ndaughters;++child) {
+    G4VPhysicalVolume* theChild = theLog->GetDaughter(child);
+    bool flag = SDLoopOverDaughter(SDLog,theChild);
+    if(flag==true) return flag;
+  }
+
+  return false;
+}
+
+
+
+
 void ExN02DetectorConstruction::DefineDimensions(){
     
   ////////////////////////////
@@ -3648,15 +3839,18 @@ void ExN02DetectorConstruction::DefineDimensions(){
   G4double cBasketLength = cBasketOuterLength;
   G4double cBasketWidth  = cBasketOuterWidth;
   G4double cBasketHeight = cBasketOuterHeight;
-  SetBasketFullLength(cBasketLength);
-  SetBasketFullWidth(cBasketWidth);
-  SetBasketFullHeight(cBasketHeight);
+  // SetBasketFullLength(cBasketLength);
+  // SetBasketFullWidth(cBasketWidth);
+  // SetBasketFullHeight(cBasketHeight);
+  SetBasketFullLength(8000*mm);
+  SetBasketFullWidth(8000*mm);
+  SetBasketFullHeight(8000*mm);
 
   // World
 
-  G4double cWorldLength = 1.2 *(cBasketLength);
-  G4double cWorldWidth  = 1.2 *(cBasketWidth);
-  G4double cWorldHeight = 1.2 *(cBasketHeight);
+  G4double cWorldLength = 1.2 * GetBasketFullLength(); //(cBasketLength);
+  G4double cWorldWidth  = 1.2 * GetBasketFullWidth(); //(cBasketWidth);
+  G4double cWorldHeight = 1.2 * GetBasketFullHeight(); //(cBasketHeight);
   SetWorldFullLength(cWorldLength);
   SetWorldFullWidth(cWorldWidth);
   SetWorldFullHeight(cWorldHeight);

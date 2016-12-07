@@ -37,6 +37,7 @@ public :
   void SetStepDeltaLyz(double stepdeltalyz){fStepDeltaLyz=stepdeltalyz;};
   void SetStepStatus(int status){fStepStatus=status;};
   void SetPhysVolName(string detname){fPhysVolName=detname;};
+  void SetLogVolName(string detname){fLogVolName=detname;};
   void SetPrePosition(double x,double y,double z){fPrePosition.SetXYZ(x,y,z);};
   void SetPostPosition(double x,double y,double z){fPostPosition.SetXYZ(x,y,z);};
   void SetIsOnBoundary(bool is){fIsOnBoundary=is;};
@@ -50,6 +51,7 @@ public :
   double GetStepDeltaLyz() {return fStepDeltaLyz;};
   int GetStepStatus() {return fStepStatus;};
   string GetPhysVolName() {return fPhysVolName;};
+  string GetLogVolName() {return fLogVolName;};
   TVector3 GetPrePosition() {return fPrePosition;};
   TVector3 GetPostPosition() {return fPostPosition;};
   bool IsOnBoundary() {return fIsOnBoundary;};
@@ -67,6 +69,7 @@ private :
   double fStepDeltaLyz;
   int fStepStatus;
   string fPhysVolName;
+  string fLogVolName;
   TVector3 fPrePosition;
   TVector3 fPostPosition;
   bool fIsOnBoundary;

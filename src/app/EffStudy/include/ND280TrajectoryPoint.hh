@@ -67,6 +67,7 @@ public:
   G4ThreeVector GetPostPosition() const { return fPostPosition;};
   G4bool IsOnBoundary() const { return fIsOnBoundary;};
   G4bool SavePoint() const { return fSavePoint;};
+  G4String GetLogVolName() const { return fLogVolName; }
 
   /// Mark this point as one that should be saved in the output.  
   void MarkPoint();
@@ -85,6 +86,7 @@ private:
   G4double fStepDeltaLyz;
   G4StepStatus fStepStatus;
   G4String fPhysVolName;
+  G4String fLogVolName;
   G4ThreeVector fPrevPosition;
   G4bool fIsOnBoundary;
 

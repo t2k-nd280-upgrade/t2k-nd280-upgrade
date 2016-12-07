@@ -309,6 +309,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double LengthForwTPC1   = 0.;
     double LengthForwTPC2   = 0.;
     double LengthForwTPC3   = 0.;
+    double LengthDsECal     = 0.;
+    double LengthBrlECal    = 0.;
+    double LengthP0DECal    = 0.;
 
     double LyzTPCUp1     = 0.;
     double LyzTPCUp2     = 0.;
@@ -329,6 +332,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double EdepForwTPC1   = 0.;
     double EdepForwTPC2   = 0.;
     double EdepForwTPC3   = 0.;
+    double EdepDsECal     = 0.;
+    double EdepBrlECal    = 0.;
+    double EdepP0DECal    = 0.;
 
     G4String detname_prev = "undefined";
     
@@ -337,15 +343,17 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       
       G4String detname_curr = "undefined";
       ND280TrajectoryPoint* ndPoint = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp));
-      detname_curr = ndPoint->GetPhysVolName();
+      //detname_curr = ndPoint->GetPhysVolName();
+      detname_curr = ndPoint->GetLogVolName();
       
       //G4cout << detname_curr << G4endl;
-
+      
       G4String detname_aft  = "undefined";
       ND280TrajectoryPoint* ndPointAfter; 
       if(itp<(NPoints-1)){ // not if last point
 	ndPointAfter = dynamic_cast<ND280TrajectoryPoint*>(ndTraj->GetPoint(itp+1));
-	detname_aft  = ndPointAfter->GetPhysVolName();
+	//detname_aft  = ndPointAfter->GetPhysVolName();
+	detname_aft  = ndPointAfter->GetLogVolName();
       }
       
       if (!ndPoint) {
@@ -360,70 +368,109 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       double stepdeltalyz = ndPoint->GetStepDeltaLyz();  
       double stepedep = ndPoint->GetEdep();
 
+      /////////////////////////////////////////
+      //
+      // Compare the Logical Volume name w/ hard-coded names 
+      // of Logical volumes in SDRegion (printed out by ExN02DetectorConstruction)
+      //
+      /////////////////////////////////////////
+      
       if(steplength>0.){
-  	if     (detname_curr=="/World/Basket/Tracker/Target1"){
+  	if     (detname_curr.contains("/t2k/OA/Magnet/Basket/Target1")){
 	  LengthTarget1 += steplength;
 	  EdepTarget1   += stepedep;
 	}
-	else if(detname_curr=="/World/Basket/Tracker/Target2"){
+	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/Target2")){
 	  LengthTarget2 += steplength;	
 	  EdepTarget2   += stepedep;	
 	}
- 	else if(detname_curr=="/World/Basket/Tracker/FGD1"){
+ 	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/FGD1")){
 	  LengthFGD1 += steplength;
 	  EdepFGD1   += stepedep;
 	}
-	else if(detname_curr=="/World/Basket/Tracker/FGD2"){
+	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/FGD2")){
 	  LengthFGD2 += steplength;	
 	  EdepFGD2   += stepedep;	
 	}
-	else if(detname_curr=="/World/Basket/Tracker/TPCUp1"){
+	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCUp1")){
 	  LengthTPCUp1 += steplength;	
 	  LyzTPCUp1    += stepdeltalyz;
 	  EdepTPCUp1   += stepedep;
 	}
-	else if(detname_curr=="/World/Basket/Tracker/TPCUp2"){
+	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCUp2")){
 	  LengthTPCUp2 += steplength;	
 	  LyzTPCUp2    += stepdeltalyz;
 	  EdepTPCUp2   += stepedep;
 	}
-	else if(detname_curr=="/World/Basket/Tracker/TPCDown1"){
+	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCDown1")){
 	  LengthTPCDown1 += steplength;	
 	  LyzTPCDown1    += stepdeltalyz;
 	  EdepTPCDown1   += stepedep;
 	}
-	else if(detname_curr=="/World/Basket/Tracker/TPCDown2"){
+	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCDown2")){
 	  LengthTPCDown2 += steplength;	
 	  LyzTPCDown2    += stepdeltalyz;
 	  EdepTPCDown2   += stepedep;
 	}
-	//else if(detname_curr=="/World/Basket/Tracker/ForwTPC1/Drift"){
-	else if( detname_curr=="/World/Basket/Tracker/ForwTPC1/Half" ||
-		 detname_curr=="/World/Basket/Tracker/ForwTPC1/MM"
+	else if( detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/Half") ||
+		 //detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/Drift") ||
+		 detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/MM")
 		 ){
 	  LengthForwTPC1 += steplength;	
 	  LyzForwTPC1    += stepdeltalyz;
 	  EdepForwTPC1   += stepedep;
 	}
-	//else if(detname_curr=="/World/Basket/Tracker/ForwTPC2/Drift"){
-	else if( detname_curr=="/World/Basket/Tracker/ForwTPC2/Half" ||
-		 detname_curr=="/World/Basket/Tracker/ForwTPC2/MM"
+	else if( detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC2/Half") ||
+		 //detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC2/Drift") ||
+		 detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC2/MM")
 		 ){
 	  LengthForwTPC2 += steplength;	
 	  LyzForwTPC2    += stepdeltalyz;
 	  EdepForwTPC2   += stepedep;
 	}
-	//else if(detname_curr=="/World/Basket/Tracker/ForwTPC3/Drift"){
-	else if( detname_curr=="/World/Basket/Tracker/ForwTPC3/Half" ||
-		 detname_curr=="/World/Basket/Tracker/ForwTPC3/MM"
+	else if( detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC3/Half") ||
+		 //detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC3/Drift") ||
+		 detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC3/MM")
 		 ){
 	  LengthForwTPC3 += steplength;	
 	  LyzForwTPC3    += stepdeltalyz;
 	  EdepForwTPC3   += stepedep;
 	}
+	
+	else if( detname_curr.contains("/t2k/OA/Magnet/Basket/DsECal/Module/Active/ScintHoriz/Bar") ||
+		 detname_curr.contains("/t2k/OA/Magnet/Basket/DsECal/Module/Active/ScintVert/Bar")
+		 ){
+	  LengthDsECal += steplength;	
+	  EdepDsECal   += stepedep;
+	}
+	else if( detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/TopLeftBotRight/Active/ScintPara/Bar") ||
+		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/LeftSide/Active/ScintPara/Bar")        ||
+		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/BotLeftTopRight/Active/ScintPara/Bar") ||
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/TopLeftBotRight/Active/ScintPara/Bar")||       
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/RightSide/Active/ScintPara/Bar")      || 
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/BotLeftTopRight/Active/ScintPara/Bar")
+		 ){
+	  LengthP0DECal += steplength;	
+	  EdepP0DECal   += stepedep;
+	}
+	else if( detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/TopLeftBotRight/Active/ScintPara/Bar") ||
+		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/TopLeftBotRight/Active/ScintPerp/Bar") ||
+		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/LeftSide/Active/ScintPara/Bar")        ||
+		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/LeftSide/Active/ScintPerp/Bar")        ||       
+		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/BotLeftTopRight/Active/ScintPara/Bar") || 
+		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/BotLeftTopRight/Active/ScintPerp/Bar") ||
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/BotLeftTopRight/Active/ScintPara/Bar")|| 
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/BotLeftTopRight/Active/ScintPerp/Bar")|| 
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/RightSide/Active/ScintPara/Bar")      ||
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/RightSide/Active/ScintPerp/Bar")      ||
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/TopLeftBotRight/Active/ScintPara/Bar")||
+		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/TopLeftBotRight/Active/ScintPerp/Bar")
+		 ){
+	  LengthBrlECal += steplength;	
+	  EdepBrlECal   += stepedep;
+	}
       }
             
-
       // Select points if first/last of the track or
       // if first/last in a SD
 
@@ -453,6 +500,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	nd280TrackPoint->SetStepDeltaLyz(ndPoint->GetStepDeltaLyz());
 	nd280TrackPoint->SetStepStatus(ndPoint->GetStepStatus());
 	nd280TrackPoint->SetPhysVolName(ndPoint->GetPhysVolName());
+	nd280TrackPoint->SetLogVolName(ndPoint->GetLogVolName());
 	
 	// preStep position 
 	double prevX = ndPoint->GetPrevPosition().x();
@@ -467,12 +515,19 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	nd280TrackPoint->SetPostPosition(postX,postY,postZ);
 	
 	nd280TrackPoint->SetIsOnBoundary(ndPoint->IsOnBoundary());
+
 	
 	//
 	// Store points if first/last point of the track
 	// or first/last of a SD
+	// (same condition already defined above)
 	//
-	
+		
+	// G4cout << "- Track PDG: " << nd280Track->GetPDG()
+	//        << " --> TrkID = " << nd280Track->GetTrackID() 
+	//        << " --> ParID = " << nd280Track->GetParentID() 
+	//        << G4endl;
+	  
 	// Mark the points
 	MarkPoint(ndPoint); // Store if in a SD 
 	if(ndPoint->SavePoint()){    
@@ -492,7 +547,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       
     } // end loop over the points   
 
-    
+
+
+
     // Store the track length    
     //G4cout << "Target track length: " 
     //<< LengthTarget1 << ", "
