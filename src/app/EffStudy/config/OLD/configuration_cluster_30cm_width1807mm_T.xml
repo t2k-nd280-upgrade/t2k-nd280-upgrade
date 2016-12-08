@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+B1;2c<?xml version="1.0"?>
  
 <fileStructure>
 <Main_Package>
@@ -25,7 +25,7 @@
    </Path2file>
 
    <filename>
-     GENIE/GENIE_nd280mc_target30cm_6E20POT.root
+     GENIE/GENIE_nd280mc_ndT_6E20POT.root
    </filename>
    
    <treename>  
@@ -35,11 +35,11 @@
    <!--                        -->
    <!-- Detector configuration -->
    <!--                        -->
- 
+
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     false
+     true
    </forwTPCdefault>
 
    <forwTPCPos1_X>
@@ -77,11 +77,11 @@
    <!-- Side TPCs 1 -->
 
    <sideTPCdefault1>
-     false
+     true
    </sideTPCdefault1>
 
    <sideTPClength1>
-     2000  
+     1697
    </sideTPClength1>
    <sideTPCwidth1>  
      2300
@@ -97,7 +97,7 @@
      651.5
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     -1487
+     -1457 <!-- -1487 -->
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
@@ -107,16 +107,16 @@
      -651.5
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     -1487
+     -1457 <!-- -1487 -->
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
 
    <sideTPCdefault2>
-     false
+     true
    </sideTPCdefault2>
    <sideTPClength2>
-     2000
+     1697
    </sideTPClength2>
    <sideTPCwidth2>  
      2300
@@ -132,7 +132,7 @@
      651.5
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
-     +1487
+     +1517 <!-- +1487 -->
    </sideTPCUpPos2_Z>
    
    <sideTPCDownPos2_X>
@@ -142,14 +142,14 @@
      -651.5
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
-     +1487
+     +1517 <!-- +1487 -->
    </sideTPCDownPos2_Z>
 
 
    <!-- Target 1 -->
 
    <Targetdefault1>
-     false
+     true
    </Targetdefault1>
    
    <TargetMaterial1>
@@ -157,13 +157,13 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     2000
+     1697
    </Targetlength1>
    <Targetwidth1>  
-     2300
+     1807
    </Targetwidth1>
    <Targetheight1> 
-     303 <!-- 303 -->
+     303 
    </Targetheight1>
  
    <TargetPos1_X>
@@ -173,14 +173,14 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1487
+     -1457 <!-- -1487 -->
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     false
+     true
    </Targetdefault2>
 
    <TargetMaterial2>
@@ -188,10 +188,10 @@
    </TargetMaterial2>
 
    <Targetlength2>
-     2000 
+     1697
    </Targetlength2>
    <Targetwidth2>  
-     2300 
+     1807
    </Targetwidth2>
    <Targetheight2> 
      303 <!-- 303 --> 
@@ -204,8 +204,10 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1487
+     +1517 <!-- +1487 -->
    </TargetPos2_Z>
+
+
 
    <!-- FGD 1 -->
 
@@ -214,7 +216,7 @@
    </FGDdefault1>
 
    <FGDMaterial1>
-     FGDScintillator
+     FGD2Uniform
    </FGDMaterial1>
    
    <FGDlength1>
@@ -245,7 +247,7 @@
    </FGDdefault2>
 
    <FGDMaterial2>
-     FGD2Uniform
+     FGDScintillator
    </FGDMaterial2>
 
    <FGDlength2>
@@ -280,15 +282,80 @@
      true
    </UseTPCUp1>
    <UseTPCUp2>
-     true
+    true
    </UseTPCUp2>
    <UseFGD1>
-    false
+    true
    </UseFGD1>
    <UseFGD2>
-    false
+    true
    </UseFGD2>
    
+   <UseMagnet>
+    false
+   </UseMagnet>
+   <!-- <UseSMRD> -->
+   <!-- true --> 
+   <!-- </UseSMRD> -->
+   <UseBasket>
+    false
+   </UseBasket>
+
+   <UseDsECal>
+    false
+   </UseDsECal>
+   <UseBrlECal>
+    false
+   </UseBrlECal>
+   <UseP0DECal>
+    false
+   </UseP0DECal>
+
+
+   <!-- Invisible detectors -->
+
+   <InvisTPCDown1>
+     false
+   </InvisTPCDown1>
+   <InvisTPCDown2>
+     false
+   </InvisTPCDown2>
+   <InvisTPCUp1>
+     false
+   </InvisTPCUp1>
+   <InvisTPCUp2>
+     false
+   </InvisTPCUp2>
+   <InvisFGD1>
+     false
+   </InvisFGD1>
+   <InvisFGD2>
+     false
+   </InvisFGD2>
+   
+   <InvisMagnet>
+     false
+   </InvisMagnet>
+   
+   <InvisBasket>
+     false
+   </InvisBasket>
+
+   <!-- To fix visualization for detectors below -->
+   <!-- always drawn if implented to the geometry -->
+   <InvisDsECal>
+     false
+   </InvisDsECal>
+   <InvisBrlECal>
+     false
+   </InvisBrlECal>
+   <InvisP0DECal>
+     false
+   </InvisP0DECal>
+   <InvisSMRD>
+     false
+   </InvisSMRD>
+
 </Dependency>
 
 </Dependency_Details>

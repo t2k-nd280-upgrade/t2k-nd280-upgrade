@@ -9,11 +9,11 @@
 <Dependency>
 
   <StoreGeometry>
-    0
+    1
   </StoreGeometry>
 
   <IsRandomSeed>
-    1
+    0
   </IsRandomSeed>
 
    <Generator>      
@@ -25,7 +25,7 @@
    </Path2file>
 
    <filename>
-     GENIE/GENIE_nd280mc_thick30cm_width1807mm_6E20POT.root
+     GENIE/GENIE_nd280mc_target30cm_6E20POT.root
    </filename>
    
    <treename>  
@@ -160,7 +160,7 @@
      2000
    </Targetlength1>
    <Targetwidth1>  
-     1807
+     2300
    </Targetwidth1>
    <Targetheight1> 
      303 <!-- 303 -->
@@ -191,7 +191,7 @@
      2000 
    </Targetlength2>
    <Targetwidth2>  
-     1807
+     2300 
    </Targetwidth2>
    <Targetheight2> 
      303 <!-- 303 --> 
@@ -208,37 +208,6 @@
    </TargetPos2_Z>
 
 
-   <!-- FGD 1 -->
-
-   <FGDdefault1>
-     true
-   </FGDdefault1>
-
-   <FGDMaterial1>
-     FGDScintillator
-   </FGDMaterial1>
-   
-   <FGDlength1>
-     303
-   </FGDlength1>
-   <FGDwidth1>  
-     1864.3
-   </FGDwidth1>
-   <FGDheight1> 
-     1864.3
-   </FGDheight1>
- 
-   <FGDPos1_X>
-     0
-   </FGDPos1_X>
-   <FGDPos1_Y>
-     0
-   </FGDPos1_Y>
-   <FGDPos1_Z>
-     -2588.5
-   </FGDPos1_Z>
-
-   
    <!-- FGD 2 -->
 
    <FGDdefault2> 
@@ -269,7 +238,6 @@
      +2648.5
    </FGDPos2_Z>
 
-
    <!-- Include detectors -->
 
    <UseTPCDown1>
@@ -285,12 +253,77 @@
      true
    </UseTPCUp2>
    <UseFGD1>
-     false
+    false
    </UseFGD1>
    <UseFGD2>
-     false
+    false
    </UseFGD2>
+
+   <UseMagnet>
+    false
+   </UseMagnet>
+   <!-- <UseSMRD> -->
+   <!-- true --> 
+   <!-- </UseSMRD> -->
+   <UseBasket>
+    false
+   </UseBasket>
+
+   <UseDsECal>
+    false
+   </UseDsECal>
+   <UseBrlECal>
+    false
+   </UseBrlECal>
+   <UseP0DECal>
+    false
+   </UseP0DECal>
+
+
+   <!-- Invisible detectors -->
+
+   <InvisTPCDown1>
+     false
+   </InvisTPCDown1>
+   <InvisTPCDown2>
+     false
+   </InvisTPCDown2>
+   <InvisTPCUp1>
+     false
+   </InvisTPCUp1>
+   <InvisTPCUp2>
+     false
+   </InvisTPCUp2>
+   <InvisFGD1>
+     false
+   </InvisFGD1>
+   <InvisFGD2>
+     false
+   </InvisFGD2>
    
+   <InvisMagnet>
+     false
+   </InvisMagnet>
+   
+   <InvisBasket>
+     false
+   </InvisBasket>
+
+   <!-- To fix visualization for detectors below -->
+   <!-- always drawn if implented to the geometry -->
+   <InvisDsECal>
+     false
+   </InvisDsECal>
+   <InvisBrlECal>
+     false
+   </InvisBrlECal>
+   <InvisP0DECal>
+     false
+   </InvisP0DECal>
+   <InvisSMRD>
+     false
+   </InvisSMRD>
+    
 </Dependency>
 
 </Dependency_Details>

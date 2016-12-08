@@ -9,15 +9,15 @@
 <Dependency>
   
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
   
   <IsRandomSeed>
-    0
+    1
   </IsRandomSeed>
   
   <Generator>      
-    GENIE  
+  GENIE
   </Generator>
 
   <Path2file>
@@ -25,21 +25,22 @@
   </Path2file>
 
   <filename>
-    GENIE/GENIE_nd280mc_ndcurrentWater_6E20POT.root
+    GENIE/GENIE_nd280mc_thick60cm_width1807mm_6E20POT.root
   </filename>
 
   <treename>  
     gRooTracker
   </treename>
+
   
-  <!--                        -->
-  <!-- Detector configuration -->
-  <!--                        -->
-  
+   <!--                        -->
+   <!-- Detector configuration -->
+   <!--                        -->
+
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     true
+     false
    </forwTPCdefault>
 
    <forwTPCPos1_X>
@@ -49,7 +50,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -1277
+     -2978
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -69,7 +70,7 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     +1277
+     +2978
    </forwTPCPos3_Z>
 
 
@@ -79,7 +80,7 @@
    <sideTPCdefault1>
      false
    </sideTPCdefault1>
-   
+
    <sideTPClength1>
      2000  
    </sideTPClength1>
@@ -115,7 +116,6 @@
    <sideTPCdefault2>
      false
    </sideTPCdefault2>
-   
    <sideTPClength2>
      2000
    </sideTPClength2>
@@ -150,21 +150,21 @@
    <!-- Target 1 -->
 
    <Targetdefault1>
-     true
+     false
    </Targetdefault1>
-
-   <TargetMaterial1>
-     ActiveWater
-   </TargetMaterial1>
    
+   <TargetMaterial1>
+     Water
+   </TargetMaterial1>
+
    <Targetlength1>
-     303
+     2000
    </Targetlength1>
    <Targetwidth1>  
-     1864.3
+     1807
    </Targetwidth1>
    <Targetheight1> 
-     1864.3
+     600 <!-- 303 -->
    </Targetheight1>
  
    <TargetPos1_X>
@@ -174,28 +174,28 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -638.5
+     -1487
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     true
+     false
    </Targetdefault2>
 
    <TargetMaterial2>
-     ActiveWater
+     WAGASHIScintillatorEmpty
    </TargetMaterial2>
 
    <Targetlength2>
-     303
+     2000 
    </Targetlength2>
    <Targetwidth2>  
-     1864.3
+     1807
    </Targetwidth2>
    <Targetheight2> 
-     1864.3  
+     600 <!-- 303 --> 
    </Targetheight2>
 
    <TargetPos2_X>
@@ -205,9 +205,8 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +638.5
+     +1487
    </TargetPos2_Z>
-
 
    <!-- FGD 1 -->
 
@@ -272,26 +271,90 @@
 
 
    <!-- Include detectors -->
-   
+
    <UseTPCDown1>
-     false
+     true
    </UseTPCDown1>
    <UseTPCDown2>
-     false
+     true
    </UseTPCDown2>
    <UseTPCUp1>
-     false
+     true
    </UseTPCUp1>
    <UseTPCUp2>
-     false
+     true
    </UseTPCUp2>
    <UseFGD1>
-     false
+    false
    </UseFGD1>
    <UseFGD2>
-     false
+    false
    </UseFGD2>
+
+   <UseMagnet>
+    false
+   </UseMagnet>
+   <!-- <UseSMRD> -->
+   <!-- true --> 
+   <!-- </UseSMRD> -->
+   <UseBasket>
+    false
+   </UseBasket>
+
+   <UseDsECal>
+    false
+   </UseDsECal>
+   <UseBrlECal>
+    false
+   </UseBrlECal>
+   <UseP0DECal>
+    false
+   </UseP0DECal>
+
+
+   <!-- Invisible detectors -->
+
+   <InvisTPCDown1>
+     false
+   </InvisTPCDown1>
+   <InvisTPCDown2>
+     false
+   </InvisTPCDown2>
+   <InvisTPCUp1>
+     false
+   </InvisTPCUp1>
+   <InvisTPCUp2>
+     false
+   </InvisTPCUp2>
+   <InvisFGD1>
+     false
+   </InvisFGD1>
+   <InvisFGD2>
+     false
+   </InvisFGD2>
    
+   <InvisMagnet>
+     false
+   </InvisMagnet>
+   
+   <InvisBasket>
+     false
+   </InvisBasket>
+
+   <!-- To fix visualization for detectors below -->
+   <!-- always drawn if implented to the geometry -->
+   <InvisDsECal>
+     false
+   </InvisDsECal>
+   <InvisBrlECal>
+     false
+   </InvisBrlECal>
+   <InvisP0DECal>
+     false
+   </InvisP0DECal>
+   <InvisSMRD>
+     false
+   </InvisSMRD>
    
 </Dependency>
 

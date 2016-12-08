@@ -9,11 +9,11 @@
 <Dependency>
 
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
 
   <IsRandomSeed>
-    0
+    1
   </IsRandomSeed>
 
    <Generator>      
@@ -25,7 +25,7 @@
    </Path2file>
 
    <filename>
-     GENIE/GENIE_nd280mc_thick30cm_width1807mm_6E20POT.root
+     GENIE/GENIE_nd280mc_target30cm_6E20POT.root
    </filename>
    
    <treename>  
@@ -35,7 +35,7 @@
    <!--                        -->
    <!-- Detector configuration -->
    <!--                        -->
-
+ 
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
@@ -160,7 +160,7 @@
      2000
    </Targetlength1>
    <Targetwidth1>  
-     1807
+     2300
    </Targetwidth1>
    <Targetheight1> 
      303 <!-- 303 -->
@@ -191,7 +191,7 @@
      2000 
    </Targetlength2>
    <Targetwidth2>  
-     1807
+     2300 
    </Targetwidth2>
    <Targetheight2> 
      303 <!-- 303 --> 
@@ -206,8 +206,6 @@
    <TargetPos2_Z>
      +1487
    </TargetPos2_Z>
-
-
 
    <!-- FGD 1 -->
 
@@ -270,7 +268,7 @@
      +2648.5
    </FGDPos2_Z>
 
-   <!-- Use detectors -->
+   <!-- Include detectors -->
 
    <UseTPCDown1>
      true
@@ -282,7 +280,7 @@
      true
    </UseTPCUp1>
    <UseTPCUp2>
-    true
+     true
    </UseTPCUp2>
    <UseFGD1>
     false
@@ -291,6 +289,71 @@
     false
    </UseFGD2>
    
+   <UseMagnet>
+    false
+   </UseMagnet>
+   <!-- <UseSMRD> -->
+   <!-- true --> 
+   <!-- </UseSMRD> -->
+   <UseBasket>
+    false
+   </UseBasket>
+
+   <UseDsECal>
+    false
+   </UseDsECal>
+   <UseBrlECal>
+    false
+   </UseBrlECal>
+   <UseP0DECal>
+    false
+   </UseP0DECal>
+
+
+   <!-- Invisible detectors -->
+
+   <InvisTPCDown1>
+     false
+   </InvisTPCDown1>
+   <InvisTPCDown2>
+     false
+   </InvisTPCDown2>
+   <InvisTPCUp1>
+     false
+   </InvisTPCUp1>
+   <InvisTPCUp2>
+     false
+   </InvisTPCUp2>
+   <InvisFGD1>
+     false
+   </InvisFGD1>
+   <InvisFGD2>
+     false
+   </InvisFGD2>
+   
+   <InvisMagnet>
+     false
+   </InvisMagnet>
+   
+   <InvisBasket>
+     false
+   </InvisBasket>
+
+   <!-- To fix visualization for detectors below -->
+   <!-- always drawn if implented to the geometry -->
+   <InvisDsECal>
+     false
+   </InvisDsECal>
+   <InvisBrlECal>
+     false
+   </InvisBrlECal>
+   <InvisP0DECal>
+     false
+   </InvisP0DECal>
+   <InvisSMRD>
+     false
+   </InvisSMRD>
+
 </Dependency>
 
 </Dependency_Details>
