@@ -94,7 +94,21 @@ ND280RootGeometryManager::ND280RootGeometryManager() {
   ShouldPrintMass("/t2k");
   ShouldPrintMass("/t2k/OA");
   ShouldPrintMass("/t2k/OA/Magnet");
+  ShouldPrintMass("/t2k/OA/Magnet/LeftClam");
+  ShouldPrintMass("/t2k/OA/Magnet/RightClam");
+  ShouldPrintMass("/t2k/OA/Magnet/LeftClam/P0DECal");
+  ShouldPrintMass("/t2k/OA/Magnet/RightClam/P0DECal");
+  ShouldPrintMass("/t2k/OA/Magnet/LeftClam/BrlECal");
+  ShouldPrintMass("/t2k/OA/Magnet/RightClam/BrlECal");
+
+  ShouldPrintMass("/t2k/OA/Magnet/LeftClam/BrlECal");
+  ShouldPrintMass("/t2k/OA/Magnet/RightClam/BrlECal");
+
+  //ShouldPrintMass("/t2k/OA/Magnet/LeftClam/BrlECal");
+  //ShouldPrintMass("/t2k/OA/Magnet/RightClam/BrlECal");
+
   ShouldPrintMass("/t2k/OA/Magnet/Basket");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/DsECal");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC1");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC2");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC3");
@@ -106,11 +120,6 @@ ND280RootGeometryManager::ND280RootGeometryManager() {
   ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCDown2");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/FGD1");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/FGD2");  
-  ShouldPrintMass("/t2k/OA/Magnet/Basket/DsECal");
-  ShouldPrintMass("/t2k/OA/Magnet/LeftClam/P0DECal");
-  ShouldPrintMass("/t2k/OA/Magnet/RightClam/P0DECal");
-  ShouldPrintMass("/t2k/OA/Magnet/LeftClam/BrlECal");
-  ShouldPrintMass("/t2k/OA/Magnet/RightClam/BrlECal");
 }
 
 ND280RootGeometryManager* ND280RootGeometryManager::Get() {
@@ -449,8 +458,8 @@ bool ND280RootGeometryManager::PrintMass(const G4VPhysicalVolume* theVol) {
          ++n) {
         if (theFullName == (*n)) {
             if (fPrintedMass.find(*n) != fPrintedMass.end()) continue;
-            fPrintedMass.insert(*n);
-            return true;
+            //fPrintedMass.insert(*n); // if not commented it doesn't print the mass of duplicate detectors (e.g. BrlECal) 
+	    return true;
         }
     }
 
@@ -582,7 +591,7 @@ bool ND280RootGeometryManager::CreateEnvelope(
       //<< " Volume: " << theG4PhysVol->GetName());
 
       G4cout << "%%% Mass: " << theLog->GetMass(true)/kg/1000.0 << " ton"
-	     << " Volume: " << theG4PhysVol->GetName() << G4endl;
+	     << " Volume: " << theG4PhysVol->GetName() << " " << G4endl;
 
       //double missingMass = 0.0;
       //for (int child = 0;
