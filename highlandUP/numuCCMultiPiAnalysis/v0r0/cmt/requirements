@@ -1,0 +1,38 @@
+package highlandUP/numuCCMultiPiAnalysis
+version v2r5
+
+manager Raquel Castillo <rcastillo@ifae.es>
+author nd280-software@mailman.t2k.org
+
+branches src cmt doc app 
+
+use ndupAnalysis * highlandUP
+
+# Build methods to include.
+document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
+
+# Build information used by packages that use this one.
+macro numuCCMultiPiAnalysis_cppflags " -DNUMUCCMULTIPIANALYSIS_USED"
+macro numuCCMultiPiAnalysis_linkopts " -L$(NUMUCCMULTIPIANALYSISROOT)/$(numuCCMultiPiAnalysis_tag) -lnumuCCMultiPiAnalysis "
+macro numuCCMultiPiAnalysis_stamps " $(NUMUCCMULTIPIANALYSISROOT)/$(numuCCMultiPiAnalysis_tag)/numuCCMultiPiAnalysis.stamp"
+
+# The paths to find this library.
+path_remove PATH "$(NUMUCCMULTIPIANALYSISROOT)"
+path_prepend PATH "$(NUMUCCMULTIPIANALYSISROOT)/$(numuCCMultiPiAnalysis_tag)"
+path_remove LD_LIBRARY_PATH "$(NUMUCCMULTIPIANALYSISROOT)"
+path_prepend LD_LIBRARY_PATH "$(NUMUCCMULTIPIANALYSISROOT)/$(numuCCMultiPiAnalysis_tag)"
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "$(NUMUCCMULTIPIANALYSISROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+	     Darwin	       "$(NUMUCCMULTIPIANALYSISROOT)/$(numuCCMultiPiAnalysis_tag)"
+
+
+# The library to build
+library numuCCMultiPiAnalysis *.cxx  ../dict/*.cxx
+
+application RunNumuCCMultiPiAnalysis ../app/RunNumuCCMultiPiAnalysis*.cxx
+
+# tests
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
+
+

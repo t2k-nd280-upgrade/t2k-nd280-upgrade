@@ -1,0 +1,187 @@
+InputManager::IsROOTFile(). If this is not a ROOT file an error will appear in the next two lines. Ignore it !!!! 
+InputManager::IsROOTFile(). This is a ROOT file. 
+InputManager::Initialize(). Input type (oaAnalysisTree, FlatTree, ...) not specified. Find it automatically...
+InputManager::Initialize(). Input type is: anatree
+has name
+AnaTreeConverterEvent::AddFileToTChain(). Adding file: /t2k1/users/ovsyanik/ND280/neut/g4ND280Up_6E20_classic_1864x600x1300_numu_0p2T_6_10_16.root
+InputManager::input tree has 227217 entries
+InputManager:: Data mode
+InputManager:: SoftwareVersion for original file is 
+Trying to load parameters file for parameter: baseAnalysis.InitializeTrees
+Trying to load parameters file for parameter: ndupAnalysis.MinAccumLevelToSave
+Trying to load parameters file for parameter: numuCCMultiPiAnalysis.MinAccumLevelToSave
+InputManager::IsROOTFile(). If this is not a ROOT file an error will appear in the next two lines. Ignore it !!!! 
+InputManager::IsROOTFile(). This is a ROOT file. 
+HLClonesArray::ReadClonesArray(). failed in reading 'CORR' clones array !!!
+HLClonesArray::ReadClonesArray(). failed in reading 'CORR' clones array !!!
+ -------- List of Corrections  -----------------------------------
+  #: index name                      enabled         applied in input    
+
+  0: -1  mom_corr                  1               0                   
+  1: -1  pid_corr                  1               0                   
+ -----------------------------------------------------------------
+SelectionBase::AddSplit(). Add split with 3 branches to branch 'trunk'
+Trying to load parameters file for parameter: psycheSelections.numuCCMultiPi.UseTPCPions
+SelectionBase::Validate(). Validating selection 'kTrackerNumuCCMultiPi' of type 22numuCCMultiPiSelection ..... OK 
+ -------- List of Configurations  ----------------------------------
+  #: name                      NToys  enabled    NSyst   RandomSeed
+
+  0: default                       1        1        0            1
+ -------------------------------------------------------------------
+*********** Configuration: default *************
+ enabled:     1
+ NVariations: 0
+ NWeights:    0
+ NSyst:       0
+ NToys:       1
+ Random seed: 1
+-------- Add variables to the analysis tree ----------------------
+AnalysisLoop::Loop(). input tree has 227217 entries (POT counted on the fly)
+AnalysisLoop::Loop(). loop over 100 entries from entry number 0
+ Running on file: /t2k1/users/ovsyanik/ND280/neut/g4ND280Up_6E20_classic_1864x600x1300_numu_0p2T_6_10_16.root
+Trying to load parameters file for parameter: psycheNDUPUtils.cututils.tpcLYZCut
+Trying to load parameters file for parameter: highlandCorrections.mom_corrections.sigma_x
+2 4 0
+Find Pions event 5
+ventBox->nRecObjectsInGroup[groupID] 4
+1
+ccmultipibox->HMNtrack
+464
+ccmultipibox->HMNtrack
+190
+ccmultipibox->HMNtrack
+515
+ccmultipibox->HMNtrack
+2 0 1
+Find Pions event 6
+ventBox->nRecObjectsInGroup[groupID] 1
+1
+ccmultipibox->HMNtrack
+0 0 0
+0 3 0
+Find Pions event 19
+ventBox->nRecObjectsInGroup[groupID] 1
+2
+ccmultipibox->HMNtrack
+1 2 0
+0 0 0
+Find Pions event 29
+ventBox->nRecObjectsInGroup[groupID] 1
+2
+ccmultipibox->HMNtrack
+1 1 1
+0 0 0
+0 1 0
+2 1 1
+Find Pions event 44
+ventBox->nRecObjectsInGroup[groupID] 5
+1
+ccmultipibox->HMNtrack
+223
+ccmultipibox->HMNtrack
+335
+ccmultipibox->HMNtrack
+277
+ccmultipibox->HMNtrack
+267
+ccmultipibox->HMNtrack
+Find Pions event 46
+ventBox->nRecObjectsInGroup[groupID] 1
+2
+ccmultipibox->HMNtrack
+1 0 1
+Find Pions event 49
+ventBox->nRecObjectsInGroup[groupID] 2
+2
+ccmultipibox->HMNtrack
+1
+ccmultipibox->HMNtrack
+1 0 1
+Find Pions event 54
+ventBox->nRecObjectsInGroup[groupID] 1
+1
+ccmultipibox->HMNtrack
+Find Pions event 57
+ventBox->nRecObjectsInGroup[groupID] 1
+1
+ccmultipibox->HMNtrack
+0 0 0
+0 1 0
+Find Pions event 69
+ventBox->nRecObjectsInGroup[groupID] 1
+2
+ccmultipibox->HMNtrack
+0 0 0
+0 1 0
+Find Pions event 79
+ventBox->nRecObjectsInGroup[groupID] 2
+2
+ccmultipibox->HMNtrack
+1
+ccmultipibox->HMNtrack
+0 0 0
+0 0 0
+5 2 1
+Find Pions event 88
+ventBox->nRecObjectsInGroup[groupID] 11
+5
+positive 
+7
+ccmultipibox->HMNtrack
+4
+ccmultipibox->HMNtrack
+107
+ccmultipibox->HMNtrack
+106
+ccmultipibox->HMNtrack
+102
+ccmultipibox->HMNtrack
+333
+ccmultipibox->HMNtrack
+81
+ccmultipibox->HMNtrack
+77
+positive 
+2
+ccmultipibox->HMNtrack
+76
+ccmultipibox->HMNtrack
+1 0 1
+Find Pions event 89
+ventBox->nRecObjectsInGroup[groupID] 3
+5
+positive 
+2
+ccmultipibox->HMNtrack
+130
+ccmultipibox->HMNtrack
+Find Pions event 91
+ventBox->nRecObjectsInGroup[groupID] 1
+2
+ccmultipibox->HMNtrack
+Find Pions event 92
+ventBox->nRecObjectsInGroup[groupID] 1
+1
+ccmultipibox->HMNtrack
+Find Pions event 93
+ventBox->nRecObjectsInGroup[groupID] 1
+2
+ccmultipibox->HMNtrack
+Find Pions event 97
+ventBox->nRecObjectsInGroup[groupID] 1
+1
+ccmultipibox->HMNtrack
+time profile --------------
+Ini Spill:        0.313186
+Ini Bunch:        0.0126579
+Ini Conf:         0.260841
+Ini Toy (v syst): 0.000212908
+Ini Sel:          6.58035e-05
+Selection:        0.00713396
+End Sel (w syst): 6.96182e-05
+End Toy:          0.00130177
+End Conf:         0.0489774
+End Bunch:        0.00645137
+End Spill:        0.0201724
+Total:            0.67123
+Total wo t:       0.67107

@@ -1,0 +1,9 @@
+--- Cut levels --------
+ < numuCCMultiPiAnalysis.MinAccumLevelToSave = 0 >   // minimum accum level to save the event
+
+--- Selections --------------------------
+ Analysis sample (1 for FGD1, 2 for FGD2, 3 for both)
+ < numuCCMultiPiAnalysis.Selections.whichTarget = 1 >
+
+--- MicroTrees ----------
+ < numuCCMultiPiAnalysis.MicroTrees.AddPionSIinfo = 0 >
