@@ -210,16 +210,47 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     // allocate a big array. Once it is filled we will resize it
     anaUtils::CreateArray(trueVertex->TrueParticles, NMAXTRUEPARTICLES);
 
-    for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
-      TND280UpTrack *nd280UpTrack = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
-      AnaTrueParticleB* truePart = MakeTrueParticle();
-      FillTrueParticleInfo(nd280UpVertex, nd280UpTrack, truePart);
-      spill->TrueParticles.push_back(truePart);
-      truePart->TrueVertex=trueVertex;
-      trueVertex->TrueParticlesVect.push_back(truePart);
+  for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
+    TND280UpTrack *nd280UpTrack = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
+    // if (nd280UpTrack->GetSDLength()>0) {
+    AnaTrueParticleB* truePart = MakeTrueParticle();
+    if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
+    (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
+    (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
+    (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) ) {
+      if(nd280UpTrack->GetInitMom().Mag() > 0){
+//             std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
+                trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
+                trueVertex->LeptonPDG = nd280UpTrack->GetPDG();
+                trueVertex->Q2 = - (nd280UpTrack->GetInitMom() - nd280UpVertex->GetInTrack(0)->GetInitMom()).Mag2();
+                trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
+           
+      }
+    }    else if (  nd280UpTrack->GetPDG() == 2212 && nd280UpTrack->GetParentID() == 0) {
+      // if many, take the first one, that should be the first primary one (not from FSI)
+      if (trueVertex->ProtonMom < 0) {
+        trueVertex->ProtonMom = nd280UpTrack->GetInitMom().Mag();
+        if (trueVertex->ProtonMom > 0)
+            anaUtils::VectorToArray((1. / trueVertex->ProtonMom) * nd280UpTrack->GetInitMom(), trueVertex->ProtonDir);
+      }
+    } // end if proton
+    // If no rooTrackerVtx, fill true pion vars, using the TruthTrajectoryModule (old way)
+    else if (  (nd280UpTrack->GetPDG() == 211  || nd280UpTrack->GetPDG() == -211) && nd280UpTrack->GetParentID() == 0) {
+      // if many, take the highest momentum one, that should be most likely to be reconstructed
+      if (trueVertex->PionMom < nd280UpTrack->GetInitMom().Mag()) {
+        trueVertex->PionMom = nd280UpTrack->GetInitMom().Mag();
+        if (trueVertex->PionMom > 0)
+            anaUtils::VectorToArray((1. / trueVertex->PionMom) * nd280UpTrack->GetInitMom(), trueVertex->PionDir);
+      }
+    } // end if pion
 
-    }
-       spill->TrueVertices.push_back(trueVertex);
+    FillTrueParticleInfo(nd280UpVertex, nd280UpTrack, truePart);
+    spill->TrueParticles.push_back(truePart);
+    truePart->TrueVertex = trueVertex;
+    trueVertex->TrueParticlesVect.push_back(truePart);
+    //}
+  }
+  spill->TrueVertices.push_back(trueVertex);
 
 }
 
@@ -229,7 +260,7 @@ void AnaTreeConverterEvent::FillTrueVertexInfo(TND280UpVertex* ndtrueVertex, Ana
 
   
 
-  trueVertex->ID       = ndtrueVertex->GetVertexID();
+    trueVertex->ID       = ndtrueVertex->GetVertexID();
     trueVertex->NuPDG    = ndtrueVertex->GetInTrack(0)->GetPDG();
     trueVertex->NuEnergy = ndtrueVertex->GetInTrack(0)->GetInitKinEnergy();
     trueVertex->NuMom = ndtrueVertex->GetInTrack(0)->GetInitMom().Mag();
@@ -289,6 +320,7 @@ void AnaTreeConverterEvent::FillVertexInfo(AnaTrueVertexB * truevertex, AnaVerte
   anaUtils::CopyArray(truevertex->Position,vertex->Position,4);
   vertex->Bunch         = bunch;
   truevertex->Bunch=bunch;
+
 }
 //*****************************************************************************
 AnaTrueObjectC* AnaTreeConverterEvent::FindTrueParticle(Int_t g4id, std::vector<AnaTrueParticleB*>& trueParticles){
@@ -305,6 +337,7 @@ AnaTrueObjectC* AnaTreeConverterEvent::FindTrueParticle(Int_t g4id, std::vector<
 //*****************************************************************************
 void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND280UpTrack* upTrack, AnaTrueParticleB* truePart){
 //*****************************************************************************
+  
   if (upTrack == NULL ) {
     truePart->ID = 0;
     truePart->PDG = 0;
@@ -339,7 +372,7 @@ int td=-1;
   }
   if(ti>=0 && td>=0){
   anaUtils::VectorToArray(upTrack->GetPoint(td)->GetPostPosition(), truePart->Position);
-
+ 
     anaUtils::VectorToArray(upTrack->GetPoint(ti)->GetPostPosition(), truePart->PositionEnd);
     truePart->PositionEnd[3]=upTrack->GetPoint(ti)->GetTime();
     truePart->Position[3]=upTrack->GetPoint(td)->GetTime();
@@ -587,12 +620,12 @@ TND280UpTrackPoint* firstTarget2=NULL;
   }
 
   truePart->nDetCrossings=0;
+
 //  anaUtils::CreateArray(truePart->DetCrossings, nCrossers);
   if(firstTPCUp1){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
    // firstTPCUp1->PrintTrackPoint();
     //lastTPCUp1->PrintTrackPoint();
-
     detCross->EntrancePosition[0] = firstTPCUp1->GetPostPosition().X();
     detCross->EntrancePosition[1] = firstTPCUp1->GetPostPosition().Y();
     detCross->EntrancePosition[2] = firstTPCUp1->GetPostPosition().Z();
@@ -610,7 +643,6 @@ TND280UpTrackPoint* firstTarget2=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCUp1();
     detCross->EDeposit=upTrack->GetEdepTPCUp1();
     detCross->SegLength=upTrack->GetLengthTPCUp1();
-
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCUp1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -660,7 +692,6 @@ TND280UpTrackPoint* firstTarget2=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCDown1();
     detCross->EDeposit=upTrack->GetEdepTPCDown1();
     detCross->SegLength=upTrack->GetLengthTPCDown1();
-
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCDown1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -686,7 +717,6 @@ TND280UpTrackPoint* firstTarget2=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCDown2();
     detCross->EDeposit=upTrack->GetEdepTPCDown2();
     detCross->SegLength=upTrack->GetLengthTPCDown2();
-
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCDown2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -711,7 +741,6 @@ TND280UpTrackPoint* firstTarget2=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzForwTPC1();
     detCross->EDeposit=upTrack->GetEdepForwTPC1();
     detCross->SegLength=upTrack->GetLengthForwTPC1();
-
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -736,7 +765,6 @@ TND280UpTrackPoint* firstTarget2=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzForwTPC2();
     detCross->EDeposit=upTrack->GetEdepForwTPC2();
     detCross->SegLength=upTrack->GetLengthForwTPC2();
-
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -813,7 +841,6 @@ TND280UpTrackPoint* firstTarget2=NULL;
     truePart->DetCrossingsVect.push_back(detCross);
 
   }
-
 }
 bool AnaTreeConverterEvent::GetEfficiency(double length,double theta){
     int bin =hefficiency_target->FindBin(theta,length);
@@ -848,7 +875,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   reconParticle->TrueObject=dynamic_cast<AnaTrueObjectC*>(trueParticle);
   for (int i = 0; i < trueParticle->DetCrossingsVect.size(); i++) {
 
-    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)) {
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)) {
       AnaTPCParticleB* seg = dynamic_cast<AnaTPCParticleB*>(MakeTPCTrack());
       Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
       anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
@@ -865,9 +892,8 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       seg->Momentum = mom;
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
-      anaUtils::ComputeTPCPull(*seg,*reconParticle);
+    //  anaUtils::ComputeTPCPull(*seg,*reconParticle);
       reconParticle->TPCSegments[reconParticle->nTPCSegments++] = seg;
- 
 
     }
     if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTarget2)) {
@@ -889,5 +915,4 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
 
     }
   }
-    
 }

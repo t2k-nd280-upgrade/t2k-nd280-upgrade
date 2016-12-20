@@ -35,11 +35,11 @@ namespace DetDef {
   Float_t ForwTPC3min[3] = {-1150.00, -1170.0, -885.0};
   Float_t ForwTPC3max[3] = { 1150.00,  1230.0,   89.0};
 
-  Float_t Target1min[3] = {-1150.00, -300.0, -2487.0};
-  Float_t Target1max[3] = { 1150.00,  300.0,  -487.0};
+  Float_t Target1min[3] = {-932.00, -300.0, -1787.0};
+  Float_t Target1max[3] = { 932.00,  300.0,  -487.0};
 
-  Float_t Target2min[3] = {-1150.00, -300.0, 487.0};
-  Float_t Target2max[3] = { 1150.00,  300.0,   2487.0};
+  Float_t Target2min[3] = {-932.00, -300.0, 487.0};
+  Float_t Target2max[3] = { 932.00,  300.0,   1787.0};
 
 
 

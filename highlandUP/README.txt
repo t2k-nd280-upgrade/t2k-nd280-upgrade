@@ -35,7 +35,7 @@ export CMTPATH=$PWD   (In tcsh or csh shells, use setenv instead of export.)
 
 Then go inside the cmt folder of the top level package:
 
-cd highlandUP/ndupAnalysis/v0r0/cmt
+cd highlandUP/numuCCAnalysis/v0r0/cmt
 
 create the makefiles recursively in all packages
 

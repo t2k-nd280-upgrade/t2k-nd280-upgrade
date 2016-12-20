@@ -26,13 +26,13 @@ Common Vertex cut options
 
  < psycheSelections.numuCCMultiPi.UseTPCPions = 1 >
  < psycheSelections.numuCCMultiPi.UseME = 1 >
- < psycheSelections.numuCCMultiPi.UseFGDPions = 1 >
+ < psycheSelections.numuCCMultiPi.UseTargetPions = 1 >
  < psycheSelections.numuCCMultiPi.OldSecondaryPID = 0 >
 
- < psycheSelections.fgd2CCMultiPi.UseTPCPions = 1 >
- < psycheSelections.fgd2CCMultiPi.UseME = 1 >
- < psycheSelections.fgd2CCMultiPi.UseFGDPions = 1 >
- < psycheSelections.fgd2CCMultiPi.OldSecondaryPID = 0 >
+ < psycheSelections.Target2CCMultiPi.UseTPCPions = 1 >
+ < psycheSelections.Target2CCMultiPi.UseME = 1 >
+ < psycheSelections.Target2CCMultiPi.UseTargetPions = 1 >
+ < psycheSelections.Target2CCMultiPi.OldSecondaryPID = 0 >
 
 
 Systematics tunning tests
@@ -53,4 +53,23 @@ Options to turn on Production 5 2013 BANFF fit
  # using that new value for the ecal objects
 
  < psycheSelections.numuCCMultiPi.MostUpstreamLayerHitCut = 5 > 
+
+=========================================================================
+numuCC MultiPi and 4pi Analysis cuts
+=========================================================================
+
+ < psycheSelections.numuCCMultiPi.UseTPCPions = 1 >
+ < psycheSelections.numuCCMultiPi.UseME = 1 >
+ < psycheSelections.numuCCMultiPi.UseTargetPions = 1 >
+ < psycheSelections.numuCCMultiPi.OldSecondaryPID = 0 >
+
+ < psycheSelections.numuCC4piMultiPi.UseTPCPions = 1 >
+ < psycheSelections.numuCC4piMultiPi.UseME = 1 >
+ < psycheSelections.numuCC4piMultiPi.UseTargetPions = 1 >
+ < psycheSelections.numuCC4piMultiPi.OldSecondaryPID = 0 >
+ 
+ < psycheSelections.Target2CCMultiPi.UseTPCPions = 1 >
+ < psycheSelections.Target2CCMultiPi.UseME = 1 >
+ < psycheSelections.Target2CCMultiPi.UseTargetPions = 1 >
+ < psycheSelections.Target2CCMultiPi.OldSecondaryPID = 0 >
 

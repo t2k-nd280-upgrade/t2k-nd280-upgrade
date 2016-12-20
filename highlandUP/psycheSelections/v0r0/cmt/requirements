@@ -8,6 +8,7 @@ branches cmt src doc app
 
 use psycheCore        * highlandUP
 use psycheEventModel  * highlandUP
+use psycheIO          * highlandUP
 use psycheNDUPUtils * highlandUP
 
 # Build methods to include.

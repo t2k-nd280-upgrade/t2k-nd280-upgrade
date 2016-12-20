@@ -30,10 +30,19 @@ namespace cutUtils{
   bool DeltaLYZTPCCut(AnaTrackB&);
 
   bool DeltaLYZTargetCut(AnaTrackB& ,const SubDetId::SubDetEnum det);
+  bool DeltaLYZTargetORTPCCut(AnaTrackB& ,const SubDetId::SubDetEnum det);
 
 
   /// Retuns true if the two tracks start within the input tolerance 
   bool CommonVertexCut(const AnaParticleB& track1, const AnaParticleB& track2, int cutx, int cuty, int cutz);
+  bool IsCCQE(int neut_reaction_mode);
+  bool IsCC1pi(int neut_reaction_mode);
+  bool IsCCcoh(int neut_reaction_mode);
+  bool Is2p2h(int neut_reaction_mode);
+  bool IsCCoth(int neut_reaction_mode);                       
+  bool IsNC(int neut_reaction_mode);
+  int GetReacAll(int neut_reaction_mode);
+
 }
 
 #endif

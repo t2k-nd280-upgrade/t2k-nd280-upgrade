@@ -539,8 +539,8 @@ AnaTrueVertexB::~AnaTrueVertexB(){
 //********************************************************************
 
   // Must delete array of pointers, since we re-create this every time we apply a selection
-  if(TrueParticles != NULL) delete [] TrueParticles;
-  TrueParticles = NULL;      
+ // if(TrueParticles != NULL) delete [] TrueParticles;
+  //TrueParticles = NULL;      
 
   TrueParticlesVect.clear();
 }
@@ -557,14 +557,15 @@ AnaTrueVertexB::AnaTrueVertexB(const AnaTrueVertexB& vertex):AnaTrueObjectC(vert
 
     anaUtils::CopyArray(vertex.Position, Position, 4);
 
-    anaUtils::CreateArray(TrueParticles, vertex.nTrueParticles);
-    for (Int_t i=0;i<vertex.nTrueParticles;i++){
-        TrueParticles[i] = vertex.TrueParticles[i];
+
+    TrueParticlesVect.clear();
+    for (UInt_t i = 0; i < vertex.TrueParticlesVect.size(); i++) {
+        TrueParticlesVect.push_back(vertex.TrueParticlesVect[i]);
     }
 
     nTrueParticles = vertex.nTrueParticles;
 
-    TrueParticlesVect.clear();
+//    TrueParticlesVect.clear();
 }
 
 //********************************************************************
@@ -1096,8 +1097,13 @@ AnaVertexB::AnaVertexB(const AnaVertexB& vertex):AnaRecObjectC(vertex){
 
     // A ponter to the original vertex
     Original = &vertex;
+    for (UInt_t i = 0; i < vertex.ParticlesVect.size(); i++) {
+        AnaParticleB* particle_tmp = vertex.ParticlesVect[i];
 
-    ParticlesVect.clear();
+        ParticlesVect.push_back(vertex.ParticlesVect[i]);
+    }
+
+   // ParticlesVect.clear();
 }
 
 //********************************************************************

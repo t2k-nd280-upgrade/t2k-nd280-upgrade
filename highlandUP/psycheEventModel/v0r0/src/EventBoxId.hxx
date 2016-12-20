@@ -7,6 +7,7 @@ namespace EventBoxId{
   enum EventBoxEnum{
     kUnassigned=-1,
     kEventBoxNDUP,
+    ktrueEventBoxNDUP,
     kEventBox1,
     kEventBox2
   };

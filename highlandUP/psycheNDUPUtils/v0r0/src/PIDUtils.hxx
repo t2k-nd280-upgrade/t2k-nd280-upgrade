@@ -19,7 +19,7 @@ namespace anaUtils{
     void ComputeTPCPull( AnaDetCrossingB &track, const AnaTrueParticleB& track_,Float_t* pulls);
     Float_t ComputedEdxSigma(AnaDetCrossingB &track, int PDG);
     Float_t RecondEdx( AnaDetCrossingB &track, const AnaTrueParticleB& track_,double momentum) ;
-    double SmearMomentum(  AnaDetCrossingB &track, int pdg,double sigma);
+    double SmearMomentum(  AnaDetCrossingB &track, int pdg,double& sigma);
     double Sigma( AnaDetCrossingB &track,int pdg);
 
     /// Function to recompute all the pull for a TPC track segment and save them into the segment

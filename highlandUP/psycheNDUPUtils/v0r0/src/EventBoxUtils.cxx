@@ -69,10 +69,10 @@ void boxUtils::FillTracksWithTPC(AnaEventB& event, SubDetId::SubDetEnum det){
   for (Int_t i=0;i<nTPC; ++i){
     AnaTrackB* track = selTracks[i];
 
-    if (track->nTPCSegments==0){
-      std::cout << "Warning. This track has no TPC segments" << std::endl;
-      //continue;
-    }
+///    if (track->nTPCSegments==0){
+   //   std::cout << "Warning. This track has no TPC segments" << std::endl;
+    //  continue;
+   // }
 
     if (processTPC){
       EventBox->RecObjectsInGroup[EventBox::kTracksWithTPC][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPC]++] = track;
@@ -100,7 +100,7 @@ void boxUtils::FillTracksWithTPC(AnaEventB& event, SubDetId::SubDetEnum det){
       EventBox->RecObjectsInGroup[EventBox::kTracksWithTPCInTarget2FV][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPCInTarget2FV]++] = track;
 
     // Apply the track quality cut
-   // if (!cutUtils::TrackQualityCut(*track)) continue;
+    if (!cutUtils::TrackQualityCut(*track)) continue;
           AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
 
     if      (inTarget1)
