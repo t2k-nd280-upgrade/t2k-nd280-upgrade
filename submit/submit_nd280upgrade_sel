@@ -42,7 +42,9 @@ foreach (@ARGV) {
     elsif($_ eq '--docut-vertex'     ) { $docut_vertex    = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-target1'    ) { $docut_target1   = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-target2'    ) { $docut_target2   = $ARGV[$iarg+1]; }
-    
+    elsif($_ eq '--docut-fgd1'       ) { $docut_fgd1      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-fgd2'       ) { $docut_fgd2      = $ARGV[$iarg+1]; }
+
     elsif($_ eq '--cut-fv1-minX'      ) { $cut_fv1_minX     = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-fv1-maxX'      ) { $cut_fv1_maxX     = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-fv1-minY'      ) { $cut_fv1_minY     = $ARGV[$iarg+1]; }
@@ -57,6 +59,20 @@ foreach (@ARGV) {
     elsif($_ eq '--cut-fv2-minZ'      ) { $cut_fv2_minZ     = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-fv2-maxZ'      ) { $cut_fv2_maxZ     = $ARGV[$iarg+1]; }
     
+    elsif($_ eq '--cut-fgd-fv1-minX'  ) { $cut_fgd_fv1_minX = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-maxX'  ) { $cut_fgd_fv1_maxX = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-minY'  ) { $cut_fgd_fv1_minY = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-maxY'  ) { $cut_fgd_fv1_maxY = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-minZ'  ) { $cut_fgd_fv1_minZ = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-maxZ'  ) { $cut_fgd_fv1_maxZ = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--cut-fgd-fv2-minX'  ) { $cut_fgd_fv2_minX = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-maxX'  ) { $cut_fgd_fv2_maxX = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-minY'  ) { $cut_fgd_fv2_minY = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-maxY'  ) { $cut_fgd_fv2_maxY = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-minZ'  ) { $cut_fgd_fv2_minZ = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-maxZ'  ) { $cut_fgd_fv2_maxZ = $ARGV[$iarg+1]; }
+
     elsif($_ eq '--docut-vtxX'       ) { $docut_vtxX      = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-xmin'         ) { $cut_xmin        = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-xmax'         ) { $cut_xmax        = $ARGV[$iarg+1]; }
@@ -82,22 +98,43 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"                 unless defined $resource;
-$tag             = "SelND280Up_NuMuBar_6E20_30cm_width1807mm_newBin"           unless defined $tag;
+#$tag             = "SelND280Up_NuE_6E20_classic_1864x600x1300_0p2T"           unless defined $tag;
+#$tag             = "SelND280Up_NuMu_6E20_ND280curr_0p2T"           unless defined $tag;
+#$tag             = "SelND280Up_classic_AfterUpdates_9_12_16_NewFV" unless defined $tag;
+#$tag             = "SelND280Up_classic_AfterUpdates_9_12_16_NewFV_ECal" unless defined $tag;
+$tag             = "SelND280Up_prova" unless defined $tag;
 
-#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_60cm_All_7_9_16.root"  unless defined $inputfile;
-#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_60cm_width1807mm_All_13_9_16.root"  unless defined $inputfile;
-#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_30cm_All_8_9_16.root"  unless defined $inputfile;
-#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_30cm_width1807mm_All_13_9_16.root"  unless defined $inputfile;
-#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_30cm_width1807mm_numubar_All_16_9_16.root" unless defined $inputfile;
-$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/g4ND280Up_6E20_nd280current_numu_All_19_9_16.root" unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/g4ND280Up_6E20_classic_1864x600x1300_numu_0p2T_6_10_16.root" unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/g4ND280Up_6E20_classic_1864x600x1300_nue_0p2T_6_10_16.root" unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/g4ND280Up_6E20_nd280current_numu_0p2T_All.root" unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/g4ND280Up_6E20_nd280current_numubar_0p2T-All_13_10_16.root" unless defined $inputfile;
+ 
+# OLD GENIE
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/9_12_16_AfterG4updates/g4ND280Up_Classic_6E20POT_AfterUpdates.root" unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/9_12_16_AfterG4updates/g4ND280Up_6E20_classic_ECal_AfterUpdates_9_12_16.root" unless defined $inputfile;
+
+# NEW GENIE
+#$inputfile       = "/neutrino/data7/davide/files/PROVA/commit_18dfe65_new/g4ND280Up_6E20_classic_AfterDetUpdate_9_12_16.root" unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/PROVA/commit_18dfe65_new/g4ND280Up_6E20_classic_AfterDetUpdate_9_12_16_ECal.root" unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/PROVA/commit_18dfe65_new/g4ND280Up_6E18_classic_AfterDetUpdate_9_12_16_test_ecal.root" unless defined $inputfile;
+#$inputfile       = "/neutrino/data7/davide/files/PROVA/commit_18dfe65_new/g4ND280Up_prova_ECal_1k.root" unless defined $inputfile;
+ 
+# Current tests
+$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/commit_current/g4ND280Up_6E20_classic_AfterDetUpdate_9_12_16_ECal-Exp0-Nexpt1000.root" unless defined $inputfile;
+
+
 
 $first_expt      = 0                             unless defined $first_expt;
 
 # Numu Beam
-$nruns           = 17                             unless defined $nruns; 
+#$nruns           = 13                             unless defined $nruns; 
+$nruns           = 21                             unless defined $nruns; # TPC+Target+ECal 
 $nexpts          = 20000                          unless defined $nexpts;
 # NumuBar beam
 #$nruns           = 3                             unless defined $nruns; 
+#$nexpts          = 20000                          unless defined $nexpts;
+# Nue beam
+#$nruns           = 1                             unless defined $nruns; 
 #$nexpts          = 20000                          unless defined $nexpts;
 
 #
@@ -105,58 +142,76 @@ $nexpts          = 20000                          unless defined $nexpts;
 #
 
 #
-# Horizontal Targets (ND280 upgrade)
+# Fiducial Volume ND280 "T"
 #
-# # Fiducial Volume Target 1
-# #$cut_fv1_minX    = -1150                      unless defined $cut_fv1_minX;
-# #$cut_fv1_maxX    = +1150                      unless defined $cut_fv1_maxX;
-# $cut_fv1_minX    = -903.5                      unless defined $cut_fv1_minX;
-# $cut_fv1_maxX    = +903.5                      unless defined $cut_fv1_maxX;
-# #
-# $cut_fv1_minY    = -151.5                       unless defined $cut_fv1_minY;
-# $cut_fv1_maxY    = +151.5                       unless defined $cut_fv1_maxY;
-# #$cut_fv1_minY    = -300                       unless defined $cut_fv1_minY;
-# #$cut_fv1_maxY    = +300                       unless defined $cut_fv1_maxY;
-# #
-# $cut_fv1_minZ    = -2487                      unless defined $cut_fv1_minZ;
-# $cut_fv1_maxZ    = -487                       unless defined $cut_fv1_maxZ;
-# # Fiducial Volume Target 2
-# #$cut_fv2_minX    = -1150                      unless defined $cut_fv2_minX;
-# #$cut_fv2_maxX    = +1150                      unless defined $cut_fv2_maxX;
-# $cut_fv2_minX    = -903.5                      unless defined $cut_fv2_minX;
-# $cut_fv2_maxX    = +903.5                      unless defined $cut_fv2_maxX;
-# #
-# $cut_fv2_minY    = -151.5                       unless defined $cut_fv2_minY;
-# $cut_fv2_maxY    = +151.5                       unless defined $cut_fv2_maxY;
-# #$cut_fv2_minY    = -300                       unless defined $cut_fv2_minY;
-# #$cut_fv2_maxY    = +300                       unless defined $cut_fv2_maxY;
-# #
-# $cut_fv2_minZ    = +487                       unless defined $cut_fv2_minZ;
-# $cut_fv2_maxZ    = +2487                      unless defined $cut_fv2_maxZ;
+# Target 1
+# $cut_fv1_minX    = -903.5                    unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +903.5                    unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -151.5                    unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +151.5                    unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = -2294.                    unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = -487.                     unless defined $cut_fv1_maxZ;
+# # Target 2 
+# $cut_fv1_minX    = -903.5                    unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +903.5                    unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -151.5                    unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +151.5                    unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = +798                      unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = +2487                     unless defined $cut_fv1_maxZ;
+# # FGD 1
+# $cut_fv1_minX    = -932.15                   unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +932.15                   unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -932.15                   unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +932.15                   unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = -2487                     unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = -2184                     unless defined $cut_fv1_maxZ;
+# FGD 2
+# $cut_fv1_minX    = -932.15                   unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +932.15                   unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -932.15                   unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +932.15                   unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = +487                      unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = +790                      unless defined $cut_fv1_maxZ;
 
+#
+# Fiducial Volume ND280 upgrade classic (1864x600x1300 mm^3)
+#
+# Target 1
+# $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
+# #$cut_fv1_minY    = -300.                    unless defined $cut_fv1_minY;
+# #$cut_fv1_maxY    = +300.                    unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = -1787.                    unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
+# Target 2 
+$cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
+$cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
+$cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
+$cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
+#$cut_fv1_minY    = -300.                    unless defined $cut_fv1_minY;
+#$cut_fv1_maxY    = +300.                    unless defined $cut_fv1_maxY;
+$cut_fv1_minZ    = +487.                      unless defined $cut_fv1_minZ;
+$cut_fv1_maxZ    = +1787.                     unless defined $cut_fv1_maxZ;
 
 #
-# Vertical Targets (Current ND280)
+# Fiducial Volume ND280 current (only FGDs)
 #
-# Fiducial FGD 1
-$cut_fv1_minX    = -932.15                      unless defined $cut_fv1_minX;
-$cut_fv1_maxX    = +932.15                      unless defined $cut_fv1_maxX;
-#
-$cut_fv1_minY    = -932.15                       unless defined $cut_fv1_minY;
-$cut_fv1_maxY    = +932.15                       unless defined $cut_fv1_maxY;
-#
-$cut_fv1_minZ    = -790                      unless defined $cut_fv1_minZ;
-$cut_fv1_maxZ    = -487                       unless defined $cut_fv1_maxZ;
-# Fiducial FGD 2
-$cut_fv2_minX    = -932.15                      unless defined $cut_fv2_minX;
-$cut_fv2_maxX    = +932.15                      unless defined $cut_fv2_maxX;
-#
-$cut_fv2_minY    = -932.15                       unless defined $cut_fv2_minY;
-$cut_fv2_maxY    = +932.15                       unless defined $cut_fv2_maxY;
-#
-$cut_fv2_minZ    = +487                       unless defined $cut_fv2_minZ;
-$cut_fv2_maxZ    = +790                      unless defined $cut_fv2_maxZ;
-
+# Target 1
+# $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -932.                    unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +932.                    unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = -790.                    unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
+# Target 2 
+# $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -932.                    unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +932.                    unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = +487.                      unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = +790.                     unless defined $cut_fv1_maxZ;
 
 
 # Reject all NC and don't account for them in the efficiencies
@@ -170,9 +225,11 @@ $cut_reac        = 0                             unless defined $cut_reac;
 $docut_mater     = 0                             unless defined $docut_mater;
 
 # select interactions only in Fiducial Volume
-$docut_vertex    = 1                             unless defined $docut_vertex;
-$docut_target1   = 0                            unless defined $docut_target1;
-$docut_target2   = 1                             unless defined $docut_target2;
+$docut_vertex  = 1                             unless defined $docut_vertex;
+$docut_target1 = 0                             unless defined $docut_target1;
+$docut_target2 = 1                             unless defined $docut_target2;
+$docut_fgd1    = 0                             unless defined $docut_fgd1;
+$docut_fgd2    = 0                             unless defined $docut_fgd2;
 
 # select range of X vertex position
 $docut_vtxX      = 0                             unless defined $docut_vtxX;
@@ -205,7 +262,7 @@ $cut_charge      = 1                             unless defined $cut_charge;
 
 # select track length (mm) in targets
 $docut_dl_target    = 1                          unless defined $docut_dl_target;
-$cut_dl_target      = 50                         unless defined $cut_dl_target; 
+$cut_dl_target      = 75                         unless defined $cut_dl_target; 
 
 # select track DeltaLyz (mm) in TPCs
 $docut_dlyz_tpc    = 1                           unless defined $docut_dlyz_tpc;
@@ -218,18 +275,21 @@ while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
-    
     $newtag = "$tag";
     if($docut_vertex eq 1){
 	if($docut_target1 eq 1){ $newtag = "$newtag-Targ1";}
 	if($docut_target2 eq 1){ $newtag = "$newtag-Targ2";}
-    }
+	if($docut_fgd1    eq 1){ $newtag = "$newtag-FGD1";}
+        if($docut_fgd2    eq 1){ $newtag = "$newtag-FGD2";}
+     }
     if($docut_pdg eq 1){
 	if($cut_pdg eq +13)  { $newtag = "$newtag-MuM";}
 	elsif($cut_pdg eq -13)  { $newtag = "$newtag-MuP";}
 	elsif($cut_pdg eq +211) { $newtag = "$newtag-PiP";}
 	elsif($cut_pdg eq -211) { $newtag = "$newtag-PiM";}
 	elsif($cut_pdg eq +2212){ $newtag = "$newtag-Prot";}
+	elsif($cut_pdg eq +11){ $newtag = "$newtag-EleM";}
+	elsif($cut_pdg eq -11){ $newtag = "$newtag-EleP";}
 	else{$newtag = "$newtag-PDG$cut_pdg";}
     }
     if($docut_parid eq 1){ $newtag = "$newtag-ParID$cut_parid";}
@@ -237,9 +297,10 @@ while($irun < $nruns) { # loop over the jobs
     if($docut_reac  eq 1){ $newtag = "$newtag-Reac$cut_reac";}
     if($docut_vtxZ  eq 1){ $newtag = "$newtag-Zrange[$cut_zmin,$cut_zmax]";}
     if($docut_vtxX  eq 1){ $newtag = "$newtag-Xrange[$cut_xmin,$cut_xmax]";}
-    
-    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$cut_fv1_minX,$cut_fv1_maxX,$cut_fv1_minY,$cut_fv1_maxY,$cut_fv1_minZ,$cut_fv1_maxZ,$cut_fv2_minX,$cut_fv2_maxX,$cut_fv2_minY,$cut_fv2_maxY,$cut_fv2_minZ,$cut_fv2_maxZ,$docut_cc,$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_target1,$docut_target2,$docut_vtxX,$cut_xmin,$cut_xmax,$docut_vtxZ,$cut_zmin,$cut_zmax,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
-    
+
+    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$cut_fv1_minX,$cut_fv1_maxX,$cut_fv1_minY,$cut_fv1_maxY,$cut_fv1_minZ,$cut_fv1_maxZ,$docut_cc,$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_target1,$docut_target2,$docut_fgd1,$docut_fgd2,$docut_vtxX,$cut_xmin,$cut_xmax,$docut_vtxZ,$cut_zmin,$cut_zmax,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
+
+
     $command = "$arguments";
     
     print "\n";
@@ -255,12 +316,12 @@ while($irun < $nruns) { # loop over the jobs
     # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
     #
     if($resource eq "UNIGE-Atlas") {
-	open(PBS, ">$job_dir/selection-$newtag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	open(PBS, ">$job_dir/$newtag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
 	print PBS "#!/bin/bash -l  \n";
 	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
 	print PBS "$command \n";
 	close(PBS);	
-	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/selection-$newtag-$evt_first-$nexpts.sbatch`;
+	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
     }
     if($resource eq "interactive") {
 	system($command);
