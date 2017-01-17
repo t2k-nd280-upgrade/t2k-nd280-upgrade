@@ -20,7 +20,6 @@ MomRangeCorrection::MomRangeCorrection(SubDetId::SubDetEnum det) :  CorrectionBa
 void MomRangeCorrection::Apply(AnaSpillC& spillBB) {
   //********************************************************* ***********
   AnaSpill& spill = *static_cast<AnaSpill*>(&spillBB);
- //std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
 
   for (UInt_t i = 0; i < spill.Bunches.size(); i++) {
     AnaBunch* bunch = static_cast<AnaBunch*>(spill.Bunches[i]);
@@ -28,35 +27,41 @@ void MomRangeCorrection::Apply(AnaSpillC& spillBB) {
 
       AnaTrackB* track = static_cast<AnaTrackB*>(bunch->Particles[j]);
       if (!track) continue;
-      
+
       // Check whether a track is relevant to apply the correction
       //if (!IsRelevantTrack(*track)) continue;
-    AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
-      double length=0.;  
+      AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
+      double length = 0.;
+      int ntpc = 0;
       for (int subdet = 0; subdet < 7; subdet++) {
+
         AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *track, static_cast<SubDetId::SubDetEnum >(subdet)));
         if (TPCSegment) {
-          double smearedMomentum = SmearMomentum(TPCSegment,trueP->PDG);
+          double smearedMomentum = SmearMomentum(TPCSegment, ParticleId::GetParticle(trueP->PDG));
           TPCSegment->SmearedMomentum = smearedMomentum;
-          // std::cout<<"smearing"<<std::endl;
-          if(TPCSegment->DeltaLYZ>length){
-            double Momentum_dif=track->Momentum-TPCSegment->Momentum;
-            track->SmearedMomentum=smearedMomentum+Momentum_dif;
-            track->MomentumError=TPCSegment->MomentumError;
-        //    std::cout<<"smearing"<<std::endl;
-
+          if (TPCSegment->DeltaLYZ > length) {
+                 ntpc++;
+     
+            double Momentum_dif = track->Momentum - TPCSegment->Momentum;
+            track->SmearedMomentum = smearedMomentum + Momentum_dif;
+            track->MomentumError = TPCSegment->MomentumError;
+ 
           }
         }
+        
       }
-  
+      if (ntpc == 0) {
+          track->SmearedMomentum = track->Momentum;
+          track->MomentumError = 0;
+
+        }
     }
   }
 }
-
 //********************************************************************
-double MomRangeCorrection::SmearMomentum( AnaTPCParticleB *cross, int pdg){
+double MomRangeCorrection::SmearMomentum( AnaTPCParticleB *cross, ParticleId::ParticleEnum partID){
 //********************************************************************
-  double sigma=Sigma( cross,pdg)*cross->Momentum;
+  double sigma=Sigma( cross,partID)*cross->Momentum;
 
   double prob=gRandom->Gaus(cross->Momentum,sigma);
   cross->MomentumError=sigma;
@@ -77,15 +82,16 @@ bool MomRangeCorrection::IsRelevantTrack(const AnaTrackB& track) const{
   return true;
 }
 
-double MomRangeCorrection::Sigma( AnaTPCParticleB *cross,int pdg){
+double MomRangeCorrection::Sigma( AnaTPCParticleB *cross,ParticleId::ParticleEnum partID){
 double LYZ=cross->DeltaLYZ*units::mm;
 double N=cross->DeltaLYZ/ units::mm;
-double mass=0.;
+//double mass=0.;
 
-  if     (pdg==211)  mass = 139.570; // pi+-
-  else if(pdg==13)   mass = 105.658; // muon
-  else if(pdg==2212) mass = 938.272; // proton
-  else if(pdg==11)   mass = 0.511;   // electron
+//  if     (pdg==211)  mass = 139.570; // pi+-
+//  else if(pdg==13)   mass = 105.658; // muon
+//  else if(pdg==2212) mass = 938.272; // proton
+//  else if(pdg==11)   mass = 0.511;   // electron
+    double mass =anaUtils::GetParticleMass(partID);
 
 double bg=cross->Momentum/mass;
 double betta=bg / sqrt(1. + bg * bg);

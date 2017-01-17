@@ -32,9 +32,13 @@ public:
         kTPCDown2,
         kTarget1,
         kTarget2,
+        kDsECal,
+        kP0DECal,
+        kBrlECal,
         kInvalidSubdetector,
         kTPC,
         kTarget,
+        kECal,
         kInvalid
     };
 
@@ -56,6 +60,9 @@ public:
     /// Returns the Target number (Target1 = 1, Target2 = 2 etc.) of the track
     /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
     static int GetTarget(unsigned long BitField);
+    /// Returns the Target number (DsECal = 1, P0DECal = 2 etc.) of the track
+    /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
+    static int GetECal(unsigned long BitField);
  
     /// Method to set the detector system bits using the individual subdetector bits.
     /// e.g. If SetDetectorUsed(BitField, SubDetId::kTPC1) had been called, this function
@@ -74,6 +81,8 @@ public:
 
     /// Check if a detector enumeration refers to a FGD or not
     static bool IsTPC(SubDetId::SubDetEnum det);
+    /// Check if a detector enumeration refers to a FGD or not
+    static bool IsECal(SubDetId::SubDetEnum det);
    
     /// Get the single subdetector that this track is from
     static SubDetId::SubDetEnum GetSubdetectorEnum(unsigned long BitField);

@@ -26,24 +26,32 @@ void anaUtils::RecomputeTPCPulls(AnaTPCParticleB &track) {
 //********************************************************************
 void anaUtils::ComputeTPCPull( AnaTPCParticleB &track, const AnaTrackB& track_) {
 //********************************************************************
-   //  std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
-
+     //std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
+      //   std::cout<<"pdg "<<track_.GetTrueParticle()->PDG<<std::endl;
+   
+    // track.Print();
+    // track_.Print();
+  
     track.dEdxMeas = RecondEdx(track, track_);
     track.dEdxexpMuon = ExpecteddEdx(track, ParticleId::kMuon);
+
     track.dEdxexpEle = ExpecteddEdx(track, ParticleId::kElectron);
+
     track.dEdxexpPion = ExpecteddEdx(track, ParticleId::kPionPlus);
+
     track.dEdxexpProton = ExpecteddEdx(track, ParticleId::kProton);
     track.dEdxSigmaMuon =TMath::Sqrt(pow( ComputedEdxSigma(track, track_.GetTrueParticle()->PDG)*track.dEdxMeas,2)+pow(TrackMomError(track.Momentum,track.MomentumError,ParticleId::kMuon),2.0));
     track.dEdxSigmaEle =TMath::Sqrt(pow( ComputedEdxSigma(track, track_.GetTrueParticle()->PDG)*track.dEdxMeas,2)+pow(TrackMomError(track.Momentum,track.MomentumError,ParticleId::kElectron),2.0));
     track.dEdxSigmaPion =TMath::Sqrt(pow( ComputedEdxSigma(track, track_.GetTrueParticle()->PDG)*track.dEdxMeas,2)+pow(TrackMomError(track.Momentum,track.MomentumError,ParticleId::kPionPlus),2.0));
     track.dEdxSigmaProton = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.GetTrueParticle()->PDG)*track.dEdxMeas,2)+pow(TrackMomError(track.Momentum,track.MomentumError,ParticleId::kProton),2.0));
+  
 }
 
 
 //********************************************************************
 void anaUtils::ComputeTPCPull( AnaDetCrossingB &track, const AnaTrueParticleB& track_, Float_t* pulls) {
 //********************************************************************
-    // std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
+  //   std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
 
   double sigmap=0;
     double momentum =anaUtils::SmearMomentum( track, track_.PDG,sigmap);
@@ -58,7 +66,6 @@ void anaUtils::ComputeTPCPull( AnaDetCrossingB &track, const AnaTrueParticleB& t
     float dEdxSigmaEle  = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum, sigmap, ParticleId::kElectron), 2.0));
     float dEdxSigmaPion = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum, sigmap, ParticleId::kPionPlus), 2.0));
     float dEdxSigmaProton  = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum,sigmap, ParticleId::kProton), 2.0));
-
     pulls[0] = (dEdxMeas - dEdxexpMuon) / dEdxSigmaMuon;
     pulls[1] = (dEdxMeas - dEdxexpEle) /dEdxSigmaEle;
     pulls[2] = (dEdxMeas - dEdxexpProton) / dEdxSigmaProton;
@@ -70,6 +77,7 @@ void anaUtils::ComputeTPCPull( AnaDetCrossingB &track, const AnaTrueParticleB& t
 //********************************************************************
 void anaUtils::ComputeTPCPull( AnaTPCParticleB &track, Float_t * pulls) {
 //********************************************************************
+//  std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
 
     pulls[0] = (track.dEdxMeas - track.dEdxexpMuon)/ track.dEdxSigmaMuon;
     pulls[1] = (track.dEdxMeas - track.dEdxexpEle) / track.dEdxSigmaEle;
@@ -95,10 +103,10 @@ Float_t anaUtils::RecondEdx( AnaTPCParticleB &track,  const AnaTrackB& track_) {
 
         dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kMuon);
     else if (PDG==211)
-        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kPiPos);
-    else if (PDG==-211)
-        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kPiNeg);
-    else if (PDG==11)
+        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kPionPlus);
+    else if (PDG==-211){
+        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kPionMinus);
+    }else if (PDG==11)
         dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kElectron);
     else if (PDG==2212)
         dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kProton);
@@ -122,9 +130,9 @@ Float_t anaUtils::RecondEdx( AnaDetCrossingB &track, const AnaTrueParticleB& tra
 
         dedxexp =  ExpecteddEdx(momentum, ParticleId::kMuon);
     else if (PDG==211)
-        dedxexp =  ExpecteddEdx(momentum, ParticleId::kPiPos);
+        dedxexp =  ExpecteddEdx(momentum, ParticleId::kPionPlus);
     else if (PDG==-211)
-        dedxexp =  ExpecteddEdx(momentum, ParticleId::kPiNeg);
+        dedxexp =  ExpecteddEdx(momentum, ParticleId::kPionMinus);
 
     else if (PDG==11)
         dedxexp =  ExpecteddEdx(momentum, ParticleId::kElectron);
@@ -250,13 +258,13 @@ void anaUtils::GetPIDLikelihood(const AnaTrackB& track, Float_t* hypo, bool prod
     // Loop over TPC segments
     for (int j = 0; j < track.nTPCSegments; ++j){      
         AnaTPCParticleB* TPCSegment = track.TPCSegments[j];
+
         if (!TPCSegment) continue;
 
         // Only segments passing the TPC track quality cut will contribute to the likelihood
         // Was not applied for production 5 BANFF analysis
 //        if(!prod5Cut)
      if (!cutUtils::TPCTrackQualityCut(*TPCSegment)) continue;
-
         // Require valid values for all quantities involved
         if( TPCSegment->dEdxexpMuon==-0xABCDEF || TPCSegment->dEdxexpEle==-0xABCDEF || TPCSegment->dEdxexpPion==-0xABCDEF || TPCSegment->dEdxexpProton==-0xABCDEF) continue;
         if( TPCSegment->dEdxMeas ==-0xABCDEF ) continue; 

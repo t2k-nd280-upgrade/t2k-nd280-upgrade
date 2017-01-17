@@ -6,6 +6,10 @@
 #include "EventBox.hxx"
 #include "CoreUtils.hxx"
 #include "ToyBoxNDUP.hxx"
+#include "MomRangeCorrection.hxx"
+#include "TruthUtils.hxx"
+#include "PIDCorrection.hxx"
+
 const bool DEBUG = false;    // debugging flag for FillTruthTree (increases verbosity)
 
 const unsigned int NMAXTPCSEC = 2000;
