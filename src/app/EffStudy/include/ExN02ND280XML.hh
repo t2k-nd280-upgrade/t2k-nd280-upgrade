@@ -124,7 +124,8 @@ public :
   G4bool   GetXMLUseBasket()     {return fUseBasket;};
   G4bool   GetXMLUseDsECal()     {return fUseDsECal;};
   G4bool   GetXMLUseBrlECal()    {return fUseBrlECal;};
-  G4bool   GetXMLUseP0DECal()    {return fUseP0DECal;};
+  G4bool   GetXMLUseP0DECal()    {return fUseP0DECal;};  
+  G4bool   GetXMLUseP0D()        {return fUseP0D;};
 
   G4bool   GetXMLInvisTPCUp1()   {return fInvisTPCUp1;};
   G4bool   GetXMLInvisTPCDown1() {return fInvisTPCDown1;};
@@ -140,6 +141,7 @@ public :
   G4bool   GetXMLInvisDsECal()   {return fInvisDsECal;};
   G4bool   GetXMLInvisBrlECal()  {return fInvisBrlECal;};
   G4bool   GetXMLInvisP0DECal()  {return fInvisP0DECal;};
+  G4bool   GetXMLInvisP0D()      {return fInvisP0D;};
   
   void SetInputs();
 
@@ -237,7 +239,8 @@ private :
   G4bool fUseDsECal;
   G4bool fUseBrlECal;
   G4bool fUseP0DECal;
-
+  G4bool fUseP0D;
+  
   G4bool fInvisTPCUp1;
   G4bool fInvisTPCDown1;
   G4bool fInvisTPCUp2;
@@ -252,6 +255,7 @@ private :
   G4bool fInvisDsECal;
   G4bool fInvisBrlECal;
   G4bool fInvisP0DECal;
+  G4bool fInvisP0D;
 
   void XML2String(string tmp_app,string &dest);
   void XML2Double(string tmp_app,double &dest);
