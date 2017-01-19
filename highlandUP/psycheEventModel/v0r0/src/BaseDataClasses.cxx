@@ -7,7 +7,7 @@
 //********************************************************************
 AnaTargetParticleB::AnaTargetParticleB(){
 //********************************************************************
-    DeltaLYZ=-999;
+    DeltaLYZ=-9999;
     IsReconstructed=false;
 
 }
@@ -39,6 +39,37 @@ AnaTargetParticleB::~AnaTargetParticleB(){
 
 }
 
+//********************************************************************
+AnaECalParticleB::AnaECalParticleB(){
+//********************************************************************
+    DeltaLYZ=-9999;
+
+}
+
+//********************************************************************
+AnaECalParticleB::AnaECalParticleB(const AnaECalParticleB& seg):AnaParticleB(seg){
+//********************************************************************
+    DeltaLYZ=seg.DeltaLYZ;
+
+}
+
+//********************************************************************
+void AnaECalParticleB::Print() const{
+//********************************************************************
+
+    std::cout << "-------- AnaECalParticleB --------- " << std::endl;
+
+    AnaParticleB::Print();
+
+    std::cout << "DeltaLYZ:          " << DeltaLYZ        << std::endl;
+
+}
+
+//********************************************************************
+AnaECalParticleB::~AnaECalParticleB(){
+//********************************************************************
+
+}
 
 //********************************************************************
 AnaTPCParticleB::AnaTPCParticleB():AnaParticleMomB() {
@@ -270,9 +301,13 @@ AnaTrackB::AnaTrackB(): AnaParticleMomB(){
 
     nTargetSegments = 0;
     nTPCSegments = 0;
+    nECalSegments = 0;
+
     EKin=-999;
     TargetSegmentsVect.clear();
     TPCSegmentsVect.clear();
+    ECalSegmentsVect.clear();
+
 }
 
 //********************************************************************
@@ -289,15 +324,23 @@ AnaTrackB::~AnaTrackB(){
         delete TPCSegments[i];    
         TPCSegments[i] = NULL;
     }
+    for (Int_t i=0;i<nECalSegments;i++){
+        delete ECalSegments[i];    
+        ECalSegments[i] = NULL;
+    }
 
     if (TargetSegmentsVect.size()>0  && nTargetSegments ==0) for (UInt_t i=0;i<TargetSegmentsVect.size(); i++) delete TargetSegmentsVect[i];
     if (TPCSegmentsVect.size()>0  && nTPCSegments ==0) for (UInt_t i=0;i<TPCSegmentsVect.size(); i++) delete TPCSegmentsVect[i];
+    if (ECalSegmentsVect.size()>0  && nECalSegments ==0) for (UInt_t i=0;i<ECalSegmentsVect.size(); i++) delete ECalSegmentsVect[i];
 
     nTargetSegments = 0;
     nTPCSegments = 0;
+    nECalSegments = 0;
 
     TargetSegmentsVect.clear();
     TPCSegmentsVect.clear();
+    ECalSegmentsVect.clear();
+
 }
 
 //********************************************************************
@@ -312,6 +355,7 @@ AnaTrackB::AnaTrackB(const AnaTrackB& track):AnaParticleMomB(track){
 
     nTargetSegments  = track.nTargetSegments;
     nTPCSegments  = track.nTPCSegments;
+    nECalSegments  = track.nECalSegments;
 
     EKin=track.EKin;
     for (Int_t i=0;i<track.nTargetSegments;i++)
@@ -320,9 +364,14 @@ AnaTrackB::AnaTrackB(const AnaTrackB& track):AnaParticleMomB(track){
     for (Int_t i=0;i<track.nTPCSegments;i++)
         TPCSegments[i] = track.TPCSegments[i]->Clone();
 
+    for (Int_t i=0;i<track.nECalSegments;i++)
+        ECalSegments[i] = track.ECalSegments[i]->Clone();
+
 
     TargetSegmentsVect.clear();
     TPCSegmentsVect.clear();
+    ECalSegmentsVect.clear();
+
 }
 
 //********************************************************************

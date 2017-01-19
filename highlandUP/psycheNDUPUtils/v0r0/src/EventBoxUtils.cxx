@@ -73,7 +73,7 @@ void boxUtils::FillTracksWithTPC(AnaEventB& event, SubDetId::SubDetEnum det){
    //   std::cout << "Warning. This track has no TPC segments" << std::endl;
     //  continue;
    // }
-
+//      std::cout<<track->GetTrueParticle()->PDG<<" "<<processTPC<<" "<<(processTarget1 && anaUtils::TrackUsesDet(*track, SubDetId::kTarget1))<<std::endl;
     if (processTPC){
       EventBox->RecObjectsInGroup[EventBox::kTracksWithTPC][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPC]++] = track;
 

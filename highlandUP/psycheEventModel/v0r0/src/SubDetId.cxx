@@ -12,9 +12,13 @@ const unsigned long SubDetId::DetMask[] = {
     1<<SubDetId::kTPCDown2,
     1<<SubDetId::kTarget1,
     1<<SubDetId::kTarget2,
+    1<<SubDetId::kDsECal,
+    1<<SubDetId::kP0DECal,
+    1<<SubDetId::kBrlECal,
     1<<SubDetId::kInvalidSubdetector,
     1<<SubDetId::kTPC     | SubDetId::MakeMask(SubDetId::kTPCUp1,       SubDetId::kTPCDown2),
     1<<SubDetId::kTarget    | SubDetId::MakeMask(SubDetId::kTarget1,       SubDetId::kTarget2),
+    1<<SubDetId::kECal    | SubDetId::MakeMask(SubDetId::kDsECal,       SubDetId::kBrlECal),
     1<<SubDetId::kInvalid
 };
 
@@ -73,6 +77,12 @@ int SubDetId::GetTarget(unsigned long BitField){
     else if (BitField & DetMask[SubDetId::kTarget2]) return 2;
     else return -1;
 }
+int SubDetId::GetECal(unsigned long BitField){
+    if      (BitField & DetMask[SubDetId::kDsECal]) return 1;
+    else if (BitField & DetMask[SubDetId::kP0DECal]) return 2;
+    else if (BitField & DetMask[SubDetId::kBrlECal]) return 3;
+    else return -1;
+}
 
 void SubDetId::SetDetectorSystemFields(unsigned long &BitField){
     for(int i = SubDetId::kTPCUp1; i < SubDetId::kInvalidSubdetector; ++i){ //loop through sub-detectors list
@@ -111,10 +121,13 @@ bool SubDetId::IsTarget(SubDetId::SubDetEnum det){
 bool SubDetId::IsTPC(SubDetId::SubDetEnum det){
     return ((det <= SubDetId::kTPCDown2 && det >= SubDetId::kTPCUp1) || det >= SubDetId::kTPC);
 }
+bool SubDetId::IsECal(SubDetId::SubDetEnum det){
+    return ((det <= SubDetId::kBrlECal && det >= SubDetId::kDsECal) || det >= SubDetId::kECal);
+}
 
 SubDetId::SubDetEnum SubDetId::GetSubdetectorEnum(unsigned long BitField){
  
-    BitField = BitField & MakeMask(SubDetId::kTarget2, SubDetId::kTPCUp1);
+    BitField = BitField & MakeMask(SubDetId::kBrlECal, SubDetId::kTPCUp1);
     int nBits = NumberOfSetBits(BitField);
     if(nBits!=1){
         std::cout << " Error: Track contains multiple subdetectors, cannot find a single subdetector enum to return." << std::endl;

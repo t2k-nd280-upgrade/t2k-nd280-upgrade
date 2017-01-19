@@ -5,8 +5,8 @@
 // 27/7/16 Davide Sgalaberna
 //
 
-#ifndef TND280UpTrack_h
-#define TND280UpTrack_h 1
+#ifndef TND280UpTrack_hxx
+#define TND280UpTrack_hxx 1
 
 #include <TTree.h>
 #include <TFile.h>
@@ -54,6 +54,8 @@ public :
   
   void SetLengthTarget1(double length) {fLengthTarget1=length;};
   void SetLengthTarget2(double length) {fLengthTarget2=length;};
+  void SetLengthFGD1(double length)    {fLengthFGD1=length;};
+  void SetLengthFGD2(double length)    {fLengthFGD2=length;};
   void SetLengthTPCUp1(double length)  {fLengthTPCUp1=length;};
   void SetLengthTPCUp2(double length)  {fLengthTPCUp2=length;};
   void SetLengthTPCDown1(double length){fLengthTPCDown1=length;};
@@ -61,6 +63,9 @@ public :
   void SetLengthForwTPC1(double length){fLengthForwTPC1=length;};
   void SetLengthForwTPC2(double length){fLengthForwTPC2=length;};
   void SetLengthForwTPC3(double length){fLengthForwTPC3=length;};
+  void SetLengthDsECal(double length)  {fLengthDsECal=length;};
+  void SetLengthP0DECal(double length) {fLengthP0DECal=length;};
+  void SetLengthBrlECal(double length) {fLengthBrlECal=length;};
 
   void SetLyzTPCUp1(double length)    {fLyzTPCUp1=length;};
   void SetLyzTPCUp2(double length)    {fLyzTPCUp2=length;};
@@ -70,15 +75,20 @@ public :
   void SetLyzForwTPC2(double length)  {fLyzForwTPC2=length;};
   void SetLyzForwTPC3(double length)  {fLyzForwTPC3=length;};
 
-  void SetEdepTarget1(double length)  {fEdepTarget1=length;};
-  void SetEdepTarget2(double length)  {fEdepTarget2=length;};
-  void SetEdepTPCUp1(double length)   {fEdepTPCUp1=length;};
-  void SetEdepTPCUp2(double length)   {fEdepTPCUp2=length;};
-  void SetEdepTPCDown1(double length) {fEdepTPCDown1=length;};
-  void SetEdepTPCDown2(double length) {fEdepTPCDown2=length;};
-  void SetEdepForwTPC1(double length) {fEdepForwTPC1=length;};
-  void SetEdepForwTPC2(double length) {fEdepForwTPC2=length;};
-  void SetEdepForwTPC3(double length) {fEdepForwTPC3=length;};
+  void SetEdepTarget1(double edep)  {fEdepTarget1=edep;};
+  void SetEdepTarget2(double edep)  {fEdepTarget2=edep;};
+  void SetEdepFGD1(double edep)     {fEdepFGD1=edep;};
+  void SetEdepFGD2(double edep)     {fEdepFGD2=edep;};
+  void SetEdepTPCUp1(double edep)   {fEdepTPCUp1=edep;};
+  void SetEdepTPCUp2(double edep)   {fEdepTPCUp2=edep;};
+  void SetEdepTPCDown1(double edep) {fEdepTPCDown1=edep;};
+  void SetEdepTPCDown2(double edep) {fEdepTPCDown2=edep;};
+  void SetEdepForwTPC1(double edep) {fEdepForwTPC1=edep;};
+  void SetEdepForwTPC2(double edep) {fEdepForwTPC2=edep;};
+  void SetEdepForwTPC3(double edep) {fEdepForwTPC3=edep;};
+  void SetEdepDsECal(double edep)   {fEdepDsECal=edep;};
+  void SetEdepP0DECal(double edep)  {fEdepP0DECal=edep;};
+  void SetEdepBrlECal(double edep)  {fEdepBrlECal=edep;};
 
   int GetTrackID() {return fTrackID;};
   int GetParentID() {return fParentID;};
@@ -95,6 +105,8 @@ public :
   
   double GetLengthTarget1() {return fLengthTarget1;};
   double GetLengthTarget2() {return fLengthTarget2;};
+  double GetLengthFGD1()    {return fLengthFGD1;};
+  double GetLengthFGD2()    {return fLengthFGD2;};
   double GetLengthTPCUp1()  {return fLengthTPCUp1;};
   double GetLengthTPCUp2()  {return fLengthTPCUp2;};
   double GetLengthTPCDown1(){return fLengthTPCDown1;};
@@ -102,6 +114,9 @@ public :
   double GetLengthForwTPC1(){return fLengthForwTPC1;};
   double GetLengthForwTPC2(){return fLengthForwTPC2;};
   double GetLengthForwTPC3(){return fLengthForwTPC3;};
+  double GetLengthDsECal()  {return fLengthDsECal;};
+  double GetLengthBrlECal() {return fLengthBrlECal;};
+  double GetLengthP0DECal() {return fLengthP0DECal;};
 
   double GetLyzTPCUp1()    {return fLyzTPCUp1;};
   double GetLyzTPCUp2()    {return fLyzTPCUp2;};
@@ -113,13 +128,18 @@ public :
   
   double GetEdepTarget1()  {return fEdepTarget1;};
   double GetEdepTarget2()  {return fEdepTarget2;};
+  double GetEdepFGD1()     {return fEdepFGD1;};
+  double GetEdepFGD2()     {return fEdepFGD2;};
   double GetEdepTPCUp1()   {return fEdepTPCUp1;};
   double GetEdepTPCUp2()   {return fEdepTPCUp2;};
   double GetEdepTPCDown1() {return fEdepTPCDown1;};
   double GetEdepTPCDown2() {return fEdepTPCDown2;};
   double GetEdepForwTPC1() {return fEdepForwTPC1;};
   double GetEdepForwTPC2() {return fEdepForwTPC2;};
-  double GetEdepForwTPC3() {return fEdepForwTPC3;};
+  double GetEdepForwTPC3() {return fEdepForwTPC3;};  
+  double GetEdepDsECal()   {return fEdepDsECal;};
+  double GetEdepBrlECal()  {return fEdepBrlECal;};
+  double GetEdepP0DECal()  {return fEdepP0DECal;};
 
   void PrintTrack();
 
@@ -143,6 +163,8 @@ private :
   double fSDLength;
   double fLengthTarget1;
   double fLengthTarget2;
+  double fLengthFGD1;
+  double fLengthFGD2;
   double fLengthTPCUp1;
   double fLengthTPCUp2;
   double fLengthTPCDown1;
@@ -150,6 +172,9 @@ private :
   double fLengthForwTPC1;
   double fLengthForwTPC2;
   double fLengthForwTPC3;
+  double fLengthDsECal;
+  double fLengthBrlECal;
+  double fLengthP0DECal;
   double fLyzTPCUp1;
   double fLyzTPCUp2;
   double fLyzTPCDown1;
@@ -159,6 +184,8 @@ private :
   double fLyzForwTPC3;
   double fEdepTarget1;
   double fEdepTarget2;
+  double fEdepFGD1;
+  double fEdepFGD2;
   double fEdepTPCUp1;
   double fEdepTPCUp2;
   double fEdepTPCDown1;
@@ -166,6 +193,9 @@ private :
   double fEdepForwTPC1;
   double fEdepForwTPC2;
   double fEdepForwTPC3;
+  double fEdepDsECal;
+  double fEdepBrlECal;
+  double fEdepP0DECal;
 
   ClassDef(TND280UpTrack,2)
 };
