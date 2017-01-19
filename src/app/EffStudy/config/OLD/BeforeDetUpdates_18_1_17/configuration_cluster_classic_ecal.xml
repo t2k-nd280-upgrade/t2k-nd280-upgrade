@@ -23,9 +23,9 @@
   <Path2file>
     /neutrino/data7/davide/files/ND280Upgrade/ 
   </Path2file>
-
+  
   <filename>
-    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_TPCsAndTarg_6E20POT.root
+    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_ECAL_6E20POT.root
   </filename>
 
   <treename>  
@@ -289,6 +289,7 @@
     false
    </UseFGD2>
 
+
    <UseMagnet>
     false
    </UseMagnet>
@@ -300,18 +301,15 @@
    </UseBasket>
 
    <UseDsECal>
-    false
+    true
    </UseDsECal>
    <UseBrlECal>
-    false
+    true
    </UseBrlECal>
    <UseP0DECal>
-    false
+    true
    </UseP0DECal>
 
-   <UseP0D>
-    true
-   </UseP0D>
 
    <!-- Invisible detectors -->
 
@@ -344,9 +342,6 @@
 
    <!-- To fix visualization for detectors below -->
    <!-- always drawn if implented to the geometry -->
-   <InvisSMRD>
-     false
-   </InvisSMRD>
    <InvisDsECal>
      false
    </InvisDsECal>
@@ -356,9 +351,9 @@
    <InvisP0DECal>
      false
    </InvisP0DECal>
-   <InvisP0D>
+   <InvisSMRD>
      false
-   </InvisP0D>
+   </InvisSMRD>
 
 </Dependency>
 

@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/GENIE_nd280mc_upclassic_6E20POT.root
+    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_TPCsAndTarg_6E20POT.root
   </filename>
 
   <treename>  
@@ -309,6 +309,9 @@
     false
    </UseP0DECal>
 
+   <UseP0D>
+    true
+   </UseP0D>
 
    <!-- Invisible detectors -->
 
@@ -341,6 +344,9 @@
 
    <!-- To fix visualization for detectors below -->
    <!-- always drawn if implented to the geometry -->
+   <InvisSMRD>
+     false
+   </InvisSMRD>
    <InvisDsECal>
      false
    </InvisDsECal>
@@ -350,9 +356,9 @@
    <InvisP0DECal>
      false
    </InvisP0DECal>
-   <InvisSMRD>
+   <InvisP0D>
      false
-   </InvisSMRD>
+   </InvisP0D>
 
 </Dependency>
 

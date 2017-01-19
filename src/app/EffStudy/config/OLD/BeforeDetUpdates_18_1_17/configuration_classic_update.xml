@@ -9,11 +9,11 @@
 <Dependency>
   
   <StoreGeometry>
-    0
+    1
   </StoreGeometry>
   
   <IsRandomSeed>
-    1
+    0
   </IsRandomSeed>
   
   <Generator>      
@@ -23,9 +23,9 @@
   <Path2file>
     /neutrino/data7/davide/files/ND280Upgrade/ 
   </Path2file>
-  
+
   <filename>
-    GENIE/GENIE_nd280mc_upclassic_6E20POT.root
+    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_TPCsAndTarg_6E20POT.root
   </filename>
 
   <treename>  
@@ -289,7 +289,6 @@
     false
    </UseFGD2>
 
-
    <UseMagnet>
     false
    </UseMagnet>
@@ -301,13 +300,13 @@
    </UseBasket>
 
    <UseDsECal>
-    true
+    false
    </UseDsECal>
    <UseBrlECal>
-    true
+    false
    </UseBrlECal>
    <UseP0DECal>
-    true
+    false
    </UseP0DECal>
 
 
@@ -342,6 +341,9 @@
 
    <!-- To fix visualization for detectors below -->
    <!-- always drawn if implented to the geometry -->
+   <InvisSMRD>
+     false
+   </InvisSMRD>
    <InvisDsECal>
      false
    </InvisDsECal>
@@ -351,9 +353,6 @@
    <InvisP0DECal>
      false
    </InvisP0DECal>
-   <InvisSMRD>
-     false
-   </InvisSMRD>
 
 </Dependency>
 
