@@ -734,7 +734,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
       Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.);
     }
     else{
-      Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.);
+      Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.); // Fix for when also FGDs are used!!!
     }
     SetTargetPos1(0,0,Target1_Z);
   }
@@ -1500,19 +1500,19 @@ void ExN02DetectorConstruction::DefineMaterials() {
   lead->AddElement(elPb,100.*perCent);
   gMan->SetDrawAtt(lead,kGray+1);// ND280 class
 
-  // //Brass -- The density is from simetric.co.uk is 8400 -- 8730 gm/cm3
-  // density = 8.50*g/cm3;
-  // G4Material* brass = new G4Material(name="Brass", density, nel=2);
-  // brass->AddElement(elCu, fractionmass = 90*perCent);
-  // brass->AddElement(elZn, fractionmass = 10*perCent);
-  // gMan->SetDrawAtt(brass,kOrange-2);// ND280 class
+  //Brass -- The density is from simetric.co.uk is 8400 -- 8730 gm/cm3
+  density = 8.50*g/cm3;
+  G4Material* brass = new G4Material(name="Brass", density, nel=2);
+  brass->AddElement(elCu, fractionmass = 90*perCent);
+  brass->AddElement(elZn, fractionmass = 10*perCent);
+  gMan->SetDrawAtt(brass,kOrange-2);// ND280 class
 
-  // //Bronze -- The density is from simetric.co.uk is 7700 -- 8920 gm/cm3
-  // density = 8.5*g/cm3;
-  // G4Material* bronze = new G4Material(name="Bronze", density, nel=2);
-  // bronze->AddElement(elCu, fractionmass = 60*perCent);
-  // bronze->AddElement(elSn, fractionmass = 40*perCent);
-  // gMan->SetDrawAtt(bronze,kOrange-3);// ND280 class
+  //Bronze -- The density is from simetric.co.uk is 7700 -- 8920 gm/cm3
+  density = 8.5*g/cm3;
+  G4Material* bronze = new G4Material(name="Bronze", density, nel=2);
+  bronze->AddElement(elCu, fractionmass = 60*perCent);
+  bronze->AddElement(elSn, fractionmass = 40*perCent);
+  gMan->SetDrawAtt(bronze,kOrange-3);// ND280 class
 
   //Stainless Steel.  The density is taken from average 304 grade SS.
   density = 8.0*g/cm3;
@@ -1651,20 +1651,20 @@ void ExN02DetectorConstruction::DefineMaterials() {
   scintillator->AddElement(elH, 8);
   gMan->SetDrawAtt(scintillator,kGreen);// ND280 class
 
-  // // P0D Scintillator -- This has the average polystyrene plastic
-  // // scintillator composition as defined in the PDG C6H5CH=CH2 (this is a
-  // // net C8H8).  The density of the P0D scintillator is taken from the assay
-  // // of the MINERvA scintillator which is manufactured on the same equipment
-  // // as the P0D scintillator and is chemically the same.  The measured
-  // // density of the MINERvA strips are 1.058 +- 0.003, including the Ti02
-  // // coating.  This corresponds to a scintillator density of 1.0506, which
-  // // has been rounded to 1.051
-  // density = 1.051*g/cm3; 
-  // G4Material* p0dScintillator 
-  //   = new G4Material(name="P0DScintillator", density, nel=2);
-  // p0dScintillator->AddElement(elC, 8);
-  // p0dScintillator->AddElement(elH, 8);
-  // gMan->SetDrawAtt(p0dScintillator,kGreen);// ND280 class
+  // P0D Scintillator -- This has the average polystyrene plastic
+  // scintillator composition as defined in the PDG C6H5CH=CH2 (this is a
+  // net C8H8).  The density of the P0D scintillator is taken from the assay
+  // of the MINERvA scintillator which is manufactured on the same equipment
+  // as the P0D scintillator and is chemically the same.  The measured
+  // density of the MINERvA strips are 1.058 +- 0.003, including the Ti02
+  // coating.  This corresponds to a scintillator density of 1.0506, which
+  // has been rounded to 1.051
+  density = 1.051*g/cm3; 
+  G4Material* p0dScintillator 
+    = new G4Material(name="P0DScintillator", density, nel=2);
+  p0dScintillator->AddElement(elC, 8);
+  p0dScintillator->AddElement(elH, 8);
+  gMan->SetDrawAtt(p0dScintillator,kGreen);// ND280 class
 
   // FGD Scintillator -- This is the average polystyrene scintillator for
   // the FGD.  The FGD density is based on our measurements of individual
@@ -1689,32 +1689,32 @@ void ExN02DetectorConstruction::DefineMaterials() {
   scintillatorCoating->AddMaterial(scintillator,fractionmass = 85*perCent);
   gMan->SetDrawAtt(scintillatorCoating,kGreen);// ND280 class
     
-  // // PVC -- Polyvinyl Chloride CH2=CHCl = C3H3Cl
-  // density = 1.38*g/cm3;
-  // G4Material* pvc
-  //   = new G4Material(name="PVC", density, nel=3);
-  // pvc->AddElement(elC, 3);
-  // pvc->AddElement(elH, 3);
-  // pvc->AddElement(elCl, 1);
-  // gMan->SetDrawAtt(pvc,kGray+1);// ND280 class
+  // PVC -- Polyvinyl Chloride CH2=CHCl = C3H3Cl
+  density = 1.38*g/cm3;
+  G4Material* pvc
+    = new G4Material(name="PVC", density, nel=3);
+  pvc->AddElement(elC, 3);
+  pvc->AddElement(elH, 3);
+  pvc->AddElement(elCl, 1);
+  gMan->SetDrawAtt(pvc,kGray+1);// ND280 class
 
-  // // HDPE -- High Density Polyethylene used in P0D water bag
-  // density = 0.94*g/cm3;
-  // G4Material* hdpe
-  //   = new G4Material(name="HDPE", density, nel=2);
-  // hdpe->AddElement(elC, natoms=1);
-  // hdpe->AddElement(elH, natoms=2);
-  // gMan->SetDrawAtt(hdpe,kCyan-10);// ND280 class
+  // HDPE -- High Density Polyethylene used in P0D water bag
+  density = 0.94*g/cm3;
+  G4Material* hdpe
+    = new G4Material(name="HDPE", density, nel=2);
+  hdpe->AddElement(elC, natoms=1);
+  hdpe->AddElement(elH, natoms=2);
+  gMan->SetDrawAtt(hdpe,kCyan-10);// ND280 class
     
-  // // P0DuleEpoxy -- The Epoxy used to hold the P0Dule together.  Density is
-  // // from the Henkel Hysol data sheet.
-  // density = 1.36*g/cm3;
-  // G4Material* p0duleEpoxy
-  //   = new G4Material(name="P0DuleEpoxy", density, nel=3);
-  // p0duleEpoxy->AddElement(elC, 3);
-  // p0duleEpoxy->AddElement(elH, 3);
-  // p0duleEpoxy->AddElement(elCl, 1);
-  // gMan->SetDrawAtt(p0duleEpoxy,kBlue+4);// ND280 class
+  // P0DuleEpoxy -- The Epoxy used to hold the P0Dule together.  Density is
+  // from the Henkel Hysol data sheet.
+  density = 1.36*g/cm3;
+  G4Material* p0duleEpoxy
+    = new G4Material(name="P0DuleEpoxy", density, nel=3);
+  p0duleEpoxy->AddElement(elC, 3);
+  p0duleEpoxy->AddElement(elH, 3);
+  p0duleEpoxy->AddElement(elCl, 1);
+  gMan->SetDrawAtt(p0duleEpoxy,kBlue+4);// ND280 class
     
   // // FGD Glue
   // density = 1.365*g/cm3;

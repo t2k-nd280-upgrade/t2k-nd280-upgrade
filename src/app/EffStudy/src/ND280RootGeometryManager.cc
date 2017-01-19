@@ -96,6 +96,7 @@ ND280RootGeometryManager::ND280RootGeometryManager() {
   ShouldPrintMass("/t2k/OA/Magnet");
   ShouldPrintMass("/t2k/OA/Magnet/LeftClam");
   ShouldPrintMass("/t2k/OA/Magnet/RightClam");
+
   ShouldPrintMass("/t2k/OA/Magnet/LeftClam/P0DECal");
   ShouldPrintMass("/t2k/OA/Magnet/RightClam/P0DECal");
   ShouldPrintMass("/t2k/OA/Magnet/LeftClam/BrlECal");
@@ -108,6 +109,10 @@ ND280RootGeometryManager::ND280RootGeometryManager() {
   //ShouldPrintMass("/t2k/OA/Magnet/RightClam/BrlECal");
 
   ShouldPrintMass("/t2k/OA/Magnet/Basket");
+
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/P0D");  
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/P0D/USECal");  
+
   ShouldPrintMass("/t2k/OA/Magnet/Basket/DsECal");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC1");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC2");

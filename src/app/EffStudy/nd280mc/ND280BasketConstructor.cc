@@ -33,9 +33,9 @@
 #include "ND280StructuralBeamConstructor.hh"
 //#include "ND280FGDMiniCrateConstructor.hh"
 
-//#include "p0d/ND280P0DConstructor.hh"
-//#include "p0d/ND280P0DSupportConstructor.hh"
-//#include "ND280TrackerConstructor.hh"
+#include "p0d/ND280P0DConstructor.hh" // NEW P0D
+#include "p0d/ND280P0DSupportConstructor.hh" // NEW P0D
+//#include "ND280TrackerConstructor.hh" 
 #include "ecal/ND280DsECalConstructor.hh"
 
 class ND280BasketMessenger: public ND280ConstructorMessenger {
@@ -167,8 +167,9 @@ void ND280BasketConstructor::Init(void) {
     
     AddConstructor(new ND280StructuralBeamConstructor("Beam",this));
     AddConstructor(new ND280IBeamConstructor("Rail",this));
-    // AddConstructor(new ND280P0DConstructor("P0D",this));
-    // AddConstructor(new ND280P0DSupportConstructor("P0DSupport",this));
+    
+    AddConstructor(new ND280P0DConstructor("P0D",this)); // NEW P0D
+    AddConstructor(new ND280P0DSupportConstructor("P0DSupport",this)); // NEW P0D
 
     if( GetND280XML()->GetXMLUseDsECal() ){        
       AddConstructor(new ND280DsECalConstructor("DsECal",this));
@@ -1403,34 +1404,47 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
   }
   
+
+
+
+
+  
   
 
+  // NEW P0D 
+  
 
-
-    /*
-    
     //////////////////////////////////////////
     // CONSTRUCT THE PI-ZERO DETECTOR
     //////////////////////////////////////////
     ND280P0DConstructor& p0d = Get<ND280P0DConstructor>("P0D");
     G4LogicalVolume* p0dVolume = p0d.GetPiece();
-
+    
     if (fP0DPosition>10*meter) {
         fP0DPosition = -GetInnerLength()/2;
         fP0DPosition += p0d.GetUpstreamSpace();
         fP0DPosition += p0d.GetLength()/2;
     }
 
-    ND280Log("P0D Envelope Length: "
-                 << p0d.GetLength()/mm << " mm");
-    ND280Log("P0D Z Center: " << fP0DPosition / mm << " mm"
-             << " from "
-             << (fP0DPosition - p0d.GetLength()/2)/mm << " mm"
-             << " to " 
-             << (fP0DPosition + p0d.GetLength()/2)/mm << " mm");
+    // ND280Log("P0D Envelope Length: "
+    //              << p0d.GetLength()/mm << " mm");
+    // ND280Log("P0D Z Center: " << fP0DPosition / mm << " mm"
+    //          << " from "
+    //          << (fP0DPosition - p0d.GetLength()/2)/mm << " mm"
+    //          << " to " 
+    //          << (fP0DPosition + p0d.GetLength()/2)/mm << " mm");
+    G4cout << "P0D Envelope Length: "
+	   << p0d.GetLength()/mm << " mm" << G4endl;
+    G4cout << "P0D Z Center: " << fP0DPosition / mm << " mm"
+	   << " from "
+	   << (fP0DPosition - p0d.GetLength()/2)/mm << " mm"
+	   << " to " 
+	   << (fP0DPosition + p0d.GetLength()/2)/mm << " mm" << G4endl;
     
     double p0dDownstreamEnd = fP0DPosition + p0d.GetLength()/2;
+    
 
+    
     //////////////////////////////////////////
     // CONSTRUCT THE PI-ZERO DETECTOR SUPPORT
     //////////////////////////////////////////
@@ -1439,9 +1453,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     p0dSupport.SetWidth(GetInnerWidth());
     p0dSupport.SetUSECalSupportLength(p0d.GetUSECalLength());
-    p0dSupport.SetUSTargetSupportLength(p0d.GetUSTargetLength());
-    p0dSupport.SetCTargetSupportLength(p0d.GetCTargetLength());
-    p0dSupport.SetCECalSupportLength(p0d.GetCECalLength());
+    p0dSupport.SetUSTargetSupportLength(p0d.GetUSTargetLength()); 
+    p0dSupport.SetCTargetSupportLength(p0d.GetCTargetLength()); 
+    p0dSupport.SetCECalSupportLength(p0d.GetCECalLength()); 
 
     G4LogicalVolume* p0dSupportVolume = p0dSupport.GetPiece();
     double supportTop = -GetOuterHeight()/2 + GetP0DSupportStructureHeight();
@@ -1455,6 +1469,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       false,    // no boolean operations
                       0);       // not a copy.
 
+
     double p0dXPosition = (-GetInnerWidth()/2 
                            +p0d.GetLISpace()
                            +p0d.GetWidth()/2);
@@ -1466,10 +1481,16 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                            +p0d.GetBottomSpace()
                            +p0d.GetHeight()/2);
 
-    ND280Log("P0D X Position: " << p0dXPosition << " mm"
-             << " LI space: " << p0dXLISpace
-             << " Electronics space: " << p0dXElecSpace);
-    ND280Log("P0D Y Position: " << p0dYPosition << " mm");
+    // ND280Log("P0D X Position: " << p0dXPosition << " mm"
+    //          << " LI space: " << p0dXLISpace
+    //          << " Electronics space: " << p0dXElecSpace);
+    // ND280Log("P0D Y Position: " << p0dYPosition << " mm");
+    G4cout << "P0D X Position: " << p0dXPosition << " mm"
+	   << " LI space: " << p0dXLISpace
+	   << " Electronics space: " << p0dXElecSpace << G4endl;
+    G4cout << "P0D Y Position: " << p0dYPosition << " mm" << G4endl;
+
+    
     
     // Put the P0D on top of the support.
     new G4PVPlacement(0,        // rotation
@@ -1481,7 +1502,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       logVolume, // mother  volume
                       false,    // no boolean operations
                       0);       // not a copy.
-  */
+    ////
+
+   
 
 
 

@@ -31,6 +31,7 @@ G4LogicalVolume* ND280BrlECalLeftConstructor::GetPiece() {
                                                    FindMaterial("Air"),
                                                    GetName());
 
+
     // Thin Aluminium Bulkhead Plate
 
     // Spans entire detector in x-z.
@@ -48,7 +49,7 @@ G4LogicalVolume* ND280BrlECalLeftConstructor::GetPiece() {
                       logical,// mother volume
                       false,// no boolean operations
                       0);// copy number
-
+    
     // Base - Carbon Panel
     double base_y = GetWidthY() - plate_y;
     double base_z = ND280ECal::Brl::BaseThicknessSide;

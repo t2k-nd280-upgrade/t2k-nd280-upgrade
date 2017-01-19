@@ -37,7 +37,7 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
   
   fMomentum = aStep->GetPostStepPoint()->GetMomentum();
   fEdep = aStep->GetTotalEnergyDeposit();
-  fStepLength = aStep->GetStepLength();
+  fStepLength = aStep->GetStepLength() / mm;
   
   G4ThreeVector prestepPos = aStep->GetPreStepPoint()->GetPosition();
   G4ThreeVector poststepPos = aStep->GetPostStepPoint()->GetPosition();
