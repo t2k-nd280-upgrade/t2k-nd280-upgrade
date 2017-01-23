@@ -1656,6 +1656,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     G4String HCname = hcT->GetHCname(i);
     
     // The collection name is given by <detector name>/<Primitive Scorer name>.
+    
+
+    G4cout << "Sensitive detector: " << SDname+"/"+HCname << G4endl;
+    
     int HCId = sdM->GetCollectionID(SDname+"/"+HCname);
     G4VHitsCollection* g4Hits = hce->GetHC(HCId);
     if (g4Hits->GetSize()<1) continue;
@@ -1666,7 +1670,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {                                                                                                         
                            
        //ND280HitSegment* g4Hit
-      //= dynamic_cast<ND280HitSegment*>(g4Hits->GetHit(h)); // used in nd280mc      
+      //= dynamic_cast<ND280HitSegment*>(g4Hits->GetHit(h)); // used in nd280mc      c
       ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));
       
       //double energy = g4Hit->GetEnergyDeposit(); // used in nd280mc

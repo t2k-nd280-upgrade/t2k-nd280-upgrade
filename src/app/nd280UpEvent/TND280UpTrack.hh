@@ -64,8 +64,9 @@ public :
   void SetLengthForwTPC2(double length){fLengthForwTPC2=length;};
   void SetLengthForwTPC3(double length){fLengthForwTPC3=length;};
   void SetLengthDsECal(double length)  {fLengthDsECal=length;};
-  void SetLengthP0DECal(double length) {fLengthP0DECal=length;};
   void SetLengthBrlECal(double length) {fLengthBrlECal=length;};
+  void SetLengthP0DECal(double length) {fLengthP0DECal=length;};
+  void SetLengthUSECalP0D(double length) {fLengthUSECalP0D=length;};
 
   void SetLyzTPCUp1(double length)    {fLyzTPCUp1=length;};
   void SetLyzTPCUp2(double length)    {fLyzTPCUp2=length;};
@@ -87,8 +88,9 @@ public :
   void SetEdepForwTPC2(double edep) {fEdepForwTPC2=edep;};
   void SetEdepForwTPC3(double edep) {fEdepForwTPC3=edep;};
   void SetEdepDsECal(double edep)   {fEdepDsECal=edep;};
-  void SetEdepP0DECal(double edep)  {fEdepP0DECal=edep;};
   void SetEdepBrlECal(double edep)  {fEdepBrlECal=edep;};
+  void SetEdepP0DECal(double edep)  {fEdepP0DECal=edep;};
+  void SetEdepUSECalP0D(double edep){fEdepUSECalP0D=edep;};
 
   int GetTrackID() {return fTrackID;};
   int GetParentID() {return fParentID;};
@@ -117,6 +119,7 @@ public :
   double GetLengthDsECal()  {return fLengthDsECal;};
   double GetLengthBrlECal() {return fLengthBrlECal;};
   double GetLengthP0DECal() {return fLengthP0DECal;};
+  double GetLengthUSECalP0D(){return fLengthUSECalP0D;};
 
   double GetLyzTPCUp1()    {return fLyzTPCUp1;};
   double GetLyzTPCUp2()    {return fLyzTPCUp2;};
@@ -140,7 +143,8 @@ public :
   double GetEdepDsECal()   {return fEdepDsECal;};
   double GetEdepBrlECal()  {return fEdepBrlECal;};
   double GetEdepP0DECal()  {return fEdepP0DECal;};
-
+  double GetEdepUSECalP0D(){return fEdepUSECalP0D;};
+  
   void PrintTrack();
 
 private :
@@ -175,6 +179,7 @@ private :
   double fLengthDsECal;
   double fLengthBrlECal;
   double fLengthP0DECal;
+  double fLengthUSECalP0D;
   double fLyzTPCUp1;
   double fLyzTPCUp2;
   double fLyzTPCDown1;
@@ -196,6 +201,7 @@ private :
   double fEdepDsECal;
   double fEdepBrlECal;
   double fEdepP0DECal;
+  double fEdepUSECalP0D;
 
   ClassDef(TND280UpTrack,2)
 };

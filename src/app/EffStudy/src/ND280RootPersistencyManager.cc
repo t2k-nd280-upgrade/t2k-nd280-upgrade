@@ -312,6 +312,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double LengthDsECal     = 0.;
     double LengthBrlECal    = 0.;
     double LengthP0DECal    = 0.;
+    double LengthUSECalP0D  = 0.;
 
     double LyzTPCUp1     = 0.;
     double LyzTPCUp2     = 0.;
@@ -335,6 +336,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double EdepDsECal     = 0.;
     double EdepBrlECal    = 0.;
     double EdepP0DECal    = 0.;
+    double EdepUSECalP0D  = 0.;
 
     G4String detname_prev = "undefined";
     
@@ -437,38 +439,61 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	  EdepForwTPC3   += stepedep;
 	}
 	
-	else if( detname_curr.contains("/t2k/OA/Magnet/Basket/DsECal/Module/Active/ScintHoriz/Bar") ||
-		 detname_curr.contains("/t2k/OA/Magnet/Basket/DsECal/Module/Active/ScintVert/Bar")
+	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/DsECal")){
+	  
+	  LengthDsECal += steplength;
+
+	  if( detname_curr.contains("/t2k/OA/Magnet/Basket/DsECal/Module/Active/ScintHoriz/Bar") ||
+	      detname_curr.contains("/t2k/OA/Magnet/Basket/DsECal/Module/Active/ScintVert/Bar")
 		 ){
-	  LengthDsECal += steplength;	
-	  EdepDsECal   += stepedep;
+	    EdepDsECal   += stepedep;
+	  }
 	}
-	else if( detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/TopLeftBotRight/Active/ScintPara/Bar") ||
-		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/LeftSide/Active/ScintPara/Bar")        ||
-		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/BotLeftTopRight/Active/ScintPara/Bar") ||
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/TopLeftBotRight/Active/ScintPara/Bar")||       
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/RightSide/Active/ScintPara/Bar")      || 
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/BotLeftTopRight/Active/ScintPara/Bar")
-		 ){
-	  LengthP0DECal += steplength;	
-	  EdepP0DECal   += stepedep;
+	else if(detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal")){
+	  
+	  LengthP0DECal += steplength;
+	  
+	  if( detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/TopLeftBotRight/Active/ScintPara/Bar") ||
+	      detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/LeftSide/Active/ScintPara/Bar")        ||
+	      detname_curr.contains("/t2k/OA/Magnet/LeftClam/P0DECal/BotLeftTopRight/Active/ScintPara/Bar") ||
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/TopLeftBotRight/Active/ScintPara/Bar")||       
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/RightSide/Active/ScintPara/Bar")      || 
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/P0DECal/BotLeftTopRight/Active/ScintPara/Bar")
+	      ){
+	    EdepP0DECal   += stepedep;
+	  }
 	}
-	else if( detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/TopLeftBotRight/Active/ScintPara/Bar") ||
-		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/TopLeftBotRight/Active/ScintPerp/Bar") ||
-		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/LeftSide/Active/ScintPara/Bar")        ||
-		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/LeftSide/Active/ScintPerp/Bar")        ||       
-		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/BotLeftTopRight/Active/ScintPara/Bar") || 
-		 detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/BotLeftTopRight/Active/ScintPerp/Bar") ||
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/BotLeftTopRight/Active/ScintPara/Bar")|| 
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/BotLeftTopRight/Active/ScintPerp/Bar")|| 
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/RightSide/Active/ScintPara/Bar")      ||
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/RightSide/Active/ScintPerp/Bar")      ||
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/TopLeftBotRight/Active/ScintPara/Bar")||
-		 detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/TopLeftBotRight/Active/ScintPerp/Bar")
-		 ){
-	  LengthBrlECal += steplength;	
-	  EdepBrlECal   += stepedep;
+	else if(detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal")){
+	  
+	  LengthBrlECal += steplength;
+	  
+	  if( detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/TopLeftBotRight/Active/ScintPara/Bar") ||
+	      detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/TopLeftBotRight/Active/ScintPerp/Bar") ||
+	      detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/LeftSide/Active/ScintPara/Bar")        ||
+	      detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/LeftSide/Active/ScintPerp/Bar")        ||       
+	      detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/BotLeftTopRight/Active/ScintPara/Bar") || 
+	      detname_curr.contains("/t2k/OA/Magnet/LeftClam/BrlECal/BotLeftTopRight/Active/ScintPerp/Bar") ||
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/BotLeftTopRight/Active/ScintPara/Bar")|| 
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/BotLeftTopRight/Active/ScintPerp/Bar")|| 
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/RightSide/Active/ScintPara/Bar")      ||
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/RightSide/Active/ScintPerp/Bar")      ||
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/TopLeftBotRight/Active/ScintPara/Bar")||
+	      detname_curr.contains("/t2k/OA/Magnet/RightClam/BrlECal/TopLeftBotRight/Active/ScintPerp/Bar")
+	      ){
+	    EdepBrlECal   += stepedep;
+	  }
 	}
+	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/P0D/USECal")){
+	  
+	  LengthUSECalP0D += steplength;
+	  
+	  if( detname_curr.contains("/t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/X/Bar") ||
+	      detname_curr.contains("/t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/Y/Bar") 
+	      ){
+	    EdepUSECalP0D += stepedep;
+	  }
+	}
+
       }
             
       // Select points if first/last of the track or
@@ -567,7 +592,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetLengthForwTPC1(LengthForwTPC1);
     nd280Track->SetLengthForwTPC2(LengthForwTPC2);
     nd280Track->SetLengthForwTPC3(LengthForwTPC3);
-   
+    nd280Track->SetLengthDsECal(LengthDsECal);
+    nd280Track->SetLengthBrlECal(LengthBrlECal);
+    nd280Track->SetLengthP0DECal(LengthP0DECal);
+    nd280Track->SetLengthUSECalP0D(LengthUSECalP0D);
+    
     nd280Track->SetLyzTPCUp1(LyzTPCUp1);
     nd280Track->SetLyzTPCUp2(LyzTPCUp2);
     nd280Track->SetLyzTPCDown1(LyzTPCDown1);
@@ -587,6 +616,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetEdepForwTPC1(EdepForwTPC1);
     nd280Track->SetEdepForwTPC2(EdepForwTPC2);
     nd280Track->SetEdepForwTPC3(EdepForwTPC3);
+    nd280Track->SetEdepDsECal(EdepDsECal);
+    nd280Track->SetEdepBrlECal(EdepBrlECal);
+    nd280Track->SetEdepP0DECal(EdepP0DECal);
+    nd280Track->SetEdepUSECalP0D(EdepUSECalP0D);
     
     // Mark the trajectories to save.
     // // MarkTrajectories(anEvent); // loop over all the tracks again... --> don't use it!!!

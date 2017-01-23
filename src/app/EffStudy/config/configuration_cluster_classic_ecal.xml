@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_TPCsAndTarg_6E20POT.root
+    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_ECAL_6E20POT.root
   </filename>
 
   <treename>  
@@ -300,17 +300,17 @@
    </UseBasket>
 
    <UseDsECal>
-    false
+    true
    </UseDsECal>
    <UseBrlECal>
-    false
+    true
    </UseBrlECal>
    <UseP0DECal>
-    false
+    true
    </UseP0DECal>
 
    <UseP0D>
-    false
+    true
    </UseP0D>
 
    <!-- Invisible detectors -->

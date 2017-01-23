@@ -278,13 +278,6 @@ void SelND280UpEvent
   TH1D *hL_ForwTPC1_FV = new TH1D("hL_ForwTPC1_FV","hL_ForwTPC1_FV",200,0,2000);
   TH1D *hL_ForwTPC2_FV = new TH1D("hL_ForwTPC2_FV","hL_ForwTPC2_FV",200,0,2000);
   TH1D *hL_ForwTPC3_FV = new TH1D("hL_ForwTPC3_FV","hL_ForwTPC3_FV",200,0,2000);
-  TH1D *hL_DsECal_FV = new TH1D("hL_DsECal_FV","hL_DsECal_FV",200,0,2000);
-  TH1D *hL_BrlECal_FV = new TH1D("hL_BrlECal_FV","hL_BrlECal_FV",200,0,2000);
-  TH1D *hL_P0DECal_FV = new TH1D("hL_P0DECal_FV","hL_P0DECal_FV",200,0,2000);
-
-  TH1D *hL_DsECal_NoTPC = new TH1D("hL_DsECal_NoTPC","hL_DsECal_NoTPC",200,0,2000);
-  TH1D *hL_BrlECal_NoTPC = new TH1D("hL_BrlECal_NoTPC","hL_BrlECal_NoTPC",200,0,2000);
-  TH1D *hL_P0DECal_NoTPC = new TH1D("hL_P0DECal_NoTPC","hL_P0DECal_NoTPC",200,0,2000);
   
   TH1D *hL_Targ1_Cut = new TH1D("hL_Targ1_Cut","hL_Targ1_Cut",200,0,2000);
   TH1D *hL_Targ2_Cut = new TH1D("hL_Targ2_Cut","hL_Targ2_Cut",200,0,2000);
@@ -309,9 +302,6 @@ void SelND280UpEvent
   TH2D *hLVsMom_ForwTPC1_FV = new TH2D("hLVsMom_ForwTPC1_FV","hLVsMom_ForwTPC1_FV",200,0,2000,100,0,5000);
   TH2D *hLVsMom_ForwTPC2_FV = new TH2D("hLVsMom_ForwTPC2_FV","hLVsMom_ForwTPC2_FV",200,0,2000,100,0,5000);
   TH2D *hLVsMom_ForwTPC3_FV = new TH2D("hLVsMom_ForwTPC3_FV","hLVsMom_ForwTPC3_FV",200,0,2000,100,0,5000);
-  TH2D *hLVsMom_DsECal_FV = new TH2D("hLVsMom_DsECal_FV","hLVsMom_DsECal_FV",200,0,2000,100,0,5000);
-  TH2D *hLVsMom_BrlECal_FV = new TH2D("hLVsMom_BrlECal_FV","hLVsMom_BrlECal_FV",200,0,2000,100,0,5000);
-  TH2D *hLVsMom_P0DECal_FV = new TH2D("hLVsMom_P0DECal_FV","hLVsMom_P0DECal_FV",200,0,2000,100,0,5000);
 
   TH2D *hLVsMom_Targ1_Cut = new TH2D("hLVsMom_Targ1_Cut","hLVsMom_Targ1_Cut",200,0,2000,100,0,5000);  
   TH2D *hLVsMom_Targ2_Cut = new TH2D("hLVsMom_Targ2_Cut","hLVsMom_Targ2_Cut",200,0,2000,100,0,5000);  
@@ -324,10 +314,6 @@ void SelND280UpEvent
   TH2D *hLVsMom_ForwTPC1_Cut = new TH2D("hLVsMom_ForwTPC1_Cut","hLVsMom_ForwTPC1_Cut",200,0,2000,100,0,5000);
   TH2D *hLVsMom_ForwTPC2_Cut = new TH2D("hLVsMom_ForwTPC2_Cut","hLVsMom_ForwTPC2_Cut",200,0,2000,100,0,5000);
   TH2D *hLVsMom_ForwTPC3_Cut = new TH2D("hLVsMom_ForwTPC3_Cut","hLVsMom_ForwTPC3_Cut",200,0,2000,100,0,5000);
-  
-  TH2D *hLVsMom_DsECal_NoTPC = new TH2D("hLVsMom_DsECal_NoTPC","hLVsMom_DsECal_NoTPC",200,0,2000,100,0,5000);
-  TH2D *hLVsMom_BrlECal_NoTPC = new TH2D("hLVsMom_BrlECal_NoTPC","hLVsMom_BrlECal_NoTPC",200,0,2000,100,0,5000);
-  TH2D *hLVsMom_P0DECal_NoTPC = new TH2D("hLVsMom_P0DECal_NoTPC","hLVsMom_P0DECal_NoTPC",200,0,2000,100,0,5000);
 
   TH1D *hLyz_TPCUp1 = new TH1D("hLyz_TPCUp1","hLyz_TPCUp1",200,0,4000);
   TH1D *hLyz_TPCUp2 = new TH1D("hLyz_TPCUp2","hLyz_TPCUp2",200,0,4000);
@@ -372,6 +358,44 @@ void SelND280UpEvent
   TH2D *hLyzVsTheta_Rej_ForwTPC1 = new TH2D("hLyzVsTheta_Rej_ForwTPC1","hLyzVsTheta_Rej_ForwTPC1",200,0,4000,40,-4,4);
   TH2D *hLyzVsTheta_Rej_ForwTPC2 = new TH2D("hLyzVsTheta_Rej_ForwTPC2","hLyzVsTheta_Rej_ForwTPC2",200,0,4000,40,-4,4);
   TH2D *hLyzVsTheta_Rej_ForwTPC3 = new TH2D("hLyzVsTheta_Rej_ForwTPC3","hLyzVsTheta_Rej_ForwTPC3",200,0,4000,40,-4,4);
+  
+  // ECal
+
+  TH1D *hEdep_DsECal_FV = new TH1D("hEdep_DsECal_FV","hEdep_DsECal_FV",200,0,2000);
+  TH1D *hEdep_BrlECal_FV = new TH1D("hEdep_BrlECal_FV","hEdep_BrlECal_FV",200,0,2000);
+  TH1D *hEdep_P0DECal_FV = new TH1D("hEdep_P0DECal_FV","hEdep_P0DECal_FV",200,0,2000);
+  TH1D *hEdep_USECalP0D_FV = new TH1D("hEdep_USECalP0D_FV","hEdep_USECalP0D_FV",200,0,2000);
+  TH1D *hEdep_DsECal_NoTPC = new TH1D("hEdep_DsECal_NoTPC","hEdep_DsECal_NoTPC",200,0,2000);
+  TH1D *hEdep_BrlECal_NoTPC = new TH1D("hEdep_BrlECal_NoTPC","hEdep_BrlECal_NoTPC",200,0,2000);
+  TH1D *hEdep_P0DECal_NoTPC = new TH1D("hEdep_P0DECal_NoTPC","hEdep_P0DECal_NoTPC",200,0,2000);
+  TH1D *hEdep_USECalP0D_NoTPC = new TH1D("hEdep_USECalP0D_NoTPC","hEdep_USECalP0D_NoTPC",200,0,2000);
+  
+  TH1D *hL_DsECal_FV = new TH1D("hL_DsECal_FV","hL_DsECal_FV",200,0,2000);
+  TH1D *hL_BrlECal_FV = new TH1D("hL_BrlECal_FV","hL_BrlECal_FV",200,0,2000);
+  TH1D *hL_P0DECal_FV = new TH1D("hL_P0DECal_FV","hL_P0DECal_FV",200,0,2000);
+  TH1D *hL_USECalP0D_FV = new TH1D("hL_USECalP0D_FV","hL_USECalP0D_FV",200,0,2000);
+  TH1D *hL_DsECal_NoTPC = new TH1D("hL_DsECal_NoTPC","hL_DsECal_NoTPC",200,0,2000);
+  TH1D *hL_BrlECal_NoTPC = new TH1D("hL_BrlECal_NoTPC","hL_BrlECal_NoTPC",200,0,2000);
+  TH1D *hL_P0DECal_NoTPC = new TH1D("hL_P0DECal_NoTPC","hL_P0DECal_NoTPC",200,0,2000);
+  TH1D *hL_USECalP0D_NoTPC = new TH1D("hL_USECalP0D_NoTPC","hL_USECalP0D_NoTPC",200,0,2000);
+
+  TH2D *hLVsMom_DsECal_FV = new TH2D("hLVsMom_DsECal_FV","hLVsMom_DsECal_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_BrlECal_FV = new TH2D("hLVsMom_BrlECal_FV","hLVsMom_BrlECal_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_P0DECal_FV = new TH2D("hLVsMom_P0DECal_FV","hLVsMom_P0DECal_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_USECalP0D_FV = new TH2D("hLVsMom_USECalP0D_FV","hLVsMom_USECalP0D_FV",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_DsECal_NoTPC = new TH2D("hLVsMom_DsECal_NoTPC","hLVsMom_DsECal_NoTPC",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_BrlECal_NoTPC = new TH2D("hLVsMom_BrlECal_NoTPC","hLVsMom_BrlECal_NoTPC",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_P0DECal_NoTPC = new TH2D("hLVsMom_P0DECal_NoTPC","hLVsMom_P0DECal_NoTPC",200,0,2000,100,0,5000);
+  TH2D *hLVsMom_USECalP0D_NoTPC = new TH2D("hLVsMom_USECalP0D_NoTPC","hLVsMom_USECalP0D_NoTPC",200,0,2000,100,0,5000);
+
+  // TH2D *hLVsMomLoc_DsECal_FV = new TH2D("hLVsMomLoc_DsECal_FV","hLVsMomLoc_DsECal_FV",200,0,2000,100,0,5000);
+  // TH2D *hLVsMomLoc_BrlECal_FV = new TH2D("hLVsMomLoc_BrlECal_FV","hLVsMomLoc_BrlECal_FV",200,0,2000,100,0,5000);
+  // TH2D *hLVsMomLoc_P0DECal_FV = new TH2D("hLVsMomLoc_P0DECal_FV","hLVsMomLoc_P0DECal_FV",200,0,2000,100,0,5000);
+  // TH2D *hLVsMomLoc_DsECal_NoTPC = new TH2D("hLVsMomLoc_DsECal_NoTPC","hLVsMomLoc_DsECal_NoTPC",200,0,2000,100,0,5000);
+  // TH2D *hLVsMomLoc_BrlECal_NoTPC = new TH2D("hLVsMomLoc_BrlECal_NoTPC","hLVsMomLoc_BrlECal_NoTPC",200,0,2000,100,0,5000);
+  // TH2D *hLVsMomLoc_P0DECal_NoTPC = new TH2D("hLVsMomLoc_P0DECal_NoTPC","hLVsMomLoc_P0DECal_NoTPC",200,0,2000,100,0,5000);
+  
+  //
   
   TH1D *hMom = new TH1D("hMom","hMom",200,0,10000); 
   TH1D *hPDG = new TH1D("hPDG","hPDG",3000,-500,2500);
@@ -809,21 +833,23 @@ void SelND280UpEvent
       double length_forwtpc2 = nd280UpTrack->GetLengthForwTPC2();
       double length_forwtpc3 = nd280UpTrack->GetLengthForwTPC3();      
       
-      double length_dsecal   = nd280UpTrack->GetLengthDsECal();
-      double length_brlecal  = nd280UpTrack->GetLengthBrlECal();
-      double length_p0decal  = nd280UpTrack->GetLengthP0DECal();
-
-      double edep_dsecal   = nd280UpTrack->GetEdepDsECal();
-      double edep_brlecal  = nd280UpTrack->GetEdepBrlECal();
-      double edep_p0decal  = nd280UpTrack->GetEdepP0DECal();
+      double length_dsecal    = nd280UpTrack->GetLengthDsECal();
+      double length_brlecal   = nd280UpTrack->GetLengthBrlECal();
+      double length_p0decal   = nd280UpTrack->GetLengthP0DECal();
+      double length_usecalp0d = nd280UpTrack->GetLengthUSECalP0D();
+      double edep_dsecal      = nd280UpTrack->GetEdepDsECal();
+      double edep_brlecal     = nd280UpTrack->GetEdepBrlECal();
+      double edep_p0decal     = nd280UpTrack->GetEdepP0DECal();
+      double edep_usecalp0d   = nd280UpTrack->GetEdepUSECalP0D();
       
-      if(length_dsecal>0.) cout << "length_dsecal = " << length_dsecal << endl;
-      if(length_brlecal>0.) cout << "length_brlecal = " << length_brlecal << endl;
-      if(length_p0decal>0.) cout << "length_p0decal = " << length_p0decal << endl;
-
+      // if(length_dsecal>0.) cout << "length_dsecal = " << length_dsecal << endl;
+      //if(length_brlecal>0.) cout << "length_brlecal = " << length_brlecal << endl;
+      // if(length_p0decal>0.) cout << "length_p0decal = " << length_p0decal << endl;
+      //if(length_usecalp0d>0.) cout << "length_usecalp0d = " << length_usecalp0d << endl;
       //if(edep_dsecal>0.) cout << "edep_dsecal = " << edep_dsecal << endl;
       //if(edep_brlecal>0.) cout << "edep_brlecal = " << edep_brlecal << endl;
       //if(edep_p0decal>0.) cout << "edep_p0decal = " << edep_p0decal << endl;
+      //if(edep_usecalp0d>0.) cout << "edep_usecalp0d = " << edep_usecalp0d << endl;
       
       double lyz_tpcup1     = nd280UpTrack->GetLyzTPCUp1();
       double lyz_tpcup2     = nd280UpTrack->GetLyzTPCUp2();
@@ -860,101 +886,95 @@ void SelND280UpEvent
       NTotTrkPassCharge++;
       hCut->Fill(6.);
       
-
-      // Loop over the track points
-
       int NPoints = nd280UpTrack->GetNPoints();    
-      //cout << "NPoints = " << NPoints << endl;
-    
-      int NPoints_ForwTPC1 = 0;
-      int NPoints_ForwTPC2 = 0;
-      int NPoints_ForwTPC3 = 0;
       
-      for(int ipt=0;ipt<NPoints;ipt++){
-	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);
-	
-	double length = nd280UpTrackPoint->GetStepLength();
-	double PtX = nd280UpTrackPoint->GetPostPosition().X();
-	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
-	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();
-	
-	string volname = nd280UpTrackPoint->GetPhysVolName();
+      // // Loop over the track points      
+      // //cout << "NPoints = " << NPoints << endl;    
+      // int NPoints_ForwTPC1 = 0;
+      // int NPoints_ForwTPC2 = 0;
+      // int NPoints_ForwTPC3 = 0;      
+      // for(int ipt=0;ipt<NPoints;ipt++){
+      // 	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
+      // 	double length = nd280UpTrackPoint->GetStepLength();
+      // 	double PtX = nd280UpTrackPoint->GetPostPosition().X();
+      // 	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
+      // 	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();	
+      // 	string volname = nd280UpTrackPoint->GetPhysVolName();
+      // 	// //if(volname=="/World/Basket/Tracker/ForwTPC1/Drift"){
+      // 	// if( volname=="/World/Basket/Tracker/ForwTPC1/Half" ||
+      // 	//     volname=="/World/Basket/Tracker/ForwTPC1/MM"
+      // 	//     ){
+      // 	//   NPoints_ForwTPC1++;
+      // 	//   hEdgePt_ForwTPC1_Z->Fill(PtZ);	  
+      // 	//   hEdgePt_ForwTPC1_XY->Fill(PtX,PtY);
+      // 	//   hEdgePt_ForwTPC1_YZ->Fill(PtY,PtZ);
+      // 	//   hEdgePt_ForwTPC1_XZ->Fill(PtX,PtZ);
+      // 	//   if(NPoints_ForwTPC1==1){
+      // 	//     hFirstPt_ForwTPC1_Z->Fill(PtZ);
+      // 	//     hFirstPt_ForwTPC1_XY->Fill(PtX,PtY);
+      // 	//     hFirstPt_ForwTPC1_YZ->Fill(PtY,PtZ);
+      // 	//     hFirstPt_ForwTPC1_XZ->Fill(PtX,PtZ);
+      // 	//   }
+      // 	//   //else if(NPoints_ForwTPC1==2){
+      // 	//   else{
+      // 	//     hLastPt_ForwTPC1_Z->Fill(PtZ);
+      // 	//     hLastPt_ForwTPC1_XY->Fill(PtX,PtY);
+      // 	//     hLastPt_ForwTPC1_YZ->Fill(PtY,PtZ);
+      // 	//     hLastPt_ForwTPC1_XZ->Fill(PtX,PtZ);
+      // 	//   }
+      // 	// }	
+      // 	// //else if(volname=="/World/Basket/Tracker/ForwTPC2/Drift"){
+      // 	// else if( volname=="/World/Basket/Tracker/ForwTPC2/Half" ||
+      // 	// 	 volname=="/World/Basket/Tracker/ForwTPC2/MM"
+      // 	// 	 ){
+      // 	//   NPoints_ForwTPC2++;
+      // 	//   hEdgePt_ForwTPC2_Z->Fill(PtZ);
+      // 	//   hEdgePt_ForwTPC2_XY->Fill(PtX,PtY);
+      // 	//   hEdgePt_ForwTPC2_YZ->Fill(PtY,PtZ);
+      // 	//   hEdgePt_ForwTPC2_XZ->Fill(PtX,PtZ);
+      // 	//   if(NPoints_ForwTPC2==1){
+      // 	//     hFirstPt_ForwTPC2_Z->Fill(PtZ);
+      // 	//     hFirstPt_ForwTPC2_XY->Fill(PtX,PtY);
+      // 	//     hFirstPt_ForwTPC2_YZ->Fill(PtY,PtZ);
+      // 	//     hFirstPt_ForwTPC2_XZ->Fill(PtX,PtZ);
+      // 	//   }
+      // 	//   //else if(NPoints_ForwTPC2==2){
+      // 	//   else{
+      // 	//     hLastPt_ForwTPC2_Z->Fill(PtZ);
+      // 	//     hLastPt_ForwTPC2_XY->Fill(PtX,PtY);
+      // 	//     hLastPt_ForwTPC2_YZ->Fill(PtY,PtZ);
+      // 	//     hLastPt_ForwTPC2_XZ->Fill(PtX,PtZ);
+      // 	//   }
+      // 	//   //else{ 
+      // 	//   //cerr << "# of points in " << volname << " is " << NPoints_ForwTPC2 << " !!!" << endl;
+      // 	//   //exit(1);
+      // 	//   //}
+      // 	// }
+      // 	// //else if(volname=="/World/Basket/Tracker/ForwTPC3/Drift"){
+      // 	// else if( volname=="/World/Basket/Tracker/ForwTPC3/Half" ||
+      // 	// 	 volname=="/World/Basket/Tracker/ForwTPC3/MM"
+      // 	// 	 ){
+      // 	//   NPoints_ForwTPC3++;
+      // 	//   hEdgePt_ForwTPC3_Z->Fill(PtZ);
+      // 	//   hEdgePt_ForwTPC3_XY->Fill(PtX,PtY);
+      // 	//   hEdgePt_ForwTPC3_YZ->Fill(PtY,PtZ);
+      // 	//   hEdgePt_ForwTPC3_XZ->Fill(PtX,PtZ);
+      // 	//   if(NPoints_ForwTPC3==1){
+      // 	//     hFirstPt_ForwTPC3_Z->Fill(PtZ);
+      // 	//     hFirstPt_ForwTPC3_XY->Fill(PtX,PtY);
+      // 	//     hFirstPt_ForwTPC3_YZ->Fill(PtY,PtZ);
+      // 	//     hFirstPt_ForwTPC3_XZ->Fill(PtX,PtZ);
+      // 	//   }
+      // 	//   //else if(NPoints_ForwTPC3==2){
+      // 	//   else{
+      // 	//     hLastPt_ForwTPC3_Z->Fill(PtZ);
+      // 	//     hLastPt_ForwTPC3_XY->Fill(PtX,PtY);
+      // 	//     hLastPt_ForwTPC3_YZ->Fill(PtY,PtZ);
+      // 	//     hLastPt_ForwTPC3_XZ->Fill(PtX,PtZ);
+      // 	//   }
+      // 	// }	
+      // } // loop over points
 
-	// //if(volname=="/World/Basket/Tracker/ForwTPC1/Drift"){
-	// if( volname=="/World/Basket/Tracker/ForwTPC1/Half" ||
-	//     volname=="/World/Basket/Tracker/ForwTPC1/MM"
-	//     ){
-	//   NPoints_ForwTPC1++;
-	//   hEdgePt_ForwTPC1_Z->Fill(PtZ);	  
-	//   hEdgePt_ForwTPC1_XY->Fill(PtX,PtY);
-	//   hEdgePt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	//   hEdgePt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	//   if(NPoints_ForwTPC1==1){
-	//     hFirstPt_ForwTPC1_Z->Fill(PtZ);
-	//     hFirstPt_ForwTPC1_XY->Fill(PtX,PtY);
-	//     hFirstPt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	//     hFirstPt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	//   }
-	//   //else if(NPoints_ForwTPC1==2){
-	//   else{
-	//     hLastPt_ForwTPC1_Z->Fill(PtZ);
-	//     hLastPt_ForwTPC1_XY->Fill(PtX,PtY);
-	//     hLastPt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	//     hLastPt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	//   }
-	// }	
-	// //else if(volname=="/World/Basket/Tracker/ForwTPC2/Drift"){
-	// else if( volname=="/World/Basket/Tracker/ForwTPC2/Half" ||
-	// 	 volname=="/World/Basket/Tracker/ForwTPC2/MM"
-	// 	 ){
-	//   NPoints_ForwTPC2++;
-	//   hEdgePt_ForwTPC2_Z->Fill(PtZ);
-	//   hEdgePt_ForwTPC2_XY->Fill(PtX,PtY);
-	//   hEdgePt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	//   hEdgePt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	//   if(NPoints_ForwTPC2==1){
-	//     hFirstPt_ForwTPC2_Z->Fill(PtZ);
-	//     hFirstPt_ForwTPC2_XY->Fill(PtX,PtY);
-	//     hFirstPt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	//     hFirstPt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	//   }
-	//   //else if(NPoints_ForwTPC2==2){
-	//   else{
-	//     hLastPt_ForwTPC2_Z->Fill(PtZ);
-	//     hLastPt_ForwTPC2_XY->Fill(PtX,PtY);
-	//     hLastPt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	//     hLastPt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	//   }
-	//   //else{ 
-	//   //cerr << "# of points in " << volname << " is " << NPoints_ForwTPC2 << " !!!" << endl;
-	//   //exit(1);
-	//   //}
-	// }
-	// //else if(volname=="/World/Basket/Tracker/ForwTPC3/Drift"){
-	// else if( volname=="/World/Basket/Tracker/ForwTPC3/Half" ||
-	// 	 volname=="/World/Basket/Tracker/ForwTPC3/MM"
-	// 	 ){
-	//   NPoints_ForwTPC3++;
-	//   hEdgePt_ForwTPC3_Z->Fill(PtZ);
-	//   hEdgePt_ForwTPC3_XY->Fill(PtX,PtY);
-	//   hEdgePt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	//   hEdgePt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	//   if(NPoints_ForwTPC3==1){
-	//     hFirstPt_ForwTPC3_Z->Fill(PtZ);
-	//     hFirstPt_ForwTPC3_XY->Fill(PtX,PtY);
-	//     hFirstPt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	//     hFirstPt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	//   }
-	//   //else if(NPoints_ForwTPC3==2){
-	//   else{
-	//     hLastPt_ForwTPC3_Z->Fill(PtZ);
-	//     hLastPt_ForwTPC3_XY->Fill(PtX,PtY);
-	//     hLastPt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	//     hLastPt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	//   }
-	// }
-	
-      } // loop over points
 
       // Fill selected particles in FV
 
@@ -1046,17 +1066,25 @@ void SelND280UpEvent
 	hLVsMom_ForwTPC3_FV->Fill(length_forwtpc3,mom);
       }
 
-      if(length_dsecal>0.){ 
+      if(edep_dsecal>0.){ 
+	hEdep_DsECal_FV->Fill(edep_dsecal);
 	hL_DsECal_FV->Fill(length_dsecal);
 	hLVsMom_DsECal_FV->Fill(length_dsecal,mom);
       }
-      if(length_brlecal>0.){ 
+      if(edep_brlecal>0.){ 
+	hEdep_BrlECal_FV->Fill(edep_brlecal);
 	hL_BrlECal_FV->Fill(length_brlecal);
 	hLVsMom_BrlECal_FV->Fill(length_brlecal,mom);
       }
-      if(length_p0decal>0.){ 
+      if(edep_p0decal>0.){ 
+	hEdep_P0DECal_FV->Fill(edep_p0decal);
 	hL_P0DECal_FV->Fill(length_p0decal);
 	hLVsMom_P0DECal_FV->Fill(length_p0decal,mom);
+      }
+      if(edep_usecalp0d>0.){ 
+	hEdep_USECalP0D_FV->Fill(edep_usecalp0d);
+	hL_USECalP0D_FV->Fill(length_usecalp0d);
+	hLVsMom_USECalP0D_FV->Fill(length_usecalp0d,mom);
       }
       
       hPhi->Fill(phi);
@@ -1205,14 +1233,27 @@ void SelND280UpEvent
       // Tracks not detected by any TPC --> try w/ ECal!!!
 
       if(!PassCutTPC){
-
-	hLVsMom_DsECal_NoTPC->Fill(length_dsecal,mom);
-	hLVsMom_BrlECal_NoTPC->Fill(length_brlecal,mom);
-	hLVsMom_P0DECal_NoTPC->Fill(length_p0decal,mom);
 	
-	hL_DsECal_NoTPC->Fill(length_dsecal);
-	hL_BrlECal_NoTPC->Fill(length_brlecal);
-	hL_P0DECal_NoTPC->Fill(length_p0decal);
+	if(edep_dsecal>0.){
+	  hEdep_DsECal_NoTPC->Fill(edep_dsecal);
+	  hL_DsECal_NoTPC->Fill(length_dsecal);
+	  hLVsMom_DsECal_NoTPC->Fill(length_dsecal,mom);
+	}
+	if(edep_brlecal>0.){
+	  hEdep_BrlECal_NoTPC->Fill(edep_brlecal);
+	  hL_BrlECal_NoTPC->Fill(length_brlecal);
+	  hLVsMom_BrlECal_NoTPC->Fill(length_brlecal,mom);
+	}
+	if(edep_p0decal>0.){
+	  hEdep_P0DECal_NoTPC->Fill(edep_p0decal);
+	  hL_P0DECal_NoTPC->Fill(length_p0decal);
+	  hLVsMom_P0DECal_NoTPC->Fill(length_p0decal,mom);
+	}
+	if(edep_usecalp0d>0.){
+	  hEdep_USECalP0D_NoTPC->Fill(edep_usecalp0d);
+	  hL_USECalP0D_NoTPC->Fill(length_usecalp0d);
+	  hLVsMom_USECalP0D_NoTPC->Fill(length_usecalp0d,mom);
+	}
 
 	TND280UpTrackPoint *nd280UpLastPoint = nd280UpTrack->GetPoint(NPoints-1);
 	double PtX = nd280UpLastPoint->GetPostPosition().X();
@@ -1419,13 +1460,37 @@ void SelND280UpEvent
   hL_ForwTPC1_FV->Write();
   hL_ForwTPC2_FV->Write();
   hL_ForwTPC3_FV->Write();
+  //
+  hEdep_DsECal_FV->Write();
+  hEdep_BrlECal_FV->Write();
+  hEdep_P0DECal_FV->Write();
+  hEdep_USECalP0D_FV->Write();
+  hEdep_DsECal_NoTPC->Write();
+  hEdep_BrlECal_NoTPC->Write();
+  hEdep_P0DECal_NoTPC->Write();
+  hEdep_USECalP0D_NoTPC->Write();
   hL_DsECal_FV->Write();
   hL_BrlECal_FV->Write();
   hL_P0DECal_FV->Write();
-  //
+  hL_USECalP0D_FV->Write();
   hL_DsECal_NoTPC->Write();
   hL_BrlECal_NoTPC->Write();
   hL_P0DECal_NoTPC->Write();
+  hL_USECalP0D_NoTPC->Write();
+  hLVsMom_DsECal_FV->Write();
+  hLVsMom_BrlECal_FV->Write();
+  hLVsMom_P0DECal_FV->Write();
+  hLVsMom_USECalP0D_FV->Write();
+  hLVsMom_DsECal_NoTPC->Write();
+  hLVsMom_BrlECal_NoTPC->Write();
+  hLVsMom_P0DECal_NoTPC->Write();
+  hLVsMom_USECalP0D_NoTPC->Write();
+  // hLVsMomLoc_DsECal_FV->Write();
+  // hLVsMomLoc_BrlECal_FV->Write();
+  // hLVsMomLoc_P0DECal_FV->Write();
+  // hLVsMomLoc_DsECal_NoTPC->Write();
+  // hLVsMomLoc_BrlECal_NoTPC->Write();
+  // hLVsMomLoc_P0DECal_NoTPC->Write();
   //
   hL_Targ1_Cut->Write();
   hL_Targ2_Cut->Write();

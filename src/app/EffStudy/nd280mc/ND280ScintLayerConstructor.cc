@@ -307,7 +307,7 @@ G4LogicalVolume *ND280ScintLayerConstructor::GetPiece(void) {
     //
     G4LogicalVolume* barLog = bar.GetPiece();
 
-    if(SDRegion) SDRegion->AddRootLogicalVolume(barLog);
+    if(SDRegion) SDRegion->AddRootLogicalVolume(barLog); // NEW ND280 UPGRADE
     
     //
 

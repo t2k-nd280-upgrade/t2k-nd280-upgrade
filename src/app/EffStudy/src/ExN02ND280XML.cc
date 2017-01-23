@@ -139,6 +139,8 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseDsECal", fUseDsECal);
     XML2Bool("UseBrlECal",fUseBrlECal);
     XML2Bool("UseP0DECal",fUseP0DECal);
+    // Use P0D
+    XML2Bool("UseP0D",fUseP0D);
     
     // Set invisible detectors 
     XML2Bool("InvisTPCDown1" ,fInvisTPCDown1);
@@ -153,6 +155,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("InvisDsECal"   ,fInvisDsECal);
     XML2Bool("InvisBrlECal"  ,fInvisBrlECal);
     XML2Bool("InvisP0DECal"  ,fInvisP0DECal);
+    XML2Bool("InvisP0D"      ,fInvisP0D);
 
     myfile.close();
   }

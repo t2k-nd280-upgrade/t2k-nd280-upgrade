@@ -48,6 +48,7 @@ TND280UpTrack::TND280UpTrack()
   fLengthDsECal   = kUndefTrack;
   fLengthBrlECal  = kUndefTrack;
   fLengthP0DECal  = kUndefTrack;
+  fLengthUSECalP0D = kUndefTrack;
 
   fLyzTPCUp1     = kUndefTrack;
   fLyzTPCUp2     = kUndefTrack;
@@ -71,6 +72,7 @@ TND280UpTrack::TND280UpTrack()
   fEdepDsECal     = kUndefTrack;
   fEdepBrlECal    = kUndefTrack;
   fEdepP0DECal    = kUndefTrack;
+  fEdepUSECalP0D  = kUndefTrack;
 
   fNPoints = 0;
   fListOfPoints = new TList;
@@ -112,6 +114,7 @@ TND280UpTrack::~TND280UpTrack()
   fLengthDsECal   = kUndefTrack;
   fLengthBrlECal  = kUndefTrack;
   fLengthP0DECal  = kUndefTrack;
+  fLengthUSECalP0D = kUndefTrack;
 
   fLyzTPCUp1     = kUndefTrack;
   fLyzTPCUp2     = kUndefTrack;
@@ -135,6 +138,7 @@ TND280UpTrack::~TND280UpTrack()
   fEdepDsECal     = kUndefTrack;
   fEdepBrlECal    = kUndefTrack;
   fEdepP0DECal    = kUndefTrack;
+  fEdepUSECalP0D  = kUndefTrack;
 
   fNPoints = 0;
 
@@ -201,6 +205,7 @@ void TND280UpTrack::PrintTrack()
   if(fLengthDsECal>0.) {cout << "Length in DsECal: "  << fLengthDsECal   << endl;}
   if(fLengthBrlECal>0.){cout << "Length in BrlECal: " << fLengthBrlECal   << endl;}
   if(fLengthP0DECal>0.){cout << "Length in P0DECal: " << fLengthP0DECal   << endl;}
+  if(fLengthUSECalP0D>0.){cout << "Length in USECalP0D: " << fLengthUSECalP0D   << endl;}
 
   if(fLyzTPCUp1>0.){cout << "Lyz in TPCUp1: "         << fLyzTPCUp1     << endl;}
   if(fLyzTPCUp2>0.){cout << "Lyz in TPCUp2: "         << fLyzTPCUp2     << endl;}
@@ -224,6 +229,7 @@ void TND280UpTrack::PrintTrack()
   if(fEdepDsECal>0.) {cout << "Edep in DsECal: "    << fEdepDsECal    << endl;}
   if(fEdepBrlECal>0.){cout << "Edep in BrlECal: "   << fEdepBrlECal   << endl;}
   if(fEdepP0DECal>0.){cout << "Edep in P0DECal: "   << fEdepP0DECal   << endl;}
+  if(fEdepUSECalP0D>0.){cout << "Edep in USECalP0D: "   << fEdepUSECalP0D   << endl;}
 
   cout << "Save track: " << ((fSaveIt) ? "YES " : "NO") << endl;
   cout << endl;

@@ -124,6 +124,7 @@ G4LogicalVolume *ND280UA1MagnetConstructor::GetPiece(void) {
     ND280UA1ClamConstructor& leftClam = Get<ND280UA1ClamConstructor>("LeftClam");
     ND280UA1ClamConstructor& rightClam = Get<ND280UA1ClamConstructor>("RightClam");
 
+
   //------------------------------ 
   // CREATE INNER BASKET
   //------------------------------ 
@@ -146,6 +147,7 @@ G4LogicalVolume *ND280UA1MagnetConstructor::GetPiece(void) {
 		    false,                // not MANY
 		    0);                   // no copy number
 
+
   
   // The left and right clams are vertically offset from the center of the
   // unloaded basket.
@@ -166,7 +168,7 @@ G4LogicalVolume *ND280UA1MagnetConstructor::GetPiece(void) {
 		      logVolume,                    // mother  volume
 		      false,                        // no boolean operations
 		      0);                           // no specific field
-    
+
     double rightShift = -rightClam.GetWidth()/2.0 - GetRightClamSplit();
     new G4PVPlacement(0,                             // rotation
 		      G4ThreeVector(rightShift,clamYOffset,0), // position
@@ -196,6 +198,6 @@ G4LogicalVolume *ND280UA1MagnetConstructor::GetPiece(void) {
     G4Exception("ND280UA1MagnetConstructor:: Basket",
 		"MyCode0002",FatalException,"Basket is too long");      
   }    
-  
+
   return logVolume;
 }
