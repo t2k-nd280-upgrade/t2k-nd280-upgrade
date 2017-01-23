@@ -1,0 +1,40 @@
+package highlandUP/numuCC4piAnalysis
+version v0r0
+
+manager Alfonso Garcia <agarcia@ifae.es>
+author nd280-software@mailman.t2k.org
+
+branches cmt src doc app
+
+use baseAnalysis * highlandUP
+use psycheSelections * highlandUP
+use highlandCorrections * highlandUP
+
+# Build methods to include.
+document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
+
+
+# Build information used by packages that use this one.
+macro numuCC4piAnalysis_cppflags " -DNUMUCC4PIANALYSIS_USED"
+macro numuCC4piAnalysis_linkopts " -L$(NUMUCC4PIANALYSISROOT)/$(numuCC4piAnalysis_tag) -lnumuCC4piAnalysis "
+macro numuCC4piAnalysis_stamps " $(NUMUCC4PIANALYSISROOT)/$(numuCC4piAnalysis_tag)/numuCC4piAnalysis.stamp"
+
+
+# The paths to find this library.
+path_remove PATH "$(NUMUCC4PIANALYSISROOT)"
+path_prepend PATH "$(NUMUCC4PIANALYSISROOT)/$(numuCC4piAnalysis_tag)"
+path_remove LD_LIBRARY_PATH "$(NUMUCC4PIANALYSISROOT)"
+path_prepend LD_LIBRARY_PATH "$(NUMUCC4PIANALYSISROOT)/$(numuCC4piAnalysis_tag)"
+path_remove DYLD_LIBRARY_PATH "" \
+      Darwin        "$(NUMUCC4PIANALYSISROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+       Darwin        "$(NUMUCC4PIANALYSISROOT)/$(numuCC4piAnalysis_tag)"
+
+# The library to build
+library numuCC4piAnalysis *.cxx  ../dict/*.cxx
+
+application RunNumuCC4piAnalysis ../app/RunNumuCC4piAnalysis*.cxx
+
+
+# Documentation
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
