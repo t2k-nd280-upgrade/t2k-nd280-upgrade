@@ -52,5 +52,6 @@ namespace anaUtils{
     
     void ResizeArray( AnaTrueParticleB**   &tgtArr,    int nObj);
     void ResizeArray( AnaTrackB**       &tgtArr,    int nObj);
+    
 }
 #endif

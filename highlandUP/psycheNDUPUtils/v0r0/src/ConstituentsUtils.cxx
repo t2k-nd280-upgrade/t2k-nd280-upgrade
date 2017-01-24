@@ -338,6 +338,23 @@ bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos){
         case SubDetId::kTarget2:
             return anaUtils::InFiducialVolume(SubDetId::kTarget2, pos, null, null);
             break;
+        case SubDetId::kECAL:
+            return (
+                    anaUtils::InFiducialVolume(SubDetId::kP0DECal, pos, null, null) ||
+                    anaUtils::InFiducialVolume(SubDetId::kBrlECal, pos, null, null) ||
+                    anaUtils::InFiducialVolume(SubDetId::kDsECal, pos, null, null)
+                   );
+            break;
+        case SubDetId::kBrlECal:
+            return anaUtils::InFiducialVolume(SubDetId::kBrlECal, pos, null, null);
+            break;
+        case SubDetId::kP0DECal:
+            return anaUtils::InFiducialVolume(SubDetId::kP0DECal, pos, null, null);
+            
+            break;
+        case SubDetId::kDsECal:
+            return anaUtils::InFiducialVolume(SubDetId::kDsECal, pos, null, null);
+            break;
         default:
             std::cout << "Warning: anaUtils::InFiducialVolume() No Fiducial Volume set for " << det << std::endl;
             return false;
@@ -433,7 +450,109 @@ bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos, co
             {
 
                 return true;}
+        case SubDetId::kDsECal:
+            if (pos[0] > DetDef::dsecalmin[0] &&
+                    pos[0] < DetDef::dsecalmax[0] &&
+                    pos[1] > DetDef::dsecalmin[1] &&
+                    pos[1] < DetDef::dsecalmax[1] &&
+                    pos[2] > DetDef::dsecalmin[2] &&
+                    pos[2] < DetDef::dsecalmax[2])
+                return true;
             break;
+            //BarrelECal (TEcal)
+        case SubDetId::kBrlECal:
+            if (pos[0] > DetDef::tecalLmin[0] &&
+                    pos[0] < DetDef::tecalLmax[0] &&
+                    pos[1] > DetDef::tecalLmin[1] &&
+                    pos[1] < DetDef::tecalLmax[1] &&
+                    pos[2] > DetDef::tecalLmin[2] &&
+                    pos[2] < DetDef::tecalLmax[2])
+                return true;
+            if (pos[0] > DetDef::tecalRmin[0] &&
+                    pos[0] < DetDef::tecalRmax[0] &&
+                    pos[1] > DetDef::tecalRmin[1] &&
+                    pos[1] < DetDef::tecalRmax[1] &&
+                    pos[2] > DetDef::tecalRmin[2] &&
+                    pos[2] < DetDef::tecalRmax[2])
+                return true;
+            if (pos[0] > DetDef::tecalTLmin[0] &&
+                    pos[0] < DetDef::tecalTLmax[0] &&
+                    pos[1] > DetDef::tecalTLmin[1] &&
+                    pos[1] < DetDef::tecalTLmax[1] &&
+                    pos[2] > DetDef::tecalTLmin[2] &&
+                    pos[2] < DetDef::tecalTLmax[2])
+                return true;
+            //two parts symmetric w.r.t to Z axis
+            if (pos[0] > DetDef::tecalTRmin[0] &&
+                    pos[0] < DetDef::tecalTRmax[0] &&
+                    pos[1] > DetDef::tecalTRmin[1] &&
+                    pos[1] < DetDef::tecalTRmax[1] &&
+                    pos[2] > DetDef::tecalTRmin[2] &&
+                    pos[2] < DetDef::tecalTRmax[2])
+                return true;
+            if (pos[0] > DetDef::tecalBLmin[0] &&
+                    pos[0] < DetDef::tecalBLmax[0] &&
+                    pos[1] > DetDef::tecalBLmin[1] &&
+                    pos[1] < DetDef::tecalBLmax[1] &&
+                    pos[2] > DetDef::tecalBLmin[2] &&
+                    pos[2] < DetDef::tecalBLmax[2])
+                return true;
+            //two parts symmetric w.r.t to Z axis
+            if (pos[0] > DetDef::tecalBRmin[0] &&
+                    pos[0] < DetDef::tecalBRmax[0] &&
+                    pos[1] > DetDef::tecalBRmin[1] &&
+                    pos[1] < DetDef::tecalBRmax[1] &&
+                    pos[2] > DetDef::tecalBRmin[2] &&
+                    pos[2] < DetDef::tecalBRmax[2])
+                return true;
+            break;
+            //P0DECal (PEcal)
+        case SubDetId::kP0DECal:
+            if (pos[0] > DetDef::pecalLmin[0] &&
+                    pos[0] < DetDef::pecalLmax[0] &&
+                    pos[1] > DetDef::pecalLmin[1] &&
+                    pos[1] < DetDef::pecalLmax[1] &&
+                    pos[2] > DetDef::pecalLmin[2] &&
+                    pos[2] < DetDef::pecalLmax[2])
+                return true;
+            if (pos[0] > DetDef::pecalRmin[0] &&
+                    pos[0] < DetDef::pecalRmax[0] &&
+                    pos[1] > DetDef::pecalRmin[1] &&
+                    pos[1] < DetDef::pecalRmax[1] &&
+                    pos[2] > DetDef::pecalRmin[2] &&
+                    pos[2] < DetDef::pecalRmax[2])
+                return true;
+             if (pos[0] > DetDef::pecalTLmin[0] &&
+                    pos[0] < DetDef::pecalTLmax[0] &&
+                    pos[1] > DetDef::pecalTLmin[1] &&
+                    pos[1] < DetDef::pecalTLmax[1] &&
+                    pos[2] > DetDef::pecalTLmin[2] &&
+                    pos[2] < DetDef::pecalTLmax[2])
+                return true;
+            //two parts symmetric w.r.t to Z axis
+            if (pos[0] > DetDef::pecalTRmin[0] &&
+                    pos[0] < DetDef::pecalTRmax[0] &&
+                    pos[1] > DetDef::pecalTRmin[1] &&
+                    pos[1] < DetDef::pecalTRmax[1] &&
+                    pos[2] > DetDef::pecalTRmin[2] &&
+                    pos[2] < DetDef::pecalTRmax[2])
+                return true;
+           if (pos[0] > DetDef::pecalBLmin[0] &&
+                    pos[0] < DetDef::pecalBLmax[0] &&
+                    pos[1] > DetDef::pecalBLmin[1] &&
+                    pos[1] < DetDef::pecalBLmax[1] &&
+                    pos[2] > DetDef::pecalBLmin[2] &&
+                    pos[2] < DetDef::pecalBLmax[2])
+                return true;
+            //two parts symmetric w.r.t to Z axis
+            if (pos[0] > DetDef::pecalBRmin[0] &&
+                    pos[0] < DetDef::pecalBRmax[0] &&
+                    pos[1] > DetDef::pecalBRmin[1] &&
+                    pos[1] < DetDef::pecalBRmax[1] &&
+                    pos[2] > DetDef::pecalBRmin[2] &&
+                    pos[2] < DetDef::pecalBRmax[2])
+                return true;
+            break;        
 
         default:
             std::cout << "Error:  anaUtils::InFiducialVolume() given an unknown subdetector enumeration: " << det << std::endl;
@@ -652,3 +771,8 @@ int anaUtils::GetNTracksUsingTPCAndDet(const AnaEventB& event, SubDetId::SubDetE
     return count;
 }
 
+//**************************************************
+int anaUtils::GetAllTracksUsingECAL(const AnaEventB& event, AnaTrackB* selTracks[]) {
+//**************************************************
+    return GetAllTracksUsingDet(event, SubDetId::kECAL, selTracks);
+}

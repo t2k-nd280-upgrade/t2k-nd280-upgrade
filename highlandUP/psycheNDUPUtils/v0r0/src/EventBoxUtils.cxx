@@ -73,7 +73,6 @@ void boxUtils::FillTracksWithTPC(AnaEventB& event, SubDetId::SubDetEnum det){
    //   std::cout << "Warning. This track has no TPC segments" << std::endl;
     //  continue;
    // }
-//      std::cout<<track->GetTrueParticle()->PDG<<" "<<processTPC<<" "<<(processTarget1 && anaUtils::TrackUsesDet(*track, SubDetId::kTarget1))<<std::endl;
     if (processTPC){
       EventBox->RecObjectsInGroup[EventBox::kTracksWithTPC][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPC]++] = track;
 
@@ -100,7 +99,7 @@ void boxUtils::FillTracksWithTPC(AnaEventB& event, SubDetId::SubDetEnum det){
       EventBox->RecObjectsInGroup[EventBox::kTracksWithTPCInTarget2FV][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPCInTarget2FV]++] = track;
 
     // Apply the track quality cut
-    if (!cutUtils::TrackQualityCut(*track)) continue;
+   if (!cutUtils::TrackQualityCut(*track)) continue;
           AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
 
     if      (inTarget1)
@@ -190,18 +189,19 @@ void boxUtils::FillTracksWithTarget(AnaEventB& event, SubDetId::SubDetEnum det){
       continue;
     }
     if (processTarget1){
-      if (SubDetId::GetDetectorUsed(track->Detector, SubDetId::kTarget1)){
-        if (!SubDetId::GetDetectorUsed(track->Detector, SubDetId::kTPC)){
+      if (SubDetId::GetDetectorUsed(track->Detectors, SubDetId::kTarget1)){
+        if (!SubDetId::GetDetectorUsed(track->Detectors, SubDetId::kTPC)){
           EventBox->RecObjectsInGroup[EventBox::kTracksWithTarget1AndNoTPC][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1AndNoTPC]++] = track;
           //tracks with TPC already saved, we only need to add those that are not in the tpc
           EventBox->RecObjectsInGroup[EventBox::kTracksWithTPCorTarget1][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPCorTarget1]++] = track;
         }
         EventBox->RecObjectsInGroup[EventBox::kTracksWithTarget1][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]++] = track;
+
       }
     }
     if (processTarget2){
-      if (SubDetId::GetDetectorUsed(track->Detector, SubDetId::kTarget2)){
-        if (!SubDetId::GetDetectorUsed(track->Detector, SubDetId::kTPC)){
+      if (SubDetId::GetDetectorUsed(track->Detectors, SubDetId::kTarget2)){
+        if (!SubDetId::GetDetectorUsed(track->Detectors, SubDetId::kTPC)){
           EventBox->RecObjectsInGroup[EventBox::kTracksWithTarget2AndNoTPC][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2AndNoTPC]++] = track;
           //tracks with TPC already saved, we only need to add those that are not in the tpc
           EventBox->RecObjectsInGroup[EventBox::kTracksWithTPCorTarget2][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPCorTarget2]++] = track;
@@ -299,3 +299,25 @@ void boxUtils::FillTrajsChargedInTPCorTarget(AnaEventB& event, SubDetId::SubDetE
   EventBox->nTrueObjectsInGroup[EventBox::kTrueParticlesChargedInTPCorTargetInBunch] = count;
 }
 
+//********************************************************************
+void boxUtils::FillTracksWithECal(AnaEventB& event){
+//********************************************************************
+
+  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+
+  // Don't fill it when already filled by other selection
+ // if (EventBox->RecObjectsInGroup[EventBox::kTracksWithECal]) return;
+
+  AnaTrackB* tracks[NMAXPARTICLES];
+
+  Int_t nECal = anaUtils::GetAllTracksUsingECAL(event, tracks);
+  if(NMAXPARTICLES<(UInt_t)nECal) nECal = NMAXPARTICLES;    
+    
+  // Fill the box
+  anaUtils::CreateArray( EventBox->RecObjectsInGroup[EventBox::kTracksWithECal], nECal);
+    for (Int_t i=0;i<nECal; ++i){
+    AnaTrackB* track = tracks[i];
+          EventBox->RecObjectsInGroup[EventBox::kTracksWithECal][EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal]++] = track;
+    }
+    
+}

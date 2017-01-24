@@ -17,11 +17,11 @@ bool cutUtils::TrackQualityCut(AnaTrackB& track){
         return track.TPCQualityCut;
     }
     // Gets all segments in the closest TPC
-    AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentWithMostNodesInClosestTPC(track));
+  //  AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentWithMostNodesInClosestTPC(track));
+  bool passed=false;
+  if(cutUtils::DeltaLYZTPCCut(track)){
 
-    if (TPCSegment){
-        bool passed = TPCTrackQualityCut(*TPCSegment);
-
+      passed=true;
         track.TPCQualityCut = passed;
         return passed;
     }
@@ -130,6 +130,7 @@ bool cutUtils::DeltaLYZTargetCut( AnaTrackB& track,const SubDetId::SubDetEnum de
       }
     
   }
+//    std::cout<<"false"<<std::endl;
 
   return false;
 }

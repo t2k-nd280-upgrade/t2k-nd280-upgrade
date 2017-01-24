@@ -25,6 +25,8 @@ namespace boxUtils{
 
  /// Fill in the EventBox the arrays of true tracks relevant for high-angle business: Target-ECal and Target-ECal-SMRD
 //  void FillTrajsChargedHATracker(AnaEventB& event, SubDetId::SubDetEnum det = SubDetId::kTarget);
+  /// Fill in the EventBox the arrays of true tracks relevant for ECal systematics
+  void FillTracksWithECal(AnaEventB& event);
 
 
 }

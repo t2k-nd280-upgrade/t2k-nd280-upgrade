@@ -86,6 +86,9 @@ namespace anaUtils{
     /// Access function to get all the tracks in the bunch that use the Target, sorted by decreasing momentum.
     /// Returns the number of entries in the input array, the number of tracks found
     int GetAllTracksUsingTarget(const AnaEventB& event, AnaTrackB* selTracks[]);
+    /// Access function to get all the tracks in the bunch that use the ECAL, sorted by decreasing momentum.
+    /// Returns the number of entries in the input array, the number of tracks found
+    int GetAllTracksUsingECAL(const AnaEventB& event, AnaTrackB* selTracks[]);
 
     /// Access function to get all the tracks in the bunch that use the Target or the TPC, sorted by decreasing number of hits
     /// Returns the number of entries in the input array, the number of tracks found

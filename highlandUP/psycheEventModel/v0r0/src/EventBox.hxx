@@ -23,6 +23,7 @@ class EventBox:public EventBoxB{
     kTracksWithTarget2AndNoTPC,
     kTracksWithTarget1,
     kTracksWithTarget2,
+    kTracksWithECal,
     kTracksWithTPCorTarget1,
     kTracksWithTPCorTarget2, 
 

@@ -38,7 +38,7 @@ public:
         kInvalidSubdetector,
         kTPC,
         kTarget,
-        kECal,
+        kECAL,
         kInvalid
     };
 
