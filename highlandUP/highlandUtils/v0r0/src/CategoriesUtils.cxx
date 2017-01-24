@@ -296,7 +296,7 @@ void anaUtils::FillCategories(const AnaTrueVertexB* trueVertexB, const std::stri
 
   _categ->SetCode(prefix + "reaction",          GetReaction(*trueVertex,det,IsAntinu)          ,CATOTHER);
   _categ->SetCode(prefix + "reactionCC",        GetReactionCC(*trueVertex,det,IsAntinu)        ,CATOTHER);
-  _categ->SetCode(prefix + "reactionnofv",      GetReactionNoFgdFv(*trueVertex,IsAntinu)       ,CATOTHER);
+  _categ->SetCode(prefix + "reactionnofv",      GetReactionNoTargetFv(*trueVertex,IsAntinu)       ,CATOTHER);
   //  _categ->SetCode(prefix + "topology",          GetTopology(*trueVertex,det,IsAntinu)          ); // the default value has to be a category
   //  _categ->SetCode(prefix + "mectopology",       GetMECTopology(*trueVertex,det,IsAntinu)       );
 }
@@ -309,7 +309,7 @@ void anaUtils::FillCategories(const AnaTrueVertexB* trueVertexB, const SubDetId:
 }
 
 //**************************************************
-Int_t anaUtils::GetReactionNoFgdFv(const AnaTrueVertex& trueVertex, bool IsAntinu){
+Int_t anaUtils::GetReactionNoTargetFv(const AnaTrueVertex& trueVertex, bool IsAntinu){
 //**************************************************
   /* Classify reaction types
     -1 = no true vertex
@@ -352,13 +352,13 @@ Int_t anaUtils::GetReaction(const AnaTrueVertex& trueVertex, const SubDetId::Sub
 
   /* Classify reaction types
      7 = out of FV
-     else as GetReactionNoFgdFv
+     else as GetReactionNoTargetFv
   */
 
   // out of FV
   if ( ! InFiducialVolume(det, trueVertex.Position)) return CATOUTFV;
 
-  return GetReactionNoFgdFv(trueVertex,IsAntinu);
+  return GetReactionNoTargetFv(trueVertex,IsAntinu);
 }
 
 //**************************************************
