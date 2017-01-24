@@ -1,4 +1,17 @@
-void makeplots(TString FGD, TString output){
+
+//
+// TODO:
+// - 2D binning {mom,costheta_loc}
+// - Inner / Outer bin 
+// - test 3D mipem/emenergy/length --> do 1D if low stat
+// - optimize binning
+//
+
+void MakeECalPDFs(){
+  //TString FGD, TString output){
+
+  TString FGD = "/neutrino/data7/davide/files/ND280Upgrade/SmearingFiles/ECal/test.root";
+  TString output = "ciao.root";
 
   gStyle->SetOptStat(0);
   gStyle->SetPadTickX(1);
@@ -6,24 +19,63 @@ void makeplots(TString FGD, TString output){
   int nbins=50;
   int low=-60;
   int high=60;
-  TFile *outf=new TFile(output.Data(),"UPDATE");
+  TFile *outf=new TFile(output.Data(),"RECREATE");
   DrawingTools *draw=new DrawingTools(FGD.Data(),false);
   DataSample   *mc  =new DataSample(FGD.Data()); 
   TString path="MomBins";
   outf->mkdir(path.Data(),path.Data());
 
-  TH1F *hECalMIPEM_mom[4], *hECalMIPEM_cos[4];
-
+  TH1F *hECalMIPEM_mom[4],    *hECalMIPEM_cos[4];
+  TH1F *hECalEMenergy_mom[4], *hECalEMenergy_cos[4];
+  TH1F *hECallength_mom[4],   *hECallength_cos[4];
+  
   TString treename="default";
-  TString opt_mom[4]={"accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=0 && selmu_truemom<300)","accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=300 && selmu_truemom<600)","accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=600 && selmu_truemom<1000)","accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=1000 && selmu_truemom<2000)"};
+  const int NbinsMom = 11;
+  TString opt_mom[NbinsMom]={
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=0    && selmu_truemom<300)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=300  && selmu_truemom<400)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=400  && selmu_truemom<500)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=500  && selmu_truemom<2000)"
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=600  && selmu_truemom<700)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=700  && selmu_truemom<800)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=800  && selmu_truemom<900)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=900  && selmu_truemom<1000)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=1000 && selmu_truemom<1200)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=1500 && selmu_truemom<2000)",
+    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=2000)"
+  };
+  TString nn_p[NbinsMom]={
+    "0-300",
+    "300-400",
+    "400-500",
+    "500-600"
+    // "600-700",
+    // "700-800",
+    // "800-900",
+    // "900-1000",
+    // "1000-1200",
+    // "1500-2000",
+    // ">2000"
+  };
 
-  TString opt_cos[4]={"(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=-1 && selmu_truedir[2]<0))","(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0 && selmu_truedir[2]<0.4))","(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0.4 && selmu_truedir[2]<0.8))","(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0.8 && selmu_truedir[2]<1))"};
+  const int NbinsCosTh = 4;
+  TString opt_cos[NbinsCosTh]={
+    "(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=-1 && selmu_truedir[2]<0))",
+    "(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0 && selmu_truedir[2]<0.4))",
+    "(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0.4 && selmu_truedir[2]<0.8))",
+    "(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0.8 && selmu_truedir[2]<1))"
+  };  
+  TString nn_c[NbinsCosTh]={
+    "-1-0",
+    "0-0.4",
+    "0.4-0.8",
+    "0.8-1"
+  };
 
 
-  TString nn_p[4]={"0-300","300-600","600-1000","1000-2000"};
-  TString nn_c[4]={"-1-0","0-0.4","0.4-0.8","0.8-1"};
-
-  for(int ih=0;ih<4;ih++){
+  ///// PDFs of Mom
+  
+  for(int ih=0;ih<NbinsMom;ih++){
     std::cout<<" ih "<<ih<<" nn_p "<<nn_p[ih]<<std::endl;
     hECalMIPEM_mom[ih]=new TH1F(Form("hh%s",nn_p[ih].Data()),"",nbins,low,high);
     TString scut=opt_mom[ih];
@@ -40,10 +92,14 @@ void makeplots(TString FGD, TString output){
     hECalMIPEM_mom[ih]->Write();
   }
 
+
+
+  ///// PDFs of CosTheta
+
   TString path1="CosThetaBins";
   outf->mkdir(path1.Data(),path1.Data());
 
-  for(int ih=0;ih<4;ih++){
+  for(int ih=0;ih<NbinsCosTh;ih++){
     std::cout<<" ih "<<ih<<" nn_c "<<nn_c[ih]<<std::endl;
     hECalMIPEM_cos[ih]=new TH1F(Form("hh%s",nn_c[ih].Data()),"",nbins,low,high);
     TString scut=opt_cos[ih];
@@ -61,6 +117,13 @@ void makeplots(TString FGD, TString output){
   }
 
   
+  // Do the same for EMenergy and track length
+  //selmu_ecal_EMenergy
+  //selmu_ecal_length
+  //selmu_ecal_det
+  //selmu_detectors
+
+
   outf->Close();
 
 
