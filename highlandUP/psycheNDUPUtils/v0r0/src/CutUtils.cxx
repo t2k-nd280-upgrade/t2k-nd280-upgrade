@@ -3,11 +3,18 @@
 //#include "EventBoxId.hxx"
 //#include "EventBoxTracker.hxx"
 #include <TVector3.h>
-#include <stdio.h>
-#include <iostream>
-#include <math.h>
+#include <TH1F.h>
+#include <TFile.h>
+
 #include "Parameters.hxx"
 #include "ConstituentsUtils.hxx"
+
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
 
 //**************************************************
 bool cutUtils::TrackQualityCut(AnaTrackB& track){
@@ -76,6 +83,82 @@ bool cutUtils::MuonPIDCut(const AnaTrackB& track, bool prod5Cut){
 
     return false;
 }
+
+
+
+//**************************************************
+bool cutUtils::MuonECALPIDCut(const AnaTrackB& track, bool prod5Cut, TFile* file_ECAL_PDF){
+//**************************************************
+
+  AnaTrueParticleB* trueParticle = track.GetTrueParticle();
+
+  /*
+  std::ifstream in(TString::Format("%s/data/binning.txt",getenv("PSYCHENDUPUTILSROOT")), std::ios_base::in);
+  bool goto_binning_cos = false;
+  std::vector<double> binning_mom, binning_cos;
+
+  double number;
+  while (in >> number){
+    if (binning_mom.size() != 0 && number<binning_mom.back())
+      goto_binning_cos = true;
+
+    if (goto_binning_cos)
+      binning_cos.push_back(number);
+    else
+      binning_mom.push_back(number);
+  }
+  */
+
+  //TVector3 init_pos = anaUtils::ArrayToTVector3(trueParticle->Position);
+
+  //TH1F *h_binning = (TH1F*)file_ECAL_PDF->Get("h_binning");
+
+  for (int i=0; i<trueParticle->nDetCrossings; i++) {
+    AnaDetCrossingB* cross = trueParticle->DetCrossings[i];
+    int ECAL_number =  SubDetId::GetECal(cross->Detector);
+    if (ECAL_number<=1 or !cross->InActive) continue;
+
+    TVector3 P   = anaUtils::ArrayToTVector3(cross->EntranceMomentum);
+    TVector3 pos = anaUtils::ArrayToTVector3(cross->EntrancePosition);
+
+    pos.Print();
+    return false;
+
+    float mom = P.Mag();
+    float cos = 0;
+    bool isInside = ((pos.X() < 1000 and pos.X() > -1000) &&
+		     (pos.Y() < 1000 and pos.Y() > -1000) &&
+		     (pos.Z() < 1000 and pos.Z() > -1000));
+
+    int mom_bin = 0;
+    int cos_bin = 0;
+
+    /*
+    for (unsigned int bm=0; bm<binning_mom.size(); bm++)
+      if (mom<binning_mom[bm]) { mom_bin = bm; break; }
+    for (unsigned int bc=0; bc<binning_cos.size(); bc++)
+      if (cos<binning_cos[bc]) { cos_bin = bc; break; }
+    */
+
+    /*
+    mom_bin = h_binning->GetXaxis()->FindBin(mom);
+    cos_bin = h_binning->GetYaxis()->FindBin(cos);
+
+    TH1F *h_MipEM  = (TH1F*)file_ECAL_PDF->Get(TString::Format("pdf_MipEM_%i_%i_%i", mom_bin, cos_bin, isInside));
+    TH1F *h_L_ECAL = (TH1F*)file_ECAL_PDF->Get(TString::Format("pdf_L_ECAL_%i_%i_%i", mom_bin, cos_bin, isInside));
+    TH1F *h_EMene  = (TH1F*)file_ECAL_PDF->Get(TString::Format("pdf_EMene_%i_%i_%i", mom_bin, cos_bin, isInside));
+   
+    float MipEM  = h_MipEM->GetRandom();
+    float L_ECAL = h_L_ECAL->GetRandom();
+    float EMene  = h_EMene->GetRandom();
+    */
+    
+  }
+  
+
+  return false;
+}
+
 //**************************************************
 bool cutUtils::ProtonPIDCut(const AnaParticleB& part){
 //**************************************************

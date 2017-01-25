@@ -23,6 +23,7 @@ namespace cutUtils{
 
   /// Whether the track is muon-like, as defined for the NuMu analysis.
   bool MuonPIDCut(const AnaTrackB& track, bool prod5Cut = 0);
+  bool MuonECALPIDCut(const AnaTrackB& track, bool prod5Cut, TFile* file_ECAL_PDF);
 
   /// Whether the track is proton-like
   bool ProtonPIDCut(const AnaParticleB& part);
