@@ -888,92 +888,95 @@ void SelND280UpEvent
       
       int NPoints = nd280UpTrack->GetNPoints();    
       
-      // // Loop over the track points      
-      // //cout << "NPoints = " << NPoints << endl;    
-      // int NPoints_ForwTPC1 = 0;
-      // int NPoints_ForwTPC2 = 0;
-      // int NPoints_ForwTPC3 = 0;      
-      // for(int ipt=0;ipt<NPoints;ipt++){
-      // 	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
-      // 	double length = nd280UpTrackPoint->GetStepLength();
-      // 	double PtX = nd280UpTrackPoint->GetPostPosition().X();
-      // 	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
-      // 	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();	
-      // 	string volname = nd280UpTrackPoint->GetPhysVolName();
-      // 	// //if(volname=="/World/Basket/Tracker/ForwTPC1/Drift"){
-      // 	// if( volname=="/World/Basket/Tracker/ForwTPC1/Half" ||
-      // 	//     volname=="/World/Basket/Tracker/ForwTPC1/MM"
-      // 	//     ){
-      // 	//   NPoints_ForwTPC1++;
-      // 	//   hEdgePt_ForwTPC1_Z->Fill(PtZ);	  
-      // 	//   hEdgePt_ForwTPC1_XY->Fill(PtX,PtY);
-      // 	//   hEdgePt_ForwTPC1_YZ->Fill(PtY,PtZ);
-      // 	//   hEdgePt_ForwTPC1_XZ->Fill(PtX,PtZ);
-      // 	//   if(NPoints_ForwTPC1==1){
-      // 	//     hFirstPt_ForwTPC1_Z->Fill(PtZ);
-      // 	//     hFirstPt_ForwTPC1_XY->Fill(PtX,PtY);
-      // 	//     hFirstPt_ForwTPC1_YZ->Fill(PtY,PtZ);
-      // 	//     hFirstPt_ForwTPC1_XZ->Fill(PtX,PtZ);
-      // 	//   }
-      // 	//   //else if(NPoints_ForwTPC1==2){
-      // 	//   else{
-      // 	//     hLastPt_ForwTPC1_Z->Fill(PtZ);
-      // 	//     hLastPt_ForwTPC1_XY->Fill(PtX,PtY);
-      // 	//     hLastPt_ForwTPC1_YZ->Fill(PtY,PtZ);
-      // 	//     hLastPt_ForwTPC1_XZ->Fill(PtX,PtZ);
-      // 	//   }
-      // 	// }	
-      // 	// //else if(volname=="/World/Basket/Tracker/ForwTPC2/Drift"){
-      // 	// else if( volname=="/World/Basket/Tracker/ForwTPC2/Half" ||
-      // 	// 	 volname=="/World/Basket/Tracker/ForwTPC2/MM"
-      // 	// 	 ){
-      // 	//   NPoints_ForwTPC2++;
-      // 	//   hEdgePt_ForwTPC2_Z->Fill(PtZ);
-      // 	//   hEdgePt_ForwTPC2_XY->Fill(PtX,PtY);
-      // 	//   hEdgePt_ForwTPC2_YZ->Fill(PtY,PtZ);
-      // 	//   hEdgePt_ForwTPC2_XZ->Fill(PtX,PtZ);
-      // 	//   if(NPoints_ForwTPC2==1){
-      // 	//     hFirstPt_ForwTPC2_Z->Fill(PtZ);
-      // 	//     hFirstPt_ForwTPC2_XY->Fill(PtX,PtY);
-      // 	//     hFirstPt_ForwTPC2_YZ->Fill(PtY,PtZ);
-      // 	//     hFirstPt_ForwTPC2_XZ->Fill(PtX,PtZ);
-      // 	//   }
-      // 	//   //else if(NPoints_ForwTPC2==2){
-      // 	//   else{
-      // 	//     hLastPt_ForwTPC2_Z->Fill(PtZ);
-      // 	//     hLastPt_ForwTPC2_XY->Fill(PtX,PtY);
-      // 	//     hLastPt_ForwTPC2_YZ->Fill(PtY,PtZ);
-      // 	//     hLastPt_ForwTPC2_XZ->Fill(PtX,PtZ);
-      // 	//   }
-      // 	//   //else{ 
-      // 	//   //cerr << "# of points in " << volname << " is " << NPoints_ForwTPC2 << " !!!" << endl;
-      // 	//   //exit(1);
-      // 	//   //}
-      // 	// }
-      // 	// //else if(volname=="/World/Basket/Tracker/ForwTPC3/Drift"){
-      // 	// else if( volname=="/World/Basket/Tracker/ForwTPC3/Half" ||
-      // 	// 	 volname=="/World/Basket/Tracker/ForwTPC3/MM"
-      // 	// 	 ){
-      // 	//   NPoints_ForwTPC3++;
-      // 	//   hEdgePt_ForwTPC3_Z->Fill(PtZ);
-      // 	//   hEdgePt_ForwTPC3_XY->Fill(PtX,PtY);
-      // 	//   hEdgePt_ForwTPC3_YZ->Fill(PtY,PtZ);
-      // 	//   hEdgePt_ForwTPC3_XZ->Fill(PtX,PtZ);
-      // 	//   if(NPoints_ForwTPC3==1){
-      // 	//     hFirstPt_ForwTPC3_Z->Fill(PtZ);
-      // 	//     hFirstPt_ForwTPC3_XY->Fill(PtX,PtY);
-      // 	//     hFirstPt_ForwTPC3_YZ->Fill(PtY,PtZ);
-      // 	//     hFirstPt_ForwTPC3_XZ->Fill(PtX,PtZ);
-      // 	//   }
-      // 	//   //else if(NPoints_ForwTPC3==2){
-      // 	//   else{
-      // 	//     hLastPt_ForwTPC3_Z->Fill(PtZ);
-      // 	//     hLastPt_ForwTPC3_XY->Fill(PtX,PtY);
-      // 	//     hLastPt_ForwTPC3_YZ->Fill(PtY,PtZ);
-      // 	//     hLastPt_ForwTPC3_XZ->Fill(PtX,PtZ);
-      // 	//   }
-      // 	// }	
-      // } // loop over points
+      // Loop over the track points      
+      cout << "Evt " << ievt << " : " << "NPoints = " << NPoints << endl;    
+      
+      int NPoints_ForwTPC1 = 0;
+      int NPoints_ForwTPC2 = 0;
+      int NPoints_ForwTPC3 = 0;      
+      for(int ipt=0;ipt<NPoints;ipt++){
+	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
+	double length = nd280UpTrackPoint->GetStepLength();
+       	double PtX = nd280UpTrackPoint->GetPostPosition().X();
+       	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
+       	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();	
+	string volname = nd280UpTrackPoint->GetPhysVolName();
+
+	cout << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
+	// 	// //if(volname=="/World/Basket/Tracker/ForwTPC1/Drift"){
+	// 	// if( volname=="/World/Basket/Tracker/ForwTPC1/Half" ||
+	// 	//     volname=="/World/Basket/Tracker/ForwTPC1/MM"
+	// 	//     ){
+	// 	//   NPoints_ForwTPC1++;
+	// 	//   hEdgePt_ForwTPC1_Z->Fill(PtZ);	  
+	// 	//   hEdgePt_ForwTPC1_XY->Fill(PtX,PtY);
+	// 	//   hEdgePt_ForwTPC1_YZ->Fill(PtY,PtZ);
+	// 	//   hEdgePt_ForwTPC1_XZ->Fill(PtX,PtZ);
+	// 	//   if(NPoints_ForwTPC1==1){
+	// 	//     hFirstPt_ForwTPC1_Z->Fill(PtZ);
+	// 	//     hFirstPt_ForwTPC1_XY->Fill(PtX,PtY);
+	// 	//     hFirstPt_ForwTPC1_YZ->Fill(PtY,PtZ);
+	// 	//     hFirstPt_ForwTPC1_XZ->Fill(PtX,PtZ);
+	// 	//   }
+	// 	//   //else if(NPoints_ForwTPC1==2){
+	// 	//   else{
+	// 	//     hLastPt_ForwTPC1_Z->Fill(PtZ);
+	// 	//     hLastPt_ForwTPC1_XY->Fill(PtX,PtY);
+	// 	//     hLastPt_ForwTPC1_YZ->Fill(PtY,PtZ);
+	// 	//     hLastPt_ForwTPC1_XZ->Fill(PtX,PtZ);
+	// 	//   }
+	// 	// }	
+	// 	// //else if(volname=="/World/Basket/Tracker/ForwTPC2/Drift"){
+	// 	// else if( volname=="/World/Basket/Tracker/ForwTPC2/Half" ||
+	// 	// 	 volname=="/World/Basket/Tracker/ForwTPC2/MM"
+	// 	// 	 ){
+	// 	//   NPoints_ForwTPC2++;
+	// 	//   hEdgePt_ForwTPC2_Z->Fill(PtZ);
+	// 	//   hEdgePt_ForwTPC2_XY->Fill(PtX,PtY);
+	// 	//   hEdgePt_ForwTPC2_YZ->Fill(PtY,PtZ);
+	// 	//   hEdgePt_ForwTPC2_XZ->Fill(PtX,PtZ);
+	// 	//   if(NPoints_ForwTPC2==1){
+	// 	//     hFirstPt_ForwTPC2_Z->Fill(PtZ);
+	// 	//     hFirstPt_ForwTPC2_XY->Fill(PtX,PtY);
+	// 	//     hFirstPt_ForwTPC2_YZ->Fill(PtY,PtZ);
+	// 	//     hFirstPt_ForwTPC2_XZ->Fill(PtX,PtZ);
+	// 	//   }
+	// 	//   //else if(NPoints_ForwTPC2==2){
+	// 	//   else{
+	// 	//     hLastPt_ForwTPC2_Z->Fill(PtZ);
+	// 	//     hLastPt_ForwTPC2_XY->Fill(PtX,PtY);
+	// 	//     hLastPt_ForwTPC2_YZ->Fill(PtY,PtZ);
+	// 	//     hLastPt_ForwTPC2_XZ->Fill(PtX,PtZ);
+	// 	//   }
+	// 	//   //else{ 
+	// 	//   //cerr << "# of points in " << volname << " is " << NPoints_ForwTPC2 << " !!!" << endl;
+	// 	//   //exit(1);
+	// 	//   //}
+	// 	// }
+	// 	// //else if(volname=="/World/Basket/Tracker/ForwTPC3/Drift"){
+	// 	// else if( volname=="/World/Basket/Tracker/ForwTPC3/Half" ||
+	// 	// 	 volname=="/World/Basket/Tracker/ForwTPC3/MM"
+	// 	// 	 ){
+	// 	//   NPoints_ForwTPC3++;
+	// 	//   hEdgePt_ForwTPC3_Z->Fill(PtZ);
+	// 	//   hEdgePt_ForwTPC3_XY->Fill(PtX,PtY);
+	// 	//   hEdgePt_ForwTPC3_YZ->Fill(PtY,PtZ);
+	// 	//   hEdgePt_ForwTPC3_XZ->Fill(PtX,PtZ);
+	// 	//   if(NPoints_ForwTPC3==1){
+	// 	//     hFirstPt_ForwTPC3_Z->Fill(PtZ);
+	// 	//     hFirstPt_ForwTPC3_XY->Fill(PtX,PtY);
+	// 	//     hFirstPt_ForwTPC3_YZ->Fill(PtY,PtZ);
+	// 	//     hFirstPt_ForwTPC3_XZ->Fill(PtX,PtZ);
+	// 	//   }
+	// 	//   //else if(NPoints_ForwTPC3==2){
+	// 	//   else{
+	// 	//     hLastPt_ForwTPC3_Z->Fill(PtZ);
+	// 	//     hLastPt_ForwTPC3_XY->Fill(PtX,PtY);
+	// 	//     hLastPt_ForwTPC3_YZ->Fill(PtY,PtZ);
+	// 	//     hLastPt_ForwTPC3_XZ->Fill(PtX,PtZ);
+	// 	//   }
+	// 	// }	
+      } // loop over points
 
 
       // Fill selected particles in FV
