@@ -3,14 +3,15 @@
 // TODO:
 // - 2D binning {mom,costheta_loc}
 // - Inner / Outer bin 
-// - test 3D mipem/emenergy/length --> do 1D if low stat
+// - test 2D mipem Vs emenergy/length --> do 1D if low stat
 // - optimize binning
-//
+// - update code for FGD1 file --> variable fgd2reaction != 7
 
 void MakeECalPDFs(){
   //TString FGD, TString output){
 
-  TString FGD = "/neutrino/data7/davide/files/ND280Upgrade/SmearingFiles/ECal/test.root";
+  //TString FGD = "../files/SmearingFiles/ECal/test.root";
+  TString FGD = "../files/SmearingFiles/ECal/test_FGD2_dsecal_entmom.root";
   TString output = "ciao.root";
 
   gStyle->SetOptStat(0);
@@ -21,100 +22,184 @@ void MakeECalPDFs(){
   int high=60;
   TFile *outf=new TFile(output.Data(),"RECREATE");
   DrawingTools *draw=new DrawingTools(FGD.Data(),false);
+  
+  draw->DumpCuts();
+  
   DataSample   *mc  =new DataSample(FGD.Data()); 
   TString path="MomBins";
   outf->mkdir(path.Data(),path.Data());
-
-  TH1F *hECalMIPEM_mom[4],    *hECalMIPEM_cos[4];
-  TH1F *hECalEMenergy_mom[4], *hECalEMenergy_cos[4];
-  TH1F *hECallength_mom[4],   *hECallength_cos[4];
+  
+  // Define variables
+  TString dsecal_entr_mom = "sqrt( selmu_dsecal_entrance_mom[0]*selmu_dsecal_entrance_mom[0] + selmu_dsecal_entrance_mom[1]*selmu_dsecal_entrance_mom[1] + selmu_dsecal_entrance_mom[2]*selmu_dsecal_entrance_mom[2] )";
+  TString dsecal_entr_costh = "(selmu_dsecal_entrance_mom[2]/"+dsecal_entr_mom+")";
+  
+  // Define cuts
+  TString StdCutMuon = "(accum_level[][0]>-1 && particle == 13 && fgd2reaction != 7)"; // all events, muons, true in FV
+  TString seldsecal = "(selmu_ecal_det == 0)";
   
   TString treename="default";
-  const int NbinsMom = 11;
-  TString opt_mom[NbinsMom]={
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=0    && selmu_truemom<300)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=300  && selmu_truemom<400)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=400  && selmu_truemom<500)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=500  && selmu_truemom<2000)"
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=600  && selmu_truemom<700)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=700  && selmu_truemom<800)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=800  && selmu_truemom<900)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=900  && selmu_truemom<1000)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=1000 && selmu_truemom<1200)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=1500 && selmu_truemom<2000)",
-    "accum_level[][0]>-1 && selvtx_truepos[2] > 2665 && particle == 13 && selmu_ecal_det == 0 && (selmu_truemom>=2000)"
+  const int NbinsMom = 32;
+  TString opt[NbinsMom]={
+ 
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=0    && "+dsecal_entr_mom+"<400) && ("+dsecal_entr_costh+">=-1   && "+dsecal_entr_costh+"<-0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=0    && "+dsecal_entr_mom+"<400) && ("+dsecal_entr_costh+">=-0.5 && "+dsecal_entr_costh+"<0.)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=0    && "+dsecal_entr_mom+"<400) && ("+dsecal_entr_costh+">=0.   && "+dsecal_entr_costh+"<0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=0    && "+dsecal_entr_mom+"<400) && ("+dsecal_entr_costh+">=0.5  && "+dsecal_entr_costh+"<1.)",
+
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=400  && "+dsecal_entr_mom+"<600) && ("+dsecal_entr_costh+">=-1   && "+dsecal_entr_costh+"<-0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=400  && "+dsecal_entr_mom+"<600) && ("+dsecal_entr_costh+">=-0.5 && "+dsecal_entr_costh+"<0.)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=400  && "+dsecal_entr_mom+"<600) && ("+dsecal_entr_costh+">=0.   && "+dsecal_entr_costh+"<0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=400  && "+dsecal_entr_mom+"<600) && ("+dsecal_entr_costh+">=0.5  && "+dsecal_entr_costh+"<1.)",
+
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=600  && "+dsecal_entr_mom+"<800) && ("+dsecal_entr_costh+">=-1   && "+dsecal_entr_costh+"<-0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=600  && "+dsecal_entr_mom+"<800) && ("+dsecal_entr_costh+">=-0.5 && "+dsecal_entr_costh+"<0.)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=600  && "+dsecal_entr_mom+"<800) && ("+dsecal_entr_costh+">=0.   && "+dsecal_entr_costh+"<0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=600  && "+dsecal_entr_mom+"<800) && ("+dsecal_entr_costh+">=0.5  && "+dsecal_entr_costh+"<1.)",
+
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=800  && "+dsecal_entr_mom+"<1000)&& ("+dsecal_entr_costh+">=-1.  && "+dsecal_entr_costh+"<-0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=800  && "+dsecal_entr_mom+"<1000)&& ("+dsecal_entr_costh+">=-0.5 && "+dsecal_entr_costh+"<0.)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=800  && "+dsecal_entr_mom+"<1000)&& ("+dsecal_entr_costh+">=0.   && "+dsecal_entr_costh+"<0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=800  && "+dsecal_entr_mom+"<1000)&& ("+dsecal_entr_costh+">=0.5  && "+dsecal_entr_costh+"<1.)",
+
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1000  && "+dsecal_entr_mom+"<1200)&& ("+dsecal_entr_costh+">=-1.  && "+dsecal_entr_costh+"<-0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1000  && "+dsecal_entr_mom+"<1200)&& ("+dsecal_entr_costh+">=-0.5 && "+dsecal_entr_costh+"<0.)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1000  && "+dsecal_entr_mom+"<1200)&& ("+dsecal_entr_costh+">=0.   && "+dsecal_entr_costh+"<0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1000  && "+dsecal_entr_mom+"<1200)&& ("+dsecal_entr_costh+">=0.5  && "+dsecal_entr_costh+"<1.)",
+
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1200  && "+dsecal_entr_mom+"<1500)&& ("+dsecal_entr_costh+">=-1.  && "+dsecal_entr_costh+"<-0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1200  && "+dsecal_entr_mom+"<1500)&& ("+dsecal_entr_costh+">=-0.5 && "+dsecal_entr_costh+"<0.)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1200  && "+dsecal_entr_mom+"<1500)&& ("+dsecal_entr_costh+">=0.   && "+dsecal_entr_costh+"<0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1200  && "+dsecal_entr_mom+"<1500)&& ("+dsecal_entr_costh+">=0.5  && "+dsecal_entr_costh+"<1.)",
+
+    StdCutMuon+"&&"+seldsecal+ "&& ("+dsecal_entr_mom+">=1500  && "+dsecal_entr_mom+"<2000)&& ("+dsecal_entr_costh+">=-1.  && "+dsecal_entr_costh+"<-0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1500  && "+dsecal_entr_mom+"<2000)&& ("+dsecal_entr_costh+">=-0.5 && "+dsecal_entr_costh+"<0.)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=1500  && "+dsecal_entr_mom+"<2000)&& ("+dsecal_entr_costh+">=0.   && "+dsecal_entr_costh+"<0.5)",
+    StdCutMuon+"&&"+seldsecal+ "&& ("+dsecal_entr_mom+">=1500  && "+dsecal_entr_mom+"<2000)&& ("+dsecal_entr_costh+">=0.5  && "+dsecal_entr_costh+"<1.)",
+
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=2000) && ("+dsecal_entr_costh+">=-1.  && "+dsecal_entr_costh+"<-0.5)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=2000) && ("+dsecal_entr_costh+">=-0.5 && "+dsecal_entr_costh+"<0.)",
+    StdCutMuon+"&&"+seldsecal+" && ("+dsecal_entr_mom+">=2000) && ("+dsecal_entr_costh+">=0.   && "+dsecal_entr_costh+"<0.5)",
+    StdCutMuon+"&&"+seldsecal+ "&& ("+dsecal_entr_mom+">=2000) && ("+dsecal_entr_costh+">=0.5  && "+dsecal_entr_costh+"<1.)"
   };
   TString nn_p[NbinsMom]={
-    "0-300",
-    "300-400",
-    "400-500",
-    "500-600"
-    // "600-700",
-    // "700-800",
-    // "800-900",
-    // "900-1000",
-    // "1000-1200",
-    // "1500-2000",
-    // ">2000"
-  };
+    "p=0,400, costh=-1,-0.5",
+    "p=0,400, costh=-0.5,0",
+    "p=0,400, costh=0,0.5",
+    "p=0,400, costh=0.5,1",
 
-  const int NbinsCosTh = 4;
-  TString opt_cos[NbinsCosTh]={
-    "(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=-1 && selmu_truedir[2]<0))",
-    "(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0 && selmu_truedir[2]<0.4))",
-    "(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0.4 && selmu_truedir[2]<0.8))",
-    "(accum_level[][0]>-1 && particle == 13 && selmu_ecal_det == 0 && (selmu_truedir[2]>=0.8 && selmu_truedir[2]<1))"
-  };  
-  TString nn_c[NbinsCosTh]={
-    "-1-0",
-    "0-0.4",
-    "0.4-0.8",
-    "0.8-1"
-  };
+    "p=400,600, costh=-1,-0.5",
+    "p=400,600, costh=-0.5,0",
+    "p=400,600, costh=0,0.5",
+    "p=400,600, costh=0.5,1",
+
+    "p=600,800, costh=-1,-0.5",
+    "p=600,800, costh=-0.5,0",
+    "p=600,800, costh=0,0.5",
+    "p=600,800, costh=0.5,1",
+
+    "p=800,1000, costh=-1,-0.5",
+    "p=800,1000, costh=-0.5,0",
+    "p=800,1000, costh=0,0.5",
+    "p=800,1000, costh=0.5,1",
+
+    "p=1000,1200, costh=-1,-0.5",
+    "p=1000,1200, costh=-0.5,0",
+    "p=1000,1200, costh=0,0.5",
+    "p=1000,1200, costh=0.5,1",
+
+    "p=1200,1500, costh=-1,-0.5",
+    "p=1200,1500, costh=-0.5,0",
+    "p=1200,1500, costh=0,0.5",
+    "p=1200,1500, costh=0.5,1",
+
+    "p=1500,2000, costh=-1,-0.5",
+    "p=1500,2000, costh=-0.5,0",
+    "p=1500,2000, costh=0,0.5",
+    "p=1500,2000, costh=0.5,1",
+
+    "p>2000, costh=-1,-0.5",
+    "p>2000, costh=-0.5,0",
+    "p>2000, costh=0,0.5",
+    "p>2000, costh=0.5,1"
+   };
+
+  TH2F *hECalMIPEM_Vs_EneLength[NbinsMom];
+  TH1F *hECalMIPEM[NbinsMom];
+
+  TH1F *hECalMIPEM_mom[NbinsMom],    *hECalMIPEM_cos[NbinsMom];
+  TH1F *hECalEMenergy_mom[NbinsMom], *hECalEMenergy_cos[NbinsMom];
+  TH1F *hECallength_mom[NbinsMom],   *hECallength_cos[NbinsMom];
 
 
-  ///// PDFs of Mom
+
+
+
+  // ///// PDFs of MIPEM (Mom Vs CosTheta)
   
+  // for(int ih=0;ih<NbinsMom;ih++){
+  //   std::cout<<" ih "<<ih<<" nn_p "<<nn_p[ih]<<std::endl;
+  //   hECalMIPEM[ih]=new TH1F(Form("hh%s",nn_p[ih].Data()),"",nbins,low,high);
+  //   TString scut=opt[ih];
+  //   std::cout<<scut.Data()<<std::endl;
+  //   std::cout<<treename.Data()<<std::endl;
+  //   TTree *tree=(TTree*) mc->GetTree(treename.Data());
+  //   tree->Project(hECalMIPEM[ih]->GetName(),"selmu_ecal_mipem",scut.Data());
+  //   cout << "# of events = " << hECalMIPEM[ih]->GetEntries() << endl;
+  //   cout << endl;
+  //   hECalMIPEM[ih]->SetTitle(Form("%s ",nn_p[ih].Data()));
+  //   hECalMIPEM[ih]->GetYaxis()->SetTitle("Entries");
+  //   hECalMIPEM[ih]->GetXaxis()->SetTitle("ECal LLR MipEm");
+  //   outf->cd();
+  //   outf->cd(path.Data());
+  //   hECalMIPEM[ih]->SetName(Form("mipem_%s",nn_p[ih].Data()));
+  //   hECalMIPEM[ih]->Write();
+  // }
+
+
+  // ///// PDFs of EMenergy/TrackLength (Mom Vs CosTheta)
+  
+  // for(int ih=0;ih<NbinsMom;ih++){
+  //   std::cout<<" ih "<<ih<<" nn_p "<<nn_p[ih]<<std::endl;
+  //   hECalMIPEM[ih]=new TH1F(Form("hh%s",nn_p[ih].Data()),"",nbins,low,high);
+  //   TString scut=opt[ih];
+  //   std::cout<<scut.Data()<<std::endl;
+  //   std::cout<<treename.Data()<<std::endl;
+  //   TTree *tree=(TTree*) mc->GetTree(treename.Data());
+  //   tree->Project(hECalMIPEM[ih]->GetName(),"selmu_ecal_mipem",scut.Data());
+  //   cout << "# of events = " << hECalMIPEM[ih]->GetEntries() << endl;
+  //   cout << endl;
+  //   hECalMIPEM[ih]->SetTitle(Form("%s ",nn_p[ih].Data()));
+  //   hECalMIPEM[ih]->GetYaxis()->SetTitle("Entries");
+  //   hECalMIPEM[ih]->GetXaxis()->SetTitle("ECal LLR MipEm");
+  //   outf->cd();
+  //   outf->cd(path.Data());
+  //   hECalMIPEM[ih]->SetName(Form("mipem_%s",nn_p[ih].Data()));
+  //   hECalMIPEM[ih]->Write();
+  // }
+
+
+  ///// PDFs of MIPEM Vs EMenergy/TrackLength (Mom Vs CosTheta)
+    
   for(int ih=0;ih<NbinsMom;ih++){
     std::cout<<" ih "<<ih<<" nn_p "<<nn_p[ih]<<std::endl;
-    hECalMIPEM_mom[ih]=new TH1F(Form("hh%s",nn_p[ih].Data()),"",nbins,low,high);
-    TString scut=opt_mom[ih];
+    hECalMIPEM_Vs_EneLength[ih]=new TH2F(Form("hh%s2D",nn_p[ih].Data()),"",nbins,low,high,nbins,-1,4);
+    TString scut=opt[ih];
     std::cout<<scut.Data()<<std::endl;
     std::cout<<treename.Data()<<std::endl;
     TTree *tree=(TTree*) mc->GetTree(treename.Data());
-    tree->Project(hECalMIPEM_mom[ih]->GetName(),"selmu_ecal_mipem",scut.Data());
-    hECalMIPEM_mom[ih]->SetTitle(Form("%s ",nn_p[ih].Data()));
-    hECalMIPEM_mom[ih]->GetYaxis()->SetTitle("Entries");
-    hECalMIPEM_mom[ih]->GetXaxis()->SetTitle("ECal LLR MipEm");
+    tree->Project(hECalMIPEM_Vs_EneLength[ih]->GetName(),"selmu_ecal_EMenergy/selmu_ecal_length:selmu_ecal_mipem",scut.Data());
+    cout << "# of events = " << hECalMIPEM_Vs_EneLength[ih]->GetEntries() << endl;
+    cout << endl;
+    hECalMIPEM_Vs_EneLength[ih]->SetTitle(Form("%s ",nn_p[ih].Data()));
+    hECalMIPEM_Vs_EneLength[ih]->GetYaxis()->SetTitle("Entries");
+    hECalMIPEM_Vs_EneLength[ih]->GetXaxis()->SetTitle("ECal LLR MipEm");
     outf->cd();
     outf->cd(path.Data());
-    hECalMIPEM_mom[ih]->SetName(Form("mipem_%s",nn_p[ih].Data()));
-    hECalMIPEM_mom[ih]->Write();
-  }
+    hECalMIPEM_Vs_EneLength[ih]->SetName(Form("mipem_%s",nn_p[ih].Data()));
+    hECalMIPEM_Vs_EneLength[ih]->Write();
+  } 
 
 
-
-  ///// PDFs of CosTheta
-
-  TString path1="CosThetaBins";
-  outf->mkdir(path1.Data(),path1.Data());
-
-  for(int ih=0;ih<NbinsCosTh;ih++){
-    std::cout<<" ih "<<ih<<" nn_c "<<nn_c[ih]<<std::endl;
-    hECalMIPEM_cos[ih]=new TH1F(Form("hh%s",nn_c[ih].Data()),"",nbins,low,high);
-    TString scut=opt_cos[ih];
-    std::cout<<scut.Data()<<std::endl;
-    std::cout<<treename.Data()<<std::endl;
-    TTree *tree=(TTree*) mc->GetTree(treename.Data());
-    tree->Project(hECalMIPEM_cos[ih]->GetName(),"selmu_ecal_mipem",scut.Data());
-    hECalMIPEM_mom[ih]->SetTitle(Form("%s ",nn_c[ih].Data()));
-    hECalMIPEM_mom[ih]->GetYaxis()->SetTitle("Entries");
-    hECalMIPEM_mom[ih]->GetXaxis()->SetTitle("ECal LLR MipEm");
-    outf->cd();
-    outf->cd(path1.Data());
-    hECalMIPEM_cos[ih]->SetName(Form("mipem_%s",nn_c[ih].Data()));
-    hECalMIPEM_cos[ih]->Write();
-  }
 
   
   // Do the same for EMenergy and track length
@@ -124,6 +209,32 @@ void MakeECalPDFs(){
   //selmu_detectors
 
 
+  // selmu_ecal_EMenergy
+  // [1:39]  
+  // selmu_ecal_det sarebbe l'ecal considerato (ds, top, bottom, etc)
+  // [1:39]  
+  // selmu_ecal_edeposit energia depositata
+  // [1:39]  
+  // selmu_ecal_mipem
+  // [1:39]  
+  // ci sarebbe anche selmu_ecal_mippion
+  // [1:39]  
+  // selmu_ecal_length che sarebbe la lunghezza del segmento in ecal (edited)
+  // [1:41]  
+  // selmu_dsecal_entrance_mom che è il tvector del momento vero in ingresso ad ecal
+  // [1:41]  
+  // selmu_dsecal_entrance_pos posizione vera dell'ingresso in ecal
+  // [1:41]  
+  // tutto è fatto solo per downstream ecal
+  // [1:41]  
+  // dimmi se va bene
+  // [1:41]  
+  // ah scusa
+  // [1:42]  
+  // per selezionare dsECal
+  // [1:42]  
+  // devi fare selmu_ecal_det == 0 quando plotti il TTree
+  
   outf->Close();
 
 

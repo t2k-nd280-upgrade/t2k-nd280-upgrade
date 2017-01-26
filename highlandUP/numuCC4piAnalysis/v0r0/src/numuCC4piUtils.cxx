@@ -254,42 +254,48 @@ bool numuCC4pi_utils::ExternalCut(int topo, const AnaEventC& event, AnaTrackB& c
 }
 */
 //**************************************************
-int numuCC4pi_utils::PIDCut(int topo, const AnaTrackB& candidate) {
-//**************************************************
+int numuCC4pi_utils::PIDCut(int topo, const AnaTrackB& candidate, TFile *file_ECAL_PDF) {
+  //**************************************************
 
-	if ( topo==0 ) {
-		if (cutUtils::MuonPIDCut(candidate, false)){
-			//if ( anaUtils::InFiducialVolume(SubDetId::kFGD2, candidate.PositionEnd, _FVdefminFGD2, _FVdefmaxFGD2) ) {
-			//	if ( candidate.Momentum>280. ) return 2;
-			//}
-//			if ( candidate.nECALSegments>0 ) {
-//				if ( candidate.ECALSegments[0]->PIDMipEm>15 ) {
-//					if ( anaUtils::TrackUsesDet(candidate,SubDetId::kTECAL) ) return 3;
-//					if ( anaUtils::InFiducialVolume(SubDetId::kDSECAL, candidate.PositionEnd, _FVdefminDsECal, _FVdefmaxDsECal) ) return 3;
-//				}
-//			}
-			return 1;
-		}
-		return 0;
-	}
-	else if ( topo==1 ) {
-//		if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
-		if (cutUtils::MuonPIDCut(candidate, false))
+  //std::cout << "topo = " << topo << std::endl; 
 
-		return 0;
-	}
-	else if ( topo==2 ) {
-		//if ( cutUtils::MuonECALPIDCut(candidate) ) return 1;
-		if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
+  if ( topo==0 ) {
+    if (cutUtils::MuonPIDCut(candidate, false)){
+      /*
+	if ( anaUtils::InFiducialVolume(SubDetId::kFGD2, candidate.PositionEnd, _FVdefminFGD2, _FVdefmaxFGD2) )
+        if ( candidate.Momentum>280. ) return 2;
 
-		return 0;
+	if ( candidate.nECALSegments>0 ) {
+        if ( candidate.ECALSegments[0]->PIDMipEm>15 ) {
+	if ( anaUtils::TrackUsesDet(candidate,SubDetId::kTECAL) ) return 3;
+	if ( anaUtils::InFiducialVolume(SubDetId::kDSECAL, candidate.PositionEnd, _FVdefminDsECal, _FVdefmaxDsECal) )
+	return 3;
+        }
 	}
-	else if ( topo==3 ) {
-		if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
+      */
+      return 1;
+    }
+    return 0;
+  }
+  else if ( topo==1 ) {
+    //if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
+    if (cutUtils::MuonPIDCut(candidate, false))
 
-//		if ( cutUtils::StoppingBrECALorSMRDCut(candidate.PositionEnd)==0 && cutUtils::MuonECALPIDCut(candidate) ) return 1;
-		return 0;
-	}
-	return 1;
+      return 0;
+  }
+  else if ( topo==2 ) {
+    if ( cutUtils::MuonECALPIDCut(candidate, false, file_ECAL_PDF) ) return 1;
+    if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
+
+    return 0;
+  }
+  else if ( topo==3 ) {
+    if ( cutUtils::MuonECALPIDCut(candidate, false, file_ECAL_PDF) ) return 1;
+    if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
+
+    //if ( cutUtils::StoppingBrECALorSMRDCut(candidate.PositionEnd)==0 && cutUtils::MuonECALPIDCut(candidate) ) return 1;
+    return 0;
+  }
+  return 1;
 
 }

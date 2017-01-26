@@ -38,7 +38,7 @@ namespace anaUtils{
   /// Classify reaction types
   Int_t GetReaction(const AnaTrueVertex& trueVertex, const SubDetId::SubDetEnum det=SubDetId::kTPCUp1, bool IsAntinu = false);
   Int_t GetReactionCC(const AnaTrueVertex& trueVertex, const SubDetId::SubDetEnum det=SubDetId::kTPCUp1, bool IsAntinu = false);
-  Int_t GetReactionNoFgdFv(const AnaTrueVertex& trueVertex, bool IsAntinu = false);
+  Int_t GetReactionNoTargetFv(const AnaTrueVertex& trueVertex, bool IsAntinu = false);
 
   /// Classify reaction types,
   /// Returns the same codes as GetReaction(), except for no '8', which corresponds to sand muons
