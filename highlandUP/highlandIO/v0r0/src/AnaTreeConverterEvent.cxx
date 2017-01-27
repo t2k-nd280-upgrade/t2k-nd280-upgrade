@@ -717,6 +717,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCUp1();
     detCross->EDeposit=upTrack->GetEdepTPCUp1();
     detCross->SegLength=upTrack->GetLengthTPCUp1();
+	detCross->Detector_name=TString(firstTPCUp1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCUp1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -741,8 +742,8 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCUp2();
     detCross->EDeposit=upTrack->GetEdepTPCUp2();
     detCross->SegLength=upTrack->GetLengthTPCUp2();
+	detCross->Detector_name=TString(firstTPCUp2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCUp2);
-  
     truePart->DetCrossingsVect.push_back(detCross);
   }
 
@@ -766,6 +767,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCDown1();
     detCross->EDeposit=upTrack->GetEdepTPCDown1();
     detCross->SegLength=upTrack->GetLengthTPCDown1();
+	detCross->Detector_name=TString(firstTPCDown1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCDown1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -791,6 +793,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCDown2();
     detCross->EDeposit=upTrack->GetEdepTPCDown2();
     detCross->SegLength=upTrack->GetLengthTPCDown2();
+	detCross->Detector_name=TString(firstTPCDown2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCDown2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -815,6 +818,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzForwTPC1();
     detCross->EDeposit=upTrack->GetEdepForwTPC1();
     detCross->SegLength=upTrack->GetLengthForwTPC1();
+	detCross->Detector_name=TString(firstForwTPC1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -839,6 +843,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzForwTPC2();
     detCross->EDeposit=upTrack->GetEdepForwTPC2();
     detCross->SegLength=upTrack->GetLengthForwTPC2();
+	detCross->Detector_name=TString(firstForwTPC2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -862,6 +867,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[2] = lastForwTPC3->GetMomentum().Z();
     detCross->DeltaLYZ=upTrack->GetLyzForwTPC3();
     detCross->EDeposit=upTrack->GetEdepForwTPC3();
+	detCross->Detector_name=TString(firstForwTPC3->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC3);
     detCross->SegLength=upTrack->GetLengthForwTPC3();
     truePart->DetCrossingsVect.push_back(detCross);
@@ -886,7 +892,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[2] = lastTarget1->GetMomentum().Z();
     detCross->DeltaLYZ=upTrack->GetLengthTarget1();
     detCross->EDeposit=upTrack->GetEdepTarget1();
-
+	detCross->Detector_name=TString(firstTarget1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTarget1);
 
     truePart->DetCrossingsVect.push_back(detCross);
@@ -911,6 +917,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[2] = lastTarget2->GetMomentum().Z();
     detCross->DeltaLYZ=upTrack->GetLengthTarget2();
     detCross->EDeposit=upTrack->GetEdepTarget2();
+	detCross->Detector_name=TString(firstTarget2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTarget2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -934,6 +941,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[2] = lastDsECal->GetMomentum().Z();
     detCross->DeltaLYZ=upTrack->GetLengthDsECal();
     detCross->EDeposit=upTrack->GetEdepDsECal();
+	detCross->Detector_name=TString(firstDsECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kDsECal);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -957,6 +965,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[2] = lastP0DECal->GetMomentum().Z();
     detCross->DeltaLYZ=upTrack->GetLengthP0DECal();
     detCross->EDeposit=upTrack->GetEdepP0DECal();
+	detCross->Detector_name=TString(firstP0DECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kP0DECal);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -980,6 +989,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[2] = lastBrlECal->GetMomentum().Z();
     detCross->DeltaLYZ=upTrack->GetLengthBrlECal();
     detCross->EDeposit=upTrack->GetEdepBrlECal();
+	detCross->Detector_name=TString(firstBrlECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kBrlECal);
     truePart->DetCrossingsVect.push_back(detCross);
 

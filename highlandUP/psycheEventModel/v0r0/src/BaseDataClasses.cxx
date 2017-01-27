@@ -420,7 +420,8 @@ void AnaDetCrossingB::Print() const{
     std::cout << "-------- AnaDetCrossingB:: --------- " << std::endl;
 
     std::cout << "InActive:                " << InActive              << std::endl;
-    std::cout << "Detector:               " << Detector             << std::endl;   
+    std::cout << "Detector:                " << Detector              << std::endl;   
+    std::cout << "Detector full name:      " << Detector_name         << std::endl;   
     std::cout << "DeltaLYZ:                " << DeltaLYZ              << std::endl;
     std::cout << "SegLength:               " << SegLength             << std::endl;
     std::cout << "EDeposit:                " << EDeposit              << std::endl;
@@ -442,6 +443,7 @@ AnaDetCrossingB::AnaDetCrossingB(const AnaDetCrossingB& cross){
 //********************************************************************
 
     Detector = cross.Detector;
+    Detector_name = cross.Detector_name;
     InActive = cross.InActive;
 
     anaUtils::CopyArray(cross.EntrancePosition,  EntrancePosition,   4);

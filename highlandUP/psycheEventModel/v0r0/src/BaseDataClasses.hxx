@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "TString.h"
 #include "TVector3.h"
 #include "TLorentzVector.h"
 
@@ -12,6 +13,7 @@
 #include "CoreDataClasses.hxx"
 #include "SampleId.hxx"
 #include "SubDetId.hxx"
+
 
 /// Classes for high level analysis. All input formats (oaAnalysis, flatTree, etc)
 /// are converted into these data classes, which are later used in the actual analysis.
@@ -83,6 +85,8 @@ class AnaDetCrossingB{
   /// See SubDetId.hxx for the detector enumerations used to 
   /// interrogate this object
   unsigned long Detector;
+  TString Detector_name; 
+  
   /// The number of nodes in the reconstructed object.
   Float_t SegLength;
 
