@@ -102,7 +102,7 @@ $resource        = "interactive"                 unless defined $resource;
 #$tag             = "SelND280Up_NuMu_6E20_ND280curr_0p2T"           unless defined $tag;
 #$tag             = "SelND280Up_classic_AfterUpdates_9_12_16_NewFV" unless defined $tag;
 #$tag             = "SelND280Up_classic_AfterUpdates_9_12_16_NewFV_ECal" unless defined $tag;
-$tag             = "SelND280Up_prova" unless defined $tag;
+$tag             = "SelND280Up_AllECal" unless defined $tag;
 
 #$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/g4ND280Up_6E20_classic_1864x600x1300_numu_0p2T_6_10_16.root" unless defined $inputfile;
 #$inputfile       = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/g4ND280Up_6E20_classic_1864x600x1300_nue_0p2T_6_10_16.root" unless defined $inputfile;
@@ -120,7 +120,8 @@ $tag             = "SelND280Up_prova" unless defined $tag;
 #$inputfile       = "/neutrino/data7/davide/files/PROVA/commit_18dfe65_new/g4ND280Up_prova_ECal_1k.root" unless defined $inputfile;
  
 # Current tests
-$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/commit_current/g4ND280Up_6E20_classic_AfterDetUpdate_9_12_16_ECal-Exp0-Nexpt1000.root" unless defined $inputfile;
+#$inputfile        = "/neutrino/data7/davide/files/PROVA/commit_current/g4ND280Up_6E20_classic_ECal_14_1_17.root" unless defined $inputfile;
+$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/20_1_17_FullND280/g4ND280Up_6E20_classic_AfterDetUpdate_19_1_17_USECalP0D.root" unless defined $inputfile;
 
 
 
@@ -177,23 +178,23 @@ $nexpts          = 20000                          unless defined $nexpts;
 # Fiducial Volume ND280 upgrade classic (1864x600x1300 mm^3)
 #
 # Target 1
-# $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
-# $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
-# $cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
-# $cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
-# #$cut_fv1_minY    = -300.                    unless defined $cut_fv1_minY;
-# #$cut_fv1_maxY    = +300.                    unless defined $cut_fv1_maxY;
-# $cut_fv1_minZ    = -1787.                    unless defined $cut_fv1_minZ;
-# $cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
-# Target 2 
 $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
 $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
 $cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
 $cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
 #$cut_fv1_minY    = -300.                    unless defined $cut_fv1_minY;
 #$cut_fv1_maxY    = +300.                    unless defined $cut_fv1_maxY;
-$cut_fv1_minZ    = +487.                      unless defined $cut_fv1_minZ;
-$cut_fv1_maxZ    = +1787.                     unless defined $cut_fv1_maxZ;
+$cut_fv1_minZ    = -1787.                    unless defined $cut_fv1_minZ;
+$cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
+# # Target 2 
+# $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
+# #$cut_fv1_minY    = -300.                    unless defined $cut_fv1_minY;
+# #$cut_fv1_maxY    = +300.                    unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = +487.                      unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = +1787.                     unless defined $cut_fv1_maxZ;
 
 #
 # Fiducial Volume ND280 current (only FGDs)
@@ -226,8 +227,8 @@ $docut_mater     = 0                             unless defined $docut_mater;
 
 # select interactions only in Fiducial Volume
 $docut_vertex  = 1                             unless defined $docut_vertex;
-$docut_target1 = 0                             unless defined $docut_target1;
-$docut_target2 = 1                             unless defined $docut_target2;
+$docut_target1 = 1                             unless defined $docut_target1;
+$docut_target2 = 0                             unless defined $docut_target2;
 $docut_fgd1    = 0                             unless defined $docut_fgd1;
 $docut_fgd2    = 0                             unless defined $docut_fgd2;
 
