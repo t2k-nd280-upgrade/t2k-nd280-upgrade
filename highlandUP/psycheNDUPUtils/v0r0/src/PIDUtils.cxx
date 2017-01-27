@@ -258,13 +258,14 @@ void anaUtils::GetPIDLikelihood(const AnaTrackB& track, Float_t* hypo, bool prod
     // Loop over TPC segments
     for (int j = 0; j < track.nTPCSegments; ++j){      
         AnaTPCParticleB* TPCSegment = track.TPCSegments[j];
-
         if (!TPCSegment) continue;
-
+  //   std::cout<<"ntpc pass"<<std::endl;
+   
         // Only segments passing the TPC track quality cut will contribute to the likelihood
         // Was not applied for production 5 BANFF analysis
 //        if(!prod5Cut)
      if (!cutUtils::TPCTrackQualityCut(*TPCSegment)) continue;
+  
         // Require valid values for all quantities involved
         if( TPCSegment->dEdxexpMuon==-0xABCDEF || TPCSegment->dEdxexpEle==-0xABCDEF || TPCSegment->dEdxexpPion==-0xABCDEF || TPCSegment->dEdxexpProton==-0xABCDEF) continue;
         if( TPCSegment->dEdxMeas ==-0xABCDEF ) continue; 
@@ -313,10 +314,10 @@ void anaUtils::GetPIDLikelihood(const AnaTrackB& track, Float_t* hypo, bool prod
             prob[2] *= tmp_prob[tpc][2];
             prob[3] *= tmp_prob[tpc][3];
 
-            if (SubDetId::GetDetectorUsed(segmentsInTPC[tpc]->Detectors, closesttpc)) found = true;
+           // if (SubDetId::GetDetectorUsed(segmentsInTPC[tpc]->Detectors, closesttpc)) found = true;
+            found=true;
         }
     }
-
     // If at least the segment in the closest TPC has a  valid PID info
     if (found){
         for (int h=0;h<4;h++){
@@ -329,7 +330,6 @@ void anaUtils::GetPIDLikelihood(const AnaTrackB& track, Float_t* hypo, bool prod
             }
         }
     }
-
     return;
 }
 

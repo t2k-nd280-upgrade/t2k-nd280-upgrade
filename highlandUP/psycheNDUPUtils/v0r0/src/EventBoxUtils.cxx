@@ -99,7 +99,7 @@ void boxUtils::FillTracksWithTPC(AnaEventB& event, SubDetId::SubDetEnum det){
       EventBox->RecObjectsInGroup[EventBox::kTracksWithTPCInTarget2FV][EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPCInTarget2FV]++] = track;
 
     // Apply the track quality cut
-   if (!cutUtils::TrackQualityCut(*track)) continue;
+   if (!cutUtils::DeltaLYZTPCCut(*track)) continue;
           AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
 
     if      (inTarget1)
@@ -319,5 +319,5 @@ void boxUtils::FillTracksWithECal(AnaEventB& event){
     AnaTrackB* track = tracks[i];
           EventBox->RecObjectsInGroup[EventBox::kTracksWithECal][EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal]++] = track;
     }
-    
+std::cout<<(EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal])<<std::endl;    
 }

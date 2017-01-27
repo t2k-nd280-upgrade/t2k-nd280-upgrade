@@ -156,6 +156,7 @@ void AnaTreeConverterEvent::IncrementPOTBySpill() {
 //*****************************************************************************
 void AnaTreeConverterEvent::FillInfo(AnaSpill* spill, Int_t entry){
 //*****************************************************************************
+  
   spill->EventInfo = MakeEventInfo();
   AnaEventInfo& info = *dynamic_cast<AnaEventInfo*>(spill->EventInfo);
 
@@ -962,6 +963,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
   }
   if(firstBrlECal){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    //std::cout<<"firstBrlECal->GetPostPosition().X() "<<lastBrlECal->GetPostPosition().X()<<" "<<lastBrlECal->GetPostPosition().Y()<<" "<<lastBrlECal->GetPostPosition().Z()<<std::endl;
     detCross->EntrancePosition[0] = firstBrlECal->GetPostPosition().X();
     detCross->EntrancePosition[1] = firstBrlECal->GetPostPosition().Y();
     detCross->EntrancePosition[2] = firstBrlECal->GetPostPosition().Z();

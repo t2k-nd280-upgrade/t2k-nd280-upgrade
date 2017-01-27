@@ -1,4 +1,4 @@
-package highlandUP/psycheCore
+package psyche/psycheCore
 version v3r8
 
 manager Anselmo Cervera <anselmo.cervera@cern.ch>

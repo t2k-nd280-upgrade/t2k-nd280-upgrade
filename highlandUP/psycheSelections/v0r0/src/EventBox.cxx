@@ -21,7 +21,7 @@ void boxUtils::FillLongTracks(AnaEventB& event, SubDetId::SubDetEnum det){
   // TODO. We need a better method to get the tracks (returning a variable size array). Otherwise we have to guess how many tracks we have
   AnaTrackB* selTracks[NMAXPARTICLES*5];
   int nLong =anaUtils::GetAllTracks(event,selTracks);
-  nLong = std::min(nLong, (Int_t)NMAXPARTICLES);
+  //nLong = std::min(nLong, (Int_t)NMAXPARTICLES);
 
   EventBox->nRecObjectsInGroup[EventBox::kLongTracks]=0;
   anaUtils::CreateArray(EventBox->RecObjectsInGroup[EventBox::kLongTracks], nLong);

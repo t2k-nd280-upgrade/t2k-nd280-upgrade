@@ -20,6 +20,7 @@ MomRangeCorrection::MomRangeCorrection(SubDetId::SubDetEnum det) :  CorrectionBa
 void MomRangeCorrection::Apply(AnaSpillC& spillBB) {
   //********************************************************* ***********
   AnaSpill& spill = *static_cast<AnaSpill*>(&spillBB);
+//std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
 
   for (UInt_t i = 0; i < spill.Bunches.size(); i++) {
     AnaBunch* bunch = static_cast<AnaBunch*>(spill.Bunches[i]);
@@ -39,13 +40,15 @@ void MomRangeCorrection::Apply(AnaSpillC& spillBB) {
         if (TPCSegment) {
           double smearedMomentum = SmearMomentum(TPCSegment, ParticleId::GetParticle(trueP->PDG));
           TPCSegment->SmearedMomentum = smearedMomentum;
+          // std::cout<<"smearing"<<std::endl;
           if (TPCSegment->DeltaLYZ > length) {
                  ntpc++;
      
             double Momentum_dif = track->Momentum - TPCSegment->Momentum;
             track->SmearedMomentum = smearedMomentum + Momentum_dif;
             track->MomentumError = TPCSegment->MomentumError;
- 
+            //    std::cout<<"smearing"<<std::endl;
+
           }
         }
         
