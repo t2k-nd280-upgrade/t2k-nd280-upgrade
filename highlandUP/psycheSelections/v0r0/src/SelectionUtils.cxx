@@ -20,7 +20,7 @@ bool SelUtils::FindLeadingTracks(AnaEventC& event, ToyBoxB& boxB){
 
     EventBox::RecObjectGroupEnum groupID;
     if   (det == SubDetId::kTarget1)
-      groupID = EventBox::kTracksWithTPCAndTarget1;
+      groupID = EventBox::kTracksWithGoodQualityTPCInTarget1FV;
     else if (det == SubDetId::kTarget2)
       groupID = EventBox::kTracksWithTPCAndTarget2;
     else 

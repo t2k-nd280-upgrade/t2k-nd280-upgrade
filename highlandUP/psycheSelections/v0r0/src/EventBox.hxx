@@ -23,16 +23,19 @@ class EventBox:public EventBoxB{
     kTracksWithTarget2AndNoTPC,
     kTracksWithTarget1,
     kTracksWithTarget2,
+    kTracksWithECal,
     kTracksWithTPCorTarget1,
     kTracksWithTPCorTarget2, 
-    kTracksWithECal
-
 
   };
   
   enum TrueObjectGroupEnum{
     kTrueParticlesUnassigned=0,
     kTrueParticlesChargedInTPCInBunch,
+    kTrueParticlesChargedInTarget1AndNoTPCInBunch,
+    kTrueParticlesChargedInTarget2AndNoTPCInBunch,
+    kTrueParticlesChargedInTPCorTargetInBunch, 
+
   };
 
   EventBox();

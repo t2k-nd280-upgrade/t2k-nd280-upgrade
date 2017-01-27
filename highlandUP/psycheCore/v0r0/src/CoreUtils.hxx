@@ -37,7 +37,22 @@ namespace anaUtils{
 
     void CopyArray(AnaRecObjectC**  tgtArr, AnaRecObjectC**    srcArr, int nObj);
     void CopyArray(AnaTrueObjectC** tgtArr, AnaTrueObjectC**   srcArr, int nObj);
- 
+   /// Copying of an array 
+  template <typename T1, typename T2> void CopyArray(const T1* srcArr, T2* tgtArr, size_t nObj){
+    for (size_t i = 0; i < nObj; i++) 
+      tgtArr[i] = srcArr[i];
+  }
+
+ /// Resize an array, basic case for int(s), float(s) etc 
+  template <typename T> void ResizeArray(T* &tgtArr, size_t nObjNew, size_t nObjOrig){
+    T* tmp = new T[nObjNew];
+    for (size_t i = 0; i < nObjNew; i++) 
+      tmp[i] = (i < nObjOrig ? tgtArr[i] : 0);
+
+    delete [] tgtArr;
+    tgtArr = tmp;
+  }
+
 
     /// Create variable sized arrays of pointers
     void CreateArray(Weight_h*            &tgtArr,  int nObj, Weight_h ini=1);
