@@ -14,8 +14,7 @@ numuCC4piSelection::numuCC4piSelection(bool forceBreak): SelectionBase(forceBrea
   //********************************************************************
 
   char filename[256];
-
-  sprintf(filename, "%s/data/ECAL_PDF.root", getenv("NUMUCC4PIANALYSISROOT"));
+  sprintf(filename, "%s/data/pdfs_dsecal.root", getenv("NUMUCC4PIANALYSISROOT"));
   _file_ECAL_PDF = TFile::Open(filename);
 
 }
@@ -31,57 +30,47 @@ void numuCC4piSelection::DefineSteps(){
   AddStep(StepBase::kCut,    "> 0 tracks ",         new TotalMultiplicityCut(), true); //if passed accum_level=2 
   AddStep(StepBase::kCut, "Sort TPC tracks",     new SortTracksAction());
   AddStep(StepBase::kCut,    "quality+fiducial",    new TrackGQandFVCut(),      true); //if passed accum_level=3
-  //	AddStep(StepBase::kAction, "veto Action",         new VetoAction());
+  //AddStep(StepBase::kAction, "veto Action",         new VetoAction());
   AddStep(StepBase::kAction, "muon PID Action",     new PIDAction(_file_ECAL_PDF));
   AddStep(StepBase::kAction, "find vertex",         new FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new FillSummaryAction_numuCC4pi());
 
-  //AddSplit(4);
-  if(branch==0){
-    AddStep( StepBase::kCut, "Fwd Quality Cut",     new Fwd_Quality());         //if passed accum_level=4
-    //AddStep(0, StepBase::kCut, "Fwd Veto Cut",        new Fwd_Veto());            //if passed accum_level=5
+  AddSplit(4);
 
-    //AddSplit(3,0);
+  AddStep(0, StepBase::kCut, "Fwd Quality Cut",     new Fwd_Quality());         //if passed accum_level=4
+  //AddStep(0, StepBase::kCut, "Fwd Veto Cut",        new Fwd_Veto());            //if passed accum_level=5
+  AddStep(0, StepBase::kCut, "Fwd PID Cut",      new Fwd_PID());             //if passed accum_level=6
+  AddStep(0, StepBase::kCut, "Fwd 4pi Cut",      new Fwd_4pi());
+ 
+  /*
+  AddSplit(3,0);
+  AddStep(0, 1, StepBase::kCut, "CSFGD2 PID Cut",   new CSFGD2_PID());
+  AddStep(0, 1, StepBase::kCut, "CSFGD2 4pi Cut",   new CSFGD2_4pi());
+  AddStep(0, 2, StepBase::kCut, "CSECAL PID Cut",   new CSECAL_PID());
+  AddStep(0, 2, StepBase::kCut, "CSECAL 4pi Cut",   new CSECAL_4pi());
+  */
 
-    AddStep(StepBase::kCut, "Fwd PID Cut",      new Fwd_PID());             //if passed accum_level=6
-    AddStep( StepBase::kCut, "Fwd 4pi Cut",      new Fwd_4pi());
-    SetBranchAlias(0, "Fwd");
+  AddStep(1, StepBase::kCut, "Bwd Quality Cut",    new Bwd_Quality());
+  //AddStep(1, StepBase::kCut, "Bwd Veto Cut",       new Bwd_Veto());
+  AddStep(1, StepBase::kCut, "Bwd PID Cut",        new Bwd_PID());
+  AddStep(1, StepBase::kCut, "Bwd 4pi Cut",        new Bwd_4pi());
 
-  }             //if passed accum_level=7
-  //	AddStep(0, 1, StepBase::kCut, "CSFGD2 PID Cut",   new CSFGD2_PID());
-  //	AddStep(0, 1, StepBase::kCut, "CSFGD2 4pi Cut",   new CSFGD2_4pi());
-  //	AddStep(0, 2, StepBase::kCut, "CSECAL PID Cut",   new CSECAL_PID());
-  //	AddStep(0, 2, StepBase::kCut, "CSECAL 4pi Cut",   new CSECAL_4pi());
-  else if(branch==1){
+  AddStep(2, StepBase::kCut, "HAFwd Quality Cut",  new HAFwd_Quality());
+  //AddStep(2, StepBase::kCut, "HAFwd Veto Cut",     new HAFwd_Veto());
+  AddStep(2, StepBase::kCut, "HAFwd PID Cut",      new HAFwd_PID());
+  AddStep(2, StepBase::kCut, "HAFwd 4pi Cut",      new HAFwd_4pi());
 
-    AddStep( StepBase::kCut, "Bwd Quality Cut",    new Bwd_Quality());
-    //	AddStep(1, StepBase::kCut, "Bwd Veto Cut",       new Bwd_Veto());
-    AddStep( StepBase::kCut, "Bwd PID Cut",        new Bwd_PID());
-    AddStep( StepBase::kCut, "Bwd 4pi Cut",        new Bwd_4pi());
-    SetBranchAlias(0, "Bwd");
+  AddStep(3, StepBase::kCut, "HABwd Quality Cut",  new HABwd_Quality());
+  //AddStep(3, StepBase::kCut, "HABwd Veto Cut",     new HABwd_Veto());
+  AddStep(3, StepBase::kCut, "HABwd PID Cut",      new HABwd_PID());
+  AddStep(3, StepBase::kCut, "HABwd 4pi Cut",      new HABwd_4pi());
 
-  }
-  else if(branch==2){
-    AddStep( StepBase::kCut, "HAFwd Quality Cut",  new HAFwd_Quality());
-    //	AddStep(2, StepBase::kCut, "HAFwd Veto Cut",     new HAFwd_Veto());
-    AddStep( StepBase::kCut, "HAFwd PID Cut",      new HAFwd_PID());
-    AddStep( StepBase::kCut, "HAFwd 4pi Cut",      new HAFwd_4pi());
-    SetBranchAlias(0, "HaFwd");
-
-  }else if(branch==3){
-    AddStep( StepBase::kCut, "HABwd Quality Cut",  new HABwd_Quality());
-    //	AddStep(3, StepBase::kCut, "HABwd Veto Cut",     new HABwd_Veto());
-    AddStep( StepBase::kCut, "HABwd PID Cut",      new HABwd_PID());
-    AddStep( StepBase::kCut, "HABwd 4pi Cut",      new HABwd_4pi());
-    SetBranchAlias(0, "HaBwd");
-
-  }
-
-  //SetBranchAlias(1, "Bwd",    1);
-  //SetBranchAlias(2, "HAFwd",  2);
-  //	SetBranchAlias(3, "HABwd",  3);
-  //	SetBranchAlias(4, "CSFGD2", 0, 1);
-  //	SetBranchAlias(5, "CSECAL", 0, 2);
+  SetBranchAlias(0, "Fwd",    0);
+  SetBranchAlias(1, "Bwd",    1);
+  SetBranchAlias(2, "HAFwd",  2);
+  SetBranchAlias(3, "HABwd",  3);
+  //SetBranchAlias(4, "CSFGD2", 0, 1);
+  //SetBranchAlias(5, "CSECAL", 0, 2);
 
   //if first two cuts are not fulfill dont throw toys
   SetPreSelectionAccumLevel(2);
@@ -113,10 +102,10 @@ void numuCC4piSelection::InitializeEvent(AnaEventC& eventBB){
 
   boxUtils::FillTracksWithTPC(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
   boxUtils::FillTracksWithTarget(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
-
   boxUtils::FillTracksWithECal(event);
+  
   //boxUtils::FillTrajsChargedInTPC(event);
-  //	boxUtils::FillTrajsChargedInFGDAndNoTPC(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
+  //boxUtils::FillTrajsChargedInFGDAndNoTPC(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
   //boxUtils::FillTrajsChargedHATracker(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
 
 }
@@ -291,19 +280,19 @@ bool PIDAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
 
   for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(0,*(cc4pibox->FwdTracks[i]))==1 ) cc4pibox->FwdTracks_PID.push_back(cc4pibox->FwdTracks[i]);
+    if ( numuCC4pi_utils::PIDCut(0, *(cc4pibox->FwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->FwdTracks_PID.push_back(cc4pibox->FwdTracks[i]);
   }
 
   for (UInt_t i=0;i<cc4pibox->BwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(1,*(cc4pibox->BwdTracks[i]))==1 ) cc4pibox->BwdTracks_PID.push_back(cc4pibox->BwdTracks[i]);
+    if ( numuCC4pi_utils::PIDCut(1, *(cc4pibox->BwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->BwdTracks_PID.push_back(cc4pibox->BwdTracks[i]);
   }
 
   for (UInt_t i=0;i<cc4pibox->HAFwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(2,*(cc4pibox->HAFwdTracks[i]))==1 ){ cc4pibox->HAFwdTracks_PID.push_back(cc4pibox->HAFwdTracks[i]);}
+    if ( numuCC4pi_utils::PIDCut(2, *(cc4pibox->HAFwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HAFwdTracks_PID.push_back(cc4pibox->HAFwdTracks[i]);
   }
 
   for (UInt_t i=0;i<cc4pibox->HABwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(3,*(cc4pibox->HABwdTracks[i]))==1 ) cc4pibox->HABwdTracks_PID.push_back(cc4pibox->HABwdTracks[i]);
+    if ( numuCC4pi_utils::PIDCut(3, *(cc4pibox->HABwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HABwdTracks_PID.push_back(cc4pibox->HABwdTracks[i]);
   }
 
   //for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
