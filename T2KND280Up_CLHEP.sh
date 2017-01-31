@@ -11,13 +11,13 @@ export GEANT4_LIBRARY=/atlas/users/dsgalabe/GEANT4/geant4.10.01.p03-install/lib6
 # setup ROOT
 source /atlas/users/dsgalabe/ROOT/root/bin/thisroot.sh
 
-# # setup CMT
-# source /atlas/users/dsgalabe/CMT/setup.sh
-# export CMTPATH=$1
+ # setup CMT
+source /atlas/users/dsgalabe/CMT/setup.sh
+export CMTPATH=$1
 
 # # setup highlandUp
-# source /atlas/users/dsgalabe/t2k-nd280-upgrade/highlandUP/ndupAnalysis/v0r0/cmt/setup.sh
-# source /atlas/users/dsgalabe/t2k-nd280-upgrade/highlandUP/highlandTools/v0r0/cmt/setup.sh 
+#source /atlas/users/dsgalabe/t2k-nd280-upgrade/highlandUP/ndupAnalysis/v0r0/cmt/setup.sh
+#source /atlas/users/dsgalabe/t2k-nd280-upgrade/highlandUP/highlandTools/v0r0/cmt/setup.sh 
 
 # setup gcc-xml
 #export PATH=/afs/cern.ch/user/d/dsgalabe/GCCXML/gccxml-install/bin:$PATH # gcc-xml

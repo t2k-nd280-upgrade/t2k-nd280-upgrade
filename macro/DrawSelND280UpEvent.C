@@ -8,7 +8,7 @@ void DrawSelND280UpEvent
  //string tag = "ND280Current_PiP_Targ2_0p2T_CC_ForBANFF",
  string tag = "prova",
 
- string infilename = "../../../files/PROVA/commit_current/SelND280Up_ECal-Targ2-MuM-ParID0-CC_14_1_17.root"
+ string infilename = "../../../files/PROVA/commit_current/SelND280Up_AllECal-Targ2-MuM-ParID0-CC_Evt0_NEvt100000.root"
 
  //string infilename = "../../../files/PROVA/commit_ea4ca8_old/SelND280Up_6E20_classic_numu_commit_eae4ca8_old_Other-Targ1-MuM-ParID0-CC.root"
  //string infilename = "../../../files/PROVA/commit_ea4ca8_old/SelND280Up_6E20_classic_numu_commit_eae4ca8_old-Targ1-MuM-ParID0-CC_ea4ca8_old.root"
@@ -71,6 +71,20 @@ void DrawSelND280UpEvent
   TFile *infile = new TFile(infilename.c_str(),"READ");
   
   // Vertex
+
+  TH2D *hTPCTrkPtXY = (TH2D*)infile->Get("hTPCTrkPtXY");
+  TH2D *hTPCTrkPtXZ = (TH2D*)infile->Get("hTPCTrkPtXZ");
+  TH2D *hTPCTrkPtYZ = (TH2D*)infile->Get("hTPCTrkPtYZ");
+  TH2D *hDsECalTrkPtXY = (TH2D*)infile->Get("hDsECalTrkPtXY");
+  TH2D *hDsECalTrkPtXZ = (TH2D*)infile->Get("hDsECalTrkPtXZ");
+  TH2D *hDsECalTrkPtYZ = (TH2D*)infile->Get("hDsECalTrkPtYZ");
+  TH2D *hBrlP0DECalTrkPtXY = (TH2D*)infile->Get("hBrlP0DECalTrkPtXY");
+  TH2D *hBrlP0DECalTrkPtXZ = (TH2D*)infile->Get("hBrlP0DECalTrkPtXZ");
+  TH2D *hBrlP0DECalTrkPtYZ = (TH2D*)infile->Get("hBrlP0DECalTrkPtYZ");
+  TH2D *hECalP0DTrkPtXY = (TH2D*)infile->Get("hECalP0DTrkPtXY");
+  TH2D *hECalP0DTrkPtXZ = (TH2D*)infile->Get("hECalP0DTrkPtXZ");
+  TH2D *hECalP0DTrkPtYZ = (TH2D*)infile->Get("hECalP0DTrkPtYZ");
+
   TH2D *hVtxOut_XY = (TH2D*)infile->Get("hVtxOut_XY");
   TH2D *hVtxOut_XZ = (TH2D*)infile->Get("hVtxOut_XZ");
   TH2D *hVtxOut_YZ = (TH2D*)infile->Get("hVtxOut_YZ");
@@ -439,6 +453,8 @@ void DrawSelND280UpEvent
   hVtxOut_Z->DrawClone("");
   if(doPrint) cVtxOut_Z->Print(TString::Format("%s_VtxOut_Z.pdf",tag.c_str()).Data());
 
+  /* 
+
   TCanvas *cCut = new TCanvas("cCut","cCut");  
   hCut->SetStats(0);
   hCut->DrawClone();
@@ -800,7 +816,6 @@ void DrawSelND280UpEvent
   hLastPt_Oth_XZ->SetStats(0);
   hLastPt_Oth_XZ->DrawClone("colz");
   if(doPrint) cLastPt_Oth_XZ->Print(TString::Format("%s_LastPt_Oth_XZ.pdf",tag.c_str()).Data());
-  
 
   // ECal variables
 
@@ -944,6 +959,92 @@ void DrawSelND280UpEvent
   hLVsMom_P0DECal_NoTPC->SetStats(0);
   hLVsMom_P0DECal_NoTPC->DrawClone("colz");
   if(doPrint) cLVsMom_P0DECal_NoTPC->Print(TString::Format("%s_LVsMom_P0DECal_NoTPC.pdf",tag.c_str()).Data());
+
+
+  */
+
+
+
+  // Distribution of TND280TrackPoint in the detectors of the SDRegion
+  
+  TCanvas *cTPCTrkPtXY = new TCanvas("cTPCTrkPtXY","cTPCTrkPtXY");
+  hTPCTrkPtXY->GetXaxis()->SetTitle("X (mm)");
+  hTPCTrkPtXY->GetYaxis()->SetTitle("Y (mm)");
+  hTPCTrkPtXY->SetStats(0);
+  hTPCTrkPtXY->DrawClone("colz");
+  if(doPrint) cTPCTrkPtXY->Print(TString::Format("%s_TPCTrkPtXY.pdf",tag.c_str()).Data());
+  TCanvas *cTPCTrkPtXZ = new TCanvas("cTPCTrkPtXZ","cTPCTrkPtXZ");
+  hTPCTrkPtXZ->GetXaxis()->SetTitle("X (mm)");
+  hTPCTrkPtXZ->GetYaxis()->SetTitle("Z (mm)");
+  hTPCTrkPtXZ->SetStats(0);
+  hTPCTrkPtXZ->DrawClone("colz");
+  if(doPrint) cTPCTrkPtXY->Print(TString::Format("%s_TPCTrkPtXY.pdf",tag.c_str()).Data());
+  TCanvas *cTPCTrkPtYZ = new TCanvas("cTPCTrkPtYZ","cTPCTrkPtYZ");
+  hTPCTrkPtYZ->GetXaxis()->SetTitle("Y (mm)");
+  hTPCTrkPtYZ->GetYaxis()->SetTitle("Z (mm)");
+  hTPCTrkPtYZ->SetStats(0);
+  hTPCTrkPtYZ->DrawClone("colz");
+  if(doPrint) cTPCTrkPtYZ->Print(TString::Format("%s_TPCTrkPtYZ.pdf",tag.c_str()).Data());
+
+  TCanvas *cDsECalTrkPtXY = new TCanvas("cDsECalTrkPtXY","cDsECalTrkPtXY");
+  hDsECalTrkPtXY->GetXaxis()->SetTitle("X (mm)");
+  hDsECalTrkPtXY->GetYaxis()->SetTitle("Y (mm)");
+  hDsECalTrkPtXY->SetStats(0);
+  hDsECalTrkPtXY->DrawClone("colz");
+  if(doPrint) cDsECalTrkPtXY->Print(TString::Format("%s_DsECalTrkPtXY.pdf",tag.c_str()).Data());
+  TCanvas *cDsECalTrkPtXZ = new TCanvas("cDsECalTrkPtXZ","cDsECalTrkPtXZ");
+  hDsECalTrkPtXZ->GetXaxis()->SetTitle("X (mm)");
+  hDsECalTrkPtXZ->GetYaxis()->SetTitle("Z (mm)");
+  hDsECalTrkPtXZ->SetStats(0);
+  hDsECalTrkPtXZ->DrawClone("colz");
+  if(doPrint) cDsECalTrkPtXY->Print(TString::Format("%s_DsECalTrkPtXY.pdf",tag.c_str()).Data());
+  TCanvas *cDsECalTrkPtYZ = new TCanvas("cDsECalTrkPtYZ","cDsECalTrkPtYZ");
+  hDsECalTrkPtYZ->GetXaxis()->SetTitle("Y (mm)");
+  hDsECalTrkPtYZ->GetYaxis()->SetTitle("Z (mm)");
+  hDsECalTrkPtYZ->SetStats(0);
+  hDsECalTrkPtYZ->DrawClone("colz");
+  if(doPrint) cDsECalTrkPtYZ->Print(TString::Format("%s_DsECalTrkPtYZ.pdf",tag.c_str()).Data());
+
+  TCanvas *cBrlP0DECalTrkPtXY = new TCanvas("cBrlP0DECalTrkPtXY","cBrlP0DECalTrkPtXY");
+  hBrlP0DECalTrkPtXY->GetXaxis()->SetTitle("X (mm)");
+  hBrlP0DECalTrkPtXY->GetYaxis()->SetTitle("Y (mm)");
+  hBrlP0DECalTrkPtXY->SetStats(0);
+  hBrlP0DECalTrkPtXY->DrawClone("colz");
+  if(doPrint) cBrlP0DECalTrkPtXY->Print(TString::Format("%s_BrlP0DECalTrkPtXY.pdf",tag.c_str()).Data());
+  TCanvas *cBrlP0DECalTrkPtXZ = new TCanvas("cBrlP0DECalTrkPtXZ","cBrlP0DECalTrkPtXZ");
+  hBrlP0DECalTrkPtXZ->GetXaxis()->SetTitle("X (mm)");
+  hBrlP0DECalTrkPtXZ->GetYaxis()->SetTitle("Z (mm)");
+  hBrlP0DECalTrkPtXZ->SetStats(0);
+  hBrlP0DECalTrkPtXZ->DrawClone("colz");
+  if(doPrint) cBrlP0DECalTrkPtXY->Print(TString::Format("%s_BrlP0DECalTrkPtXY.pdf",tag.c_str()).Data());
+  TCanvas *cBrlP0DECalTrkPtYZ = new TCanvas("cBrlP0DECalTrkPtYZ","cBrlP0DECalTrkPtYZ");
+  hBrlP0DECalTrkPtYZ->GetXaxis()->SetTitle("Y (mm)");
+  hBrlP0DECalTrkPtYZ->GetYaxis()->SetTitle("Z (mm)");
+  hBrlP0DECalTrkPtYZ->SetStats(0);
+  hBrlP0DECalTrkPtYZ->DrawClone("colz");
+  if(doPrint) cBrlP0DECalTrkPtYZ->Print(TString::Format("%s_BrlP0DECalTrkPtYZ.pdf",tag.c_str()).Data());
+
+  TCanvas *cECalP0DTrkPtXY = new TCanvas("cECalP0DTrkPtXY","cECalP0DTrkPtXY");
+  hECalP0DTrkPtXY->GetXaxis()->SetTitle("X (mm)");
+  hECalP0DTrkPtXY->GetYaxis()->SetTitle("Y (mm)");
+  hECalP0DTrkPtXY->SetStats(0);
+  hECalP0DTrkPtXY->DrawClone("colz");
+  if(doPrint) cECalP0DTrkPtXY->Print(TString::Format("%s_ECalP0DTrkPtXY.pdf",tag.c_str()).Data());
+  TCanvas *cECalP0DTrkPtXZ = new TCanvas("cECalP0DTrkPtXZ","cECalP0DTrkPtXZ");
+  hECalP0DTrkPtXZ->GetXaxis()->SetTitle("X (mm)");
+  hECalP0DTrkPtXZ->GetYaxis()->SetTitle("Z (mm)");
+  hECalP0DTrkPtXZ->SetStats(0);
+  hECalP0DTrkPtXZ->DrawClone("colz");
+  if(doPrint) cECalP0DTrkPtXY->Print(TString::Format("%s_ECalP0DTrkPtXY.pdf",tag.c_str()).Data());
+  TCanvas *cECalP0DTrkPtYZ = new TCanvas("cECalP0DTrkPtYZ","cECalP0DTrkPtYZ");
+  hECalP0DTrkPtYZ->GetXaxis()->SetTitle("Y (mm)");
+  hECalP0DTrkPtYZ->GetYaxis()->SetTitle("Z (mm)");
+  hECalP0DTrkPtYZ->SetStats(0);
+  hECalP0DTrkPtYZ->DrawClone("colz");
+  if(doPrint) cECalP0DTrkPtYZ->Print(TString::Format("%s_ECalP0DTrkPtYZ.pdf",tag.c_str()).Data());
+
+
+
 
   return;
 

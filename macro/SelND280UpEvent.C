@@ -263,7 +263,24 @@ void SelND280UpEvent
 
 
   // FV histograms
+  
+  TH2D *hTPCTrkPtXY = new TH2D("hTPCTrkPtXY","hTPCTrkPtXY",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hTPCTrkPtXZ = new TH2D("hTPCTrkPtXZ","hTPCTrkPtXZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hTPCTrkPtYZ = new TH2D("hTPCTrkPtYZ","hTPCTrkPtYZ",400,-2000,+2000,400,-4000,+4000);
 
+  TH2D *hDsECalTrkPtXY = new TH2D("hDsECalTrkPtXY","hDsECalTrkPtXY",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hDsECalTrkPtXZ = new TH2D("hDsECalTrkPtXZ","hDsECalTrkPtXZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hDsECalTrkPtYZ = new TH2D("hDsECalTrkPtYZ","hDsECalTrkPtYZ",400,-2000,+2000,400,-4000,+4000);
+
+  TH2D *hBrlP0DECalTrkPtXY = new TH2D("hBrlP0DECalTrkPtXY","hBrlP0DECalTrkPtXY",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hBrlP0DECalTrkPtXZ = new TH2D("hBrlP0DECalTrkPtXZ","hBrlP0DECalTrkPtXZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hBrlP0DECalTrkPtYZ = new TH2D("hBrlP0DECalTrkPtYZ","hBrlP0DECalTrkPtYZ",400,-2000,+2000,400,-4000,+4000);
+
+  TH2D *hECalP0DTrkPtXY = new TH2D("hECalP0DTrkPtXY","hECalP0DTrkPtXY",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hECalP0DTrkPtXZ = new TH2D("hECalP0DTrkPtXZ","hECalP0DTrkPtXZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hECalP0DTrkPtYZ = new TH2D("hECalP0DTrkPtYZ","hECalP0DTrkPtYZ",400,-2000,+2000,400,-4000,+4000);
+
+  
   TH1D *hL_SD = new TH1D("hL_SD","hL_SD",200,0,2000);
   TH2D *hLVsMom_SD = new TH2D("hLVsMom_SD","hLVsMom_SD",200,0,2000,100,0,5000);  
 
@@ -571,6 +588,17 @@ void SelND280UpEvent
     if(!(ievt%1000)){
       cout << "Event " << ievt << endl;
     }
+
+
+
+
+
+    //if(ievt!=574) continue;
+    
+
+
+
+
     //nd280UpEvent->PrintEvent();
 
     bool PassCutVtx = false; // if at least 1 vertex does it
@@ -589,8 +617,9 @@ void SelND280UpEvent
       exit(1);
     }
 
+    TND280UpVertex *nd280UpVertex;
     for(int ivtx=0;ivtx<NVertices;ivtx++){
-      TND280UpVertex *nd280UpVertex = nd280UpEvent->GetVertex(ivtx);
+      nd280UpVertex = nd280UpEvent->GetVertex(ivtx);
       //TND280UpVertex *nd280UpVertex = new TND280UpVertex();
       //nd280UpEvent->GetVertex(ivtx)->Copy(*nd280UpVertex);
       
@@ -759,8 +788,11 @@ void SelND280UpEvent
 
       //nd280UpVertex->PrintVertex();
       //delete nd280UpVtxTrkIn1;
+      //nd280UpVtxTrkIn1 = 0;
       //delete nd280UpVtxTrkIn2;
+      //nd280UpVtxTrkIn2 = 0;
       //delete nd280UpVertex;
+      //nd280UpVertex = 0;
 
     } // end loop over vertices
 
@@ -889,95 +921,89 @@ void SelND280UpEvent
       int NPoints = nd280UpTrack->GetNPoints();    
       
       // Loop over the track points      
-      cout << "Evt " << ievt << " : " << "NPoints = " << NPoints << endl;    
       
-      int NPoints_ForwTPC1 = 0;
-      int NPoints_ForwTPC2 = 0;
-      int NPoints_ForwTPC3 = 0;      
+      //cout << "Evt " << ievt << " : " << "NPoints = " << NPoints << endl;    
+      
       for(int ipt=0;ipt<NPoints;ipt++){
 	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
 	double length = nd280UpTrackPoint->GetStepLength();
        	double PtX = nd280UpTrackPoint->GetPostPosition().X();
        	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
        	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();	
-	string volname = nd280UpTrackPoint->GetPhysVolName();
+	//string volname = nd280UpTrackPoint->GetPhysVolName();
+	string volname = nd280UpTrackPoint->GetLogVolName();
+	
+	//cout << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
+	
+	// All the parts of TPCs in SDRegion ("Half" and "MM" only for ForwTPCs) 
+	if( volname.find("/t2k/OA/Magnet/Basket/ForwTPC1/MM")   != string::npos ||
+	    //volname.find("/t2k/OA/Magnet/Basket/ForwTPC1/Half") != string::npos ||
+	    volname.find("/t2k/OA/Magnet/Basket/ForwTPC2/MM")   != string::npos ||
+	    //volname.find("/t2k/OA/Magnet/Basket/ForwTPC2/Half") != string::npos ||
+	    volname.find("/t2k/OA/Magnet/Basket/ForwTPC3/MM")   != string::npos 
+	    //volname.find("/t2k/OA/Magnet/Basket/ForwTPC3/Half") != string::npos ||
+	    //volname.find("/t2k/OA/Magnet/Basket/TPCUp")         != string::npos ||
+	    //volname.find("/t2k/OA/Magnet/Basket/TPCDown")       != string::npos 
+	    ){
+	  hTPCTrkPtXY->Fill(PtX,PtY);
+	  hTPCTrkPtXZ->Fill(PtX,PtZ);
+	  hTPCTrkPtYZ->Fill(PtY,PtZ);	  
+	}
 
-	cout << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
-	// 	// //if(volname=="/World/Basket/Tracker/ForwTPC1/Drift"){
-	// 	// if( volname=="/World/Basket/Tracker/ForwTPC1/Half" ||
-	// 	//     volname=="/World/Basket/Tracker/ForwTPC1/MM"
-	// 	//     ){
-	// 	//   NPoints_ForwTPC1++;
-	// 	//   hEdgePt_ForwTPC1_Z->Fill(PtZ);	  
-	// 	//   hEdgePt_ForwTPC1_XY->Fill(PtX,PtY);
-	// 	//   hEdgePt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	// 	//   hEdgePt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	// 	//   if(NPoints_ForwTPC1==1){
-	// 	//     hFirstPt_ForwTPC1_Z->Fill(PtZ);
-	// 	//     hFirstPt_ForwTPC1_XY->Fill(PtX,PtY);
-	// 	//     hFirstPt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	// 	//     hFirstPt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	//   //else if(NPoints_ForwTPC1==2){
-	// 	//   else{
-	// 	//     hLastPt_ForwTPC1_Z->Fill(PtZ);
-	// 	//     hLastPt_ForwTPC1_XY->Fill(PtX,PtY);
-	// 	//     hLastPt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	// 	//     hLastPt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	// }	
-	// 	// //else if(volname=="/World/Basket/Tracker/ForwTPC2/Drift"){
-	// 	// else if( volname=="/World/Basket/Tracker/ForwTPC2/Half" ||
-	// 	// 	 volname=="/World/Basket/Tracker/ForwTPC2/MM"
-	// 	// 	 ){
-	// 	//   NPoints_ForwTPC2++;
-	// 	//   hEdgePt_ForwTPC2_Z->Fill(PtZ);
-	// 	//   hEdgePt_ForwTPC2_XY->Fill(PtX,PtY);
-	// 	//   hEdgePt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	// 	//   hEdgePt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	// 	//   if(NPoints_ForwTPC2==1){
-	// 	//     hFirstPt_ForwTPC2_Z->Fill(PtZ);
-	// 	//     hFirstPt_ForwTPC2_XY->Fill(PtX,PtY);
-	// 	//     hFirstPt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	// 	//     hFirstPt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	//   //else if(NPoints_ForwTPC2==2){
-	// 	//   else{
-	// 	//     hLastPt_ForwTPC2_Z->Fill(PtZ);
-	// 	//     hLastPt_ForwTPC2_XY->Fill(PtX,PtY);
-	// 	//     hLastPt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	// 	//     hLastPt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	//   //else{ 
-	// 	//   //cerr << "# of points in " << volname << " is " << NPoints_ForwTPC2 << " !!!" << endl;
-	// 	//   //exit(1);
-	// 	//   //}
-	// 	// }
-	// 	// //else if(volname=="/World/Basket/Tracker/ForwTPC3/Drift"){
-	// 	// else if( volname=="/World/Basket/Tracker/ForwTPC3/Half" ||
-	// 	// 	 volname=="/World/Basket/Tracker/ForwTPC3/MM"
-	// 	// 	 ){
-	// 	//   NPoints_ForwTPC3++;
-	// 	//   hEdgePt_ForwTPC3_Z->Fill(PtZ);
-	// 	//   hEdgePt_ForwTPC3_XY->Fill(PtX,PtY);
-	// 	//   hEdgePt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	// 	//   hEdgePt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	// 	//   if(NPoints_ForwTPC3==1){
-	// 	//     hFirstPt_ForwTPC3_Z->Fill(PtZ);
-	// 	//     hFirstPt_ForwTPC3_XY->Fill(PtX,PtY);
-	// 	//     hFirstPt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	// 	//     hFirstPt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	//   //else if(NPoints_ForwTPC3==2){
-	// 	//   else{
-	// 	//     hLastPt_ForwTPC3_Z->Fill(PtZ);
-	// 	//     hLastPt_ForwTPC3_XY->Fill(PtX,PtY);
-	// 	//     hLastPt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	// 	//     hLastPt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	// }	
+	// All the parts of Brl+P0D ECal in SDRegion (name must contain "Bar") 
+
+	// else if( (volname.find("BrlECal")!=string::npos && volname.find("Bar")!=string::npos) ||
+	// 	 (volname.find("P0DECal")!=string::npos && volname.find("Bar")!=string::npos) 
+	// 	 ){
+	//   hBrlP0DECalTrkPtXY->Fill(PtX,PtY);
+	//   hBrlP0DECalTrkPtXZ->Fill(PtX,PtZ);
+	//   hBrlP0DECalTrkPtYZ->Fill(PtY,PtZ);	  
+	// }
+
+	// else if( (volname.find("DsECal") != string::npos && volname.find("Bar")!=string::npos) ){
+	//   hDsECalTrkPtXY->Fill(PtX,PtY);
+	//   hDsECalTrkPtXZ->Fill(PtX,PtZ);
+	//   hDsECalTrkPtYZ->Fill(PtY,PtZ);	  
+	// }
+	//else if( (volname.find("DsECal/Module/Active/ScintHoriz/Bar") != string::npos) || 
+	//	 (volname.find("DsECal/Module/Active/ScintVert/Bar") != string::npos) 
+	//	 ){
+	
+	//else 
+	if( (volname.find("DsECal") != string::npos) ){
+	  //cout << volname << endl;
+	  hDsECalTrkPtXY->Fill(PtX,PtY);
+	  hDsECalTrkPtXZ->Fill(PtX,PtZ);
+	  hDsECalTrkPtYZ->Fill(PtY,PtZ);	  
+	}
+	
+	// else if( (volname.find("ECalP0D") != string::npos && volname.find("Bar")!=string::npos) ){
+	//   hECalP0DTrkPtXY->Fill(PtX,PtY);
+	//   hECalP0DTrkPtXZ->Fill(PtX,PtZ);
+	//   hECalP0DTrkPtYZ->Fill(PtY,PtZ);	  
+	// }
+	
+	
+		  
+	// // ECal entrance point
+	// if (Tpoint->GetPhysVolName().find("BrlECal") != std::string::npos) {
+	//   if (Tpoint->GetMomentum().Mag() < BrlECalZ) {
+	//     lastBrlECal = Tpoint;
+	//     BrlECalZ = Tpoint->GetMomentum().Mag();
+	//   }
+	//   if (Tpoint->GetMomentum().Mag() > BrlECalfZ) {
+	//     firstBrlECal = Tpoint;
+	//     BrlECalfZ = Tpoint->GetMomentum().Mag();
+	//   }
+	// }
+
+
+
+	//delete nd280UpTrackPoint;
+	//nd280UpTrackPoint = 0;
+
       } // loop over points
-
+      
 
       // Fill selected particles in FV
 
@@ -1258,6 +1284,8 @@ void SelND280UpEvent
 	  hLVsMom_USECalP0D_NoTPC->Fill(length_usecalp0d,mom);
 	}
 
+
+
 	TND280UpTrackPoint *nd280UpLastPoint = nd280UpTrack->GetPoint(NPoints-1);
 	double PtX = nd280UpLastPoint->GetPostPosition().X();
 	double PtY = nd280UpLastPoint->GetPostPosition().Y();
@@ -1314,6 +1342,10 @@ void SelND280UpEvent
 	  hLyzVsTheta_Rej_ForwTPC2->Fill(lyz_forwtpc2,theta);
 	  hLyzVsTheta_Rej_ForwTPC3->Fill(lyz_forwtpc3,theta);
 	}
+
+	      
+	//delete nd280UpLastPoint;
+	//nd280UpLastPoint = 0;
       }
 
       //
@@ -1337,7 +1369,8 @@ void SelND280UpEvent
 	}
       }
 
-      // delete nd280UpTrack;
+      //delete nd280UpTrack;
+      //nd280UpTrack = 0;
     } // end loop over tracks
 
     //cout << endl;
@@ -1351,13 +1384,31 @@ void SelND280UpEvent
     //hEtrueVsEreco->Fill();
     //hDiffEtrueEreco->Fill();
     
-    //delete nd280UpEvent;    
+    delete nd280UpEvent;    
+    nd280UpEvent = 0;
   } // end loop over events
   
    
   // Write output file
   TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
   TFile *out = new TFile(outfilename.Data(),"RECREATE");
+  
+  hTPCTrkPtXY->Write();
+  hTPCTrkPtXZ->Write();
+  hTPCTrkPtYZ->Write();
+
+  hDsECalTrkPtXY->Write();
+  hDsECalTrkPtXZ->Write();
+  hDsECalTrkPtYZ->Write();
+
+  hBrlP0DECalTrkPtXY->Write();
+  hBrlP0DECalTrkPtXZ->Write();
+  hBrlP0DECalTrkPtYZ->Write();
+
+  hECalP0DTrkPtXY->Write();
+  hECalP0DTrkPtXZ->Write();
+  hECalP0DTrkPtYZ->Write();
+
   hVtx_X->Write();
   hVtx_Y->Write();
   hVtx_Z->Write();
