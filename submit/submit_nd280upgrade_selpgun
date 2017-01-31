@@ -1,0 +1,257 @@
+#!/usr/bin/perl
+
+#-------------------------------------------------------------------------------------------------------------------------------
+# Submit a batch of build_marg_toys.C jobs
+#
+# Inputs
+#  --resource               : Computer resource, <ETH-Monch, RAL, Oxford, Grid, interactive>. Default: interactive.
+#  --tag                    : Tag for output files.
+#  --fit-param-list         : Fit parameter list. See FitParamList.h for allowed options.
+#  --physparam-freepar      : Free parameter
+#  --npt-freepar            : Number of points of the free parameter to scan
+#  --step-freepar           : Step of the free parameter scan
+#
+# D.Sgalaberna
+#-------------------------------------------------------------------------------------------------------------------------------
+#
+
+use File::Path;
+
+$iarg=0;
+foreach (@ARGV) {
+
+    if($iarg % 2 == 1) {$iarg++; next;}
+    
+    ##################################### Common ########################################
+    if   ($_ eq '--resource'         ) { $resource        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--inputfile'        ) { $inputfile       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--first_expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
+
+    # where to put the output files
+    elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
+    # where is the software (/t2k-nd280-upgrade)
+    elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }    
+    
+    elsif($_ eq '--docut-reac'       ) { $docut_reac      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-cc'         ) { $docut_cc        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-reac'         ) { $cut_reac        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-mater'      ) { $docut_mater     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-vertex'     ) { $docut_vertex    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-target1'    ) { $docut_target1   = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-target2'    ) { $docut_target2   = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-fgd1'       ) { $docut_fgd1      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-fgd2'       ) { $docut_fgd2      = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--cut-fv1-minX'      ) { $cut_fv1_minX     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv1-maxX'      ) { $cut_fv1_maxX     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv1-minY'      ) { $cut_fv1_minY     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv1-maxY'      ) { $cut_fv1_maxY     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv1-minZ'      ) { $cut_fv1_minZ     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv1-maxZ'      ) { $cut_fv1_maxZ     = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--cut-fv2-minX'      ) { $cut_fv2_minX     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv2-maxX'      ) { $cut_fv2_maxX     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv2-minY'      ) { $cut_fv2_minY     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv2-maxY'      ) { $cut_fv2_maxY     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv2-minZ'      ) { $cut_fv2_minZ     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fv2-maxZ'      ) { $cut_fv2_maxZ     = $ARGV[$iarg+1]; }
+    
+    elsif($_ eq '--cut-fgd-fv1-minX'  ) { $cut_fgd_fv1_minX = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-maxX'  ) { $cut_fgd_fv1_maxX = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-minY'  ) { $cut_fgd_fv1_minY = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-maxY'  ) { $cut_fgd_fv1_maxY = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-minZ'  ) { $cut_fgd_fv1_minZ = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv1-maxZ'  ) { $cut_fgd_fv1_maxZ = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--cut-fgd-fv2-minX'  ) { $cut_fgd_fv2_minX = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-maxX'  ) { $cut_fgd_fv2_maxX = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-minY'  ) { $cut_fgd_fv2_minY = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-maxY'  ) { $cut_fgd_fv2_maxY = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-minZ'  ) { $cut_fgd_fv2_minZ = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-fgd-fv2-maxZ'  ) { $cut_fgd_fv2_maxZ = $ARGV[$iarg+1]; }
+
+    elsif($_ eq '--docut-vtxX'       ) { $docut_vtxX      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-xmin'         ) { $cut_xmin        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-xmax'         ) { $cut_xmax        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-vtxZ'       ) { $docut_vtxZ      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-zmin'         ) { $cut_zmin        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-zmax'         ) { $cut_zmax        = $ARGV[$iarg+1]; }
+     
+    elsif($_ eq '--docut-pdg'        ) { $docut_pdg       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-pdg'          ) { $cut_pdg         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-parid'      ) { $docut_parid     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-parid'        ) { $cut_parid       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-charge'     ) { $docut_charge     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-charge'       ) { $cut_charge       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-dl-target'  ) { $docut_dl_target  = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-dl-target'    ) { $cut_dl_target    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--docut-dlyz-tpc'   ) { $docut_dlyz_tpc   = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-dlyz-tpc'     ) { $cut_dlyz_tpc     = $ARGV[$iarg+1]; }
+    
+    else {
+	print "Unrecognised argument ".$_."\n"; exit;
+    }
+    $iarg++;
+}
+
+$resource        = "interactive"                 unless defined $resource;
+$tag             = "SelND280Up_AllECal_PGun" unless defined $tag;
+
+# Particle guns
+$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/particlegun_muon_dsecal/g4ND280Up_6E20_classic_AfterDetUpdate_19_1_17_USECalP0D-Exp0-Nexpt50.root" unless defined $inputfile;
+
+
+$first_expt      = 0                             unless defined $first_expt;
+
+# Numu Beam
+$nruns           = 1                             unless defined $nruns; # TPC+Target+ECal 
+$nexpts          = 50                          unless defined $nexpts;
+
+
+#
+# Selection cuts
+#
+
+#
+# Fiducial Volume ND280 upgrade classic (1864x600x1300 mm^3)
+#
+# # Target 1
+# $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
+# $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
+# $cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
+# $cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
+# #$cut_fv1_minY    = -300.                    unless defined $cut_fv1_minY;
+# #$cut_fv1_maxY    = +300.                    unless defined $cut_fv1_maxY;
+# $cut_fv1_minZ    = -1787.                    unless defined $cut_fv1_minZ;
+# $cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
+# Target 2 
+$cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
+$cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
+$cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
+$cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
+#$cut_fv1_minY    = -300.                    unless defined $cut_fv1_minY;
+#$cut_fv1_maxY    = +300.                    unless defined $cut_fv1_maxY;
+$cut_fv1_minZ    = +487.                      unless defined $cut_fv1_minZ;
+$cut_fv1_maxZ    = +1787.                     unless defined $cut_fv1_maxZ;
+
+
+# Reject all NC and don't account for them in the efficiencies
+$docut_cc        = 0                             unless defined $docut_cc;
+
+# 0=CCQE, 1=MEC, 2=CC1pi, 3=CCcoh, 4=CCDIS, 5=NC (see macro definition)
+$docut_reac      = 0                             unless defined $docut_reac;
+$cut_reac        = 0                             unless defined $cut_reac; 
+
+# select interactions only in target materials
+$docut_mater     = 0                             unless defined $docut_mater;
+
+# select interactions only in Fiducial Volume
+$docut_vertex  = 0                             unless defined $docut_vertex;
+$docut_target1 = 0                             unless defined $docut_target1;
+$docut_target2 = 1                             unless defined $docut_target2;
+$docut_fgd1    = 0                             unless defined $docut_fgd1;
+$docut_fgd2    = 0                             unless defined $docut_fgd2;
+
+# select range of X vertex position
+$docut_vtxX      = 0                             unless defined $docut_vtxX;
+$cut_xmin        = -575                         unless defined $docut_xmin;
+$cut_xmax        = +575                         unless defined $docut_xmax;
+ 
+# select range of Z vertex position
+$docut_vtxZ      = 0                             unless defined $docut_vtxZ;
+# 30cm downstream
+#$cut_zmin        = -2487                         unless defined $docut_zmin;
+#$cut_zmax        = -2487 + 300                   unless defined $docut_zmax;
+# 30cm upstream
+#$cut_zmin        = -487 - 300                    unless defined $docut_zmin;
+#$cut_zmax        = -487                          unless defined $docut_zmax;
+# 140cm middle
+$cut_zmin        = -2487 + 300                   unless defined $docut_zmin;
+$cut_zmax        = -487 - 300                    unless defined $docut_zmax;
+ 
+# select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
+$docut_pdg       = 1                             unless defined $docut_pdg;
+$cut_pdg         = +13                           unless defined $cut_pdg; 
+
+# select track parent ID. If 0 --> primary particle,
+$docut_parid     = 0                             unless defined $docut_parid;
+$cut_parid       = 0                             unless defined $cut_parid; 
+
+# select track charge
+$docut_charge    = 0                             unless defined $docut_charge;
+$cut_charge      = 1                             unless defined $cut_charge; 
+
+# select track length (mm) in targets
+$docut_dl_target    = 0                          unless defined $docut_dl_target;
+$cut_dl_target      = 75                         unless defined $cut_dl_target; 
+
+# select track DeltaLyz (mm) in TPCs
+$docut_dlyz_tpc    = 0                           unless defined $docut_dlyz_tpc;
+$cut_dlyz_tpc      = 200                         unless defined $cut_dlyz_tpc; 
+
+##################################
+
+$irun = 0;
+while($irun < $nruns) { # loop over the jobs
+    
+    $evt_first = $first_expt + $irun * $nexpts;
+    
+    $newtag = "$tag";
+    if($docut_vertex eq 1){
+	if($docut_target1 eq 1){ $newtag = "$newtag-Targ1";}
+	if($docut_target2 eq 1){ $newtag = "$newtag-Targ2";}
+	if($docut_fgd1    eq 1){ $newtag = "$newtag-FGD1";}
+        if($docut_fgd2    eq 1){ $newtag = "$newtag-FGD2";}
+     }
+    if($docut_pdg eq 1){
+	if($cut_pdg eq +13)  { $newtag = "$newtag-MuM";}
+	elsif($cut_pdg eq -13)  { $newtag = "$newtag-MuP";}
+	elsif($cut_pdg eq +211) { $newtag = "$newtag-PiP";}
+	elsif($cut_pdg eq -211) { $newtag = "$newtag-PiM";}
+	elsif($cut_pdg eq +2212){ $newtag = "$newtag-Prot";}
+	elsif($cut_pdg eq +11){ $newtag = "$newtag-EleM";}
+	elsif($cut_pdg eq -11){ $newtag = "$newtag-EleP";}
+	else{$newtag = "$newtag-PDG$cut_pdg";}
+    }
+    if($docut_parid eq 1){ $newtag = "$newtag-ParID$cut_parid";}
+    if($docut_cc    eq 1){ $newtag = "$newtag-CC";}
+    if($docut_reac  eq 1){ $newtag = "$newtag-Reac$cut_reac";}
+    if($docut_vtxZ  eq 1){ $newtag = "$newtag-Zrange[$cut_zmin,$cut_zmax]";}
+    if($docut_vtxX  eq 1){ $newtag = "$newtag-Xrange[$cut_xmin,$cut_xmax]";}
+
+    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/SelND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$cut_fv1_minX,$cut_fv1_maxX,$cut_fv1_minY,$cut_fv1_maxY,$cut_fv1_minZ,$cut_fv1_maxZ,$docut_cc,$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_target1,$docut_target2,$docut_fgd1,$docut_fgd2,$docut_vtxX,$cut_xmin,$cut_xmax,$docut_vtxZ,$cut_zmin,$cut_zmax,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
+
+
+    $command = "$arguments";
+    
+    print "\n";
+    print "Job $irun \n";
+    print "First event: $evt_first \n";
+    print "# of events: $nexpts \n";
+    print "$command \n";
+    print "\n////////////////////////////// \n\n";
+
+    ################################### Submit the job ##################################
+    
+    #
+    # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
+    #
+    if($resource eq "UNIGE-Atlas") {
+	open(PBS, ">$job_dir/$newtag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	print PBS "#!/bin/bash -l  \n";
+	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
+	print PBS "$command \n";
+	close(PBS);	
+	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
+    }
+    if($resource eq "interactive") {
+	system($command);
+    }
+    
+    $irun=$irun+1; # increment job id
+    
+} # loop over jobs
+
