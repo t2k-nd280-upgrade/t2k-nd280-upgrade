@@ -1029,7 +1029,7 @@ void DrawSelND280UpEvent
   hForwTPC2TrkPtYZ->GetXaxis()->SetTitle("Y (mm)");
   hForwTPC2TrkPtYZ->GetYaxis()->SetTitle("Z (mm)");
    hForwTPC2TrkPtYZ->DrawClone("colz");
-  if(doPrint) cForwTPC2TrkPtYZ->Print(TString::Format("%s_ForwTPC3TrkPtYZ.pdf",tag.c_str()).Data());
+  if(doPrint) cForwTPC2TrkPtYZ->Print(TString::Format("%s_ForwTPC2TrkPtYZ.pdf",tag.c_str()).Data());
 
   TCanvas *cForwTPC3TrkPtXY = new TCanvas("cForwTPC3TrkPtXY","cForwTPC3TrkPtXY");
   hForwTPC3TrkPtXY->GetXaxis()->SetTitle("X (mm)");
