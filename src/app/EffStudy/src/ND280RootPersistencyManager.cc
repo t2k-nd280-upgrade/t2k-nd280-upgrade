@@ -496,15 +496,14 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
       }
             
-      // Select points if first/last of the track or
-      // if first/last in a SD
-
+      //Select points if first/last of the track or
+      //if first/last in a SD
       if( detname_curr != detname_prev ||
       	  detname_curr != detname_aft  ||
       	  itp == 0                     ||
       	  itp == (NPoints-1)
       	  ){
-	
+      
 	//G4cout << "TrajTrkId = " << TrajTrkId << " : " 
 	//<< detname_prev << " " << detname_curr << " " << detname_aft << G4endl;
 	
@@ -555,7 +554,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	  
 	// Mark the points
 	MarkPoint(ndPoint); // Store if in a SD 
-	if(ndPoint->SavePoint()){    
+	//if(ndPoint->SavePoint()){    
+	if(1){ // TEST PARTICLE GUN
 	  nd280Track->AddPoint(nd280TrackPoint);
 	}	
 	else if(itp == 0           || 
