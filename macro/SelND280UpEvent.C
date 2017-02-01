@@ -1,15 +1,58 @@
 //
-// Available sensitive detectors:
-// detname=="ForwTPC1/Half" 
-// detname=="ForwTPC2/Half" 
-// detname=="ForwTPC3/Half" 
-// detname=="Target1" 
-// detname=="Target2" 
-// detname=="TPCUp1" 
-// detname=="TPCDown1"
-// detname=="TPCUp2" 
-// detname=="TPCDown2"
+// Available sensitive detectors (1/2/17):
 //
+//
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/X/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/Y/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/X/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/Y/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/X/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/Y/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/X/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/Y/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/X/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/Y/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/X/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/Y/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/X/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/P0D/USECal/P0Dule/Y/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/DsECal/Module/Active/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/DsECal/Module/Active/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/P0DECal/TopLeftBotRight/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/P0DECal/LeftSide/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/P0DECal/BotLeftTopRight/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/BrlECal/TopLeftBotRight/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/BrlECal/TopLeftBotRight/Active/ScintPerp/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/BrlECal/LeftSide/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/BrlECal/LeftSide/Active/ScintPerp/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/BrlECal/BotLeftTopRight/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/LeftClam/BrlECal/BotLeftTopRight/Active/ScintPerp/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/P0DECal/BotLeftTopRight/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/P0DECal/RightSide/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/P0DECal/TopLeftBotRight/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/BrlECal/BotLeftTopRight/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/BrlECal/BotLeftTopRight/Active/ScintPerp/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/BrlECal/RightSide/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/BrlECal/RightSide/Active/ScintPerp/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/BrlECal/TopLeftBotRight/Active/ScintPara/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/RightClam/BrlECal/TopLeftBotRight/Active/ScintPerp/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC1/Half --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC1/Half --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC1/MM --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC2/Half --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC2/Half --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC2/MM --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC3/Half --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC3/Half --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ForwTPC3/MM --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/TPCUp1 --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/TPCUp2 --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/TPCDown1 --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/TPCDown2 --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/Target1 --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/Target2 --> Included and same name as corresponding physical volume
+
+
 
 #include <TH1D.h>
 #include <TH2D.h>
@@ -946,7 +989,7 @@ void SelND280UpEvent
 	LastY = PtY;
 	LastZ = PtZ;
 	
-	//cout << "Evt " << ievt << " : " << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
+	cout << "Evt " << ievt << " : " << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
 			  
 	if( (volname.find("DsECal") != string::npos) &&  
 		 (volname.find("Bar")    !=string::npos)  ){
@@ -993,7 +1036,7 @@ void SelND280UpEvent
 	    ExBrlECalZ = PtZ;
 	  }
 	}
-	else if( (volname.find("USECalP0D") != string::npos) &&  
+	else if( (volname.find("P0D/USECal") != string::npos) &&  
 		 (volname.find("Bar")    !=string::npos)  ){
 	  if(PtMom>EntrUSECalP0DMom){
 	    EntrUSECalP0DMom = PtMom;
