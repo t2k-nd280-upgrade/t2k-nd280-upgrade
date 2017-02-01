@@ -55,7 +55,7 @@ public:
         fBarNumberCMD->SetRange("number>0");
         fBarNumberCMD->AvailableForStates(G4State_PreInit,G4State_Idle);
     };
-
+  
     ~ND280ScintLayerMessenger() {
 
         delete fBarBaseCMD;
@@ -108,7 +108,7 @@ void ND280ScintLayerConstructor::Init() {
 
     SetBarNumber(0);
     fNumberOfBars = 0;
-
+    
     fMakeXLayer = true;
     fAntiParallelBars = true;
 
@@ -297,7 +297,8 @@ G4LogicalVolume *ND280ScintLayerConstructor::GetPiece(void) {
         = Get<ND280ExtrudedScintConstructor>("Bar");
     
     //bar.SetSensitiveDetector(GetSensitiveDetector());
-    //bar.SetLength(barLength);
+    
+    bar.SetLength(barLength);
     
     ND280ExtrudedScintConstructor::ExtrudedShape barShape = bar.GetShape();
     
@@ -306,7 +307,7 @@ G4LogicalVolume *ND280ScintLayerConstructor::GetPiece(void) {
     // fNumberOfBars extruded scintillating bars
     //
     G4LogicalVolume* barLog = bar.GetPiece();
-
+    
     if(SDRegion) SDRegion->AddRootLogicalVolume(barLog); // NEW ND280 UPGRADE
     
     //
@@ -385,10 +386,11 @@ G4LogicalVolume *ND280ScintLayerConstructor::GetPiece(void) {
     maxBound = offset + fNumberOfBars*bar.GetCenterToCenter();
 
     G4int barCount = 1;
-
+   
     // This can suffer from round-off since a "small" number is being added to
     // an increasingly large number.  Make sure that a bar isn't created just
     // inside of the volume boundary.
+
     for (int count = 0; count < fNumberOfBars; ++ count) {
         G4RotationMatrix *rot;
         
@@ -399,11 +401,11 @@ G4LogicalVolume *ND280ScintLayerConstructor::GetPiece(void) {
         else {
             rot = rot2;
         }
-        
+	
         // Place a bar at positive offset.
         G4double xPos=sin(orientation)*(count*bar.GetCenterToCenter()+offset);
         G4double yPos=cos(orientation)*(count*bar.GetCenterToCenter()+offset);
-        
+	
         new G4PVPlacement(rot,               // rotation
                           G4ThreeVector(xPos,
                                         yPos,
@@ -413,15 +415,12 @@ G4LogicalVolume *ND280ScintLayerConstructor::GetPiece(void) {
                           logVolume,         // mother  volume
                           false,             // no boolean operations
                           barCount);         // copy number
-    
-	//G4cout << barLog->GetName() << " --> " 
-	//<< bar.GetName() << G4endl;
-       
+
         ++barCount;
     }
 
     // not used in nd280mc
-    //barLog->SetVisAttributes(G4Color(0.,0.7,0.));
+    barLog->SetVisAttributes(G4Color(0.,0.7,0.));
     //barLog->SetVisAttributes(G4VisAttributes::Invisible);
         
     return logVolume;

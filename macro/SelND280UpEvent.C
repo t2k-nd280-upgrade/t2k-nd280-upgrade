@@ -263,7 +263,43 @@ void SelND280UpEvent
 
 
   // FV histograms
+  
+  TH2D *hForwTPC1TrkPtXY = new TH2D("hForwTPC1TrkPtXY","hForwTPC1TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hForwTPC1TrkPtXZ = new TH2D("hForwTPC1TrkPtXZ","hForwTPC1TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hForwTPC1TrkPtYZ = new TH2D("hForwTPC1TrkPtYZ","hForwTPC1TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hForwTPC2TrkPtXY = new TH2D("hForwTPC2TrkPtXY","hForwTPC2TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hForwTPC2TrkPtXZ = new TH2D("hForwTPC2TrkPtXZ","hForwTPC2TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hForwTPC2TrkPtYZ = new TH2D("hForwTPC2TrkPtYZ","hForwTPC2TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hForwTPC3TrkPtXY = new TH2D("hForwTPC3TrkPtXY","hForwTPC3TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hForwTPC3TrkPtXZ = new TH2D("hForwTPC3TrkPtXZ","hForwTPC3TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hForwTPC3TrkPtYZ = new TH2D("hForwTPC3TrkPtYZ","hForwTPC3TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCUp1TrkPtXY = new TH2D("hTPCUp1TrkPtXY","hTPCUp1TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCUp1TrkPtXZ = new TH2D("hTPCUp1TrkPtXZ","hTPCUp1TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCUp1TrkPtYZ = new TH2D("hTPCUp1TrkPtYZ","hTPCUp1TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCUp2TrkPtXY = new TH2D("hTPCUp2TrkPtXY","hTPCUp2TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCUp2TrkPtXZ = new TH2D("hTPCUp2TrkPtXZ","hTPCUp2TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCUp2TrkPtYZ = new TH2D("hTPCUp2TrkPtYZ","hTPCUp2TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCDown1TrkPtXY = new TH2D("hTPCDown1TrkPtXY","hTPCDown1TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCDown1TrkPtXZ = new TH2D("hTPCDown1TrkPtXZ","hTPCDown1TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCDown1TrkPtYZ = new TH2D("hTPCDown1TrkPtYZ","hTPCDown1TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCDown2TrkPtXY = new TH2D("hTPCDown2TrkPtXY","hTPCDown2TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCDown2TrkPtXZ = new TH2D("hTPCDown2TrkPtXZ","hTPCDown2TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTPCDown2TrkPtYZ = new TH2D("hTPCDown2TrkPtYZ","hTPCDown2TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hDsECalTrkPtXY = new TH2D("hDsECalTrkPtXY","hDsECalTrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hDsECalTrkPtXZ = new TH2D("hDsECalTrkPtXZ","hDsECalTrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hDsECalTrkPtYZ = new TH2D("hDsECalTrkPtYZ","hDsECalTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hP0DECalTrkPtXY = new TH2D("hP0DECalTrkPtXY","hP0DECalTrkPtXY",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hP0DECalTrkPtXZ = new TH2D("hP0DECalTrkPtXZ","hP0DECalTrkPtXZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hP0DECalTrkPtYZ = new TH2D("hP0DECalTrkPtYZ","hP0DECalTrkPtYZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hBrlECalTrkPtXY = new TH2D("hBrlECalTrkPtXY","hBrlECalTrkPtXY",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hBrlECalTrkPtXZ = new TH2D("hBrlECalTrkPtXZ","hBrlECalTrkPtXZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hBrlECalTrkPtYZ = new TH2D("hBrlECalTrkPtYZ","hBrlECalTrkPtYZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hUSECalP0DTrkPtXY = new TH2D("hUSECalP0DTrkPtXY","hUSECalP0DTrkPtXY",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hUSECalP0DTrkPtXZ = new TH2D("hUSECalP0DTrkPtXZ","hUSECalP0DTrkPtXZ",400,-2000,+2000,400,-4000,+4000);
+  TH2D *hUSECalP0DTrkPtYZ = new TH2D("hUSECalP0DTrkPtYZ","hUSECalP0DTrkPtYZ",400,-2000,+2000,400,-4000,+4000);
 
+  //
+  
   TH1D *hL_SD = new TH1D("hL_SD","hL_SD",200,0,2000);
   TH2D *hLVsMom_SD = new TH2D("hLVsMom_SD","hLVsMom_SD",200,0,2000,100,0,5000);  
 
@@ -457,43 +493,6 @@ void SelND280UpEvent
   TH2D *hLastPt_Oth_YZ = new TH2D("hLastPt_Oth_YZ","hLastPt_Oth_YZ",800,-8000,+8000,800,-8000,+8000);
   TH2D *hLastPt_Oth_XZ = new TH2D("hLastPt_Oth_XZ","hLastPt_Oth_XZ",800,-8000,+8000,800,-8000,+8000);
   
-  // TH1D *hEdgePt_ForwTPC1_Z = new TH1D("hEdgePt_ForwTPC1_Z","hEdgePt_ForwTPC1_Z",800,-4000,+4000);
-  // TH1D *hEdgePt_ForwTPC2_Z = new TH1D("hEdgePt_ForwTPC2_Z","hEdgePt_ForwTPC2_Z",800,-4000,+4000);
-  // TH1D *hEdgePt_ForwTPC3_Z = new TH1D("hEdgePt_ForwTPC3_Z","hEdgePt_ForwTPC3_Z",800,-4000,+4000);
-  // TH1D *hFirstPt_ForwTPC1_Z = new TH1D("hFirstPt_ForwTPC1_Z","hFirstPt_ForwTPC1_Z",800,-4000,+4000);
-  // TH1D *hFirstPt_ForwTPC2_Z = new TH1D("hFirstPt_ForwTPC2_Z","hFirstPt_ForwTPC2_Z",800,-4000,+4000);
-  // TH1D *hFirstPt_ForwTPC3_Z = new TH1D("hFirstPt_ForwTPC3_Z","hFirstPt_ForwTPC3_Z",800,-4000,+4000);  
-  // TH1D *hLastPt_ForwTPC1_Z = new TH1D("hLastPt_ForwTPC1_Z","hLastPt_ForwTPC1_Z",800,-4000,+4000);
-  // TH1D *hLastPt_ForwTPC2_Z = new TH1D("hLastPt_ForwTPC2_Z","hLastPt_ForwTPC2_Z",800,-4000,+4000);
-  // TH1D *hLastPt_ForwTPC3_Z = new TH1D("hLastPt_ForwTPC3_Z","hLastPt_ForwTPC3_Z",800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC1_XY = new TH2D("hEdgePt_ForwTPC1_XY","hEdgePt_ForwTPC1_XY",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC2_XY = new TH2D("hEdgePt_ForwTPC2_XY","hEdgePt_ForwTPC2_XY",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC3_XY = new TH2D("hEdgePt_ForwTPC3_XY","hEdgePt_ForwTPC3_XY",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC1_XY = new TH2D("hFirstPt_ForwTPC1_XY","hFirstPt_ForwTPC1_XY",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC2_XY = new TH2D("hFirstPt_ForwTPC2_XY","hFirstPt_ForwTPC2_XY",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC3_XY = new TH2D("hFirstPt_ForwTPC3_XY","hFirstPt_ForwTPC3_XY",800,-4000,+4000,800,-4000,+4000);  
-  // TH2D *hLastPt_ForwTPC1_XY = new TH2D("hLastPt_ForwTPC1_XY","hLastPt_ForwTPC1_XY",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hLastPt_ForwTPC2_XY = new TH2D("hLastPt_ForwTPC2_XY","hLastPt_ForwTPC2_XY",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hLastPt_ForwTPC3_XY = new TH2D("hLastPt_ForwTPC3_XY","hLastPt_ForwTPC3_XY",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC1_YZ = new TH2D("hEdgePt_ForwTPC1_YZ","hEdgePt_ForwTPC1_YZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC2_YZ = new TH2D("hEdgePt_ForwTPC2_YZ","hEdgePt_ForwTPC2_YZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC3_YZ = new TH2D("hEdgePt_ForwTPC3_YZ","hEdgePt_ForwTPC3_YZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC1_YZ = new TH2D("hFirstPt_ForwTPC1_YZ","hFirstPt_ForwTPC1_YZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC2_YZ = new TH2D("hFirstPt_ForwTPC2_YZ","hFirstPt_ForwTPC2_YZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC3_YZ = new TH2D("hFirstPt_ForwTPC3_YZ","hFirstPt_ForwTPC3_YZ",800,-4000,+4000,800,-4000,+4000);  
-  // TH2D *hLastPt_ForwTPC1_YZ = new TH2D("hLastPt_ForwTPC1_YZ","hLastPt_ForwTPC1_YZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hLastPt_ForwTPC2_YZ = new TH2D("hLastPt_ForwTPC2_YZ","hLastPt_ForwTPC2_YZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hLastPt_ForwTPC3_YZ = new TH2D("hLastPt_ForwTPC3_YZ","hLastPt_ForwTPC3_YZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC1_XZ = new TH2D("hEdgePt_ForwTPC1_XZ","hEdgePt_ForwTPC1_XZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC2_XZ = new TH2D("hEdgePt_ForwTPC2_XZ","hEdgePt_ForwTPC2_XZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hEdgePt_ForwTPC3_XZ = new TH2D("hEdgePt_ForwTPC3_XZ","hEdgePt_ForwTPC3_XZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC1_XZ = new TH2D("hFirstPt_ForwTPC1_XZ","hFirstPt_ForwTPC1_XZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC2_XZ = new TH2D("hFirstPt_ForwTPC2_XZ","hFirstPt_ForwTPC2_XZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hFirstPt_ForwTPC3_XZ = new TH2D("hFirstPt_ForwTPC3_XZ","hFirstPt_ForwTPC3_XZ",800,-4000,+4000,800,-4000,+4000);  
-  // TH2D *hLastPt_ForwTPC1_XZ = new TH2D("hLastPt_ForwTPC1_XZ","hLastPt_ForwTPC1_XZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hLastPt_ForwTPC2_XZ = new TH2D("hLastPt_ForwTPC2_XZ","hLastPt_ForwTPC2_XZ",800,-4000,+4000,800,-4000,+4000);
-  // TH2D *hLastPt_ForwTPC3_XZ = new TH2D("hLastPt_ForwTPC3_XZ","hLastPt_ForwTPC3_XZ",800,-4000,+4000,800,-4000,+4000);
-
   // # of events after each cut  
   int NTotCC = 0; // Cut 1
   int NTotVtxReac = 0; // Cut 1
@@ -571,6 +570,17 @@ void SelND280UpEvent
     if(!(ievt%1000)){
       cout << "Event " << ievt << endl;
     }
+
+
+
+
+
+    //if(ievt!=574) continue;
+    
+
+
+
+    
     //nd280UpEvent->PrintEvent();
 
     bool PassCutVtx = false; // if at least 1 vertex does it
@@ -589,8 +599,9 @@ void SelND280UpEvent
       exit(1);
     }
 
+    TND280UpVertex *nd280UpVertex;
     for(int ivtx=0;ivtx<NVertices;ivtx++){
-      TND280UpVertex *nd280UpVertex = nd280UpEvent->GetVertex(ivtx);
+      nd280UpVertex = nd280UpEvent->GetVertex(ivtx);
       //TND280UpVertex *nd280UpVertex = new TND280UpVertex();
       //nd280UpEvent->GetVertex(ivtx)->Copy(*nd280UpVertex);
       
@@ -759,8 +770,11 @@ void SelND280UpEvent
 
       //nd280UpVertex->PrintVertex();
       //delete nd280UpVtxTrkIn1;
+      //nd280UpVtxTrkIn1 = 0;
       //delete nd280UpVtxTrkIn2;
+      //nd280UpVtxTrkIn2 = 0;
       //delete nd280UpVertex;
+      //nd280UpVertex = 0;
 
     } // end loop over vertices
 
@@ -889,94 +903,352 @@ void SelND280UpEvent
       int NPoints = nd280UpTrack->GetNPoints();    
       
       // Loop over the track points      
-      cout << "Evt " << ievt << " : " << "NPoints = " << NPoints << endl;    
       
-      int NPoints_ForwTPC1 = 0;
-      int NPoints_ForwTPC2 = 0;
-      int NPoints_ForwTPC3 = 0;      
+      //cout << "Evt " << ievt << " : " << "NPoints = " << NPoints << endl;    
+
+      double EntrForwTPC1X = 0; double EntrForwTPC1Y = 0; double EntrForwTPC1Z = 0; double EntrForwTPC1Mom = -999;
+      double EntrForwTPC2X = 0; double EntrForwTPC2Y = 0; double EntrForwTPC2Z = 0; double EntrForwTPC2Mom = -999;
+      double EntrForwTPC3X = 0; double EntrForwTPC3Y = 0; double EntrForwTPC3Z = 0; double EntrForwTPC3Mom = -999;
+      double EntrTPCUp1X = 0; double EntrTPCUp1Y = 0; double EntrTPCUp1Z = 0; double EntrTPCUp1Mom = -999;
+      double EntrTPCUp2X = 0; double EntrTPCUp2Y = 0; double EntrTPCUp2Z = 0; double EntrTPCUp2Mom = -999;
+      double EntrTPCDown1X = 0; double EntrTPCDown1Y = 0; double EntrTPCDown1Z = 0; double EntrTPCDown1Mom = -999;
+      double EntrTPCDown2X = 0; double EntrTPCDown2Y = 0; double EntrTPCDown2Z = 0; double EntrTPCDown2Mom = -999;
+      double EntrDsECalX = 0;   double EntrDsECalY = 0;   double EntrDsECalZ = 0;   double EntrDsECalMom = -999;
+      double EntrBrlECalX = 0;  double EntrBrlECalY = 0;  double EntrBrlECalZ = 0;  double EntrBrlECalMom = -999;
+      double EntrP0DECalX = 0;  double EntrP0DECalY = 0;  double EntrP0DECalZ = 0;  double EntrP0DECalMom = -999;
+      double EntrUSECalP0DX = 0;double EntrUSECalP0DY = 0;double EntrUSECalP0DZ = 0;double EntrUSECalP0DMom = -999;
+
+      double ExForwTPC1X = 0;   double ExForwTPC1Y = 0;   double ExForwTPC1Z = 0;   double ExForwTPC1Mom = 999999999;
+      double ExForwTPC2X = 0;   double ExForwTPC2Y = 0;   double ExForwTPC2Z = 0;   double ExForwTPC2Mom = 999999999;
+      double ExForwTPC3X = 0;   double ExForwTPC3Y = 0;   double ExForwTPC3Z = 0;   double ExForwTPC3Mom = 999999999;
+      double ExTPCUp1X = 0;   double ExTPCUp1Y = 0;   double ExTPCUp1Z = 0;   double ExTPCUp1Mom = 999999999;
+      double ExTPCUp2X = 0;   double ExTPCUp2Y = 0;   double ExTPCUp2Z = 0;   double ExTPCUp2Mom = 999999999;
+      double ExTPCDown1X = 0;   double ExTPCDown1Y = 0;   double ExTPCDown1Z = 0;   double ExTPCDown1Mom = 999999999;
+      double ExTPCDown2X = 0;   double ExTPCDown2Y = 0;   double ExTPCDown2Z = 0;   double ExTPCDown2Mom = 999999999;
+      double ExDsECalX = 0;     double ExDsECalY = 0;     double ExDsECalZ = 0;     double ExDsECalMom = 999999999;
+      double ExBrlECalX = 0;    double ExBrlECalY = 0;    double ExBrlECalZ = 0;    double ExBrlECalMom = 999999999;
+      double ExP0DECalX = 0;    double ExP0DECalY = 0;    double ExP0DECalZ = 0;    double ExP0DECalMom = 999999999;
+      double ExUSECalP0DX = 0;  double ExUSECalP0DY = 0;  double ExUSECalP0DZ = 0;  double ExUSECalP0DMom = 999999999;
+
+      double LastX = 0;         double LastY = 0;         double LastZ = 0; 
+	    
       for(int ipt=0;ipt<NPoints;ipt++){
 	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
 	double length = nd280UpTrackPoint->GetStepLength();
        	double PtX = nd280UpTrackPoint->GetPostPosition().X();
        	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
        	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();	
-	string volname = nd280UpTrackPoint->GetPhysVolName();
+	double PtMom = nd280UpTrackPoint->GetMomentum().Mag();
+	//string volname = nd280UpTrackPoint->GetPhysVolName();
+	string volname = nd280UpTrackPoint->GetLogVolName();
+	
+	LastX = PtX;
+	LastY = PtY;
+	LastZ = PtZ;
+	
+	//cout << "Evt " << ievt << " : " << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
+			  
+	if( (volname.find("DsECal") != string::npos) &&  
+		 (volname.find("Bar")    !=string::npos)  ){
+	  if(PtMom>EntrDsECalMom){
+	    EntrDsECalMom = PtMom;
+	    EntrDsECalX = PtX;
+	    EntrDsECalY = PtY;
+	    EntrDsECalZ = PtZ;
+	  }	
+	  if(PtMom<ExDsECalMom){
+	    ExDsECalMom = PtMom;
+	    ExDsECalX = PtX;
+	    ExDsECalY = PtY;
+	    ExDsECalZ = PtZ;
+	  }
+	}
+	else if( (volname.find("P0DECal") != string::npos) &&  
+		 (volname.find("Bar")    !=string::npos)  ){
+	  if(PtMom>EntrP0DECalMom){
+	    EntrP0DECalMom = PtMom;
+	    EntrP0DECalX = PtX;
+	    EntrP0DECalY = PtY;
+	    EntrP0DECalZ = PtZ;
+	  }	
+	  if(PtMom<ExP0DECalMom){
+	    ExP0DECalMom = PtMom;
+	    ExP0DECalX = PtX;
+	    ExP0DECalY = PtY;
+	    ExP0DECalZ = PtZ;
+	  }
+	}
+	else if( (volname.find("BrlECal") != string::npos) &&  
+		 (volname.find("Bar")    !=string::npos)  ){
+	  if(PtMom>EntrBrlECalMom){
+	    EntrBrlECalMom = PtMom;
+	    EntrBrlECalX = PtX;
+	    EntrBrlECalY = PtY;
+	    EntrBrlECalZ = PtZ;
+	  }	
+	  if(PtMom<ExBrlECalMom){
+	    ExBrlECalMom = PtMom;
+	    ExBrlECalX = PtX;
+	    ExBrlECalY = PtY;
+	    ExBrlECalZ = PtZ;
+	  }
+	}
+	else if( (volname.find("USECalP0D") != string::npos) &&  
+		 (volname.find("Bar")    !=string::npos)  ){
+	  if(PtMom>EntrUSECalP0DMom){
+	    EntrUSECalP0DMom = PtMom;
+	    EntrUSECalP0DX = PtX;
+	    EntrUSECalP0DY = PtY;
+	    EntrUSECalP0DZ = PtZ;
+	  }	
+	  if(PtMom<ExUSECalP0DMom){
+	    ExUSECalP0DMom = PtMom;
+	    ExUSECalP0DX = PtX;
+	    ExUSECalP0DY = PtY;
+	    ExUSECalP0DZ = PtZ;
+	  }
+	}
+	else if( (volname.find("ForwTPC1") != string::npos) &&
+		 ( (volname.find("MM")     !=string::npos)  || 
+		   (volname.find("Half")   !=string::npos)   )  
+		 ){
+	  if(PtMom>EntrForwTPC1Mom){
+	    EntrForwTPC1Mom = PtMom;
+	    EntrForwTPC1X = PtX;
+	    EntrForwTPC1Y = PtY;
+	    EntrForwTPC1Z = PtZ;
+	  }
+	  if(PtMom<ExForwTPC1Mom){
+	    ExForwTPC1Mom = PtMom;
+	    ExForwTPC1X = PtX;
+	    ExForwTPC1Y = PtY;
+	    ExForwTPC1Z = PtZ;
+	  }
+	}
+	else if( (volname.find("ForwTPC2") != string::npos) &&
+		 ( (volname.find("MM")     !=string::npos)  || 
+		   (volname.find("Half")   !=string::npos)   )
+		 ){
+	  if(PtMom>EntrForwTPC2Mom){
+	    EntrForwTPC2Mom = PtMom;
+	    EntrForwTPC2X = PtX;
+	    EntrForwTPC2Y = PtY;
+	    EntrForwTPC2Z = PtZ;
+	  }
+	  if(PtMom<ExForwTPC2Mom){
+	    ExForwTPC2Mom = PtMom;
+	    ExForwTPC2X = PtX;
+	    ExForwTPC2Y = PtY;
+	    ExForwTPC2Z = PtZ;
+	  }
+	}
+	else if( (volname.find("ForwTPC3") != string::npos) &&
+		 ( (volname.find("MM")     !=string::npos)  ||
+		   (volname.find("Half")   !=string::npos)   )
+		 ){
+	  if(PtMom>EntrForwTPC3Mom){
+	    EntrForwTPC3Mom = PtMom;
+	    EntrForwTPC3X = PtX;
+	    EntrForwTPC3Y = PtY;
+	    EntrForwTPC3Z = PtZ;
+	  }
+	  if(PtMom<ExForwTPC3Mom){
+	    ExForwTPC3Mom = PtMom;
+	    ExForwTPC3X = PtX;
+	    ExForwTPC3Y = PtY;
+	    ExForwTPC3Z = PtZ;
+	  }
+	}
+	else if( (volname.find("TPCUp1") != string::npos) ){
+	  if(PtMom>EntrTPCUp1Mom){
+	    EntrTPCUp1Mom = PtMom;
+	    EntrTPCUp1X = PtX;
+	    EntrTPCUp1Y = PtY;
+	    EntrTPCUp1Z = PtZ;
+	  }
+	  if(PtMom<ExTPCUp1Mom){
+	    ExTPCUp1Mom = PtMom;
+	    ExTPCUp1X = PtX;
+	    ExTPCUp1Y = PtY;
+	    ExTPCUp1Z = PtZ;
+	  }
+	}
+	else if( (volname.find("TPCUp2") != string::npos) ){
+	  if(PtMom>EntrTPCUp2Mom){
+	    EntrTPCUp2Mom = PtMom;
+	    EntrTPCUp2X = PtX;
+	    EntrTPCUp2Y = PtY;
+	    EntrTPCUp2Z = PtZ;
+	  }
+	  if(PtMom<ExTPCUp2Mom){
+	    ExTPCUp2Mom = PtMom;
+	    ExTPCUp2X = PtX;
+	    ExTPCUp2Y = PtY;
+	    ExTPCUp2Z = PtZ;
+	  }
+	}
+	else if( (volname.find("TPCDown1") != string::npos) ){
+	  if(PtMom>EntrTPCDown1Mom){
+	    EntrTPCDown1Mom = PtMom;
+	    EntrTPCDown1X = PtX;
+	    EntrTPCDown1Y = PtY;
+	    EntrTPCDown1Z = PtZ;
+	  }
+	  if(PtMom<ExTPCDown1Mom){
+	    ExTPCDown1Mom = PtMom;
+	    ExTPCDown1X = PtX;
+	    ExTPCDown1Y = PtY;
+	    ExTPCDown1Z = PtZ;
+	  }
+	}
+	else if( (volname.find("TPCDown2") != string::npos) ){
+	  if(PtMom>EntrTPCDown2Mom){
+	    EntrTPCDown2Mom = PtMom;
+	    EntrTPCDown2X = PtX;
+	    EntrTPCDown2Y = PtY;
+	    EntrTPCDown2Z = PtZ;
+	  }
+	  if(PtMom<ExTPCDown2Mom){
+	    ExTPCDown2Mom = PtMom;
+	    ExTPCDown2X = PtX;
+	    ExTPCDown2Y = PtY;
+	    ExTPCDown2Z = PtZ;
+	  }
+	}
 
-	cout << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
-	// 	// //if(volname=="/World/Basket/Tracker/ForwTPC1/Drift"){
-	// 	// if( volname=="/World/Basket/Tracker/ForwTPC1/Half" ||
-	// 	//     volname=="/World/Basket/Tracker/ForwTPC1/MM"
-	// 	//     ){
-	// 	//   NPoints_ForwTPC1++;
-	// 	//   hEdgePt_ForwTPC1_Z->Fill(PtZ);	  
-	// 	//   hEdgePt_ForwTPC1_XY->Fill(PtX,PtY);
-	// 	//   hEdgePt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	// 	//   hEdgePt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	// 	//   if(NPoints_ForwTPC1==1){
-	// 	//     hFirstPt_ForwTPC1_Z->Fill(PtZ);
-	// 	//     hFirstPt_ForwTPC1_XY->Fill(PtX,PtY);
-	// 	//     hFirstPt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	// 	//     hFirstPt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	//   //else if(NPoints_ForwTPC1==2){
-	// 	//   else{
-	// 	//     hLastPt_ForwTPC1_Z->Fill(PtZ);
-	// 	//     hLastPt_ForwTPC1_XY->Fill(PtX,PtY);
-	// 	//     hLastPt_ForwTPC1_YZ->Fill(PtY,PtZ);
-	// 	//     hLastPt_ForwTPC1_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	// }	
-	// 	// //else if(volname=="/World/Basket/Tracker/ForwTPC2/Drift"){
-	// 	// else if( volname=="/World/Basket/Tracker/ForwTPC2/Half" ||
-	// 	// 	 volname=="/World/Basket/Tracker/ForwTPC2/MM"
-	// 	// 	 ){
-	// 	//   NPoints_ForwTPC2++;
-	// 	//   hEdgePt_ForwTPC2_Z->Fill(PtZ);
-	// 	//   hEdgePt_ForwTPC2_XY->Fill(PtX,PtY);
-	// 	//   hEdgePt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	// 	//   hEdgePt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	// 	//   if(NPoints_ForwTPC2==1){
-	// 	//     hFirstPt_ForwTPC2_Z->Fill(PtZ);
-	// 	//     hFirstPt_ForwTPC2_XY->Fill(PtX,PtY);
-	// 	//     hFirstPt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	// 	//     hFirstPt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	//   //else if(NPoints_ForwTPC2==2){
-	// 	//   else{
-	// 	//     hLastPt_ForwTPC2_Z->Fill(PtZ);
-	// 	//     hLastPt_ForwTPC2_XY->Fill(PtX,PtY);
-	// 	//     hLastPt_ForwTPC2_YZ->Fill(PtY,PtZ);
-	// 	//     hLastPt_ForwTPC2_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	//   //else{ 
-	// 	//   //cerr << "# of points in " << volname << " is " << NPoints_ForwTPC2 << " !!!" << endl;
-	// 	//   //exit(1);
-	// 	//   //}
-	// 	// }
-	// 	// //else if(volname=="/World/Basket/Tracker/ForwTPC3/Drift"){
-	// 	// else if( volname=="/World/Basket/Tracker/ForwTPC3/Half" ||
-	// 	// 	 volname=="/World/Basket/Tracker/ForwTPC3/MM"
-	// 	// 	 ){
-	// 	//   NPoints_ForwTPC3++;
-	// 	//   hEdgePt_ForwTPC3_Z->Fill(PtZ);
-	// 	//   hEdgePt_ForwTPC3_XY->Fill(PtX,PtY);
-	// 	//   hEdgePt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	// 	//   hEdgePt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	// 	//   if(NPoints_ForwTPC3==1){
-	// 	//     hFirstPt_ForwTPC3_Z->Fill(PtZ);
-	// 	//     hFirstPt_ForwTPC3_XY->Fill(PtX,PtY);
-	// 	//     hFirstPt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	// 	//     hFirstPt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	//   //else if(NPoints_ForwTPC3==2){
-	// 	//   else{
-	// 	//     hLastPt_ForwTPC3_Z->Fill(PtZ);
-	// 	//     hLastPt_ForwTPC3_XY->Fill(PtX,PtY);
-	// 	//     hLastPt_ForwTPC3_YZ->Fill(PtY,PtZ);
-	// 	//     hLastPt_ForwTPC3_XZ->Fill(PtX,PtZ);
-	// 	//   }
-	// 	// }	
+	
+	//delete nd280UpTrackPoint;
+	//nd280UpTrackPoint = 0;
+
       } // loop over points
+	
+      
+      //
+      // Fill entrance detector points
+      //
+      if(EntrForwTPC1Mom>0.){
+	hForwTPC1TrkPtXY->Fill(EntrForwTPC1X,EntrForwTPC1Y);
+	hForwTPC1TrkPtXZ->Fill(EntrForwTPC1X,EntrForwTPC1Z);
+	hForwTPC1TrkPtYZ->Fill(EntrForwTPC1Y,EntrForwTPC1Z);	  
+      }
+      if(ExForwTPC1Mom<9999999.){
+	hForwTPC1TrkPtXY->Fill(ExForwTPC1X,ExForwTPC1Y);
+      	hForwTPC1TrkPtXZ->Fill(ExForwTPC1X,ExForwTPC1Z);
+      	hForwTPC1TrkPtYZ->Fill(ExForwTPC1Y,ExForwTPC1Z);	  
+      }
+      //
+      if(EntrForwTPC2Mom>0.){
+	hForwTPC2TrkPtXY->Fill(EntrForwTPC2X,EntrForwTPC2Y);
+	hForwTPC2TrkPtXZ->Fill(EntrForwTPC2X,EntrForwTPC2Z);
+	hForwTPC2TrkPtYZ->Fill(EntrForwTPC2Y,EntrForwTPC2Z);	  
+      }
+      if(ExForwTPC2Mom<9999999.){
+	hForwTPC2TrkPtXY->Fill(ExForwTPC2X,ExForwTPC2Y);
+      	hForwTPC2TrkPtXZ->Fill(ExForwTPC2X,ExForwTPC2Z);
+      	hForwTPC2TrkPtYZ->Fill(ExForwTPC2Y,ExForwTPC2Z);	  
+      }
+      // 
+      if(EntrForwTPC3Mom>0.){
+	hForwTPC3TrkPtXY->Fill(EntrForwTPC3X,EntrForwTPC3Y);
+	hForwTPC3TrkPtXZ->Fill(EntrForwTPC3X,EntrForwTPC3Z);
+	hForwTPC3TrkPtYZ->Fill(EntrForwTPC3Y,EntrForwTPC3Z);	  
+      }
+      if(ExForwTPC3Mom<9999999.){
+	hForwTPC3TrkPtXY->Fill(ExForwTPC3X,ExForwTPC3Y);
+      	hForwTPC3TrkPtXZ->Fill(ExForwTPC3X,ExForwTPC3Z);
+      	hForwTPC3TrkPtYZ->Fill(ExForwTPC3Y,ExForwTPC3Z);	  
+      }
+      //
+      if(EntrTPCUp1Mom>0.){
+	hTPCUp1TrkPtXY->Fill(EntrTPCUp1X,EntrTPCUp1Y);
+	hTPCUp1TrkPtXZ->Fill(EntrTPCUp1X,EntrTPCUp1Z);
+	hTPCUp1TrkPtYZ->Fill(EntrTPCUp1Y,EntrTPCUp1Z);	  
+      }
+      if(ExTPCUp1Mom<9999999.){
+	hTPCUp1TrkPtXY->Fill(ExTPCUp1X,ExTPCUp1Y);
+      	hTPCUp1TrkPtXZ->Fill(ExTPCUp1X,ExTPCUp1Z);
+      	hTPCUp1TrkPtYZ->Fill(ExTPCUp1Y,ExTPCUp1Z);	  
+      }
+      //
+      if(EntrTPCUp2Mom>0.){
+	hTPCUp2TrkPtXY->Fill(EntrTPCUp2X,EntrTPCUp2Y);
+	hTPCUp2TrkPtXZ->Fill(EntrTPCUp2X,EntrTPCUp2Z);
+	hTPCUp2TrkPtYZ->Fill(EntrTPCUp2Y,EntrTPCUp2Z);	  
+      }
+      if(ExTPCUp2Mom<9999999.){
+	hTPCUp2TrkPtXY->Fill(ExTPCUp2X,ExTPCUp2Y);
+      	hTPCUp2TrkPtXZ->Fill(ExTPCUp2X,ExTPCUp2Z);
+      	hTPCUp2TrkPtYZ->Fill(ExTPCUp2Y,ExTPCUp2Z);	  
+      }
+      //
+      if(EntrTPCDown1Mom>0.){
+	hTPCDown1TrkPtXY->Fill(EntrTPCDown1X,EntrTPCDown1Y);
+	hTPCDown1TrkPtXZ->Fill(EntrTPCDown1X,EntrTPCDown1Z);
+	hTPCDown1TrkPtYZ->Fill(EntrTPCDown1Y,EntrTPCDown1Z);	  
+      }
+      if(ExTPCDown1Mom<9999999.){
+	hTPCDown1TrkPtXY->Fill(ExTPCDown1X,ExTPCDown1Y);
+      	hTPCDown1TrkPtXZ->Fill(ExTPCDown1X,ExTPCDown1Z);
+      	hTPCDown1TrkPtYZ->Fill(ExTPCDown1Y,ExTPCDown1Z);	  
+      }
+      //
+      if(EntrTPCDown2Mom>0.){
+	hTPCDown2TrkPtXY->Fill(EntrTPCDown2X,EntrTPCDown2Y);
+	hTPCDown2TrkPtXZ->Fill(EntrTPCDown2X,EntrTPCDown2Z);
+	hTPCDown2TrkPtYZ->Fill(EntrTPCDown2Y,EntrTPCDown2Z);	  
+      }
+      if(ExTPCDown2Mom<9999999.){
+	hTPCDown2TrkPtXY->Fill(ExTPCDown2X,ExTPCDown2Y);
+      	hTPCDown2TrkPtXZ->Fill(ExTPCDown2X,ExTPCDown2Z);
+      	hTPCDown2TrkPtYZ->Fill(ExTPCDown2Y,ExTPCDown2Z);	  
+      }
+      //
+      if(EntrDsECalMom>0.){
+	hDsECalTrkPtXY->Fill(EntrDsECalX,EntrDsECalY);
+	hDsECalTrkPtXZ->Fill(EntrDsECalX,EntrDsECalZ);
+	hDsECalTrkPtYZ->Fill(EntrDsECalY,EntrDsECalZ);	  
+      }
+      if(ExDsECalMom<9999999.){
+	hDsECalTrkPtXY->Fill(ExDsECalX,ExDsECalY);
+	hDsECalTrkPtXZ->Fill(ExDsECalX,ExDsECalZ);
+	hDsECalTrkPtYZ->Fill(ExDsECalY,ExDsECalZ);	  
+      }
+      //
+      if(EntrBrlECalMom>0.){
+	hBrlECalTrkPtXY->Fill(EntrBrlECalX,EntrBrlECalY);
+	hBrlECalTrkPtXZ->Fill(EntrBrlECalX,EntrBrlECalZ);
+	hBrlECalTrkPtYZ->Fill(EntrBrlECalY,EntrBrlECalZ);	  
+      }
+      if(ExBrlECalMom<9999999.){
+	hBrlECalTrkPtXY->Fill(ExBrlECalX,ExBrlECalY);
+	hBrlECalTrkPtXZ->Fill(ExBrlECalX,ExBrlECalZ);
+	hBrlECalTrkPtYZ->Fill(ExBrlECalY,ExBrlECalZ);	  
+      }
+      //
+      if(EntrP0DECalMom>0.){
+	hP0DECalTrkPtXY->Fill(EntrP0DECalX,EntrP0DECalY);
+	hP0DECalTrkPtXZ->Fill(EntrP0DECalX,EntrP0DECalZ);
+	hP0DECalTrkPtYZ->Fill(EntrP0DECalY,EntrP0DECalZ);	  
+      }
+      if(ExP0DECalMom<9999999.){
+	hP0DECalTrkPtXY->Fill(ExP0DECalX,ExP0DECalY);
+	hP0DECalTrkPtXZ->Fill(ExP0DECalX,ExP0DECalZ);
+	hP0DECalTrkPtYZ->Fill(ExP0DECalY,ExP0DECalZ);	  
+      }
+      //
+      if(EntrUSECalP0DMom>0.){
+	hUSECalP0DTrkPtXY->Fill(EntrUSECalP0DX,EntrUSECalP0DY);
+	hUSECalP0DTrkPtXZ->Fill(EntrUSECalP0DX,EntrUSECalP0DZ);
+	hUSECalP0DTrkPtYZ->Fill(EntrUSECalP0DY,EntrUSECalP0DZ);	  
+      }
+      if(ExUSECalP0DMom<9999999.){
+	hUSECalP0DTrkPtXY->Fill(ExUSECalP0DX,ExUSECalP0DY);
+	hUSECalP0DTrkPtXZ->Fill(ExUSECalP0DX,ExUSECalP0DZ);
+	hUSECalP0DTrkPtYZ->Fill(ExUSECalP0DY,ExUSECalP0DZ);	  
+      }
+      
+      /////
+
 
 
       // Fill selected particles in FV
@@ -1258,6 +1530,8 @@ void SelND280UpEvent
 	  hLVsMom_USECalP0D_NoTPC->Fill(length_usecalp0d,mom);
 	}
 
+
+
 	TND280UpTrackPoint *nd280UpLastPoint = nd280UpTrack->GetPoint(NPoints-1);
 	double PtX = nd280UpLastPoint->GetPostPosition().X();
 	double PtY = nd280UpLastPoint->GetPostPosition().Y();
@@ -1314,6 +1588,10 @@ void SelND280UpEvent
 	  hLyzVsTheta_Rej_ForwTPC2->Fill(lyz_forwtpc2,theta);
 	  hLyzVsTheta_Rej_ForwTPC3->Fill(lyz_forwtpc3,theta);
 	}
+
+	      
+	//delete nd280UpLastPoint;
+	//nd280UpLastPoint = 0;
       }
 
       //
@@ -1337,7 +1615,8 @@ void SelND280UpEvent
 	}
       }
 
-      // delete nd280UpTrack;
+      //delete nd280UpTrack;
+      //nd280UpTrack = 0;
     } // end loop over tracks
 
     //cout << endl;
@@ -1351,13 +1630,49 @@ void SelND280UpEvent
     //hEtrueVsEreco->Fill();
     //hDiffEtrueEreco->Fill();
     
-    //delete nd280UpEvent;    
+    delete nd280UpEvent;    
+    nd280UpEvent = 0;
   } // end loop over events
   
    
   // Write output file
   TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
   TFile *out = new TFile(outfilename.Data(),"RECREATE");
+  
+  hForwTPC1TrkPtXY->Write();
+  hForwTPC1TrkPtXZ->Write();
+  hForwTPC1TrkPtYZ->Write();
+  hForwTPC2TrkPtXY->Write();
+  hForwTPC2TrkPtXZ->Write();
+  hForwTPC2TrkPtYZ->Write();
+  hForwTPC3TrkPtXY->Write();
+  hForwTPC3TrkPtXZ->Write();
+  hForwTPC3TrkPtYZ->Write();
+  hTPCUp1TrkPtXY->Write();
+  hTPCUp1TrkPtXZ->Write();
+  hTPCUp1TrkPtYZ->Write();
+  hTPCUp2TrkPtXY->Write();
+  hTPCUp2TrkPtXZ->Write();
+  hTPCUp2TrkPtYZ->Write();
+  hTPCDown1TrkPtXY->Write();
+  hTPCDown1TrkPtXZ->Write();
+  hTPCDown1TrkPtYZ->Write();
+  hTPCDown2TrkPtXY->Write();
+  hTPCDown2TrkPtXZ->Write();
+  hTPCDown2TrkPtYZ->Write();
+  hDsECalTrkPtXY->Write();
+  hDsECalTrkPtXZ->Write();
+  hDsECalTrkPtYZ->Write();
+  hBrlECalTrkPtXY->Write();
+  hBrlECalTrkPtXZ->Write();
+  hBrlECalTrkPtYZ->Write();
+  hP0DECalTrkPtXY->Write();
+  hP0DECalTrkPtXZ->Write();
+  hP0DECalTrkPtYZ->Write();
+  hUSECalP0DTrkPtXY->Write();
+  hUSECalP0DTrkPtXZ->Write();
+  hUSECalP0DTrkPtYZ->Write();
+  //
   hVtx_X->Write();
   hVtx_Y->Write();
   hVtx_Z->Write();
@@ -1412,43 +1727,6 @@ void SelND280UpEvent
   hLastPt_Oth_XY->Write();
   hLastPt_Oth_YZ->Write();
   hLastPt_Oth_XZ->Write();
-  //
-  // hEdgePt_ForwTPC1_Z->Write();
-  // hEdgePt_ForwTPC2_Z->Write();
-  // hEdgePt_ForwTPC3_Z->Write();
-  // hFirstPt_ForwTPC1_Z->Write();
-  // hFirstPt_ForwTPC2_Z->Write();
-  // hFirstPt_ForwTPC3_Z->Write();
-  // hLastPt_ForwTPC1_Z->Write();
-  // hLastPt_ForwTPC2_Z->Write();
-  // hLastPt_ForwTPC3_Z->Write();
-  // hEdgePt_ForwTPC1_XY->Write();
-  // hEdgePt_ForwTPC2_XY->Write();
-  // hEdgePt_ForwTPC3_XY->Write();
-  // hFirstPt_ForwTPC1_XY->Write();
-  // hFirstPt_ForwTPC2_XY->Write();
-  // hFirstPt_ForwTPC3_XY->Write();
-  // hLastPt_ForwTPC1_XY->Write();
-  // hLastPt_ForwTPC2_XY->Write();
-  // hLastPt_ForwTPC3_XY->Write();
-  // hEdgePt_ForwTPC1_XZ->Write();
-  // hEdgePt_ForwTPC2_XZ->Write();
-  // hEdgePt_ForwTPC3_XZ->Write();
-  // hFirstPt_ForwTPC1_XZ->Write();
-  // hFirstPt_ForwTPC2_XZ->Write();
-  // hFirstPt_ForwTPC3_XZ->Write();
-  // hLastPt_ForwTPC1_XZ->Write();
-  // hLastPt_ForwTPC2_XZ->Write();
-  // hLastPt_ForwTPC3_XZ->Write();
-  // hEdgePt_ForwTPC1_YZ->Write();
-  // hEdgePt_ForwTPC2_YZ->Write();
-  // hEdgePt_ForwTPC3_YZ->Write();
-  // hFirstPt_ForwTPC1_YZ->Write();
-  // hFirstPt_ForwTPC2_YZ->Write();
-  // hFirstPt_ForwTPC3_YZ->Write();
-  // hLastPt_ForwTPC1_YZ->Write();
-  // hLastPt_ForwTPC2_YZ->Write();
-  // hLastPt_ForwTPC3_YZ->Write();
   //
   hL_SD->Write();
   hLVsMom_SD->Write();
@@ -1803,3 +2081,4 @@ bool IsTargetIn(double x,double y,double z,
 //  exit(1);
 //}
 //}
+//___________________________________________________________________________ 
