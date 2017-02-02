@@ -66,6 +66,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("sideTPCDownPos1_X" ,fSideTPCDownPos1_X);
     XML2Double("sideTPCDownPos1_Y" ,fSideTPCDownPos1_Y);
     XML2Double("sideTPCDownPos1_Z" ,fSideTPCDownPos1_Z);
+
 	
     // Side TPCs 2
     XML2Bool("sideTPCdefault2" ,fSideTPCdefault2);
@@ -122,6 +123,9 @@ void ExN02ND280XML::SetInputs(){
     //
     // Set detectors used in the simulation
     //
+    // Use horizontal targets
+    XML2Bool("UseTarget1" ,fUseTarget1);
+    XML2Bool("UseTarget2" ,fUseTarget2);
     // Use side TPCs
     XML2Bool("UseTPCDown1" ,fUseTPCDown1);
     XML2Bool("UseTPCUp1"   ,fUseTPCUp1);
@@ -143,6 +147,8 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseP0D",fUseP0D);
     
     // Set invisible detectors 
+    XML2Bool("InvisTarget1"  ,fInvisTarget1);
+    XML2Bool("InvisTarget2"  ,fInvisTarget2);
     XML2Bool("InvisTPCDown1" ,fInvisTPCDown1);
     XML2Bool("InvisTPCUp1"   ,fInvisTPCUp1);
     XML2Bool("InvisTPCDown2" ,fInvisTPCDown2);

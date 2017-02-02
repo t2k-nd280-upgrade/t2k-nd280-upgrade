@@ -455,9 +455,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4LogicalVolume *tpc1Volume = this->GetPieceTPC("ForwTPC1",cParentNameTPC);
   
   if( ND280XMLInput->GetXMLForwTPCdefault() ){ // default
-
-    //if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
-    //}
     currentZ = - (GetLengthForwTPC()/2. +  GetFGDFullLength1() + GetTargetFullLength1() + GetLengthForwTPC()/2.); 
     SetForwTPCPos1(0,0,currentZ);
   }
@@ -480,7 +477,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    0);
 
   G4cout << " - name: " << tpc1Volume->GetName() << G4endl;
-  G4cout << " - length: " << GetLengthForwTPC() << G4endl;
+  G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos1().x()/mm << ", "
 	 << GetForwTPCPos1().y()/mm << ", "
@@ -519,7 +516,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    0);
 
   G4cout << " - name: " << tpc2Volume->GetName() << G4endl;
-  G4cout << " - length: " << GetLengthForwTPC() << G4endl;
+  G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos2().x()/mm << ", "
 	 << GetForwTPCPos2().y()/mm << ", "
@@ -558,7 +555,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   		    0);
 
   G4cout << " - name: " << tpc3Volume->GetName() << G4endl;
-  G4cout << " - length: " << GetLengthForwTPC() << G4endl;
+  G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos3().x()/mm << ", "
 	 << GetForwTPCPos3().y()/mm << ", "
@@ -711,7 +708,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   //G4String cParentNameTarget = physiTracker->GetName();
   G4String cParentNameTarget = logicBasket->GetName();
-
+  
   const G4String cNameSolidTarget1     = cParentNameTarget+"/target1";
   const G4String cNameLogicTarget1     = cParentNameTarget+"/Target1";
   const G4String cNamePhysiTarget1     = cParentNameTarget+"/Target1";
@@ -721,56 +718,62 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //const G4String cTargetMater1 = "FGDScintillator"; 
   const G4String cTargetMater1 = ND280XMLInput->GetXMLTargetMaterial1();
   TargetMater1  = FindMaterial(cTargetMater1);  
-
+  
   G4double targetSizeLength1  = 0.5 * GetTargetFullLength1();    // Half length of the Target 1
   G4double targetSizeWidth1   = 0.5 * GetTargetFullWidth1();     // Half width of the Target 1
   G4double targetSizeHeight1  = 0.5 * GetTargetFullHeight1();    // Half height of the Target 1
-
+  
   G4double HalfTargetHeight1  = 0.5 * GetTargetFullHeight1();
+  
+
+
+  if( ND280XMLInput->GetXMLUseTarget1() ){ 
     
-  if( ND280XMLInput->GetXMLTargetdefault1() ){ // default
-    G4double Target1_Z = 0.;    
-    if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
-      Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.);
+    if( ND280XMLInput->GetXMLTargetdefault1() ){ // default
+      G4double Target1_Z = 0.;    
+      if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
+	Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.);
+      }
+      else{
+	Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.); // Fix for when also FGDs are used!!!
+      }
+      SetTargetPos1(0,0,Target1_Z);
     }
-    else{
-      Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.); // Fix for when also FGDs are used!!!
+    else { // from XML file
+      G4double x = ND280XMLInput->GetXMLTargetPos1_X();
+      G4double y = ND280XMLInput->GetXMLTargetPos1_Y();
+      G4double z = ND280XMLInput->GetXMLTargetPos1_Z();
+      SetTargetPos1(x,y,z);
     }
-    SetTargetPos1(0,0,Target1_Z);
+    
+    solidTarget1 = new G4Box(cNameSolidTarget1,targetSizeWidth1,targetSizeHeight1,targetSizeLength1);
+    logicTarget1 = new G4LogicalVolume(solidTarget1,TargetMater1,cNameLogicTarget1,0,0,0);
+    physiTarget1 = new G4PVPlacement(0,                 // no rotation
+				     GetTargetPos1(),    // at (x,y,z)
+				     logicTarget1,       // its logical volume  	  
+				     cNamePhysiTarget1,  // its name
+				     //logicTracker,      // its mother  volume
+				     //logicND280MC,      // its mother  volume
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+    //fCheckOverlaps);   
+    
+    G4cout << "Target 1: " << G4endl
+	   << " - dimensions: "
+	   << GetTargetFullWidth1()/mm  << " (width) x " 
+	   << GetTargetFullHeight1()/mm << " (height) x " 
+	   << GetTargetFullLength1()/mm << " (length) mm^3" 
+	   << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
+    G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " name: " << logicTarget1->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << GetTargetPos1().x()/mm << ", "
+	   << GetTargetPos1().y()/mm << ", "
+	   << GetTargetPos1().z()/mm << " ) mm"  
+	   << G4endl << G4endl;
   }
-  else { // from XML file
-    G4double x = ND280XMLInput->GetXMLTargetPos1_X();
-    G4double y = ND280XMLInput->GetXMLTargetPos1_Y();
-    G4double z = ND280XMLInput->GetXMLTargetPos1_Z();
-    SetTargetPos1(x,y,z);
-  }
-
-  solidTarget1 = new G4Box(cNameSolidTarget1,targetSizeWidth1,targetSizeHeight1,targetSizeLength1);
-  logicTarget1 = new G4LogicalVolume(solidTarget1,TargetMater1,cNameLogicTarget1,0,0,0);
-  physiTarget1 = new G4PVPlacement(0,                 // no rotation
-				   GetTargetPos1(),    // at (x,y,z)
-				   logicTarget1,       // its logical volume  	  
-				   cNamePhysiTarget1,  // its name
-				   //logicTracker,      // its mother  volume
-				   //logicND280MC,      // its mother  volume
-				   logicBasket,
-				   false,             // no boolean operations
-				   0);                 // copy number 
-  //fCheckOverlaps);   
-
-  G4cout << "Target 1: " << G4endl
-	 << " - dimensions: "
-	 << GetTargetFullWidth1()/mm  << " (width) x " 
-  	 << GetTargetFullHeight1()/mm << " (height) x " 
-  	 << GetTargetFullLength1()/mm << " (length) mm^3" 
-         << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-  G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl; 
-  G4cout << " name: " << logicTarget1->GetName() << G4endl;
-  G4cout << " - position: ( " 
-	 << GetTargetPos1().x()/mm << ", "
-	 << GetTargetPos1().y()/mm << ", "
-	 << GetTargetPos1().z()/mm << " ) mm"  
-	 << G4endl << G4endl;
+  
   
   //------------------------------ 
   // Target 2 - Upstream - Water 
@@ -792,53 +795,56 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4double targetSizeHeight2  = 0.5 * GetTargetFullHeight2();    // Half height of the Target 1
 
   G4double HalfTargetHeight2  = 0.5 * GetTargetFullHeight2();
-  
-  if( ND280XMLInput->GetXMLTargetdefault2() ){ // default
-    //G4double Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
-    //SetTargetPos2(0,0,Target2_Z);
-    G4double Target2_Z = 0.;    
-    if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
-      Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
+
+  if( ND280XMLInput->GetXMLUseTarget2() ){ 
+    
+    if( ND280XMLInput->GetXMLTargetdefault2() ){ // default
+      //G4double Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
+      //SetTargetPos2(0,0,Target2_Z);
+      G4double Target2_Z = 0.;    
+      if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
+	Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
+      }
+      else{
+	Target2_Z = + (GetLengthForwTPC()/2. + GetFGDFullLength2() + GetTargetFullLength2()/2.);
+      }
+      SetTargetPos2(0,0,Target2_Z);
     }
-    else{
-      Target2_Z = + (GetLengthForwTPC()/2. + GetFGDFullLength2() + GetTargetFullLength2()/2.);
+    else { // from XML file
+      G4double x = ND280XMLInput->GetXMLTargetPos2_X();
+      G4double y = ND280XMLInput->GetXMLTargetPos2_Y();
+      G4double z = ND280XMLInput->GetXMLTargetPos2_Z();
+      SetTargetPos2(x,y,z);
     }
-    SetTargetPos2(0,0,Target2_Z);
+    
+    solidTarget2 = new G4Box(cNameSolidTarget2,targetSizeWidth2,targetSizeHeight2,targetSizeLength2);
+    logicTarget2 = new G4LogicalVolume(solidTarget2,TargetMater2,cNameLogicTarget2,0,0,0);
+    physiTarget2 = new G4PVPlacement(0,                 // no rotation
+				     GetTargetPos2(),    // at (x,y,z)
+				     logicTarget2,       // its logical volume  	  
+				     cNamePhysiTarget2,  // its name
+				     //logicTracker,      // its mother  volume
+				     //logicND280MC,      // its mother  volume
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+    //fCheckOverlaps);   
+    
+    G4cout << "Target 2: " << G4endl
+	   << " - dimensions: "
+	   << GetTargetFullWidth2()/mm  << " (width) x " 
+	   << GetTargetFullHeight2()/mm << " (height) x " 
+	   << GetTargetFullLength2()/mm << " (length) mm^3" 
+	   << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
+    G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicTarget2->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << GetTargetPos2().x()/mm << ", "
+	   << GetTargetPos2().y()/mm << ", "
+	   << GetTargetPos2().z()/mm << " ) mm"  
+	   << G4endl << G4endl;
   }
-  else { // from XML file
-    G4double x = ND280XMLInput->GetXMLTargetPos2_X();
-    G4double y = ND280XMLInput->GetXMLTargetPos2_Y();
-    G4double z = ND280XMLInput->GetXMLTargetPos2_Z();
-    SetTargetPos2(x,y,z);
-  }
-  
-  solidTarget2 = new G4Box(cNameSolidTarget2,targetSizeWidth2,targetSizeHeight2,targetSizeLength2);
-  logicTarget2 = new G4LogicalVolume(solidTarget2,TargetMater2,cNameLogicTarget2,0,0,0);
-  physiTarget2 = new G4PVPlacement(0,                 // no rotation
-				   GetTargetPos2(),    // at (x,y,z)
-				   logicTarget2,       // its logical volume  	  
-				   cNamePhysiTarget2,  // its name
-				   //logicTracker,      // its mother  volume
-				   //logicND280MC,      // its mother  volume
-				   logicBasket,
-				   false,             // no boolean operations
-				   0);                 // copy number 
-  //fCheckOverlaps);   
-  
-  G4cout << "Target 2: " << G4endl
-	 << " - dimensions: "
-	 << GetTargetFullWidth2()/mm  << " (width) x " 
-  	 << GetTargetFullHeight2()/mm << " (height) x " 
-  	 << GetTargetFullLength2()/mm << " (length) mm^3" 
-         << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
-  G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
-  G4cout << " name: " << logicTarget2->GetName() << G4endl;
-  G4cout << " - position: ( " 
-	 << GetTargetPos2().x()/mm << ", "
-	 << GetTargetPos2().y()/mm << ", "
-	 << GetTargetPos2().z()/mm << " ) mm"  
-	 << G4endl << G4endl;
-  
+ 
   //
   //------------------------------ 
   // Side TPCs 
@@ -1084,10 +1090,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     if( ND280XMLInput->GetXMLUseTPCUp2() )   SDRegion->AddRootLogicalVolume(logicSideTPCUp2);
     if( ND280XMLInput->GetXMLUseTPCDown1() ) SDRegion->AddRootLogicalVolume(logicSideTPCDown1);
     if( ND280XMLInput->GetXMLUseTPCDown2() ) SDRegion->AddRootLogicalVolume(logicSideTPCDown2);
-    SDRegion->AddRootLogicalVolume(logicTarget1);
-    SDRegion->AddRootLogicalVolume(logicTarget2);
-    if( ND280XMLInput->GetXMLUseFGD1() )   SDRegion->AddRootLogicalVolume(logicFGD1);
-    if( ND280XMLInput->GetXMLUseFGD2() )   SDRegion->AddRootLogicalVolume(logicFGD2);
+    if( ND280XMLInput->GetXMLUseTarget1() )  SDRegion->AddRootLogicalVolume(logicTarget1);
+    if( ND280XMLInput->GetXMLUseTarget2() )  SDRegion->AddRootLogicalVolume(logicTarget2);
+    if( ND280XMLInput->GetXMLUseFGD1() )     SDRegion->AddRootLogicalVolume(logicFGD1);
+    if( ND280XMLInput->GetXMLUseFGD2() )     SDRegion->AddRootLogicalVolume(logicFGD2);
   } else {
     G4ExceptionDescription msg;
     msg << "The SD region does not exist" << G4endl;
@@ -1136,10 +1142,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
   if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
   if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
-  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
-  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseFGD1() ) logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseFGD2() ) logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );
+  if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
+  if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
+  if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
+  if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );
   
   // Construct the field creator - this will register the field it creates
   if (!fEmFieldSetup.Get()) {
@@ -1160,10 +1166,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
   if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
   if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetVisAttributes(TPCVisAtt);
-  logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
-  logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
-  if( ND280XMLInput->GetXMLUseFGD1() ) logicFGD1->SetVisAttributes(FGDScintVisAtt);
-  if( ND280XMLInput->GetXMLUseFGD2() ) logicFGD2->SetVisAttributes(FGDWaterVisAtt);
+  if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
+  if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
+  if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetVisAttributes(FGDScintVisAtt);
+  if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetVisAttributes(FGDWaterVisAtt);
 
 
   // //--------- Set Step Limiter -------------------------------
@@ -1226,6 +1232,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
  
 void ExN02DetectorConstruction::setMaterial_Target1(G4String materialName)
 {
+  if( !ND280XMLInput->GetXMLUseTarget1() ){
+    G4ExceptionDescription msg;
+    msg << "Target1 is not used" << G4endl;
+    G4Exception("ExN02DetectorConstruction::setMaterial_Target1",
+		"MyCode0002",FatalException, msg);
+  }
+
   // search the material by its name 
   G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
   if (pttoMaterial)
@@ -1256,6 +1269,13 @@ void ExN02DetectorConstruction::setMaterial_Target1(G4String materialName)
 
 void ExN02DetectorConstruction::setMaterial_Target2(G4String materialName)
 {
+  if( !ND280XMLInput->GetXMLUseTarget2() ){
+    G4ExceptionDescription msg;
+    msg << "Target2 is not used" << G4endl;
+    G4Exception("ExN02DetectorConstruction::setMaterial_Target2",
+		"MyCode0002",FatalException, msg);
+  }
+
   // search the material by its name 
   G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
   if (pttoMaterial)
@@ -3867,18 +3887,32 @@ void ExN02DetectorConstruction::DefineDimensions(){
   G4double targetlength1 = ND280XMLInput->GetXMLTargetlength1() * mm;
   G4double targetwidth1  = ND280XMLInput->GetXMLTargetwidth1() * mm;
   G4double targetheight1 = ND280XMLInput->GetXMLTargetheight1() * mm;
-  SetTargetFullLength1(targetlength1);
-  SetTargetFullWidth1(targetwidth1);
-  SetTargetFullHeight1(targetheight1);
-  
+  if( ND280XMLInput->GetXMLUseTarget1() ){
+    SetTargetFullLength1(targetlength1);
+    SetTargetFullWidth1(targetwidth1);
+    SetTargetFullHeight1(targetheight1);
+  }
+  else{
+    SetTargetFullLength1(0.);
+    SetTargetFullWidth1(0.);
+    SetTargetFullHeight1(0.);
+  }
+
   // Target 2 (water)  
   G4double targetlength2 = ND280XMLInput->GetXMLTargetlength2() * mm;
   G4double targetwidth2  = ND280XMLInput->GetXMLTargetwidth2() * mm;
   G4double targetheight2 = ND280XMLInput->GetXMLTargetheight2() * mm;
-  SetTargetFullLength2(targetlength2);
-  SetTargetFullWidth2(targetwidth2);
-  SetTargetFullHeight2(targetheight2);
-
+  if( ND280XMLInput->GetXMLUseTarget2() ){
+    SetTargetFullLength2(targetlength2);
+    SetTargetFullWidth2(targetwidth2);
+    SetTargetFullHeight2(targetheight2);
+  }
+  else{
+    SetTargetFullLength2(0.);
+    SetTargetFullWidth2(0.);
+    SetTargetFullHeight2(0.);
+  }
+  
   // FGD 1 (FGDScintillator)
   G4double FGDlength1 = ND280XMLInput->GetXMLFGDlength1() * mm;
   G4double FGDwidth1  = ND280XMLInput->GetXMLFGDwidth1() * mm;

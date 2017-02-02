@@ -111,14 +111,14 @@ public :
   G4double GetXMLFGDPos2_Y()     {return fFGDPos2_Y;};
   G4double GetXMLFGDPos2_Z()     {return fFGDPos2_Z;};
 
+  G4bool   GetXMLUseTarget1()    {return fUseTarget1;};
+  G4bool   GetXMLUseTarget2()    {return fUseTarget2;};
   G4bool   GetXMLUseTPCUp1()     {return fUseTPCUp1;};
   G4bool   GetXMLUseTPCDown1()   {return fUseTPCDown1;};
   G4bool   GetXMLUseTPCUp2()     {return fUseTPCUp2;};
   G4bool   GetXMLUseTPCDown2()   {return fUseTPCDown2;};
   G4bool   GetXMLUseFGD1()       {return fUseFGD1;};
   G4bool   GetXMLUseFGD2()       {return fUseFGD2;};
-  G4bool   GetXMLUseTarget1()    {return fUseTarget1;};
-  G4bool   GetXMLUseTarget2()    {return fUseTarget2;};
   G4bool   GetXMLUseMagnet()     {return fUseMagnet;};
   //G4bool   GetXMLUseSMRD()       {return fUseSMRD;};
   G4bool   GetXMLUseBasket()     {return fUseBasket;};
@@ -127,14 +127,14 @@ public :
   G4bool   GetXMLUseP0DECal()    {return fUseP0DECal;};  
   G4bool   GetXMLUseP0D()        {return fUseP0D;};
 
+  G4bool   GetXMLInvisTarget1()  {return fInvisTarget1;};
+  G4bool   GetXMLInvisTarget2()  {return fInvisTarget2;};
   G4bool   GetXMLInvisTPCUp1()   {return fInvisTPCUp1;};
   G4bool   GetXMLInvisTPCDown1() {return fInvisTPCDown1;};
   G4bool   GetXMLInvisTPCUp2()   {return fInvisTPCUp2;};
   G4bool   GetXMLInvisTPCDown2() {return fInvisTPCDown2;};
   G4bool   GetXMLInvisFGD1()     {return fInvisFGD1;};
   G4bool   GetXMLInvisFGD2()     {return fInvisFGD2;};
-  G4bool   GetXMLInvisTarget1()  {return fInvisTarget1;};
-  G4bool   GetXMLInvisTarget2()  {return fInvisTarget2;};
   G4bool   GetXMLInvisMagnet()   {return fInvisMagnet;};
   G4bool   GetXMLInvisSMRD()     {return fInvisSMRD;};
   G4bool   GetXMLInvisBasket()   {return fInvisBasket;};
@@ -225,14 +225,14 @@ private :
   G4double fFGDPos2_Y;
   G4double fFGDPos2_Z;
 
+  G4bool fUseTarget1;
+  G4bool fUseTarget2;
   G4bool fUseTPCUp1;
   G4bool fUseTPCDown1;
   G4bool fUseTPCUp2;
   G4bool fUseTPCDown2;
   G4bool fUseFGD1;
   G4bool fUseFGD2;
-  G4bool fUseTarget1;
-  G4bool fUseTarget2;
   G4bool fUseMagnet;
   //G4bool fUseSMRD;
   G4bool fUseBasket;
@@ -241,14 +241,14 @@ private :
   G4bool fUseP0DECal;
   G4bool fUseP0D;
   
+  G4bool fInvisTarget1;
+  G4bool fInvisTarget2;
   G4bool fInvisTPCUp1;
   G4bool fInvisTPCDown1;
   G4bool fInvisTPCUp2;
   G4bool fInvisTPCDown2;
   G4bool fInvisFGD1;
   G4bool fInvisFGD2;
-  G4bool fInvisTarget1;
-  G4bool fInvisTarget2;
   G4bool fInvisMagnet;
   G4bool fInvisSMRD;
   G4bool fInvisBasket;

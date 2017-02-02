@@ -270,6 +270,13 @@
 
    <!-- Include detectors -->
 
+   <UseTarget1>
+     true
+   </UseTarget1>
+   <UseTarget2>
+     true
+   </UseTarget2>
+
    <UseTPCDown1>
      true
    </UseTPCDown1>
@@ -315,6 +322,13 @@
 
    <!-- Invisible detectors -->
 
+  <InvisTarget1>
+     false
+   </InvisTarget1>
+   <InvisTarget2>
+     false
+   </InvisTarget2>
+
    <InvisTPCDown1>
      false
    </InvisTPCDown1>
@@ -335,11 +349,11 @@
    </InvisFGD2>
    
    <InvisMagnet>
-     false
+     true
    </InvisMagnet>
    
    <InvisBasket>
-     false
+     true
    </InvisBasket>
 
    <!-- To fix visualization for detectors below -->

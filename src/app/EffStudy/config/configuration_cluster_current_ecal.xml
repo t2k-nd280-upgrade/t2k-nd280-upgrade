@@ -9,11 +9,11 @@
 <Dependency>
   
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
   
   <IsRandomSeed>
-    0
+    1
   </IsRandomSeed>
   
   <Generator>      
@@ -39,9 +39,9 @@
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     true
+     false
    </forwTPCdefault>
-
+   
    <forwTPCPos1_X>
      0
    </forwTPCPos1_X>
@@ -49,7 +49,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -2978
+     -211
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -59,7 +59,7 @@
      0
    </forwTPCPos2_Y>
    <forwTPCPos2_Z>
-     0
+     +1066
    </forwTPCPos2_Z>
    
    <forwTPCPos3_X>
@@ -69,7 +69,7 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     +2978
+     +2343
    </forwTPCPos3_Z>
 
 
@@ -210,7 +210,7 @@
    <!-- FGD 1 -->
 
    <FGDdefault1>
-     true
+     false
    </FGDdefault1>
 
    <FGDMaterial1>
@@ -234,14 +234,14 @@
      0
    </FGDPos1_Y>
    <FGDPos1_Z>
-     -2588.5
+     +427.5
    </FGDPos1_Z>
 
    
    <!-- FGD 2 -->
 
    <FGDdefault2> 
-     true
+     false
    </FGDdefault2>
 
    <FGDMaterial2>
@@ -265,35 +265,36 @@
      0
    </FGDPos2_Y>
    <FGDPos2_Z>
-     +2648.5
+     +1704.5
    </FGDPos2_Z>
 
    <!-- Include detectors -->
 
    <UseTarget1>
-     true
+     false
    </UseTarget1>
    <UseTarget2>
-     true
+     false
    </UseTarget2>
 
    <UseTPCDown1>
-     true
+     false
    </UseTPCDown1>
    <UseTPCDown2>
-     true
+     false
    </UseTPCDown2>
    <UseTPCUp1>
-     true
+     false
    </UseTPCUp1>
    <UseTPCUp2>
-     true
+     false
    </UseTPCUp2>
+
    <UseFGD1>
-    false
+    true
    </UseFGD1>
    <UseFGD2>
-    false
+    true
    </UseFGD2>
 
    <UseMagnet>
