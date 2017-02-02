@@ -47,7 +47,7 @@ void numuCC4piAnalysis::DefineSelections(){
 	bool forceBreak = (bool)ND::params().GetParameterI("numuCC4piAnalysis.ForceBreak");
 
 	// ----- Inclusive CC -----------
-	sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piSelection(forceBreak)); //true/false for forcing break
+	sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piCanSelection(forceBreak)); //true/false for forcing break
 
 }
 
@@ -332,7 +332,7 @@ void numuCC4piAnalysis::FillCategories(){
 
 	AnaTrack* track = static_cast<AnaTrack*>( cc4pibox().MainTrack );
 	if(!track){return;}
-	anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget1);
+	//anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget1);
 //	anaUtils::_categ->SetCode("CC4pi",      numuCC4pi_utils::CC4piCategory(track) );
 //	anaUtils::_categ->SetCode("OOFV_Fwd",   numuCC4pi_utils::OOFVCategory(track,0) );
 //	anaUtils::_categ->SetCode("OOFV_Bwd",   numuCC4pi_utils::OOFVCategory(track,1) );

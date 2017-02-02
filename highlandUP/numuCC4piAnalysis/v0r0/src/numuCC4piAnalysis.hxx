@@ -1,7 +1,7 @@
 #ifndef numuCC4piAnalysis_h
 #define numuCC4piAnalysis_h
 
-#include "numuCC4piSelection.hxx"
+#include "numuCC4piCanSelection.hxx"
 #include "baseAnalysis.hxx"
 
 class numuCC4piAnalysis: public baseAnalysis {
