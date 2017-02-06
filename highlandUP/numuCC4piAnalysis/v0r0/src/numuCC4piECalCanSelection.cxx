@@ -28,20 +28,20 @@ void numuCC4piECalCanSelection::DefineSteps(){
   AddStep(StepBase::kCut," true vertex in target  ",   new numuCC4piCanUtils::TrueVertexInTargetCut(), true);
 
   AddStep(StepBase::kCut,    "> 0 tracks ",         new numuCC4piCanUtils::TotalMultiplicityCut(), true); //if passed accum_level=2 
-  AddStep(StepBase::kAction, "Sort TPC tracks",     new numuCC4piCanUtils::SortTracksAction());
+  AddStep(StepBase::kAction, "Sort TPC tracks",     new numuCC4piCanUtils::SortECalTracksAction());
   AddStep(StepBase::kCut,    "quality+fiducial",    new numuCC4piCanUtils::TrackECalGQandFVCut(),      true); //if passed accum_level=3
 
   AddStep(StepBase::kAction, "find vertex",         new numuCC4piCanUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCC4piCanUtils::FillSummaryAction_numuCC4pi());
 
 
-  AddStep(StepBase::kAction, "ECal Quality Cut",     new numuCC4piCanUtils::ECal_Quality(),true);     
+ // AddStep(StepBase::kAction, "ECal Quality Cut",     new numuCC4piCanUtils::ECal_Quality(),true);     
 
   AddStep(StepBase::kCut, "ECal PID Cut",      new numuCC4piCanUtils::ECal_PID(_file_ECAL_PDF),true);             //if passed accum_level=6
  
  
 
-  SetBranchAlias(0, "ECal tracks",0);
+  SetBranchAlias(0, "ECal tracks");
   //if first two cuts are not fulfill dont throw toys
   SetPreSelectionAccumLevel(2);
 
@@ -95,6 +95,41 @@ bool numuCC4piECalCanSelection::FillEventSummary(AnaEventC& event, Int_t allCuts
 }
 
 namespace numuCC4piCanUtils{
+
+
+//**************************************************
+bool SortECalTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
+  //**************************************************
+
+  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+
+  // Retrieve the EventBoxNDUP
+  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+  //Find TPCGoodQuality tracks in Fwd and Bwd
+  int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPCAndTarget1];
+  for (Int_t i=0;i<nTPC; ++i){
+    AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithTPCAndTarget1][i]);
+    if ( track->Charge!=-1 ) continue;
+    
+    cc4pibox->LowAngle.push_back(track);
+  }
+  //Sort TPCGoodQuality using Momentum
+  std::sort(cc4pibox->LowAngle.begin(), cc4pibox->LowAngle.end(), numuCC4pi_utils::HGlobalMomFirst);
+
+  int nECALTracks=EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal];
+  for(int i=0;i<nECALTracks;i++){
+    AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithECal][i]);
+      cc4pibox->HighAngle.push_back(track);
+   // }
+  }
+  //Sort HighAngle using RangeMomentum
+  std::sort(cc4pibox->HighAngle.begin(), cc4pibox->HighAngle.end(), numuCC4pi_utils::HGlobalMomFirst);
+  if(cc4pibox->HighAngle.size()>0){
+  cc4pibox->MainTrack=cc4pibox->HighAngle[0];
+  return true;}
+  return false;
+
+}
 
 
 //**************************************************
@@ -165,7 +200,7 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const {
   //**************************************************
   (void)event;
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-
+/*
   for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
     if ( numuCC4pi_utils::PIDCut(0, *(cc4pibox->FwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->FwdTracks_PID.push_back(cc4pibox->FwdTracks[i]);
   }
@@ -180,7 +215,7 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const {
 
   for (UInt_t i=0;i<cc4pibox->HABwdTracks.size();i++){
     if ( numuCC4pi_utils::PIDCut(3, *(cc4pibox->HABwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HABwdTracks_PID.push_back(cc4pibox->HABwdTracks[i]);
-  }
+  }*/
       if (!cc4pibox->MainTrack) return false;
 
     if ( cutUtils::MuonECALPIDCut(*cc4pibox->MainTrack, false, _file_ECAL_PDF) ) {

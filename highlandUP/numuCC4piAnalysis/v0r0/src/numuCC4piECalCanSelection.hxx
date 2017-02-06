@@ -7,7 +7,7 @@
 #include "EventBoxId.hxx"
 #include "SystId.hxx"
 #include "SubDetId.hxx"
-#include "numuCC4piFwdCanSelection.hxx"
+#include "numuCC4piCanSelection.hxx"
 #include "TFile.h"
 
 //#include "ToFSenseCorrector.hxx"
@@ -45,6 +45,12 @@ public:
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new TrackECalGQandFVCut();}
+};
+class SortECalTracksAction: public StepBase{
+public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& box) const;
+  StepBase* MakeClone(){return new SortTracksAction();}
 };
 
 

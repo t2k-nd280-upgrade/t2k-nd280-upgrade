@@ -276,7 +276,7 @@ bool Fwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
   (void)event;
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  for (UInt_t i = 0; i < cc4pibox->LowAngleGQ.size(); i++ ) {
+  /*for (UInt_t i = 0; i < cc4pibox->LowAngleGQ.size(); i++ ) {
 
     if ( numuCC4pi_utils::IsForward(*cc4pibox->LowAngleGQ[i]) ) {
       cc4pibox->FwdTracks.push_back(cc4pibox->LowAngleGQ[i]);
@@ -292,7 +292,7 @@ bool Fwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
       cc4pibox->HABwdTracks.push_back(cc4pibox->HighAngleGQ[i]);
 
     }
-  }
+  }*/
       if (!cc4pibox->MainTrack) return false;
 
     if ( numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) ) {
@@ -306,7 +306,7 @@ bool Fwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const {
   (void)event;
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
 
-  for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
+ /* for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
     if ( numuCC4pi_utils::PIDCut(0, *(cc4pibox->FwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->FwdTracks_PID.push_back(cc4pibox->FwdTracks[i]);
   }
 
@@ -320,7 +320,7 @@ bool Fwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const {
 
   for (UInt_t i=0;i<cc4pibox->HABwdTracks.size();i++){
     if ( numuCC4pi_utils::PIDCut(3, *(cc4pibox->HABwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HABwdTracks_PID.push_back(cc4pibox->HABwdTracks[i]);
-  }
+  }*/
       if (!cc4pibox->MainTrack) return false;
 
   if (numuCC4pi_utils::PIDCut(0, *cc4pibox->MainTrack,   _file_ECAL_PDF) == 1 ) {
@@ -334,7 +334,7 @@ bool Bwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
   (void)event;
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  for (UInt_t i = 0; i < cc4pibox->LowAngleGQ.size(); i++ ) {
+ /* for (UInt_t i = 0; i < cc4pibox->LowAngleGQ.size(); i++ ) {
 
     if ( numuCC4pi_utils::IsForward(*cc4pibox->LowAngleGQ[i]) ) {
       cc4pibox->FwdTracks.push_back(cc4pibox->LowAngleGQ[i]);
@@ -350,7 +350,7 @@ bool Bwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
       cc4pibox->HABwdTracks.push_back(cc4pibox->HighAngleGQ[i]);
 
     }
-  }
+  }*/
       if (!cc4pibox->MainTrack) return false;
 
     if ( !numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) ) {
@@ -364,7 +364,7 @@ bool Bwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   (void)event;
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
 
-  for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
+ /* for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
     if ( numuCC4pi_utils::PIDCut(0, *(cc4pibox->FwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->FwdTracks_PID.push_back(cc4pibox->FwdTracks[i]);
   }
 
@@ -378,7 +378,7 @@ bool Bwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
 
   for (UInt_t i=0;i<cc4pibox->HABwdTracks.size();i++){
     if ( numuCC4pi_utils::PIDCut(3, *(cc4pibox->HABwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HABwdTracks_PID.push_back(cc4pibox->HABwdTracks[i]);
-  }
+  }*/
       if (!cc4pibox->MainTrack) return false;
 
   if (numuCC4pi_utils::PIDCut(1, *cc4pibox->MainTrack,   _file_ECAL_PDF) == 1 ) {
