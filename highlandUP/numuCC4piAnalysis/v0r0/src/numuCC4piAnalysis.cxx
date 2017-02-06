@@ -47,7 +47,17 @@ void numuCC4piAnalysis::DefineSelections(){
 	bool forceBreak = (bool)ND::params().GetParameterI("numuCC4piAnalysis.ForceBreak");
 
 	// ----- Inclusive CC -----------
-	sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piCanSelection(forceBreak)); //true/false for forcing break
+	int branch = ND::params().GetParameterI("numuCC4piAnalysis.Branch");
+	if (branch == 0) {
+		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piFwdCanSelection(forceBreak)); //true/false for forcing break
+	} else if (branch == 1) {
+		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piBwdCanSelection(forceBreak)); //true/false for forcing break
+
+	} else if (branch == 2) {
+		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piECalCanSelection(forceBreak)); //true/false for forcing break
+
+	}
+	//sel().AddSelection("kTrackerNumuCC4piECal", "inclusive numuCC4pi ECal selection", new numuCC4piECalCanSelection(forceBreak)); //true/false for forcing break
 
 }
 

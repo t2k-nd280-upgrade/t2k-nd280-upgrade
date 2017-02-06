@@ -1,17 +1,16 @@
-#include "numuCC4piCanSelection.hxx"
+#include "numuCC4piECalCanSelection.hxx"
 #include "baseSelection.hxx"
 #include "CutUtils.hxx"
 #include "EventBoxUtils.hxx"
 #include "EventBox.hxx"
 #include "VersioningUtils.hxx"
 #include "SystematicUtils.hxx"
-
 #include "SelectionUtils.hxx"
 #include "numuCC4piUtils.hxx"
 #include "Parameters.hxx"
-#include "CategoriesUtils.hxx"
+
 //********************************************************************
-numuCC4piCanSelection::numuCC4piCanSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
+numuCC4piECalCanSelection::numuCC4piECalCanSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
   //********************************************************************
 
   char filename[256];
@@ -21,44 +20,35 @@ numuCC4piCanSelection::numuCC4piCanSelection(bool forceBreak): SelectionBase(for
 }
 
 //********************************************************************
-void numuCC4piCanSelection::DefineSteps(){
+void numuCC4piECalCanSelection::DefineSteps(){
   //********************************************************************
   int branch=ND::params().GetParameterI("numuCC4piAnalysis.Branch");
   //last true means that if that cut is not fulfill the sequence is stop
-  // AddSplit(2);
-
   AddStep(StepBase::kAction,"find true vertex",   new numuCC4piCanUtils::FindTrueVertexAction());
- 
+  AddStep(StepBase::kCut," true vertex in target  ",   new numuCC4piCanUtils::TrueVertexInTargetCut(), true);
+
   AddStep(StepBase::kCut,    "> 0 tracks ",         new numuCC4piCanUtils::TotalMultiplicityCut(), true); //if passed accum_level=2 
   AddStep(StepBase::kAction, "Sort TPC tracks",     new numuCC4piCanUtils::SortTracksAction());
-  AddStep(StepBase::kCut,    "quality+fiducial",    new numuCC4piCanUtils::TrackGQandFVCut(),      true); //if passed accum_level=3
+  AddStep(StepBase::kCut,    "quality+fiducial",    new numuCC4piCanUtils::TrackECalGQandFVCut(),      true); //if passed accum_level=3
 
   AddStep(StepBase::kAction, "find vertex",         new numuCC4piCanUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCC4piCanUtils::FillSummaryAction_numuCC4pi());
 
-  AddSplit(2);
-   AddStep(0,StepBase::kCut," true vertex in target  ",   new numuCC4piCanUtils::TrueVertexInTargetCut(), true);
 
+  AddStep(StepBase::kAction, "ECal Quality Cut",     new numuCC4piCanUtils::ECal_Quality(),true);     
 
-  AddStep(0, StepBase::kCut, "Fwd Quality Cut",     new numuCC4piCanUtils::Fwd_Quality(),true);     
-
-  AddStep(0, StepBase::kCut, "Fwd PID Cut",      new numuCC4piCanUtils::Fwd_PID(_file_ECAL_PDF),true);             //if passed accum_level=6
+  AddStep(StepBase::kCut, "ECal PID Cut",      new numuCC4piCanUtils::ECal_PID(_file_ECAL_PDF),true);             //if passed accum_level=6
  
-   AddStep(1,StepBase::kCut," true vertex in target  ",   new numuCC4piCanUtils::TrueVertexInTargetCut(), true);
-  
+ 
 
-  AddStep(1, StepBase::kCut, "Bwd Quality Cut",    new numuCC4piCanUtils::Bwd_Quality(),true);
-  AddStep(1, StepBase::kCut, "Bwd PID Cut",      new numuCC4piCanUtils::Bwd_PID(_file_ECAL_PDF),true);             //if passed accum_level=6
-
-  SetBranchAlias(0, "Fwd",0);
-  SetBranchAlias(1, "Bwd",    1);
+  SetBranchAlias(0, "ECal tracks",0);
   //if first two cuts are not fulfill dont throw toys
   SetPreSelectionAccumLevel(2);
 
 }
 
 //********************************************************************
-void numuCC4piCanSelection::DefineDetectorFV(){
+void numuCC4piECalCanSelection::DefineDetectorFV(){
   //********************************************************************
 
   // Change FV definition to take all thickness
@@ -72,7 +62,7 @@ void numuCC4piCanSelection::DefineDetectorFV(){
 }
 
 //**************************************************
-void numuCC4piCanSelection::InitializeEvent(AnaEventC& eventBB){
+void numuCC4piECalCanSelection::InitializeEvent(AnaEventC& eventBB){
   //**************************************************
 
   AnaEventB& event = *static_cast<AnaEventB*>(&eventBB);
@@ -91,7 +81,7 @@ void numuCC4piCanSelection::InitializeEvent(AnaEventC& eventBB){
 }
 
 //********************************************************************
-bool numuCC4piCanSelection::FillEventSummary(AnaEventC& event, Int_t allCutsPassed[]){
+bool numuCC4piECalCanSelection::FillEventSummary(AnaEventC& event, Int_t allCutsPassed[]){
   //********************************************************************
 
   if(allCutsPassed[0]) static_cast<AnaEventSummaryB*>(event.Summary)->EventSample = SampleId::kTarget1NuMuCC;
@@ -106,88 +96,9 @@ bool numuCC4piCanSelection::FillEventSummary(AnaEventC& event, Int_t allCutsPass
 
 namespace numuCC4piCanUtils{
 
-//**************************************************
-bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
-  //**************************************************
-
-  (void)event;
-  ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
-  AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
-
-  // Cast the ToyBox to the appropriate type
-  for (Int_t i = 0; i < eventB.nVertices; i++) {
-
-    AnaVertexB* vertex = static_cast<AnaVertexB*>(eventB.Vertices[i]);
-    box.Vertex = vertex->Clone();
-  }
-
-  if (!box.Vertex) return false;
-  box.TrueVertex = box.Vertex->TrueVertex;
-
-  return true;
-}
 
 //**************************************************
-bool TrueVertexInTargetCut::Apply(AnaEventC & event, ToyBoxB & boxB) const{
-  //**************************************************
-
-  // Cast the ToyBox to the appropriate type
-  ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
-  AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
-    AnaTrueVertex* vertex = static_cast<AnaTrueVertex*>(box.Vertex->TrueVertex);
-
-  return anaUtils::GetReaction(*vertex, SubDetId::kTarget1,0);
-
-}
-
-//**************************************************
-bool TotalMultiplicityCut::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-
-  (void)box;
-
-  // Check we have at least one reconstructed track in the FGD
-  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
-  return (EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]>0);
-
-}
-
-//**************************************************
-bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-
-  // Retrieve the EventBoxNDUP
-  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
-  //Find TPCGoodQuality tracks in Fwd and Bwd
-  int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithTPCAndTarget1];
-  for (Int_t i=0;i<nTPC; ++i){
-    AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithTPCAndTarget1][i]);
-    if ( track->Charge!=-1 ) continue;
- 		
-    cc4pibox->LowAngle.push_back(track);
-  }
-  //Sort TPCGoodQuality using Momentum
-  std::sort(cc4pibox->LowAngle.begin(), cc4pibox->LowAngle.end(), numuCC4pi_utils::HGlobalMomFirst);
-
-  int nECALTracks=EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal];
-  for(int i=0;i<nECALTracks;i++){
-    AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithECal][i]);
-      cc4pibox->HighAngle.push_back(track);
-   // }
-  }
-  //Sort HighAngle using RangeMomentum
-  std::sort(cc4pibox->HighAngle.begin(), cc4pibox->HighAngle.end(), numuCC4pi_utils::HGlobalMomFirst);
-  if(cc4pibox->LowAngle.size()>0){
-  cc4pibox->MainTrack=cc4pibox->LowAngle[0];
-  return true;}
-  return false;
-
-}
-
-//**************************************************
-bool TrackGQandFVCut::Apply(AnaEventC& event, ToyBoxB& box) const{
+bool TrackECalGQandFVCut::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
 
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
@@ -203,7 +114,7 @@ bool TrackGQandFVCut::Apply(AnaEventC& event, ToyBoxB& box) const{
 
   for(UInt_t i=0;i<cc4pibox->HighAngle.size();i++){
     if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, cc4pibox->HighAngle[i]->PositionStart, HAFVmin, HAFVmax) ) {
-          if (cutUtils::DeltaLYZTPCCut(*cc4pibox->HighAngle[i])) {
+          if (!cutUtils::DeltaLYZTPCCut(*cc4pibox->HighAngle[i])) {
               cc4pibox->HighAngleGQ.push_back(cc4pibox->HighAngle[i]);
           }
     }
@@ -211,7 +122,7 @@ bool TrackGQandFVCut::Apply(AnaEventC& event, ToyBoxB& box) const{
   if (!cc4pibox->MainTrack) return false;
 
   if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, cc4pibox->MainTrack->PositionStart, LAFVmin, LAFVmax) ) {
-    if (cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)) {
+    if (!cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)) {
       return true;
     }
   }
@@ -220,59 +131,8 @@ bool TrackGQandFVCut::Apply(AnaEventC& event, ToyBoxB& box) const{
 
 }
 
-
-//Define vertex
 //**************************************************
-bool FindVertexAction::Apply(AnaEventC& event, ToyBoxB& boxB) const{
-  //**************************************************
-
-  (void)event;
-
-  ToyBoxNDUP& box = *static_cast<ToyBoxNDUP*>(&boxB);
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&boxB);
-
-  // reset the vertex
-  box.Vertex = NULL;
-  box.TrueVertex = NULL;
-
-  if ( !cc4pibox->MainTrack ) return false;
-  box.MainTrack = cc4pibox->MainTrack;
-
-  box.Vertex = new AnaVertexB();
-  anaUtils::CreateArray(box.Vertex->Particles, 1);
-
-  box.Vertex->nParticles = 0;
-  box.Vertex->Particles[box.Vertex->nParticles++] = box.MainTrack;
-
-  for(int i = 0; i < 4; ++i) box.Vertex->Position[i] = box.MainTrack->PositionStart[i];
-
-  if ( box.MainTrack->GetTrueParticle() ) box.TrueVertex = box.Vertex->TrueVertex = cc4pibox->MainTrack->GetTrueParticle()->TrueVertex;
-
-  return true;
-
-}
-
-//********************************************************************
-bool FillSummaryAction_numuCC4pi::Apply(AnaEventC& event, ToyBoxB& boxB) const{
-  //********************************************************************
-
-  // Cast the ToyBox to the appropriate type
-  ToyBoxNDUP& box = *static_cast<ToyBoxNDUP*>(&boxB);
-
-  if(!box.MainTrack) return 1;
-
-  static_cast<AnaEventSummaryB*>(event.Summary)->LeptonCandidate[SampleId::kTarget1NuMuCC] = box.MainTrack;
-
-  for(int i = 0; i < 4; ++i) static_cast<AnaEventSummaryB*>(event.Summary)->VertexPosition[SampleId::kTarget1NuMuCC][i] = box.MainTrack->PositionStart[i];
-
-  if(box.MainTrack->GetTrueParticle()) static_cast<AnaEventSummaryB*>(event.Summary)->TrueVertex[SampleId::kTarget1NuMuCC] = box.MainTrack->GetTrueParticle()->TrueVertex;
-
-  return true;
-
-}
-
-//**************************************************
-bool Fwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
+bool ECal_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
   (void)event;
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
@@ -293,15 +153,15 @@ bool Fwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
 
     }
   }
-      if (!cc4pibox->MainTrack) return false;
+     // if (!cc4pibox->MainTrack) return false;
 
-    if ( numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) ) {
-      return true;
-  }  
-  return false;
+    //if ( numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) ) {
+     // return true;
+  //}  
+  return true;
 }
 //**************************************************
-bool Fwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const {
+bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const {
   //**************************************************
   (void)event;
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
@@ -323,73 +183,15 @@ bool Fwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const {
   }
       if (!cc4pibox->MainTrack) return false;
 
-  if (numuCC4pi_utils::PIDCut(0, *cc4pibox->MainTrack,   _file_ECAL_PDF) == 1 ) {
+    if ( cutUtils::MuonECALPIDCut(*cc4pibox->MainTrack, false, _file_ECAL_PDF) ) {
     return true;
   }
   return false;
 }
-
-//**************************************************
-bool Bwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  for (UInt_t i = 0; i < cc4pibox->LowAngleGQ.size(); i++ ) {
-
-    if ( numuCC4pi_utils::IsForward(*cc4pibox->LowAngleGQ[i]) ) {
-      cc4pibox->FwdTracks.push_back(cc4pibox->LowAngleGQ[i]);
-    }else{
-      cc4pibox->BwdTracks.push_back(cc4pibox->LowAngleGQ[i]);
-
-    }
-  }
-  for(UInt_t i=0;i<cc4pibox->HighAngleGQ.size();i++){
-    if ( numuCC4pi_utils::IsForward(*cc4pibox->HighAngleGQ[i]) ) {
-      cc4pibox->HAFwdTracks.push_back(cc4pibox->HighAngleGQ[i]);
-    }else{
-      cc4pibox->HABwdTracks.push_back(cc4pibox->HighAngleGQ[i]);
-
-    }
-  }
-      if (!cc4pibox->MainTrack) return false;
-
-    if ( !numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) ) {
-      return true;
-  }  
-  return false;
-}
-//**************************************************
-bool Bwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-
-  for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(0, *(cc4pibox->FwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->FwdTracks_PID.push_back(cc4pibox->FwdTracks[i]);
-  }
-
-  for (UInt_t i=0;i<cc4pibox->BwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(1, *(cc4pibox->BwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->BwdTracks_PID.push_back(cc4pibox->BwdTracks[i]);
-  }
-
-  for (UInt_t i=0;i<cc4pibox->HAFwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(2, *(cc4pibox->HAFwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HAFwdTracks_PID.push_back(cc4pibox->HAFwdTracks[i]);
-  }
-
-  for (UInt_t i=0;i<cc4pibox->HABwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(3, *(cc4pibox->HABwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HABwdTracks_PID.push_back(cc4pibox->HABwdTracks[i]);
-  }
-      if (!cc4pibox->MainTrack) return false;
-
-  if (numuCC4pi_utils::PIDCut(1, *cc4pibox->MainTrack,   _file_ECAL_PDF) == 1 ) {
-    return true;
-  }
-  return false;
 }
 
-}
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantSystematic(const AnaEventC& event, const ToyBoxB& box, SystId_h systId, Int_t branch) const{
+bool numuCC4piECalCanSelection::IsRelevantSystematic(const AnaEventC& event, const ToyBoxB& box, SystId_h systId, Int_t branch) const{
   //**************************************************
 	
   (void)event;
@@ -404,7 +206,7 @@ bool numuCC4piCanSelection::IsRelevantSystematic(const AnaEventC& event, const T
 }
 
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantRecObjectForSystematic(const AnaEventC& event, AnaRecObjectC* recObj, SystId_h systId, Int_t branch) const{
+bool numuCC4piECalCanSelection::IsRelevantRecObjectForSystematic(const AnaEventC& event, AnaRecObjectC* recObj, SystId_h systId, Int_t branch) const{
   //**************************************************
 
   (void)event;
@@ -420,7 +222,7 @@ bool numuCC4piCanSelection::IsRelevantRecObjectForSystematic(const AnaEventC& ev
 }
 
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantTrueObjectForSystematic(const AnaEventC& event, AnaTrueObjectC* trueObj, SystId_h systId, Int_t branch) const{
+bool numuCC4piECalCanSelection::IsRelevantTrueObjectForSystematic(const AnaEventC& event, AnaTrueObjectC* trueObj, SystId_h systId, Int_t branch) const{
   //**************************************************
 	
   (void)event;
@@ -435,7 +237,7 @@ bool numuCC4piCanSelection::IsRelevantTrueObjectForSystematic(const AnaEventC& e
 }
 
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantRecObjectForSystematicInToy(const AnaEventC& event, const ToyBoxB& boxB, AnaRecObjectC* recObj, SystId_h systId, Int_t branch) const{
+bool numuCC4piECalCanSelection::IsRelevantRecObjectForSystematicInToy(const AnaEventC& event, const ToyBoxB& boxB, AnaRecObjectC* recObj, SystId_h systId, Int_t branch) const{
   //**************************************************
 
   (void)event;
@@ -481,7 +283,7 @@ bool numuCC4piCanSelection::IsRelevantRecObjectForSystematicInToy(const AnaEvent
 }
 
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantTrueObjectForSystematicInToy(const AnaEventC& event, const ToyBoxB& boxB, AnaTrueObjectC* trueObj, SystId_h systId, Int_t branch) const{
+bool numuCC4piECalCanSelection::IsRelevantTrueObjectForSystematicInToy(const AnaEventC& event, const ToyBoxB& boxB, AnaTrueObjectC* trueObj, SystId_h systId, Int_t branch) const{
   //**************************************************
 
   (void)event;
@@ -552,7 +354,7 @@ bool numuCC4piCanSelection::IsRelevantTrueObjectForSystematicInToy(const AnaEven
 }
 
 //********************************************************************
-bool numuCC4piCanSelection::CheckRedoSelection(const AnaEventC& eventBB, const ToyBoxB& PreviousToyBoxB, Int_t& redoFromStep){
+bool numuCC4piECalCanSelection::CheckRedoSelection(const AnaEventC& eventBB, const ToyBoxB& PreviousToyBoxB, Int_t& redoFromStep){
   //********************************************************************
 
   (void)eventBB;

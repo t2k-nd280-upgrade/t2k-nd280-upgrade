@@ -1,4 +1,4 @@
-#include "numuCC4piCanSelection.hxx"
+#include "numuCC4piBwdCanSelection.hxx"
 #include "baseSelection.hxx"
 #include "CutUtils.hxx"
 #include "EventBoxUtils.hxx"
@@ -11,7 +11,7 @@
 #include "Parameters.hxx"
 #include "CategoriesUtils.hxx"
 //********************************************************************
-numuCC4piCanSelection::numuCC4piCanSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
+numuCC4piBwdCanSelection::numuCC4piBwdCanSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
   //********************************************************************
 
   char filename[256];
@@ -21,14 +21,15 @@ numuCC4piCanSelection::numuCC4piCanSelection(bool forceBreak): SelectionBase(for
 }
 
 //********************************************************************
-void numuCC4piCanSelection::DefineSteps(){
+void numuCC4piBwdCanSelection::DefineSteps(){
   //********************************************************************
   int branch=ND::params().GetParameterI("numuCC4piAnalysis.Branch");
   //last true means that if that cut is not fulfill the sequence is stop
   // AddSplit(2);
 
   AddStep(StepBase::kAction,"find true vertex",   new numuCC4piCanUtils::FindTrueVertexAction());
- 
+  AddStep(StepBase::kCut," true vertex in target  ",   new numuCC4piCanUtils::TrueVertexInTargetCut(), true);
+
   AddStep(StepBase::kCut,    "> 0 tracks ",         new numuCC4piCanUtils::TotalMultiplicityCut(), true); //if passed accum_level=2 
   AddStep(StepBase::kAction, "Sort TPC tracks",     new numuCC4piCanUtils::SortTracksAction());
   AddStep(StepBase::kCut,    "quality+fiducial",    new numuCC4piCanUtils::TrackGQandFVCut(),      true); //if passed accum_level=3
@@ -36,29 +37,28 @@ void numuCC4piCanSelection::DefineSteps(){
   AddStep(StepBase::kAction, "find vertex",         new numuCC4piCanUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCC4piCanUtils::FillSummaryAction_numuCC4pi());
 
-  AddSplit(2);
-   AddStep(0,StepBase::kCut," true vertex in target  ",   new numuCC4piCanUtils::TrueVertexInTargetCut(), true);
+ // AddSplit(2);
 
 
-  AddStep(0, StepBase::kCut, "Fwd Quality Cut",     new numuCC4piCanUtils::Fwd_Quality(),true);     
+  //AddStep( StepBase::kCut, "Fwd Quality Cut",     new numuCC4piCanUtils::Fwd_Quality(),true);     
 
-  AddStep(0, StepBase::kCut, "Fwd PID Cut",      new numuCC4piCanUtils::Fwd_PID(_file_ECAL_PDF),true);             //if passed accum_level=6
+ // AddStep( StepBase::kCut, "Fwd PID Cut",      new numuCC4piCanUtils::Fwd_PID(_file_ECAL_PDF),true);             //if passed accum_level=6
  
-   AddStep(1,StepBase::kCut," true vertex in target  ",   new numuCC4piCanUtils::TrueVertexInTargetCut(), true);
+//   AddStep(StepBase::kCut," true vertex in target  ",   new numuCC4piCanUtils::TrueVertexInTargetCut(), true);
   
 
-  AddStep(1, StepBase::kCut, "Bwd Quality Cut",    new numuCC4piCanUtils::Bwd_Quality(),true);
-  AddStep(1, StepBase::kCut, "Bwd PID Cut",      new numuCC4piCanUtils::Bwd_PID(_file_ECAL_PDF),true);             //if passed accum_level=6
+  AddStep( StepBase::kCut, "Bwd Quality Cut",    new numuCC4piCanUtils::Bwd_Quality(),true);
+  AddStep( StepBase::kCut, "Bwd PID Cut",      new numuCC4piCanUtils::Bwd_PID(_file_ECAL_PDF),true);             //if passed accum_level=6
 
-  SetBranchAlias(0, "Fwd",0);
-  SetBranchAlias(1, "Bwd",    1);
+  SetBranchAlias(0, "Bwd");
+ // SetBranchAlias(1, "Bwd",    1);
   //if first two cuts are not fulfill dont throw toys
   SetPreSelectionAccumLevel(2);
 
 }
 
 //********************************************************************
-void numuCC4piCanSelection::DefineDetectorFV(){
+void numuCC4piBwdCanSelection::DefineDetectorFV(){
   //********************************************************************
 
   // Change FV definition to take all thickness
@@ -72,7 +72,7 @@ void numuCC4piCanSelection::DefineDetectorFV(){
 }
 
 //**************************************************
-void numuCC4piCanSelection::InitializeEvent(AnaEventC& eventBB){
+void numuCC4piBwdCanSelection::InitializeEvent(AnaEventC& eventBB){
   //**************************************************
 
   AnaEventB& event = *static_cast<AnaEventB*>(&eventBB);
@@ -91,7 +91,7 @@ void numuCC4piCanSelection::InitializeEvent(AnaEventC& eventBB){
 }
 
 //********************************************************************
-bool numuCC4piCanSelection::FillEventSummary(AnaEventC& event, Int_t allCutsPassed[]){
+bool numuCC4piBwdCanSelection::FillEventSummary(AnaEventC& event, Int_t allCutsPassed[]){
   //********************************************************************
 
   if(allCutsPassed[0]) static_cast<AnaEventSummaryB*>(event.Summary)->EventSample = SampleId::kTarget1NuMuCC;
@@ -103,7 +103,7 @@ bool numuCC4piCanSelection::FillEventSummary(AnaEventC& event, Int_t allCutsPass
 
   return (static_cast<AnaEventSummaryB*>(event.Summary)->EventSample != SampleId::kTarget1NuMuCC);
 }
-
+/*
 namespace numuCC4piCanUtils{
 
 //**************************************************
@@ -387,9 +387,9 @@ bool Bwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   return false;
 }
 
-}
+}*/
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantSystematic(const AnaEventC& event, const ToyBoxB& box, SystId_h systId, Int_t branch) const{
+bool numuCC4piBwdCanSelection::IsRelevantSystematic(const AnaEventC& event, const ToyBoxB& box, SystId_h systId, Int_t branch) const{
   //**************************************************
 	
   (void)event;
@@ -404,7 +404,7 @@ bool numuCC4piCanSelection::IsRelevantSystematic(const AnaEventC& event, const T
 }
 
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantRecObjectForSystematic(const AnaEventC& event, AnaRecObjectC* recObj, SystId_h systId, Int_t branch) const{
+bool numuCC4piBwdCanSelection::IsRelevantRecObjectForSystematic(const AnaEventC& event, AnaRecObjectC* recObj, SystId_h systId, Int_t branch) const{
   //**************************************************
 
   (void)event;
@@ -420,7 +420,7 @@ bool numuCC4piCanSelection::IsRelevantRecObjectForSystematic(const AnaEventC& ev
 }
 
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantTrueObjectForSystematic(const AnaEventC& event, AnaTrueObjectC* trueObj, SystId_h systId, Int_t branch) const{
+bool numuCC4piBwdCanSelection::IsRelevantTrueObjectForSystematic(const AnaEventC& event, AnaTrueObjectC* trueObj, SystId_h systId, Int_t branch) const{
   //**************************************************
 	
   (void)event;
@@ -435,7 +435,7 @@ bool numuCC4piCanSelection::IsRelevantTrueObjectForSystematic(const AnaEventC& e
 }
 
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantRecObjectForSystematicInToy(const AnaEventC& event, const ToyBoxB& boxB, AnaRecObjectC* recObj, SystId_h systId, Int_t branch) const{
+bool numuCC4piBwdCanSelection::IsRelevantRecObjectForSystematicInToy(const AnaEventC& event, const ToyBoxB& boxB, AnaRecObjectC* recObj, SystId_h systId, Int_t branch) const{
   //**************************************************
 
   (void)event;
@@ -481,7 +481,7 @@ bool numuCC4piCanSelection::IsRelevantRecObjectForSystematicInToy(const AnaEvent
 }
 
 //**************************************************
-bool numuCC4piCanSelection::IsRelevantTrueObjectForSystematicInToy(const AnaEventC& event, const ToyBoxB& boxB, AnaTrueObjectC* trueObj, SystId_h systId, Int_t branch) const{
+bool numuCC4piBwdCanSelection::IsRelevantTrueObjectForSystematicInToy(const AnaEventC& event, const ToyBoxB& boxB, AnaTrueObjectC* trueObj, SystId_h systId, Int_t branch) const{
   //**************************************************
 
   (void)event;
@@ -552,7 +552,7 @@ bool numuCC4piCanSelection::IsRelevantTrueObjectForSystematicInToy(const AnaEven
 }
 
 //********************************************************************
-bool numuCC4piCanSelection::CheckRedoSelection(const AnaEventC& eventBB, const ToyBoxB& PreviousToyBoxB, Int_t& redoFromStep){
+bool numuCC4piBwdCanSelection::CheckRedoSelection(const AnaEventC& eventBB, const ToyBoxB& PreviousToyBoxB, Int_t& redoFromStep){
   //********************************************************************
 
   (void)eventBB;
