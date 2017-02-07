@@ -279,7 +279,7 @@ int numuCC4pi_utils::PIDCut(int topo, const AnaTrackB& candidate, TFile *file_EC
   }
   else if ( topo==1 ) {
     //if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
-    if (cutUtils::MuonPIDCut(candidate, false))
+    if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
 
       return 0;
   }

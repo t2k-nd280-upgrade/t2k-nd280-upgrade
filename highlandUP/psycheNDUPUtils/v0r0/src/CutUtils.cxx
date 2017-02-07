@@ -101,8 +101,7 @@ bool cutUtils::MuonECALPIDCut(const AnaTrackB& track, bool prod5Cut, TFile* file
 
   for (int i=0; i<trueParticle->DetCrossingsVect.size(); i++) {
     AnaDetCrossingB* cross = trueParticle->DetCrossingsVect[i];
-
-    if (!cross->Detector_name.Contains("ECal") || !cross->Detector_name.Contains("Scint")) continue;
+    if (!cross->Detector_name.Contains("ECal") || !cross->Detector_name.Contains("Bar")) continue;
 
     TVector3 P   = anaUtils::ArrayToTVector3(cross->EntranceMomentum);
     TVector3 pos = anaUtils::ArrayToTVector3(cross->EntrancePosition);
@@ -122,9 +121,10 @@ bool cutUtils::MuonECALPIDCut(const AnaTrackB& track, bool prod5Cut, TFile* file
       entryNormal_vect.SetX(1);  // (+X)
     else if (cross->Detector_name.Contains("RightSide"))
       entryNormal_vect.SetX(-1); // (-X)
+    else if(cross->Detector_name.Contains("POD/USECal"))
+      entryNormal_vect.SetZ(-1); // (-Z)
     else
       continue;
-
     float mom = P.Mag();
     float cos = P.Dot(entryNormal_vect)/mom;
     int bin   = h_binning->GetBinContent(h_binning->FindBin(cos,mom));
@@ -133,7 +133,7 @@ bool cutUtils::MuonECALPIDCut(const AnaTrackB& track, bool prod5Cut, TFile* file
     double MipEM, EneOnL;
     h_bin->GetRandom2(MipEM, EneOnL);
     
-    if (MipEM < 0 && EneOnL > 0.8)
+    if (MipEM < 0 && EneOnL < 1.25)
       return true;
     return false;
 
