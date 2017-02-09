@@ -142,6 +142,10 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVar3VF(output(), selmu_enddir,    "");
   AddVar4VF(output(), selmu_pos,       "");
   AddVar4VF(output(), selmu_endpos,    "");
+
+  //--- ECal PID
+  AddVarF(output(),   selmu_ecal_mipem,     "");
+  AddVarF(output(),   selmu_ecal_EneOnL,    "");
 }
 
 //********************************************************************
@@ -205,6 +209,9 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVectorVarFromArray(selmu_pos,        track->PositionStart, 4);
     output().FillVectorVarFromArray(selmu_endpos,     track->PositionEnd, 4);
 
+    output().FillVar(selmu_ecal_mipem,                cc4pibox().track_ECal_MipEM);
+    output().FillVar(selmu_ecal_EneOnL,                    cc4pibox().track_ECal_EneOnL);
+    
   }
 
 }

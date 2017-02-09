@@ -84,7 +84,7 @@ public:
 		selmu_pos,
 		selmu_endpos,
 		selmu_fgdlayer,
-
+		
 		selmu_1hit_pos,
 		selmu_2hit_pos,
 		selmu_1hit_charge,
@@ -114,6 +114,7 @@ public:
 		selmu_ecal_length,
 		selmu_ecal_EMenergy,
 		selmu_ecal_mipem,
+		selmu_ecal_EneOnL,
 		/*
 					NtargetSec,
 					FGDSec_ToF_PoD,

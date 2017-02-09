@@ -43,24 +43,26 @@ class ToyBoxCC4piSimple: public ToyBoxNDUP{
 public:
 
   ToyBoxCC4piSimple() {
-    Topology = -1;
+    track_ECal_MipEM = -0xABCDEF;
+    track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     LowAngle.clear();       HighAngle.clear();
   }
 
   virtual void Reset(){
     ResetBase();
-    Topology = -1;
+    track_ECal_MipEM = -0xABCDEF;
+    track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     LowAngle.clear();       HighAngle.clear();
   }
 
   virtual ~ToyBoxCC4piSimple(){}
 
-  /// For storing tracks information in the bunch.
-  int Topology;
+  /// For storing tracks information in the bunch
+  float track_ECal_MipEM, track_ECal_EneOnL;
   AnaTrackB* MainTrack;
-  std::vector<AnaTrackB*> LowAngle,   HighAngle;
+  std::vector<AnaTrackB*> LowAngle, HighAngle;
 
 };
 

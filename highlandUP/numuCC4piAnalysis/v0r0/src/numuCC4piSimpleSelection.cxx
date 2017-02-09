@@ -1,4 +1,3 @@
- 
 #include "numuCC4piSimpleSelection.hxx"
 #include "baseSelection.hxx"
 #include "CutUtils.hxx"
@@ -9,6 +8,9 @@
 #include "SelectionUtils.hxx"
 #include "numuCC4piUtils.hxx"
 #include "Parameters.hxx"
+
+#include "TH2F.h"
+
 
 //********************************************************************
 numuCC4piSimpleSelection::numuCC4piSimpleSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
@@ -145,11 +147,10 @@ bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
 bool TrueVertexInTargetCut::Apply(AnaEventC & event, ToyBoxB & boxB) const{
   //**************************************************
 
+  (void)event;
+  
   // Cast the ToyBox to the appropriate type
   ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
-  AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
-
-
   
   return cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1);
 
@@ -207,14 +208,16 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   std::sort(cc4pibox->HighAngle.begin(), cc4pibox->HighAngle.end(), numuCC4pi_utils::HGlobalMomFirst);
 
 
-  if (cc4pibox->LowAngle.size()>0) {
+  if      (cc4pibox->LowAngle.size()>0  && cc4pibox->HighAngle.size()==0)
     cc4pibox->MainTrack = cc4pibox->LowAngle[0];
-    if (cc4pibox->HighAngle.size()>0 &&
-	cc4pibox->HighAngle[0]->Momentum > cc4pibox->MainTrack->Momentum)
+  else if (cc4pibox->LowAngle.size()==0 && cc4pibox->HighAngle.size()>0)
+    cc4pibox->MainTrack = cc4pibox->HighAngle[0];
+  else if (cc4pibox->LowAngle.size()>0  && cc4pibox->HighAngle.size()>0) {
+    if (cc4pibox->LowAngle[0]->Momentum > cc4pibox->HighAngle[0]->Momentum)
+      cc4pibox->MainTrack = cc4pibox->LowAngle[0];
+    else
       cc4pibox->MainTrack = cc4pibox->HighAngle[0];
   }
-  else if (cc4pibox->HighAngle.size()>0)
-    cc4pibox->MainTrack = cc4pibox->HighAngle[0];
   
   return true;
 
@@ -229,7 +232,8 @@ bool TrackGQandFVCut::Apply(AnaEventC& event, ToyBoxB& box) const{
   if (!cc4pibox->MainTrack)
     return false;
 
-  if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, cc4pibox->MainTrack->PositionStart, LAFVmin, LAFVmax) )
+  if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, cc4pibox->MainTrack->PositionStart,
+				  LAFVmin, LAFVmax) )
     return true;
   
   return false;
@@ -345,7 +349,7 @@ bool Fwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
   (void)event;
   ToyBoxCC4piSimple* cc4pibox = static_cast<ToyBoxCC4piSimple*>(&box);
-  if ( numuCC4pi_utils::PIDCut(0, *cc4pibox->MainTrack) == 1 ) return true;
+  if ( cutUtils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
   return false;
 }
 
@@ -364,7 +368,7 @@ bool Bwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
   (void)event;
   ToyBoxCC4piSimple* cc4pibox = static_cast<ToyBoxCC4piSimple*>(&box);
-  if ( numuCC4pi_utils::PIDCut(0, *cc4pibox->MainTrack) == 1 ) return true;
+  if ( cutUtils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
   return false;
 }
 
@@ -382,43 +386,110 @@ bool ECal_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
 bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
   (void)event;
+
+
+  // initializing
+  
   ToyBoxCC4piSimple* cc4pibox = static_cast<ToyBoxCC4piSimple*>(&box);
-  if ( cutUtils::MuonECALPIDCut(*cc4pibox->MainTrack, false, _file_ECAL_PDF) )
+  
+  if (!_file_ECAL_PDF) {
+    std::cerr << "In cutUtils::MuonECALPIDCut : No file found to define the PDFs for ECal variables" << std::endl;
+    return false;
+  }
+
+  TH2F *h_binning = (TH2F*)_file_ECAL_PDF->Get("hBinning");
+  AnaTrueParticleB* trueParticle = cc4pibox->MainTrack->GetTrueParticle();
+  if (!trueParticle) return false;
+
+  
+  // find the first segment in an ECal
+  
+  AnaDetCrossingB* firstECal_cross=NULL;
+  for (unsigned int i=0; i<trueParticle->DetCrossingsVect.size(); i++) {
+    AnaDetCrossingB* cross = trueParticle->DetCrossingsVect[i];
+    if (!cross->Detector_name.Contains("ECal") || !cross->Detector_name.Contains("Bar")) continue;
+    firstECal_cross = cross;
+  }
+
+
+  // fill the information at ECal entry
+
+  if (!firstECal_cross)
+    return false;
+  
+  TVector3 P   = anaUtils::ArrayToTVector3(firstECal_cross->EntranceMomentum);
+  TVector3 pos = anaUtils::ArrayToTVector3(firstECal_cross->EntrancePosition);
+  TVector3 entryNormal_vect(0,0,0);
+    
+  if (firstECal_cross->Detector_name.Contains("RightClam") &&
+      firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
+    entryNormal_vect.SetY(1);  // (+Y)
+  else if (firstECal_cross->Detector_name.Contains("RightClam") &&
+	   firstECal_cross->Detector_name.Contains("TopLeftBotRight"))
+    entryNormal_vect.SetY(-1); // (-Y)
+  else if (firstECal_cross->Detector_name.Contains("LeftClam") &&
+	   firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
+    entryNormal_vect.SetY(-1); // (-Y)
+  else if (firstECal_cross->Detector_name.Contains("LeftClam") &&
+	   firstECal_cross->Detector_name.Contains("TopLeftBotRight"))
+    entryNormal_vect.SetY(1);  // (+Y)
+  else if (firstECal_cross->Detector_name.Contains("LeftSide"))
+    entryNormal_vect.SetX(1);  // (+X)
+  else if (firstECal_cross->Detector_name.Contains("RightSide"))
+    entryNormal_vect.SetX(-1); // (-X)
+  else if(firstECal_cross->Detector_name.Contains("POD/USECal"))
+    entryNormal_vect.SetZ(-1); // (-Z)
+  else
+    entryNormal_vect.SetZ(1);  // (+Z)
+
+  float mom = P.Mag();
+  float cos = P.Dot(entryNormal_vect)/mom;
+  int bin   = h_binning->GetBinContent(h_binning->FindBin(cos,mom));
+
+  
+  // throw random the ECal variables using the pdfs
+  
+  TH2F *h_bin  = (TH2F*)_file_ECAL_PDF->Get(TString::Format("mipem_Vs_EneOnL_%i", bin));
+  double MipEM, EneOnL;
+  h_bin->GetRandom2(MipEM, EneOnL);
+
+
+  // fill the ECal variables in the box
+
+  cc4pibox->track_ECal_MipEM  = MipEM;
+  cc4pibox->track_ECal_EneOnL = EneOnL;
+  
+  
+  // apply cuts on ECal variables
+  
+  if (MipEM < 0 && EneOnL < 1.25)
     return true;
   return false;
+ 
 }
-
 }
   
 /*
-//**************************************************
 bool CSFGD2_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-//**************************************************
 (void)event;
 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
 if (cc4pibox->CSFD2Tracks_PID.size()>0) return true;
 return false;
 }
-//**************************************************
 bool CSFGD2_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-//**************************************************
 (void)event;
 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
 if (cc4pibox->CSFD2Tracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0 && cc4pibox->HABwdTracks_PID.size()==0) return true;
 return false;
 }
 
-//**************************************************
 bool CSECAL_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-//**************************************************
 (void)event;
 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
 if (cc4pibox->CSECALTracks_PID.size()>0) return true;
 return false;
 }
-//**************************************************
 bool CSECAL_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-//**************************************************
 (void)event;
 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
 if (cc4pibox->CSECALTracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0 && cc4pibox->HABwdTracks_PID.size()==0 && cc4pibox->CSFD2Tracks_PID.size()==0) return true;
@@ -513,8 +584,9 @@ bool numuCC4piSimpleSelection::IsRelevantRecObjectForSystematicInToy(const AnaEv
     }
     return false;
     }
-
-  */	return true;
+  */
+  
+  return true;
 
 }
 
