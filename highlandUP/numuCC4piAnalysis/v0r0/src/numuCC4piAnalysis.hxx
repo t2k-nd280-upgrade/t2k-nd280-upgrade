@@ -5,6 +5,7 @@
 #include "numuCC4piECalCanSelection.hxx"
 #include "numuCC4piFwdCanSelection.hxx"
 #include "numuCC4piBwdCanSelection.hxx"
+#include "numuCC4piSimpleSelection.hxx"
 
 #include "baseAnalysis.hxx"
 
@@ -38,7 +39,7 @@ public:
 	void AddCategories();
 	void FillCategories();
 
-	const ToyBoxCC4pi& cc4pibox(Int_t isel = -1) {return *static_cast<const ToyBoxCC4pi*>(&boxB(isel));}
+	const ToyBoxCC4piSimple& cc4pibox(Int_t isel = -1) {return *static_cast<const ToyBoxCC4piSimple*>(&boxB(isel));}
 
 public:
 

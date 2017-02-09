@@ -36,11 +36,12 @@ void numuCC4piSimpleSelection::DefineSteps(){
   AddStep(StepBase::kAction, "find vertex",         new numuCC4piSimpleUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCC4piSimpleUtils::FillSummaryAction_numuCC4pi());
 
-  AddSplit(2);
+  //AddSplit(2);
 
-  AddStep(0, StepBase::kCut, "Fwd Quality Cut",  new numuCC4piSimpleUtils::Fwd_Quality());
-  AddStep(0, StepBase::kCut, "Fwd PID Cut",      new numuCC4piSimpleUtils::Fwd_PID());
-  
+  if (branch == 0) {
+  AddStep(StepBase::kCut, "Fwd Quality Cut",  new numuCC4piSimpleUtils::Fwd_Quality());
+  AddStep(StepBase::kCut, "Fwd PID Cut",      new numuCC4piSimpleUtils::Fwd_PID());
+  }
   /*
   AddSplit(3,0);
   AddStep(0, 1, StepBase::kCut, "CSFGD2 PID Cut",   new CSFGD2_PID());
@@ -49,24 +50,28 @@ void numuCC4piSimpleSelection::DefineSteps(){
   AddStep(0, 2, StepBase::kCut, "CSECAL 4pi Cut",   new CSECAL_4pi());
   */
 
+  if (branch == 1) {
   AddStep(1, StepBase::kCut, "Bwd Quality Cut",    new numuCC4piSimpleUtils::Bwd_Quality());
   AddStep(1, StepBase::kCut, "Bwd PID Cut",        new numuCC4piSimpleUtils::Bwd_PID());
-  
-  //AddStep(2, StepBase::kCut, "ECal Quality Cut",  new numuCC4piSimpleUtils::ECal_Quality());
-  //AddStep(2, StepBase::kCut, "ECal PID Cut",      new numuCC4piSimpleUtils::ECal_PID(_file_ECAL_PDF));
+  }
+
+  if (branch == 2) {
+  AddStep(2, StepBase::kCut, "ECal Quality Cut",  new numuCC4piSimpleUtils::ECal_Quality());
+  AddStep(2, StepBase::kCut, "ECal PID Cut",      new numuCC4piSimpleUtils::ECal_PID(_file_ECAL_PDF));
+  }
 
   
-  SetBranchAlias(0, "Fwd",  0);
-  SetBranchAlias(1, "Bwd",  1);
+  //SetBranchAlias(0, "Fwd",  0);
+  //SetBranchAlias(1, "Bwd",  1);
   //SetBranchAlias(2, "ECal", 2);
 
-  //SetBranchAlias(0, "test");
+  SetBranchAlias(0, "test");
   
   //SetBranchAlias(4, "CSFGD2", 0, 1);
   //SetBranchAlias(5, "CSECAL", 0, 2);
 
   //if first two cuts are not fulfill dont throw toys
-  SetPreSelectionAccumLevel(2);
+  SetPreSelectionAccumLevel(0);
 
 }
 
@@ -143,6 +148,9 @@ bool TrueVertexInTargetCut::Apply(AnaEventC & event, ToyBoxB & boxB) const{
   // Cast the ToyBox to the appropriate type
   ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
   AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
+
+
+  
   return cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1);
 
 }
@@ -190,6 +198,8 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
     if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, track->PositionStart) ) {
       if ( SubDetId::GetDetectorUsed(track->Detector,SubDetId::kDsECal)) continue;
       if ( cutUtils::DeltaLYZTPCCut(*track) )                            continue;
+      if ( track->Charge!=-1 ) continue;
+
       cc4pibox->HighAngle.push_back(track);
     }
   }
@@ -200,7 +210,7 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   if (cc4pibox->LowAngle.size()>0) {
     cc4pibox->MainTrack = cc4pibox->LowAngle[0];
     if (cc4pibox->HighAngle.size()>0 &&
-	cc4pibox->HighAngle[0]->Momentum < cc4pibox->MainTrack->Momentum)
+	cc4pibox->HighAngle[0]->Momentum > cc4pibox->MainTrack->Momentum)
       cc4pibox->MainTrack = cc4pibox->HighAngle[0];
   }
   else if (cc4pibox->HighAngle.size()>0)
