@@ -29,6 +29,7 @@ namespace cutUtils{
   bool ProtonPIDCut(const AnaParticleB& part);
 
   bool DeltaLYZTPCCut(AnaTrackB&);
+  bool DeltaLYZTPCCut(AnaTrueParticleB&);
 
   bool DeltaLYZTargetCut(AnaTrackB& ,const SubDetId::SubDetEnum det);
   bool DeltaLYZTargetORTPCCut(AnaTrackB& ,const SubDetId::SubDetEnum det);

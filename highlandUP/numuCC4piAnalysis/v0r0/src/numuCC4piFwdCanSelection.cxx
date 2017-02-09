@@ -52,7 +52,7 @@ void numuCC4piFwdCanSelection::DefineSteps(){
   SetBranchAlias(0, "Fwd");
  // SetBranchAlias(1, "Bwd",    1);
   //if first two cuts are not fulfill dont throw toys
-  SetPreSelectionAccumLevel(2);
+  SetPreSelectionAccumLevel(0);
 
 }
 

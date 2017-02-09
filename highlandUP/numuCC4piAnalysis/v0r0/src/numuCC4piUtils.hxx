@@ -34,7 +34,7 @@ namespace numuCC4pi_utils{
   int PIDCut(int topo, const AnaTrackB& candidate, TFile *file_ECAL_PDF=0);
   /// Check whether a track is forward going
   bool IsForward(const AnaTrackB& track);
-  //bool IsForward(const AnaTrueParticleB& track);
+
 
 }
 

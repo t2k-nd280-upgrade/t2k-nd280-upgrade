@@ -43,7 +43,7 @@ void numuCC4piECalCanSelection::DefineSteps(){
 
   SetBranchAlias(0, "ECal tracks");
   //if first two cuts are not fulfill dont throw toys
-  SetPreSelectionAccumLevel(2);
+  SetPreSelectionAccumLevel(0);
 
 }
 

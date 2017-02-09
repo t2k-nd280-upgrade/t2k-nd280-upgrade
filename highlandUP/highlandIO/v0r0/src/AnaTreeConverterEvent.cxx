@@ -504,6 +504,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
 
   for (int ip = 0; ip < upTrack->GetNPoints(); ip++) {
     TND280UpTrackPoint* Tpoint = upTrack->GetPoint(ip);
+//    std:;cout<<Tpoint->GetPhysVolName()<<std::endl;
     if (Tpoint->GetPhysVolName().find("TPCUp1") != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < TPCUp1Z) {
         lastTPCUp1 = Tpoint;
@@ -615,7 +616,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     }
-    if (Tpoint->GetPhysVolName().find("DsECal") != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("DsECal") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
     
       if (Tpoint->GetMomentum().Mag() < DsECalZ) {
         lastDsECal = Tpoint;
@@ -627,7 +628,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     }
-    if (Tpoint->GetPhysVolName().find("P0DECal") != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("P0DECal") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
     
       if (Tpoint->GetMomentum().Mag() < P0DECalZ) {
         lastP0DECal = Tpoint;
@@ -639,7 +640,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     }
-    if (Tpoint->GetPhysVolName().find("BrlECal") != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("BrlECal") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
     
       if (Tpoint->GetMomentum().Mag() < BrlECalZ) {
         lastBrlECal = Tpoint;

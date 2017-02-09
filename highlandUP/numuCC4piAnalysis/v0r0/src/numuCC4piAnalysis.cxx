@@ -8,7 +8,7 @@
 #include "BasicUtils.hxx"
 #include "MomRangeCorrection.hxx"
 #include "PIDCorrection.hxx"
-
+#include "CutUtils.hxx"
 #include "NuDirUtils.hxx"
 
 const UInt_t NMAXMU = 500;
@@ -44,17 +44,17 @@ bool numuCC4piAnalysis::Initialize(){
 void numuCC4piAnalysis::DefineSelections(){
 //********************************************************************
 
-	bool forceBreak = (bool)ND::params().GetParameterI("numuCC4piAnalysis.ForceBreak");
-
+//	bool forceBreak = (bool)ND::params().GetParameterI("numuCC4piAnalysis.ForceBreak");
+//bool forceBreak=0;
 	// ----- Inclusive CC -----------
 	int branch = ND::params().GetParameterI("numuCC4piAnalysis.Branch");
 	if (branch == 0) {
-		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piFwdCanSelection(forceBreak)); //true/false for forcing break
+		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piFwdCanSelection()); //true/false for forcing break
 	} else if (branch == 1) {
-		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piBwdCanSelection(forceBreak)); //true/false for forcing break
+		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piBwdCanSelection()); //true/false for forcing break
 
 	} else if (branch == 2) {
-		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piECalCanSelection(forceBreak)); //true/false for forcing break
+		sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piECalCanSelection()); //true/false for forcing break
 
 	}
 	//sel().AddSelection("kTrackerNumuCC4piECal", "inclusive numuCC4pi ECal selection", new numuCC4piECalCanSelection(forceBreak)); //true/false for forcing break
@@ -244,14 +244,43 @@ void numuCC4piAnalysis::FillToyVarsInMicroTrees(bool addBase){
 }
 
 //********************************************************************
-bool numuCC4piAnalysis::CheckFillTruthTree(const AnaTrueVertex& vtx){
+bool numuCC4piAnalysis::CheckFillTruthTree(const AnaTrueVertex& vtx) {
 //********************************************************************
+  int branch = ND::params().GetParameterI("numuCC4piAnalysis.Branch");
 
-	bool TrueNuMuCC = vtx.ReacCode>0 && vtx.ReacCode<30 && vtx.NuPDG==14;
-	bool TrueVtxFV = anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position );
-	return TrueNuMuCC && TrueVtxFV;
+  bool TrueNuMuCC = vtx.ReacCode > 0 && vtx.ReacCode < 30 && vtx.NuPDG == 14;
+  bool TrueVtxFV = anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position );
+    /*std::vector<AnaTrueParticleB*> TrueParticles = vtx.TrueParticlesVect;
 
-return false;
+  AnaTrueParticleB* trueTrack = NULL;
+  bool top = false;
+  for (Int_t i = 0; i < TrueParticles.size(); i++) {
+    if (TrueParticles[i]->PDG == 13) {
+      trueTrack = dynamic_cast<AnaTrueParticleB*>(TrueParticles[i]);
+      if (branch == 0) {
+        if (trueTrack->CosTheta >= 0) {
+          top = true;
+        }
+      } else if (branch == 1) {
+        if (trueTrack->CosTheta < 0) {
+          top = true;
+        }
+
+      } else if (branch == 2) {
+        for (int i = 0; i < trueTrack->DetCrossingsVect.size(); i++) {
+          if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kDsECal) || SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kBrlECal) || SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kP0DECal) ) {
+            if ( !cutUtils::DeltaLYZTPCCut(*trueTrack)) {
+              top = true;
+            }
+
+          }
+        }
+      }
+    }
+  }*/
+  return TrueNuMuCC && TrueVtxFV ;
+
+  return false;
 }
 
 //********************************************************************

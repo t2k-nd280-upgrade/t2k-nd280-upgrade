@@ -53,7 +53,7 @@ void numuCC4piCanSelection::DefineSteps(){
   SetBranchAlias(0, "Fwd",0);
   SetBranchAlias(1, "Bwd",    1);
   //if first two cuts are not fulfill dont throw toys
-  SetPreSelectionAccumLevel(2);
+  SetPreSelectionAccumLevel(0);
 
 }
 
@@ -130,13 +130,50 @@ bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
 //**************************************************
 bool TrueVertexInTargetCut::Apply(AnaEventC & event, ToyBoxB & boxB) const{
   //**************************************************
+int branch = ND::params().GetParameterI("numuCC4piAnalysis.Branch");
 
   // Cast the ToyBox to the appropriate type
   ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
   AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
-    AnaTrueVertex* vertex = static_cast<AnaTrueVertex*>(box.Vertex->TrueVertex);
+    AnaTrueVertex* vtx = static_cast<AnaTrueVertex*>(box.Vertex->TrueVertex);
+	// ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
+//  return cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1); 
+  bool TrueNuMuCC = vtx->ReacCode>0 && vtx->ReacCode<30 && vtx->NuPDG==14; 
+bool TrueVtxFV = anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx->Position );
+  /*  std::vector<AnaTrueParticleB*> TrueParticles = vtx->TrueParticlesVect;
 
-  return anaUtils::GetReaction(*vertex, SubDetId::kTarget1,0);
+  AnaTrueParticleB* trueTrack = NULL;
+  bool top = false;
+  for (Int_t i = 0; i < TrueParticles.size(); i++) {
+    if (TrueParticles[i]->PDG == 13) {
+      trueTrack = dynamic_cast<AnaTrueParticleB*>(TrueParticles[i]);
+      if (branch == 0) {
+        if (trueTrack->CosTheta >= 0) {
+          top = true;
+        }
+      } else if (branch == 1) {
+        if (trueTrack->CosTheta < 0) {
+          top = true;
+        }
+
+      } else if (branch == 2) {
+        for (int i = 0; i < trueTrack->DetCrossingsVect.size(); i++) {
+          if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kDsECal) || SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kBrlECal) || SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kP0DECal) ) {
+            if ( !cutUtils::DeltaLYZTPCCut(*trueTrack)) {
+              top = true;
+            }
+
+          }
+        }
+      }
+    }
+  }
+  return TrueNuMuCC && TrueVtxFV && top;
+*/
+return TrueNuMuCC && TrueVtxFV;
+
+
+//  return anaUtils::GetReaction(*vertex, SubDetId::kTarget1,0);
 
 }
 

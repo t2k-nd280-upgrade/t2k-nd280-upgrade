@@ -319,5 +319,4 @@ void boxUtils::FillTracksWithECal(AnaEventB& event){
     AnaTrackB* track = tracks[i];
           EventBox->RecObjectsInGroup[EventBox::kTracksWithECal][EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal]++] = track;
     }
-std::cout<<(EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal])<<std::endl;    
 }

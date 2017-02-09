@@ -95,14 +95,14 @@ bool cutUtils::MuonECALPIDCut(const AnaTrackB& track, bool prod5Cut, TFile* file
     return false;
   }
   TH2F *h_binning = (TH2F*)file_ECAL_PDF->Get("hBinning");
-  
   AnaTrueParticleB* trueParticle = track.GetTrueParticle();
   if (!trueParticle) return false;  
-
   for (int i=0; i<trueParticle->DetCrossingsVect.size(); i++) {
+   
     AnaDetCrossingB* cross = trueParticle->DetCrossingsVect[i];
+  
     if (!cross->Detector_name.Contains("ECal") || !cross->Detector_name.Contains("Bar")) continue;
-
+   
     TVector3 P   = anaUtils::ArrayToTVector3(cross->EntranceMomentum);
     TVector3 pos = anaUtils::ArrayToTVector3(cross->EntrancePosition);
 
@@ -226,6 +226,26 @@ bool cutUtils::DeltaLYZTPCCut(AnaTrackB& track)  {
   return false;
 }
 
+bool cutUtils::DeltaLYZTPCCut(AnaTrueParticleB& track)  {
+//**************************************************
+
+
+  // This cut check the existence of track with position inside the Fiducial Volume and
+  // with a minimum number of hits
+  float tpcLYZCut = ND::params().GetParameterD("psycheNDUPUtils.cututils.tpcLYZCut");
+
+  // Cast the ToyBox to the appropriate type
+
+  for (int i = 0; i < track.DetCrossingsVect.size(); i++) {
+    // std::cout<<"trutP"<<std::endl;
+    if (SubDetId::GetDetectorUsed(track.DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2) || SubDetId::GetDetectorUsed(track.DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(track.DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || SubDetId::GetDetectorUsed(track.DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2) || SubDetId::GetDetectorUsed(track.DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1) || SubDetId::GetDetectorUsed(track.DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(track.DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)  ) {
+      if (track.DetCrossingsVect[i]->DeltaLYZ > tpcLYZCut) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 //**************************************************
 bool cutUtils::DeltaLYZTargetORTPCCut(AnaTrackB& track,const SubDetId::SubDetEnum det)  {
