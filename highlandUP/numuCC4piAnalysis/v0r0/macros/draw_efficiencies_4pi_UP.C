@@ -116,61 +116,6 @@ void draw_efficiencies(std::string FWD,std::string BWD,std::string HaECal) {
 	DataSample samplebwd(BWD.c_str());
 
 	DataSample sampleHaFwd(HaECal.c_str());
-	//To get the total efficiencies
-	TFile *infile1 = new TFile(FWD.c_str(), "READ");
-
-	TTree *TruthFWD = (TTree*)infile1->Get("truth");
-
-
-	TFile *infile2 = new TFile(BWD.c_str(), "READ");
-
-	TTree *TruthBWD = (TTree*)infile2->Get("truth");
-
-	TFile *infile3 = new TFile(HaECal.c_str(), "READ");
-
-	TTree *TruthHaECal = (TTree*)infile3->Get("truth");
-
-	TH1F *hFWDMom = new TH1F("hFWDMom", "hFWDMom",  NBins_Mom, BinEdges_Mom);
-	TH1F *hBWDMom = new TH1F("hBWDMom", "hBWDMom",  NBins_Mom, BinEdges_Mom);
-	TH1F *hHAWDMom = new TH1F("hHAWDMom", "hHAWDMom",  NBins_Mom, BinEdges_Mom);
-
-	TH1F *hFWDMom_c = new TH1F("hFWDMom_c", "hFWDMom_c",  NBins_Mom, BinEdges_Mom);
-
-	TruthFWD->Project("hFWDMom", "true_mom", "accum_level[][]>4");
-	TruthBWD->Project("hBWDMom", "true_mom", "accum_level[][]>4");
-	TruthHaECal->Project("hHAWDMom", "true_mom", "accum_level[][]>3");
-
-	TruthHaECal->Project("hFWDMom_c", "true_mom", "accum_level[][]>1");
-	TH1F *hFWDMom_eff
-	    = (TH1F*) hFWDMom->Clone("hFWDMom_eff");
-	hFWDMom_eff->Add(hBWDMom);
-	hFWDMom_eff->Add(hHAWDMom);
-
-	hFWDMom_eff->Divide(hFWDMom_c);
-
-
-	TH1F *hFWDCos = new TH1F("hFWDCos", "hFWDCos",  NBins_CosTh, BinEdges_CosTh);
-	TH1F *hBWDCos = new TH1F("hBWDCos", "hBWDCos",  NBins_CosTh, BinEdges_CosTh);
-	TH1F *hHAWDCos = new TH1F("hHAWDCos", "hHAWDCos",  NBins_CosTh, BinEdges_CosTh);
-
-	TH1F *hFWDCos_c = new TH1F("hFWDCos_c", "hFWDCos_c",  NBins_CosTh, BinEdges_CosTh);
-
-
-	TruthFWD->Project("hFWDCos", "true_costheta", "accum_level[][]>4");
-	TruthBWD->Project("hBWDCos", "true_costheta", "accum_level[][]>4");
-	TruthHaECal->Project("hHAWDCos", "true_costheta", "accum_level[][]>3");
-
-	TruthHaECal->Project("hFWDCos_c", "true_costheta", "accum_level[][]>1");
-	TH1F *hFWDCos_eff
-	    = (TH1F*) hFWDCos->Clone("hFWDCos_eff");
-	hFWDCos_eff->Add(hBWDCos);
-	hFWDCos_eff->Add(hHAWDCos);
-//	hFWDCos_eff->Add(hHAWDCos);
-
-	//std::cout<<"FWD "<<hFWDCos->GetEntries()<<" "<<hBWDCos->GetEntries()<<" "<<hHAWDCos->GetEntries()<<" "<<hFWDCos_eff->GetEntries()<<" "<<hFWDCos_c->GetEntries()<<std::endl;
-
-	hFWDCos_eff->Divide(hFWDCos_c);
-	//////////////////Draw efficiencies
 	TFile * hfile = new TFile("numuCC_4pi_efficiencies_plots.root","RECREATE","ROOT file");
 	drawFwd.SetTitleX("P_{#mu}, MeV");
 	drawFwd.SetTitleY("Efficiency");
@@ -179,10 +124,6 @@ void draw_efficiencies(std::string FWD,std::string BWD,std::string HaECal) {
 	drawFwd.DrawEff(samplebwd.GetTree("truth"), "true_mom", NBins_Mom, BinEdges_Mom, "accum_level[][]>4", "accum_level[][]>1", "same","","BWD UP");
 	drawFwd.DrawEff(sampleHaFwd.GetTree("truth"), "true_mom", NBins_Mom, BinEdges_Mom, "accum_level[][]>3", "accum_level[][]>1", "same","","ECAl UP");
 
-	hFWDMom_eff->Draw("same");
-	TLegend* L = drawFwd.GetLastLegend();
-	L->AddEntry(hFWDMom_eff, "total UP");
-	hFWDMom_eff->SetLineColor(4);
 	BGcanvas->Modified();
 
 	BGcanvas->Update();
@@ -197,11 +138,6 @@ void draw_efficiencies(std::string FWD,std::string BWD,std::string HaECal) {
 	drawFwd.DrawEff(samplebwd.GetTree("truth"), "true_costheta", NBins_CosTh, BinEdges_CosTh, "accum_level[][]>4", "accum_level[][]>1",  "same","","BWD UP");
 	drawFwd.DrawEff(sampleHaFwd.GetTree("truth"), "true_costheta", NBins_CosTh, BinEdges_CosTh, "accum_level[][]>3", "accum_level[][]>1",  "same","","ECAl UP ");
 
-	hFWDCos_eff->Draw("same");
-	TLegend* L = drawFwd.GetLastLegend();
-	L->AddEntry(hFWDCos_eff, "total UP ");
-	hFWDCos_eff->SetLineColor(4);
-//    BGcanvas_2->Print("Efficiency_cos_pid_all_4pi.pdf");
 	BGcanvas_2->Modified();
 
 	BGcanvas_2->Update();
