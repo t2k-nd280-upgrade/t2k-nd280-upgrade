@@ -1,8 +1,11 @@
 --- Cut levels --------
- < numuCC4piAnalysis.Branch = 3 >   // minimum accum level to save the event
+ < numuCC4piAnalysis.Branch = 0 >
+ < numuCC4piAnalysis.ForceBreak = 1 > 
 
- Cut levels --------
- < numuCC4piAnalysis.ForceBreak = 1 >   // Don't continue applying steps when a cut is not passed
+ < numuCC4piAnalysis.EnableND280Current = 0 >
 
- < numuCC4piAnalysis.MinAccumLevelToSave = 0 >   // minimum accum level to save the event
+ < numuCC4piAnalysis.EnableTarget1 = 1 >
+ < numuCC4piAnalysis.EnableTarget2 = 0 >
+
+ < numuCC4piAnalysis.MinAccumLevelToSave = 0 > 
 

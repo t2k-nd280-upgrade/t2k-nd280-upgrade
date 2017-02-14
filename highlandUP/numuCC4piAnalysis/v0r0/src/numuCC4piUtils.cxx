@@ -9,6 +9,8 @@
 #include "CutUtils.hxx"
 #include "numuCC4piUtils.hxx"
 
+#include "Parameters.hxx"
+
 //********************************************************************
 int numuCC4pi_utils::CC4piCategory(AnaTrack* candidate){
 //********************************************************************
@@ -23,7 +25,12 @@ int numuCC4pi_utils::CC4piCategory(AnaTrack* candidate){
 	bool FV = false;
 	bool CC = false;
 	muon =  truetrack->Momentum == truevtx->LeptonMom;
-	FV = anaUtils::InFiducialVolume( SubDetId::kTarget1, truevtx->Position );
+
+	bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
+	bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+	FV = ((useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, truevtx->Position )) ||
+	      (useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, truevtx->Position )));
+
 	int reac = anaUtils::GetReactionNoTargetFv( *static_cast<AnaTrueVertex*>(truevtx) );
 	CC = ((reac==0) || (reac==1) || (reac==2) || (reac==3) || (reac==9)) && truevtx->LeptonMom>0 && truevtx->LeptonPDG==13;
 
@@ -49,8 +56,13 @@ int numuCC4pi_utils::OOFVCategory(AnaTrack* candidate, int topo){
 	if (!truevtx) return -1;
 
 	Float_t* tvertex = truevtx->Position;
-	
-	if(anaUtils::InFiducialVolume(SubDetId::kTarget1, tvertex)) return 0;
+
+	bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
+	bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+
+	if((useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, truevtx->Position )) ||
+	   (useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, truevtx->Position )))
+	  return 0;
 
 	Float_t* tdir = truetrack->Direction;
 	Float_t* pos  = truetrack->Position;
@@ -191,12 +203,17 @@ bool numuCC4pi_utils::HRangeMomFirst(AnaTrackB* a, AnaTrackB* b){
 bool numuCC4pi_utils::isHMNT(const AnaTrackB* candidate, std::vector<AnaTrackB*> GroupTracks, bool lowangle) {
 //********************************************************************
 
+	bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
+	bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+
 	for (UInt_t i=0;i<GroupTracks.size(); ++i){
 		if (lowangle) {
-			if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, GroupTracks[i]->PositionStart, LAFVmin, LAFVmax) ) return GroupTracks[i]->SmearedMomentum == candidate->SmearedMomentum;
+			if ( useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget1, GroupTracks[i]->PositionStart, LAFVmin, LAFVmax) ) return GroupTracks[i]->SmearedMomentum == candidate->SmearedMomentum;
+			if ( useTarget2 && anaUtils::InFiducialVolume(SubDetId::kTarget2, GroupTracks[i]->PositionStart, LAFVmin, LAFVmax) ) return GroupTracks[i]->SmearedMomentum == candidate->SmearedMomentum;
 		}
 		else {
-			if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, GroupTracks[i]->PositionStart, HAFVmin, HAFVmax) ) return GroupTracks[i]->SmearedMomentum == candidate->SmearedMomentum;
+			if ( useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget1, GroupTracks[i]->PositionStart, HAFVmin, HAFVmax) ) return GroupTracks[i]->SmearedMomentum == candidate->SmearedMomentum;
+			if ( useTarget2 && anaUtils::InFiducialVolume(SubDetId::kTarget2, GroupTracks[i]->PositionStart, HAFVmin, HAFVmax) ) return GroupTracks[i]->SmearedMomentum == candidate->SmearedMomentum;
 		}
 	}
 
@@ -279,9 +296,7 @@ int numuCC4pi_utils::PIDCut(int topo, const AnaTrackB& candidate, TFile *file_EC
     return 0;
   }
   else if ( topo==1 ) {
-    //if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
     if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
-
       return 0;
   }
   else if ( topo==2 ) {
@@ -294,7 +309,8 @@ int numuCC4pi_utils::PIDCut(int topo, const AnaTrackB& candidate, TFile *file_EC
     if ( cutUtils::MuonECALPIDCut(candidate, false, file_ECAL_PDF) ) return 1;
     if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
 
-    //if ( cutUtils::StoppingBrECALorSMRDCut(candidate.PositionEnd)==0 && cutUtils::MuonECALPIDCut(candidate) ) return 1;
+    //if ( cutUtils::StoppingBrECALorSMRDCut(candidate.PositionEnd)==0 && cutUtils::MuonECALPIDCut(candidate) ) 
+    //return 1;
     return 0;
   }
   return 1;
