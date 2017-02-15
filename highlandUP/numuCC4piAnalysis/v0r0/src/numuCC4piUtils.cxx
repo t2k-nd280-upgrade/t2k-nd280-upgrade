@@ -122,11 +122,10 @@ bool numuCC4pi_utils::IsForward(const AnaTrackB& track){
   return track.PositionStart[2] < track.PositionEnd[2];  
 }
 
+//********************************************************************
+//int numuCC4pi_utils::GetFgdLayer(Float_t* pos){
+//********************************************************************
 /*
-//********************************************************************
-int numuCC4pi_utils::GetFgdLayer(Float_t* pos){
-//********************************************************************
-
 	Float_t initZ=0;
 	Float_t finalZ=0;
 	Float_t barCenter[30];
@@ -145,6 +144,7 @@ int numuCC4pi_utils::GetFgdLayer(Float_t* pos){
 
 }
 */
+
 // ********************************************************************
 Float_t* numuCC4pi_utils::GetFittedPos(Float_t* start, Float_t* end, double z){
 // ********************************************************************
@@ -190,14 +190,14 @@ bool numuCC4pi_utils::HGlobalMomFirst(AnaTrackB* a, AnaTrackB* b){
 	return a->SmearedMomentum > b->SmearedMomentum;
 
 }
+
+//********************************************************************
+//bool numuCC4pi_utils::HRangeMomFirst(AnaTrackB* a, AnaTrackB* b){
+//********************************************************************
 /*
-//********************************************************************
-bool numuCC4pi_utils::HRangeMomFirst(AnaTrackB* a, AnaTrackB* b){
-//********************************************************************
-
 	return a->RangeMomentumMuon > b->RangeMomentumMuon;
-
-}*/
+}
+*/
 
 //********************************************************************
 bool numuCC4pi_utils::isHMNT(const AnaTrackB* candidate, std::vector<AnaTrackB*> GroupTracks, bool lowangle) {
@@ -220,11 +220,11 @@ bool numuCC4pi_utils::isHMNT(const AnaTrackB* candidate, std::vector<AnaTrackB*>
 	return false;
 
 }
-/*
-//********************************************************************
-bool numuCC4pi_utils::VetoCut(int topo, const AnaEventB& event, AnaTrackB& candidate){
-//********************************************************************
 
+//********************************************************************
+//bool numuCC4pi_utils::VetoCut(int topo, const AnaEventB& event, AnaTrackB& candidate){
+//********************************************************************
+/*
 	if (topo==0) {
 		AnaTrackB* VetoTrack = cutUtils::FindVetoTrack(event, candidate);
 		if (VetoTrack) {
@@ -248,12 +248,13 @@ bool numuCC4pi_utils::VetoCut(int topo, const AnaEventB& event, AnaTrackB& candi
 	}
 	return true;
 
-}*/
-/*
-//********************************************************************
-bool numuCC4pi_utils::ExternalCut(int topo, const AnaEventC& event, AnaTrackB& candidate){
-//********************************************************************
+}
+*/
 
+//********************************************************************
+//bool numuCC4pi_utils::ExternalCut(int topo, const AnaEventC& event, AnaTrackB& candidate){
+//********************************************************************
+/*
 	if ( topo==0 ) {
 		if ( GetTargetLayer(candidate.PositionStart) > 27 ) {
 			EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxTracker];
@@ -271,6 +272,7 @@ bool numuCC4pi_utils::ExternalCut(int topo, const AnaEventC& event, AnaTrackB& c
 
 }
 */
+
 //**************************************************
 int numuCC4pi_utils::PIDCut(int topo, const AnaTrackB& candidate, TFile *file_ECAL_PDF) {
   //**************************************************
@@ -286,7 +288,8 @@ int numuCC4pi_utils::PIDCut(int topo, const AnaTrackB& candidate, TFile *file_EC
 	if ( candidate.nECALSegments>0 ) {
         if ( candidate.ECALSegments[0]->PIDMipEm>15 ) {
 	if ( anaUtils::TrackUsesDet(candidate,SubDetId::kTECAL) ) return 3;
-	if ( anaUtils::InFiducialVolume(SubDetId::kDSECAL, candidate.PositionEnd, _FVdefminDsECal, _FVdefmaxDsECal) )
+	if ( anaUtils::InFiducialVolume(SubDetId::kDSECAL, candidate.PositionEnd, 
+	_FVdefminDsECal, _FVdefmaxDsECal) )
 	return 3;
         }
 	}

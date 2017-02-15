@@ -9,6 +9,9 @@
 #include "numuCC4piUtils.hxx"
 #include "Parameters.hxx"
 
+#include "TH2F.h"
+
+
 //********************************************************************
 numuCC4piSelection::numuCC4piSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
   //********************************************************************
@@ -23,57 +26,61 @@ numuCC4piSelection::numuCC4piSelection(bool forceBreak): SelectionBase(forceBrea
 void numuCC4piSelection::DefineSteps(){
   //********************************************************************
   int branch=ND::params().GetParameterI("numuCC4piAnalysis.Branch");
+
   //last true means that if that cut is not fulfill the sequence is stop
-  AddStep(StepBase::kAction,"find true vertex",   new FindTrueVertexAction());
-  AddStep(StepBase::kCut," true vertex in target  ",   new TrueVertexInTargetCut(), true);
+  AddStep(StepBase::kAction, "find true vertex",      new numuCC4piUtils::FindTrueVertexAction());
+  AddStep(StepBase::kCut,    "true vertex in target", new numuCC4piUtils::TrueVertexInTargetCut(), true);
 
-  AddStep(StepBase::kCut,    "> 0 tracks ",         new TotalMultiplicityCut(), true); //if passed accum_level=2 
-  AddStep(StepBase::kCut, "Sort TPC tracks",     new SortTracksAction());
-  AddStep(StepBase::kCut,    "quality+fiducial",    new TrackGQandFVCut(),      true); //if passed accum_level=3
+  AddStep(StepBase::kCut,    "> 0 tracks ",         new numuCC4piUtils::TotalMultiplicityCut(), true);
+  AddStep(StepBase::kAction, "Sort TPC tracks",     new numuCC4piUtils::SortTracksAction());
+  AddStep(StepBase::kCut,    "quality+fiducial",    new numuCC4piUtils::TrackGQandFVCut(),      true);
   //AddStep(StepBase::kAction, "veto Action",         new VetoAction());
-  AddStep(StepBase::kAction, "muon PID Action",     new PIDAction(_file_ECAL_PDF));
-  AddStep(StepBase::kAction, "find vertex",         new FindVertexAction());
-  AddStep(StepBase::kAction, "fill summary",        new FillSummaryAction_numuCC4pi());
 
-  AddSplit(4);
+  AddStep(StepBase::kAction, "find vertex",         new numuCC4piUtils::FindVertexAction());
+  AddStep(StepBase::kAction, "fill summary",        new numuCC4piUtils::FillSummaryAction_numuCC4pi());
 
-  AddStep(0, StepBase::kCut, "Fwd Quality Cut",     new Fwd_Quality());         //if passed accum_level=4
-  //AddStep(0, StepBase::kCut, "Fwd Veto Cut",        new Fwd_Veto());            //if passed accum_level=5
-  AddStep(0, StepBase::kCut, "Fwd PID Cut",      new Fwd_PID());             //if passed accum_level=6
-  AddStep(0, StepBase::kCut, "Fwd 4pi Cut",      new Fwd_4pi());
- 
+
+  if (branch == 0) {
+    AddStep(StepBase::kCut, "Fwd TPC Quality Cut",  new numuCC4piUtils::FwdTPC_Quality());
+    AddStep(StepBase::kCut, "Fwd TPC PID Cut",      new numuCC4piUtils::FwdTPC_PID());
+  }
+
   /*
-  AddSplit(3,0);
-  AddStep(0, 1, StepBase::kCut, "CSFGD2 PID Cut",   new CSFGD2_PID());
-  AddStep(0, 1, StepBase::kCut, "CSFGD2 4pi Cut",   new CSFGD2_4pi());
-  AddStep(0, 2, StepBase::kCut, "CSECAL PID Cut",   new CSECAL_PID());
-  AddStep(0, 2, StepBase::kCut, "CSECAL 4pi Cut",   new CSECAL_4pi());
+    AddSplit(3,0);
+    AddStep(0, 1, StepBase::kCut, "CSFGD2 PID Cut",   new CSFGD2_PID());
+    AddStep(0, 1, StepBase::kCut, "CSFGD2 4pi Cut",   new CSFGD2_4pi());
+    AddStep(0, 2, StepBase::kCut, "CSECAL PID Cut",   new CSECAL_PID());
+    AddStep(0, 2, StepBase::kCut, "CSECAL 4pi Cut",   new CSECAL_4pi());
   */
 
-  AddStep(1, StepBase::kCut, "Bwd Quality Cut",    new Bwd_Quality());
-  //AddStep(1, StepBase::kCut, "Bwd Veto Cut",       new Bwd_Veto());
-  AddStep(1, StepBase::kCut, "Bwd PID Cut",        new Bwd_PID());
-  AddStep(1, StepBase::kCut, "Bwd 4pi Cut",        new Bwd_4pi());
+  if (branch == 1) {
+    AddStep(StepBase::kCut, "Bwd TPC Quality Cut",    new numuCC4piUtils::BwdTPC_Quality());
+    AddStep(StepBase::kCut, "Bwd TPC PID Cut",        new numuCC4piUtils::BwdTPC_PID());
+  }
 
-  AddStep(2, StepBase::kCut, "HAFwd Quality Cut",  new HAFwd_Quality());
-  //AddStep(2, StepBase::kCut, "HAFwd Veto Cut",     new HAFwd_Veto());
-  AddStep(2, StepBase::kCut, "HAFwd PID Cut",      new HAFwd_PID());
-  AddStep(2, StepBase::kCut, "HAFwd 4pi Cut",      new HAFwd_4pi());
+  if (branch == 2) {
+    AddStep(StepBase::kCut, "HA TPC Quality Cut",    new numuCC4piUtils::HATPC_Quality());
+    AddStep(StepBase::kCut, "HA TPC PID Cut",        new numuCC4piUtils::HATPC_PID());
+  }
 
-  AddStep(3, StepBase::kCut, "HABwd Quality Cut",  new HABwd_Quality());
-  //AddStep(3, StepBase::kCut, "HABwd Veto Cut",     new HABwd_Veto());
-  AddStep(3, StepBase::kCut, "HABwd PID Cut",      new HABwd_PID());
-  AddStep(3, StepBase::kCut, "HABwd 4pi Cut",      new HABwd_4pi());
+  if (branch == 3) {
+    AddStep(StepBase::kCut, "ECal Quality Cut",  new numuCC4piUtils::ECal_Quality());
+    AddStep(StepBase::kCut, "ECal PID Cut",      new numuCC4piUtils::ECal_PID(_file_ECAL_PDF));
+  }
 
-  SetBranchAlias(0, "Fwd",    0);
-  SetBranchAlias(1, "Bwd",    1);
-  SetBranchAlias(2, "HAFwd",  2);
-  SetBranchAlias(3, "HABwd",  3);
+  
+  //SetBranchAlias(0, "Fwd TPC",  0);
+  //SetBranchAlias(1, "Bwd TPC",  1);
+  //SetBranchAlias(2, "HA TPC",   2);
+  //SetBranchAlias(3, "ECal",     3);
+
+  SetBranchAlias(0, "test");
+  
   //SetBranchAlias(4, "CSFGD2", 0, 1);
   //SetBranchAlias(5, "CSECAL", 0, 2);
 
   //if first two cuts are not fulfill dont throw toys
-  SetPreSelectionAccumLevel(2);
+  SetPreSelectionAccumLevel(0);
 
 }
 
@@ -87,7 +94,12 @@ void numuCC4piSelection::DefineDetectorFV(){
   //FVDef::FVdefmaxTarget1[2] = 0;
 
   // The detector in which the selection is applied
-  SetDetectorFV(SubDetId::kTarget1);
+  bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
+  bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+
+  if ( useTarget1 && !useTarget2) SetDetectorFV(SubDetId::kTarget1);
+  if (!useTarget1 &&  useTarget2) SetDetectorFV(SubDetId::kTarget2);
+  if ( useTarget1 &&  useTarget2) SetDetectorFV(SubDetId::kTarget);
 
 }
 
@@ -118,418 +130,443 @@ bool numuCC4piSelection::FillEventSummary(AnaEventC& event, Int_t allCutsPassed[
   if(allCutsPassed[1]) static_cast<AnaEventSummaryB*>(event.Summary)->EventSample = SampleId::kTarget1NuMuCC;
   if(allCutsPassed[2]) static_cast<AnaEventSummaryB*>(event.Summary)->EventSample = SampleId::kTarget1NuMuCC;
   if(allCutsPassed[3]) static_cast<AnaEventSummaryB*>(event.Summary)->EventSample = SampleId::kTarget1NuMuCC;
-  if(allCutsPassed[4]) static_cast<AnaEventSummaryB*>(event.Summary)->EventSample = SampleId::kTarget1NuMuCC;
-  if(allCutsPassed[5]) static_cast<AnaEventSummaryB*>(event.Summary)->EventSample = SampleId::kTarget1NuMuCC;
-
   return (static_cast<AnaEventSummaryB*>(event.Summary)->EventSample != SampleId::kTarget1NuMuCC);
-}
-//**************************************************
-bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
-  //**************************************************
-
-  (void)event;
-  ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
-  AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
-
-  // Cast the ToyBox to the appropriate type
-  for (Int_t i = 0; i < eventB.nVertices; i++) {
-
-    AnaVertexB* vertex = static_cast<AnaVertexB*>(eventB.Vertices[i]);
-    box.Vertex = vertex->Clone();
-  }
-
-  if (!box.Vertex) return false;
-  box.TrueVertex = box.Vertex->TrueVertex;
-
-  return true;
-}
-
-//**************************************************
-bool TrueVertexInTargetCut::Apply(AnaEventC & event, ToyBoxB & boxB) const{
-  //**************************************************
-
-  // Cast the ToyBox to the appropriate type
-  ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
-  AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
-  return cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1);
 
 }
 
-//**************************************************
-bool TotalMultiplicityCut::Apply(AnaEventC& event, ToyBoxB& box) const{
+namespace numuCC4piUtils{
+
   //**************************************************
+  bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
+    //**************************************************
 
-  (void)box;
+    (void)event;
+    ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
+    AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
 
-  // Check we have at least one reconstructed track in the FGD
-  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
-  return (EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]>0);
-
-}
-
-//**************************************************
-bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-
-  // Retrieve the EventBoxNDUP
-  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
-
-  //Find TPCGoodQuality tracks in Fwd and Bwd
-  int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV];
-  for (Int_t i=0;i<nTPC; ++i){
-    AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV][i]);
-    if ( track->Charge!=-1 ) continue;
-    if ( SubDetId::GetDetectorUsed(track->Detector,SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(track->Detector,SubDetId::kTPCDown1)) continue; 
-		
-    cc4pibox->LowAngle.push_back(track);
-  }
-  //Sort TPCGoodQuality using Momentum
-  std::sort(cc4pibox->LowAngle.begin(), cc4pibox->LowAngle.end(), numuCC4pi_utils::HGlobalMomFirst);
-
-  int nECALTracks=EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal];
-  for(int i=0;i<nECALTracks;i++){
-    AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithECal][i]);
-    if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, track->PositionStart) ) {
-      if ( !cutUtils::TrackQualityCut(*track) ) continue;
-      if ( SubDetId::GetDetectorUsed(track->Detector,SubDetId::kDsECal)) continue; 
-      cc4pibox->HighAngle.push_back(track);
+    // Cast the ToyBox to the appropriate type
+    for (Int_t i = 0; i < eventB.nVertices; i++) {
+      AnaVertexB* vertex = static_cast<AnaVertexB*>(eventB.Vertices[i]);
+      box.Vertex = vertex->Clone();
     }
+
+    if (!box.Vertex) return false;
+    box.TrueVertex = box.Vertex->TrueVertex;
+
+    return true;
   }
-  //Sort HighAngle using RangeMomentum
-  std::sort(cc4pibox->HighAngle.begin(), cc4pibox->HighAngle.end(), numuCC4pi_utils::HGlobalMomFirst);
-  return true;
 
-}
-
-//**************************************************
-bool TrackGQandFVCut::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
+  bool TrueVertexInTargetCut::Apply(AnaEventC & event, ToyBoxB & boxB) const{
+    //**************************************************
 
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    (void)event;
+  
+    // Cast the ToyBox to the appropriate type
+    ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
+  
+    return ( (useTarget1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1)) ||
+	     (useTarget2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget2)) );
+  
+  }
 
-  for(UInt_t i=0;i<cc4pibox->LowAngle.size();i++ ){
-    if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, cc4pibox->LowAngle[i]->PositionStart, LAFVmin, LAFVmax) ){
-      if ( numuCC4pi_utils::IsForward(*cc4pibox->LowAngle[i]) ) {cc4pibox->FwdTracks.push_back(cc4pibox->LowAngle[i]);
-	//	std::cout<<"cos "<<(*cc4pibox->LowAngle[i]).DirectionStart[2]<<"cc4pibox->LowAngle[i] "<<(*cc4pibox->LowAngle[i]).PositionStart[2]<<" "<<(*cc4pibox->LowAngle[i]).PositionEnd[2]<<" "<<(*cc4pibox->LowAngle[i]).PositionStart[0]<<" "<<(*cc4pibox->LowAngle[i]).PositionEnd[0]<<" "<<(*cc4pibox->LowAngle[i]).PositionStart[1]<<" "<<(*cc4pibox->LowAngle[i]).PositionEnd[1]<<std::endl;
+  //**************************************************
+  bool TotalMultiplicityCut::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
 
+    (void)box;
+
+    // Check we have at least one reconstructed track in the FGD
+    EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+
+    return ((useTarget1 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]>0) ||
+	    (useTarget2 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2]>0));
+
+  }
+
+  //**************************************************
+  bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+
+    // Retrieve the EventBoxNDUP
+    EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+
+    //========================
+    //Find TPCGoodQuality tracks in Fwd and Bwd
+    //========================
+  
+    if (useTarget1) {
+
+      int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV];
+      for (Int_t i=0;i<nTPC; ++i){
+	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV][i]);
+	if ( track->Charge!=-1 ) continue;
+
+	cc4pibox->TPCTracks.push_back(track);
       }
-      else cc4pibox->BwdTracks.push_back(cc4pibox->LowAngle[i]);
-      break;
+
     }
-  }
+    if (useTarget2) {
 
-  for(UInt_t i=0;i<cc4pibox->HighAngle.size();i++){
-    if ( anaUtils::InFiducialVolume(SubDetId::kTarget1, cc4pibox->HighAngle[i]->PositionStart, HAFVmin, HAFVmax) ) {
-      if ( numuCC4pi_utils::IsForward(*cc4pibox->HighAngle[i]) ) cc4pibox->HAFwdTracks.push_back(cc4pibox->HighAngle[i]);
-      else cc4pibox->HABwdTracks.push_back(cc4pibox->HighAngle[i]);
+      int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget2FV];
+      for (Int_t i=0;i<nTPC; ++i){
+	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget2FV][i]);
+	if ( track->Charge!=-1 ) continue;
+
+	cc4pibox->TPCTracks.push_back(track);
+      }
+
     }
+  
+    //Sort TPCGoodQuality using Momentum
+    std::sort(cc4pibox->TPCTracks.begin(), cc4pibox->TPCTracks.end(), numuCC4pi_utils::HGlobalMomFirst);
+
+    //========================
+    //Find ECal only tracks
+    //========================  
+    int nECALTracks=EventBox->nRecObjectsInGroup[EventBox::kTracksWithECal];
+    for(int i=0;i<nECALTracks;i++){
+      AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithECal][i]);
+      if ( (useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget1, track->PositionStart)) ||
+	   (useTarget2 && anaUtils::InFiducialVolume(SubDetId::kTarget2, track->PositionStart)) ) {
+	if ( SubDetId::GetDetectorUsed(track->Detector,SubDetId::kDsECal)) continue;
+	if ( cutUtils::DeltaLYZTPCCut(*track) )                            continue;
+	if ( track->Charge!=-1 ) continue;
+	cc4pibox->ECalTracks.push_back(track);
+      }
+    }
+    //Sort ECalTracks using RangeMomentum
+    std::sort(cc4pibox->ECalTracks.begin(), cc4pibox->ECalTracks.end(), numuCC4pi_utils::HGlobalMomFirst);
+
+
+    if      (cc4pibox->TPCTracks.size()>0  && cc4pibox->ECalTracks.size()==0)
+      cc4pibox->MainTrack = cc4pibox->TPCTracks[0];
+    else if (cc4pibox->TPCTracks.size()==0 && cc4pibox->ECalTracks.size()>0)
+      cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
+    else if (cc4pibox->TPCTracks.size()>0  && cc4pibox->ECalTracks.size()>0)
+      if (cc4pibox->TPCTracks[0]->Momentum > cc4pibox->ECalTracks[0]->Momentum)
+	cc4pibox->MainTrack = cc4pibox->TPCTracks[0];
+      else
+	cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
+    else return false;  
+
+    cc4pibox->TPC_det = anaUtils::GetClosestTPC(*cc4pibox->MainTrack);
+
+    return true;
+
   }
 
-  if      ( cc4pibox->FwdTracks.size()>0   ) { cc4pibox->MainTrack = cc4pibox->FwdTracks[0];   return true; }
-  else if ( cc4pibox->BwdTracks.size()>0   ) { cc4pibox->MainTrack = cc4pibox->BwdTracks[0];   return true; }
-  else if ( cc4pibox->HAFwdTracks.size()>0 ) { cc4pibox->MainTrack = cc4pibox->HAFwdTracks[0]; return true; }
-  else if ( cc4pibox->HABwdTracks.size()>0 ) { cc4pibox->MainTrack = cc4pibox->HABwdTracks[0]; return true; }
-	
-  return false;
-
-}
-
-//**************************************************
-bool VetoAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
+  bool TrackGQandFVCut::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
 
-  AnaEventB& eventB = *static_cast<AnaEventB*>(&event); 
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
 
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    if (!cc4pibox->MainTrack)
+      return false;
 
-  for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
-    //	if ( numuCC4pi_utils::VetoCut(0,eventB,*(cc4pibox->FwdTracks[i])) ) {
-    /*if ( numuCC4pi_utils::ExternalCut(0,event,*(cc4pibox->FwdTracks[i])) ) */cc4pibox->FwdTracks.push_back(cc4pibox->FwdTracks[i]);
-    //	}
+    if ( (useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget1, cc4pibox->MainTrack->PositionStart,
+						   LAFVmin, LAFVmax)) ||
+	 (useTarget2 && anaUtils::InFiducialVolume(SubDetId::kTarget2, cc4pibox->MainTrack->PositionStart,
+						   LAFVmin, LAFVmax)))
+      return true;
+  
+    return false;
+  
   }
 
-  for (UInt_t i=0;i<cc4pibox->BwdTracks.size();i++){
-    cc4pibox->BwdTracks.push_back(cc4pibox->BwdTracks[i]);
-  }
 
-  for (UInt_t i=0;i<cc4pibox->HAFwdTracks.size();i++){
-    /*if ( numuCC4pi_utils::VetoCut(2,eventB,*(cc4pibox->HAFwdTracks[i])) ) */cc4pibox->HAFwdTracks.push_back(cc4pibox->HAFwdTracks[i]);
-  }
-
-  for (UInt_t i=0;i<cc4pibox->HABwdTracks.size();i++){
-    /*if ( numuCC4pi_utils::VetoCut(3,eventB,*(cc4pibox->HABwdTracks[i])) )*/ cc4pibox->HABwdTracks.push_back(cc4pibox->HABwdTracks[i]);
-  }
-
-  if      ( cc4pibox->FwdTracks.size()>0   ) cc4pibox->MainTrack = cc4pibox->FwdTracks[0];
-  else if ( cc4pibox->BwdTracks.size()>0   ) cc4pibox->MainTrack = cc4pibox->BwdTracks[0];
-  else if ( cc4pibox->HAFwdTracks.size()>0 ) cc4pibox->MainTrack = cc4pibox->HAFwdTracks[0];
-  else if ( cc4pibox->HABwdTracks.size()>0 ) cc4pibox->MainTrack = cc4pibox->HABwdTracks[0];
-
-  return true;
-
-}
-
-//**************************************************
-bool PIDAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
+  bool VetoAction::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
 
-  (void)event;
+    return true;
 
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    /*
+      AnaEventB& eventB = *static_cast<AnaEventB*>(&event); 
+      ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
 
-  for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(0, *(cc4pibox->FwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->FwdTracks_PID.push_back(cc4pibox->FwdTracks[i]);
+      for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
+      if ( numuCC4pi_utils::VetoCut(0,eventB,*(cc4pibox->FwdTracks[i])) ) {
+      if ( numuCC4pi_utils::ExternalCut(0,event,*(cc4pibox->FwdTracks[i])) ) 
+      cc4pibox->FwdTracks.push_back(cc4pibox->FwdTracks[i]);
+      //	}
+      }
+
+      for (UInt_t i=0;i<cc4pibox->BwdTracks.size();i++){
+      cc4pibox->BwdTracks.push_back(cc4pibox->BwdTracks[i]);
+      }
+
+      for (UInt_t i=0;i<cc4pibox->HAFwdTracks.size();i++){
+      if ( numuCC4pi_utils::VetoCut(2,eventB,*(cc4pibox->HAFwdTracks[i])) )
+      cc4pibox->HAFwdTracks.push_back(cc4pibox->HAFwdTracks[i]);
+      }
+
+      for (UInt_t i=0;i<cc4pibox->HABwdTracks.size();i++){
+      if ( numuCC4pi_utils::VetoCut(3,eventB,*(cc4pibox->HABwdTracks[i])) )
+      cc4pibox->HABwdTracks.push_back(cc4pibox->HABwdTracks[i]);
+      }
+
+      if      ( cc4pibox->FwdTracks.size()>0   ) cc4pibox->MainTrack = cc4pibox->FwdTracks[0];
+      else if ( cc4pibox->BwdTracks.size()>0   ) cc4pibox->MainTrack = cc4pibox->BwdTracks[0];
+      else if ( cc4pibox->HAFwdTracks.size()>0 ) cc4pibox->MainTrack = cc4pibox->HAFwdTracks[0];
+      else if ( cc4pibox->HABwdTracks.size()>0 ) cc4pibox->MainTrack = cc4pibox->HABwdTracks[0];
+
+      return true;
+    */
+  
   }
 
-  for (UInt_t i=0;i<cc4pibox->BwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(1, *(cc4pibox->BwdTracks[i]),   _file_ECAL_PDF)==1 ) cc4pibox->BwdTracks_PID.push_back(cc4pibox->BwdTracks[i]);
-  }
 
-  for (UInt_t i=0;i<cc4pibox->HAFwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(2, *(cc4pibox->HAFwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HAFwdTracks_PID.push_back(cc4pibox->HAFwdTracks[i]);
-  }
-
-  for (UInt_t i=0;i<cc4pibox->HABwdTracks.size();i++){
-    if ( numuCC4pi_utils::PIDCut(3, *(cc4pibox->HABwdTracks[i]), _file_ECAL_PDF)==1 ) cc4pibox->HABwdTracks_PID.push_back(cc4pibox->HABwdTracks[i]);
-  }
-
-  //for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
-  //	if ( numuCC4pi_utils::PIDCut(0,*(cc4pibox->FwdTracks[i]))==2 ) cc4pibox->CSFD2Tracks_PID.push_back(cc4pibox->FwdTracks[i]);
-  ///	}
-  //
-  //for (UInt_t i=0;i<cc4pibox->FwdTracks.size();i++){
-  //		if ( numuCC4pi_utils::PIDCut(0,*(cc4pibox->FwdTracks[i]))==3 ) cc4pibox->CSECALTracks_PID.push_back(cc4pibox->FwdTracks[i]);
-  //	}
-
-  if      ( cc4pibox->FwdTracks_PID.size()>0    ) cc4pibox->MainTrack = cc4pibox->FwdTracks_PID[0];
-  else if ( cc4pibox->BwdTracks_PID.size()>0    ) cc4pibox->MainTrack = cc4pibox->BwdTracks_PID[0];
-  else if ( cc4pibox->HAFwdTracks_PID.size()>0  ) cc4pibox->MainTrack = cc4pibox->HAFwdTracks_PID[0];
-  else if ( cc4pibox->HABwdTracks_PID.size()>0  ) cc4pibox->MainTrack = cc4pibox->HABwdTracks_PID[0];
-  //else if ( cc4pibox->CSFD2Tracks_PID.size()>0  ) cc4pibox->MainTrack = cc4pibox->CSFD2Tracks_PID[0];
-  //else if ( cc4pibox->CSECALTracks_PID.size()>0 ) cc4pibox->MainTrack = cc4pibox->CSECALTracks_PID[0];
-
-  return true;
-
-}
-
-//Define vertex
-//**************************************************
-bool FindVertexAction::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+  //Define vertex
   //**************************************************
+  bool FindVertexAction::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //**************************************************
 
-  (void)event;
+    (void)event;
 
-  ToyBoxNDUP& box = *static_cast<ToyBoxNDUP*>(&boxB);
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&boxB);
+    ToyBoxNDUP& box = *static_cast<ToyBoxNDUP*>(&boxB);
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&boxB);
 
-  // reset the vertex
-  box.Vertex = NULL;
-  box.TrueVertex = NULL;
+    // reset the vertex
+    box.Vertex = NULL;
+    box.TrueVertex = NULL;
 
-  if ( !cc4pibox->MainTrack ) return false;
-  box.MainTrack = cc4pibox->MainTrack;
+    if ( !cc4pibox->MainTrack ) return false;
+    box.MainTrack = cc4pibox->MainTrack;
 
-  box.Vertex = new AnaVertexB();
-  anaUtils::CreateArray(box.Vertex->Particles, 1);
+    box.Vertex = new AnaVertexB();
+    anaUtils::CreateArray(box.Vertex->Particles, 1);
 
-  box.Vertex->nParticles = 0;
-  box.Vertex->Particles[box.Vertex->nParticles++] = box.MainTrack;
+    box.Vertex->nParticles = 0;
+    box.Vertex->Particles[box.Vertex->nParticles++] = box.MainTrack;
 
-  for(int i = 0; i < 4; ++i) box.Vertex->Position[i] = box.MainTrack->PositionStart[i];
+    for(int i = 0; i < 4; ++i) box.Vertex->Position[i] = box.MainTrack->PositionStart[i];
 
-  if ( box.MainTrack->GetTrueParticle() ) box.TrueVertex = box.Vertex->TrueVertex = cc4pibox->MainTrack->GetTrueParticle()->TrueVertex;
+    if ( box.MainTrack->GetTrueParticle() ) box.TrueVertex = box.Vertex->TrueVertex = cc4pibox->MainTrack->GetTrueParticle()->TrueVertex;
 
-  return true;
+    return true;
 
-}
+  }
 
-//********************************************************************
-bool FillSummaryAction_numuCC4pi::Apply(AnaEventC& event, ToyBoxB& boxB) const{
   //********************************************************************
+  bool FillSummaryAction_numuCC4pi::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //********************************************************************
 
-  // Cast the ToyBox to the appropriate type
-  ToyBoxNDUP& box = *static_cast<ToyBoxNDUP*>(&boxB);
+    // Cast the ToyBox to the appropriate type
+    ToyBoxNDUP& box = *static_cast<ToyBoxNDUP*>(&boxB);
 
-  if(!box.MainTrack) return 1;
+    if(!box.MainTrack) return 1;
 
-  static_cast<AnaEventSummaryB*>(event.Summary)->LeptonCandidate[SampleId::kTarget1NuMuCC] = box.MainTrack;
+    static_cast<AnaEventSummaryB*>(event.Summary)->LeptonCandidate[SampleId::kTarget1NuMuCC] = box.MainTrack;
 
-  for(int i = 0; i < 4; ++i) static_cast<AnaEventSummaryB*>(event.Summary)->VertexPosition[SampleId::kTarget1NuMuCC][i] = box.MainTrack->PositionStart[i];
+    for(int i = 0; i < 4; ++i) static_cast<AnaEventSummaryB*>(event.Summary)->VertexPosition[SampleId::kTarget1NuMuCC][i] = box.MainTrack->PositionStart[i];
+    if(box.MainTrack->GetTrueParticle()) static_cast<AnaEventSummaryB*>(event.Summary)->TrueVertex[SampleId::kTarget1NuMuCC] = box.MainTrack->GetTrueParticle()->TrueVertex;
 
-  if(box.MainTrack->GetTrueParticle()) static_cast<AnaEventSummaryB*>(event.Summary)->TrueVertex[SampleId::kTarget1NuMuCC] = box.MainTrack->GetTrueParticle()->TrueVertex;
+   static_cast<AnaEventSummaryB*>(event.Summary)->LeptonCandidate[SampleId::kTarget2NuMuCC] = box.MainTrack;
 
-  return true;
+    for(int i = 0; i < 4; ++i) static_cast<AnaEventSummaryB*>(event.Summary)->VertexPosition[SampleId::kTarget2NuMuCC][i] = box.MainTrack->PositionStart[i];
+    if(box.MainTrack->GetTrueParticle()) static_cast<AnaEventSummaryB*>(event.Summary)->TrueVertex[SampleId::kTarget2NuMuCC] = box.MainTrack->GetTrueParticle()->TrueVertex;
 
+    return true;
+
+  }
+
+  //**************************************************
+  bool FwdTPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)   && 
+	 numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) &&
+	 (cc4pibox->TPC_det == SubDetId::kForwTPC1 ||
+	  cc4pibox->TPC_det == SubDetId::kForwTPC2 || 
+	  cc4pibox->TPC_det == SubDetId::kForwTPC3) )
+      return true;
+    return false;
+  }
+
+  //**************************************************
+  bool FwdTPC_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    if ( cutUtils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
+    return false;
+  }
+
+  //**************************************************
+  bool BwdTPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)    && 
+	 !numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) &&
+	 (cc4pibox->TPC_det == SubDetId::kForwTPC1 || 
+	  cc4pibox->TPC_det == SubDetId::kForwTPC2 || 
+	  cc4pibox->TPC_det == SubDetId::kForwTPC3) )
+      return true;
+    return false;
+  }
+
+  //**************************************************
+  bool BwdTPC_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    if ( cutUtils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
+    return false;
+  }
+
+  //**************************************************
+  bool HATPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack) && 
+	 !(cc4pibox->TPC_det == SubDetId::kForwTPC1 ||
+	   cc4pibox->TPC_det == SubDetId::kForwTPC2 || 
+	   cc4pibox->TPC_det == SubDetId::kForwTPC3) )
+      return true;
+    return false;
+  }
+
+  //**************************************************
+  bool HATPC_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    if ( cutUtils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
+    return false;
+  }
+
+  //**************************************************
+  bool ECal_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+    if (!cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack))
+      return true;
+    return false;
+  }
+
+  //**************************************************
+  bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+
+
+    // initializing
+  
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+  
+    if (!_file_ECAL_PDF) {
+      std::cerr << "In cutUtils::MuonECALPIDCut : No file found to define the PDFs for ECal variables" << std::endl;
+      return false;
+    }
+
+    TH2F *h_binning = (TH2F*)_file_ECAL_PDF->Get("hBinning");
+    AnaTrueParticleB* trueParticle = cc4pibox->MainTrack->GetTrueParticle();
+    if (!trueParticle) return false;
+
+  
+    // find the first segment in an ECal
+  
+    AnaDetCrossingB* firstECal_cross=NULL;
+    for (unsigned int i=0; i<trueParticle->DetCrossingsVect.size(); i++) {
+      AnaDetCrossingB* cross = trueParticle->DetCrossingsVect[i];
+      if (!cross->Detector_name.Contains("ECal") || !cross->Detector_name.Contains("Bar")) continue;
+      firstECal_cross = cross;
+    }
+
+
+    // fill the information at ECal entry
+
+    if (!firstECal_cross)
+      return false;
+  
+    TVector3 P   = anaUtils::ArrayToTVector3(firstECal_cross->EntranceMomentum);
+    TVector3 pos = anaUtils::ArrayToTVector3(firstECal_cross->EntrancePosition);
+    TVector3 entryNormal_vect(0,0,0);
+    
+    if (firstECal_cross->Detector_name.Contains("RightClam") &&
+	firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
+      entryNormal_vect.SetY(1);  // (+Y)
+    else if (firstECal_cross->Detector_name.Contains("RightClam") &&
+	     firstECal_cross->Detector_name.Contains("TopLeftBotRight"))
+      entryNormal_vect.SetY(-1); // (-Y)
+    else if (firstECal_cross->Detector_name.Contains("LeftClam") &&
+	     firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
+      entryNormal_vect.SetY(-1); // (-Y)
+    else if (firstECal_cross->Detector_name.Contains("LeftClam") &&
+	     firstECal_cross->Detector_name.Contains("TopLeftBotRight"))
+      entryNormal_vect.SetY(1);  // (+Y)
+    else if (firstECal_cross->Detector_name.Contains("LeftSide"))
+      entryNormal_vect.SetX(1);  // (+X)
+    else if (firstECal_cross->Detector_name.Contains("RightSide"))
+      entryNormal_vect.SetX(-1); // (-X)
+    else if(firstECal_cross->Detector_name.Contains("POD/USECal"))
+      entryNormal_vect.SetZ(-1); // (-Z)
+    else
+      entryNormal_vect.SetZ(1);  // (+Z)
+
+    float mom = P.Mag();
+    float cos = P.Dot(entryNormal_vect)/mom;
+    int bin   = h_binning->GetBinContent(h_binning->FindBin(cos,mom));
+
+  
+    // throw random the ECal variables using the pdfs
+  
+    TH2F *h_bin  = (TH2F*)_file_ECAL_PDF->Get(TString::Format("mipem_Vs_EneOnL_%i", bin));
+    double MipEM, EneOnL;
+    h_bin->GetRandom2(MipEM, EneOnL);
+
+
+    // fill the ECal variables in the box
+
+    cc4pibox->track_ECal_MipEM  = MipEM;
+    cc4pibox->track_ECal_EneOnL = EneOnL;
+  
+  
+    // apply cuts on ECal variables
+  
+    if (MipEM < 0 && EneOnL < 1.25)
+      return true;
+    return false;
+ 
+  }
 }
-
-//**************************************************
-bool Fwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->FwdTracks.size()>0) return true;
-  return false;
-}
-/*//**************************************************
-  bool Fwd_Veto::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->FwdTracks.size()>0) return true;
-  return false;
-  }*/
-//**************************************************
-bool Fwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->FwdTracks_PID.size()>0) return true;
-  return false;
-}
-//**************************************************
-bool Fwd_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->FwdTracks_PID.size()>0) return true;
-  return false;
-}
-
-//**************************************************
-bool Bwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->BwdTracks.size()>0) return true;
-  return false;
-}/*
- //**************************************************
- bool Bwd_Veto::Apply(AnaEventC& event, ToyBoxB& box) const{
- //**************************************************
- (void)event;
- ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
- if (cc4pibox->BwdTracks.size()>0) return true;
- return false;
- }*/
-//**************************************************
-bool Bwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->BwdTracks_PID.size()>0) return true;
-  return false;
-}
-//**************************************************
-bool Bwd_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->BwdTracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0) return true;
-  return false;
-}
-
-//**************************************************
-bool HAFwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->HAFwdTracks.size()>0) return true;
-  return false;
-}/*
- //**************************************************
- bool HAFwd_Veto::Apply(AnaEventC& event, ToyBoxB& box) const{
- //**************************************************
- (void)event;
- ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
- if (cc4pibox->HAFwdTracks.size()>0) return true;
- return false;
- }*/
-//**************************************************
-bool HAFwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->HAFwdTracks_PID.size()>0) return true;
-  return false;
-}
-//**************************************************
-bool HAFwd_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->HAFwdTracks_PID.size()>0 /*&& cc4pibox->FwdTracks_PID.size()==0*/ && cc4pibox->BwdTracks_PID.size()==0) return true;
-  return false;
-}
-
-//**************************************************
-bool HABwd_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->HABwdTracks.size()>0) return true;
-  return false;
-}/*
- //**************************************************
- bool HABwd_Veto::Apply(AnaEventC& event, ToyBoxB& box) const{
- //**************************************************
- (void)event;
- ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
- if (cc4pibox->HABwdTracks.size()>0) return true;
- return false;
- }*/
-//**************************************************
-bool HABwd_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->HABwdTracks_PID.size()>0) return true;
-  return false;
-}
-//**************************************************
-bool HABwd_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-  if (cc4pibox->HABwdTracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0) return true;
-  return false;
-}
+  
 /*
-//**************************************************
-bool CSFGD2_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-//**************************************************
-(void)event;
-ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
-if (cc4pibox->CSFD2Tracks_PID.size()>0) return true;
-return false;
-}
-//**************************************************
-bool CSFGD2_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-//**************************************************
-(void)event;
-ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
-if (cc4pibox->CSFD2Tracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0 && cc4pibox->HABwdTracks_PID.size()==0) return true;
-return false;
-}
+  bool CSFGD2_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
+  (void)event;
+  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
+  if (cc4pibox->CSFD2Tracks_PID.size()>0) return true;
+  return false;
+  }
+  bool CSFGD2_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
+  (void)event;
+  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
+  if (cc4pibox->CSFD2Tracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0 && cc4pibox->HABwdTracks_PID.size()==0) return true;
+  return false;
+  }
 
-//**************************************************
-bool CSECAL_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-//**************************************************
-(void)event;
-ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
-if (cc4pibox->CSECALTracks_PID.size()>0) return true;
-return false;
-}
-//**************************************************
-bool CSECAL_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-//**************************************************
-(void)event;
-ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
-if (cc4pibox->CSECALTracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0 && cc4pibox->HABwdTracks_PID.size()==0 && cc4pibox->CSFD2Tracks_PID.size()==0) return true;
-return false;
-}
+  bool CSECAL_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
+  (void)event;
+  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
+  if (cc4pibox->CSECALTracks_PID.size()>0) return true;
+  return false;
+  }
+  bool CSECAL_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
+  (void)event;
+  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
+  if (cc4pibox->CSECALTracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0 && cc4pibox->HABwdTracks_PID.size()==0 && cc4pibox->CSFD2Tracks_PID.size()==0) return true;
+  return false;
+  }
 */
+
 //**************************************************
 bool numuCC4piSelection::IsRelevantSystematic(const AnaEventC& event, const ToyBoxB& box, SystId_h systId, Int_t branch) const{
   //**************************************************
@@ -617,8 +654,9 @@ bool numuCC4piSelection::IsRelevantRecObjectForSystematicInToy(const AnaEventC& 
     }
     return false;
     }
-
-  */	return true;
+  */
+  
+  return true;
 
 }
 

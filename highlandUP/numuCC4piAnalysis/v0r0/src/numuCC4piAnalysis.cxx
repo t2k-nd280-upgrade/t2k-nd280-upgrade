@@ -77,7 +77,7 @@ void numuCC4piAnalysis::DefineSelections(){
 
     }
   */
-  sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piSimpleSelection()); //true/false for forcing break
+  sel().AddSelection("kTrackerNumuCC4pi", "inclusive numuCC4pi selection", new numuCC4piSelection()); //true/false for forcing break
 
 }
 
@@ -273,6 +273,8 @@ bool numuCC4piAnalysis::CheckFillTruthTree(const AnaTrueVertex& vtx) {
   bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
   bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
   
+  //std::cout << useTarget1 << " " << useTarget2 << std::endl;
+
   bool TrueNuMuCC = vtx.ReacCode > 0 && vtx.ReacCode < 30 && vtx.NuPDG == 14;
   bool TrueVtxFV = (useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position )) ||
 		   (useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, vtx.Position ));

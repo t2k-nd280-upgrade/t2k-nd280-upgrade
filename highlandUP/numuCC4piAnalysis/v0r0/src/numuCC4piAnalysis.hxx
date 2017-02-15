@@ -1,7 +1,7 @@
 #ifndef numuCC4piAnalysis_h
 #define numuCC4piAnalysis_h
 
-#include "numuCC4piSimpleSelection.hxx"
+#include "numuCC4piSelection.hxx"
 
 #include "baseAnalysis.hxx"
 
@@ -34,7 +34,7 @@ public:
   void AddCategories();
   void FillCategories();
 
-  const ToyBoxCC4piSimple& cc4pibox(Int_t isel = -1) {return *static_cast<const ToyBoxCC4piSimple*>(&boxB(isel));}
+  const ToyBoxCC4pi& cc4pibox(Int_t isel = -1) {return *static_cast<const ToyBoxCC4pi*>(&boxB(isel));}
 
 public:
 
