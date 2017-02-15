@@ -593,7 +593,8 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     } 
-    if (Tpoint->GetPhysVolName().find("Target1") != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("Target1") != std::string::npos ||
+	Tpoint->GetPhysVolName().find("FGD1")    != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < Target1Z) {
         lastTarget1 = Tpoint;
         Target1Z = Tpoint->GetMomentum().Mag();
@@ -604,7 +605,8 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     } 
-    if (Tpoint->GetPhysVolName().find("Target2") != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("Target2") != std::string::npos ||
+	Tpoint->GetPhysVolName().find("FGD2")    != std::string::npos) {
     
       if (Tpoint->GetMomentum().Mag() < Target2Z) {
         lastTarget2 = Tpoint;

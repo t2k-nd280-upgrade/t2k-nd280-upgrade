@@ -436,9 +436,8 @@ bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos, co
                     pos[1] > DetDef::Target1min[1] &&
                     pos[1] < DetDef::Target1max[1] &&
                     pos[2] > DetDef::Target1min[2] &&
-                    pos[2] < DetDef::Target1max[2]){
+                    pos[2] < DetDef::Target1max[2])
                 return true;
-                  }
             break;
         case SubDetId::kTarget2:
             if (pos[0] > DetDef::Target2min[0] &&
@@ -447,9 +446,8 @@ bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos, co
                     pos[1] < DetDef::Target2max[1] &&
                     pos[2] > DetDef::Target2min[2] &&
                     pos[2] < DetDef::Target2max[2])
-            {
-
-                return true;}
+                 return true;
+	    break;
         case SubDetId::kDsECal:
             if (pos[0] > DetDef::dsecalmin[0] &&
                     pos[0] < DetDef::dsecalmax[0] &&

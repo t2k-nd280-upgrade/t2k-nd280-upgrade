@@ -82,21 +82,33 @@ TH1F* computeEfficiency(TString file, int branch, int cut1, int cut2,
 
 void plotEfficiency(int cut1, int cut2, 
 		    TString var, TString var_title, 
-		    int nbins, double* xbins, int target, bool left=false) {
+		    int nbins, double* xbins, int target, bool current=false, bool left=false) {
 
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(0);
   
-  TH1F* h_eff_Fwd  = computeEfficiency(TString::Format("test_%i.root", 0+4*(target-1)), 0, cut1, cut2,
+  TH1F* h_eff_Fwd  = computeEfficiency(TString::Format("jobs/files/%s_Target%i_%i.root",
+						       current ? "current":"upgrade",
+						       target, 0),
+				       0, cut1, cut2,
 				       var, var_title,
 				       nbins, xbins);
-  TH1F* h_eff_Bwd  = computeEfficiency(TString::Format("test_%i.root", 1+4*(target-1)), 0, cut1, cut2,
+  TH1F* h_eff_Bwd  = computeEfficiency(TString::Format("jobs/files/%s_Target%i_%i.root",
+						       current ? "current":"upgrade",
+						       target, 1),
+				       0, cut1, cut2,
 				       var, var_title,
 				       nbins, xbins);
-  TH1F* h_eff_HA   = computeEfficiency(TString::Format("test_%i.root", 2+4*(target-1)), 0, cut1, cut2,
+  TH1F* h_eff_HA   = computeEfficiency(TString::Format("jobs/files/%s_Target%i_%i.root",
+						       current ? "current":"upgrade",
+						       target, 2),
+				       0, cut1, cut2,
 				       var, var_title,
 				       nbins, xbins);
-  TH1F* h_eff_ECal = computeEfficiency(TString::Format("test_%i.root", 3+4*(target-1)), 0, cut1, cut2,
+  TH1F* h_eff_ECal = computeEfficiency(TString::Format("jobs/files/%s_Target%i_%i.root",
+						       current ? "current":"upgrade",
+						       target, 3),
+				       0, cut1, cut2,
 				       var, var_title,
 				       nbins, xbins);
   
@@ -135,7 +147,8 @@ void plotEfficiency(int cut1, int cut2,
   leg->Draw("same");
 
   c->Update();
-  c->SaveAs(TString::Format("fig/eff_sep_Target%i_%s.eps", target, var.Data()));
+  c->SaveAs(TString::Format("fig/eff_%s_sep_Target%i_%s.eps", 
+			    current ? "current":"upgrade", target, var.Data()));
 
 
   // draw stacked histogram
@@ -160,7 +173,7 @@ void plotEfficiency(int cut1, int cut2,
   h_stack->Add(h_eff_Fwd,"hist");
 
   h_stack->Draw("");
-    h_stack->GetXaxis()->SetTitle(var_title);
+  h_stack->GetXaxis()->SetTitle(var_title);
   h_stack->GetXaxis()->SetTitleSize(0.05);
   h_stack->GetXaxis()->SetTitleOffset(0.9);
   h_stack->GetYaxis()->SetTitleSize(0.05);
@@ -177,7 +190,8 @@ void plotEfficiency(int cut1, int cut2,
   leg2->Draw("same");
 
   c2->Update();
-  c2->SaveAs(TString::Format("fig/eff_stacked_Target%i_%s.png", target, var.Data()));
+  c2->SaveAs(TString::Format("fig/eff_%s_stacked_Target%i_%s.png", 
+			     current ? "current":"upgrade", target, var.Data()));
 }
 
 
@@ -187,16 +201,19 @@ void plotAll() {
   double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,
 					  0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
 
-  plotEfficiency(0, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, 1, true);
-  plotEfficiency(0, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, 2, true);
+  plotEfficiency(0, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, 1, false, true);
+  plotEfficiency(0, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, 2, false, true);
+  plotEfficiency(0, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, 1, true, true);
+  plotEfficiency(0, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, 2, true, true);
 
   const int NBins_Mom = 29;
   double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,
 				      600,650,700,750,800,850,900,950,1000,1200,
 				      1400,1600,1800,2000,2500,3000,4000,5000};
 
-  plotEfficiency(0, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, 1, false);
-  plotEfficiency(0, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, 2, false);
-
+  plotEfficiency(0, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, 1, false, false);
+  plotEfficiency(0, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, 2, false, false);
+  plotEfficiency(0, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, 1, true, false);
+  plotEfficiency(0, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, 2, true, false);
 
 }
