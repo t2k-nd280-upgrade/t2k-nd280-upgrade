@@ -31,7 +31,7 @@ namespace numuCC4pi_utils{
 	
   //bool VetoCut(int topo, const AnaEventB& event, AnaTrackB& candidate);
   //bool ExternalCut(int topo, const AnaEventC& event, AnaTrackB& candidate);
-  int PIDCut(int topo, const AnaTrackB& candidate, TFile *file_ECAL_PDF=0);
+  bool MuonPIDCut(const AnaTrackB& candidate, bool ApplyMIP=true);
   /// Check whether a track is forward going
   bool IsForward(const AnaTrackB& track);
 

@@ -393,7 +393,7 @@ namespace numuCC4piUtils{
     //**************************************************
     (void)event;
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if ( cutUtils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
+    if ( numuCC4pi_utils::MuonPIDCut(*cc4pibox->MainTrack, true) ) return true;
     return false;
   }
 
@@ -416,7 +416,7 @@ namespace numuCC4piUtils{
     //**************************************************
     (void)event;
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if ( cutUtils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
+    if ( numuCC4pi_utils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
     return false;
   }
 
@@ -438,7 +438,7 @@ namespace numuCC4piUtils{
     //**************************************************
     (void)event;
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if ( cutUtils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
+    if ( numuCC4pi_utils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
     return false;
   }
 

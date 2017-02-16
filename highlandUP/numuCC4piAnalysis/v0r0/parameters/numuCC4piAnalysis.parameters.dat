@@ -7,5 +7,9 @@
  < numuCC4piAnalysis.EnableTarget1 = 1 >
  < numuCC4piAnalysis.EnableTarget2 = 0 >
 
- < numuCC4piAnalysis.MinAccumLevelToSave = 0 > 
+ < numuCC4piAnalysis.MinAccumLevelToSave = 0 >
 
+
+ < numuCC4piAnalysis.MuonPID.Cut.Lmip  = 0.80 >
+ < numuCC4piAnalysis.MuonPID.Cut.Lmu   = 0.05 >
+ < numuCC4piAnalysis.MuonPID.Cut.p_mip = 500  >

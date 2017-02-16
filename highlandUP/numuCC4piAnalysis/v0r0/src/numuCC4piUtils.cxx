@@ -274,48 +274,25 @@ bool numuCC4pi_utils::isHMNT(const AnaTrackB* candidate, std::vector<AnaTrackB*>
 */
 
 //**************************************************
-int numuCC4pi_utils::PIDCut(int topo, const AnaTrackB& candidate, TFile *file_ECAL_PDF) {
+bool numuCC4pi_utils::MuonPIDCut(const AnaTrackB& candidate, bool ApplyMIP) {
   //**************************************************
 
-  //std::cout << "topo = " << topo << std::endl; 
+   Float_t cut1 = 0.06;
+   Float_t cut2 = 0.80;
+   Float_t pcut = 500;
 
-  if ( topo==0 ) {
-    if (cutUtils::MuonPIDCut(candidate, false)){
-      /*
-	if ( anaUtils::InFiducialVolume(SubDetId::kFGD2, candidate.PositionEnd, _FVdefminFGD2, _FVdefmaxFGD2) )
-        if ( candidate.Momentum>280. ) return 2;
+  
+  Float_t PIDLikelihood[4];
+  anaUtils::GetPIDLikelihood(candidate, PIDLikelihood, false);
+  
+  if (ApplyMIP) {
+    if ( ((PIDLikelihood[0]+PIDLikelihood[3])/(1-PIDLikelihood[2]) > cut1 || candidate.Momentum > pcut ) &&
+	 (PIDLikelihood[0]>cut2) )
+      return true;
+  }
+  else
+    if ( PIDLikelihood[0]>cut2 ) return true;
 
-	if ( candidate.nECALSegments>0 ) {
-        if ( candidate.ECALSegments[0]->PIDMipEm>15 ) {
-	if ( anaUtils::TrackUsesDet(candidate,SubDetId::kTECAL) ) return 3;
-	if ( anaUtils::InFiducialVolume(SubDetId::kDSECAL, candidate.PositionEnd, 
-	_FVdefminDsECal, _FVdefmaxDsECal) )
-	return 3;
-        }
-	}
-      */
-      return 1;
-    }
-    return 0;
-  }
-  else if ( topo==1 ) {
-    if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
-      return 0;
-  }
-  else if ( topo==2 ) {
-    if ( cutUtils::MuonECALPIDCut(candidate, false, file_ECAL_PDF) ) return 1;
-    if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
-
-    return 0;
-  }
-  else if ( topo==3 ) {
-    if ( cutUtils::MuonECALPIDCut(candidate, false, file_ECAL_PDF) ) return 1;
-    if ( anaUtils::GetPIDLikelihood(candidate, 0, false) > 0.05 ) return 1;
-
-    //if ( cutUtils::StoppingBrECALorSMRDCut(candidate.PositionEnd)==0 && cutUtils::MuonECALPIDCut(candidate) ) 
-    //return 1;
-    return 0;
-  }
-  return 1;
+  return false;
 
 }
