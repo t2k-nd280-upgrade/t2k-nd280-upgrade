@@ -9,6 +9,9 @@
 #include "SubDetId.hxx"
 #include "Parameters.hxx"
 
+#include "BinnedParams.hxx"
+
+#include "TRandom3.h"
 #include "TFile.h"
 
 //#include "ToFSenseCorrector.hxx"
@@ -19,6 +22,7 @@ public:
   virtual ~numuCC4piSelection(){
     _file_ECAL_PDF->Close();
     delete _file_ECAL_PDF;
+	delete _randomGen;
   }
 
   //---- These are mandatory functions
@@ -35,8 +39,11 @@ public:
   void InitializeEvent(AnaEventC& event);
   bool CheckRedoSelection(const AnaEventC& event, const ToyBoxB& PreviousToyBox, Int_t& redoFromStep);
 
+private:
+  BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
   TFile *_file_ECAL_PDF;
-
+  TRandom3 *_randomGen;
+  
 };
 
 class ToyBoxCC4pi: public ToyBoxNDUP{
@@ -206,9 +213,17 @@ public:
 
 class ECal_Quality: public StepBase{
 public:
+  ECal_Quality(TRandom3 *r, BinnedParams* b1, BinnedParams* b2){
+	  _randomGen = r;
+	  _ECal_reco_eff = b1;
+	  _ECal_FGDmatch_eff = b2;
+  }
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new ECal_Quality();}
+  StepBase* MakeClone(){return new ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff);}
+private:
+  TRandom3* _randomGen;
+  BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
 };
 
 class ECal_PID: public StepBase{

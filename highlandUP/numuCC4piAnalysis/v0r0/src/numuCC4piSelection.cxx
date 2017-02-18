@@ -7,7 +7,6 @@
 #include "SystematicUtils.hxx"
 #include "SelectionUtils.hxx"
 #include "numuCC4piUtils.hxx"
-#include "Parameters.hxx"
 
 #include "TH2F.h"
 
@@ -20,6 +19,13 @@ numuCC4piSelection::numuCC4piSelection(bool forceBreak): SelectionBase(forceBrea
   sprintf(filename, "%s/data/pdfs_dsecal.root", getenv("NUMUCC4PIANALYSISROOT"));
   _file_ECAL_PDF = TFile::Open(filename);
 
+  _ECal_reco_eff = new BinnedParams(std::string(getenv("NUMUCC4PIANALYSISROOT")) + "/data",
+				    "ECal_recoEff", BinnedParams::k1D_SYMMETRIC); 
+  
+  _ECal_FGDmatch_eff = new BinnedParams(std::string(getenv("NUMUCC4PIANALYSISROOT")) + "/data",
+					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC); 
+
+  _randomGen = new TRandom3();
 }
 
 //********************************************************************
@@ -64,7 +70,7 @@ void numuCC4piSelection::DefineSteps(){
   }
 
   if (branch == 3) {
-    AddStep(StepBase::kCut, "ECal Quality Cut",  new numuCC4piUtils::ECal_Quality());
+    AddStep(StepBase::kCut, "ECal Quality Cut",  new numuCC4piUtils::ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff));
     AddStep(StepBase::kCut, "ECal PID Cut",      new numuCC4piUtils::ECal_PID(_file_ECAL_PDF));
   }
 
@@ -381,9 +387,10 @@ namespace numuCC4piUtils{
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
     if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)   && 
 	 numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) &&
-	 (cc4pibox->TPC_det == SubDetId::kForwTPC1 ||
-	  cc4pibox->TPC_det == SubDetId::kForwTPC2 || 
-	  cc4pibox->TPC_det == SubDetId::kForwTPC3) )
+	 !(cc4pibox->TPC_det == SubDetId::kTPCUp1 ||
+	  cc4pibox->TPC_det == SubDetId::kTPCUp2 || 
+	  cc4pibox->TPC_det == SubDetId::kTPCDown1 || 
+	  cc4pibox->TPC_det == SubDetId::kTPCDown2) )
       return true;
     return false;
   }
@@ -404,9 +411,10 @@ namespace numuCC4piUtils{
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
     if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)    && 
 	 !numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) &&
-	 (cc4pibox->TPC_det == SubDetId::kForwTPC1 || 
-	  cc4pibox->TPC_det == SubDetId::kForwTPC2 || 
-	  cc4pibox->TPC_det == SubDetId::kForwTPC3) )
+	 !(cc4pibox->TPC_det == SubDetId::kTPCUp1 ||
+	  cc4pibox->TPC_det == SubDetId::kTPCUp2 || 
+	  cc4pibox->TPC_det == SubDetId::kTPCDown1 || 
+	  cc4pibox->TPC_det == SubDetId::kTPCDown2) )
       return true;
     return false;
   }
@@ -426,9 +434,10 @@ namespace numuCC4piUtils{
     (void)event;
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
     if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack) && 
-	 !(cc4pibox->TPC_det == SubDetId::kForwTPC1 ||
-	   cc4pibox->TPC_det == SubDetId::kForwTPC2 || 
-	   cc4pibox->TPC_det == SubDetId::kForwTPC3) )
+	 (cc4pibox->TPC_det == SubDetId::kTPCUp1   ||
+	  cc4pibox->TPC_det == SubDetId::kTPCUp2   || 
+	  cc4pibox->TPC_det == SubDetId::kTPCDown1 ||
+	  cc4pibox->TPC_det == SubDetId::kTPCDown2 ) )
       return true;
     return false;
   }
@@ -445,11 +454,32 @@ namespace numuCC4piUtils{
   //**************************************************
   bool ECal_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
     //**************************************************
+	
     (void)event;
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if (!cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack))
-      return true;
-    return false;
+	
+	// if long enough TPC track, it should be selected by other branches
+    if (cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack))
+      return false;
+
+	double mom = cc4pibox->MainTrack->Momentum;
+	double cos = cc4pibox->MainTrack->DirectionStart[2];
+	float reco_eff, FGDmatch_eff;
+	float reco_err, FGDmatch_err;
+	
+	if (!_ECal_reco_eff->GetBinValues(mom, reco_eff, reco_err)) return false;
+	if (!_ECal_FGDmatch_eff->GetBinValues(cos, FGDmatch_eff, FGDmatch_err)) return false;
+
+	// throw two random numbers between 0 and 1
+	double r_eff[2];
+	_randomGen->RndmArray(2, r_eff);
+	
+	// select artificially only a fraction of the events, 
+	// by applying the reconstruction/FGD-ECal match efficiencies
+	if (r_eff[0] < reco_eff && r_eff[1] < FGDmatch_eff)
+		return true;
+	
+	return false;
   }
 
   //**************************************************

@@ -72,16 +72,15 @@ bool cutUtils::MuonPIDCut(const AnaTrackB& track, bool prod5Cut){
    Float_t cut1 = ND::params().GetParameterD("psycheNDUPUtils.cututils.pidmuoncut");
    Float_t cut2 = ND::params().GetParameterD("psycheNDUPUtils.cututils.pidmipcut");
 
-    Float_t pcut = 500;
+   Float_t pcut = 500;
 
-    Float_t PIDLikelihood[4];
-    anaUtils::GetPIDLikelihood(track, PIDLikelihood, prod5Cut);
+   Float_t PIDLikelihood[4];
+   anaUtils::GetPIDLikelihood(track, PIDLikelihood, prod5Cut);
 
-    if (((PIDLikelihood[0]+PIDLikelihood[3])/(1-PIDLikelihood[2]) > cut1 || track.Momentum > pcut )){//; && (PIDLikelihood[0]>cut2)){
-        return true; 
-    }
-
-    return false;
+   if ( ((PIDLikelihood[0]+PIDLikelihood[3])/(1-PIDLikelihood[2]) > cut1 || track.Momentum > pcut) &&
+	(PIDLikelihood[0]>cut2) )
+     return true; 
+   return false;
 }
 
 

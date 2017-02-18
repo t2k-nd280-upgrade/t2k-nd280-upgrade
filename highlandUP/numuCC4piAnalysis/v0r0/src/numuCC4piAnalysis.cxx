@@ -239,7 +239,7 @@ void numuCC4piAnalysis::FillToyVarsInMicroTrees(bool addBase){
 
   if (addBase) baseAnalysis::FillToyVarsInMicroTreesBase(addBase);
  
-    if ( cc4pibox().MainTrack ){
+  if ( cc4pibox().MainTrack ){
     output().FillToyVar(NTPC,    (int)cc4pibox().TPCTracks.size() );
     output().FillToyVar(NECal,   (int)cc4pibox().ECalTracks.size() );
 
@@ -259,7 +259,7 @@ void numuCC4piAnalysis::FillToyVarsInMicroTrees(bool addBase){
     output().FillToyVar(selmu_likemip,       anaUtils::GetPIDLikelihoodMIP( *(cc4pibox().MainTrack)));
     //output().FillToyVar(selmu_end_ecal,      cutUtils::StoppingBrECALorSMRDCut(track->PositionEnd));
 
-    }
+  }
   
 
 }
