@@ -43,3 +43,4 @@ setenv VGM_INSTALL_DIR ${SOFTWARE_DIR}/vgm.4.3-install
 setenv T2KND280UP ${SOFTWARE_DIR}/t2k-nd280-upgrade
 setenv T2KND280UP_SRC ${T2KND280UP}/src/app/EffStudy 
 setenv T2KND280UP_EVT ${T2KND280UP}/src/app/nd280UpEvent
+setenv T2KND280UP_RUN=$1
