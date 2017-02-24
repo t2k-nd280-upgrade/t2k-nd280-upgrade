@@ -259,22 +259,20 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
 void AnaTreeConverterEvent::FillTrueVertexInfo(TND280UpVertex* ndtrueVertex, AnaTrueVertex* trueVertex){
 //*****************************************************************************
 
-  
-
-    trueVertex->ID       = ndtrueVertex->GetVertexID();
-    trueVertex->NuPDG    = ndtrueVertex->GetInTrack(0)->GetPDG();
-    trueVertex->NuEnergy = ndtrueVertex->GetInTrack(0)->GetInitKinEnergy();
-    trueVertex->NuMom = ndtrueVertex->GetInTrack(0)->GetInitMom().Mag();
+  trueVertex->ID       = ndtrueVertex->GetVertexID();
+  trueVertex->NuPDG    = ndtrueVertex->GetInTrack(0)->GetPDG();
+  trueVertex->NuEnergy = ndtrueVertex->GetInTrack(0)->GetInitKinEnergy();
+  trueVertex->NuMom = ndtrueVertex->GetInTrack(0)->GetInitMom().Mag();
+  trueVertex->NuDir[0] = ndtrueVertex->GetInTrack(0)->GetInitMom().X()/trueVertex->NuMom;
+  trueVertex->NuDir[1] = ndtrueVertex->GetInTrack(0)->GetInitMom().Y()/trueVertex->NuMom;
+  trueVertex->NuDir[2] = ndtrueVertex->GetInTrack(0)->GetInitMom().Z()/trueVertex->NuMom;
 
   trueVertex->Position[0] = ndtrueVertex->GetPosition().X(); //*units::mm;
   trueVertex->Position[1] =ndtrueVertex->GetPosition().Y();//*units::mm;
   trueVertex->Position[2] =ndtrueVertex->GetPosition().Z();//*units::mm;
   trueVertex->Position[3] =ndtrueVertex->GetTime();//*units::s;
-
     
-
   trueVertex->ReacCode  =ndtrueVertex->GetReacMode();
-
 
  }
 
@@ -411,6 +409,8 @@ double ForwTPC2Length=0;
 double ForwTPC3Length=0;
 double Target1Length=0;
 double Target2Length=0;
+double FGD1Length=0;
+double FGD2Length=0;
 double DsECalLength=0;
 double P0DECalLength=0;
 double BrlECalLength=0;
@@ -426,6 +426,8 @@ double ForwTPC2Z=9999;
 double ForwTPC3Z=9999;
 double Target1Z=9999;
 double Target2Z=9999;
+double FGD1Z=9999;
+double FGD2Z=9999;
 double DsECalZ=9999;
 double P0DECalZ=9999;
 double BrlECalZ=9999;
@@ -440,6 +442,8 @@ double ForwTPC2fZ=-9999;
 double ForwTPC3fZ=-9999;
 double Target1fZ=-9999;
 double Target2fZ=-9999;
+double FGD1fZ=-9999;
+double FGD2fZ=-9999;
 double DsECalfZ=-9999;
 double P0DECalfZ=-9999;
 double BrlECalfZ=-9999;
@@ -455,6 +459,8 @@ double ForwTPC2LengthYZ=0;
 double ForwTPC3LengthYZ=0;
 double Target1LengthYZ=0;
 double Target2LengthYZ=0;
+double FGD1LengthYZ=0;
+double FGD2LengthYZ=0;
 double DsECalLengthYZ=0;
 double P0DECalLengthYZ=0;
 double BrlECalLengthYZ=0;
@@ -469,6 +475,8 @@ double ForwTPC2Edep=0;
 double ForwTPC3Edep=0;
 double Target1Edep=0;
 double Target2Edep=0;
+double FGD1Edep=0;
+double FGD2Edep=0;
 double DsECalEdep=0;
 double P0DECalEdep=0;
 double BrlECalEdep=0;
@@ -483,6 +491,8 @@ TND280UpTrackPoint* lastForwTPC2=NULL;
 TND280UpTrackPoint* lastForwTPC3=NULL;
 TND280UpTrackPoint* lastTarget1=NULL;
 TND280UpTrackPoint* lastTarget2=NULL;
+TND280UpTrackPoint* lastFGD1=NULL;
+TND280UpTrackPoint* lastFGD2=NULL;
 TND280UpTrackPoint* lastDsECal=NULL;
 TND280UpTrackPoint* lastP0DECal=NULL;
 TND280UpTrackPoint* lastBrlECal=NULL;
@@ -497,6 +507,8 @@ TND280UpTrackPoint* firstForwTPC2=NULL;
 TND280UpTrackPoint* firstForwTPC3=NULL;
 TND280UpTrackPoint* firstTarget1=NULL;
 TND280UpTrackPoint* firstTarget2=NULL;
+TND280UpTrackPoint* firstFGD1=NULL;
+TND280UpTrackPoint* firstFGD2=NULL;
 TND280UpTrackPoint* firstDsECal=NULL;
 TND280UpTrackPoint* firstP0DECal=NULL;
 TND280UpTrackPoint* firstBrlECal=NULL;
@@ -593,8 +605,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     } 
-    if (Tpoint->GetPhysVolName().find("Target1") != std::string::npos ||
-	Tpoint->GetPhysVolName().find("FGD1")    != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("Target1") != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < Target1Z) {
         lastTarget1 = Tpoint;
         Target1Z = Tpoint->GetMomentum().Mag();
@@ -605,8 +616,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     } 
-    if (Tpoint->GetPhysVolName().find("Target2") != std::string::npos ||
-	Tpoint->GetPhysVolName().find("FGD2")    != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("Target2") != std::string::npos) {
     
       if (Tpoint->GetMomentum().Mag() < Target2Z) {
         lastTarget2 = Tpoint;
@@ -618,6 +628,30 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     }
+    if (Tpoint->GetPhysVolName().find("FGD1") != std::string::npos) {
+      if (Tpoint->GetMomentum().Mag() < FGD1Z) {
+        lastFGD1 = Tpoint;
+        FGD1Z = Tpoint->GetMomentum().Mag();
+      }
+    if (Tpoint->GetMomentum().Mag() > FGD1fZ) {
+        firstFGD1 = Tpoint;
+        FGD1fZ = Tpoint->GetMomentum().Mag();
+      }
+
+    } 
+    if (Tpoint->GetPhysVolName().find("FGD2") != std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < FGD2Z) {
+        lastFGD2 = Tpoint;
+        FGD2Z = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > FGD2fZ) {
+        firstFGD2 = Tpoint;
+        FGD2fZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
     if (Tpoint->GetPhysVolName().find("DsECal") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
     
       if (Tpoint->GetMomentum().Mag() < DsECalZ) {
@@ -683,6 +717,12 @@ TND280UpTrackPoint* firstBrlECal=NULL;
        nCrossers++;
   }
    if(firstTarget2){
+       nCrossers++;
+  }
+  if(firstFGD1){
+       nCrossers++;
+  }
+   if(firstFGD2){
        nCrossers++;
   }
    if(firstDsECal){
@@ -925,6 +965,55 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     truePart->DetCrossingsVect.push_back(detCross);
 
   }
+  if(firstFGD1){
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+
+    detCross->EntrancePosition[0] = firstFGD1->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstFGD1->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstFGD1->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstFGD1->GetTime();
+    detCross->ExitPosition[0] = lastFGD1->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastFGD1->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastFGD1->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastFGD1->GetTime();
+    detCross->EntranceMomentum[0] = firstFGD1->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstFGD1->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstFGD1->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastFGD1->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastFGD1->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastFGD1->GetMomentum().Z();
+    detCross->DeltaLYZ=upTrack->GetLengthFGD1();
+    detCross->EDeposit=upTrack->GetEdepFGD1();
+	detCross->Detector_name=TString(firstFGD1->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kFGD1);
+
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+  if(firstFGD2){
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+
+    detCross->EntrancePosition[0] = firstFGD2->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstFGD2->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstFGD2->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstFGD2->GetTime();
+    detCross->ExitPosition[0] = lastFGD2->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastFGD2->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastFGD2->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastFGD2->GetTime();
+    detCross->EntranceMomentum[0] = firstFGD2->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstFGD2->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstFGD2->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastFGD2->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastFGD2->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastFGD2->GetMomentum().Z();
+    detCross->DeltaLYZ=upTrack->GetLengthFGD2();
+    detCross->EDeposit=upTrack->GetEdepFGD2();
+	detCross->Detector_name=TString(firstFGD2->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kFGD2);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
   if(firstDsECal){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
 
@@ -1028,6 +1117,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   reconParticle->MomentumErrorMuon = -10000;
   reconParticle->MomentumErrorProton = -10000;
   reconParticle->nTargetSegments = 0;
+  reconParticle->nFGDSegments = 0;
   reconParticle->nTPCSegments = 0;
   reconParticle->TrueObject=dynamic_cast<AnaTrueObjectC*>(trueParticle);
   for (int i = 0; i < trueParticle->DetCrossingsVect.size(); i++) {
@@ -1069,6 +1159,24 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
       seg->IsReconstructed = GetEfficiency(seg->DeltaLYZ, trueParticle->CosTheta);
       reconParticle->TargetSegments[reconParticle->nTargetSegments++] = seg;
+
+    }
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kFGD1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kFGD2)) {
+      AnaFGDParticleB* seg = dynamic_cast<AnaFGDParticleB*>(MakeFGDTrack() );
+      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
+      anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
+      anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
+      seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
+
+      seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
+      SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
+      SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
+ 
+      seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
+      seg->IsReconstructed = GetEfficiency(seg->DeltaLYZ, trueParticle->CosTheta);
+      reconParticle->FGDSegments[reconParticle->nFGDSegments++] = seg;
 
     }
     if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kDsECal) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kBrlECal) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kP0DECal)) {

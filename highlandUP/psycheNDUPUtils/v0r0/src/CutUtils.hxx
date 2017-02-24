@@ -34,6 +34,8 @@ namespace cutUtils{
   bool DeltaLYZTargetCut(AnaTrackB& ,const SubDetId::SubDetEnum det);
   bool DeltaLYZTargetORTPCCut(AnaTrackB& ,const SubDetId::SubDetEnum det);
 
+  bool DeltaLYZFGDCut(AnaTrackB& ,const SubDetId::SubDetEnum det);
+  bool DeltaLYZFGDORTPCCut(AnaTrackB& ,const SubDetId::SubDetEnum det);
 
   /// Retuns true if the two tracks start within the input tolerance 
   bool CommonVertexCut(const AnaParticleB& track1, const AnaParticleB& track2, int cutx, int cuty, int cutz);

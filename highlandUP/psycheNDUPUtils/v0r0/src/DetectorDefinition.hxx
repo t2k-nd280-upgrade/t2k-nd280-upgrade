@@ -66,6 +66,19 @@ namespace DetDef {
 
   /// Maximum of the SUBDET2_3 det. See definition in AnalysisUtils.cxx for default value.
   extern Float_t Target2max[3];
+
+    /// Minimum of the SUBDET2_3 det. See definition in AnalysisUtils.cxx for default value.
+  extern Float_t FGD1min[3];
+
+  /// Maximum of the SUBDET2_3 det. See definition in AnalysisUtils.cxx for default value.
+  extern Float_t FGD1max[3];
+
+    /// Minimum of the SUBDET2_3 det. See definition in AnalysisUtils.cxx for default value.
+  extern Float_t FGD2min[3];
+
+  /// Maximum of the SUBDET2_3 det. See definition in AnalysisUtils.cxx for default value.
+  extern Float_t FGD2max[3];
+
   /// Minimum of the DsECal det. See definition in AnalysisUtils.cxx for default value.
   extern Float_t dsecalmin[3];
 

@@ -12,8 +12,10 @@ namespace convUtils{
     
     /// Convert the detector used array to the bit field used by psyche for TPC track segments
     void ConvertTPCDetEnumToBitField(unsigned long &det, int tpc);
-    /// Convert the detector used array to the bit field used by psyche for FGD track segments
+    /// Convert the detector used array to the bit field used by psyche for Target track segments
     void ConvertTargetDetEnumToBitField(unsigned long &det, int target);
+    /// Convert the detector used array to the bit field used by psyche for FGD track segments
+    void ConvertFGDDetEnumToBitField(unsigned long &det, int target);
     
     /// Convert the detector used array to the bit field used by psyche given a SubDetEnum
     void ConvertLocalDetEnumToBitField(unsigned long &det, int index, SubDetId::SubDetEnum subdet_enum); 

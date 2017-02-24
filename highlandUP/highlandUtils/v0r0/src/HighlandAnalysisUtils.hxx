@@ -35,10 +35,12 @@ namespace anaUtils{
     /// Access function to get all the tracks in the given bunch (AnaBunchB) that use the TPC and no Target, sorted by decreasing NHits.
     /// Returns the number of entries in the input array, the number of tracks found
     int GetAllTracksUsingTPCAndNoTarget(const AnaBunchB& bunch, AnaTrackB* selTracks[]);
+    int GetAllTracksUsingTPCAndNoFGD(const AnaBunchB& bunch, AnaTrackB* selTracks[]);
 
     /// Access function to get all the tracks in the given bunch (AnaBunchB) that use the TPC or Target, not sorted.
     /// Returns the number of entries in the input array, the number of tracks found
     int GetAllTracksUsingTPCorTarget(const AnaBunchB& bunch, AnaTrackB* selTracks[]);
+    int GetAllTracksUsingTPCorFGD(const AnaBunchB& bunch, AnaTrackB* selTracks[]);
 
     /// Get all the tracks in a given bunch using only a specific detector.
     /// See SubDetId::SubDetEnum for the detector numbering convention.

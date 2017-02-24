@@ -37,15 +37,14 @@ namespace DetDef {
 
   Float_t Target1min[3] = {-932.00, -300.0, -1787.0};
   Float_t Target1max[3] = { 932.00,  300.0,  -487.0};
-
   Float_t Target2min[3] = {-932.00, -300.0, 487.0};
   Float_t Target2max[3] = { 932.00,  300.0,   1787.0};
 
- // Float_t Target1min[3] = {-932.00, -932.0, 276.0};
- // Float_t Target1max[3] = { 932.00,  932.0,  579.0};
+ Float_t FGD1min[3] = {-932.00, -932.0, 276.0};
+ Float_t FGD1max[3] = { 932.00,  932.0,  579.0};
 
- // Float_t Target2min[3] = {-932.00, -932.0, 1554.0};
- // Float_t Target2max[3] = { 932.00,  932.0,   1885.0};
+ Float_t FGD2min[3] = {-932.00, -932.0, 1554.0};
+ Float_t FGD2max[3] = { 932.00,  932.0,   1885.0};
 
   //from RECPACK simplified geometry: active DsECal volume
   Float_t dsecalmin[3] = {-1019.97,-1009.97,2855.03};
@@ -115,6 +114,9 @@ namespace DetDef {
 
     dump_array3(Target1min);
     dump_array3(Target2max);
+    dump_array3(FGD1min);
+    dump_array3(FGD2max);
+
     dump_array3(dsecalmin);
     dump_array3(dsecalmax);
 

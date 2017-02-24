@@ -12,12 +12,15 @@ const unsigned long SubDetId::DetMask[] = {
     1<<SubDetId::kTPCDown2,
     1<<SubDetId::kTarget1,
     1<<SubDetId::kTarget2,
+    1<<SubDetId::kFGD1,
+    1<<SubDetId::kFGD2,
     1<<SubDetId::kDsECal,
     1<<SubDetId::kP0DECal,
     1<<SubDetId::kBrlECal,
     1<<SubDetId::kInvalidSubdetector,
     1<<SubDetId::kTPC     | SubDetId::MakeMask(SubDetId::kTPCUp1,       SubDetId::kTPCDown2),
-    1<<SubDetId::kTarget    | SubDetId::MakeMask(SubDetId::kTarget1,       SubDetId::kTarget2),
+    1<<SubDetId::kTarget  | SubDetId::MakeMask(SubDetId::kTarget1,      SubDetId::kTarget2),
+    1<<SubDetId::kFGD     | SubDetId::MakeMask(SubDetId::kFGD1,         SubDetId::kFGD2),
     1<<SubDetId::kECAL    | SubDetId::MakeMask(SubDetId::kDsECal,       SubDetId::kBrlECal),
     1<<SubDetId::kInvalid
 };
@@ -77,6 +80,13 @@ int SubDetId::GetTarget(unsigned long BitField){
     else if (BitField & DetMask[SubDetId::kTarget2]) return 2;
     else return -1;
 }
+
+int SubDetId::GetFGD(unsigned long BitField){
+    if      (BitField & DetMask[SubDetId::kFGD1]) return 1;
+    else if (BitField & DetMask[SubDetId::kFGD2]) return 2;
+    else return -1;
+}
+
 int SubDetId::GetECal(unsigned long BitField){
     if      (BitField & DetMask[SubDetId::kDsECal]) return 1;
     else if (BitField & DetMask[SubDetId::kP0DECal]) return 2;
@@ -93,6 +103,8 @@ void SubDetId::SetDetectorSystemFields(unsigned long &BitField){
             // Subdet2
             }else if (i == SubDetId::kTarget1 || i == SubDetId::kTarget2){
                 SetDetectorUsed(BitField, SubDetId::kTarget);
+            }else if (i == SubDetId::kFGD1 || i == SubDetId::kFGD2){
+                SetDetectorUsed(BitField, SubDetId::kFGD);
             }else if (i == SubDetId::kDsECal || i == SubDetId::kBrlECal || i == SubDetId::kP0DECal ){
                 SetDetectorUsed(BitField, SubDetId::kECAL);
 
@@ -118,6 +130,9 @@ bool SubDetId::TrackUsesOnlyDet(unsigned long BitField, SubDetId::SubDetEnum det
 
 bool SubDetId::IsTarget(SubDetId::SubDetEnum det){
     return ((det <= SubDetId::kTarget2 && det >= SubDetId::kTarget1 )|| det == SubDetId::kTarget);
+}
+bool SubDetId::IsFGD(SubDetId::SubDetEnum det){
+    return ((det <= SubDetId::kFGD2 && det >= SubDetId::kFGD1 )|| det == SubDetId::kFGD);
 }
 
 bool SubDetId::IsTPC(SubDetId::SubDetEnum det){

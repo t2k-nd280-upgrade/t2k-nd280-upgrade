@@ -41,6 +41,8 @@ namespace FVDef {
 
   Float_t FVdefminTarget1[3] = {0*units::cm,0*units::cm,0*units::cm};
   Float_t FVdefmaxTarget2[3] = {0*units::cm,0*units::cm,0*units::cm};
+  Float_t FVdefminFGD1[3] = {0*units::cm,0*units::cm,0*units::cm};
+  Float_t FVdefmaxFGD2[3] = {0*units::cm,0*units::cm,0*units::cm};
 
 
   //**********************************
@@ -74,6 +76,9 @@ namespace FVDef {
 
     dump_array3(FVdefminTarget1);
     dump_array3(FVdefmaxTarget2);
+
+    dump_array3(FVdefminFGD1);
+    dump_array3(FVdefmaxFGD2);
 
     std::cout << "\n******************************************************* \n" << std::endl;
 

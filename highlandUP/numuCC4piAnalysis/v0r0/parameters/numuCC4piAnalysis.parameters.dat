@@ -2,10 +2,10 @@
  < numuCC4piAnalysis.Branch = 0 >
  < numuCC4piAnalysis.ForceBreak = 1 > 
 
- < numuCC4piAnalysis.EnableND280Current = 0 >
-
  < numuCC4piAnalysis.EnableTarget1 = 1 >
  < numuCC4piAnalysis.EnableTarget2 = 0 >
+ < numuCC4piAnalysis.EnableFGD1 = 0 >
+ < numuCC4piAnalysis.EnableFGD2 = 0 >
 
  < numuCC4piAnalysis.MinAccumLevelToSave = 0 >
 

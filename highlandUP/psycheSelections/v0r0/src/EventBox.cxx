@@ -42,9 +42,9 @@ void boxUtils::FillLongTracks(AnaEventB& event, SubDetId::SubDetEnum det){
   }
 
   anaUtils::ResizeArray(EventBox->RecObjectsInGroup [EventBox::kLongTracks],
-  EventBox->nRecObjectsInGroup[EventBox::kLongTracks]);
+			EventBox->nRecObjectsInGroup[EventBox::kLongTracks]);
 
   anaUtils::ResizeArray(EventBox->RecObjectsInGroup [EventBox::kLongTracksInFV],
-  EventBox->nRecObjectsInGroup[EventBox::kLongTracksInFV]);
- }
+			EventBox->nRecObjectsInGroup[EventBox::kLongTracksInFV]);
+}
 

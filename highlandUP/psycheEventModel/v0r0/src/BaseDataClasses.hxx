@@ -36,6 +36,7 @@ const UInt_t NMAXVERTICES = 20;
 const UInt_t NMAXCROSSEDDET = 30;
 
 const UInt_t NMAXTARGET  = 2;
+const UInt_t NMAXFGD  = 2;
 const UInt_t NMAXTPC  = 7;
 const UInt_t NMAXECAL  = 4;
 
@@ -355,12 +356,39 @@ class AnaTargetParticleB:public AnaParticleB {
  public:
 
   Float_t DeltaLYZ;
-
   Float_t SegLength;
-
   Bool_t IsReconstructed;
 
 };
+
+/// Representation of a Subdet1 segment of a global track.
+class AnaFGDParticleB:public AnaParticleB {
+ public :
+
+  AnaFGDParticleB();
+  virtual ~AnaFGDParticleB();
+
+  /// Clone this object.
+  virtual AnaFGDParticleB* Clone() {
+    return new AnaFGDParticleB(*this);
+  }
+
+  /// Dump the object to screen.
+  virtual void Print() const;
+
+ protected:
+
+  /// Copy constructor is protected, as Clone() should be used to copy this object.
+  AnaFGDParticleB(const AnaFGDParticleB& seg);
+
+ public:
+
+  Float_t DeltaLYZ;
+  Float_t SegLength;
+  Bool_t IsReconstructed;
+
+};
+
 
 /// Representation of a Subdet1 segment of a global track.
 class AnaECalParticleB:public AnaParticleB {
@@ -518,6 +546,11 @@ class AnaTrackB: public AnaParticleMomB{
   /// How many Subdet1 tracks are associated with this track
   int nTargetSegments; //!
 
+  /// The Subdet1 segments that contributed to this global track.
+  AnaFGDParticleB* FGDSegments[NMAXTARGET]; //!
+  /// How many Subdet1 tracks are associated with this track
+  int nFGDSegments; //!
+
   Float_t EKin;
   /// The Subdet2 segments that contributed to this global track.
   AnaTPCParticleB* TPCSegments[NMAXTPC]; //!
@@ -531,6 +564,7 @@ class AnaTrackB: public AnaParticleMomB{
 
   /// A copy of the segment arrays but using an std::vector, which can be saved into a tree
   std::vector<AnaTargetParticleB*>  TargetSegmentsVect; 
+  std::vector<AnaFGDParticleB*>  FGDSegmentsVect; 
   std::vector<AnaTPCParticleB*>  TPCSegmentsVect; 
  std::vector<AnaECalParticleB*>  ECalSegmentsVect; 
 

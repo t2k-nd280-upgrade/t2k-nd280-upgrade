@@ -33,11 +33,48 @@ void AnaTargetParticleB::Print() const{
 
 }
 
+
 //********************************************************************
 AnaTargetParticleB::~AnaTargetParticleB(){
 //********************************************************************
 
 }
+
+//********************************************************************
+AnaFGDParticleB::AnaFGDParticleB(){
+//********************************************************************
+    DeltaLYZ=-9999;
+    IsReconstructed=false;
+
+}
+
+//********************************************************************
+AnaFGDParticleB::AnaFGDParticleB(const AnaFGDParticleB& seg):AnaParticleB(seg){
+//********************************************************************
+    DeltaLYZ=seg.DeltaLYZ;
+    IsReconstructed=seg.IsReconstructed;
+
+}
+
+//********************************************************************
+void AnaFGDParticleB::Print() const{
+//********************************************************************
+
+    std::cout << "-------- AnaFGDParticleB --------- " << std::endl;
+
+    AnaParticleB::Print();
+
+    std::cout << "DeltaLYZ:          " << DeltaLYZ        << std::endl;
+    std::cout << "IsReconstructed:          " <<  IsReconstructed        << std::endl;
+
+}
+
+//********************************************************************
+AnaFGDParticleB::~AnaFGDParticleB(){
+//********************************************************************
+
+}
+
 
 //********************************************************************
 AnaECalParticleB::AnaECalParticleB(){
@@ -300,11 +337,13 @@ AnaTrackB::AnaTrackB(): AnaParticleMomB(){
     TPCQualityCut     = -999;
 
     nTargetSegments = 0;
+    nFGDSegments = 0;
     nTPCSegments = 0;
     nECalSegments = 0;
 
     EKin=-999;
     TargetSegmentsVect.clear();
+    FGDSegmentsVect.clear();
     TPCSegmentsVect.clear();
     ECalSegmentsVect.clear();
 
@@ -318,7 +357,10 @@ AnaTrackB::~AnaTrackB(){
         delete TargetSegments[i];    
         TargetSegments[i] = NULL;
     }
-
+    for (Int_t i=0;i<nFGDSegments;i++){
+        delete FGDSegments[i];    
+        FGDSegments[i] = NULL;
+    }
 
     for (Int_t i=0;i<nTPCSegments;i++){
         delete TPCSegments[i];    
@@ -330,14 +372,17 @@ AnaTrackB::~AnaTrackB(){
     }
 
     if (TargetSegmentsVect.size()>0  && nTargetSegments ==0) for (UInt_t i=0;i<TargetSegmentsVect.size(); i++) delete TargetSegmentsVect[i];
+    if (FGDSegmentsVect.size()>0  && nFGDSegments ==0) for (UInt_t i=0;i<FGDSegmentsVect.size(); i++) delete FGDSegmentsVect[i];
     if (TPCSegmentsVect.size()>0  && nTPCSegments ==0) for (UInt_t i=0;i<TPCSegmentsVect.size(); i++) delete TPCSegmentsVect[i];
     if (ECalSegmentsVect.size()>0  && nECalSegments ==0) for (UInt_t i=0;i<ECalSegmentsVect.size(); i++) delete ECalSegmentsVect[i];
 
     nTargetSegments = 0;
+    nFGDSegments = 0;
     nTPCSegments = 0;
     nECalSegments = 0;
 
     TargetSegmentsVect.clear();
+    FGDSegmentsVect.clear();
     TPCSegmentsVect.clear();
     ECalSegmentsVect.clear();
 
@@ -347,30 +392,35 @@ AnaTrackB::~AnaTrackB(){
 AnaTrackB::AnaTrackB(const AnaTrackB& track):AnaParticleMomB(track){
 //********************************************************************
 
-    Index             = track.Index;
-    MomentumFlip      = track.MomentumFlip;
-    anaUtils::CopyArray(track.DirectionStartFlip,  DirectionStartFlip, 3);
+  Index             = track.Index;
+  MomentumFlip      = track.MomentumFlip;
+  anaUtils::CopyArray(track.DirectionStartFlip,  DirectionStartFlip, 3);
 
-    TPCQualityCut     = track.TPCQualityCut;
+  TPCQualityCut     = track.TPCQualityCut;
 
-    nTargetSegments  = track.nTargetSegments;
-    nTPCSegments  = track.nTPCSegments;
-    nECalSegments  = track.nECalSegments;
+  nTargetSegments  = track.nTargetSegments;
+  nFGDSegments  = track.nFGDSegments;
+  nTPCSegments  = track.nTPCSegments;
+  nECalSegments  = track.nECalSegments;
 
-    EKin=track.EKin;
-    for (Int_t i=0;i<track.nTargetSegments;i++)
-        TargetSegments[i] = track.TargetSegments[i]->Clone();
+  EKin=track.EKin;
+  for (Int_t i=0;i<track.nTargetSegments;i++)
+    TargetSegments[i] = track.TargetSegments[i]->Clone();
 
-    for (Int_t i=0;i<track.nTPCSegments;i++)
-        TPCSegments[i] = track.TPCSegments[i]->Clone();
+  for (Int_t i=0;i<track.nFGDSegments;i++)
+    FGDSegments[i] = track.FGDSegments[i]->Clone();
 
-    for (Int_t i=0;i<track.nECalSegments;i++)
-        ECalSegments[i] = track.ECalSegments[i]->Clone();
+  for (Int_t i=0;i<track.nTPCSegments;i++)
+    TPCSegments[i] = track.TPCSegments[i]->Clone();
+
+  for (Int_t i=0;i<track.nECalSegments;i++)
+    ECalSegments[i] = track.ECalSegments[i]->Clone();
 
 
-    TargetSegmentsVect.clear();
-    TPCSegmentsVect.clear();
-    ECalSegmentsVect.clear();
+  TargetSegmentsVect.clear();
+  FGDSegmentsVect.clear();
+  TPCSegmentsVect.clear();
+  ECalSegmentsVect.clear();
 
 }
 
@@ -388,6 +438,7 @@ void AnaTrackB::Print() const{
     dump_array3(DirectionStartFlip);
 
     std::cout << "NTargets:                " << nTargetSegments       << std::endl;
+    std::cout << "NFGDs:                " << nFGDSegments       << std::endl;
     std::cout << "NTPCs:                " << nTPCSegments       << std::endl;
 
 }
@@ -948,9 +999,14 @@ void AnaSpillB::CopyArraysIntoVectors(){
       for (UInt_t i=0;i<bunch->Particles.size();i++){
         AnaTrackB* track = dynamic_cast<AnaTrackB*>(bunch->Particles[i]);
         if (!track)  continue;
+
         track->TargetSegmentsVect.clear();
         for (Int_t j=0;j<track->nTargetSegments;j++)
-          track->TargetSegmentsVect.push_back(track->TargetSegments[j]);       
+          track->TargetSegmentsVect.push_back(track->TargetSegments[j]);   
+
+	track->FGDSegmentsVect.clear();
+        for (Int_t j=0;j<track->nFGDSegments;j++)
+          track->FGDSegmentsVect.push_back(track->FGDSegments[j]);   
 
         track->TPCSegmentsVect.clear();
         for (Int_t j=0;j<track->nTPCSegments;j++)
@@ -998,9 +1054,14 @@ void AnaSpillB::CopyVectorsIntoArrays(){
     for (UInt_t i=0;i<bunch->Particles.size();i++){
       AnaTrackB* track = dynamic_cast<AnaTrackB*>(bunch->Particles[i]);
       if (!track)  continue;
+
       track->nTargetSegments=0;
       for (UInt_t j=0;j<track->TargetSegmentsVect.size();j++)
         track->TargetSegments[track->nTargetSegments++]=track->TargetSegmentsVect[j];
+
+      track->nFGDSegments=0;
+      for (UInt_t j=0;j<track->FGDSegmentsVect.size();j++)
+        track->FGDSegments[track->nFGDSegments++]=track->FGDSegmentsVect[j];
 
       track->nTPCSegments=0;
       for (UInt_t j=0;j<track->TPCSegmentsVect.size();j++)

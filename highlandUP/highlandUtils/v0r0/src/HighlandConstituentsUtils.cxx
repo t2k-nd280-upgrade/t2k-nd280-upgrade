@@ -59,6 +59,26 @@ int anaUtils::GetAllTracksUsingTPCAndNoTarget(const AnaBunchB& bunch, AnaTrackB*
 
 
 //**************************************************
+int anaUtils::GetAllTracksUsingTPCAndNoFGD(const AnaBunchB& bunch, AnaTrackB* selTracks[]) {
+//**************************************************
+
+  int count = 0;
+  for (unsigned int it = 0; it < bunch.Particles.size(); it++) {
+    AnaTrackB* track = static_cast<AnaTrackB*>(bunch.Particles[it]);
+    if (!anaUtils::TrackUsesDet(*track, SubDetId::kFGD) && anaUtils::TrackUsesDet(*track, SubDetId::kTPC)) {
+      selTracks[count] = track;
+      ++count;
+    }
+  }
+
+  // Sort by decreasing number of hits
+  std::sort(&selTracks[0], &selTracks[count], AnaParticleB::CompareNHits);
+
+  return count;
+}
+
+
+//**************************************************
 int anaUtils::GetAllTracksUsingTPCorTarget(const AnaBunchB& bunch, AnaTrackB* selTracks[]) {
 //**************************************************
 
@@ -75,4 +95,19 @@ int anaUtils::GetAllTracksUsingTPCorTarget(const AnaBunchB& bunch, AnaTrackB* se
 }
 
 
+//**************************************************
+int anaUtils::GetAllTracksUsingTPCorFGD(const AnaBunchB& bunch, AnaTrackB* selTracks[]) {
+//**************************************************
+
+  int count = 0;
+  for (unsigned int it = 0; it < bunch.Particles.size(); it++) {
+    AnaTrackB* track = static_cast<AnaTrackB*>(bunch.Particles[it]);
+    if ( ! (anaUtils::TrackUsesDet(*track, SubDetId::kFGD) || anaUtils::TrackUsesDet(*track, SubDetId::kTPC))) {
+      selTracks[count] = track;
+      ++count;
+    }
+  }
+
+  return count;
+}
 

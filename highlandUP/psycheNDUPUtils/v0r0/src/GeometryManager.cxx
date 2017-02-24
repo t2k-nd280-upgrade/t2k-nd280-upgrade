@@ -481,6 +481,18 @@ bool GeometryManager::VisitNode(const std::string& name, const TGeoNode* node) c
     UpdateVolumeBound(DetDef::Target2min, DetDef::Target2max, low, high);
     return false;
   }
+ if (name.find("FGD1_0")     != std::string::npos
+   //   && name.find("Drift") != std::string::npos) {
+  ){
+    UpdateVolumeBound(DetDef::FGD1min, DetDef::FGD1max, low, high);
+    return false;
+  }
+ if (name.find("FGD2_0")     != std::string::npos
+   //   && name.find("Drift") != std::string::npos) {
+  ){
+    UpdateVolumeBound(DetDef::FGD2min, DetDef::FGD2max, low, high);
+    return false;
+  }
 
    
 
@@ -533,5 +545,10 @@ void GeometryManager::ResetVolumeDefinitions() const {
   SetDetectorBoundaries(DetDef::Target1min,      DetDef::Target1max,    min, max);
 
   SetDetectorBoundaries(DetDef::Target2min,      DetDef::Target2max,    min, max);
+
+  SetDetectorBoundaries(DetDef::FGD1min,      DetDef::FGD1max,    min, max);
+
+  SetDetectorBoundaries(DetDef::FGD2min,      DetDef::FGD2max,    min, max);
+
 
 }
