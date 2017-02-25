@@ -989,7 +989,7 @@ void SelND280UpEvent
 	LastY = PtY;
 	LastZ = PtZ;
 	
-	cout << "Evt " << ievt << " : " << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
+	//cout << "Evt " << ievt << " : " << PtX << ", " << PtY << ", " << PtZ << " --> " << volname << endl;
 			  
 	if( (volname.find("DsECal") != string::npos) &&  
 		 (volname.find("Bar")    !=string::npos)  ){
