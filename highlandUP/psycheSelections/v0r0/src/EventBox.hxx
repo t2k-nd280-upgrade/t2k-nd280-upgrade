@@ -23,10 +23,21 @@ class EventBox:public EventBoxB{
     kTracksWithTarget2AndNoTPC,
     kTracksWithTarget1,
     kTracksWithTarget2,
-    kTracksWithECal,
+    kTracksWithTPCInFGD1FV,
+    kTracksWithTPCInFGD2FV,
+    kTracksWithGoodQualityTPCInFGD1FV,
+    kTracksWithGoodQualityTPCInFGD2FV,
+    kTracksWithTPCAndFGD1,
+    kTracksWithTPCAndFGD2,
+    kTracksWithFGD1AndNoTPC,
+    kTracksWithFGD2AndNoTPC,
+    kTracksWithFGD1,
+    kTracksWithFGD2,
     kTracksWithTPCorTarget1,
     kTracksWithTPCorTarget2, 
-
+    kTracksWithTPCorFGD1,
+    kTracksWithTPCorFGD2, 
+    kTracksWithECal
   };
   
   enum TrueObjectGroupEnum{
@@ -35,7 +46,9 @@ class EventBox:public EventBoxB{
     kTrueParticlesChargedInTarget1AndNoTPCInBunch,
     kTrueParticlesChargedInTarget2AndNoTPCInBunch,
     kTrueParticlesChargedInTPCorTargetInBunch, 
-
+    kTrueParticlesChargedInFGD1AndNoTPCInBunch,
+    kTrueParticlesChargedInFGD2AndNoTPCInBunch,
+    kTrueParticlesChargedInTPCorFGDInBunch
   };
 
   EventBox();

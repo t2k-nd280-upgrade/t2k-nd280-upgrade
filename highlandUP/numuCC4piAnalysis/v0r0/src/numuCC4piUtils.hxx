@@ -16,6 +16,8 @@ const Float_t _FVdefminDsECal[3] = {40, 40, 25.};   // "z == 25." to reject peak
 const Float_t _FVdefmaxDsECal[3] = {40, 40, 18.17}; // reject last layer in both data and MC
 const Float_t _FVdefminTarget2[3]   = {76.88, 38.44, 0.};     //9.61*8, 9.61*4
 const Float_t _FVdefmaxTarget2[3]   = {76.88, 38.44, 10.125}; //9.61*8, 9.61*4
+const Float_t _FVdefminFGD2[3]   = {76.88, 38.44, 0.};     //9.61*8, 9.61*4
+const Float_t _FVdefmaxFGD2[3]   = {76.88, 38.44, 10.125}; //9.61*8, 9.61*4
 
 namespace numuCC4pi_utils{
 

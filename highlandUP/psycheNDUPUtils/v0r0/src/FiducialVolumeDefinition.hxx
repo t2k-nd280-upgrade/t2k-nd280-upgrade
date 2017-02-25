@@ -82,18 +82,14 @@ namespace FVDef {
   extern Float_t FVdefmaxForwTPC3[3];
 
   extern Float_t FVdefminTarget1[3];
-
-  /// Fiducial volume cut for Subdet1_2. See definition in StandardActions.cxx for
-  /// default value. This is the amount by which DetDef::fgd2max is shrunk
-  /// in the FiducialCut function.
   extern Float_t FVdefmaxTarget1[3];
-
   extern Float_t FVdefminTarget2[3];
-
-  /// Fiducial volume cut for Subdet1_2. See definition in StandardActions.cxx for
-  /// default value. This is the amount by which DetDef::fgd2max is shrunk
-  /// in the FiducialCut function.
   extern Float_t FVdefmaxTarget2[3];
+
+  extern Float_t FVdefminFGD1[3];
+  extern Float_t FVdefmaxFGD1[3];
+  extern Float_t FVdefminFGD2[3];
+  extern Float_t FVdefmaxFGD2[3];
 
   /// Dump Fiducial Volume definitions
   void DumpFV();

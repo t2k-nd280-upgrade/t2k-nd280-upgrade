@@ -128,6 +128,8 @@ public:
     true_phi,
     true_charge,
     true_ekin,
+    true_Q2,
+    true_TPC,
     true_part,
     true_parentID,
     true_Nu_pdg,

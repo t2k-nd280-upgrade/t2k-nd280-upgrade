@@ -102,10 +102,16 @@ void numuCC4piSelection::DefineDetectorFV(){
   // The detector in which the selection is applied
   bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
   bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+  bool useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+  bool useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
 
   if ( useTarget1 && !useTarget2) SetDetectorFV(SubDetId::kTarget1);
   if (!useTarget1 &&  useTarget2) SetDetectorFV(SubDetId::kTarget2);
   if ( useTarget1 &&  useTarget2) SetDetectorFV(SubDetId::kTarget);
+
+  if ( useFGD1 && !useFGD2) SetDetectorFV(SubDetId::kFGD1);
+  if (!useFGD1 &&  useFGD2) SetDetectorFV(SubDetId::kFGD2);
+  if ( useFGD1 &&  useFGD2) SetDetectorFV(SubDetId::kFGD);
 
 }
 
@@ -120,6 +126,7 @@ void numuCC4piSelection::InitializeEvent(AnaEventC& eventBB){
 
   boxUtils::FillTracksWithTPC(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
   boxUtils::FillTracksWithTarget(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
+  boxUtils::FillTracksWithFGD(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
   boxUtils::FillTracksWithECal(event);
   
   //boxUtils::FillTrajsChargedInTPC(event);
@@ -172,7 +179,9 @@ namespace numuCC4piUtils{
     ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
   
     return ( (useTarget1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1)) ||
-	     (useTarget2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget2)) );
+	     (useTarget2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget2)) ||
+	     (useFGD1    && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD1   )) ||
+	     (useFGD2    && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD2   )));
   
   }
 
@@ -186,7 +195,9 @@ namespace numuCC4piUtils{
     EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
 
     return ((useTarget1 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]>0) ||
-	    (useTarget2 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2]>0));
+	    (useTarget2 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2]>0) ||
+	    (useFGD1    && EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD1]>0   ) ||
+	    (useFGD2    && EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD2]>0   ));
 
   }
 
@@ -225,6 +236,30 @@ namespace numuCC4piUtils{
       }
 
     }
+   if (useFGD1) {
+
+      int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD1FV];
+      for (Int_t i=0;i<nTPC; ++i){
+	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD1FV][i]);
+	if ( track->Charge!=-1 ) continue;
+
+	cc4pibox->TPCTracks.push_back(track);
+      }
+
+    }
+    if (useFGD2) {
+
+      int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD2FV];
+      for (Int_t i=0;i<nTPC; ++i){
+	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD2FV][i]);
+	if ( track->Charge!=-1 ) continue;
+
+	cc4pibox->TPCTracks.push_back(track);
+      }
+
+    }
+
+
   
     //Sort TPCGoodQuality using Momentum
     std::sort(cc4pibox->TPCTracks.begin(), cc4pibox->TPCTracks.end(), numuCC4pi_utils::HGlobalMomFirst);
@@ -236,26 +271,28 @@ namespace numuCC4piUtils{
     for(int i=0;i<nECALTracks;i++){
       AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithECal][i]);
       if ( (useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget1, track->PositionStart)) ||
-	   (useTarget2 && anaUtils::InFiducialVolume(SubDetId::kTarget2, track->PositionStart)) ) {
+	   (useTarget2 && anaUtils::InFiducialVolume(SubDetId::kTarget2, track->PositionStart)) ||
+	   (useFGD1    && anaUtils::InFiducialVolume(SubDetId::kFGD1,    track->PositionStart)) ||
+	   (useFGD2    && anaUtils::InFiducialVolume(SubDetId::kFGD2,    track->PositionStart))) {
 	if ( SubDetId::GetDetectorUsed(track->Detector,SubDetId::kDsECal)) continue;
 	if ( cutUtils::DeltaLYZTPCCut(*track) )                            continue;
-	if ( track->Charge!=-1 ) continue;
+	//if ( track->Charge!=-1 ) continue;
 	cc4pibox->ECalTracks.push_back(track);
       }
     }
     //Sort ECalTracks using RangeMomentum
     std::sort(cc4pibox->ECalTracks.begin(), cc4pibox->ECalTracks.end(), numuCC4pi_utils::HGlobalMomFirst);
 
-
     if      (cc4pibox->TPCTracks.size()>0  && cc4pibox->ECalTracks.size()==0)
       cc4pibox->MainTrack = cc4pibox->TPCTracks[0];
     else if (cc4pibox->TPCTracks.size()==0 && cc4pibox->ECalTracks.size()>0)
       cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
-    else if (cc4pibox->TPCTracks.size()>0  && cc4pibox->ECalTracks.size()>0)
-      if (cc4pibox->TPCTracks[0]->Momentum > cc4pibox->ECalTracks[0]->Momentum)
-	cc4pibox->MainTrack = cc4pibox->TPCTracks[0];
-      else
-	cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
+    else if (cc4pibox->TPCTracks.size()>0  && cc4pibox->ECalTracks.size()>0){
+      //if (cc4pibox->TPCTracks[0]->Momentum > cc4pibox->ECalTracks[0]->Momentum)
+      cc4pibox->MainTrack = cc4pibox->TPCTracks[0];
+      //else
+      //cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
+    }
     else return false;  
 
     cc4pibox->TPC_det = anaUtils::GetClosestTPC(*cc4pibox->MainTrack);
@@ -276,6 +313,10 @@ namespace numuCC4piUtils{
     if ( (useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget1, cc4pibox->MainTrack->PositionStart,
 						   LAFVmin, LAFVmax)) ||
 	 (useTarget2 && anaUtils::InFiducialVolume(SubDetId::kTarget2, cc4pibox->MainTrack->PositionStart,
+						   LAFVmin, LAFVmax)) ||
+	 (useFGD1 && anaUtils::InFiducialVolume(SubDetId::kFGD1, cc4pibox->MainTrack->PositionStart,
+						   LAFVmin, LAFVmax)) ||
+	 (useFGD2 && anaUtils::InFiducialVolume(SubDetId::kFGD2, cc4pibox->MainTrack->PositionStart,
 						   LAFVmin, LAFVmax)))
       return true;
   
@@ -375,6 +416,16 @@ namespace numuCC4piUtils{
 
     for(int i = 0; i < 4; ++i) static_cast<AnaEventSummaryB*>(event.Summary)->VertexPosition[SampleId::kTarget2NuMuCC][i] = box.MainTrack->PositionStart[i];
     if(box.MainTrack->GetTrueParticle()) static_cast<AnaEventSummaryB*>(event.Summary)->TrueVertex[SampleId::kTarget2NuMuCC] = box.MainTrack->GetTrueParticle()->TrueVertex;
+
+    static_cast<AnaEventSummaryB*>(event.Summary)->LeptonCandidate[SampleId::kFGD1NuMuCC] = box.MainTrack;
+
+    for(int i = 0; i < 4; ++i) static_cast<AnaEventSummaryB*>(event.Summary)->VertexPosition[SampleId::kFGD1NuMuCC][i] = box.MainTrack->PositionStart[i];
+    if(box.MainTrack->GetTrueParticle()) static_cast<AnaEventSummaryB*>(event.Summary)->TrueVertex[SampleId::kFGD1NuMuCC] = box.MainTrack->GetTrueParticle()->TrueVertex;
+
+   static_cast<AnaEventSummaryB*>(event.Summary)->LeptonCandidate[SampleId::kFGD2NuMuCC] = box.MainTrack;
+
+    for(int i = 0; i < 4; ++i) static_cast<AnaEventSummaryB*>(event.Summary)->VertexPosition[SampleId::kFGD2NuMuCC][i] = box.MainTrack->PositionStart[i];
+    if(box.MainTrack->GetTrueParticle()) static_cast<AnaEventSummaryB*>(event.Summary)->TrueVertex[SampleId::kFGD2NuMuCC] = box.MainTrack->GetTrueParticle()->TrueVertex;
 
     return true;
 

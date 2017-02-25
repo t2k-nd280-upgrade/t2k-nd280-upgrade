@@ -28,8 +28,12 @@ int numuCC4pi_utils::CC4piCategory(AnaTrack* candidate){
 
   bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
   bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+  bool useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+  bool useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
   FV = ((useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, truevtx->Position )) ||
-	(useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, truevtx->Position )));
+	(useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, truevtx->Position )) ||
+	(useFGD1 && anaUtils::InFiducialVolume( SubDetId::kFGD1, truevtx->Position )) ||
+	(useFGD2 && anaUtils::InFiducialVolume( SubDetId::kFGD2, truevtx->Position )));
 
   int reac = anaUtils::GetReactionNoTargetFv( *static_cast<AnaTrueVertex*>(truevtx) );
   CC = ((reac==0) || (reac==1) || (reac==2) || (reac==3) || (reac==9)) && truevtx->LeptonMom>0 && truevtx->LeptonPDG==13;

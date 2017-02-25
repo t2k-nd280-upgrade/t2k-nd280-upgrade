@@ -86,12 +86,15 @@ public:
   TotalMultiplicityCut() {
     useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
     useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+    useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+    useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
   };
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new TotalMultiplicityCut();}
 private:
   bool useTarget1, useTarget2;
+  bool useFGD1, useFGD2;
 };
 
 class SortTracksAction: public StepBase{
@@ -99,12 +102,15 @@ public:
   SortTracksAction() {
     useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
     useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+    useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+    useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
   };
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new SortTracksAction();}
 private:
   bool useTarget1, useTarget2;
+  bool useFGD1, useFGD2;
 };
 
 class TrackGQandFVCut: public StepBase{
@@ -112,6 +118,8 @@ public:
   TrackGQandFVCut() {
     useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
     useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+    useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+    useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
   };
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
@@ -119,6 +127,7 @@ public:
 
 private:
   bool useTarget1, useTarget2;
+  bool useFGD1, useFGD2;
 };
 
 class VetoAction: public StepBase{
@@ -133,6 +142,8 @@ public:
   TrueVertexInTargetCut() {
     useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
     useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+    useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+    useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
   };
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
@@ -140,6 +151,7 @@ public:
 
 private:
   bool useTarget1, useTarget2;
+  bool useFGD1, useFGD2;
 };
 
 /// Find the True Vertex. For the moment it's just start position of the true particle associated to the longest track

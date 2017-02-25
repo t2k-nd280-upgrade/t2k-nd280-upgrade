@@ -62,6 +62,7 @@ class AnaTreeConverterEvent: public InputConverter{
   virtual AnaVertexB*        MakeVertex()      { return new AnaVertexB(); }
   virtual AnaParticleB*        MakeTPCTrack()      { return new AnaTPCParticleB();}
   virtual AnaParticleB*        MakeTargetTrack()      { return new AnaTargetParticleB();}
+  virtual AnaParticleB*        MakeFGDTrack()      { return new AnaFGDParticleB();}
   virtual AnaParticleB*        MakeECalTrack()      { return new AnaECalParticleB();}
 
   virtual AnaDetCrossingB*        MakeAnaDetCrossing()      { return new AnaDetCrossingB();}

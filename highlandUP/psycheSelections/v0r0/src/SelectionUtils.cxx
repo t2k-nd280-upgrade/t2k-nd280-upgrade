@@ -23,6 +23,11 @@ bool SelUtils::FindLeadingTracks(AnaEventC& event, ToyBoxB& boxB){
       groupID = EventBox::kTracksWithGoodQualityTPCInTarget1FV;
     else if (det == SubDetId::kTarget2)
       groupID = EventBox::kTracksWithTPCAndTarget2;
+    else if (det == SubDetId::kFGD1)
+      groupID = EventBox::kTracksWithGoodQualityTPCInFGD1FV;
+    else if (det == SubDetId::kFGD2)
+      groupID = EventBox::kTracksWithTPCAndFGD2;
+
     else 
       return false;
 

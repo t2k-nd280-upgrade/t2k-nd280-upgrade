@@ -33,24 +33,6 @@ bool numuCC4piAnalysis::Initialize(){
   //Minimum accum level to save event into the output tree
   SetMinAccumCutLevelToSave(ND::params().GetParameterI("numuCC4piAnalysis.MinAccumLevelToSave"));
 
-  if (ND::params().GetParameterI("numuCC4piAnalysis.EnableND280Current")) {
-
-    DetDef::Target1min[0] = -932.00;
-    DetDef::Target1min[1] = -932.00;
-    DetDef::Target1min[2] =  276.00;
-    DetDef::Target1max[0] =  932.00;
-    DetDef::Target1max[1] =  932.00;
-    DetDef::Target1max[2] =  579.00;
-
-    DetDef::Target2min[0] = -932.00;
-    DetDef::Target2min[1] = -932.00;
-    DetDef::Target2min[2] = 1554.00;
-    DetDef::Target2max[0] =  932.00;
-    DetDef::Target2max[1] =  932.00;
-    DetDef::Target2max[2] = 1885.00;
-
-  }
-
   //Add muon candidate categories
   numuCC4piAnalysis::AddCategories();
 
@@ -168,21 +150,23 @@ void numuCC4piAnalysis::DefineTruthTree(){
 
   baseAnalysis::DefineTruthTree();
 
-  AddVarI(output(), true_Nu_pdg,         "nu pdg");
-  AddVarF(output(), true_Nu_mom,         "nu momentum");
-  AddVarI(output(), true_reaction_code,         "reaction_code");
-  AddVar4VF(output(), true_vertex_position,         "vertex position");
+  AddVarI(output(), true_Nu_pdg,            "nu pdg");
+  AddVarF(output(), true_Nu_mom,            "nu momentum");
+  AddVarI(output(), true_reaction_code,     "reaction_code");
+  AddVar4VF(output(), true_vertex_position, "vertex position");
 
-  AddVarI(output(), true_parentID,         "  true_parentID");                  
+  AddVarI(output(), true_parentID,          "true_parentID");                  
 
-  AddVarI(output(), true_pdg,         "  pdg");
-  AddVarF(output(), true_SDlength,  " SD length  ");
-  AddVarF(output(), true_Edep,  " Edeposite  ");
-  AddVarF(output(), true_mom,         " mom");
-  AddVarF(output(), true_costheta,         " costheta");
-  AddVarF(output(), true_phi,         " phi");
-  AddVarF(output(), true_charge,         " charge");
-  AddVarF(output(), true_ekin,         " kinetic energy");
+  AddVarI(output(), true_pdg,         "pdg");
+  AddVarF(output(), true_SDlength,    "SD length");
+  AddVarF(output(), true_Edep,        "Edeposite");
+  AddVarF(output(), true_mom,         "mom");
+  AddVarF(output(), true_costheta,    "costheta");
+  AddVarF(output(), true_phi,         "phi");
+  AddVarF(output(), true_charge,      "charge");
+  AddVarF(output(), true_ekin,        "kinetic energy");
+  AddVarF(output(), true_Q2,          "Q2");
+  AddVarI(output(), true_TPC,         "TPC detector");
 
 }
 
@@ -272,12 +256,17 @@ bool numuCC4piAnalysis::CheckFillTruthTree(const AnaTrueVertex& vtx) {
 
   bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
   bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+  bool useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+  bool useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+
   
   //std::cout << useTarget1 << " " << useTarget2 << std::endl;
 
   bool TrueNuMuCC = vtx.ReacCode > 0 && vtx.ReacCode < 30 && vtx.NuPDG == 14;
   bool TrueVtxFV = (useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position )) ||
-		   (useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, vtx.Position ));
+				   (useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, vtx.Position )) ||
+				   (useFGD1    && anaUtils::InFiducialVolume( SubDetId::kFGD1,    vtx.Position )) ||
+		           (useFGD2    && anaUtils::InFiducialVolume( SubDetId::kFGD2,    vtx.Position ));
   
   /*
     std::vector<AnaTrueParticleB*> TrueParticles = vtx.TrueParticlesVect;
@@ -342,16 +331,29 @@ void numuCC4piAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
     output().FillVar(true_ekin, trueTrack->EKin);
     output().FillVar(true_charge, trueTrack->Charge);
 
+    for (int i=0; i<trueTrack->DetCrossingsVect.size(); i++) {
+      int tpc = SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector);
+      if (tpc > 0) { output().FillVar(true_TPC, tpc); break; }
+    }
+
     float phi = atan2(trueTrack->Direction[1], trueTrack->Direction[0]);
     //float cosphi = cos(phi);
 
     output().FillVar(true_phi, phi);
 
+    TLorentzVector P_nu, P_mu;
+    P_nu.SetVectM(vtx.NuMom*anaUtils::ArrayToTVector3(vtx.NuDir), 0);
+    P_mu.SetVectM(trueTrack->Momentum*anaUtils::ArrayToTVector3(trueTrack->Direction), 105.66);
+
+    float Q2 = -(P_mu-P_nu).Mag2()/1e6; // in GeV^2/c^2
+    output().FillVar(true_Q2, Q2);
+
   }
 
-  /*
   bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
   bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+  bool useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+  bool useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
 
   if ( useTarget1 && !useTarget2)
     anaUtils::FillCategories(&vtx, "", SubDetId::kTarget1, IsAntinu,GetSpill().GetIsSandMC());
@@ -359,7 +361,12 @@ void numuCC4piAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
     anaUtils::FillCategories(&vtx, "", SubDetId::kTarget2, IsAntinu,GetSpill().GetIsSandMC());
   if ( useTarget1 &&  useTarget2)
     anaUtils::FillCategories(&vtx, "", SubDetId::kTarget, IsAntinu,GetSpill().GetIsSandMC());
-  */
+  if ( useFGD1 && !useFGD2)
+    anaUtils::FillCategories(&vtx, "", SubDetId::kFGD1, IsAntinu,GetSpill().GetIsSandMC());
+  if (!useFGD1 &&  useFGD2)
+    anaUtils::FillCategories(&vtx, "", SubDetId::kFGD2, IsAntinu,GetSpill().GetIsSandMC());
+  if ( useFGD1 &&  useFGD2)
+    anaUtils::FillCategories(&vtx, "", SubDetId::kFGD, IsAntinu,GetSpill().GetIsSandMC());
 
 }
 
@@ -395,6 +402,8 @@ void numuCC4piAnalysis::FillCategories(){
 
   bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
   bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+  bool useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+  bool useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
 
   if ( useTarget1 && !useTarget2)
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget1);
@@ -402,6 +411,13 @@ void numuCC4piAnalysis::FillCategories(){
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget2);
   if ( useTarget1 &&  useTarget2)
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget);
+
+  if ( useFGD1 && !useFGD2)
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD1);
+  if (!useFGD1 &&  useFGD2)
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD2);
+  if ( useFGD1 &&  useFGD2)
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD);
   
   anaUtils::_categ->SetCode("CC4pi",      numuCC4pi_utils::CC4piCategory(track) );
   //	anaUtils::_categ->SetCode("OOFV_Fwd",   numuCC4pi_utils::OOFVCategory(track,0) );

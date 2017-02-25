@@ -69,6 +69,30 @@ Float_t anaUtils::GetTrueLinearLengthInTarget(const AnaTrueParticleB& trueTrack,
   return sqrt(dist);
 }
 
+//**************************************************
+Float_t anaUtils::GetTrueLinearLengthInFGD(const AnaTrueParticleB& trueTrack, Float_t& distz){
+  //**************************************************
+
+  Float_t dist = -9999999;
+  distz = -999;
+  for (Int_t idet = 0; idet < trueTrack.nDetCrossings; idet++) {
+    //i.e crossing the active part of the tpc
+    if (!trueTrack.DetCrossings[idet]->Detector)
+      continue;
+    if (SubDetId::GetDetectorUsed(trueTrack.DetCrossings[idet]->Detector, SubDetId::kFGD) && trueTrack.DetCrossings[idet]->InActive) {
+      Float_t dist_temp = anaUtils::GetSeparationSquared(trueTrack.DetCrossings[idet]->ExitPosition, trueTrack.DetCrossings[idet]->EntrancePosition);
+      Float_t distz_temp = fabs(trueTrack.DetCrossings[idet]->ExitPosition[2] - trueTrack.DetCrossings[idet]->EntrancePosition[2]);
+      if (dist_temp > dist)
+        dist = dist_temp;
+      if (distz_temp > distz)
+        distz = distz_temp;
+
+    }
+  }
+
+  return sqrt(dist);
+}
+
 //********************************************************************
 bool anaUtils::TrueParticleEntersDet(const AnaTrueParticleB* track, SubDetId::SubDetEnum det){
   //********************************************************************
@@ -162,6 +186,43 @@ bool anaUtils::TrueParticleCrossesTarget(const AnaTrueParticleB* track, SubDetId
   }
   
   if(dist>62500)//bigger than the ~1/4 of the width of the Target
+      return true;
+      
+  return false;
+
+}
+
+//********************************************************************
+bool anaUtils::TrueParticleCrossesFGD(const AnaTrueParticleB* track, SubDetId::SubDetEnum det){
+  //********************************************************************
+
+  if(!track)
+    return false;
+
+  if  (det!=SubDetId::kFGD && !SubDetId::IsFGD(det))
+    return false;
+
+  Float_t dist=-999999.;
+
+  //loop through det crossings
+  for(Int_t idet=0;idet<track->nDetCrossings;idet++){
+
+    AnaDetCrossingB* cross = track->DetCrossings[idet];
+    if(!cross)
+      continue;
+
+    // i.e crossing the active part of the TPC
+    if (!SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, det) || !track->DetCrossings[idet]->InActive)
+      continue;
+    
+    //i.e crossing the active part of the tpc
+    if(SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, det) && track->DetCrossings[idet]->InActive){
+        Float_t sep = anaUtils::GetSeparationSquared(track->DetCrossings[idet]->EntrancePosition, track->DetCrossings[idet]->ExitPosition);
+        if(sep>dist) dist=sep;
+      }
+  }
+  
+  if(dist>62500)//bigger than the ~1/4 of the width of the FGD
       return true;
       
   return false;
