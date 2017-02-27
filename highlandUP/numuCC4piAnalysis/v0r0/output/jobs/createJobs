@@ -1,0 +1,105 @@
+#! /bin/csh -f
+
+set code_dir = /sps/t2k/mlamoure/dev/Upgrade/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
+set original_parfile = ${code_dir}/parameters/numuCC4piAnalysis.parameters.dat
+
+set par_dir = ${code_dir}/output/jobs/parameters
+set log_dir = ${code_dir}/output/jobs/logs
+set job_dir = ${code_dir}/output/jobs
+
+rm -rf ${par_dir}/*
+rm -rf ${log_dir}/*
+rm -rf ${job_dir}/job_*.sh
+rm launchJobs
+touch launchJobs
+
+set j=0 # job number
+cd ${code_dir}/output/jobs
+
+set i_conf=0
+while ($i_conf < 6)
+
+    set i_target  = 1
+	set N_targets = 2
+	if ($i_conf >= 2) then
+		set N_targets = 3
+	endif
+		
+    while ($i_target <= $N_targets)
+
+		set i_branch=0
+		while ($i_branch < 4)
+
+			set parfile = ${par_dir}/par_$j.dat
+			cp -f $original_parfile $parfile
+
+			if ($i_conf == 0) then
+			set name = "current"
+			else 
+			set name = "upgrade${i_conf}"
+			endif
+			
+			set name = "${name}_Target${i_target}_${i_branch}"
+			
+			if ($i_conf == 0) then
+				set file = "g4ND280Up_6E20_current_ECalAll_1_2_17.root"
+				sed -i "/EnableTarget1 =/c\ < numuCC4piAnalysis.EnableTarget1 = 1 >" $parfile
+				sed -i "/EnableTarget2 =/c\ < numuCC4piAnalysis.EnableTarget2 = 0 >" $parfile		
+				if ($i_target == 1) then
+					sed -i "/EnableFGD1 =/c\ < numuCC4piAnalysis.EnableFGD1 = 1 >" $parfile
+					sed -i "/EnableFGD2 =/c\ < numuCC4piAnalysis.EnableFGD2 = 0 >" $parfile
+				else
+					sed -i "/EnableFGD1 =/c\ < numuCC4piAnalysis.EnableFGD1 = 0 >" $parfile
+					sed -i "/EnableFGD2 =/c\ < numuCC4piAnalysis.EnableFGD2 = 1 >" $parfile
+				endif
+				
+			else if ($i_conf == 1) then
+				set file = "g4ND280Up_6E20_classic_ECalAll_1_2_17.root"
+				sed -i "/EnableFGD1 =/c\ < numuCC4piAnalysis.EnableFGD1 = 0 >" $parfile
+				sed -i "/EnableFGD2 =/c\ < numuCC4piAnalysis.EnableFGD2 = 0 >" $parfile
+				if ($i_target == 1) then
+					sed -i "/EnableTarget1 =/c\ < numuCC4piAnalysis.EnableTarget1 = 1 >" $parfile
+					sed -i "/EnableTarget2 =/c\ < numuCC4piAnalysis.EnableTarget2 = 0 >" $parfile
+				else
+					sed -i "/EnableTarget1 =/c\ < numuCC4piAnalysis.EnableTarget1 = 0 >" $parfile
+					sed -i "/EnableTarget2 =/c\ < numuCC4piAnalysis.EnableTarget2 = 1 >" $parfile
+				endif
+			
+			else
+				set file = "g4ND280Up_6E20_alt${i_conf}.root"
+				sed -i "/EnableTarget2 =/c\ < numuCC4piAnalysis.EnableTarget2 = 0 >" $parfile
+				if ($i_target == 1) then
+					sed -i "/EnableFGD1 =/c\ < numuCC4piAnalysis.EnableFGD1 = 1 >" $parfile
+					sed -i "/EnableFGD2 =/c\ < numuCC4piAnalysis.EnableFGD2 = 0 >" $parfile
+					sed -i "/EnableTarget1 =/c\ < numuCC4piAnalysis.EnableTarget1 = 0 >" $parfile
+				else if ($i_target == 2) then
+					sed -i "/EnableFGD1 =/c\ < numuCC4piAnalysis.EnableFGD1 = 0 >" $parfile
+					sed -i "/EnableFGD2 =/c\ < numuCC4piAnalysis.EnableFGD2 = 1 >" $parfile
+					sed -i "/EnableTarget1 =/c\ < numuCC4piAnalysis.EnableTarget1 = 0 >" $parfile
+				else
+					sed -i "/EnableFGD1 =/c\ < numuCC4piAnalysis.EnableFGD1 = 0 >" $parfile
+					sed -i "/EnableFGD2 =/c\ < numuCC4piAnalysis.EnableFGD2 = 0 >" $parfile
+					sed -i "/EnableTarget1 =/c\ < numuCC4piAnalysis.EnableTarget1 = 1 >" $parfile
+				endif
+			endif
+			
+			sed -i "/Branch =/c\ < numuCC4piAnalysis.Branch = ${i_branch} >" $parfile
+			sed -i "/Configuration =/c\ < numuCC4piAnalysis.Configuration = ${i_conf} >" $parfile
+
+			echo "${code_dir}/output/jobs/jobBase $j $name $file" > job_$j.sh
+			chmod +x job_$j.sh
+
+			echo "qsub -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=10:00:00,s_fsize=4G,sps=1,s_rss=3G job_$j.sh" >> launchJobs
+
+			@ j = $j + 1
+			@ i_branch = $i_branch + 1
+
+		end
+
+	@ i_target = $i_target + 1
+    end
+
+    @ i_conf = $i_conf + 1
+end
+
+chmod +x launchJobs

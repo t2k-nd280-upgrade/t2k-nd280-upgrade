@@ -1,0 +1,14 @@
+#!/bin/csh
+
+set upgrade_dir = /sps/t2k/mlamoure/dev/Upgrade/t2k-nd280-upgrade
+set code_dir = ${upgrade_dir}/highlandUP/numuCC4piAnalysis/v0r0
+set job_dir = ${upgrade_dir}/highlandUP/numuCC4piAnalysis/v0r0/output/jobs
+
+source ${upgrade_dir}/T2KND280Up_CLHEP.csh
+source ${upgrade_dir}/highlandUP/run_at_start_t2k.csh
+source ${upgrade_dir}/highlandUP/numuCC4piAnalysis/v0r0/cmt/setup.csh
+
+cd ${job_dir}
+
+rm -f files/$2.root
+${code_dir}/Linux-x86_64/RunNumuCC4piAnalysis.exe -p ${job_dir}/parameters/par_$1.dat -o ${job_dir}/files/$2.root ${upgrade_dir}/files/$3

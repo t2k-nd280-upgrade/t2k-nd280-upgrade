@@ -35,7 +35,46 @@ bool numuCC4piAnalysis::Initialize(){
 
   //Add muon candidate categories
   numuCC4piAnalysis::AddCategories();
+  
+  if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") >= 2) {
+    
+	DetDef::FGD1min[0] = -932.15;
+    DetDef::FGD1max[0] =  932.15;	
+    DetDef::FGD1min[1] = -948.15;
+    DetDef::FGD1max[1] =  916.15;	
+    DetDef::FGD1min[2] =  276.00;
+    DetDef::FGD1max[2] =  579.00;
 
+    DetDef::FGD2min[0] = -932.15;
+    DetDef::FGD2max[0] =  932.15;	
+    DetDef::FGD2min[1] = -948.15;
+    DetDef::FGD2max[1] =  916.15;	
+    DetDef::FGD2min[2] = 1553.00;
+    DetDef::FGD2max[2] = 1856.00;
+	
+  }
+  
+  if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 2) {
+    DetDef::Target1min[2] =  -2692.00;
+    DetDef::Target1max[2] =   -698.00;
+  }
+  if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 3) {
+    DetDef::Target1min[1] =   -216.00;
+    DetDef::Target1max[1] =    184.00;  
+    DetDef::Target1min[2] =  -2692.00;
+    DetDef::Target1max[2] =   -698.00;
+  }
+  if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 4) {
+    DetDef::Target1min[2] =  -1718.00;
+    DetDef::Target1max[2] =   -276.00;
+  }
+  if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 5) {
+	DetDef::Target1min[1] =   -216.00;
+    DetDef::Target1max[1] =    184.00;  
+    DetDef::Target1min[2] =  -1718.00;
+    DetDef::Target1max[2] =   -276.00;
+  }
+  
   return true;
 
 }

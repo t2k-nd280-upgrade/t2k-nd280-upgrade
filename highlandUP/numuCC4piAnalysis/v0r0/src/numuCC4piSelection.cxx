@@ -283,16 +283,10 @@ namespace numuCC4piUtils{
     //Sort ECalTracks using RangeMomentum
     std::sort(cc4pibox->ECalTracks.begin(), cc4pibox->ECalTracks.end(), numuCC4pi_utils::HGlobalMomFirst);
 
-    if      (cc4pibox->TPCTracks.size()>0  && cc4pibox->ECalTracks.size()==0)
+    if      (cc4pibox->TPCTracks.size()>0)
       cc4pibox->MainTrack = cc4pibox->TPCTracks[0];
-    else if (cc4pibox->TPCTracks.size()==0 && cc4pibox->ECalTracks.size()>0)
+    else if (cc4pibox->ECalTracks.size()>0)
       cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
-    else if (cc4pibox->TPCTracks.size()>0  && cc4pibox->ECalTracks.size()>0){
-      //if (cc4pibox->TPCTracks[0]->Momentum > cc4pibox->ECalTracks[0]->Momentum)
-      cc4pibox->MainTrack = cc4pibox->TPCTracks[0];
-      //else
-      //cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
-    }
     else return false;  
 
     cc4pibox->TPC_det = anaUtils::GetClosestTPC(*cc4pibox->MainTrack);

@@ -20,10 +20,10 @@ namespace DetDef {
   // (note that DetDef::Subdet1_1min = {x,y,z} works only with old compilers)
   // Fiducial volume is defined by removing the edge volumes in FiducialVolumeDefinition.cxx
 
-  Float_t TPCUp1min[3] = {-1150.00, -1150.0, -885.0};
-  Float_t TPCUp1max[3] = { 1150.00,  1230.0,   89.0};
-  Float_t TPCUp2min[3] = {-1150.00, -1170.0,  474.0};
-  Float_t TPCUp2max[3] = { 1150.00,  1230.0, 1448.0};
+  Float_t TPCUp1min[3]   = {-1150.00, -1150.0, -885.0};
+  Float_t TPCUp1max[3]   = { 1150.00,  1230.0,   89.0};
+  Float_t TPCUp2min[3]   = {-1150.00, -1170.0,  474.0};
+  Float_t TPCUp2max[3]   = { 1150.00,  1230.0, 1448.0};
   Float_t TPCDown1min[3] = {-1150.00, -1170.0, 1833.0};
   Float_t TPCDown1max[3] = { 1150.00,  1230.0, 2807.0};
   Float_t TPCDown2min[3] = {-1150.00, -1170.0, 1833.0};
@@ -35,16 +35,16 @@ namespace DetDef {
   Float_t ForwTPC3min[3] = {-1150.00, -1170.0, -885.0};
   Float_t ForwTPC3max[3] = { 1150.00,  1230.0,   89.0};
 
-  Float_t Target1min[3] = {-932.00, -300.0, -1787.0};
-  Float_t Target1max[3] = { 932.00,  300.0,  -487.0};
-  Float_t Target2min[3] = {-932.00, -300.0, 487.0};
-  Float_t Target2max[3] = { 932.00,  300.0,   1787.0};
+  Float_t Target1min[3] = {-932.00, -316.0, -1787.0};
+  Float_t Target1max[3] = { 932.00,  284.0,  -487.0};
+  Float_t Target2min[3] = {-932.00, -316.0,   487.0};
+  Float_t Target2max[3] = { 932.00,  284.0,  1787.0};
 
- Float_t FGD1min[3] = {-932.00, -932.0, 276.0};
- Float_t FGD1max[3] = { 932.00,  932.0,  579.0};
+ Float_t FGD1min[3] = {-932.15, -948.15,  276.0};
+ Float_t FGD1max[3] = { 932.15,  916.15,  579.0};
 
- Float_t FGD2min[3] = {-932.00, -932.0, 1554.0};
- Float_t FGD2max[3] = { 932.00,  932.0,   1885.0};
+ Float_t FGD2min[3] = {-932.15, -948.15, 1553.0};
+ Float_t FGD2max[3] = { 932.15,  916.15, 1856.0};
 
   //from RECPACK simplified geometry: active DsECal volume
   Float_t dsecalmin[3] = {-1019.97,-1009.97,2855.03};
@@ -82,6 +82,7 @@ namespace DetDef {
   Float_t pecalBLmax[3] = {1676.00,   -1510.00, -890.00};
   Float_t pecalBRmin[3] = {-1676.00,  -1597.00, -3270.00};
   Float_t pecalBRmax[3] = {136.00,    -1510.00, -890.00};
+
 
   //**********************************
   void DumpVolumes(){
