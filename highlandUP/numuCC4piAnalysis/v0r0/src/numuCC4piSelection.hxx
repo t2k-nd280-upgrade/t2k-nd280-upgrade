@@ -22,7 +22,7 @@ public:
   virtual ~numuCC4piSelection(){
     _file_ECAL_PDF->Close();
     delete _file_ECAL_PDF;
-	delete _randomGen;
+    delete _randomGen;
   }
 
   //---- These are mandatory functions

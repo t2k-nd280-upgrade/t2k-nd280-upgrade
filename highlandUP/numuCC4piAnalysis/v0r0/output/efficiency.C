@@ -98,8 +98,6 @@ TH1F* computeEfficiency(int target, int config, int mode, int branch, int cut1, 
   h_eff->GetXaxis()->SetTitleOffset(0.9);
   h_eff->GetYaxis()->SetTitleSize(0.05);
   h_eff->GetYaxis()->SetTitle("efficiency");
-  
-  //f->Close();
 
   return h_eff;
 
@@ -200,7 +198,7 @@ void plotEfficiency(int cut1, int cut2,
   
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(1);
-  gStyle->SetTitleAlign(13);
+  gStyle->SetTitleAlign(23);
 
   TH1F* h_eff_Fwd  = computeEfficiency(target, config, 0,
 				       0, cut1, cut2,
@@ -305,7 +303,7 @@ void plotEfficiency(int cut1, int cut2,
 		    (config!=1 && target!=3) ? "FGD":"Target",
 				    (target!=3) ? target : 1));
 
-TLegend *leg2 = new TLegend(0.1, 0.89, 0.9, 0.94);
+  TLegend *leg2 = new TLegend(0.1, 0.89, 0.9, 0.94);
   leg2->SetNColumns(5);
 
   leg2->AddEntry(h_eff_Fwd,  "Fwd TPC", "f");
@@ -334,7 +332,7 @@ void plotTotal(int cut1, int cut2,
   gStyle->SetOptTitle(0);
 
   TCanvas *c = new TCanvas("c", "c");
-  TH1F* h_dummy = c->DrawFrame(xbins[0], 0, xbins[nbins-1], 1.02);
+  TH1F* h_dummy = c->DrawFrame(xbins[0], 0, xbins[nbins], 1.02);
   h_dummy->GetXaxis()->SetTitle(var_title);
   h_dummy->GetXaxis()->SetTitleSize(0.05);
   h_dummy->GetXaxis()->SetTitleOffset(0.9);
@@ -372,11 +370,11 @@ void plotTotal(int cut1, int cut2,
     c->SaveAs(TString::Format("fig/eff/binZ/eff_total_%s_Z%i.eps", var.Data(), Z_bin));
 
   gStyle->SetOptTitle(1);
-  gStyle->SetTitleAlign(13);
+  gStyle->SetTitleAlign(23);
   for (int ic=2; ic<6; ic++) {
 
     TCanvas *c0 = new TCanvas("c0", "c0");
-    TH1F* h_dummy0 = c0->DrawFrame(xbins[0], 0, xbins[nbins-1], 1.02);
+    TH1F* h_dummy0 = c0->DrawFrame(xbins[0], 0, xbins[nbins], 1.02);
     h_dummy0->GetXaxis()->SetTitle(var_title);
     h_dummy0->GetXaxis()->SetTitleSize(0.05);
     h_dummy0->GetXaxis()->SetTitleOffset(0.9);
@@ -435,7 +433,7 @@ void plotAll(bool drawECal=true) {
 
   int cut=4;
 
-  for (int ic=2; ic<6; ic++) {
+  for (int ic=0; ic<6; ic++) {
     for (int it=1; it<=NTargets[ic]; it++) {
       plotEfficiency(0, cut, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, it, ic, drawECal);
       plotEfficiency(0, cut, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, it, ic, drawECal);

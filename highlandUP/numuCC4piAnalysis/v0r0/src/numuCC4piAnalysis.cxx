@@ -150,8 +150,8 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   //AddToyVarF(output(),  selmu_ToF_PoD,      "");
   //AddToyVarF(output(),  selmu_ToF_ECAL,     "");
   //AddToyVarF(output(),  selmu_ToF_FGD2,     "");
-  AddToyVarF(output(),  selmu_likemu,       ""); 
-  AddToyVarF(output(),  selmu_likemip,      ""); 
+  AddVarF(output(),  selmu_likemu,       ""); 
+  AddVarF(output(),  selmu_likemip,      ""); 
   //AddToyVarI(output(),  selmu_end_ecal,     "");
   
   //--- info from true vertex
@@ -228,7 +228,6 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
 	double costheta_mu_nu = cos(anaUtils::ArrayToTVector3(vtx->LeptonDir).Angle(anaUtils::ArrayToTVector3(vtx->NuDir)));
 	output().FillVar(truelepton_costheta, (Float_t)costheta_mu_nu);
 	output().FillVectorVarFromArray(truelepton_pos, vtx->Position,4);
-
       }
       output().FillVar(selmu_ID,                        cc4pibox().MainTrack->GetTrueParticle()->ID);
       output().FillVar(selmu_PDG,                       cc4pibox().MainTrack->GetTrueParticle()->PDG);
@@ -236,6 +235,7 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVarFromArray(selmu_truedir,    cc4pibox().MainTrack->GetTrueParticle()->Direction, 3);
       output().FillVectorVarFromArray(selmu_truepos,    cc4pibox().MainTrack->GetTrueParticle()->Position, 4);
       output().FillVectorVarFromArray(selmu_trueendpos, cc4pibox().MainTrack->GetTrueParticle()->PositionEnd, 4);
+
     }
 
     AnaTrack* track = static_cast<AnaTrack*>( cc4pibox().MainTrack );
@@ -246,6 +246,8 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVectorVarFromArray(selmu_enddir,     track->DirectionEnd, 3);
     output().FillVectorVarFromArray(selmu_pos,        track->PositionStart, 4);
     output().FillVectorVarFromArray(selmu_endpos,     track->PositionEnd, 4);
+    output().FillVar(selmu_likemu,        anaUtils::GetPIDLikelihood( *track, 0));
+    output().FillVar(selmu_likemip,       anaUtils::GetPIDLikelihoodMIP( *track));
 
     output().FillVar(selmu_ecal_mipem,                cc4pibox().track_ECal_MipEM);
     output().FillVar(selmu_ecal_EneOnL,               cc4pibox().track_ECal_EneOnL);
@@ -278,8 +280,6 @@ void numuCC4piAnalysis::FillToyVarsInMicroTrees(bool addBase){
     //output().FillToyVar(selmu_ToF_PoD,       track->ToF.P0D_FGD1);
     //output().FillToyVar(selmu_ToF_ECAL,      track->ToF.ECal_FGD1);
     //output().FillToyVar(selmu_ToF_FGD2,      track->ToF.FGD1_FGD2);
-    output().FillToyVar(selmu_likemu,        anaUtils::GetPIDLikelihood( *(cc4pibox().MainTrack),0));
-    output().FillToyVar(selmu_likemip,       anaUtils::GetPIDLikelihoodMIP( *(cc4pibox().MainTrack)));
     //output().FillToyVar(selmu_end_ecal,      cutUtils::StoppingBrECALorSMRDCut(track->PositionEnd));
 
   }
@@ -298,14 +298,11 @@ bool numuCC4piAnalysis::CheckFillTruthTree(const AnaTrueVertex& vtx) {
   bool useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
   bool useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
 
-  
-  //std::cout << useTarget1 << " " << useTarget2 << std::endl;
-
   bool TrueNuMuCC = vtx.ReacCode > 0 && vtx.ReacCode < 30 && vtx.NuPDG == 14;
-  bool TrueVtxFV = (useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position )) ||
-				   (useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, vtx.Position )) ||
-				   (useFGD1    && anaUtils::InFiducialVolume( SubDetId::kFGD1,    vtx.Position )) ||
-		           (useFGD2    && anaUtils::InFiducialVolume( SubDetId::kFGD2,    vtx.Position ));
+  bool TrueVtxFV = ( (useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position )) ||
+		     (useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, vtx.Position )) ||
+		     (useFGD1    && anaUtils::InFiducialVolume( SubDetId::kFGD1,    vtx.Position )) ||
+		     (useFGD2    && anaUtils::InFiducialVolume( SubDetId::kFGD2,    vtx.Position )) );
   
   /*
     std::vector<AnaTrueParticleB*> TrueParticles = vtx.TrueParticlesVect;

@@ -283,21 +283,20 @@ bool numuCC4pi_utils::isHMNT(const AnaTrackB* candidate, std::vector<AnaTrackB*>
 bool numuCC4pi_utils::MuonPIDCut(const AnaTrackB& candidate, bool ApplyMIP) {
   //**************************************************
 
-  Float_t cut1 = ND::params().GetParameterI("numuCC4piAnalysis.MuonPID.Cut.Lmip");
-  Float_t cut2 = ND::params().GetParameterI("numuCC4piAnalysis.MuonPID.Cut.Lmu");
-  Float_t pcut = ND::params().GetParameterI("numuCC4piAnalysis.MuonPID.Cut.p_mip");
+  Float_t cut1 = ND::params().GetParameterD("numuCC4piAnalysis.MuonPID.Cut.Lmip");
+  Float_t cut2 = ND::params().GetParameterD("numuCC4piAnalysis.MuonPID.Cut.Lmu");
+  Float_t pcut = ND::params().GetParameterD("numuCC4piAnalysis.MuonPID.Cut.p_mip");
 
-  
-  Float_t PIDLikelihood[4];
-  anaUtils::GetPIDLikelihood(candidate, PIDLikelihood, false);
-  
   if (ApplyMIP) {
-    if ( ((PIDLikelihood[0]+PIDLikelihood[3])/(1-PIDLikelihood[2]) > cut1 || candidate.Momentum > pcut ) &&
-	 (PIDLikelihood[0]>cut2) )
+    if ( (anaUtils::GetPIDLikelihoodMIP(candidate) > cut1 || candidate.Momentum > pcut) &&
+	 (anaUtils::GetPIDLikelihood(candidate, 0) > cut2) ) {
       return true;
+    }
   }
   else
-    if ( PIDLikelihood[0]>cut2 ) return true;
+    if ( anaUtils::GetPIDLikelihood(candidate, 0) > cut2 ) {
+      return true;
+    }
 
   return false;
 
