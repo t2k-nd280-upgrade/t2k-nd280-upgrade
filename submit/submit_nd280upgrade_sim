@@ -2,26 +2,16 @@
 
 
 #-------------------------------------------------------------------------------------------------------------------------------
-# Submit a batch of build_marg_toys.C jobs
+# Submit a GEANT4 simulation job
 #
 # Inputs
-#  --resource               : Computer resource, <ETH-Monch, RAL, Oxford, Grid, interactive>. Default: interactive.
+#  --resource               : Computer resource. Default: interactive.
 #  --tag                    : Tag for output files.
 #  --config-file            : Analysis configuration file from the config/ directory.
-#  --fit-param-list         : Fit parameter list. See FitParamList.h for allowed options.
-#  --physparam-freepar      : Free parameter
-#  --npt-freepar            : Number of points of the free parameter to scan
-#  --step-freepar           : Step of the free parameter scan
-
-#  --tweak-systematics      : generate marginalization toy MC with randomized systematics
-#  --cpu-time               : Required CPU time. Default: "6:00:00" for RAL, "11:50:00" for Oxford.
-#  --job-dir                : Directory for job scripts and outputs. Default: `pwd`.
-#  --softw-dir              : Oscillation code top-level directory. Default: `pwd`.
-#  --dmsq-scheme            : abs23 or fogli
-#  --hierarchy              : normal or inverted
-#  --mix-param-choice       : sinsq2theta or sinsqtheta
-#  --mix-param-octant       : one or two
 #
+#  --cpu-time               : Required CPU time. 
+#  --job-dir                : Directory for job scripts and outputs. Default: `pwd`.
+#  --softw-dir              : code top-level directory. 
 # D.Sgalaberna
 #-------------------------------------------------------------------------------------------------------------------------------
 #
@@ -45,41 +35,71 @@ foreach (@ARGV) {
     elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
     elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--exe-clust-dir'    ) { $exe_clust_dir   = $ARGV[$iarg+1]; }
+    elsif($_ eq '--exe-loc-dir'      ) { $exe_loc_dir     = $ARGV[$iarg+1]; }
+
     else {
 	print "Unrecognised argument ".$_."\n"; exit;
     }
     $iarg++;
 }
 
+$exe_clust_dir = "bin/cluster/" unless defined $exe_clust_dir; # path starting from $softw_dir
+$exe_loc_dir = "bin/" unless defined $exe_loc_dir; # path starting from $softw_dir
+
 $resource        = "interactive"               unless defined $resource;
-#$tag             = "g4ND280Up_6E20_30cm_width1807mm_numubar_Cluster"    unless defined $tag;
-$tag             = "g4ND280Up_6E20_nd280current_numu_Cluster"    unless defined $tag;
+#$tag             = "g4ND280Up_6E20_classic_1864x600x1300_nue"    unless defined $tag;
+#$tag             = "g4ND280Up_6E20_nd280current_numubar_0p2T"    unless defined $tag;
+#$tag             = "g4ND280Up_6E20_classic_AfterDetUpdate_9_12_16" unless defined $tag;
+#$tag             = "g4ND280Up_6E20_classic_ECalAll_1_2_17" unless defined $tag;
 
-#$config_file     = "config/configuration.xml" unless defined $config_file;
-#$config_file     = "config/configuration_30cm.xml" unless defined $config_file;
-#$config_file     = "config/configuration_width1807mm.xml" unless defined $config_file;
-#$config_file     = "config/configuration_30cm_width1807mm.xml" unless defined $config_file;
-$config_file     = "config/configuration_nd280current.xml" unless defined $config_file;
+#$tag             = "g4ND280Up_6E20_alter_targ_ftpc_ECalAll_28_2_17" unless defined $tag;
+#$tag             = "g4ND280Up_6E20_alter_targ_40cm_ftpc_ECalAll_28_2_17" unless defined $tag;
+#$tag             = "g4ND280Up_6E20_alter_ftpc_targ_ECalAll_28_2_17" unless defined $tag;
+#$tag             = "g4ND280Up_6E20_alter_ftpc_targ_40cm_ECalAll_28_2_17" unless defined $tag;
 
-#$config_file     = "config/configuration_cluster.xml" unless defined $config_file;
-#$config_file     = "config/configuration_cluster_30cm.xml" unless defined $config_file;
-#$config_file     = "config/configuration_cluster_width1807mm.xml" unless defined $config_file;
-#$config_file     = "config/configuration_cluster_30cm_width1807mm.xml" unless defined $config_file;
-#$config_file     = "config/configuration_cluster_nd280current.xml" unless defined $config_file;
+$tag             = "test" unless defined $tag;
 
+# After updates
+
+#$config_file     = "config/configuration_classic.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_classic.xml" unless defined $config_file;
+#$config_file     = "config/configuration_classic_ecal.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_classic_ecal.xml" unless defined $config_file;
+#$config_file     = "config/configuration_current_ecal.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file;
+
+# Alternative configurations
+
+#$config_file     = "config/Alternative/configuration_targ_ftpc_2fgd_ecal.xml" unless defined $config_file;
+#$config_file     = "config/Alternative/configuration_targ_ftpc_2fgd_ecal_40cm.xml" unless defined $config_file;
+#$config_file     = "config/Alternative/configuration_ftpc_targ_2fgd_ecal.xml" unless defined $config_file;
+#$config_file     = "config/Alternative/configuration_ftpc_targ_2fgd_ecal_40cm.xml" unless defined $config_file;
+
+#$config_file     = "config/Alternative/configuration_cluster_targ_ftpc_2fgd_ecal.xml" unless defined $config_file;
+#$config_file     = "config/Alternative/configuration_cluster_targ_ftpc_2fgd_ecal_40cm.xml" unless defined $config_file;                                                               
+#$config_file     = "config/Alternative/configuration_cluster_ftpc_targ_2fgd_ecal.xml" unless defined $config_file;                                                                              
+#$config_file     = "config/Alternative/configuration_cluster_ftpc_targ_2fgd_ecal_40cm.xml" unless defined $config_file;                                                                     
+
+# Add ToF detectors
+$config_file     = "config/Test/configuration_classic_ecal_tof.xml" unless defined $config_file;
 
 $vis_file        = "mac/vis.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis_nd280current.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis_cluster_nd280current.mac"           unless defined $vis_file;
 
-#$nruns           = 68                          unless defined $nruns;      # number of jobs (6E20POT - thick=30cm, width=230cm - default)
-#$nruns           = 44                          unless defined $nruns;      # number of jobs (6E20POT - thick=30cm, width=180cm)
-$nruns           = 41                          unless defined $nruns;      # number of jobs (6E20POT - nd280 current)
+$nruns           = 180                          unless defined $nruns;      # number of jobs (ECal)
+#$nruns           = 90                          unless defined $nruns;      # number of jobs (classic)   
+#$nexpts          = 10000                        unless defined $nexpts;     # number of events per job  
+
+#$nruns           = 46                          unless defined $nruns;      # number of jobs (classic)
 $nexpts          = 5000                        unless defined $nexpts;     # number of events per job
+
 $first_expt      = 0                           unless defined $first_expt; # first event
 
-$queue           = "veryshort"                unless defined $queue;
+#$queue           = "veryshort"                unless defined $queue;
+$queue           = "short"                unless defined $queue;
 
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
@@ -87,8 +107,13 @@ while($irun < $nruns) { # loop over the jobs
     $evt_first = $first_expt + $irun * $nexpts;
     
  
-    $arguments = "$softw_dir/bin/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
-   
+    if($resource eq "interactive") {
+	$arguments = "$softw_dir/$exe_clust_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+    }
+    else{
+	$arguments = "$softw_dir/$exe_loc_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+    }
+    
     $command = "$arguments";
     
     print "\n";
@@ -104,7 +129,7 @@ while($irun < $nruns) { # loop over the jobs
     # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
     #
     if($resource eq "UNIGE-Atlas") {
-	open(PBS, ">$job_dir/g4ND280Up-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	open(PBS, ">$job_dir/$tag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
 	print PBS "#!/bin/bash -l  \n";
 	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
 	print PBS "\n";
@@ -115,7 +140,7 @@ while($irun < $nruns) { # loop over the jobs
 	print PBS "$command \n";
 	close(PBS);	
 	`qsub -q $queue -l mem=6000mb -l vmem=6000mb $job_dir/g4ND280Up-$evt_first-$nexpts.sbatch`;
-	#`qsub -q $queue -l mem=6000mb -l vmem=6000mb -l nodes=atlas079+atlas075+atlas063+atlas063+atlas054+atlas040 $job_dir/g4ND280Up-$evt_first-$nexpts.sbatch`;
+	#`qsub -q $queue -l mem=20000mb -l vmem=20000mb $job_dir/g4ND280Up-$evt_first-$nexpts.sbatch`;
     }
     if($resource eq "interactive") {
 	system($command);
