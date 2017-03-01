@@ -158,15 +158,15 @@ void convUtils::SetDetectorUsedField(unsigned long &det, unsigned int i){
             break;
     case 1: SubDetId::SetDetectorUsed(det, SubDetId::kTPCUp2);
             break;
-    case 2: SubDetId::SetDetectorUsed(det, SubDetId::kTPCDown1);
+    case 5: SubDetId::SetDetectorUsed(det, SubDetId::kTPCDown1);
             break;
-    case 3: SubDetId::SetDetectorUsed(det, SubDetId::kTPCDown2);
+    case 6: SubDetId::SetDetectorUsed(det, SubDetId::kTPCDown2);
             break;
-    case 4: SubDetId::SetDetectorUsed(det, SubDetId::kForwTPC1);  // Temporary fix whilst SubDetId in truth is not available from oaAnalysis
+    case 2: SubDetId::SetDetectorUsed(det, SubDetId::kForwTPC1);  // Temporary fix whilst SubDetId in truth is not available from oaAnalysis
             break;
-    case 5: SubDetId::SetDetectorUsed(det, SubDetId::kForwTPC2);  // Temporary fix whilst SubDetId in truth is not available from oaAnalysis
+    case 3: SubDetId::SetDetectorUsed(det, SubDetId::kForwTPC2);  // Temporary fix whilst SubDetId in truth is not available from oaAnalysis
             break;
-    case 6: SubDetId::SetDetectorUsed(det, SubDetId::kForwTPC3);  // Temporary fix whilst SubDetId in truth is not available from oaAnalysis
+    case 4: SubDetId::SetDetectorUsed(det, SubDetId::kForwTPC3);  // Temporary fix whilst SubDetId in truth is not available from oaAnalysis
             break;
     case 7: SubDetId::SetDetectorUsed(det, SubDetId::kTarget1);  // Temporary fix whilst SubDetId in truth is not available from oaAnalysis
             break;
@@ -219,17 +219,22 @@ void convUtils::ConvertBitFieldToTrueParticleDetEnum(unsigned long det, int &tru
   
   trueDet=-1;
 
-  if ( SubDetId::GetDetectorUsed(det, SubDetId::kTPCUp1))     trueDet = 0;
-  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kTPCUp2))  trueDet = 1;
-  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kTPCDown1))    trueDet = 2;
-  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kTPCDown2))    trueDet = 3;
-  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kForwTPC1))    trueDet = 4;
-  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kForwTPC2))    trueDet = 5;
-  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kForwTPC3))    trueDet = 6;
+  if ( SubDetId::GetDetectorUsed(det, SubDetId::kTPCUp1))           trueDet = 0;
+  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kTPCUp2))      trueDet = 1;
+  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kTPCDown1))    trueDet = 5;
+  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kTPCDown2))    trueDet = 6;
+  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kForwTPC1))    trueDet = 2;
+  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kForwTPC2))    trueDet = 3;
+  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kForwTPC3))    trueDet = 4;
   else if ( SubDetId::GetDetectorUsed(det, SubDetId::kTarget1))     trueDet = 7;
   else if ( SubDetId::GetDetectorUsed(det, SubDetId::kTarget2))     trueDet = 8;
   else if ( SubDetId::GetDetectorUsed(det, SubDetId::kFGD1))        trueDet = 9;
   else if ( SubDetId::GetDetectorUsed(det, SubDetId::kFGD2))        trueDet = 10;
+  else if ( SubDetId::GetDetectorUsed(det, SubDetId::kDsECal))      trueDet = 11;
+  else if ((SubDetId::GetDetectorUsed(det, SubDetId::kBrlECal)) ||
+	   (     det & (1<<SubDetId::kBrlECal)))                    trueDet = 13;
+  else if ((SubDetId::GetDetectorUsed(det, SubDetId::kP0DECal)) ||
+	   (     det & (1<<SubDetId::kP0DECal)))                    trueDet = 12;
 
 }
 

@@ -211,47 +211,76 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     // allocate a big array. Once it is filled we will resize it
     anaUtils::CreateArray(trueVertex->TrueParticles, NMAXTRUEPARTICLES);
 
-  for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
-    TND280UpTrack *nd280UpTrack = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
-    // if (nd280UpTrack->GetSDLength()>0) {
-    AnaTrueParticleB* truePart = MakeTrueParticle();
-    if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
-    (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
-    (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
-    (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) ) {
-      if(nd280UpTrack->GetInitMom().Mag() > 0){
-//             std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
-                trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
-                trueVertex->LeptonPDG = nd280UpTrack->GetPDG();
-                trueVertex->Q2 = - (nd280UpTrack->GetInitMom() - nd280UpVertex->GetInTrack(0)->GetInitMom()).Mag2();
-                trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
-           
-      }
-    }    else if (  nd280UpTrack->GetPDG() == 2212 && nd280UpTrack->GetParentID() == 0) {
-      // if many, take the first one, that should be the first primary one (not from FSI)
-      if (trueVertex->ProtonMom < 0) {
-        trueVertex->ProtonMom = nd280UpTrack->GetInitMom().Mag();
-        if (trueVertex->ProtonMom > 0)
-            anaUtils::VectorToArray((1. / trueVertex->ProtonMom) * nd280UpTrack->GetInitMom(), trueVertex->ProtonDir);
-      }
-    } // end if proton
-    // If no rooTrackerVtx, fill true pion vars, using the TruthTrajectoryModule (old way)
-    else if (  (nd280UpTrack->GetPDG() == 211  || nd280UpTrack->GetPDG() == -211) && nd280UpTrack->GetParentID() == 0) {
-      // if many, take the highest momentum one, that should be most likely to be reconstructed
-      if (trueVertex->PionMom < nd280UpTrack->GetInitMom().Mag()) {
-        trueVertex->PionMom = nd280UpTrack->GetInitMom().Mag();
-        if (trueVertex->PionMom > 0)
-            anaUtils::VectorToArray((1. / trueVertex->PionMom) * nd280UpTrack->GetInitMom(), trueVertex->PionDir);
-      }
-    } // end if pion
+    AnaTrueParticleB* highestMomTrack=0;
+    for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
+      TND280UpTrack *nd280UpTrack = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
 
-    FillTrueParticleInfo(nd280UpVertex, nd280UpTrack, truePart);
-    spill->TrueParticles.push_back(truePart);
-    truePart->TrueVertex = trueVertex;
-    trueVertex->TrueParticlesVect.push_back(truePart);
-    //}
-  }
-  spill->TrueVertices.push_back(trueVertex);
+      AnaTrueParticleB* truePart = MakeTrueParticle();
+
+      if (!highestMomTrack ||
+	  highestMomTrack->Momentum < truePart->Momentum)
+	highestMomTrack = truePart;
+
+      if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
+	   (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
+	   (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
+	   (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) ) {
+	if(nd280UpTrack->GetInitMom().Mag() > 0){
+	  //std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
+	  trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
+	  trueVertex->LeptonPDG = nd280UpTrack->GetPDG();
+	  trueVertex->Q2 = - (nd280UpTrack->GetInitMom() - nd280UpVertex->GetInTrack(0)->GetInitMom()).Mag2();
+	  trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
+           
+	}
+      } else if (  nd280UpTrack->GetPDG() == 2212 && nd280UpTrack->GetParentID() == 0) {
+	// if many, take the first one, that should be the first primary one (not from FSI)
+	if (trueVertex->ProtonMom < 0) {
+	  trueVertex->ProtonMom = nd280UpTrack->GetInitMom().Mag();
+	  if (trueVertex->ProtonMom > 0)
+            anaUtils::VectorToArray((1. / trueVertex->ProtonMom) * nd280UpTrack->GetInitMom(), trueVertex->ProtonDir);
+	}
+      } // end if proton
+      // If no rooTrackerVtx, fill true pion vars, using the TruthTrajectoryModule (old way)
+      else if (  (nd280UpTrack->GetPDG() == 211  || nd280UpTrack->GetPDG() == -211) && nd280UpTrack->GetParentID() == 0) {
+	// if many, take the highest momentum one, that should be most likely to be reconstructed
+	if (trueVertex->PionMom < nd280UpTrack->GetInitMom().Mag()) {
+	  trueVertex->PionMom = nd280UpTrack->GetInitMom().Mag();
+	  if (trueVertex->PionMom > 0)
+            anaUtils::VectorToArray((1. / trueVertex->PionMom) * nd280UpTrack->GetInitMom(), trueVertex->PionDir);
+	}
+      } // end if pion
+
+      FillTrueParticleInfo(nd280UpVertex, nd280UpTrack, truePart);
+      spill->TrueParticles.push_back(truePart);
+      truePart->TrueVertex = trueVertex;
+      trueVertex->TrueParticlesVect.push_back(truePart);
+
+      int index = ParticleId::GetParticle(nd280UpTrack->GetPDG(),false);
+      trueVertex->NPrimaryParticles[index]++;
+      if (abs(nd280UpTrack->GetPDG()) > 1000 && abs(nd280UpTrack->GetPDG()) < 10000) trueVertex->NPrimaryParticles[ParticleId::kBaryons]++;
+      if (abs(nd280UpTrack->GetPDG()) > 100 && abs(nd280UpTrack->GetPDG()) < 1000) trueVertex->NPrimaryParticles[ParticleId::kMesons]++;
+      if (abs(nd280UpTrack->GetPDG()) > 10 && abs(nd280UpTrack->GetPDG()) < 19) trueVertex->NPrimaryParticles[ParticleId::kLeptons]++;
+      if (nd280UpTrack->GetPDG() == +12 || nd280UpTrack->GetPDG() == +14 || nd280UpTrack->GetPDG() == +16) trueVertex->NPrimaryParticles[ParticleId::kNeutrinos]++;
+      if (nd280UpTrack->GetPDG() == -12 || nd280UpTrack->GetPDG() == -14 || nd280UpTrack->GetPDG() == -16) trueVertex->NPrimaryParticles[ParticleId::kAntiNeutrinos]++;
+
+    }
+
+    if (highestMomTrack)
+      if (highestMomTrack->DetCrossingsVect.size()>0)
+	trueVertex->Detector = highestMomTrack->DetCrossingsVect[0]->Detector;
+
+    trueVertex->NPrimaryParticles[ParticleId::kPions] = trueVertex->NPrimaryParticles[ParticleId::kPi0]   +
+      trueVertex->NPrimaryParticles[ParticleId::kPiPos] +
+      trueVertex->NPrimaryParticles[ParticleId::kPiNeg] ;
+    trueVertex->NPrimaryParticles[ParticleId::kKaons] = trueVertex->NPrimaryParticles[ParticleId::kK0]     +
+      trueVertex->NPrimaryParticles[ParticleId::kAntiK0] +
+      trueVertex->NPrimaryParticles[ParticleId::kK0L]    +
+      trueVertex->NPrimaryParticles[ParticleId::kK0S]    +
+      trueVertex->NPrimaryParticles[ParticleId::kKPos]   +
+      trueVertex->NPrimaryParticles[ParticleId::kKNeg]   ;
+
+    spill->TrueVertices.push_back(trueVertex);
 
 }
 
@@ -262,7 +291,7 @@ void AnaTreeConverterEvent::FillTrueVertexInfo(TND280UpVertex* ndtrueVertex, Ana
   trueVertex->ID       = ndtrueVertex->GetVertexID();
   trueVertex->NuPDG    = ndtrueVertex->GetInTrack(0)->GetPDG();
   trueVertex->NuEnergy = ndtrueVertex->GetInTrack(0)->GetInitKinEnergy();
-  trueVertex->NuMom = ndtrueVertex->GetInTrack(0)->GetInitMom().Mag();
+  trueVertex->NuMom    = ndtrueVertex->GetInTrack(0)->GetInitMom().Mag();
   trueVertex->NuDir[0] = ndtrueVertex->GetInTrack(0)->GetInitMom().X()/trueVertex->NuMom;
   trueVertex->NuDir[1] = ndtrueVertex->GetInTrack(0)->GetInitMom().Y()/trueVertex->NuMom;
   trueVertex->NuDir[2] = ndtrueVertex->GetInTrack(0)->GetInitMom().Z()/trueVertex->NuMom;
@@ -1099,6 +1128,7 @@ bool AnaTreeConverterEvent::GetEfficiency(double length,double theta){
       return 0;
     }
 }
+
 void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* trueParticle, AnaTrack* reconParticle) {
 
   reconParticle->UniqueID       = trueParticle->ID;

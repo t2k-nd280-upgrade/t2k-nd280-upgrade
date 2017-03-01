@@ -1,7 +1,7 @@
 #include "ND280UPAnalysisUtils.hxx"
 #include "BasicUtils.hxx"
 #include "CategoriesUtils.hxx"
-//#include "TreeConverterUtils.hxx"
+#include "TreeConverterUtils.hxx"
 
 
 // PUT HERE ONLY COMMON CATEGORIES!
@@ -41,9 +41,9 @@ int reacnofv_codes[]         = {0     , CAT2P2H , 1    , 2    , 3    , 4   , 5  
 int reacnofv_colors[]        = {2     , COL2P2H , 3    , 4    , 7    , 6   , 31               , 65                       , COLOTHER};
 const int NREACNOFV = sizeof(reacnofv_types)/sizeof(reacnofv_types[0]);
 
-std::string topology_types[] = {"CC-0#pi", "CC-1#pi^{+}", "CC-other", NAMEBKG, NAMEOUTFV};
-int topology_codes[]         = {0        , 1            , 2         , 3      , CATOUTFV};
-int topology_colors[]        = {2        , 4            , 7         , COLBKG , COLOUTFV};
+std::string topology_types[] = {"CC-0#pi", "CC-1#pi^{+}", "CC-other", NAMEBKG, NAMEOTHER, NAMEOUTFV};
+int topology_codes[]         = {0        , 1            , 2         , 3      , CATOTHER,  CATOUTFV};
+int topology_colors[]        = {2        , 4            , 7         , COLBKG , COLOTHER,  COLOUTFV};
 const int NTOPOLOGY = sizeof(topology_types)/sizeof(topology_types[0]);
 
 std::string mectopology_types[] = {"CC-0#pi-0p", "CC-0#pi-1p", "CC-0#pi-Np", "CC-1#pi^{+}", "CC-other", NAMEBKG, NAMEOUTFV};
@@ -51,26 +51,22 @@ int mectopology_codes[]         = {0           , 1           , 2           , 3  
 int mectopology_colors[]        = {2           , 3           , 4           , 7            , 31        , COLBKG , COLOUTFV};
 const int NMECTOPOLOGY = sizeof(mectopology_types)/sizeof(mectopology_types[0]);
 
-std::string target_types[] = {"Argon", "Cromo", "Iron", "Niquel", NAMEOTHER};
-int target_codes[]         = {18       , 24    , 26   , 28      , CATOTHER};
-int target_colors[]        = {2        , 4     , 3    , 7       , COLOTHER};
+std::string target_types[] = {"Carbon", "Oxygen", "Hydrogen", "Aluminium", "Iron", "Copper", "Zinc", "Lead", NAMEOTHER, "#splitline{coh on H}{bugzilla 1056}"};
+int target_codes[]         = {6       , 8       , 1         , 13         , 26    , 29      , 30    , 82    , CATOTHER,  0 };
+int target_colors[]        = {2       , 4       , 3         , 7          , 6     , 51      , 31    , 5     , COLOTHER,  40};
 const int NTARGET = sizeof(target_types)/sizeof(target_types[0]);
 
 //TMP: keep the enumeration from the AnaTrueVertex::Detector (the original oaAnalysis one)
-std::string detector_types[] = {"TPC1", "TPC2", "TPC3", "FGD1", "FGD2", "DsECAL", "BrECAL", "P0DECAL", "P0D", "SMRD", NAMEOTHER};
-int detector_codes[] = {6, //SubDetId::kTPC1,
-                        7, //SubDetId::kTPC2,
-                        8, //SubDetId::kTPC3,
-                        0, //SubDetId::kFGD1,
-                        1, //SubDetId::kFGD2,
-                        3, //SubDetId::kDSECAL,
-                        4, //SubDetId::kTECAL,
-                        5, //SubDetId::kPECAL,
-                        2, //SubDetId::kP0D,
-                        9, //SubDetId::kSMRD,
-                        CATOTHER
+std::string detector_types[] = {"fTPC1", "fTPC2", "fTPC3", "TPCUp1", "TPCUp2", "TPCDown1", "TPCDown2", "FGD1", "FGD2", "Target1", "Target2", "DsECAL", "BrECAL", "P0DECAL", NAMEOTHER};
+int detector_codes[] = {2, 3, 4,    // FwdTPC
+			0, 1, 5, 6, // HTPC
+                        9, 10,      // FGD
+			7, 8,       // Target
+                        11, 13, 12, // ECal 
+			CATOTHER
                         };
-int detector_colors[] = {2, 3, 4, 7, 6, 31, 51, 1, 65, 9, COLOTHER};
+int detector_colors[] = {2, 3, 4, 34, 37, 24, 28,
+			 9, 46, 7, 6, 30, 31, 32, COLOTHER};
 const int NDETECTOR = sizeof(detector_types)/sizeof(detector_types[0]);
 
 //********************************************************************
@@ -91,8 +87,8 @@ void anaUtils::AddStandardCategories(const std::string& prefix){
   _categ->AddCategory(prefix+"reaction",           NREAC,              reac_types,               reac_codes,               reac_colors);
   _categ->AddCategory(prefix+"reactionCC",         NREACCC,            reacCC_types,             reacCC_codes,             reacCC_colors);
   _categ->AddCategory(prefix+"reactionnofv",       NREACNOFV,          reacnofv_types,           reacnofv_codes,           reacnofv_colors);
-  //  _categ->AddCategory(prefix+"topology",           NTOPOLOGY,          topology_types,           topology_codes,           topology_colors);
-  //  _categ->AddCategory(prefix+"mectopology",        NMECTOPOLOGY,       mectopology_types,        mectopology_codes,        mectopology_colors);
+  _categ->AddCategory(prefix+"topology",           NTOPOLOGY,          topology_types,           topology_codes,           topology_colors);
+  _categ->AddCategory(prefix+"mectopology",        NMECTOPOLOGY,       mectopology_types,        mectopology_codes,        mectopology_colors);
 }
 
 //********************************************************************
@@ -211,8 +207,8 @@ void anaUtils::SetCategoriesDefaultCode(const std::string& prefix, const int cod
   _categ->SetCode(prefix + "reaction"          , code);
   _categ->SetCode(prefix + "reactionCC"        , code);
   _categ->SetCode(prefix + "reactionnofv"      , code);
-  //  _categ->SetCode(prefix + "topology"          , code);
-  //  _categ->SetCode(prefix + "mectopology"       , code);
+  _categ->SetCode(prefix + "topology"          , code);
+  _categ->SetCode(prefix + "mectopology"       , code);
 }
 
 //********************************************************************
@@ -289,16 +285,17 @@ void anaUtils::FillCategories(const AnaTrueVertexB* trueVertexB, const std::stri
   _categ->SetCode(prefix + "nutype",   trueVertex->NuPDG         ,CATOTHER);
   _categ->SetCode(prefix + "nuparent", trueVertex->NuParentPDG   ,CATOTHER);
 
-  //  int Detector_tmp;
-  //  convUtils::ConvertBitFieldToTrueParticleDetEnum(trueVertex->Detector, Detector_tmp);
-  _categ->SetCode(prefix + "detector", trueVertex->Detector      ,CATOTHER);
+  int Detector_tmp;
+  convUtils::ConvertBitFieldToTrueParticleDetEnum(trueVertex->Detector, Detector_tmp);
+  if (Detector_tmp==-1) Detector_tmp  = CATOTHER;
+  _categ->SetCode(prefix + "detector", Detector_tmp              ,CATOTHER);
   _categ->SetCode(prefix + "target",   GetTargetCode(trueVertex) ,CATOTHER);
 
-  _categ->SetCode(prefix + "reaction",          GetReaction(*trueVertex,det,IsAntinu)          ,CATOTHER);
-  _categ->SetCode(prefix + "reactionCC",        GetReactionCC(*trueVertex,det,IsAntinu)        ,CATOTHER);
-  _categ->SetCode(prefix + "reactionnofv",      GetReactionNoTargetFv(*trueVertex,IsAntinu)       ,CATOTHER);
-  //  _categ->SetCode(prefix + "topology",          GetTopology(*trueVertex,det,IsAntinu)          ); // the default value has to be a category
-  //  _categ->SetCode(prefix + "mectopology",       GetMECTopology(*trueVertex,det,IsAntinu)       );
+  _categ->SetCode(prefix + "reaction",          GetReaction(*trueVertex,det,IsAntinu)       ,CATOTHER);
+  _categ->SetCode(prefix + "reactionCC",        GetReactionCC(*trueVertex,det,IsAntinu)     ,CATOTHER);
+  _categ->SetCode(prefix + "reactionnofv",      GetReactionNoTargetFv(*trueVertex,IsAntinu) ,CATOTHER);
+  _categ->SetCode(prefix + "topology",          GetTopology(*trueVertex,det,IsAntinu)       ,CATOTHER);
+  _categ->SetCode(prefix + "mectopology",       GetMECTopology(*trueVertex,det,IsAntinu)    ,CATOTHER);
 }
 
 //********************************************************************
@@ -336,11 +333,13 @@ Int_t anaUtils::GetReactionNoTargetFv(const AnaTrueVertex& trueVertex, bool IsAn
 
   // (anti-)numu
   else if (abs(nutype) == 14) {
-    if (abs(reac) == 0)                  return 0;
-    if (abs(reac) == 1)                  return 1;
-    if (abs(reac) == 2)                  return 2;
-    if (abs(reac) == 3)                  return 3;
-    if (abs(reac) > 10)                  return 4;
+    if (abs(reac) == 1)                  return 0;
+    if (abs(reac) == 2)                  return CAT2P2H;
+    if (abs(reac) == 70)                 return CAT2P2H;
+    if (abs(reac)>10 && abs(reac)<14)    return 1;
+    if (abs(reac)>16 && abs(reac)<30)    return 2;
+    if (abs(reac) == 16)                 return 3;
+    if (abs(reac) > 30)                  return 4;
   }
 
   return CATOTHER; // nu-tau??

@@ -25,14 +25,14 @@ public:
     enum SubDetEnum {
         kTPCUp1 = 0,
         kTPCUp2,
-        kForwTPC1,
+        kForwTPC1, //2
         kForwTPC2,
         kForwTPC3,       
-        kTPCDown1,
+        kTPCDown1, //5
         kTPCDown2,
-        kTarget1,
+        kTarget1,  //7
         kTarget2,
-        kFGD1,
+        kFGD1,     //9
         kFGD2,
         kDsECal,
         kP0DECal,
