@@ -42,13 +42,7 @@ TH1F* computeEfficiency(int target, int config, int mode, int branch, int cut1, 
 			TString var, TString var_title, 
 			int nbins, double* xbins, int Z_bin=-1) {
   
-  TString configName;
-  if (config == 0) configName = "current";
-  if (config == 1) configName = "upgrade1";
-  if (config == 2) configName = "upgrade2";
-  if (config == 3) configName = "upgrade3";
-  if (config == 4) configName = "upgrade4";
-  if (config == 5) configName = "upgrade5";
+  TString configName(TString::Format("config%i", config));
   
   TFile* f = new TFile(TString::Format("jobs/files/%s_Target%i_%i.root",
 				       configName.Data(), target, mode));
@@ -107,13 +101,7 @@ TH1F* computeEffTotal(int target, int config, int branch, int cut1, int cut2,
 		      TString var, TString var_title, 
 		      int nbins, double* xbins, bool drawECal=true, int Z_bin=-1) {
   
-  TString configName;
-  if (config == 0) configName = "current";
-  if (config == 1) configName = "upgrade1";
-  if (config == 2) configName = "upgrade2";
-  if (config == 3) configName = "upgrade3";
-  if (config == 4) configName = "upgrade4";
-  if (config == 5) configName = "upgrade5";
+  TString configName(TString::Format("config%i", config)); 
   
   // use one file to get the number of events before cuts
   
@@ -188,13 +176,7 @@ void plotEfficiency(int cut1, int cut2,
 		    int nbins, double* xbins, int target, int config=0, bool drawECal=true, 
 		    int Z_bin=-1) {
 
-  TString configName;
-  if (config == 0) configName = "current";
-  if (config == 1) configName = "upgrade1";
-  if (config == 2) configName = "upgrade2";
-  if (config == 3) configName = "upgrade3";
-  if (config == 4) configName = "upgrade4";
-  if (config == 5) configName = "upgrade5";
+  TString configName(TString::Format("config%i", config)); 
   
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(1);
