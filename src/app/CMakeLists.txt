@@ -5,6 +5,8 @@ AUX_SOURCE_DIRECTORY(EffStudy/BlineTracer/src sourcefile) ###
 AUX_SOURCE_DIRECTORY(nd280UpEvent/ sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/nd280mc sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/nd280mc/ecal sourcefile) ###
+AUX_SOURCE_DIRECTORY(EffStudy/nd280mc/p0d sourcefile) ###
+AUX_SOURCE_DIRECTORY(EffStudy/src/ToF sourcefile) ###
 
 message(STATUS "sourcefile ${sourcefile}") ###
 
