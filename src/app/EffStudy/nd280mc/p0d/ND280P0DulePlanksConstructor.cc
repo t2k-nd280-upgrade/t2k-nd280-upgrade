@@ -16,6 +16,11 @@
 #include "p0d/ND280P0DulePlanksConstructor.hh"
 #include "ND280ExtrudedScintConstructor.hh"
 
+// used to keep a list of SD logical volumes
+#include "G4RegionStore.hh"
+#include <G4Region.hh> 
+//
+
 class ND280P0DulePlanksMessenger: public ND280ConstructorMessenger {
 
 private:
@@ -279,6 +284,12 @@ void ND280P0DulePlanksConstructor::SetFiberMaterial(const char* mat) {
 }
 
 G4LogicalVolume *ND280P0DulePlanksConstructor::GetPiece(void) {
+
+  // NEW ND280 UPGRADE
+  G4Region* SDRegion = G4RegionStore::GetInstance()->
+    GetRegion("SDRegion",false);
+  //
+
     // This rotates the bar into position with the apex pointing upstream
     // (toward the target [-Z]).
     G4RotationMatrix* rotUpstream = new G4RotationMatrix(); 
@@ -313,11 +324,20 @@ G4LogicalVolume *ND280P0DulePlanksConstructor::GetPiece(void) {
         = Get<ND280ExtrudedScintConstructor>("Bar");
 
     //bar.SetSensitiveDetector(GetSensitiveDetector());
+
+    
     bar.SetLength(GetBarLength());
     bar.SetBase(GetBarBase()*std::sqrt(1.0+GetMassCorrection()));
     bar.SetHeight(GetBarHeight()*std::sqrt(1.0+GetMassCorrection()));
 
     G4LogicalVolume* barLog = bar.GetPiece();
+    
+    //
+    // N.B.: barLog is the logical volume that contains only 1 scintillating bar 
+    // (different from ECal in ND280ScintLayerConstructor where there's a single volume for all the bars)
+    //
+    if(SDRegion) SDRegion->AddRootLogicalVolume(barLog); // NEW ND280 UPGRADE
+    //
 
     G4double SinOrientation;
     G4double CosOrientation;

@@ -10,6 +10,11 @@
 
 #include "ND280ExtrudedScintConstructor.hh"
 
+// used to keep a list of SD logical volumes
+#include "G4RegionStore.hh"
+#include <G4Region.hh> 
+//
+
 class ND280ExtrudedScintMessenger: public ND280ConstructorMessenger {
 
 private:
@@ -155,7 +160,7 @@ void ND280ExtrudedScintConstructor::Init() {
     SetLength(10*cm);
     SetBase(3.0*cm);
     SetHeight(1.5*cm);
-
+    
     SetFiberRadius(0.5*mm);
     SetHoleRadius(0.9*mm);
 
@@ -174,6 +179,12 @@ void ND280ExtrudedScintConstructor::Init() {
 }
 
 G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
+  
+  // // NEW ND280UPGRADE
+  //G4Region* SDRegion = G4RegionStore::GetInstance()->
+  //GetRegion("SDRegion",false);
+  //
+
 
     G4VSolid* extrusion = NULL;
     G4VSolid* scintillator = NULL;
@@ -182,8 +193,9 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
 
     // The offset of the core volume from the bar volume.
     double coreOffset = 0.0;
-
+    
     if ( fShape == eRectangle ) {
+
         extrusion = new G4Box(GetName(),
                               GetBase()/2,
                               GetHeight()/2,
@@ -212,6 +224,7 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
         coreOffset = 0.0;
     }
     else {
+
         extrusion = new G4Trap(GetName(),
                                GetLength()/2, 0, 0,
                                GetHeight()/2, GetBase()/2, GetTop()/2, 0,
@@ -254,6 +267,9 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
 
     scintVolume->SetVisAttributes(G4VisAttributes::Invisible);
     scintVolume->SetSensitiveDetector(GetSensitiveDetector());
+    
+    //if(SDRegion) SDRegion->AddRootLogicalVolume(scintVolume); // NEW ND280 UPGRADE
+	
 
     new G4PVPlacement(0,                   // no rotation
                       G4ThreeVector(0,coreOffset,0),     // position
@@ -278,6 +294,10 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
         scintSide->SetSensitiveDetector(GetSensitiveDetector());
         scintCrnr->SetVisAttributes(G4VisAttributes::Invisible);
         scintCrnr->SetSensitiveDetector(GetSensitiveDetector());
+
+	//if(SDRegion) SDRegion->AddRootLogicalVolume(scintSide); // NEW ND280 UPGRADE
+	//if(SDRegion) SDRegion->AddRootLogicalVolume(scintCrnr); // NEW ND280 UPGRADE
+
         
         double x = GetBase()/2-GetCoatingThickness()-GetCoatingRadius()/2;
         double y = GetHeight()/2-GetCoatingThickness()-GetCoatingRadius()/2;

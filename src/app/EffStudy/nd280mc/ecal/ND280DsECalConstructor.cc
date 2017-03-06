@@ -54,13 +54,16 @@ G4LogicalVolume* ND280DsECalModuleConstructor::GetPiece() {
 
 
     if(!fBuild) return logical;
-    
+
+
+
+   
     // Carbon Base (Upstream)
     ND280DsCarbonPanelConstructor& basePanel 
         = Get<ND280DsCarbonPanelConstructor>("BasePanel");
     basePanel.SetLength(ND280ECal::DS::BaseThickness);
     double base_pos_z = (basePanel.GetLength() - GetHeightZ()) / 2.0;
-           
+            
     new G4PVPlacement(0,                     // rotation
     		      G4ThreeVector(0.0, 0.0, base_pos_z), // position
     		      basePanel.GetPiece(),      // logical volume
@@ -112,7 +115,8 @@ G4LogicalVolume* ND280DsECalModuleConstructor::GetPiece() {
                       logical,                               // mother volume
                       false,    // no boolean operations
                       0);       // copy number
-    
+
+     
     //
     // Carbon Lid (Downstream)
     ND280DsCarbonPanelConstructor& lidPanel 
@@ -236,6 +240,7 @@ G4LogicalVolume* ND280DsECalModuleConstructor::GetPiece() {
         - ( 2.0 * ND280ECal::CoolingPlateBaseWidth );
 	
     G4LogicalVolume* cp_logical = components.CoolingPlate(cp_height, cp_length);
+
     // not in nd280mc
     //cp_logical->SetVisAttributes(G4VisAttributes::Invisible);
 
