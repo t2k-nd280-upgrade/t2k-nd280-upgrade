@@ -276,7 +276,7 @@ namespace numuCC4piUtils{
 	   (useFGD2    && anaUtils::InFiducialVolume(SubDetId::kFGD2,    track->PositionStart))) {
 	if ( SubDetId::GetDetectorUsed(track->Detector,SubDetId::kDsECal)) continue;
 	if ( cutUtils::DeltaLYZTPCCut(*track) )                            continue;
-	//if ( track->Charge!=-1 ) continue;
+	if ( track->Charge==0 ) continue;
 	cc4pibox->ECalTracks.push_back(track);
       }
     }

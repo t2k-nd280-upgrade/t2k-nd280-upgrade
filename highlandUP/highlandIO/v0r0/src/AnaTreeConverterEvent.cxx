@@ -264,6 +264,7 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
       if (nd280UpTrack->GetPDG() == +12 || nd280UpTrack->GetPDG() == +14 || nd280UpTrack->GetPDG() == +16) trueVertex->NPrimaryParticles[ParticleId::kNeutrinos]++;
       if (nd280UpTrack->GetPDG() == -12 || nd280UpTrack->GetPDG() == -14 || nd280UpTrack->GetPDG() == -16) trueVertex->NPrimaryParticles[ParticleId::kAntiNeutrinos]++;
 
+      //delete nd280UpTrack;
     }
 
     if (highestMomTrack)
@@ -279,6 +280,8 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
       trueVertex->NPrimaryParticles[ParticleId::kK0S]    +
       trueVertex->NPrimaryParticles[ParticleId::kKPos]   +
       trueVertex->NPrimaryParticles[ParticleId::kKNeg]   ;
+	  
+    //delete nd280UpVertex;
 
     spill->TrueVertices.push_back(trueVertex);
 
