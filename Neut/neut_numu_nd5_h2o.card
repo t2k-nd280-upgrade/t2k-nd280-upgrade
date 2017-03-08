@@ -1,0 +1,160 @@
+C========================================================================
+C  Input card for Super-Kamiokande Monte Carlo simulation
+C========================================================================
+C
+C Number of events ; NEBM-NEVNT
+C
+NEBM-NEVNT  200000
+C
+C--------------------------------
+C
+C Flux flavor   ; NEBM-FLX
+C
+NEBM-FLX    14
+C
+C--------------------------------
+C
+C Particle Code ; NEBM-PID
+C
+NEBM-PID    14
+C
+C--------------------------------
+C
+C RADIUS (MAX) in cm ; NEBM-RADMX
+C
+NEBM-RADMX  100000.
+C
+C
+C--------------------------------
+C
+C Detector ID   ; NEBM-DETID
+C
+NEBM-DETID    5
+C
+C
+C--------------------------------
+C ******************************
+C **** NEUTRINO INTERACTION ****
+C ******************************
+C
+C **** TARGET INFORMATION ****
+C
+C NUMBNDN : total number of neutron
+C           (e.g. CH => 6, H2O => 8, Ar => 22, Fe => 30)
+C
+NEUT-NUMBNDN 8
+C
+C NUMBNDP : total number of bound proton
+C           (e.g. CH => 6, H2O => 8, Ar => 18, Fe => 26)
+C
+NEUT-NUMBNDP 8
+C
+C NUMFREP : total number of free proton
+C           (e.g. CH => 1, H2O => 2, Ar => 0, Fe => 0)
+C
+NEUT-NUMFREP 2
+C
+C NUMATOM : atomic number of atom heavier than hydrogen
+C           (e.g. CH => 12, H2O =>16, Ar => 40, Fe => 56)
+C
+NEUT-NUMATOM 16
+C
+C The Fermi surface momentum(0.225GeV/c is default)
+C
+CNEUT-PFSURF 0.217
+CNEUT-PFMAX  0.217
+C
+C ****************************
+C
+C FERM : Fermi motion  0 : on ( default )  1 : off
+C
+NEUT-FERM 0
+C
+C PAUL : Pauli blocking  0 : on ( default )  1 : off 
+C
+NEUT-PAUL 0
+C
+C NEFF : Nuclear effect in O16  0 : on ( default )  1 : off
+C
+NEUT-NEFF 0
+C
+C IFORMLEN : Formation zone 1: on (default) 0: off
+C 
+NEUT-IFORMLEN 1
+C
+C
+C Nucleon rescattering
+C 
+C NUCRES-RESCAT  1: on (default) 0: off
+C 
+NUCRES-RESCAT 1
+C
+C NUCRES-XNUCFACT  cross-section factor to study uncertainty default = 1.
+C
+NUCRES-FACT 1.
+C
+CC
+C
+C
+C MODE : Interaction mode
+C                     0 : normal ( default )
+C                    -1 : input cross section by CRSNEUT
+C                     n : sellect one mode ( n > 0 )   See nemodsel.F
+C                           n =  1 : charged current Q.E. 
+C                           n = 11,12,13
+C                                  : charged current Single pi production
+C                           n = 16 : coherent Single pi production
+C                           n = 21 : charged current Multi pi production
+C                           n = 31,32,33,34
+C                                  : neutral current Single pi production
+C                           n = 36 : coherent Single pi production
+C                           n = 41 : neutral current Multi pi production
+C                           n = 51,52 : neutral current elastic 
+C                           n = 22,42,43 : single eta production 
+C                           n = 23,44,45 : single  K  production 
+C
+C
+C  nu                  nub
+C  1:     CC Q.E.
+C  2-4:   CC 1pi
+C  5:     CC DIS 1320
+C  6-9:   NC 1pi
+C  10:    NC DIS 1320
+C  11-13: NC els       11-14:NC els
+C  14,15: coherent     15,16:
+C  16:    CC eta       17:
+C  17,18: NC eta       18,19
+C  19:    CC K         20:
+C  20,21: NC K         21,22:
+C  22:    dummy
+C  23:    CC DIS
+C  24:    NC DIS
+C
+NEUT-MODE   0
+C
+C  PDF for DIS is set in this section
+C  (GRV94DI -> 7, GRV98_LO -> 12)
+NEUT-PDF    12
+C  Which PDF is used ( original=0, modified=1)
+NEUT-BODEK   1
+C  Select Coherent pion model (Rein & Sehgal=0(default), Kartavtsev et al.=1)
+NEUT-COHEPI  0
+C
+C CRS  :  Multiplied factor to cross section on each mode. ( neu )
+C CSRB :  Multiplied factor to cross section on each mode. ( neu-bar )
+C
+C          1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+NEUT-CRS   1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+NEUT-CRSB  1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+C
+C
+C RAND : random seed
+C      0 : Read RANDOM number from FILE
+C      1 : Generating RANDOM SEED from the time
+C
+NEUT-RAND 0
+C
+C RNDM : TAUOLA RANDUM NUMBER SEED
+C        IF IRNDM(1)=0, SEED IS NOT INITIALIZED.(TERMINATED)
+C        
+TAU-RNDM 72342014 34181 0
