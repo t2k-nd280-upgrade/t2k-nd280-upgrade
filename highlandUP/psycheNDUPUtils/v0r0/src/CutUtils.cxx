@@ -55,6 +55,15 @@ bool cutUtils::TrackQualityCut(const AnaTrackB& track){
         return false;
     }
 }
+
+//**************************************************
+bool cutUtils::StoppingECALCut(const AnaTrackB& track){
+//**************************************************
+
+  return anaUtils::InFiducialVolume(SubDetId::kECAL, track.PositionEnd);
+
+}
+
 //**************************************************
 bool cutUtils::TPCTrackQualityCut(const AnaTPCParticleB& tpcSeg){
 //**************************************************

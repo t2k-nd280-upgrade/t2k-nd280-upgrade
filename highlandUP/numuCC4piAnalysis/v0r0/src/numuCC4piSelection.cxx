@@ -45,6 +45,7 @@ void numuCC4piSelection::DefineSteps(){
   AddStep(StepBase::kAction, "find vertex",         new numuCC4piUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCC4piUtils::FillSummaryAction_numuCC4pi());
 
+  AddStep(StepBase::kAction, "find pions",         new numuCC4piUtils::FindPionsAction());
 
   if (branch == 0) {
     AddStep(StepBase::kCut, "Fwd TPC Quality Cut",  new numuCC4piUtils::FwdTPC_Quality());
@@ -219,7 +220,7 @@ namespace numuCC4piUtils{
       int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV];
       for (Int_t i=0;i<nTPC; ++i){
 	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV][i]);
-	if ( track->Charge!=-1 ) continue;
+	if ( track->Charge>=-0.5 ) continue;
 
 	cc4pibox->TPCTracks.push_back(track);
       }
@@ -230,7 +231,7 @@ namespace numuCC4piUtils{
       int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget2FV];
       for (Int_t i=0;i<nTPC; ++i){
 	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget2FV][i]);
-	if ( track->Charge!=-1 ) continue;
+	if ( track->Charge>=-0.5 ) continue;
 
 	cc4pibox->TPCTracks.push_back(track);
       }
@@ -241,7 +242,7 @@ namespace numuCC4piUtils{
       int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD1FV];
       for (Int_t i=0;i<nTPC; ++i){
 	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD1FV][i]);
-	if ( track->Charge!=-1 ) continue;
+	if ( track->Charge>=-0.5 ) continue;
 
 	cc4pibox->TPCTracks.push_back(track);
       }
@@ -252,7 +253,7 @@ namespace numuCC4piUtils{
       int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD2FV];
       for (Int_t i=0;i<nTPC; ++i){
 	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD2FV][i]);
-	if ( track->Charge!=-1 ) continue;
+	if ( track->Charge>=-0.5 ) continue;
 
 	cc4pibox->TPCTracks.push_back(track);
       }
@@ -276,7 +277,7 @@ namespace numuCC4piUtils{
 	   (useFGD2    && anaUtils::InFiducialVolume(SubDetId::kFGD2,    track->PositionStart))) {
 	if ( SubDetId::GetDetectorUsed(track->Detector,SubDetId::kDsECal)) continue;
 	if ( cutUtils::DeltaLYZTPCCut(*track) )                            continue;
-	if ( track->Charge==0 ) continue;
+	if ( fabs(track->Charge) < 1e-3 ) continue;
 	cc4pibox->ECalTracks.push_back(track);
       }
     }
@@ -392,6 +393,25 @@ namespace numuCC4piUtils{
 
   }
 
+  //*********************************************************************
+  bool FindPionsAction::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //*********************************************************************
+
+    SubDetId::SubDetEnum det = static_cast<SubDetId::SubDetEnum>(boxB.DetectorFV);
+
+    ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
+    EventBox* EventBox_ = static_cast<EventBox*>(event.EventBoxes[EventBoxId::kEventBoxNDUP]);
+
+    numuCC4pi_utils::FindTPCPions(event, boxB, det);
+    numuCC4pi_utils::FindTargetOnlyPions(event, boxB, det);
+
+    //int nTargetpions     =  box->nTargetPiontracks;
+
+    box->nPosPions   = box->nPositivePionTPCtracks;
+    box->nOtherPions = box->nNegativePionTPCtracks + box->nPosPi0TPCtracks + box->nElPi0TPCtracks;
+    return true;
+  }
+
   //********************************************************************
   bool FillSummaryAction_numuCC4pi::Apply(AnaEventC& event, ToyBoxB& boxB) const{
     //********************************************************************
@@ -503,28 +523,31 @@ namespace numuCC4piUtils{
     (void)event;
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
 	
-	// if long enough TPC track, it should be selected by other branches
+    // if long enough TPC track, it should be selected by other branches
     if (cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack))
       return false;
 
-	double mom = cc4pibox->MainTrack->Momentum;
-	double cos = cc4pibox->MainTrack->DirectionStart[2];
-	float reco_eff, FGDmatch_eff;
-	float reco_err, FGDmatch_err;
-	
-	if (!_ECal_reco_eff->GetBinValues(mom, reco_eff, reco_err)) return false;
-	if (!_ECal_FGDmatch_eff->GetBinValues(cos, FGDmatch_eff, FGDmatch_err)) return false;
+    if (!cutUtils::StoppingECALCut( *cc4pibox->MainTrack ))
+      return false;
 
-	// throw two random numbers between 0 and 1
-	double r_eff[2];
-	_randomGen->RndmArray(2, r_eff);
+    double mom = cc4pibox->MainTrack->Momentum;
+    double cos = cc4pibox->MainTrack->DirectionStart[2];
+    float reco_eff, FGDmatch_eff;
+    float reco_err, FGDmatch_err;
 	
-	// select artificially only a fraction of the events, 
-	// by applying the reconstruction/FGD-ECal match efficiencies
-	if (r_eff[0] < reco_eff && r_eff[1] < FGDmatch_eff)
-		return true;
+    if (!_ECal_reco_eff->GetBinValues(mom, reco_eff, reco_err)) return false;
+    if (!_ECal_FGDmatch_eff->GetBinValues(cos, FGDmatch_eff, FGDmatch_err)) return false;
+
+    // throw two random numbers between 0 and 1
+    double r_eff[2];
+    _randomGen->RndmArray(2, r_eff);
 	
-	return false;
+    // select artificially only a fraction of the events, 
+    // by applying the reconstruction/FGD-ECal match efficiencies
+    if (r_eff[0] < reco_eff && r_eff[1] < FGDmatch_eff)
+      return true;
+	
+    return false;
   }
 
   //**************************************************

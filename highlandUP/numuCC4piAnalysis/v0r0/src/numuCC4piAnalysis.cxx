@@ -66,13 +66,13 @@ bool numuCC4piAnalysis::Initialize(){
   }
   if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 4) {
     DetDef::Target1min[2] =  -1718.00;
-    DetDef::Target1max[2] =   -276.00;
+    DetDef::Target1max[2] =    276.00;
   }
   if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 5) {
 	DetDef::Target1min[1] =   -216.00;
     DetDef::Target1max[1] =    184.00;  
     DetDef::Target1min[2] =  -1718.00;
-    DetDef::Target1max[2] =   -276.00;
+    DetDef::Target1max[2] =    276.00;
   }
   
   return true;
@@ -178,9 +178,15 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVar4VF(output(), selmu_endpos,    "");
   AddVarI(output(),   selmu_longestTPC,"");
 
-  //--- ECal PID
+  //--- ECal
   AddVarF(output(),   selmu_ecal_mipem,     "");
   AddVarF(output(),   selmu_ecal_EneOnL,    "");
+  AddVarI(output(),   selmu_ecal_stopping,  "");
+
+  //--- Pion multiplicity
+  AddVarI(output(),   sel_nOtherPions,      "");
+  AddVarI(output(),   sel_nPosPions,        "");
+
 }
 
 //********************************************************************
@@ -249,9 +255,13 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selmu_likemu,        anaUtils::GetPIDLikelihood( *track, 0));
     output().FillVar(selmu_likemip,       anaUtils::GetPIDLikelihoodMIP( *track));
 
+    output().FillVar(selmu_ecal_stopping,             cutUtils::StoppingECALCut( *track ));
     output().FillVar(selmu_ecal_mipem,                cc4pibox().track_ECal_MipEM);
     output().FillVar(selmu_ecal_EneOnL,               cc4pibox().track_ECal_EneOnL);
     output().FillVar(selmu_longestTPC,                cc4pibox().TPC_det);
+
+    output().FillVar(sel_nOtherPions, cc4pibox().nOtherPions);
+    output().FillVar(sel_nPosPions,   cc4pibox().nPosPions);
 
   }
 
@@ -377,7 +387,7 @@ void numuCC4piAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
 
     output().FillVar(true_phi, phi);
 
-    TLorentzVector P_nu, P_mu;
+    TLorentzVector P_nu(0,0,0,0), P_mu(0,0,0,0);
     P_nu.SetVectM(vtx.NuMom*anaUtils::ArrayToTVector3(vtx.NuDir), 0);
     P_mu.SetVectM(trueTrack->Momentum*anaUtils::ArrayToTVector3(trueTrack->Direction), 105.66);
 

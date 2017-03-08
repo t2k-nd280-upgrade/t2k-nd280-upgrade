@@ -21,6 +21,8 @@ namespace cutUtils{
   bool FiducialCut(const AnaParticleB& track, const SubDetId::SubDetEnum det = SubDetId::kTPCUp1);
   bool FiducialCut(const Float_t* pos, const SubDetId::SubDetEnum det = SubDetId::kTPCUp1);
 
+  bool StoppingECALCut(const AnaTrackB& track);
+
   /// Whether the track is muon-like, as defined for the NuMu analysis.
   bool MuonPIDCut(const AnaTrackB& track, bool prod5Cut = 0);
   bool MuonECALPIDCut(const AnaTrackB& track, bool prod5Cut, TFile* file_ECAL_PDF);
