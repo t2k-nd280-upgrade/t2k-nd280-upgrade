@@ -42,12 +42,11 @@ TH1F* computeEfficiency(int target, int config, int mode, int branch, int cut1, 
 			TString var, TString var_title, 
 			int nbins, double* xbins, int Z_bin=-1) {
   
-  TString configName(TString::Format("config%i", config));
-  
-  TFile* f = new TFile(TString::Format("jobs/files/%s_Target%i_%i.root",
-				       configName.Data(), target, mode));
-  TTree* t = (TTree*)f->Get("truth");
-  
+  TFile f(TString::Format("jobs/files/config%i_Target%i_%i.root",
+			  config, target, mode));
+  TTree* t = (TTree*)f.Get("truth");
+  TH1::AddDirectory(kFALSE);
+
   TH1F* h_beforeCut = new TH1F(TString::Format("before_%s_%i",var.Data(),branch),
 			       TString::Format("before_%s_%i",var.Data(),branch),
 			       nbins, xbins);
@@ -107,13 +106,13 @@ TH1F* computeEffTotal(int target, int config, int branch, int cut1, int cut2,
   
   vector<TFile*> f;
   vector<TTree*> t;
+  TH1::AddDirectory(kFALSE);
 
   int last = drawECal ? 4:3;
   for (int i=0; i<last; i++) {
-    f.push_back(new TFile(TString::Format("jobs/files/%s_Target%i_%i.root",
-			    configName.Data(),
-			    target, i)));
-	t.push_back((TTree*)f.back()->Get("truth"));
+    f.push_back(new TFile(TString::Format("jobs/files/config%i_Target%i_%i.root",
+				      config, target, i)));
+    t.push_back((TTree*)f.back()->Get("truth"));
   }	
 
 
@@ -128,14 +127,14 @@ TH1F* computeEffTotal(int target, int config, int branch, int cut1, int cut2,
   Float_t variable, pos[4];
   
   for (unsigned int i=0; i<f.size(); i++) {
-  t[i]->SetBranchAddress("accum_level", &accum_level[i]);
-  t[i]->SetBranchAddress(var,           &variable);
-  t[i]->SetBranchAddress("true_vertex_position", &pos);
+    t[i]->SetBranchAddress("accum_level", &accum_level[i]);
+    t[i]->SetBranchAddress(var,           &variable);
+    t[i]->SetBranchAddress("true_vertex_position", &pos);
   }
 
   for (Int_t ient=0; ient < t[0]->GetEntries(); ient++) {
 	  
-	t[0]->GetEntry(ient);
+    t[0]->GetEntry(ient);
     if (accum_level[0][0][branch]>cut1 &&
 	(Z_bin==-1 || (pos[2]>Z_bins[config][target-1][Z_bin] && pos[2]<Z_bins[config][target-1][Z_bin+1])))
       h_beforeCut->Fill(variable);
@@ -164,8 +163,9 @@ TH1F* computeEffTotal(int target, int config, int branch, int cut1, int cut2,
   h_eff->GetXaxis()->SetTitleOffset(0.9);
   h_eff->GetYaxis()->SetTitleSize(0.05);
   h_eff->GetYaxis()->SetTitle("efficiency");
-  
-  //f0->Close();
+ 
+  for (int i=0; i<last; i++)
+    f[i]->Close();
   
   return h_eff;
 
@@ -176,8 +176,6 @@ void plotEfficiency(int cut1, int cut2,
 		    int nbins, double* xbins, int target, int config=0, bool drawECal=true, 
 		    int Z_bin=-1) {
 
-  TString configName(TString::Format("config%i", config)); 
-  
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(1);
   gStyle->SetTitleAlign(23);
@@ -245,11 +243,11 @@ void plotEfficiency(int cut1, int cut2,
 
   c->Update();
   if (Z_bin==-1)
-    c->SaveAs(TString::Format("fig/eff/eff_%s_sep_Target%i_%s.eps", 
-			      configName.Data(), target, var.Data()));
+    c->SaveAs(TString::Format("fig/eff/eff_config%i_sep_Target%i_%s.eps", 
+			      config, target, var.Data()));
   else
-    c->SaveAs(TString::Format("fig/eff/binZ/eff_%s_sep_Target%i_%s_Z%i.eps", 
-			      configName.Data(), target, var.Data(), Z_bin));
+    c->SaveAs(TString::Format("fig/eff/binZ/eff_config%i_sep_Target%i_%s_Z%i.eps", 
+			      config, target, var.Data(), Z_bin));
 
 
   // draw stacked histogram
@@ -297,11 +295,11 @@ void plotEfficiency(int cut1, int cut2,
 
   c2->Update();
   if (Z_bin==-1)
-    c2->SaveAs(TString::Format("fig/eff/eff_%s_stacked_Target%i_%s.png", 
-			       configName.Data(), target, var.Data()));
+    c2->SaveAs(TString::Format("fig/eff/eff_config%i_stacked_Target%i_%s.png", 
+			       config, target, var.Data()));
   else
-    c2->SaveAs(TString::Format("fig/eff/binZ/eff_%s_stacked_Target%i_%s_Z%i.png", 
-			     configName.Data(), target, var.Data(), Z_bin));
+    c2->SaveAs(TString::Format("fig/eff/binZ/eff_config%i_stacked_Target%i_%s_Z%i.png", 
+			     config, target, var.Data(), Z_bin));
 }
 
 
@@ -321,9 +319,52 @@ void plotTotal(int cut1, int cut2,
   h_dummy->GetYaxis()->SetTitleSize(0.05);
   h_dummy->GetYaxis()->SetTitle("efficiency");
 
-  TLegend *leg = new TLegend(0.1, 0.89, 0.9, 0.94);
+  TLegend *leg = new TLegend(0.1, 0.89, 0.9, 0.97);
   leg->SetNColumns(4);
+
+  int col=0;
+  int color[7]={1,2,3,4,6,7,35};
   for (int ic=0; ic<2; ic++) {
+	  
+    TString configName;
+    if (ic == 0) configName = "current";
+    if (ic == 1) configName = "upgrade ref.";	
+    for (int it=1; it<=NTargets[ic]; it++) {
+		
+      TH1F* h_eff_total = computeEffTotal(it, ic,
+					  0, cut1, cut2,
+					  var, var_title,
+					  nbins, xbins, drawECal,
+					  Z_bin);
+
+      h_eff_total->SetLineColor(color[col++]);
+      h_eff_total->Draw("esame");
+
+      leg->AddEntry(h_eff_total, TString::Format("%s, %s %i", configName.Data(), (ic!=1 && it<=2) ? "FGD":"Target", it<=2 ? it:1), "elp");
+
+    }
+  }
+  leg->Draw("same");
+  if (Z_bin == -1)
+    c->SaveAs(TString::Format("fig/eff/eff_total_%s.eps", var.Data()));
+  else 
+    c->SaveAs(TString::Format("fig/eff/binZ/eff_total_%s_Z%i.eps", var.Data(), Z_bin));
+
+  //====================
+
+  TCanvas *c2 = new TCanvas("c", "c");
+  TH1F* h_dummy2 = c2->DrawFrame(xbins[0], 0, xbins[nbins], 1.02);
+  h_dummy2->GetXaxis()->SetTitle(var_title);
+  h_dummy2->GetXaxis()->SetTitleSize(0.05);
+  h_dummy2->GetXaxis()->SetTitleOffset(0.9);
+  h_dummy2->GetYaxis()->SetTitleSize(0.05);
+  h_dummy2->GetYaxis()->SetTitle("efficiency");
+
+  TLegend *leg2 = new TLegend(0.1, 0.89, 0.9, 0.97);
+  leg2->SetNColumns(4);
+
+  col=0;
+  for (int ic=0; ic<3; ic++) {
 	  
     TString configName;
     if (ic == 0) configName = "current";
@@ -338,18 +379,20 @@ void plotTotal(int cut1, int cut2,
 					  nbins, xbins, drawECal,
 					  Z_bin);
 
-      h_eff_total->SetLineColor(2*ic+it);
+      h_eff_total->SetLineColor(color[col++]);
       h_eff_total->Draw("esame");
 
-      leg->AddEntry(h_eff_total, TString::Format("%s, %s %i", configName.Data(), ic==0 ? "FGD":"Target", it), "elp");
+      leg2->AddEntry(h_eff_total, TString::Format("%s, %s %i", configName.Data(), (ic!=1 && it<=2) ? "FGD":"Target", it<=2 ? it:1), "elp");
 
     }
   }
-  leg->Draw("same");
+  leg2->Draw("same");
   if (Z_bin == -1)
-    c->SaveAs(TString::Format("fig/eff/eff_total_%s.eps", var.Data()));
+    c2->SaveAs(TString::Format("fig/eff/eff_total2_%s.eps", var.Data()));
   else 
-    c->SaveAs(TString::Format("fig/eff/binZ/eff_total_%s_Z%i.eps", var.Data(), Z_bin));
+    c2->SaveAs(TString::Format("fig/eff/binZ/eff_total2_%s_Z%i.eps", var.Data(), Z_bin));
+
+  //====================
 
   gStyle->SetOptTitle(1);
   gStyle->SetTitleAlign(23);

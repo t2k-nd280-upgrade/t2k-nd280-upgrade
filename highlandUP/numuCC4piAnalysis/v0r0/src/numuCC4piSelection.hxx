@@ -75,6 +75,13 @@ public:
   std::vector<AnaTrackB*> TPCTracks, ECalTracks;
   SubDetId::SubDetEnum TPC_det;
 
+  int nNegativePionTPCtracks;
+  int nPositivePionTPCtracks;
+  int nTargetPiontracks;
+  int nPosPi0TPCtracks;
+  int nElPi0TPCtracks;
+  int nPosPions;
+  int nOtherPions;
 };
 
 inline ToyBoxB* numuCC4piSelection::MakeToyBox() {return new ToyBoxCC4pi();}
@@ -176,7 +183,12 @@ public:
   StepBase* MakeClone(){return new FillSummaryAction_numuCC4pi();}
 };
 
-
+class FindPionsAction: public StepBase{
+public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& box) const;
+  StepBase* MakeClone(){return new FindPionsAction();}
+};
 
 class FwdTPC_Quality: public StepBase{
 public:

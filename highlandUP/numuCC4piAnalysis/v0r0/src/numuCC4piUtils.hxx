@@ -37,6 +37,8 @@ namespace numuCC4pi_utils{
   /// Check whether a track is forward going
   bool IsForward(const AnaTrackB& track);
 
+  void FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
+  void FindTargetOnlyPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
 
 }
 

@@ -77,7 +77,11 @@ public:
 
     selmu_ecal_mipem,
     selmu_ecal_EneOnL,
+    selmu_ecal_stopping,
     selmu_longestTPC,
+
+    sel_nOtherPions,
+    sel_nPosPions,
 		
     /*
       selmu_1hit_pos,
