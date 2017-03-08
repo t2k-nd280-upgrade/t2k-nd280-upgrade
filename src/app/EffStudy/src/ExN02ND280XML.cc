@@ -120,6 +120,70 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("FGDPos2_Y"   ,fFGDPos2_Y);
     XML2Double("FGDPos2_Z"   ,fFGDPos2_Z);
     
+    // ToF Top Downstream 
+    XML2Bool("ToFdefault_TopDown"      ,fToFdefault_TopDown);
+    XML2Int("ToFPlaneXYNum_TopDown"    ,fToFPlaneXYNum_TopDown);
+    XML2Int("ToFLayerHorizNBar_TopDown",fToFLayerHorizNBar_TopDown);
+    XML2Int("ToFLayerVertNBar_TopDown" ,fToFLayerVertNBar_TopDown);
+    XML2Double("ToFBarHorizlength_TopDown",fToFBarHorizlength_TopDown);
+    XML2Double("ToFBarVertlength_TopDown" ,fToFBarVertlength_TopDown);
+    XML2Double("ToFBarwidth_TopDown"      ,fToFBarwidth_TopDown);
+    XML2Double("ToFBarheight_TopDown"     ,fToFBarheight_TopDown);
+    XML2Double("ToFRotX_TopDown"         ,fToFRotX_TopDown);
+    XML2Double("ToFRotY_TopDown"         ,fToFRotY_TopDown);
+    XML2Double("ToFRotZ_TopDown"         ,fToFRotZ_TopDown);
+    XML2Double("ToFPosX_TopDown"         ,fToFPosX_TopDown);
+    XML2Double("ToFPosY_TopDown"         ,fToFPosY_TopDown);
+    XML2Double("ToFPosZ_TopDown"         ,fToFPosZ_TopDown);
+
+    // ToF Bottom Downstream 
+    XML2Bool("ToFdefault_BotDown"      ,fToFdefault_BotDown);
+    XML2Int("ToFPlaneXYNum_BotDown"    ,fToFPlaneXYNum_BotDown);
+    XML2Int("ToFLayerHorizNBar_BotDown",fToFLayerHorizNBar_BotDown);
+    XML2Int("ToFLayerVertNBar_BotDown" ,fToFLayerVertNBar_BotDown);
+    XML2Double("ToFBarHorizlength_BotDown",fToFBarHorizlength_BotDown);
+    XML2Double("ToFBarVertlength_BotDown" ,fToFBarVertlength_BotDown);
+    XML2Double("ToFBarwidth_BotDown"      ,fToFBarwidth_BotDown);
+    XML2Double("ToFBarheight_BotDown"     ,fToFBarheight_BotDown);
+    XML2Double("ToFRotX_BotDown"         ,fToFRotX_BotDown);
+    XML2Double("ToFRotY_BotDown"         ,fToFRotY_BotDown);
+    XML2Double("ToFRotZ_BotDown"         ,fToFRotZ_BotDown);
+    XML2Double("ToFPosX_BotDown"         ,fToFPosX_BotDown);
+    XML2Double("ToFPosY_BotDown"         ,fToFPosY_BotDown);
+    XML2Double("ToFPosZ_BotDown"         ,fToFPosZ_BotDown);
+
+    // ToF Top Upstream 
+    XML2Bool("ToFdefault_TopUp"      ,fToFdefault_TopUp);
+    XML2Int("ToFPlaneXYNum_TopUp"    ,fToFPlaneXYNum_TopUp);
+    XML2Int("ToFLayerHorizNBar_TopUp",fToFLayerHorizNBar_TopUp);
+    XML2Int("ToFLayerVertNBar_TopUp" ,fToFLayerVertNBar_TopUp);
+    XML2Double("ToFBarHorizlength_TopUp",fToFBarHorizlength_TopUp);
+    XML2Double("ToFBarVertlength_TopUp" ,fToFBarVertlength_TopUp);
+    XML2Double("ToFBarwidth_TopUp"      ,fToFBarwidth_TopUp);
+    XML2Double("ToFBarheight_TopUp"     ,fToFBarheight_TopUp);
+    XML2Double("ToFRotX_TopUp"         ,fToFRotX_TopUp);
+    XML2Double("ToFRotY_TopUp"         ,fToFRotY_TopUp);
+    XML2Double("ToFRotZ_TopUp"         ,fToFRotZ_TopUp);
+    XML2Double("ToFPosX_TopUp"         ,fToFPosX_TopUp);
+    XML2Double("ToFPosY_TopUp"         ,fToFPosY_TopUp);
+    XML2Double("ToFPosZ_TopUp"         ,fToFPosZ_TopUp);
+
+    // ToF Bottom Upstream 
+    XML2Bool("ToFdefault_BotUp"      ,fToFdefault_BotUp);
+    XML2Int("ToFPlaneXYNum_BotUp"    ,fToFPlaneXYNum_BotUp);
+    XML2Int("ToFLayerHorizNBar_BotUp",fToFLayerHorizNBar_BotUp);
+    XML2Int("ToFLayerVertNBar_BotUp" ,fToFLayerVertNBar_BotUp);
+    XML2Double("ToFBarHorizlength_BotUp",fToFBarHorizlength_BotUp);
+    XML2Double("ToFBarVertlength_BotUp" ,fToFBarVertlength_BotUp);
+    XML2Double("ToFBarwidth_BotUp"      ,fToFBarwidth_BotUp);
+    XML2Double("ToFBarheight_BotUp"     ,fToFBarheight_BotUp);
+    XML2Double("ToFRotX_BotUp"         ,fToFRotX_BotUp);
+    XML2Double("ToFRotY_BotUp"         ,fToFRotY_BotUp);
+    XML2Double("ToFRotZ_BotUp"         ,fToFRotZ_BotUp);
+    XML2Double("ToFPosX_BotUp"         ,fToFPosX_BotUp);
+    XML2Double("ToFPosY_BotUp"         ,fToFPosY_BotUp);
+    XML2Double("ToFPosZ_BotUp"         ,fToFPosZ_BotUp);
+
     //
     // Set detectors used in the simulation
     //
@@ -134,6 +198,11 @@ void ExN02ND280XML::SetInputs(){
     // Use FGDs
     XML2Bool("UseFGD1",fUseFGD1);
     XML2Bool("UseFGD2",fUseFGD2);
+    // Use ToFs
+    XML2Bool("UseToF_TopDown" ,fUseToF_TopDown);
+    XML2Bool("UseToF_BotDown" ,fUseToF_BotDown);
+    XML2Bool("UseToF_TopUp" ,fUseToF_TopUp);
+    XML2Bool("UseToF_BotUp" ,fUseToF_BotUp);
     // Use Magnet
     XML2Bool("UseMagnet",fUseMagnet);
     //XML2Bool("UseSMRD",  fUseSMRD);
@@ -155,6 +224,10 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("InvisTPCUp2"   ,fInvisTPCUp2);
     XML2Bool("InvisFGD1"     ,fInvisFGD1);
     XML2Bool("InvisFGD2"     ,fInvisFGD2);
+    XML2Bool("InvisToF_TopDown"     ,fInvisToF_TopDown);
+    XML2Bool("InvisToF_BotDown"     ,fInvisToF_BotDown);
+    XML2Bool("InvisToF_TopUp"     ,fInvisToF_TopUp);
+    XML2Bool("InvisToF_BotUp"     ,fInvisToF_BotUp);
     XML2Bool("InvisMagnet"   ,fInvisMagnet);
     XML2Bool("InvisSMRD"     ,fInvisSMRD);
     XML2Bool("InvisBasket"   ,fInvisBasket);

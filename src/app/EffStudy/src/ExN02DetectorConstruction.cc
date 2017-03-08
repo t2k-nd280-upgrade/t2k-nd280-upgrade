@@ -64,7 +64,8 @@
 //#include "ecal/ND280DsECalConstructor.hh"
 #include "ND280BasketConstructor.hh"
 #include "ND280OffAxisConstructor.hh"
-
+// ToF
+#include "ND280ToFConstructor.hh"
 
 
 //#ifdef USE_PAI
@@ -102,7 +103,9 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
   solidSideTPCUp1(0),logicSideTPCUp1(0),physiSideTPCUp1(0), 
   solidSideTPCUp2(0),logicSideTPCUp2(0),physiSideTPCUp2(0), 
   solidSideTPCDown1(0),logicSideTPCDown1(0),physiSideTPCDown1(0), 
-  solidSideTPCDown2(0),logicSideTPCDown2(0),physiSideTPCDown2(0), 
+  solidSideTPCDown2(0),logicSideTPCDown2(0),physiSideTPCDown2(0),
+  physiToF_TopDown(0),
+  physiToF_TopUp(0),
   WorldMater(0), BasketMater(0), TargetMater1(0), TargetMater2(0), 
   FGDMater1(0), FGDMater2(0),
   SideTPCMater(0), fDefaultMaterial(0), 
@@ -241,7 +244,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
-  /*
+ /*
 
   //------------------------------ 
   // Basket
@@ -439,6 +442,397 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
+   
+  //------------------------------------------
+  // ToF Top Downstream - along X (x-layer) and Z (y-layer)
+  //------------------------------------------   
+  
+  G4String cParentNameToF = logicBasket->GetName();
+  ND280ToFConstructor *fToFConstructor_TopDown = new ND280ToFConstructor(cParentNameToF+"/ToF/TopDown",this);
+  G4String nameToF_TopDown = fToFConstructor_TopDown->GetName();
+  G4RotationMatrix* rotation_tof_TopDown = new G4RotationMatrix();
+  
+  double rotX=0,rotY=0,rotZ=0;
+  
+  if( ND280XMLInput->GetXMLUseToF_TopDown() ){
+
+    G4double x = ND280XMLInput->GetXMLToFPosX_TopDown() * mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_TopDown() * mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_TopDown() * mm;
+    SetToFPos_TopDown(x,y,z);
+    
+    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_TopDown();
+    fToFConstructor_TopDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
+     
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_TopDown() * mm;
+    fToFConstructor_TopDown->SetBarWidth(BarWidth);
+
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_TopDown() * mm;
+    fToFConstructor_TopDown->SetBarHeight(BarHeight);
+    
+    double BarHorizLength = ND280XMLInput->GetXMLToFBarHorizlength_TopDown() * mm;
+    fToFConstructor_TopDown->SetBarHorizLength(BarHorizLength);
+
+    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_TopDown();
+    fToFConstructor_TopDown->SetLayerHorizNBar(NBarHoriz); //120
+                                              
+    double BarVertLength = ND280XMLInput->GetXMLToFBarVertlength_TopDown() * mm;
+    fToFConstructor_TopDown->SetBarVertLength(BarVertLength);
+
+    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_TopDown();
+    fToFConstructor_TopDown->SetLayerVertNBar(NBarVert); //120
+
+    rotX = ND280XMLInput->GetXMLToFRotX_TopDown() * degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_TopDown() * degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_TopDown() * degree;
+    rotation_tof_TopDown->rotateX(rotX); 
+    rotation_tof_TopDown->rotateY(rotY); 
+    rotation_tof_TopDown->rotateZ(rotZ);      
+  }
+ 
+  // The ToF detector is built on the X-Y plane, then rotate it! 
+  // - horizontal bars are built along X
+  // - vertical bars are built along Y
+  // - then rotate everything by -90*degree around X axis --> from X-Y to X-Z plane
+  // After rotation horizontal bars are along X, vertical bars are along Z
+  
+  logicToF_TopDown = fToFConstructor_TopDown->GetPiece();
+  physiToF_TopDown = new G4PVPlacement(
+				rotation_tof_TopDown,               // rotation
+				GetToFPos_TopDown(),
+				logicToF_TopDown,// logical volume
+				nameToF_TopDown, // name   
+				logicBasket,    // mother  volume  
+				false,        // no boolean operations
+				0);
+ 
+  G4cout << " - name: " << logicToF_TopDown->GetName() << G4endl;
+  G4cout << " - Total size before rotation  (mm^3): "
+	 << fToFConstructor_TopDown->GetWidth() / mm << " (width) x "
+	 << fToFConstructor_TopDown->GetHeight() / mm << " (height) x "
+	 << fToFConstructor_TopDown->GetLength() / mm << " (length)"
+	 << G4endl;
+  G4cout << " - Rotation ToF TopDown: ("
+         << rotX / degree << ","
+         << rotY / degree << ","
+         << rotZ / degree << ")"
+         << G4endl;
+  G4cout << " - position: ( "
+         << GetToFPos_TopDown().x()/mm << ", "
+	 << GetToFPos_TopDown().y()/mm << ", "
+	 << GetToFPos_TopDown().z()/mm << " ) mm" << G4endl;
+  G4cout << " - # of planes XY = " << fToFConstructor_TopDown->GetPlaneXYNum() 
+	 << " --> " << fToFConstructor_TopDown->GetPlaneXYNum() * 2. << " layers"
+	 << G4endl;
+  G4cout << " - size of bar cross section (mm): " 
+	 << fToFConstructor_TopDown->GetBarWidth() / mm << " (width) x " 
+	 << fToFConstructor_TopDown->GetBarHeight() / mm << " (height)" 
+	 << G4endl
+	 << "   Horiz length = " << fToFConstructor_TopDown->GetBarHorizLength() / mm 
+	 << " / Vert length = " << fToFConstructor_TopDown->GetBarVertLength() / mm 
+	 << G4endl;
+  G4cout << " - number of bars / layer: " 
+	 << fToFConstructor_TopDown->GetLayerHorizNBar() << " (horiz) - "
+	 << fToFConstructor_TopDown->GetLayerVertNBar() << " (vert)"
+	 << G4endl << G4endl;
+
+
+
+
+
+
+
+
+
+   
+  //------------------------------------------
+  // ToF Bottom Downstream - along X (x-layer) and Z (y-layer)
+  //------------------------------------------   
+  
+  ND280ToFConstructor *fToFConstructor_BotDown = new ND280ToFConstructor(cParentNameToF+"/ToF/BotDown",this);
+  G4String nameToF_BotDown = fToFConstructor_BotDown->GetName();
+  G4RotationMatrix* rotation_tof_BotDown = new G4RotationMatrix();
+  
+  rotX=0,rotY=0,rotZ=0;
+  
+  if( ND280XMLInput->GetXMLUseToF_BotDown() ){
+
+    G4double x = ND280XMLInput->GetXMLToFPosX_BotDown() * mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_BotDown() * mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_BotDown() * mm;
+    SetToFPos_BotDown(x,y,z);
+    
+    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_BotDown();
+    fToFConstructor_BotDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
+     
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BotDown() * mm;
+    fToFConstructor_BotDown->SetBarWidth(BarWidth);
+
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BotDown() * mm;
+    fToFConstructor_BotDown->SetBarHeight(BarHeight);
+    
+    double BarHorizLength = ND280XMLInput->GetXMLToFBarHorizlength_BotDown() * mm;
+    fToFConstructor_BotDown->SetBarHorizLength(BarHorizLength);
+
+    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BotDown();
+    fToFConstructor_BotDown->SetLayerHorizNBar(NBarHoriz); //120
+                                              
+    double BarVertLength = ND280XMLInput->GetXMLToFBarVertlength_BotDown() * mm;
+    fToFConstructor_BotDown->SetBarVertLength(BarVertLength);
+
+    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BotDown();
+    fToFConstructor_BotDown->SetLayerVertNBar(NBarVert); //120
+
+    rotX = ND280XMLInput->GetXMLToFRotX_BotDown() * degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_BotDown() * degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_BotDown() * degree;
+    rotation_tof_BotDown->rotateX(rotX); 
+    rotation_tof_BotDown->rotateY(rotY); 
+    rotation_tof_BotDown->rotateZ(rotZ);      
+  }
+ 
+  // The ToF detector is built on the X-Y plane, then rotate it! 
+  // - horizontal bars are built along X
+  // - vertical bars are built along Y
+  // - then rotate everything by -90*degree around X axis --> from X-Y to X-Z plane
+  // After rotation horizontal bars are along X, vertical bars are along Z
+  
+  logicToF_BotDown = fToFConstructor_BotDown->GetPiece();
+  physiToF_BotDown = new G4PVPlacement(
+				rotation_tof_BotDown,               // rotation
+				GetToFPos_BotDown(),
+				logicToF_BotDown,// logical volume
+				nameToF_BotDown, // name   
+				logicBasket,    // mother  volume  
+				false,        // no boolean operations
+				0);
+ 
+  G4cout << " - name: " << logicToF_BotDown->GetName() << G4endl;
+  G4cout << " - Total size before rotation  (mm^3): "
+	 << fToFConstructor_BotDown->GetWidth() / mm << " (width) x "
+	 << fToFConstructor_BotDown->GetHeight() / mm << " (height) x "
+	 << fToFConstructor_BotDown->GetLength() / mm << " (length)"
+	 << G4endl;
+  G4cout << " - Rotation ToF BotDown: ("
+         << rotX / degree << ","
+         << rotY / degree << ","
+         << rotZ / degree << ")"
+         << G4endl;
+  G4cout << " - position: ( "
+         << GetToFPos_BotDown().x()/mm << ", "
+	 << GetToFPos_BotDown().y()/mm << ", "
+	 << GetToFPos_BotDown().z()/mm << " ) mm" << G4endl;
+  G4cout << " - # of planes XY = " << fToFConstructor_BotDown->GetPlaneXYNum() 
+	 << " --> " << fToFConstructor_BotDown->GetPlaneXYNum() * 2. << " layers"
+	 << G4endl;
+  G4cout << " - size of bar cross section (mm): " 
+	 << fToFConstructor_BotDown->GetBarWidth() / mm << " (width) x " 
+	 << fToFConstructor_BotDown->GetBarHeight() / mm << " (height)" 
+	 << G4endl
+	 << "   Horiz length = " << fToFConstructor_BotDown->GetBarHorizLength() / mm 
+	 << " / Vert length = " << fToFConstructor_BotDown->GetBarVertLength() / mm 
+	 << G4endl;
+  G4cout << " - number of bars / layer: " 
+	 << fToFConstructor_BotDown->GetLayerHorizNBar() << " (horiz) - "
+	 << fToFConstructor_BotDown->GetLayerVertNBar() << " (vert)"
+	 << G4endl << G4endl;
+
+
+
+
+  //------------------------------------------
+  // ToF Top Upstream - along X (x-layer) and Z (y-layer)
+  //------------------------------------------   
+  
+  ND280ToFConstructor *fToFConstructor_TopUp = new ND280ToFConstructor(cParentNameToF+"/ToF/TopUp",this);
+  G4String nameToF_TopUp = fToFConstructor_TopUp->GetName();
+  G4RotationMatrix* rotation_tof_TopUp = new G4RotationMatrix();
+  
+  rotX=0,rotY=0,rotZ=0;
+  
+  if( ND280XMLInput->GetXMLUseToF_TopUp() ){
+
+    G4double x = ND280XMLInput->GetXMLToFPosX_TopUp() * mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_TopUp() * mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_TopUp() * mm;
+    SetToFPos_TopUp(x,y,z);
+    
+    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_TopUp();
+    fToFConstructor_TopUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
+     
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_TopUp() * mm;
+    fToFConstructor_TopUp->SetBarWidth(BarWidth);
+
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_TopUp() * mm;
+    fToFConstructor_TopUp->SetBarHeight(BarHeight);
+    
+    double BarHorizLength = ND280XMLInput->GetXMLToFBarHorizlength_TopUp() * mm;
+    fToFConstructor_TopUp->SetBarHorizLength(BarHorizLength);
+
+    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_TopUp();
+    fToFConstructor_TopUp->SetLayerHorizNBar(NBarHoriz); //120
+                                              
+    double BarVertLength = ND280XMLInput->GetXMLToFBarVertlength_TopUp() * mm;
+    fToFConstructor_TopUp->SetBarVertLength(BarVertLength);
+
+    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_TopUp();
+    fToFConstructor_TopUp->SetLayerVertNBar(NBarVert); //120
+
+    rotX = ND280XMLInput->GetXMLToFRotX_TopUp() * degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_TopUp() * degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_TopUp() * degree;
+    rotation_tof_TopUp->rotateX(rotX); 
+    rotation_tof_TopUp->rotateY(rotY); 
+    rotation_tof_TopUp->rotateZ(rotZ);      
+  }
+ 
+  // The ToF detector is built on the X-Y plane, then rotate it! 
+  // - horizontal bars are built along X
+  // - vertical bars are built along Y
+  // - then rotate everything by -90*degree around X axis --> from X-Y to X-Z plane
+  // After rotation horizontal bars are along X, vertical bars are along Z
+  
+  logicToF_TopUp = fToFConstructor_TopUp->GetPiece();
+  physiToF_TopUp = new G4PVPlacement(
+				rotation_tof_TopUp,               // rotation
+				GetToFPos_TopUp(),
+				logicToF_TopUp,// logical volume
+				nameToF_TopUp, // name   
+				logicBasket,    // mother  volume  
+				false,        // no boolean operations
+				0);
+ 
+  G4cout << " - name: " << logicToF_TopUp->GetName() << G4endl;
+  G4cout << " - Total size before rotation  (mm^3): "
+	 << fToFConstructor_TopUp->GetWidth() / mm << " (width) x "
+	 << fToFConstructor_TopUp->GetHeight() / mm << " (height) x "
+	 << fToFConstructor_TopUp->GetLength() / mm << " (length)"
+	 << G4endl;
+  G4cout << " - Rotation ToF TopUp: ("
+         << rotX / degree << ","
+         << rotY / degree << ","
+         << rotZ / degree << ")"
+         << G4endl;
+  G4cout << " - position: ( "
+         << GetToFPos_TopUp().x()/mm << ", "
+	 << GetToFPos_TopUp().y()/mm << ", "
+	 << GetToFPos_TopUp().z()/mm << " ) mm" << G4endl;
+  G4cout << " - # of planes XY = " << fToFConstructor_TopUp->GetPlaneXYNum() 
+	 << " --> " << fToFConstructor_TopUp->GetPlaneXYNum() * 2. << " layers"
+	 << G4endl;
+  G4cout << " - size of bar cross section (mm): " 
+	 << fToFConstructor_TopUp->GetBarWidth() / mm << " (width) x " 
+	 << fToFConstructor_TopUp->GetBarHeight() / mm << " (height)" 
+	 << G4endl
+	 << "   Horiz length = " << fToFConstructor_TopUp->GetBarHorizLength() / mm 
+	 << " / Vert length = " << fToFConstructor_TopUp->GetBarVertLength() / mm 
+	 << G4endl;
+  G4cout << " - number of bars / layer: " 
+	 << fToFConstructor_TopUp->GetLayerHorizNBar() << " (horiz) - "
+	 << fToFConstructor_TopUp->GetLayerVertNBar() << " (vert)"
+	 << G4endl << G4endl;
+  
+
+
+  //------------------------------------------
+  // ToF Bottom Upstream - along X (x-layer) and Z (y-layer)
+  //------------------------------------------   
+  
+  ND280ToFConstructor *fToFConstructor_BotUp = new ND280ToFConstructor(cParentNameToF+"/ToF/BotUp",this);
+  G4String nameToF_BotUp = fToFConstructor_BotUp->GetName();
+  G4RotationMatrix* rotation_tof_BotUp = new G4RotationMatrix();
+  
+  rotX=0,rotY=0,rotZ=0;
+  
+  if( ND280XMLInput->GetXMLUseToF_BotUp() ){
+
+    G4double x = ND280XMLInput->GetXMLToFPosX_BotUp() * mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_BotUp() * mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_BotUp() * mm;
+    SetToFPos_BotUp(x,y,z);
+    
+    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_BotUp();
+    fToFConstructor_BotUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
+     
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BotUp() * mm;
+    fToFConstructor_BotUp->SetBarWidth(BarWidth);
+
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BotUp() * mm;
+    fToFConstructor_BotUp->SetBarHeight(BarHeight);
+    
+    double BarHorizLength = ND280XMLInput->GetXMLToFBarHorizlength_BotUp() * mm;
+    fToFConstructor_BotUp->SetBarHorizLength(BarHorizLength);
+
+    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BotUp();
+    fToFConstructor_BotUp->SetLayerHorizNBar(NBarHoriz); //120
+                                              
+    double BarVertLength = ND280XMLInput->GetXMLToFBarVertlength_BotUp() * mm;
+    fToFConstructor_BotUp->SetBarVertLength(BarVertLength);
+
+    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BotUp();
+    fToFConstructor_BotUp->SetLayerVertNBar(NBarVert); //120
+
+    rotX = ND280XMLInput->GetXMLToFRotX_BotUp() * degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_BotUp() * degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_BotUp() * degree;
+    rotation_tof_BotUp->rotateX(rotX); 
+    rotation_tof_BotUp->rotateY(rotY); 
+    rotation_tof_BotUp->rotateZ(rotZ);      
+  }
+ 
+  // The ToF detector is built on the X-Y plane, then rotate it! 
+  // - horizontal bars are built along X
+  // - vertical bars are built along Y
+  // - then rotate everything by -90*degree around X axis --> from X-Y to X-Z plane
+  // After rotation horizontal bars are along X, vertical bars are along Z
+  
+  logicToF_BotUp = fToFConstructor_BotUp->GetPiece();
+  physiToF_BotUp = new G4PVPlacement(
+				rotation_tof_BotUp,               // rotation
+				GetToFPos_BotUp(),
+				logicToF_BotUp,// logical volume
+				nameToF_BotUp, // name   
+				logicBasket,    // mother  volume  
+				false,        // no boolean operations
+				0);
+ 
+  G4cout << " - name: " << logicToF_BotUp->GetName() << G4endl;
+  G4cout << " - Total size before rotation  (mm^3): "
+	 << fToFConstructor_BotUp->GetWidth() / mm << " (width) x "
+	 << fToFConstructor_BotUp->GetHeight() / mm << " (height) x "
+	 << fToFConstructor_BotUp->GetLength() / mm << " (length)"
+	 << G4endl;
+  G4cout << " - Rotation ToF BotUp: ("
+         << rotX / degree << ","
+         << rotY / degree << ","
+         << rotZ / degree << ")"
+         << G4endl;
+  G4cout << " - position: ( "
+         << GetToFPos_BotUp().x()/mm << ", "
+	 << GetToFPos_BotUp().y()/mm << ", "
+	 << GetToFPos_BotUp().z()/mm << " ) mm" << G4endl;
+  G4cout << " - # of planes XY = " << fToFConstructor_BotUp->GetPlaneXYNum() 
+	 << " --> " << fToFConstructor_BotUp->GetPlaneXYNum() * 2. << " layers"
+	 << G4endl;
+  G4cout << " - size of bar cross section (mm): " 
+	 << fToFConstructor_BotUp->GetBarWidth() / mm << " (width) x " 
+	 << fToFConstructor_BotUp->GetBarHeight() / mm << " (height)" 
+	 << G4endl
+	 << "   Horiz length = " << fToFConstructor_BotUp->GetBarHorizLength() / mm 
+	 << " / Vert length = " << fToFConstructor_BotUp->GetBarVertLength() / mm 
+	 << G4endl;
+  G4cout << " - number of bars / layer: " 
+	 << fToFConstructor_BotUp->GetLayerHorizNBar() << " (horiz) - "
+	 << fToFConstructor_BotUp->GetLayerVertNBar() << " (vert)"
+	 << G4endl << G4endl;
+ 
+
+
+
+
+
+
+
 
 
   //------------------------------ 
@@ -478,6 +872,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4cout << " - name: " << tpc1Volume->GetName() << G4endl;
   G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
+  G4cout << " - width (mm): " << GetWidthForwTPC() / mm << G4endl;
+  G4cout << " - height (mm): " << GetHeightForwTPC() / mm << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos1().x()/mm << ", "
 	 << GetForwTPCPos1().y()/mm << ", "
@@ -517,6 +913,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4cout << " - name: " << tpc2Volume->GetName() << G4endl;
   G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
+  G4cout << " - width (mm): " << GetWidthForwTPC() / mm << G4endl;
+  G4cout << " - height (mm): " << GetHeightForwTPC() / mm << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos2().x()/mm << ", "
 	 << GetForwTPCPos2().y()/mm << ", "
@@ -556,6 +954,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4cout << " - name: " << tpc3Volume->GetName() << G4endl;
   G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
+  G4cout << " - width (mm): " << GetWidthForwTPC() / mm << G4endl;
+  G4cout << " - height (mm): " << GetHeightForwTPC() / mm << G4endl;
   G4cout << " - position: ( " 
 	 << GetForwTPCPos3().x()/mm << ", "
 	 << GetForwTPCPos3().y()/mm << ", "
