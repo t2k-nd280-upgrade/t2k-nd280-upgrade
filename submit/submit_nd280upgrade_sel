@@ -100,21 +100,20 @@ foreach (@ARGV) {
 $resource        = "interactive"                 unless defined $resource;
 
 #$tag             = "SelND280Up_6E20_Classic_AllECal_1_2_17" unless defined $tag;
-$tag             = "SelND280Up_6E20_Alter_targ_ftpc_AllECal_25_2_17" unless defined $tag;
+#$tag             = "SelND280Up_6E20_Current_AllECal_1_2_17" unless defined $tag; 
+$tag             = "SelND280Up_6E20_Alter_targ_ftpc_AllECal" unless defined $tag;
+#$tag             = "SelND280Up_6E20_Alter_targ_ftpc_AllECal_FGD2" unless defined $tag;
 
 #$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_classic_ECalAll_1_2_17_AllTrkPt.root" unless defined $inputfile;
-
-$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_alter_targ_ftpc_ECalAll_25_2_17_All.root" unless defined $inputfile;
-#$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_alter_targ_40cm_ftpc_ECalAll_25_2_17_All.root" unless defined $inputfile; 
-#$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_alter_ftpc_targ_ECalAll_25_2_17_All.root" unless defined $inputfile;
-#$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_alter_ftpc_targ_40cm_ECalAll_25_2_17_All.root" unless defined $inputfile; 
+#$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_current_ECalAll_1_2_17_All.root" unless defined $inputfile;
+$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_alter_targ_ftpc_ECalAll_28_2_17_All.root" unless defined $inputfile;
 
 $first_expt      = 0                             unless defined $first_expt;
 
 # Numu Beam
 #$nruns           = 21                             unless defined $nruns; # TPC+Target+ECal 
 #$nexpts          = 20000                          unless defined $nexpts;
-$nruns           = 35                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
+$nruns           = 90                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
 $nexpts          = 10000                          unless defined $nexpts;
 
 #
@@ -144,12 +143,12 @@ $nexpts          = 10000                          unless defined $nexpts;
 # Fiducial Volume ND280 current (only FGDs)
 #
 # Target 1
-# $cut_fv1_minX    = -932.15                    unless defined $cut_fv1_minX;
-# $cut_fv1_maxX    = +932.15                    unless defined $cut_fv1_maxX;
-# $cut_fv1_minY    = -948.15                    unless defined $cut_fv1_minY;
-# $cut_fv1_maxY    = +916.15                    unless defined $cut_fv1_maxY;
-# $cut_fv1_minZ    = -790.                    unless defined $cut_fv1_minZ;
-# $cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
+#$cut_fv1_minX    = -932.15                    unless defined $cut_fv1_minX;
+#$cut_fv1_maxX    = +932.15                    unless defined $cut_fv1_maxX;
+#$cut_fv1_minY    = -948.15                    unless defined $cut_fv1_minY;
+#$cut_fv1_maxY    = +916.15                    unless defined $cut_fv1_maxY;
+#$cut_fv1_minZ    = -790.                    unless defined $cut_fv1_minZ;
+#$cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
 # Target 2 
 # $cut_fv1_minX    = -932.15                    unless defined $cut_fv1_minX;
 # $cut_fv1_maxX    = +932.15                    unless defined $cut_fv1_maxX;
@@ -181,14 +180,14 @@ $cut_fv1_maxZ    = -698.                    unless defined $cut_fv1_maxZ;
 #$cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
 #$cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
 #$cut_fv1_minZ    = -1718.                   unless defined $cut_fv1_minZ;
-#$cut_fv1_maxZ    = -276.                    unless defined $cut_fv1_maxZ;
+#$cut_fv1_maxZ    = +276.                    unless defined $cut_fv1_maxZ;
 # Target 1 (40cm) - Order: VTPC1 -> Target1 -> FGD1 -> VTPC2 -> FGD2 -> VTPC3
 #$cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;                                                                                                                                 
 #$cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;                                                                                                                                 
 #$cut_fv1_minY    = -216.                    unless defined $cut_fv1_minY;                                                                                                                                 
 #$cut_fv1_maxY    = +184.                    unless defined $cut_fv1_maxY;                                                                                                                                 
 #$cut_fv1_minZ    = -1718.                      unless defined $cut_fv1_minZ;                                                                                                                              
-#$cut_fv1_maxZ    = -276.                     unless defined $cut_fv1_maxZ;                                                                                                                                
+#$cut_fv1_maxZ    = +276.                     unless defined $cut_fv1_maxZ;                                                                                                                                
 # FGD1 (same for both configurations)                                                                                                                                                       
 #$cut_fv1_minX    = -932.15                    unless defined $cut_fv1_minX;                                                                                                                               
 #$cut_fv1_maxX    = +932.15                    unless defined $cut_fv1_maxX;                                                                                                                               
@@ -219,7 +218,7 @@ $docut_mater     = 0                             unless defined $docut_mater;
 $docut_vertex  = 1                             unless defined $docut_vertex;
 $docut_target1 = 1                             unless defined $docut_target1;
 $docut_target2 = 0                             unless defined $docut_target2;
-$docut_fgd1    = 0                             unless defined $docut_fgd1;
+$docut_fgd1    = 0                            unless defined $docut_fgd1;
 $docut_fgd2    = 0                             unless defined $docut_fgd2;
 
 # select range of X vertex position
@@ -254,6 +253,7 @@ $cut_charge      = 1                             unless defined $cut_charge;
 # select track length (mm) in targets
 $docut_dl_target    = 1                          unless defined $docut_dl_target;
 $cut_dl_target      = 75                         unless defined $cut_dl_target; 
+#$cut_dl_target      = 1.                         unless defined $cut_dl_target;
 
 # select track DeltaLyz (mm) in TPCs
 $docut_dlyz_tpc    = 1                           unless defined $docut_dlyz_tpc;
