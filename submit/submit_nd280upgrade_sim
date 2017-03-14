@@ -50,7 +50,7 @@ $exe_loc_dir = "bin/" unless defined $exe_loc_dir; # path starting from $softw_d
 $resource        = "interactive"               unless defined $resource;
 
 #$tag             = "g4ND280Up_6E20_classic_1864x600x1300_nue"    unless defined $tag;
-$tag             = "g4ND280Up_6E20_nd280current_numu_0p2T"    unless defined $tag;
+#$tag             = "g4ND280Up_6E20_nd280current_numu_0p2T"    unless defined $tag;
 #$tag             = "g4ND280Up_6E20_classic_AfterDetUpdate_9_12_16" unless defined $tag;
 #$tag             = "g4ND280Up_6E20_classic_ECalAll_1_2_17" unless defined $tag;
 
@@ -59,26 +59,38 @@ $tag             = "g4ND280Up_6E20_nd280current_numu_0p2T"    unless defined $ta
 #$tag             = "g4ND280Up_6E20_alter_ftpc_targ_ECalAll_28_2_17" unless defined $tag;
 #$tag             = "g4ND280Up_6E20_alter_ftpc_targ_40cm_ECalAll_28_2_17" unless defined $tag;
 
-#$tag             = "test_tof" unless defined $tag;
+$tag             = "test" unless defined $tag;
+
+
+# After update 14/3/17
+
+#$config_file     = "config/configuration_cluster_current.xml" unless defined $config_file; # current: no ecal, no tof, cluster
+#$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file; # current: no ecal, no tof, cluster
+#$config_file     = "config/configuration_cluster_ref.xml" unless defined $config_file; # reference: no ecal, no tof, cluste
+#$config_file     = "config/configuration_cluster_ref_ecal.xml" unless defined $config_file; # reference: no ecal, no tof, cluste
+#$config_file     = "config/configuration_cluster_targ_ftpc_2fgd.xml" unless defined $config_file; # alternative targ/ftpc: no ecal, no tof, cluster
+#$config_file     = "config/configuration_cluster_targ_ftpc_2fgd_ecal.xml" unless defined $config_file; # alternative targ/ftpc: no ecal, no tof, cluster
+#$config_file     = "config/configuration_cluster_ftpc_targ_2fgd.xml" unless defined $config_file; # alternative ftpc/targ: no ecal, no tof, cluster
+#$config_file     = "config/configuration_cluster_ftpc_targ_2fgd_ecal.xml" unless defined $config_file; # alternative ftpc/targ: no ecal, no tof, cluster
+#$config_file     = "config/configuration_cluster_ref_tof.xml" unless defined $config_file; # reference: no ecal, cluster
+$config_file     = "config/configuration_cluster_ref_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
+
 
 
 
 # After updates
-
 #$config_file     = "config/configuration_classic.xml" unless defined $config_file;
 #$config_file     = "config/configuration_cluster_classic.xml" unless defined $config_file;
 #$config_file     = "config/configuration_classic_ecal.xml" unless defined $config_file;
 #$config_file     = "config/configuration_cluster_classic_ecal.xml" unless defined $config_file;
 #$config_file     = "config/configuration_current_ecal.xml" unless defined $config_file;
-$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file;
 
 # Alternative configurations
-
 #$config_file     = "config/Alternative/configuration_targ_ftpc_2fgd_ecal.xml" unless defined $config_file;
 #$config_file     = "config/Alternative/configuration_targ_ftpc_2fgd_ecal_40cm.xml" unless defined $config_file;
 #$config_file     = "config/Alternative/configuration_ftpc_targ_2fgd_ecal.xml" unless defined $config_file;
 #$config_file     = "config/Alternative/configuration_ftpc_targ_2fgd_ecal_40cm.xml" unless defined $config_file;
-
 #$config_file     = "config/Alternative/configuration_cluster_targ_ftpc_2fgd_ecal.xml" unless defined $config_file;
 #$config_file     = "config/Alternative/configuration_cluster_targ_ftpc_2fgd_ecal_40cm.xml" unless defined $config_file;   
 #$config_file     = "config/Alternative/configuration_cluster_ftpc_targ_2fgd_ecal.xml" unless defined $config_file;       
@@ -88,9 +100,9 @@ $config_file     = "config/configuration_cluster_current_ecal.xml" unless define
 #$config_file     = "config/Test/configuration_classic_ecal_tof.xml" unless defined $config_file;
 
 
-#$vis_file        = "mac/vis.mac"           unless defined $vis_file;
+$vis_file        = "mac/vis.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis_nd280current.mac"           unless defined $vis_file;
-$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis_cluster_nd280current.mac"           unless defined $vis_file;
 
 $nruns           = 180                          unless defined $nruns;      # number of jobs (ECal)

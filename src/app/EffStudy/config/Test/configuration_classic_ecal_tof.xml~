@@ -9,7 +9,7 @@
 <Dependency>
   
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
   
   <IsRandomSeed>
@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/AfterDetUpdate_1_2_17/Alternative_27_2_17_FULL/GENIE_ftpc_targ_2fgd_ecal_6E20POT.root
+    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_ECAL_6E20POT.root
   </filename>
 
   <treename>  
@@ -39,7 +39,7 @@
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     false
+     true
    </forwTPCdefault>
 
    <forwTPCPos1_X>
@@ -49,7 +49,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -2205
+     -2978
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -59,7 +59,7 @@
      0
    </forwTPCPos2_Y>
    <forwTPCPos2_Z>
-     +1066
+     0
    </forwTPCPos2_Z>
    
    <forwTPCPos3_X>
@@ -69,7 +69,7 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     +2343
+     +2978
    </forwTPCPos3_Z>
 
 
@@ -77,17 +77,17 @@
    <!-- Side TPCs 1 -->
 
    <sideTPCdefault1>
-     false
+     true
    </sideTPCdefault1>
 
    <sideTPClength1>
-     1994
+     1300  
    </sideTPClength1>
    <sideTPCwidth1>  
      2300
    </sideTPCwidth1>
    <sideTPCheight1> 
-     851.5 
+     840
    </sideTPCheight1>
 
    <sideTPCUpPos1_X>
@@ -97,7 +97,7 @@
      725.75
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     -721
+     -1487
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
@@ -107,13 +107,13 @@
      -725.75
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     -721
+     -1487
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
 
    <sideTPCdefault2>
-     false
+     true
    </sideTPCdefault2>
    <sideTPClength2>
      1300
@@ -122,7 +122,7 @@
      2300
    </sideTPCwidth2>
    <sideTPCheight2> 
-     851.5
+     840.
    </sideTPCheight2>
 
    <sideTPCUpPos2_X>
@@ -132,7 +132,7 @@
      725.75
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
-     +1206
+     +1487
    </sideTPCUpPos2_Z>
    
    <sideTPCDownPos2_X>
@@ -142,14 +142,14 @@
      -725.75
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
-     +1206
+     +1487
    </sideTPCDownPos2_Z>
 
 
    <!-- Target 1 -->
 
    <Targetdefault1>
-     false
+     true
    </Targetdefault1>
    
    <TargetMaterial1>
@@ -157,7 +157,7 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     1994
+     1300
    </Targetlength1>
    <Targetwidth1>  
      1864
@@ -173,14 +173,14 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -721
+     -1487
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     false
+     true
    </Targetdefault2>
 
    <TargetMaterial2>
@@ -204,13 +204,13 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1206
+     +1487
    </TargetPos2_Z>
 
    <!-- FGD 1 -->
 
    <FGDdefault1>
-     false
+     true
    </FGDdefault1>
 
    <FGDMaterial1>
@@ -234,14 +234,14 @@
      0
    </FGDPos1_Y>
    <FGDPos1_Z>
-     +427.5
+     -2588.5
    </FGDPos1_Z>
 
    
    <!-- FGD 2 -->
 
    <FGDdefault2> 
-     false
+     true
    </FGDdefault2>
 
    <FGDMaterial2>
@@ -265,8 +265,119 @@
      0
    </FGDPos2_Y>
    <FGDPos2_Z>
-     +1704.5
+     +2648.5
    </FGDPos2_Z>
+
+
+
+
+   <!-- ToF 1 --> 
+   
+   <ToFdefault1>
+     false
+   </ToFdefault1>
+
+   <ToFPlaneXYNum1>
+     1
+   </ToFPlaneXYNum1>
+
+   <ToFLayerHorizNBar1>
+     280
+   </ToFLayerHorizNBar1>
+   <!-- 330 -->
+
+   <ToFLayerVertNBar1>
+     230
+   </ToFLayerVertNBar1>
+   
+   <ToFBarHorizlength1>
+     2300
+   </ToFBarHorizlength1>
+   <ToFBarVertlength1>
+     2800
+   </ToFBarVertlength1>
+   <!-- 3300 -->
+
+   <ToFBarwidth1>
+     10
+   </ToFBarwidth1>
+   <ToFBarheight1>
+     10
+   </ToFBarheight1>
+   <ToFRot1_X>
+     -90
+   </ToFRot1_X>
+   <ToFRot1_Y>
+     0
+   </ToFRot1_Y>
+   <ToFRot1_Z>
+     0
+   </ToFRot1_Z>
+   <ToFPos1_X>
+     0
+   </ToFPos1_X>
+   <ToFPos1_Y>
+     1240
+   </ToFPos1_Y>
+   <ToFPos1_Z>
+     1400.1
+   </ToFPos1_Z>
+   <!-- 1137 -->
+
+   
+   <!-- ToF 2 -->
+
+   <ToFdefault2>
+     false
+   </ToFdefault2>
+
+   <ToFPlaneXYNum2>
+     1
+   </ToFPlaneXYNum2>
+
+   <ToFLayerHorizNBar2>
+     280
+   </ToFLayerHorizNBar2>
+   <!-- 330 -->
+   
+   <ToFLayerVertNBar2>
+     230
+   </ToFLayerVertNBar2>
+
+   <ToFBarHorizlength2>
+     2300
+   </ToFBarHorizlength2>
+   <ToFBarVertlength2>
+     2800
+   </ToFBarVertlength2>
+   <!-- 3300 -->
+
+   <ToFBarwidth2>
+     10
+   </ToFBarwidth2>
+   <ToFBarheight2>
+     10
+   </ToFBarheight2>
+   <ToFRot2_X>
+     -90
+   </ToFRot2_X>
+   <ToFRot2_Y>
+     0
+   </ToFRot2_Y>
+   <ToFRot2_Z>
+     0
+   </ToFRot2_Z>
+   <ToFPos2_X>
+     0
+   </ToFPos2_X>
+   <ToFPos2_Y>
+     -1240
+   </ToFPos2_Y>
+   <ToFPos2_Z>
+     -1400.1
+   </ToFPos2_Z>
+   <!-- -1137 -->
+
 
    <!-- Include detectors -->
 
@@ -274,27 +385,34 @@
      true
    </UseTarget1>
    <UseTarget2>
-     false
+     true
    </UseTarget2>
 
    <UseTPCDown1>
      true
    </UseTPCDown1>
    <UseTPCDown2>
-     false
+     true
    </UseTPCDown2>
    <UseTPCUp1>
      true
    </UseTPCUp1>
    <UseTPCUp2>
-     false
+     true
    </UseTPCUp2>
    <UseFGD1>
-    true
+    false
    </UseFGD1>
    <UseFGD2>
-    true
+    false
    </UseFGD2>
+
+   <UseToF1>
+     true
+   </UseToF1>
+   <UseToF2>
+     true
+   </UseToF2>
 
    <UseMagnet>
     false
@@ -307,17 +425,17 @@
    </UseBasket>
 
    <UseDsECal>
-    true
+     true
    </UseDsECal>
    <UseBrlECal>
-    true
+     false
    </UseBrlECal>
    <UseP0DECal>
-    true
+     false
    </UseP0DECal>
 
    <UseP0D>
-    true
+     true
    </UseP0D>
 
    <!-- Invisible detectors -->
@@ -348,6 +466,13 @@
      false
    </InvisFGD2>
    
+   <InvisToF1>
+     false
+   </InvisToF1>
+   <InvisToF2>
+     false
+   </InvisToF2>
+
    <InvisMagnet>
      true
    </InvisMagnet>
