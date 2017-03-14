@@ -51,6 +51,30 @@
 // /t2k/OA/Magnet/Basket/TPCDown2 --> Included and same name as corresponding physical volume
 // /t2k/OA/Magnet/Basket/Target1 --> Included and same name as corresponding physical volume
 // /t2k/OA/Magnet/Basket/Target2 --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/TopDown/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/TopDown/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/BotDown/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/BotDown/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/RightDown/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/RightDown/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/LeftDown/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/LeftDown/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/BackDown/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/BackDown/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/FrontDown/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/FrontDown/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/TopUp/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/TopUp/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/BotUp/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/BotUp/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/RightUp/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/RightUp/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/LeftUp/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/LeftUp/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/BackUp/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/BackUp/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/FrontUp/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/FrontUp/ScintVert/Bar --> Included and same name as corresponding physical volume
 
 
 
@@ -218,9 +242,9 @@ void SelND280UpEvent
   //const double cut_zmin = 0;
   //const double cut_zmax = 0;
 
-  // Cut 5: Charge cut (TPCs and Target)                                                                                                                                                                  
+  // Cut 5: Charge cut (TPCs and Target)      
   //const bool doCutCharge = true;
-  //const double cut_charge = 1; // absolute value                                                                                                                                                             
+  //const double cut_charge = 1; // absolute value 
 
  
   // Efficiency
@@ -340,6 +364,13 @@ void SelND280UpEvent
   TH2D *hUSECalP0DTrkPtXY = new TH2D("hUSECalP0DTrkPtXY","hUSECalP0DTrkPtXY",200,-2000,+2000,200,-4000,+4000);
   TH2D *hUSECalP0DTrkPtXZ = new TH2D("hUSECalP0DTrkPtXZ","hUSECalP0DTrkPtXZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hUSECalP0DTrkPtYZ = new TH2D("hUSECalP0DTrkPtYZ","hUSECalP0DTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  
+  TH2D *hToFUpTrkPtXY = new TH2D("hToFUpTrkPtXY","hToFUpTrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hToFUpTrkPtXZ = new TH2D("hToFUpTrkPtXZ","hToFUpTrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hToFUpTrkPtYZ = new TH2D("hToFUpTrkPtYZ","hToFUpTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hToFDownTrkPtXY = new TH2D("hToFDownTrkPtXY","hToFDownTrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hToFDownTrkPtXZ = new TH2D("hToFDownTrkPtXZ","hToFDownTrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hToFDownTrkPtYZ = new TH2D("hToFDownTrkPtYZ","hToFDownTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
 
   //
   
@@ -960,6 +991,8 @@ void SelND280UpEvent
       double EntrBrlECalX = 0;  double EntrBrlECalY = 0;  double EntrBrlECalZ = 0;  double EntrBrlECalMom = -999;
       double EntrP0DECalX = 0;  double EntrP0DECalY = 0;  double EntrP0DECalZ = 0;  double EntrP0DECalMom = -999;
       double EntrUSECalP0DX = 0;double EntrUSECalP0DY = 0;double EntrUSECalP0DZ = 0;double EntrUSECalP0DMom = -999;
+      double EntrToFUpX = 0;    double EntrToFUpY = 0;    double EntrToFUpZ = 0;   double EntrToFUpMom = 999999999;
+      double EntrToFDownX = 0;  double EntrToFDownY = 0;  double EntrToFDownZ = 0; double EntrToFDownMom = 999999999;
 
       double ExForwTPC1X = 0;   double ExForwTPC1Y = 0;   double ExForwTPC1Z = 0;   double ExForwTPC1Mom = 999999999;
       double ExForwTPC2X = 0;   double ExForwTPC2Y = 0;   double ExForwTPC2Z = 0;   double ExForwTPC2Mom = 999999999;
@@ -971,8 +1004,10 @@ void SelND280UpEvent
       double ExDsECalX = 0;     double ExDsECalY = 0;     double ExDsECalZ = 0;     double ExDsECalMom = 999999999;
       double ExBrlECalX = 0;    double ExBrlECalY = 0;    double ExBrlECalZ = 0;    double ExBrlECalMom = 999999999;
       double ExP0DECalX = 0;    double ExP0DECalY = 0;    double ExP0DECalZ = 0;    double ExP0DECalMom = 999999999;
-      double ExUSECalP0DX = 0;  double ExUSECalP0DY = 0;  double ExUSECalP0DZ = 0;  double ExUSECalP0DMom = 999999999;
-
+      double ExUSECalP0DX = 0;  double ExUSECalP0DY = 0;  double ExUSECalP0DZ = 0;  double ExUSECalP0DMom = 999999999;      
+      double ExToFUpX = 0;    double ExToFUpY = 0;    double ExToFUpZ = 0;   double ExToFUpMom = 999999999;
+      double ExToFDownX = 0;  double ExToFDownY = 0;  double ExToFDownZ = 0; double ExToFDownMom = 999999999;
+ 
       double LastX = 0;         double LastY = 0;         double LastZ = 0; 
 	    
       for(int ipt=0;ipt<NPoints;ipt++){
@@ -1158,8 +1193,37 @@ void SelND280UpEvent
 	    ExTPCDown2Z = PtZ;
 	  }
 	}
+	else if( (volname.find("ToF") != string::npos) && 
+		 (volname.find("Up") != string::npos) ){
+	  if(PtMom>EntrToFUpMom){
+	    EntrToFUpMom = PtMom;
+	    EntrToFUpX = PtX;
+	    EntrToFUpY = PtY;
+	    EntrToFUpZ = PtZ;
+	  }
+	  if(PtMom<ExToFUpMom){
+	    ExToFUpMom = PtMom;
+	    ExToFUpX = PtX;
+	    ExToFUpY = PtY;
+	    ExToFUpZ = PtZ;
+	  }
+	}
+	else if( (volname.find("ToF") != string::npos) && 
+		 (volname.find("Down") != string::npos) ){
+	  if(PtMom>EntrToFDownMom){
+	    EntrToFDownMom = PtMom;
+	    EntrToFDownX = PtX;
+	    EntrToFDownY = PtY;
+	    EntrToFDownZ = PtZ;
+	  }
+	  if(PtMom<ExToFDownMom){
+	    ExToFDownMom = PtMom;
+	    ExToFDownX = PtX;
+	    ExToFDownY = PtY;
+	    ExToFDownZ = PtZ;
+	  }
+	}
 
-	
 	//delete nd280UpTrackPoint;
 	//nd280UpTrackPoint = 0;
 
@@ -1288,6 +1352,29 @@ void SelND280UpEvent
 	hUSECalP0DTrkPtXY->Fill(ExUSECalP0DX,ExUSECalP0DY);
 	hUSECalP0DTrkPtXZ->Fill(ExUSECalP0DX,ExUSECalP0DZ);
 	hUSECalP0DTrkPtYZ->Fill(ExUSECalP0DY,ExUSECalP0DZ);	  
+      }
+      //
+
+      if(EntrToFUpMom>0.){
+	hToFUpTrkPtXY->Fill(EntrToFUpX,EntrToFUpY);
+	hToFUpTrkPtXZ->Fill(EntrToFUpX,EntrToFUpZ);
+	hToFUpTrkPtYZ->Fill(EntrToFUpY,EntrToFUpZ);	  
+      }
+      if(ExToFUpMom<9999999.){
+	hToFUpTrkPtXY->Fill(ExToFUpX,ExToFUpY);
+	hToFUpTrkPtXZ->Fill(ExToFUpX,ExToFUpZ);
+	hToFUpTrkPtYZ->Fill(ExToFUpY,ExToFUpZ);	  
+      }
+
+      if(EntrToFDownMom>0.){
+	hToFDownTrkPtXY->Fill(EntrToFDownX,EntrToFDownY);
+	hToFDownTrkPtXZ->Fill(EntrToFDownX,EntrToFDownZ);
+	hToFDownTrkPtYZ->Fill(EntrToFDownY,EntrToFDownZ);	  
+      }
+      if(ExToFDownMom<9999999.){
+	hToFDownTrkPtXY->Fill(ExToFDownX,ExToFDownY);
+	hToFDownTrkPtXZ->Fill(ExToFDownX,ExToFDownZ);
+	hToFDownTrkPtYZ->Fill(ExToFDownY,ExToFDownZ);	  
       }
       
       /////
@@ -1715,6 +1802,17 @@ void SelND280UpEvent
   hUSECalP0DTrkPtXY->Write();
   hUSECalP0DTrkPtXZ->Write();
   hUSECalP0DTrkPtYZ->Write();
+
+
+  hToFDownTrkPtXY->Write();
+  hToFDownTrkPtXZ->Write();
+  hToFDownTrkPtYZ->Write();
+
+  hToFUpTrkPtXY->Write();
+  hToFUpTrkPtXZ->Write();
+  hToFUpTrkPtYZ->Write();
+
+
   //
   hVtx_X->Write();
   hVtx_Y->Write();
