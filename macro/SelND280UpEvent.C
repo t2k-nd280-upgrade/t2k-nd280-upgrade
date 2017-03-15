@@ -991,8 +991,8 @@ void SelND280UpEvent
       double EntrBrlECalX = 0;  double EntrBrlECalY = 0;  double EntrBrlECalZ = 0;  double EntrBrlECalMom = -999;
       double EntrP0DECalX = 0;  double EntrP0DECalY = 0;  double EntrP0DECalZ = 0;  double EntrP0DECalMom = -999;
       double EntrUSECalP0DX = 0;double EntrUSECalP0DY = 0;double EntrUSECalP0DZ = 0;double EntrUSECalP0DMom = -999;
-      double EntrToFUpX = 0;    double EntrToFUpY = 0;    double EntrToFUpZ = 0;   double EntrToFUpMom = 999999999;
-      double EntrToFDownX = 0;  double EntrToFDownY = 0;  double EntrToFDownZ = 0; double EntrToFDownMom = 999999999;
+      double EntrToFUpX = 0;    double EntrToFUpY = 0;    double EntrToFUpZ = 0;   double EntrToFUpMom = -999;
+      double EntrToFDownX = 0;  double EntrToFDownY = 0;  double EntrToFDownZ = 0; double EntrToFDownMom = -999;
 
       double ExForwTPC1X = 0;   double ExForwTPC1Y = 0;   double ExForwTPC1Z = 0;   double ExForwTPC1Mom = 999999999;
       double ExForwTPC2X = 0;   double ExForwTPC2Y = 0;   double ExForwTPC2Z = 0;   double ExForwTPC2Mom = 999999999;
