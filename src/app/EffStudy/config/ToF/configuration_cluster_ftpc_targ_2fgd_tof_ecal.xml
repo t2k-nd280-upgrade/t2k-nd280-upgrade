@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root
+    GENIE/14_3_17/GENIE_geometry_alt_ftpc_targ_1E21POT.root
   </filename>
 
   <treename>  
@@ -49,7 +49,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -211
+     -2205
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -72,7 +72,7 @@
      +2343
    </forwTPCPos3_Z>
 
-   
+
    
    <!-- Side TPCs 1 -->
 
@@ -97,7 +97,7 @@
      725.75
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     -1695
+     -721
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
@@ -107,7 +107,7 @@
      -725.75
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     -1695
+     -721
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
@@ -173,7 +173,7 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1695
+     -721
    </TargetPos1_Z>
 
    
@@ -532,7 +532,7 @@
      +1200
    </ToFPosY_TopUp>
    <ToFPosZ_TopUp>
-     -1695
+     -721
    </ToFPosZ_TopUp>
 
    <!-- ToF Bottom Upstream -->
@@ -570,7 +570,7 @@
      -1200
    </ToFPosY_BotUp>
    <ToFPosZ_BotUp>
-     -1695
+     -721
    </ToFPosZ_BotUp>
 
    <!-- ToF Right Upstream -->
@@ -608,7 +608,7 @@
      0
    </ToFPosY_RightUp>
    <ToFPosZ_RightUp>
-     -1695
+     -721
    </ToFPosZ_RightUp>
 
    <!-- ToF Left Upstream -->
@@ -646,7 +646,7 @@
      0
    </ToFPosY_LeftUp>
    <ToFPosZ_LeftUp>
-     -1695
+     -721
    </ToFPosZ_LeftUp>
 
    <!-- ToF Back Upstream -->
@@ -684,7 +684,7 @@
      0
    </ToFPosY_BackUp>
    <ToFPosZ_BackUp>
-     -2667
+     -1693
    </ToFPosZ_BackUp>
 
    <!-- ToF Front Upstream -->
@@ -722,7 +722,7 @@
      0
    </ToFPosY_FrontUp>
    <ToFPosZ_FrontUp>
-     -723
+     +251
    </ToFPosZ_FrontUp>
 
    <!-- Include detectors -->
@@ -764,7 +764,7 @@
    </UseFGD2>
 
    <UseToF_TopDown>
-     fasle
+     false
    </UseToF_TopDown>
    <UseToF_BotDown>
      false
@@ -810,21 +810,21 @@
    <UseBasket>
      false
    </UseBasket>
-   
+
    <UseDsECal>
-     false
+    true
    </UseDsECal>
    <UseBrlECal>
-     false
+    true
    </UseBrlECal>
    <UseP0DECal>
-     false
+    true
    </UseP0DECal>
-   
+
    <UseP0D>
-     false
+     true
    </UseP0D>
-   
+
    <!-- Invisible detectors -->
 
    <InvisForwTPC1>
@@ -862,7 +862,7 @@
    <InvisFGD2>
      false
    </InvisFGD2>
-   
+
    <InvisToF_TopDown>
      false
    </InvisToF_TopDown>
@@ -900,7 +900,7 @@
    <InvisToF_FrontUp>
      false
    </InvisToF_FrontUp>
-
+   
    <InvisMagnet>
      true
    </InvisMagnet>
