@@ -171,6 +171,11 @@ public:
   void SetToFFullHeight_FrontDown(G4double height)  {fToFHeight_FrontDown = height;};
   void SetToFPos_FrontDown(G4double x,G4double y,G4double z) {fToFPos_FrontDown = G4ThreeVector(x,y,z);};
 
+  void SetToFFullLength_ECalP0D(G4double length)  {fToFLength_ECalP0D = length;};
+  void SetToFFullWidth_ECalP0D(G4double width)   {fToFWidth_ECalP0D = width;};
+  void SetToFFullHeight_ECalP0D(G4double height)  {fToFHeight_ECalP0D = height;};
+  void SetToFPos_ECalP0D(G4double x,G4double y,G4double z) {fToFPos_ECalP0D = G4ThreeVector(x,y,z);};
+
   // ToF Upstream
 
   void SetToFFullLength_TopUp(G4double length)  {fToFLength_TopUp = length;};
@@ -287,6 +292,11 @@ public:
   G4double GetToFFullWidth_FrontDown()   {return fToFWidth_FrontDown;};
   G4double GetToFFullHeight_FrontDown()  {return fToFHeight_FrontDown;};
   G4ThreeVector GetToFPos_FrontDown()  {return fToFPos_FrontDown;};
+
+  G4double GetToFFullLength_ECalP0D()  {return fToFLength_ECalP0D;};
+  G4double GetToFFullWidth_ECalP0D()   {return fToFWidth_ECalP0D;};
+  G4double GetToFFullHeight_ECalP0D()  {return fToFHeight_ECalP0D;};
+  G4ThreeVector GetToFPos_ECalP0D()  {return fToFPos_ECalP0D;};
 
   // ToF Upstream
 
@@ -428,6 +438,10 @@ private:
   G4LogicalVolume*   logicToF_FrontDown; // pointer to the logical ToF           
   G4VPhysicalVolume* physiToF_FrontDown; // pointer to the physical ToF 
 
+  //G4Box*             solidToF_ECalP0D;  // pointer to the solid ToF
+  G4LogicalVolume*   logicToF_ECalP0D; // pointer to the logical ToF           
+  G4VPhysicalVolume* physiToF_ECalP0D; // pointer to the physical ToF 
+
   //G4Box*             solidToF_TopUp;  // pointer to the solid ToF
   G4LogicalVolume*   logicToF_TopUp; // pointer to the logical ToF           
   G4VPhysicalVolume* physiToF_TopUp; // pointer to the physical ToF 
@@ -548,6 +562,11 @@ private:
   G4double fToFWidth_FrontDown;            // width of the tof                                       
   G4double fToFHeight_FrontDown;           // height of the tof                                      
   G4ThreeVector fToFPos_FrontDown;       // Position of side tof
+
+ G4double fToFLength_ECalP0D;           // length of the tof
+  G4double fToFWidth_ECalP0D;            // width of the tof                                       
+  G4double fToFHeight_ECalP0D;           // height of the tof                                      
+  G4ThreeVector fToFPos_ECalP0D;       // Position of side tof
 
   G4double fToFLength_TopUp;           // length of the tof
   G4double fToFWidth_TopUp;            // width of the tof                                       

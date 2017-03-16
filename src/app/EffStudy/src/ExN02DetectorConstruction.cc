@@ -104,7 +104,7 @@ ExN02DetectorConstruction::ExN02DetectorConstruction()
   solidSideTPCUp2(0),logicSideTPCUp2(0),physiSideTPCUp2(0), 
   solidSideTPCDown1(0),logicSideTPCDown1(0),physiSideTPCDown1(0), 
   solidSideTPCDown2(0),logicSideTPCDown2(0),physiSideTPCDown2(0),
-  physiToF_TopDown(0),physiToF_BotDown(0),physiToF_RightDown(0),physiToF_LeftDown(0),physiToF_BackDown(0),physiToF_FrontDown(0),
+  physiToF_TopDown(0),physiToF_BotDown(0),physiToF_RightDown(0),physiToF_LeftDown(0),physiToF_BackDown(0),physiToF_FrontDown(0),physiToF_ECalP0D(0),
   physiToF_TopUp(0),physiToF_BotUp(0),physiToF_RightUp(0),physiToF_LeftUp(0),physiToF_BackUp(0),physiToF_FrontUp(0),  
   WorldMater(0), BasketMater(0), TargetMater1(0), TargetMater2(0), 
   FGDMater1(0), FGDMater2(0),
@@ -209,7 +209,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4double HalfWorldLength = 0.5 * GetWorldFullLength();
   G4double HalfWorldWidth  = 0.5 * GetWorldFullWidth();
   G4double HalfWorldHeight = 0.5 * GetWorldFullHeight();
-
+  
   G4GeometryManager::GetInstance()->SetWorldMaximumExtent(fWorldLength);
   G4cout << "Computed tolerance = "
          << G4GeometryTolerance::GetInstance()->GetSurfaceTolerance()/mm
@@ -251,7 +251,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4VPhysicalVolume* physiND280MC 
     = new G4PVPlacement(0,               // no rotation
-  			G4ThreeVector(), // position (0,0,0)
+  			G4ThreeVector(0,0,0), // position (0,0,0)
   			logicND280MC,// logical volume
   			nameND280MC, // name
   			logicWorld,               // mother  volume
@@ -757,22 +757,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // ToF Top Upstream - along X (horizontal layer) and Z (vertical layer)
   
   ND280ToFConstructor *fToFConstructor_TopUp = new ND280ToFConstructor(cParentNameToF+"/ToF/TopUp",this);
@@ -1226,6 +1210,82 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
+
+  // ToF ECalP0D - along X (horizontal layer) and Y (vertical layer)
+  
+  ND280ToFConstructor *fToFConstructor_ECalP0D = new ND280ToFConstructor(cParentNameToF+"/ToF/ECalP0D",this);
+  G4String nameToF_ECalP0D = fToFConstructor_ECalP0D->GetName();
+  G4RotationMatrix* rotation_tof_ECalP0D = new G4RotationMatrix();
+  
+  rotX=0,rotY=0,rotZ=0;
+  
+  if( ND280XMLInput->GetXMLUseToF_ECalP0D() ){
+
+    G4double x = ND280XMLInput->GetXMLToFPosX_ECalP0D() * mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_ECalP0D() * mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_ECalP0D() * mm;
+    SetToFPos_ECalP0D(x,y,z);
+    
+    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_ECalP0D();
+    fToFConstructor_ECalP0D->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_ECalP0D() * mm;
+    fToFConstructor_ECalP0D->SetBarWidth(BarWidth);
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_ECalP0D() * mm;
+    fToFConstructor_ECalP0D->SetBarHeight(BarHeight);
+    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_ECalP0D();
+    fToFConstructor_ECalP0D->SetLayerHorizNBar(NBarHoriz); 
+    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_ECalP0D();
+    fToFConstructor_ECalP0D->SetLayerVertNBar(NBarVert); 
+
+    rotX = ND280XMLInput->GetXMLToFRotX_ECalP0D() * degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_ECalP0D() * degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_ECalP0D() * degree;
+    rotation_tof_ECalP0D->rotateX(rotX); 
+    rotation_tof_ECalP0D->rotateY(rotY); 
+    rotation_tof_ECalP0D->rotateZ(rotZ);      
+    
+    logicToF_ECalP0D = fToFConstructor_ECalP0D->GetPiece();
+    physiToF_ECalP0D = new G4PVPlacement(
+				       rotation_tof_ECalP0D,               // rotation
+				       GetToFPos_ECalP0D(),
+				       logicToF_ECalP0D,// logical volume
+				       nameToF_ECalP0D, // name   
+				       logicBasket,    // mother  volume  
+				       false,        // no boolean operations
+				       0);
+    
+    G4cout << " - name: " << logicToF_ECalP0D->GetName() << G4endl;
+    G4cout << " - Total size before rotation  (mm^3): "
+	   << fToFConstructor_ECalP0D->GetWidth() / mm << " (width) x "
+	   << fToFConstructor_ECalP0D->GetHeight() / mm << " (height) x "
+	   << fToFConstructor_ECalP0D->GetLength() / mm << " (length)"
+	   << G4endl;
+    G4cout << " - Rotation ToF ECalP0D: ("
+	   << rotX / degree << ","
+	   << rotY / degree << ","
+	   << rotZ / degree << ")"
+	   << G4endl;
+    G4cout << " - position: ( "
+	   << GetToFPos_ECalP0D().x()/mm << ", "
+	   << GetToFPos_ECalP0D().y()/mm << ", "
+	   << GetToFPos_ECalP0D().z()/mm << " ) mm" << G4endl;
+    G4cout << " - # of planes XY = " << fToFConstructor_ECalP0D->GetPlaneXYNum() 
+	   << " --> " << fToFConstructor_ECalP0D->GetPlaneXYNum() * 2. << " layers"
+	   << G4endl;
+    G4cout << " - size of bar cross section (mm): " 
+	   << fToFConstructor_ECalP0D->GetBarWidth() / mm << " (width) x " 
+	   << fToFConstructor_ECalP0D->GetBarHeight() / mm << " (height)" 
+	   << G4endl
+	   << "   Horiz length = " << fToFConstructor_ECalP0D->GetBarHorizLength() / mm 
+	   << " / Vert length = " << fToFConstructor_ECalP0D->GetBarVertLength() / mm 
+	   << G4endl;
+    G4cout << " - number of bars / layer: " 
+	   << fToFConstructor_ECalP0D->GetLayerHorizNBar() << " (horiz) - "
+	   << fToFConstructor_ECalP0D->GetLayerVertNBar() << " (vert)"
+	   << G4endl << G4endl;
+    
+  }
+
   /*
     
   //------------------------------ 
@@ -1316,6 +1376,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << fToFConstructor_FrontUp->GetLayerVertNBar() << " (vert)"
 	   << G4endl << G4endl;	   
   */
+
+
 
 
 
@@ -2083,6 +2145,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     // // Export geometry in Root and save it in a file
     // // TGeoManager::Import("geometry.root");
     // // gGeoManager->GetTopVolume()->Draw();
+    // // gGeoManager->FindVolumeFast("/t2k/OA/Magnet/LeftClam/BrlECal")
     // // Import Geant4 geometry to VGM
     // Geant4GM::Factory g4Factory;
     // g4Factory.SetDebug(0);

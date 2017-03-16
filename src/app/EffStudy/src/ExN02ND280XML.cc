@@ -203,6 +203,20 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("ToFPosY_FrontDown"         ,fToFPosY_FrontDown);
     XML2Double("ToFPosZ_FrontDown"         ,fToFPosZ_FrontDown);
 
+    // ToF ECalP0D
+    XML2Bool("ToFdefault_ECalP0D"      ,fToFdefault_ECalP0D);
+    XML2Int("ToFPlaneXYNum_ECalP0D"    ,fToFPlaneXYNum_ECalP0D);
+    XML2Int("ToFLayerHorizNBar_ECalP0D",fToFLayerHorizNBar_ECalP0D);
+    XML2Int("ToFLayerVertNBar_ECalP0D" ,fToFLayerVertNBar_ECalP0D);
+    XML2Double("ToFBarwidth_ECalP0D"      ,fToFBarwidth_ECalP0D);
+    XML2Double("ToFBarheight_ECalP0D"     ,fToFBarheight_ECalP0D);
+    XML2Double("ToFRotX_ECalP0D"         ,fToFRotX_ECalP0D);
+    XML2Double("ToFRotY_ECalP0D"         ,fToFRotY_ECalP0D);
+    XML2Double("ToFRotZ_ECalP0D"         ,fToFRotZ_ECalP0D);
+    XML2Double("ToFPosX_ECalP0D"         ,fToFPosX_ECalP0D);
+    XML2Double("ToFPosY_ECalP0D"         ,fToFPosY_ECalP0D);
+    XML2Double("ToFPosZ_ECalP0D"         ,fToFPosZ_ECalP0D);
+
     // ToF Top Upstream 
     XML2Bool("ToFdefault_TopUp"      ,fToFdefault_TopUp);
     XML2Int("ToFPlaneXYNum_TopUp"    ,fToFPlaneXYNum_TopUp);
@@ -313,6 +327,8 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseToF_LeftDown" ,fUseToF_LeftDown);
     XML2Bool("UseToF_BackDown" ,fUseToF_BackDown);
     XML2Bool("UseToF_FrontDown" ,fUseToF_FrontDown);
+    // Use ECalP0D ToF
+    XML2Bool("UseToF_ECalP0D" ,fUseToF_ECalP0D); 
     // Use Upstream ToFs
     XML2Bool("UseToF_TopUp" ,fUseToF_TopUp);
     XML2Bool("UseToF_BotUp" ,fUseToF_BotUp);
@@ -351,6 +367,8 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("InvisToF_LeftDown"     ,fInvisToF_LeftDown);
     XML2Bool("InvisToF_BackDown"     ,fInvisToF_BackDown);
     XML2Bool("InvisToF_FrontDown"     ,fInvisToF_FrontDown);
+    //
+    XML2Bool("InvisToF_ECalP0D"     ,fInvisToF_ECalP0D);
     //
     XML2Bool("InvisToF_TopUp"     ,fInvisToF_TopUp);
     XML2Bool("InvisToF_BotUp"     ,fInvisToF_BotUp);

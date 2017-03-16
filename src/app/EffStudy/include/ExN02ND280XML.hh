@@ -189,6 +189,21 @@ public :
   G4double GetXMLToFPosX_FrontDown()         {return fToFPosX_FrontDown;};
   G4double GetXMLToFPosY_FrontDown()         {return fToFPosY_FrontDown;};
   G4double GetXMLToFPosZ_FrontDown()         {return fToFPosZ_FrontDown;};
+  
+  // ToF ECalP0D
+
+  G4bool   GetXMLToFdefault_ECalP0D()       {return fToFdefault_ECalP0D;};
+  G4int    GetXMLToFLayerHorizNBar_ECalP0D()   {return fToFLayerHorizNBar_ECalP0D;};  
+  G4int    GetXMLToFLayerVertNBar_ECalP0D()    {return fToFLayerVertNBar_ECalP0D;};
+  G4int    GetXMLToFPlaneXYNum_ECalP0D()       {return fToFPlaneXYNum_ECalP0D;};
+  G4double GetXMLToFBarwidth_ECalP0D()      {return fToFBarwidth_ECalP0D;};
+  G4double GetXMLToFBarheight_ECalP0D()     {return fToFBarheight_ECalP0D;};
+  G4double GetXMLToFRotX_ECalP0D()          {return fToFRotX_ECalP0D;};
+  G4double GetXMLToFRotY_ECalP0D()          {return fToFRotY_ECalP0D;};
+  G4double GetXMLToFRotZ_ECalP0D()          {return fToFRotZ_ECalP0D;};
+  G4double GetXMLToFPosX_ECalP0D()         {return fToFPosX_ECalP0D;};
+  G4double GetXMLToFPosY_ECalP0D()         {return fToFPosY_ECalP0D;};
+  G4double GetXMLToFPosZ_ECalP0D()         {return fToFPosZ_ECalP0D;};
 
   // ToF Upstream
 
@@ -288,6 +303,7 @@ public :
   G4bool   GetXMLUseToF_LeftDown()       {return fUseToF_LeftDown;};
   G4bool   GetXMLUseToF_BackDown()       {return fUseToF_BackDown;};
   G4bool   GetXMLUseToF_FrontDown()       {return fUseToF_FrontDown;};
+  G4bool   GetXMLUseToF_ECalP0D()       {return fUseToF_ECalP0D;};
   G4bool   GetXMLUseToF_TopUp()       {return fUseToF_TopUp;};
   G4bool   GetXMLUseToF_BotUp()       {return fUseToF_BotUp;};
   G4bool   GetXMLUseToF_RightUp()       {return fUseToF_RightUp;};
@@ -320,6 +336,7 @@ public :
   G4bool   GetXMLInvisToF_LeftDown()     {return fInvisToF_LeftDown;};  
   G4bool   GetXMLInvisToF_BackDown()     {return fInvisToF_BackDown;};  
   G4bool   GetXMLInvisToF_FrontDown()     {return fInvisToF_FrontDown;};  
+  G4bool   GetXMLInvisToF_ECalP0D()     {return fInvisToF_ECalP0D;};  
   G4bool   GetXMLInvisToF_TopUp()     {return fInvisToF_TopUp;};  
   G4bool   GetXMLInvisToF_BotUp()     {return fInvisToF_BotUp;};  
   G4bool   GetXMLInvisToF_RightUp()     {return fInvisToF_RightUp;};  
@@ -509,6 +526,23 @@ private :
   G4double fToFPosY_FrontDown;
   G4double fToFPosZ_FrontDown;
 
+  // ToF ECalP0D
+
+  G4bool   fToFdefault_ECalP0D;
+  G4int    fToFLayerHorizNBar_ECalP0D;
+  G4int    fToFLayerVertNBar_ECalP0D;
+  G4int    fToFPlaneXYNum_ECalP0D;
+  G4double fToFBarHorizlength_ECalP0D;
+  G4double fToFBarVertlength_ECalP0D;
+  G4double fToFBarwidth_ECalP0D;
+  G4double fToFBarheight_ECalP0D;
+  G4double fToFRotX_ECalP0D;
+  G4double fToFRotY_ECalP0D;
+  G4double fToFRotZ_ECalP0D;
+  G4double fToFPosX_ECalP0D;
+  G4double fToFPosY_ECalP0D;
+  G4double fToFPosZ_ECalP0D;
+
   // ToF Upstream
 
   G4bool   fToFdefault_TopUp;
@@ -621,6 +655,7 @@ private :
   G4bool fUseToF_LeftDown;
   G4bool fUseToF_BackDown;
   G4bool fUseToF_FrontDown;
+  G4bool fUseToF_ECalP0D;
   G4bool fUseToF_TopUp;
   G4bool fUseToF_BotUp;
   G4bool fUseToF_RightUp;
@@ -651,6 +686,7 @@ private :
   G4bool fInvisToF_LeftDown;
   G4bool fInvisToF_BackDown;
   G4bool fInvisToF_FrontDown;
+  G4bool fInvisToF_ECalP0D;
   G4bool fInvisToF_TopUp;
   G4bool fInvisToF_BotUp;
   G4bool fInvisToF_RightUp;
