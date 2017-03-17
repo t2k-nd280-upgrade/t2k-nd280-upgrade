@@ -818,17 +818,17 @@
    </UseBasket>
 
    <UseDsECal>
-    true
+    false
    </UseDsECal>
    <UseBrlECal>
-    true
+    false
    </UseBrlECal>
    <UseP0DECal>
-    true
+    false
    </UseP0DECal>
 
    <UseP0D>
-    true
+    false
    </UseP0D>
 
    <!-- Invisible detectors -->

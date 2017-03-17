@@ -9,11 +9,11 @@
 <Dependency>
   
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
   
   <IsRandomSeed>
-    0
+    1
   </IsRandomSeed>
   
   <Generator>      
@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_ECAL_6E20POT.root
+    GENIE/AfterDetUpdate_1_2_17/Alternative_27_2_17_FULL/GENIE_targ_ftpc_2fgd_ecal_6E20POT.root
   </filename>
 
   <treename>  
@@ -41,7 +41,7 @@
    <forwTPCdefault>
      false
    </forwTPCdefault>
-   
+
    <forwTPCPos1_X>
      0
    </forwTPCPos1_X>
@@ -77,11 +77,11 @@
    <!-- Side TPCs 1 -->
 
    <sideTPCdefault1>
-     true
+     false
    </sideTPCdefault1>
 
    <sideTPClength1>
-     1300  
+     1994
    </sideTPClength1>
    <sideTPCwidth1>  
      2300
@@ -97,7 +97,7 @@
      725.75
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     -1487
+     -1695
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
@@ -107,13 +107,13 @@
      -725.75
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     -1487
+     -1695
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
 
    <sideTPCdefault2>
-     true
+     false
    </sideTPCdefault2>
    <sideTPClength2>
      1300
@@ -132,7 +132,7 @@
      725.75
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
-     +1487
+     +1206
    </sideTPCUpPos2_Z>
    
    <sideTPCDownPos2_X>
@@ -142,14 +142,14 @@
      -725.75
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
-     +1487
+     +1206
    </sideTPCDownPos2_Z>
 
 
    <!-- Target 1 -->
 
    <Targetdefault1>
-     true
+     false
    </Targetdefault1>
    
    <TargetMaterial1>
@@ -157,7 +157,7 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     1300
+     1994
    </Targetlength1>
    <Targetwidth1>  
      1864
@@ -173,14 +173,14 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1487
+     -1695
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     true
+     false
    </Targetdefault2>
 
    <TargetMaterial2>
@@ -204,7 +204,7 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1487
+     +1206
    </TargetPos2_Z>
 
    <!-- FGD 1 -->
@@ -271,25 +271,24 @@
    <!-- Include detectors -->
 
    <UseTarget1>
-     false
+     true
    </UseTarget1>
    <UseTarget2>
      false
    </UseTarget2>
 
    <UseTPCDown1>
-     false
+     true
    </UseTPCDown1>
    <UseTPCDown2>
      false
    </UseTPCDown2>
    <UseTPCUp1>
-     false
+     true
    </UseTPCUp1>
    <UseTPCUp2>
      false
    </UseTPCUp2>
-
    <UseFGD1>
     true
    </UseFGD1>
@@ -304,7 +303,7 @@
    <!-- true --> 
    <!-- </UseSMRD> -->
    <UseBasket>
-    false
+     false
    </UseBasket>
 
    <UseDsECal>

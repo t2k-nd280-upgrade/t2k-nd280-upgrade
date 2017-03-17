@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/14_3_17/GENIE_geometry_current_1E21POT.root
+    GENIE/14_3_17/GENIE_geometry_ref_1E21POT.root
   </filename>
 
   <treename>  
@@ -39,9 +39,9 @@
    <!-- Forward TPCs positions -->
 
    <forwTPCdefault>
-     false
+     true
    </forwTPCdefault>
-   
+
    <forwTPCPos1_X>
      0
    </forwTPCPos1_X>
@@ -49,7 +49,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -211
+     -2978
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -59,7 +59,7 @@
      0
    </forwTPCPos2_Y>
    <forwTPCPos2_Z>
-     +1066
+     0
    </forwTPCPos2_Z>
    
    <forwTPCPos3_X>
@@ -69,7 +69,7 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     +2343
+     +2978
    </forwTPCPos3_Z>
 
 
@@ -210,7 +210,7 @@
    <!-- FGD 1 -->
 
    <FGDdefault1>
-     false
+     true
    </FGDdefault1>
 
    <FGDMaterial1>
@@ -234,14 +234,14 @@
      0
    </FGDPos1_Y>
    <FGDPos1_Z>
-     +427.5
+     -2588.5
    </FGDPos1_Z>
 
    
    <!-- FGD 2 -->
 
    <FGDdefault2> 
-     false
+     true
    </FGDdefault2>
 
    <FGDMaterial2>
@@ -265,10 +265,8 @@
      0
    </FGDPos2_Y>
    <FGDPos2_Z>
-     +1704.5
+     +2648.5
    </FGDPos2_Z>
-
-
 
    <!-- ToF Top Downstream -->    
    <ToFdefault_TopDown>
@@ -727,9 +725,6 @@
      -512
    </ToFPosZ_FrontUp>
 
-
-
-
    <!-- Include detectors -->
 
    <UseForwTPC1>
@@ -743,30 +738,29 @@
    </UseForwTPC3>
 
    <UseTarget1>
-     false
+     true
    </UseTarget1>
    <UseTarget2>
-     false
+     true
    </UseTarget2>
 
    <UseTPCDown1>
-     false
+     true
    </UseTPCDown1>
    <UseTPCDown2>
-     false
+     true
    </UseTPCDown2>
    <UseTPCUp1>
-     false
+     true
    </UseTPCUp1>
    <UseTPCUp2>
-     false
+     true
    </UseTPCUp2>
-
    <UseFGD1>
-    true
+    false
    </UseFGD1>
    <UseFGD2>
-    true
+    false
    </UseFGD2>
 
    <UseToF_TopDown>
@@ -842,7 +836,7 @@
    <InvisForwTPC3>
      false
    </InvisForwTPC3>
-
+   
    <InvisTarget1>
      false
    </InvisTarget1>
@@ -908,7 +902,7 @@
    </InvisToF_FrontUp>
    
    <InvisMagnet>
-     true
+     false
    </InvisMagnet>
    
    <InvisBasket>

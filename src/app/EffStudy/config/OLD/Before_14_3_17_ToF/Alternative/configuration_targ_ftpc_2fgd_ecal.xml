@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/AfterDetUpdate_1_2_17/Alternative/GENIE_targ_ftpc_2fgd_ecal_40cm_6E20POT.root
+    GENIE/AfterDetUpdate_1_2_17/Alternative_27_2_17_FULL/GENIE_targ_ftpc_2fgd_ecal_6E20POT.root
   </filename>
 
   <treename>  
@@ -87,14 +87,14 @@
      2300
    </sideTPCwidth1>
    <sideTPCheight1> 
-     951.5 
+     851.5 
    </sideTPCheight1>
 
    <sideTPCUpPos1_X>
      0 
    </sideTPCUpPos1_X>
    <sideTPCUpPos1_Y>
-     675.75
+     725.75
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
      -1695
@@ -104,7 +104,7 @@
      0
    </sideTPCDownPos1_X>
    <sideTPCDownPos1_Y>
-     -675.75
+     -725.75
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
      -1695
@@ -122,14 +122,14 @@
      2300
    </sideTPCwidth2>
    <sideTPCheight2> 
-     951.5
+     851.5
    </sideTPCheight2>
 
    <sideTPCUpPos2_X>
      0
    </sideTPCUpPos2_X>
    <sideTPCUpPos2_Y>
-     675.75
+     725.75
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
      +1206
@@ -139,7 +139,7 @@
      0 
    </sideTPCDownPos2_X>
    <sideTPCDownPos2_Y>
-     -675.75
+     -725.75
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
      +1206
@@ -163,7 +163,7 @@
      1864
    </Targetwidth1>
    <Targetheight1> 
-     400
+     600
    </Targetheight1>
  
    <TargetPos1_X>

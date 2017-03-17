@@ -9,11 +9,11 @@
 <Dependency>
   
   <StoreGeometry>
-    0
+    1
   </StoreGeometry>
   
   <IsRandomSeed>
-    1
+    0
   </IsRandomSeed>
   
   <Generator>      
@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/AfterDetUpdate_1_2_17/Alternative/GENIE_ftpc_targ_2fgd_ecal_6E20POT.root
+    GENIE/AfterDetUpdate_1_2_17/Alternative_27_2_17_FULL/GENIE_ftpc_targ_2fgd_ecal_6E20POT.root
   </filename>
 
   <treename>  

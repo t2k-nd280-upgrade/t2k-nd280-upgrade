@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/AfterDetUpdate_1_2_17/Alternative/GENIE_ftpc_targ_2fgd_ecal_40cm_6E20POT.root
+    GENIE/AfterDetUpdate_1_2_17/GENIE_current_March2017_6E20POT.root
   </filename>
 
   <treename>  
@@ -41,7 +41,7 @@
    <forwTPCdefault>
      false
    </forwTPCdefault>
-
+   
    <forwTPCPos1_X>
      0
    </forwTPCPos1_X>
@@ -49,7 +49,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -2205
+     -211
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -77,43 +77,43 @@
    <!-- Side TPCs 1 -->
 
    <sideTPCdefault1>
-     false
+     true
    </sideTPCdefault1>
 
    <sideTPClength1>
-     1994
+     1300  
    </sideTPClength1>
    <sideTPCwidth1>  
      2300
    </sideTPCwidth1>
    <sideTPCheight1> 
-     951.5 
+     851.5 
    </sideTPCheight1>
 
    <sideTPCUpPos1_X>
      0 
    </sideTPCUpPos1_X>
    <sideTPCUpPos1_Y>
-     675.75
+     725.75
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     -721
+     -1487
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
      0
    </sideTPCDownPos1_X>
    <sideTPCDownPos1_Y>
-     -675.75
+     -725.75
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     -721
+     -1487
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
 
    <sideTPCdefault2>
-     false
+     true
    </sideTPCdefault2>
    <sideTPClength2>
      1300
@@ -132,7 +132,7 @@
      725.75
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
-     +1206
+     +1487
    </sideTPCUpPos2_Z>
    
    <sideTPCDownPos2_X>
@@ -142,14 +142,14 @@
      -725.75
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
-     +1206
+     +1487
    </sideTPCDownPos2_Z>
 
 
    <!-- Target 1 -->
 
    <Targetdefault1>
-     false
+     true
    </Targetdefault1>
    
    <TargetMaterial1>
@@ -157,13 +157,13 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     1994
+     1300
    </Targetlength1>
    <Targetwidth1>  
      1864
    </Targetwidth1>
    <Targetheight1> 
-     400
+     600
    </Targetheight1>
  
    <TargetPos1_X>
@@ -173,14 +173,14 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -721
+     -1487
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     false
+     true
    </Targetdefault2>
 
    <TargetMaterial2>
@@ -204,7 +204,7 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1206
+     +1487
    </TargetPos2_Z>
 
    <!-- FGD 1 -->
@@ -271,24 +271,25 @@
    <!-- Include detectors -->
 
    <UseTarget1>
-     true
+     false
    </UseTarget1>
    <UseTarget2>
      false
    </UseTarget2>
 
    <UseTPCDown1>
-     true
+     false
    </UseTPCDown1>
    <UseTPCDown2>
      false
    </UseTPCDown2>
    <UseTPCUp1>
-     true
+     false
    </UseTPCUp1>
    <UseTPCUp2>
      false
    </UseTPCUp2>
+
    <UseFGD1>
     true
    </UseFGD1>
@@ -303,7 +304,7 @@
    <!-- true --> 
    <!-- </UseSMRD> -->
    <UseBasket>
-     false
+    false
    </UseBasket>
 
    <UseDsECal>
@@ -313,7 +314,7 @@
     true
    </UseBrlECal>
    <UseP0DECal>
-     true
+    true
    </UseP0DECal>
 
    <UseP0D>

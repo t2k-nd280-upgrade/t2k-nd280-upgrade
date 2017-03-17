@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/14_3_17/GENIE_geometry_current_1E21POT.root
+    GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root
   </filename>
 
   <treename>  
@@ -41,7 +41,7 @@
    <forwTPCdefault>
      false
    </forwTPCdefault>
-   
+
    <forwTPCPos1_X>
      0
    </forwTPCPos1_X>
@@ -72,19 +72,19 @@
      +2343
    </forwTPCPos3_Z>
 
-
+   
    
    <!-- Side TPCs 1 -->
 
    <sideTPCdefault1>
-     true
+     false
    </sideTPCdefault1>
 
    <sideTPClength1>
-     1300  
+     1894
    </sideTPClength1>
    <sideTPCwidth1>  
-     2300
+     2200
    </sideTPCwidth1>
    <sideTPCheight1> 
      851.5 
@@ -97,7 +97,7 @@
      725.75
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     -1487
+     -1695
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
@@ -107,13 +107,13 @@
      -725.75
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     -1487
+     -1695
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
 
    <sideTPCdefault2>
-     true
+     false
    </sideTPCdefault2>
    <sideTPClength2>
      1300
@@ -132,7 +132,7 @@
      725.75
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
-     +1487
+     +1206
    </sideTPCUpPos2_Z>
    
    <sideTPCDownPos2_X>
@@ -142,14 +142,14 @@
      -725.75
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
-     +1487
+     +1206
    </sideTPCDownPos2_Z>
 
 
    <!-- Target 1 -->
 
    <Targetdefault1>
-     true
+     false
    </Targetdefault1>
    
    <TargetMaterial1>
@@ -157,7 +157,7 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     1300
+     1894
    </Targetlength1>
    <Targetwidth1>  
      1864
@@ -173,14 +173,14 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1487
+     -1695
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     true
+     false
    </Targetdefault2>
 
    <TargetMaterial2>
@@ -204,7 +204,7 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1487
+     +1206
    </TargetPos2_Z>
 
    <!-- FGD 1 -->
@@ -267,8 +267,6 @@
    <FGDPos2_Z>
      +1704.5
    </FGDPos2_Z>
-
-
 
    <!-- ToF Top Downstream -->    
    <ToFdefault_TopDown>
@@ -498,6 +496,43 @@
      +512
    </ToFPosZ_FrontDown>
 
+  <!-- ToF ECalP0D -->
+   <ToFdefault_ECalP0D>
+     false
+   </ToFdefault_ECalP0D>
+   <ToFPlaneXYNum_ECalP0D>
+     1
+   </ToFPlaneXYNum_ECalP0D>
+   <ToFLayerHorizNBar_ECalP0D>
+     91
+   </ToFLayerHorizNBar_ECalP0D>   
+   <ToFLayerVertNBar_ECalP0D>
+     88
+   </ToFLayerVertNBar_ECalP0D>
+   <ToFBarwidth_ECalP0D>
+     25
+   </ToFBarwidth_ECalP0D>
+   <ToFBarheight_ECalP0D>
+     25
+   </ToFBarheight_ECalP0D>
+   <ToFRotX_ECalP0D>
+     0
+   </ToFRotX_ECalP0D>
+   <ToFRotY_ECalP0D>
+     0
+   </ToFRotY_ECalP0D>
+   <ToFRotZ_ECalP0D>
+     0
+   </ToFRotZ_ECalP0D>
+   <ToFPosX_ECalP0D>
+     0
+   </ToFPosX_ECalP0D>
+   <ToFPosY_ECalP0D>
+     0
+   </ToFPosY_ECalP0D>
+   <ToFPosZ_ECalP0D>
+     -2950
+   </ToFPosZ_ECalP0D>
 
    <!-- ToF Top Upstream -->
    <ToFdefault_TopUp>
@@ -507,7 +542,7 @@
      1
    </ToFPlaneXYNum_TopUp>
    <ToFLayerHorizNBar_TopUp>
-     52
+     75
    </ToFLayerHorizNBar_TopUp>   
    <ToFLayerVertNBar_TopUp>
      92
@@ -534,7 +569,7 @@
      +1200
    </ToFPosY_TopUp>
    <ToFPosZ_TopUp>
-     -1137
+     -1695
    </ToFPosZ_TopUp>
 
    <!-- ToF Bottom Upstream -->
@@ -545,7 +580,7 @@
      1
    </ToFPlaneXYNum_BotUp>
    <ToFLayerHorizNBar_BotUp>
-     52
+     75
    </ToFLayerHorizNBar_BotUp>   
    <ToFLayerVertNBar_BotUp>
      92
@@ -572,7 +607,7 @@
      -1200
    </ToFPosY_BotUp>
    <ToFPosZ_BotUp>
-     -1137
+     -1695
    </ToFPosZ_BotUp>
 
    <!-- ToF Right Upstream -->
@@ -586,7 +621,7 @@
      91
    </ToFLayerHorizNBar_RightUp>   
    <ToFLayerVertNBar_RightUp>
-     52
+     75
    </ToFLayerVertNBar_RightUp>
    <ToFBarwidth_RightUp>
      25
@@ -610,7 +645,7 @@
      0
    </ToFPosY_RightUp>
    <ToFPosZ_RightUp>
-     -1137
+     -1695
    </ToFPosZ_RightUp>
 
    <!-- ToF Left Upstream -->
@@ -624,7 +659,7 @@
      91
    </ToFLayerHorizNBar_LeftUp>   
    <ToFLayerVertNBar_LeftUp>
-     52
+     75
    </ToFLayerVertNBar_LeftUp>
    <ToFBarwidth_LeftUp>
      25
@@ -648,7 +683,7 @@
      0
    </ToFPosY_LeftUp>
    <ToFPosZ_LeftUp>
-     -1137
+     -1695
    </ToFPosZ_LeftUp>
 
    <!-- ToF Back Upstream -->
@@ -686,7 +721,7 @@
      0
    </ToFPosY_BackUp>
    <ToFPosZ_BackUp>
-     -1762
+     -2667
    </ToFPosZ_BackUp>
 
    <!-- ToF Front Upstream -->
@@ -724,11 +759,8 @@
      0
    </ToFPosY_FrontUp>
    <ToFPosZ_FrontUp>
-     -512
+     -723
    </ToFPosZ_FrontUp>
-
-
-
 
    <!-- Include detectors -->
 
@@ -743,25 +775,24 @@
    </UseForwTPC3>
 
    <UseTarget1>
-     false
+     true
    </UseTarget1>
    <UseTarget2>
      false
    </UseTarget2>
 
    <UseTPCDown1>
-     false
+     true
    </UseTPCDown1>
    <UseTPCDown2>
      false
    </UseTPCDown2>
    <UseTPCUp1>
-     false
+     true
    </UseTPCUp1>
    <UseTPCUp2>
      false
    </UseTPCUp2>
-
    <UseFGD1>
     true
    </UseFGD1>
@@ -770,7 +801,7 @@
    </UseFGD2>
 
    <UseToF_TopDown>
-     false
+     fasle
    </UseToF_TopDown>
    <UseToF_BotDown>
      false
@@ -788,23 +819,27 @@
      false
    </UseToF_FrontDown>
 
+   <UseToF_ECalP0D>
+     true
+   </UseToF_ECalP0D>
+
    <UseToF_TopUp>
-     false
+     true
    </UseToF_TopUp>
    <UseToF_BotUp>
-     false
+     true
    </UseToF_BotUp>
    <UseToF_RightUp>
-     false
+     true
    </UseToF_RightUp>
    <UseToF_LeftUp>
-     false
+     true
    </UseToF_LeftUp>
    <UseToF_BackUp>
-     false
+     true
    </UseToF_BackUp>
    <UseToF_FrontUp>
-     false
+     true
    </UseToF_FrontUp>
 
    <UseMagnet>
@@ -814,23 +849,23 @@
    <!-- true --> 
    <!-- </UseSMRD> -->
    <UseBasket>
-    false
+     false
    </UseBasket>
-
+   
    <UseDsECal>
-    true
+     false
    </UseDsECal>
    <UseBrlECal>
-    true
+     false
    </UseBrlECal>
    <UseP0DECal>
-    true
+     false
    </UseP0DECal>
-
+   
    <UseP0D>
-    true
+     false
    </UseP0D>
-
+   
    <!-- Invisible detectors -->
 
    <InvisForwTPC1>
@@ -868,7 +903,7 @@
    <InvisFGD2>
      false
    </InvisFGD2>
-
+   
    <InvisToF_TopDown>
      false
    </InvisToF_TopDown>
@@ -888,6 +923,10 @@
      false
    </InvisToF_FrontDown>
 
+   <InvisToF_ECalP0D>
+     false
+   </InvisToF_ECalP0D>
+
    <InvisToF_TopUp>
      false
    </InvisToF_TopUp>
@@ -906,7 +945,7 @@
    <InvisToF_FrontUp>
      false
    </InvisToF_FrontUp>
-   
+
    <InvisMagnet>
      true
    </InvisMagnet>
