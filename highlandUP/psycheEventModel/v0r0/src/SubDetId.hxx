@@ -37,6 +37,7 @@ public:
         kDsECal,
         kP0DECal,
         kBrlECal,
+	kToF,
         kInvalidSubdetector,
         kTPC,
         kTarget,

@@ -15,6 +15,7 @@ namespace anaUtils{
   void ClearArray(AnaTrueParticleB* arr[], int n);
   void ClearArray(AnaTargetParticleB* arr[], int n);
   void ClearArray(AnaFGDParticleB* arr[], int n);
+  void ClearArray(AnaToFParticleB* arr[], int n);
   void ClearArray(AnaTPCParticleB* arr[], int n);
 
   void ReserveArray(AnaTrackB* arr[], int n);
@@ -22,6 +23,7 @@ namespace anaUtils{
   void ReserveArray(AnaTrueParticleB* arr[], int n);
   void ReserveArray(AnaTargetParticleB* arr[], int n);
   void ReserveArray(AnaFGDParticleB* arr[], int n);
+  void ReserveArray(AnaToFParticleB* arr[], int n);
   void ReserveArray(AnaTPCParticleB* arr[], int n);
 
   void ReclaimArray(AnaTrackB* arr[], int n, int size);
@@ -29,6 +31,7 @@ namespace anaUtils{
   void ReclaimArray(AnaTrueParticleB* arr[], int n, int size);
   void ReclaimArray(AnaTargetParticleB* arr[], int n, int size);
   void ReclaimArray(AnaFGDParticleB* arr[], int n, int size);
+  void ReclaimArray(AnaToFParticleB* arr[], int n, int size);
   void ReclaimArray(AnaTPCParticleB* arr[], int n, int size);
 
   void CopyArray( AnaTrackB** const     &src,     AnaTrackB**     &dest,  int n);
@@ -47,6 +50,7 @@ namespace anaUtils{
   void CreateArray(AnaParticleB**       &tgtArr,  int nObj);
   void CreateArray(AnaTargetParticleB**       &tgtArr,  int nObj);
   void CreateArray(AnaFGDParticleB**       &tgtArr,  int nObj);
+  void CreateArray(AnaToFParticleB**       &tgtArr,  int nObj);
   void CreateArray(AnaTPCParticleB**       &tgtArr,  int nObj);
   void CreateArray(AnaDetCrossingB**    &tgtArr,  int nObj);
   void CreateArray(SubDetId::SubDetEnum*  &tgtArr,  int nObj, SubDetId::SubDetEnum ini=SubDetId::kInvalid);

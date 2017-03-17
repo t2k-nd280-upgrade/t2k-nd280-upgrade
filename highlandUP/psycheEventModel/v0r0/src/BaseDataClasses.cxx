@@ -75,6 +75,40 @@ AnaFGDParticleB::~AnaFGDParticleB(){
 
 }
 
+//********************************************************************
+AnaToFParticleB::AnaToFParticleB(){
+//********************************************************************
+    DeltaLYZ=-9999;
+    IsReconstructed=false;
+
+}
+
+//********************************************************************
+AnaToFParticleB::AnaToFParticleB(const AnaToFParticleB& seg):AnaParticleB(seg){
+//********************************************************************
+    DeltaLYZ=seg.DeltaLYZ;
+    IsReconstructed=seg.IsReconstructed;
+
+}
+
+//********************************************************************
+void AnaToFParticleB::Print() const{
+//********************************************************************
+
+    std::cout << "-------- AnaToFParticleB --------- " << std::endl;
+
+    AnaParticleB::Print();
+
+    std::cout << "DeltaLYZ:          " << DeltaLYZ        << std::endl;
+    std::cout << "IsReconstructed:          " <<  IsReconstructed        << std::endl;
+
+}
+
+//********************************************************************
+AnaToFParticleB::~AnaToFParticleB(){
+//********************************************************************
+
+}
 
 //********************************************************************
 AnaECalParticleB::AnaECalParticleB(){

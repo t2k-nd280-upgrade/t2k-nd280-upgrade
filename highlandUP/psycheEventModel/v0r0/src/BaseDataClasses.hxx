@@ -37,6 +37,7 @@ const UInt_t NMAXCROSSEDDET = 30;
 
 const UInt_t NMAXTARGET  = 2;
 const UInt_t NMAXFGD  = 2;
+const UInt_t NMAXTOF  = 10;
 const UInt_t NMAXTPC  = 7;
 const UInt_t NMAXECAL  = 4;
 
@@ -389,6 +390,33 @@ class AnaFGDParticleB:public AnaParticleB {
 
 };
 
+/// Representation of a Subdet1 segment of a global track.
+class AnaToFParticleB:public AnaParticleB {
+ public :
+
+  AnaToFParticleB();
+  virtual ~AnaToFParticleB();
+
+  /// Clone this object.
+  virtual AnaToFParticleB* Clone() {
+    return new AnaToFParticleB(*this);
+  }
+
+  /// Dump the object to screen.
+  virtual void Print() const;
+
+ protected:
+
+  /// Copy constructor is protected, as Clone() should be used to copy this object.
+  AnaToFParticleB(const AnaToFParticleB& seg);
+
+ public:
+
+  Float_t DeltaLYZ;
+  Float_t SegLength;
+  Bool_t IsReconstructed;
+
+};
 
 /// Representation of a Subdet1 segment of a global track.
 class AnaECalParticleB:public AnaParticleB {
@@ -541,32 +569,28 @@ class AnaTrackB: public AnaParticleMomB{
   /// Whether track passes Subdet2 quality cut.
   Int_t TPCQualityCut;
 
-  /// The Subdet1 segments that contributed to this global track.
   AnaTargetParticleB* TargetSegments[NMAXTARGET]; //!
-  /// How many Subdet1 tracks are associated with this track
   int nTargetSegments; //!
 
-  /// The Subdet1 segments that contributed to this global track.
   AnaFGDParticleB* FGDSegments[NMAXTARGET]; //!
-  /// How many Subdet1 tracks are associated with this track
   int nFGDSegments; //!
 
+  AnaToFParticleB* ToFSegments[NMAXTARGET]; //!
+  int nToFSegments; //!
+
   Float_t EKin;
-  /// The Subdet2 segments that contributed to this global track.
   AnaTPCParticleB* TPCSegments[NMAXTPC]; //!
-  /// How many Subdet2 tracks are associated with this track
   int nTPCSegments; //!
 
-  /// The Subdet2 segments that contributed to this global track.
   AnaECalParticleB* ECalSegments[NMAXECAL]; //!
-  /// How many Subdet2 tracks are associated with this track
   int nECalSegments; //!
 
   /// A copy of the segment arrays but using an std::vector, which can be saved into a tree
   std::vector<AnaTargetParticleB*>  TargetSegmentsVect; 
   std::vector<AnaFGDParticleB*>  FGDSegmentsVect; 
+  std::vector<AnaToFParticleB*>  ToFSegmentsVect; 
   std::vector<AnaTPCParticleB*>  TPCSegmentsVect; 
- std::vector<AnaECalParticleB*>  ECalSegmentsVect; 
+  std::vector<AnaECalParticleB*>  ECalSegmentsVect; 
 
 };
 

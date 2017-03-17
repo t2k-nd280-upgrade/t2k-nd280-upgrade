@@ -32,6 +32,19 @@ void anaUtils::ReclaimArray(AnaFGDParticleB* arr[], int n, int size){
 }
 
 //********************************************************************
+void anaUtils::ReclaimArray(AnaToFParticleB* arr[], int n, int size){
+//********************************************************************
+    if(arr[0] == NULL) return;
+    if(size < 1) return;
+    for(int i = size; i < n; ++i){
+        if(arr[i] == NULL ) continue;
+        delete [] arr[i];
+        arr[i] = NULL;
+    }
+    return;
+}
+
+//********************************************************************
 void anaUtils::ReclaimArray(AnaTPCParticleB* arr[], int n, int size){
 //********************************************************************
     if(arr[0] == NULL) return;
@@ -105,6 +118,17 @@ void anaUtils::ReserveArray(AnaFGDParticleB* arr[], int n){
 }
 
 //********************************************************************
+void anaUtils::ReserveArray(AnaToFParticleB* arr[], int n){
+//********************************************************************
+
+    for(int i = 0; i < n; ++i){
+        arr[i] = new AnaToFParticleB();
+    }
+    return;
+}
+
+
+//********************************************************************
 void anaUtils::ReserveArray(AnaTPCParticleB* arr[], int n){
 //********************************************************************
 
@@ -156,6 +180,16 @@ void anaUtils::ClearArray(AnaTargetParticleB* arr[], int n){
 
 //********************************************************************
 void anaUtils::ClearArray(AnaFGDParticleB* arr[], int n){
+//********************************************************************
+
+    for(int i = 0; i < n; ++i){
+        arr[i] = NULL;
+    }
+    return;
+}
+
+//********************************************************************
+void anaUtils::ClearArray(AnaToFParticleB* arr[], int n){
 //********************************************************************
 
     for(int i = 0; i < n; ++i){
@@ -320,6 +354,15 @@ void anaUtils::CreateArray(AnaFGDParticleB** &tgtArr, int nObj){
     }
 }
 
+//********************************************************************
+void anaUtils::CreateArray(AnaToFParticleB** &tgtArr, int nObj){
+//********************************************************************
+
+    tgtArr = new AnaToFParticleB*[nObj];
+    for(int i = 0; i < nObj; ++i){
+        tgtArr[i] = NULL;
+    }
+}
 
 //********************************************************************
 void anaUtils::CreateArray(AnaTPCParticleB** &tgtArr, int nObj){

@@ -322,6 +322,7 @@ void AnaTreeConverterEvent::FillBunchInfo(std::vector<AnaTrueVertexB*>& TrueVert
   
   for (std::vector<AnaTrueParticleB*>::const_iterator itp = trueParticles.begin(); itp != trueParticles.end(); ++itp) {
       AnaTrackB* part = NULL;
+      if ( fabs( (*itp)->Charge )<1e-3 ) continue;
       if (*itp) {
         AnaTrack* part = dynamic_cast<AnaTrack*> (MakeTrack());
 
@@ -1133,7 +1134,7 @@ bool AnaTreeConverterEvent::GetEfficiency(double length,double theta){
 }
 
 void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* trueParticle, AnaTrack* reconParticle) {
-
+  
   reconParticle->UniqueID       = trueParticle->ID;
   reconParticle->Momentum       = trueParticle->Momentum;
   reconParticle->Charge         = trueParticle->Charge;
