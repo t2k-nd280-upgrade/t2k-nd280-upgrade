@@ -31,7 +31,6 @@ numuCC4piSelection::numuCC4piSelection(bool forceBreak): SelectionBase(forceBrea
 //********************************************************************
 void numuCC4piSelection::DefineSteps(){
   //********************************************************************
-  int branch=ND::params().GetParameterI("numuCC4piAnalysis.Branch");
 
   //last true means that if that cut is not fulfill the sequence is stop
   AddStep(StepBase::kAction, "find true vertex",      new numuCC4piUtils::FindTrueVertexAction());
@@ -44,49 +43,54 @@ void numuCC4piSelection::DefineSteps(){
 
   AddStep(StepBase::kAction, "find vertex",         new numuCC4piUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCC4piUtils::FillSummaryAction_numuCC4pi());
-
   AddStep(StepBase::kAction, "find pions",         new numuCC4piUtils::FindPionsAction());
 
-  if (branch == 0) {
-    AddStep(StepBase::kCut, "Fwd TPC Quality Cut",  new numuCC4piUtils::FwdTPC_Quality());
-    AddStep(StepBase::kCut, "Fwd TPC PID Cut",      new numuCC4piUtils::FwdTPC_PID());
-  }
+  AddSplit(4);
 
-  /*
-    AddSplit(3,0);
-    AddStep(0, 1, StepBase::kCut, "CSFGD2 PID Cut",   new CSFGD2_PID());
-    AddStep(0, 1, StepBase::kCut, "CSFGD2 4pi Cut",   new CSFGD2_4pi());
-    AddStep(0, 2, StepBase::kCut, "CSECAL PID Cut",   new CSECAL_PID());
-    AddStep(0, 2, StepBase::kCut, "CSECAL 4pi Cut",   new CSECAL_4pi());
-  */
+  AddStep(0, StepBase::kCut, "Fwd TPC Quality Cut",  new numuCC4piUtils::FwdTPC_Quality());
+  AddStep(0, StepBase::kCut, "Fwd TPC PID Cut",      new numuCC4piUtils::FwdTPC_PID());
+  AddSplit(3, 0);
+  AddStep(0, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
+  AddStep(0, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
+  AddStep(0, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
-  if (branch == 1) {
-    AddStep(StepBase::kCut, "Bwd TPC Quality Cut",    new numuCC4piUtils::BwdTPC_Quality());
-    AddStep(StepBase::kCut, "Bwd TPC PID Cut",        new numuCC4piUtils::BwdTPC_PID());
-  }
+  AddStep(1, StepBase::kCut, "Bwd TPC Quality Cut",    new numuCC4piUtils::BwdTPC_Quality());
+  AddStep(1, StepBase::kCut, "Bwd TPC PID Cut",        new numuCC4piUtils::BwdTPC_PID());
+  AddSplit(3, 1);
+  AddStep(1, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
+  AddStep(1, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
+  AddStep(1, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
-  if (branch == 2) {
-    AddStep(StepBase::kCut, "HA TPC Quality Cut",    new numuCC4piUtils::HATPC_Quality());
-    AddStep(StepBase::kCut, "HA TPC PID Cut",        new numuCC4piUtils::HATPC_PID());
-  }
+  AddStep(2, StepBase::kCut, "HA TPC Quality Cut",    new numuCC4piUtils::HATPC_Quality());
+  AddStep(2, StepBase::kCut, "HA TPC PID Cut",        new numuCC4piUtils::HATPC_PID());
+  AddSplit(3, 2);
+  AddStep(2, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
+  AddStep(2, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
+  AddStep(2, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
-  if (branch == 3) {
-    AddStep(StepBase::kCut, "ECal Quality Cut",  new numuCC4piUtils::ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff));
-    AddStep(StepBase::kCut, "ECal PID Cut",      new numuCC4piUtils::ECal_PID(_file_ECAL_PDF));
-  }
+  AddStep(3, StepBase::kCut, "ECal Quality Cut",  new numuCC4piUtils::ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff));
+  AddStep(3, StepBase::kCut, "ECal PID Cut",      new numuCC4piUtils::ECal_PID(_file_ECAL_PDF));
+  AddSplit(3, 3);
+  AddStep(3, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
+  AddStep(3, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
+  AddStep(3, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
   
-  //SetBranchAlias(0, "Fwd TPC",  0);
-  //SetBranchAlias(1, "Bwd TPC",  1);
-  //SetBranchAlias(2, "HA TPC",   2);
-  //SetBranchAlias(3, "ECal",     3);
+  SetBranchAlias(0,  "CC0pi Fwd TPC",  0,0);
+  SetBranchAlias(1,  "CC0pi Bwd TPC",  1,0);
+  SetBranchAlias(2,  "CC0pi HA TPC",   2,0);
+  SetBranchAlias(3,  "CC0pi ECal",     3,0);
 
-  SetBranchAlias(0, "test");
-  
-  //SetBranchAlias(4, "CSFGD2", 0, 1);
-  //SetBranchAlias(5, "CSECAL", 0, 2);
+  SetBranchAlias(4,  "CC1pi Fwd TPC",  0,1);
+  SetBranchAlias(5,  "CC1pi Bwd TPC",  1,1);
+  SetBranchAlias(6,  "CC1pi HA TPC",   2,1);
+  SetBranchAlias(7,  "CC1pi ECal",     3,1);
 
-  //if first two cuts are not fulfill dont throw toys
+  SetBranchAlias(8,  "CCoth Fwd TPC",  0,2);
+  SetBranchAlias(9,  "CCoth Bwd TPC",  1,2);
+  SetBranchAlias(10, "CCoth HA TPC",   2,2);
+  SetBranchAlias(11, "CCoth ECal",     3,2);
+
   SetPreSelectionAccumLevel(0);
 
 }
@@ -403,12 +407,20 @@ namespace numuCC4piUtils{
     EventBox* EventBox_ = static_cast<EventBox*>(event.EventBoxes[EventBoxId::kEventBoxNDUP]);
 
     numuCC4pi_utils::FindTPCPions(event, boxB, det);
-    numuCC4pi_utils::FindTargetOnlyPions(event, boxB, det);
+    numuCC4pi_utils::FindIsoTargetPions(event, boxB, det);
+    numuCC4pi_utils::FindMEPions(event, boxB, det);
 
-    //int nTargetpions     =  box->nTargetPiontracks;
-
-    box->nPosPions   = box->nPositivePionTPCtracks;
-    box->nOtherPions = box->nNegativePionTPCtracks + box->nPosPi0TPCtracks + box->nElPi0TPCtracks;
+    int nPospionsTPC     =  box->nPositivePionTPCtracks;
+    int nNegpionsTPC     =  box->nNegativePionTPCtracks;
+    int nIsoTargetpions  =  box->nIsoTargetPiontracks;
+    int npi0             =  box->nPosPi0TPCtracks + box->nElPi0TPCtracks;
+    int nME              =  box->nMichelElectrons;
+    
+    int pionTarget = nME;
+    if (!nME && nIsoTargetpions > 0) pionTarget = 1;
+    
+    box->nPosPions   = nPospionsTPC + pionTarget;
+    box->nOtherPions = nNegpionsTPC + npi0;
     return true;
   }
 
@@ -635,6 +647,37 @@ namespace numuCC4piUtils{
     return false;
  
   }
+
+  //**************************************************
+  bool CC0pi::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //**************************************************
+
+    (void)event;
+    ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
+    return (box->nPosPions == 0 && box->nOtherPions == 0);
+
+  }
+
+  //**************************************************
+  bool CC1pi::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //**************************************************
+
+    (void)event;
+    ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
+    return (box->nPosPions == 1 && box->nOtherPions == 0);
+
+  }
+
+  //**************************************************
+  bool CCoth::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //**************************************************
+
+    (void)event;
+    ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
+    return (box->nPosPions > 1 || box->nOtherPions > 0);
+
+  }
+
 }
   
 /*

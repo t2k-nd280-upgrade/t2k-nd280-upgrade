@@ -55,6 +55,14 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     TPCTracks.clear();       ECalTracks.clear();
+    NegativePionTPCtracks.clear();
+    PositivePionTPCtracks.clear();
+    IsoTargetPiontracks.clear();
+    PosPi0TPCtracks.clear();
+    ElPi0TPCtracks.clear();
+    MichelElectrons.clear();
+    PosPions.clear();
+    OtherPions.clear();
     TPC_det = SubDetId::kInvalid;
   }
 
@@ -64,6 +72,14 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     TPCTracks.clear();       ECalTracks.clear();
+    NegativePionTPCtracks.clear();
+    PositivePionTPCtracks.clear();
+    IsoTargetPiontracks.clear();
+    PosPi0TPCtracks.clear();
+    ElPi0TPCtracks.clear();
+    MichelElectrons.clear();
+    PosPions.clear();
+    OtherPions.clear();
     TPC_det = SubDetId::kInvalid;
   }
 
@@ -76,12 +92,22 @@ public:
   SubDetId::SubDetEnum TPC_det;
 
   int nNegativePionTPCtracks;
+  std::vector<AnaTrackB*> NegativePionTPCtracks;
   int nPositivePionTPCtracks;
-  int nTargetPiontracks;
+  std::vector<AnaTrackB*> PositivePionTPCtracks;
+  int nIsoTargetPiontracks;
+  std::vector<AnaTrackB*> IsoTargetPiontracks;
   int nPosPi0TPCtracks;
+  std::vector<AnaTrackB*> PosPi0TPCtracks;
   int nElPi0TPCtracks;
+  std::vector<AnaTrackB*> ElPi0TPCtracks;
+  int nMichelElectrons;
+  std::vector<AnaTrackB*> MichelElectrons;
   int nPosPions;
+  std::vector<AnaTrackB*> PosPions;
   int nOtherPions;
+  std::vector<AnaTrackB*> OtherPions;
+  
 };
 
 inline ToyBoxB* numuCC4piSelection::MakeToyBox() {return new ToyBoxCC4pi();}
@@ -258,6 +284,27 @@ public:
   StepBase* MakeClone(){return new ECal_PID(_file_ECAL_PDF);}
 private:
   TFile* _file_ECAL_PDF; 
+};
+
+class CC0pi: public StepBase{
+public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& box) const;
+  StepBase* MakeClone(){return new CC0pi();}
+};
+
+class CC1pi: public StepBase{
+public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& box) const;
+  StepBase* MakeClone(){return new CC1pi();}
+};
+
+class CCoth: public StepBase{
+public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& box) const;
+  StepBase* MakeClone(){return new CCoth();}
 };
 
 }

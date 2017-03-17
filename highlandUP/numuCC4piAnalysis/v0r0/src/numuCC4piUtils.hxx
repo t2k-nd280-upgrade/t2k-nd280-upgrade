@@ -38,7 +38,8 @@ namespace numuCC4pi_utils{
   bool IsForward(const AnaTrackB& track);
 
   void FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
-  void FindTargetOnlyPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
+  void FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
+  void FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
 
 }
 

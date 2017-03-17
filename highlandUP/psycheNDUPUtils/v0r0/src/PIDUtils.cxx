@@ -26,11 +26,6 @@ void anaUtils::RecomputeTPCPulls(AnaTPCParticleB &track) {
 //********************************************************************
 void anaUtils::ComputeTPCPull( AnaTPCParticleB &track, const AnaTrackB& track_) {
 //********************************************************************
-     //std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
-      //   std::cout<<"pdg "<<track_.GetTrueParticle()->PDG<<std::endl;
-   
-    // track.Print();
-    // track_.Print();
   
     track.dEdxMeas = RecondEdx(track, track_);
     track.dEdxexpMuon = ExpecteddEdx(track, ParticleId::kMuon);
@@ -51,25 +46,26 @@ void anaUtils::ComputeTPCPull( AnaTPCParticleB &track, const AnaTrackB& track_) 
 //********************************************************************
 void anaUtils::ComputeTPCPull( AnaDetCrossingB &track, const AnaTrueParticleB& track_, Float_t* pulls) {
 //********************************************************************
-  //   std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
 
   double sigmap=0;
-    double momentum =anaUtils::SmearMomentum( track, track_.PDG,sigmap);
+  double momentum =anaUtils::SmearMomentum( track, track_.PDG,sigmap);
 
-    float dEdxMeas = RecondEdx(track, track_,momentum);
-    float  dEdxexpMuon = ExpecteddEdx(momentum, ParticleId::kMuon);
-    float dEdxexpEle = ExpecteddEdx(momentum, ParticleId::kElectron);
-    float dEdxexpPion = ExpecteddEdx(momentum, ParticleId::kPionPlus);
-    float dEdxexpProton = ExpecteddEdx(momentum, ParticleId::kProton);
+  float dEdxMeas = RecondEdx(track, track_,momentum);
+  float  dEdxexpMuon = ExpecteddEdx(momentum, ParticleId::kMuon);
+  float dEdxexpEle = ExpecteddEdx(momentum, ParticleId::kElectron);
+  float dEdxexpPion = ExpecteddEdx(momentum, ParticleId::kPionPlus);
+  float dEdxexpProton = ExpecteddEdx(momentum, ParticleId::kProton);
 
-    float dEdxSigmaMuon = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum, sigmap, ParticleId::kMuon), 2.0));
-    float dEdxSigmaEle  = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum, sigmap, ParticleId::kElectron), 2.0));
-    float dEdxSigmaPion = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum, sigmap, ParticleId::kPionPlus), 2.0));
-    float dEdxSigmaProton  = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum,sigmap, ParticleId::kProton), 2.0));
-    pulls[0] = (dEdxMeas - dEdxexpMuon) / dEdxSigmaMuon;
-    pulls[1] = (dEdxMeas - dEdxexpEle) /dEdxSigmaEle;
-    pulls[2] = (dEdxMeas - dEdxexpProton) / dEdxSigmaProton;
-    pulls[3] = (dEdxMeas - dEdxexpPion) / dEdxSigmaPion;
+  float dEdxSigmaMuon = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum, sigmap, ParticleId::kMuon), 2.0));
+  float dEdxSigmaEle  = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum, sigmap, ParticleId::kElectron), 2.0));
+  float dEdxSigmaPion = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum, sigmap, ParticleId::kPionPlus), 2.0));
+  float dEdxSigmaProton  = TMath::Sqrt(pow( ComputedEdxSigma(track, track_.PDG)*dEdxMeas, 2) + pow(TrackMomError(momentum,sigmap, ParticleId::kProton), 2.0));
+
+  pulls[0] = (dEdxMeas - dEdxexpMuon) / dEdxSigmaMuon;
+  pulls[1] = (dEdxMeas - dEdxexpEle) /dEdxSigmaEle;
+  pulls[2] = (dEdxMeas - dEdxexpProton) / dEdxSigmaProton;
+  pulls[3] = (dEdxMeas - dEdxexpPion) / dEdxSigmaPion;
+
 }
 
 
@@ -77,74 +73,69 @@ void anaUtils::ComputeTPCPull( AnaDetCrossingB &track, const AnaTrueParticleB& t
 //********************************************************************
 void anaUtils::ComputeTPCPull( AnaTPCParticleB &track, Float_t * pulls) {
 //********************************************************************
-//  std::cout << "Now running func " << __func__ << " at line " << __LINE__ << " of file " << __FILE__ << std::endl;
 
     pulls[0] = (track.dEdxMeas - track.dEdxexpMuon)/ track.dEdxSigmaMuon;
     pulls[1] = (track.dEdxMeas - track.dEdxexpEle) / track.dEdxSigmaEle;
     pulls[2] = (track.dEdxMeas - track.dEdxexpProton)/ track.dEdxSigmaProton;
     pulls[3] = (track.dEdxMeas - track.dEdxexpPion) / track.dEdxSigmaPion;
+
 }
 
 Float_t anaUtils::ComputedEdxSigma(AnaTPCParticleB &track, int PDG) {
-
     return  0.08 *sqrt(720/track.DeltaLYZ);
 }
 
 Float_t anaUtils::ComputedEdxSigma(AnaDetCrossingB &track, int PDG) {
     return  0.08* sqrt(720/track.DeltaLYZ);
 }
+
 //********************************************************************
 Float_t anaUtils::RecondEdx( AnaTPCParticleB &track,  const AnaTrackB& track_) {
 //********************************************************************
 
-    Int_t PDG = abs(track_.GetTrueParticle()->PDG);
-    double dedxexp=0.;
-    if (PDG==13) 
+  Int_t PDG = abs(track_.GetTrueParticle()->PDG);
+  double dedxexp=0.;
+  if (PDG==13) 
+    dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kMuon);
+  else if (PDG==211)
+    dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kPionPlus);
+  else if (PDG==-211)
+    dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kPionMinus);
+  else if (PDG==11)
+    dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kElectron);
+  else if (PDG==2212)
+    dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kProton);
 
-        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kMuon);
-    else if (PDG==211)
-        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kPionPlus);
-    else if (PDG==-211){
-        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kPionMinus);
-    }else if (PDG==11)
-        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kElectron);
-    else if (PDG==2212)
-        dedxexp =  ExpecteddEdx(track.SmearedMomentum, ParticleId::kProton);
+  double sigmadedx = ComputedEdxSigma(track, PDG)*dedxexp;
+  double dedxsmeared = gRandom->Gaus(dedxexp, sigmadedx);
 
-    
-
-    double sigmadedx = ComputedEdxSigma(track, PDG)*dedxexp;
-    double dedxsmeared = gRandom->Gaus(dedxexp, sigmadedx);
-
-    return dedxsmeared;
+  return dedxsmeared;
 }
 
 //********************************************************************
-Float_t anaUtils::RecondEdx( AnaDetCrossingB &track, const AnaTrueParticleB& track_,double momentum) {
+Float_t anaUtils::RecondEdx( AnaDetCrossingB &track, const AnaTrueParticleB& track_, double momentum) {
 //********************************************************************
 
-    Int_t PDG = abs(track_.PDG);
+  Int_t PDG = abs(track_.PDG);
 
- double dedxexp=0.;
-    if (PDG==13) 
+  double dedxexp=0.;
+  if (PDG==13) 
 
-        dedxexp =  ExpecteddEdx(momentum, ParticleId::kMuon);
-    else if (PDG==211)
-        dedxexp =  ExpecteddEdx(momentum, ParticleId::kPionPlus);
-    else if (PDG==-211)
-        dedxexp =  ExpecteddEdx(momentum, ParticleId::kPionMinus);
+    dedxexp =  ExpecteddEdx(momentum, ParticleId::kMuon);
+  else if (PDG==211)
+    dedxexp =  ExpecteddEdx(momentum, ParticleId::kPionPlus);
+  else if (PDG==-211)
+    dedxexp =  ExpecteddEdx(momentum, ParticleId::kPionMinus);
 
-    else if (PDG==11)
-        dedxexp =  ExpecteddEdx(momentum, ParticleId::kElectron);
-    else if (PDG==2212)
-        dedxexp =  ExpecteddEdx(momentum, ParticleId::kProton);
+  else if (PDG==11)
+    dedxexp =  ExpecteddEdx(momentum, ParticleId::kElectron);
+  else if (PDG==2212)
+    dedxexp =  ExpecteddEdx(momentum, ParticleId::kProton);
 
-    
-    double sigmadedx = ComputedEdxSigma(track, PDG)*dedxexp;
+  double sigmadedx = ComputedEdxSigma(track, PDG)*dedxexp;
+  double dedxsmeared = gRandom->Gaus(dedxexp, sigmadedx);
 
-    double dedxsmeared = gRandom->Gaus(dedxexp, sigmadedx);
-
-    return dedxsmeared;
+  return dedxsmeared;
 
 }
 
@@ -201,24 +192,28 @@ Float_t anaUtils::ExpecteddEdx(Float_t mom, ParticleId::ParticleEnum partID) {
     return func;
 }
 
+//********************************************************************
 double anaUtils::Sigma( AnaDetCrossingB &track,int pdg){
-double LYZ=track.DeltaLYZ*units::mm;
-double N=track.DeltaLYZ/ units::mm;
-double mass=0.;
+//********************************************************************
+
+  double LYZ=track.DeltaLYZ*units::mm;
+  double N=track.DeltaLYZ/ units::mm;
+  double mass=0.;
 
   if     (pdg==211)  mass = 139.570; // pi+-
   else if(pdg==13)   mass = 105.658; // muon
   else if(pdg==2212) mass = 938.272; // proton
   else if(pdg==11)   mass = 0.511;   // electron
 
-double bg=anaUtils::GetEntranceMomentum(track)/mass;
-double betta=bg / sqrt(1. + bg * bg);
-double sigma_x= ND::params().GetParameterD("psycheNDUPUtils.mom_corrections.sigma_x");
-double B= ND::params().GetParameterD("psycheNDUPUtils.mom_corrections.B");
-double X0= ND::params().GetParameterD("psycheNDUPUtils.mom_corrections.x0");
-double p_iv=anaUtils::ComputeInversePT(track)*units::GeV;
-double sigma_inv_p=sqrt(TMath::Power(1./(0.3*B*LYZ*LYZ)*sigma_x/p_iv*sqrt(720/(N+4)),2)+TMath::Power(0.2/(B*sqrt(LYZ*X0)*betta),2));
-return sigma_inv_p;
+  double bg=anaUtils::GetEntranceMomentum(track)/mass;
+  double betta=bg / sqrt(1. + bg * bg);
+  double sigma_x= ND::params().GetParameterD("psycheNDUPUtils.mom_corrections.sigma_x");
+  double B= ND::params().GetParameterD("psycheNDUPUtils.mom_corrections.B");
+  double X0= ND::params().GetParameterD("psycheNDUPUtils.mom_corrections.x0");
+  double p_iv=anaUtils::ComputeInversePT(track)*units::GeV;
+  double sigma_inv_p=sqrt(TMath::Power(1./(0.3*B*LYZ*LYZ)*sigma_x/p_iv*sqrt(720/(N+4)),2)+TMath::Power(0.2/(B*sqrt(LYZ*X0)*betta),2));
+  return sigma_inv_p;
+
 }
 
 //********************************************************************

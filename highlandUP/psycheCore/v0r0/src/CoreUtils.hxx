@@ -38,6 +38,7 @@ namespace anaUtils{
     void CopyArray(AnaRecObjectC**  tgtArr, AnaRecObjectC**    srcArr, int nObj);
     void CopyArray(AnaTrueObjectC** tgtArr, AnaTrueObjectC**   srcArr, int nObj);
    /// Copying of an array 
+  
   template <typename T1, typename T2> void CopyArray(const T1* srcArr, T2* tgtArr, size_t nObj){
     for (size_t i = 0; i < nObj; i++) 
       tgtArr[i] = srcArr[i];

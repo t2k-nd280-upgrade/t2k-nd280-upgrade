@@ -319,10 +319,10 @@ void numuCC4pi_utils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Su
     AnaEventB& eventB = *static_cast<AnaEventB*>(&event); 
 
     EventBox::RecObjectGroupEnum groupID;
-    if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTPCAndTarget1;
-    else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTPCAndTarget2;
-    else if (det==SubDetId::kFGD1)    groupID = EventBox::kTracksWithTPCAndFGD1;
-    else if (det==SubDetId::kFGD2)    groupID = EventBox::kTracksWithTPCAndFGD2;
+    if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithGoodQualityTPCInTarget1FV;
+    else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithGoodQualityTPCInTarget2FV;
+    else if (det==SubDetId::kFGD1)    groupID = EventBox::kTracksWithGoodQualityTPCInFGD1FV;
+    else if (det==SubDetId::kFGD2)    groupID = EventBox::kTracksWithGoodQualityTPCInFGD2FV;
     else return;
 
     EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
@@ -330,7 +330,9 @@ void numuCC4pi_utils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Su
     // Look for pions in positive tracks 
     for(int i = 0; i < EventBox->nRecObjectsInGroup[groupID]; i++ ) {
       AnaTrackB *ptrack = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[groupID][i]);
-
+      if( box->MainTrack == ptrack ) continue; // Same as the leading track.
+      if (ptrack->Momentum < 20) continue;
+      
       if (ptrack->Charge>0){
      
 	Float_t PIDLikelihood[4];
@@ -340,24 +342,26 @@ void numuCC4pi_utils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Su
 	double ElLklh = PIDLikelihood[1];  
 	double ProtonLklh = PIDLikelihood[2];  
 	double PionLklh = PIDLikelihood[3];
-	double MIPLklh = anaUtils::GetPIDLikelihoodMIP(*ptrack);
-
-	// If the highest probability is a proton continue. 
-	if( ProtonLklh > ElLklh && ProtonLklh > PionLklh ) continue; 
-
+	double norm = ElLklh+ProtonLklh+PionLklh;
+	ProtonLklh /= norm; 
+	ElLklh /= norm; 
+	PionLklh /= norm; 
+ 	
+	if( ProtonLklh > ElLklh && ProtonLklh > PionLklh ) continue;
+ 	
 	// Id associated to the largest of the two probabilities.
-	if( PionLklh > 0.05 && (ptrack->Momentum > 500 || MIPLklh > 0.8) )
+	if (PionLklh > ElLklh) {
 	  box->nPositivePionTPCtracks++;
+	  box->PositivePionTPCtracks.push_back(ptrack);
+	}
 	else {
 	  if (ptrack->Momentum > 900.) continue; // This is mainly protons.
 	  box->nPosPi0TPCtracks++;
+	  box->PosPi0TPCtracks.push_back(ptrack);
 	}
-
       }
 
-      else{
-
-	if( box->MainTrack == ptrack ) continue; // Same as the leading track.
+      else if (ptrack->Charge<0){
 
 	// For Negative tracks we distinguish pions, electrons and protons.
 	Float_t PIDLikelihood[4];
@@ -366,10 +370,18 @@ void numuCC4pi_utils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Su
 	// For Positive tracks we distinguish pions, electrons and protons.
 	double ElLklh = PIDLikelihood[1];  
 	double PionLklh = PIDLikelihood[3];  
-	double MIPLklh = anaUtils::GetPIDLikelihoodMIP(*ptrack);
-
-	if( PionLklh > 0.05 && (ptrack->Momentum > 500 || MIPLklh > 0.8) )
+	double norm = ElLklh+PionLklh;
+	ElLklh /= norm; 
+	PionLklh /= norm;
+ 
+	if( PionLklh > 0.8 ) {
 	  box->nNegativePionTPCtracks++;
+	  box->NegativePionTPCtracks.push_back(ptrack);
+	}
+	else {
+	  box->nElPi0TPCtracks++;
+	  box->ElPi0TPCtracks.push_back(ptrack);
+	}
 
       }
 
@@ -378,49 +390,122 @@ void numuCC4pi_utils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Su
 }
 
 //*********************************************************************
-void numuCC4pi_utils::FindTargetOnlyPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det){
+void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det){
 //*********************************************************************
 
     ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
-    box->nTargetPiontracks = 0;
+    box->nIsoTargetPiontracks = 0;
 
+    Float_t cut_length = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
+    
     EventBox::RecObjectGroupEnum groupID;
-    if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1AndNoTPC;
-    else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTarget2AndNoTPC;
-    if      (det==SubDetId::kFGD1)    groupID = EventBox::kTracksWithFGD1AndNoTPC;
-    else if (det==SubDetId::kFGD2)    groupID = EventBox::kTracksWithFGD2AndNoTPC;
+    if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
+    else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTarget2;
+    else if (det==SubDetId::kFGD1)    groupID = EventBox::kTracksWithFGD1;
+    else if (det==SubDetId::kFGD2)    groupID = EventBox::kTracksWithFGD2;
     else return;
-
+    
     EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
-
+    
     //loop over tracks
     for (int i=0;i<EventBox->nRecObjectsInGroup[groupID]; i++ ){
-        AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[groupID][i]);
-	if (track == box->MainTrack) continue;
-	//if (!anaUtils::InFiducialVolume(det, track->PositionEnd)) continue;
+      AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[groupID][i]);
+      if (track == box->MainTrack) continue;
+      if (cutUtils::DeltaLYZTPCCut(*track)) continue;
+      //if (!anaUtils::InFiducialVolume(det, track->PositionEnd)) continue;
 
-	if (det==SubDetId::kTarget1 || det==SubDetId::kTarget2) {
-	  AnaTargetParticleB* TargetSegment = 
-	    dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
-	  if (!TargetSegment) continue;
-	  if (TargetSegment->SegLength < 100) continue;
+      if (det==SubDetId::kTarget1 || det==SubDetId::kTarget2) {
+	AnaTargetParticleB* TargetSegment = 
+	  dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
+	if (!TargetSegment) continue;
+	if (TargetSegment->DeltaLYZ < cut_length) continue;
 	  
-	  AnaTrueParticleB* true_part = track->GetTrueParticle();
-	  if (!true_part) continue;
-	  if (true_part->PDG == 211 || true_part->PDG == -211)
-	    box->nTargetPiontracks++;
+	AnaTrueParticleB* true_part = track->GetTrueParticle();
+	if (!true_part) continue;
+	if (true_part->PDG == 211 || true_part->PDG == -211) {
+	  box->nIsoTargetPiontracks++;
+	  box->IsoTargetPiontracks.push_back(track);
 	}
-	if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
-	  AnaFGDParticleB* FGDSegment = 
-	    dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
-	  if (!FGDSegment) continue;
-	  if (FGDSegment->SegLength < 100) continue;
+      }
+      if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
+	AnaFGDParticleB* FGDSegment = 
+	  dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
+	if (!FGDSegment) continue;
+	if (FGDSegment->DeltaLYZ < cut_length) continue;
 	  
-	  AnaTrueParticleB* true_part = track->GetTrueParticle();
-	  if (!true_part) continue;
-	  if (true_part->PDG == 211 || true_part->PDG == -211)
-	    box->nTargetPiontracks++;
+	AnaTrueParticleB* true_part = track->GetTrueParticle();
+	if (!true_part) continue;
+	if (true_part->PDG == 211 || true_part->PDG == -211) {
+	  box->nIsoTargetPiontracks++;
+	  box->IsoTargetPiontracks.push_back(track);
 	}
+      }
 	  
     }
+}
+
+
+//*********************************************************************
+void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det){
+  //*********************************************************************
+
+  ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
+  box->nMichelElectrons = 0;
+  
+  EventBox::RecObjectGroupEnum groupID;
+  if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
+  else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTarget2;
+  else if (det==SubDetId::kFGD1)    groupID = EventBox::kTracksWithFGD1;
+  else if (det==SubDetId::kFGD2)    groupID = EventBox::kTracksWithFGD2;
+  else return;
+    
+  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+
+  // true muon candidate
+  if (!box->MainTrack) return;
+  AnaTrueParticleB* true_mu = box->MainTrack->GetTrueParticle();
+
+  //loop over tracks
+  for (int i=0;i<EventBox->nRecObjectsInGroup[groupID]; i++ ){
+      AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[groupID][i]);
+      if (track == box->MainTrack) continue;
+      if (!anaUtils::InFiducialVolume(det, track->PositionEnd)) continue;
+
+      if (det==SubDetId::kTarget1 || det==SubDetId::kTarget2) {
+	AnaTargetParticleB* TargetSegment = 
+	  dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
+	if (!TargetSegment) continue;
+	
+	AnaTrueParticleB* true_part = track->GetTrueParticle();
+	if (!true_part) continue;
+	if (abs(true_part->PDG) == 11)
+	  if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > 2) {
+	    double r = rand()%1000/1000.;
+	    if (r < 0.5) {
+	      box->nMichelElectrons++;
+	      box->MichelElectrons.push_back(track);
+	    }
+	  }
+      }
+      if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
+	AnaFGDParticleB* FGDSegment = 
+	  dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
+	if (!FGDSegment) continue;
+	  
+	AnaTrueParticleB* true_part = track->GetTrueParticle();
+	if (!true_part) continue;
+	if (abs(true_part->PDG) == 11)
+	  if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > 2) {
+	    double r = rand()%1000/1000.;
+	    if (r < 0.5) {
+	      box->nMichelElectrons++;
+	      box->MichelElectrons.push_back(track);
+	    }
+	  }
+      }
+      
+  }
+
+  
+  
 }

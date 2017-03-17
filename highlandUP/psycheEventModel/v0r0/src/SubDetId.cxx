@@ -17,6 +17,7 @@ const unsigned long SubDetId::DetMask[] = {
     1<<SubDetId::kDsECal,
     1<<SubDetId::kP0DECal,
     1<<SubDetId::kBrlECal,
+    1<<SubDetId::kToF,
     1<<SubDetId::kInvalidSubdetector,
     1<<SubDetId::kTPC     | SubDetId::MakeMask(SubDetId::kTPCUp1,       SubDetId::kTPCDown2),
     1<<SubDetId::kTarget  | SubDetId::MakeMask(SubDetId::kTarget1,      SubDetId::kTarget2),
@@ -134,7 +135,6 @@ bool SubDetId::IsTarget(SubDetId::SubDetEnum det){
 bool SubDetId::IsFGD(SubDetId::SubDetEnum det){
     return ((det <= SubDetId::kFGD2 && det >= SubDetId::kFGD1 )|| det == SubDetId::kFGD);
 }
-
 bool SubDetId::IsTPC(SubDetId::SubDetEnum det){
     return ((det <= SubDetId::kTPCDown2 && det >= SubDetId::kTPCUp1) || det >= SubDetId::kTPC);
 }

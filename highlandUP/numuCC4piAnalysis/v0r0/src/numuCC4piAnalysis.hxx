@@ -80,9 +80,33 @@ public:
     selmu_ecal_stopping,
     selmu_longestTPC,
 
+    sel_nNegativePionTPCtracks,
+    sel_nPositivePionTPCtracks,
+    sel_nIsoTargetPiontracks,
+    sel_nPosPi0TPCtracks,
+    sel_nElPi0TPCtracks,
+    sel_nMichelElectrons,
     sel_nOtherPions,
     sel_nPosPions,
-		
+    
+    sel_NegativePionTPCtracks_PDG,
+    sel_PositivePionTPCtracks_PDG,
+    sel_IsoTargetPiontracks_PDG,
+    sel_PosPi0TPCtracks_PDG,
+    sel_ElPi0TPCtracks_PDG,
+    sel_MichelElectrons_PDG,
+    sel_PosPions_PDG,
+    sel_OtherPions_PDG,
+
+    sel_NegativePionTPCtracks_mom,
+    sel_PositivePionTPCtracks_mom,
+    sel_IsoTargetPiontracks_mom,
+    sel_PosPi0TPCtracks_mom,
+    sel_ElPi0TPCtracks_mom,
+    sel_MichelElectrons_mom,
+    sel_PosPions_mom,
+    sel_OtherPions_mom,
+    
     /*
       selmu_1hit_pos,
       selmu_2hit_pos,
