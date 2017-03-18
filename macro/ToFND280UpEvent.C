@@ -1,6 +1,3 @@
-
-
-
 //
 // Available sensitive detectors (1/2/17):
 //
@@ -78,6 +75,8 @@
 // /t2k/OA/Magnet/Basket/ToF/BackUp/ScintVert/Bar --> Included and same name as corresponding physical volume
 // /t2k/OA/Magnet/Basket/ToF/FrontUp/ScintHoriz/Bar --> Included and same name as corresponding physical volume
 // /t2k/OA/Magnet/Basket/ToF/FrontUp/ScintVert/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/ECalP0D/ScintHoriz/Bar --> Included and same name as corresponding physical volume
+// /t2k/OA/Magnet/Basket/ToF/ECalP0D/ScintVert/Bar --> Included and same name as corresponding physical volume
 
 
 
@@ -87,55 +86,28 @@
 #include <TTree.h>
 #include <TFile.h>
 #include <TMath.h>
+#include <TRandom3.h>
 
 #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.hh"
 #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.hh"
 #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
 #include "/atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
 
-//#include "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.hh"
-//#include "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.hh"
-//#include "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
-//#include "/Users/davidesgalaberna/Desktop/GENEVA_postdoc/CODE/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
-
+double GetToFMass(
+		  double mom,double momerr,// fractional error
+		  double length,double lengtherr, // absolute error
+		  double tof,double toferr, // absolute error
+		  bool doSmear);
 int GetReacAll(int neut_reaction_mode);
 string StringReacAll(int neut_reaction_mode);
-//bool IsTargetIn(int targetID,double x,double y,double z);
-
-//bool IsTargetIn(int targetID,double x,double y,double z,
 bool IsTargetIn(double x,double y,double z,
-		// Target 1
 		double vtx_min_x_1,
 		double vtx_max_x_1,  
 		double vtx_min_y_1, 
 		double vtx_max_y_1, 
 		double vtx_min_z_1,  
 		double vtx_max_z_1 
-		// Target 2
-		//double vtx_min_x_2,  
-		//double vtx_max_x_2,  
-		//double vtx_min_y_2, 
-		//double vtx_max_y_2,  
-		//double vtx_min_z_2,
-		//double vtx_max_z_2  
 		);
-
-//bool IsFGDIn(int fgdID,double x,double y,double z,
-//		// Target 1                                                                                                                                                              
-//              double vtx_min_x_1,
-//              double vtx_max_x_1,
-//              double vtx_min_y_1,
-//              double vtx_max_y_1,
-//              double vtx_min_z_1,
-//              double vtx_max_z_1,
-//              // Target 2                                                                                                                                                   
-// double vtx_min_x_2,
-//              double vtx_max_x_2,
-//                double vtx_min_y_2,
-//              double vtx_max_y_2,
-//              double vtx_min_z_2,
-//              double vtx_max_z_2
-//              );
 
 void ToFND280UpEvent
 (
@@ -147,35 +119,12 @@ void ToFND280UpEvent
  string infilename = "../bin/ciao.root",
 
  // Definition of Fiducial Volume for target thickness=60cm (mm)  
- // Target 1
  const double vtx_min_x_1 = -1150,
  const double vtx_max_x_1 = +1150,  
  const double vtx_min_y_1 = -300, 
  const double vtx_max_y_1 = +300, 
  const double vtx_min_z_1 = -2487,  
  const double vtx_max_z_1 = -487, 
- // Target 2
- //const double vtx_min_x_2 = -1150,  
- //const double vtx_max_x_2 = +1150,  
- //const double vtx_min_y_2 = -300, 
- //const double vtx_max_y_2 = +300, 
- //const double vtx_min_z_2 = +487,  
- //const double vtx_max_z_2 = +2487,  
- // FGD 1        
- //const double vtx_min_x_fgd1 = -1150,
- //const double vtx_max_x_fgd1 = +1150,
- //const double vtx_min_y_fgd1 = -300,
- //const double vtx_max_y_fgd1 = +300,
- //const double vtx_min_z_fgd1 = -2487,
- //const double vtx_max_z_fgd1 = -487,
- // FGD 2
- //const double vtx_min_x_fgd2 = -1150,
- //const double vtx_max_x_fgd2 = +1150,
- //const double vtx_min_y_fgd2 = -300,
- //const double vtx_max_y_fgd2 = +300,
- //const double vtx_min_z_fgd2 = +487,
- //const double vtx_max_z_fgd2 = +2487,
-
 
  // Cut 0: Select only CC mode
  const bool doCutCC = true,
@@ -185,21 +134,12 @@ void ToFND280UpEvent
  const int cut_reac = 0, // 0=CCQE, 1=2p2h, 2=CC1pi, 3=CCcoh, 4=CCDIS, 5=NC
  
  // Cut 2: Vertex cut (inside the Targets and FGDs)
- const bool doCutMater = false,
  const bool doCutVtx = true, 
  
  const bool doCutTarget1 = true, // Select vertex in Target1
  const bool doCutTarget2 = false, // Select vertex in Target2
  const bool doCutFGD1 = true, // Select vertex in FGD1
  const bool doCutFGD2 = false, // Select vertex in FGD2 
-
- const bool doCutVtxX = false, // width
- const double cut_xmin = 0,
- const double cut_xmax = 0,
- 
- const bool doCutVtxZ = false, // length
- const double cut_zmin = 0,
- const double cut_zmax = 0,
  
  // Cut 3: Select PDG
  const bool doCutPDG = true,
@@ -219,79 +159,28 @@ void ToFND280UpEvent
  
  // Cut 7: DeltaLyz cut (TPCs)
  const bool doCutDLyzTPC = true,
- const double cut_dlyz_tpc_min = 200 //mm  
+ const double cut_dlyz_tpc_min = 200, //mm  
  
+ // Apply smearing
+ const bool doToFSmear = true,
+ const double momerr = 0.1, // fractional error
+ const double lengtherr = 10, // absolute error (mm)
+ const double toferr = 0.1 // absolute error (ns)
+
  )
 {
-  //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+");
-  //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+");
-  //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+");
-  //gROOT->ProcessLine(".L /atlas/users/dsgalabe/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+");
 
-
-
-
-
-
-
-  // Efficiency
+  //const bool doCutMater = false,
   
-  // My
-  const int NBins_Mom = 33;
-  double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1200,1400,
-  				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,10000};
-  const int NBins_CosTh = 20;
-  double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+  // const bool doCutVtxX = false, // width
+  // const double cut_xmin = 0,
+  // const double cut_xmax = 0,  
+  
+  // const bool doCutVtxZ = false, // length
+  // const double cut_zmin = 0,
+  // const double cut_zmax = 0,
 
-  // // Final - Muons (Numu)
-  // const int NBins_Mom = 33;
-  // double BinEdges_Mom[NBins_Mom+1] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1200,1400,
-  //   				      1600,1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
-  // const int NBins_CosTh = 10;
-  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
-
-  // // Final - Pions (Numu)
-  // const int NBins_Mom = 21;
-  // double BinEdges_Mom[NBins_Mom+1] = {0,100,200,300,400,500,600,700,800,900,1000,1400,
-  // 				      1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
-  // const int NBins_CosTh = 10;
-  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
-
-  // // Final - Muons (NumuBar)
-  // const int NBins_Mom = 21;
-  // double BinEdges_Mom[NBins_Mom+1] = {0,100,200,300,400,500,600,700,800,900,1000,1400,
-  //  				      1800,2000,2500,3000,4000,5000,6000,7000,8000,30000};
-  // const int NBins_CosTh = 8;
-  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.6,-0.2,0.0,0.2,0.4,0.6,0.8,1.0};
-
-  // // Final - Electrons (Nue)
-  // const int NBins_Mom = 2;
-  // double BinEdges_Mom[NBins_Mom+1] = {0,1000,30000};
-  // const int NBins_CosTh = 3;
-  // double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.4,0.4,1.0};
-
-  const int NBins_Phi = 20;
-  double BinEdges_Phi[NBins_Phi+1];
-  double phi_width = 2*TMath::Pi() / NBins_Phi;
-  for(int iphi = 0;iphi<NBins_Phi+1;iphi++){
-    BinEdges_Phi[iphi] = -TMath::Pi() + iphi*phi_width;
-    //cout << BinEdges_Phi[iphi] << ", ";
-  }
-  
-  TH1D *hPhi = new TH1D("hPhi","hPhi",40,-4,4);
-  TH1D *hTheta = new TH1D("hTheta","hTheta",40,-4,4);
-  
-  TH2D *hCosThetaVsMom_FV = new TH2D("hCosThetaVsMom_FV","hCosThetaVsMom_FV",NBins_CosTh,BinEdges_CosTh,NBins_Mom,BinEdges_Mom);
-  TH2D *hPhiVsMom_FV = new TH2D("hPhiVsMom_FV","hPhiVsMom_FV",NBins_Phi,BinEdges_Phi,NBins_Mom,BinEdges_Mom);
-  TH2D *hThetaVsPhi_FV = new TH2D("hThetaVsPhi_FV","hCosThetaVsMom_FV",NBins_Phi,BinEdges_Phi,NBins_Phi,BinEdges_Phi);
-  
-  TH2D *hLVsMom_USECalP0D_NoTPC = new TH2D("hLVsMom_USECalP0D_NoTPC","hLVsMom_USECalP0D_NoTPC",200,0,2000,100,0,5000);
-  
-  //
-  
-  TH1D *hMom = new TH1D("hMom","hMom",200,0,10000); 
-  TH1D *hPDG = new TH1D("hPDG","hPDG",3000,-500,2500);
-  
+    
   // Vertex
   TH2D *hVtxOut_XY = new TH2D("hVtxOut_XY","hVtxOut_XY",400,-2000,2000,400,-2000,2000); // mm 
   TH2D *hVtxOut_XZ = new TH2D("hVtxOut_XZ","hVtxOut_XZ",400,-2000,2000,800,-4000,4000); // mm  
@@ -327,36 +216,60 @@ void ToFND280UpEvent
 
   //
   
-  TH1D *hTimeTarg1_DsECal    = new TH1D("hTimeTarg1_DsECal", "hTimeTarg1_DsECal", 100,0,100); 
-  TH1D *hTimeTarg1_BrlECal   = new TH1D("hTimeTarg1_BrlECal","hTimeTarg1_BrlECal",100,0,100); 
-  TH1D *hTimeTarg1_P0DECal   = new TH1D("hTimeTarg1_P0DECal","hTimeTarg1_P0DECal",100,0,100); 
-  TH1D *hTimeTarg1_USECalP0D = new TH1D("hTimeTarg1_USECalP0D","hTimeTarg1_USECalP0D",100,0,100); 
-
-  TH1D *hTimeTarg1_ForwTPC1 = new TH1D("hTimeTarg1_ForwTPC1","hTimeTarg1_ForwTPC1",100,0,100); 
-  TH1D *hTimeTarg1_ForwTPC2 = new TH1D("hTimeTarg1_ForwTPC2","hTimeTarg1_ForwTPC2",100,0,100); 
-  TH1D *hTimeTarg1_ForwTPC3 = new TH1D("hTimeTarg1_ForwTPC3","hTimeTarg1_ForwTPC3",100,0,100); 
-
-  TH1D *hTimeTarg1_TPCUp1   = new TH1D("hTimeTarg1_TPCUp1","hTimeTarg1_TPCUp1",100,0,100); 
-  TH1D *hTimeTarg1_TPCUp2   = new TH1D("hTimeTarg1_TPCUp2","hTimeTarg1_TPCUp2",100,0,100); 
-  TH1D *hTimeTarg1_TPCDown1 = new TH1D("hTimeTarg1_TPCDown1","hTimeTarg1_TPCDown1",100,0,100); 
-  TH1D *hTimeTarg1_TPCDown2 = new TH1D("hTimeTarg1_TPCDown2","hTimeTarg1_TPCDown2",100,0,100); 
-    
-  TH1D *hTimeTarg1_ToFTopUp   = new TH1D("hTimeTarg1_ToFTopUp", "hTimeTarg1_ToFTopUp", 100,0,100); 
-  TH1D *hTimeTarg1_ToFBotUp   = new TH1D("hTimeTarg1_ToFBotUp", "hTimeTarg1_ToFBotUp", 100,0,100); 
-  TH1D *hTimeTarg1_ToFRightUp = new TH1D("hTimeTarg1_ToFRightUp", "hTimeTarg1_ToFRightUp", 100,0,100); 
-  TH1D *hTimeTarg1_ToFLeftUp  = new TH1D("hTimeTarg1_ToFLeftUp", "hTimeTarg1_ToFLeftUp", 100,0,100); 
-  TH1D *hTimeTarg1_ToFBackUp  = new TH1D("hTimeTarg1_ToFBackUp", "hTimeTarg1_ToFBackUp", 100,0,100); 
-  TH1D *hTimeTarg1_ToFFrontUp = new TH1D("hTimeTarg1_ToFFrontUp", "hTimeTarg1_ToFFrontUp", 100,0,100); 
-
-  TH1D *hTimeTarg1_ToFTopDown   = new TH1D("hTimeTarg1_ToFTopDown", "hTimeTarg1_ToFTopDown", 100,0,100); 
-  TH1D *hTimeTarg1_ToFBotDown   = new TH1D("hTimeTarg1_ToFBotDown", "hTimeTarg1_ToFBotDown", 100,0,100); 
-  TH1D *hTimeTarg1_ToFRightDown = new TH1D("hTimeTarg1_ToFRightDown", "hTimeTarg1_ToFRightDown", 100,0,100); 
-  TH1D *hTimeTarg1_ToFLeftDown  = new TH1D("hTimeTarg1_ToFLeftDown", "hTimeTarg1_ToFLeftDown", 100,0,100); 
-  TH1D *hTimeTarg1_ToFBackDown  = new TH1D("hTimeTarg1_ToFBackDown", "hTimeTarg1_ToFBackDown", 100,0,100); 
-  TH1D *hTimeTarg1_ToFFrontDown = new TH1D("hTimeTarg1_ToFFrontDown", "hTimeTarg1_ToFFrontDown", 100,0,100); 
-
+  TH1D *hTimeTarg1_DsECal    = new TH1D("hTimeTarg1_DsECal", "hTimeTarg1_DsECal", 100,0,25); 
+  TH1D *hTimeTarg1_BrlECal   = new TH1D("hTimeTarg1_BrlECal","hTimeTarg1_BrlECal",100,0,25); 
+  TH1D *hTimeTarg1_P0DECal   = new TH1D("hTimeTarg1_P0DECal","hTimeTarg1_P0DECal",100,0,25); 
+  TH1D *hTimeTarg1_USECalP0D = new TH1D("hTimeTarg1_USECalP0D","hTimeTarg1_USECalP0D",100,0,25); 
+  TH1D *hTimeTarg1_ForwTPC1  = new TH1D("hTimeTarg1_ForwTPC1","hTimeTarg1_ForwTPC1",100,0,25); 
+  TH1D *hTimeTarg1_ForwTPC2  = new TH1D("hTimeTarg1_ForwTPC2","hTimeTarg1_ForwTPC2",100,0,25); 
+  TH1D *hTimeTarg1_ForwTPC3  = new TH1D("hTimeTarg1_ForwTPC3","hTimeTarg1_ForwTPC3",100,0,25); 
+  TH1D *hTimeTarg1_Target1   = new TH1D("hTimeTarg1_Target1","hTimeTarg1_Target1",100,0,25); 
+  TH1D *hTimeTarg1_Target2   = new TH1D("hTimeTarg1_Target2","hTimeTarg1_Target2",100,0,25); 
+  TH1D *hTimeTarg1_TPCUp1   = new TH1D("hTimeTarg1_TPCUp1","hTimeTarg1_TPCUp1",100,0,25); 
+  TH1D *hTimeTarg1_TPCUp2   = new TH1D("hTimeTarg1_TPCUp2","hTimeTarg1_TPCUp2",100,0,25); 
+  TH1D *hTimeTarg1_TPCDown1 = new TH1D("hTimeTarg1_TPCDown1","hTimeTarg1_TPCDown1",100,0,25); 
+  TH1D *hTimeTarg1_TPCDown2 = new TH1D("hTimeTarg1_TPCDown2","hTimeTarg1_TPCDown2",100,0,25);     
+  TH1D *hTimeTarg1_ToFTopUp   = new TH1D("hTimeTarg1_ToFTopUp", "hTimeTarg1_ToFTopUp", 100,0,25); 
+  TH1D *hTimeTarg1_ToFBotUp   = new TH1D("hTimeTarg1_ToFBotUp", "hTimeTarg1_ToFBotUp", 100,0,25); 
+  TH1D *hTimeTarg1_ToFRightUp = new TH1D("hTimeTarg1_ToFRightUp", "hTimeTarg1_ToFRightUp", 100,0,25); 
+  TH1D *hTimeTarg1_ToFLeftUp  = new TH1D("hTimeTarg1_ToFLeftUp", "hTimeTarg1_ToFLeftUp", 100,0,25); 
+  TH1D *hTimeTarg1_ToFBackUp  = new TH1D("hTimeTarg1_ToFBackUp", "hTimeTarg1_ToFBackUp", 100,0,25); 
+  TH1D *hTimeTarg1_ToFFrontUp = new TH1D("hTimeTarg1_ToFFrontUp", "hTimeTarg1_ToFFrontUp", 100,0,25); 
+  TH1D *hTimeTarg1_ToFECalP0D = new TH1D("hTimeTarg1_ToFECalP0D", "hTimeTarg1_ToFECalP0D", 100,0,25); 
+  TH1D *hTimeTarg1_ToFTopDown   = new TH1D("hTimeTarg1_ToFTopDown", "hTimeTarg1_ToFTopDown", 100,0,25); 
+  TH1D *hTimeTarg1_ToFBotDown   = new TH1D("hTimeTarg1_ToFBotDown", "hTimeTarg1_ToFBotDown", 100,0,25); 
+  TH1D *hTimeTarg1_ToFRightDown = new TH1D("hTimeTarg1_ToFRightDown", "hTimeTarg1_ToFRightDown", 100,0,25); 
+  TH1D *hTimeTarg1_ToFLeftDown  = new TH1D("hTimeTarg1_ToFLeftDown", "hTimeTarg1_ToFLeftDown", 100,0,25); 
+  TH1D *hTimeTarg1_ToFBackDown  = new TH1D("hTimeTarg1_ToFBackDown", "hTimeTarg1_ToFBackDown", 100,0,25); 
+  TH1D *hTimeTarg1_ToFFrontDown = new TH1D("hTimeTarg1_ToFFrontDown", "hTimeTarg1_ToFFrontDown", 100,0,25); 
   //
-
+  TH1D *hMassTarg1_DsECal    = new TH1D("hMassTarg1_DsECal", "hMassTarg1_DsECal", 200,0,2000); 
+  TH1D *hMassTarg1_BrlECal   = new TH1D("hMassTarg1_BrlECal","hMassTarg1_BrlECal",200,0,2000); 
+  TH1D *hMassTarg1_P0DECal   = new TH1D("hMassTarg1_P0DECal","hMassTarg1_P0DECal",200,0,2000); 
+  TH1D *hMassTarg1_USECalP0D = new TH1D("hMassTarg1_USECalP0D","hMassTarg1_USECalP0D",200,0,2000); 
+  TH1D *hMassTarg1_ForwTPC1  = new TH1D("hMassTarg1_ForwTPC1","hMassTarg1_ForwTPC1",200,0,2000); 
+  TH1D *hMassTarg1_ForwTPC2  = new TH1D("hMassTarg1_ForwTPC2","hMassTarg1_ForwTPC2",200,0,2000); 
+  TH1D *hMassTarg1_ForwTPC3  = new TH1D("hMassTarg1_ForwTPC3","hMassTarg1_ForwTPC3",200,0,2000); 
+  TH1D *hMassTarg1_Target1   = new TH1D("hMassTarg1_Target1","hMassTarg1_Target1",200,0,2000); 
+  TH1D *hMassTarg1_Target2   = new TH1D("hMassTarg1_Target2","hMassTarg1_Target2",200,0,2000); 
+  TH1D *hMassTarg1_TPCUp1   = new TH1D("hMassTarg1_TPCUp1","hMassTarg1_TPCUp1",200,0,2000); 
+  TH1D *hMassTarg1_TPCUp2   = new TH1D("hMassTarg1_TPCUp2","hMassTarg1_TPCUp2",200,0,2000); 
+  TH1D *hMassTarg1_TPCDown1 = new TH1D("hMassTarg1_TPCDown1","hMassTarg1_TPCDown1",200,0,2000); 
+  TH1D *hMassTarg1_TPCDown2 = new TH1D("hMassTarg1_TPCDown2","hMassTarg1_TPCDown2",200,0,2000);     
+  TH1D *hMassTarg1_ToFTopUp   = new TH1D("hMassTarg1_ToFTopUp", "hMassTarg1_ToFTopUp", 200,0,2000); 
+  TH1D *hMassTarg1_ToFBotUp   = new TH1D("hMassTarg1_ToFBotUp", "hMassTarg1_ToFBotUp", 200,0,2000); 
+  TH1D *hMassTarg1_ToFRightUp = new TH1D("hMassTarg1_ToFRightUp", "hMassTarg1_ToFRightUp", 200,0,2000); 
+  TH1D *hMassTarg1_ToFLeftUp  = new TH1D("hMassTarg1_ToFLeftUp", "hMassTarg1_ToFLeftUp", 200,0,2000); 
+  TH1D *hMassTarg1_ToFBackUp  = new TH1D("hMassTarg1_ToFBackUp", "hMassTarg1_ToFBackUp", 200,0,2000); 
+  TH1D *hMassTarg1_ToFFrontUp = new TH1D("hMassTarg1_ToFFrontUp", "hMassTarg1_ToFFrontUp", 200,0,2000); 
+  TH1D *hMassTarg1_ToFECalP0D = new TH1D("hMassTarg1_ToFECalP0D", "hMassTarg1_ToFECalP0D", 200,0,2000); 
+  TH1D *hMassTarg1_ToFTopDown   = new TH1D("hMassTarg1_ToFTopDown", "hMassTarg1_ToFTopDown", 200,0,2000); 
+  TH1D *hMassTarg1_ToFBotDown   = new TH1D("hMassTarg1_ToFBotDown", "hMassTarg1_ToFBotDown", 200,0,2000); 
+  TH1D *hMassTarg1_ToFRightDown = new TH1D("hMassTarg1_ToFRightDown", "hMassTarg1_ToFRightDown", 200,0,2000); 
+  TH1D *hMassTarg1_ToFLeftDown  = new TH1D("hMassTarg1_ToFLeftDown", "hMassTarg1_ToFLeftDown", 200,0,2000); 
+  TH1D *hMassTarg1_ToFBackDown  = new TH1D("hMassTarg1_ToFBackDown", "hMassTarg1_ToFBackDown", 200,0,2000); 
+  TH1D *hMassTarg1_ToFFrontDown = new TH1D("hMassTarg1_ToFFrontDown", "hMassTarg1_ToFFrontDown", 200,0,2000); 
+  //
   TH2D *hForwTPC1TrkPtXY = new TH2D("hForwTPC1TrkPtXY","hForwTPC1TrkPtXY",200,-2000,+2000,200,-4000,+4000);
   TH2D *hForwTPC1TrkPtXZ = new TH2D("hForwTPC1TrkPtXZ","hForwTPC1TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hForwTPC1TrkPtYZ = new TH2D("hForwTPC1TrkPtYZ","hForwTPC1TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
@@ -366,6 +279,12 @@ void ToFND280UpEvent
   TH2D *hForwTPC3TrkPtXY = new TH2D("hForwTPC3TrkPtXY","hForwTPC3TrkPtXY",200,-2000,+2000,200,-4000,+4000);
   TH2D *hForwTPC3TrkPtXZ = new TH2D("hForwTPC3TrkPtXZ","hForwTPC3TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hForwTPC3TrkPtYZ = new TH2D("hForwTPC3TrkPtYZ","hForwTPC3TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTarget1TrkPtXY = new TH2D("hTarget1TrkPtXY","hTarget1TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTarget1TrkPtXZ = new TH2D("hTarget1TrkPtXZ","hTarget1TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTarget1TrkPtYZ = new TH2D("hTarget1TrkPtYZ","hTarget1TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTarget2TrkPtXY = new TH2D("hTarget2TrkPtXY","hTarget2TrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTarget2TrkPtXZ = new TH2D("hTarget2TrkPtXZ","hTarget2TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hTarget2TrkPtYZ = new TH2D("hTarget2TrkPtYZ","hTarget2TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hTPCUp1TrkPtXY = new TH2D("hTPCUp1TrkPtXY","hTPCUp1TrkPtXY",200,-2000,+2000,200,-4000,+4000);
   TH2D *hTPCUp1TrkPtXZ = new TH2D("hTPCUp1TrkPtXZ","hTPCUp1TrkPtXZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hTPCUp1TrkPtYZ = new TH2D("hTPCUp1TrkPtYZ","hTPCUp1TrkPtYZ",200,-2000,+2000,200,-4000,+4000);
@@ -389,15 +308,16 @@ void ToFND280UpEvent
   TH2D *hBrlECalTrkPtYZ = new TH2D("hBrlECalTrkPtYZ","hBrlECalTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hUSECalP0DTrkPtXY = new TH2D("hUSECalP0DTrkPtXY","hUSECalP0DTrkPtXY",200,-2000,+2000,200,-4000,+4000);
   TH2D *hUSECalP0DTrkPtXZ = new TH2D("hUSECalP0DTrkPtXZ","hUSECalP0DTrkPtXZ",200,-2000,+2000,200,-4000,+4000);
-  TH2D *hUSECalP0DTrkPtYZ = new TH2D("hUSECalP0DTrkPtYZ","hUSECalP0DTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
-  
+  TH2D *hUSECalP0DTrkPtYZ = new TH2D("hUSECalP0DTrkPtYZ","hUSECalP0DTrkPtYZ",200,-2000,+2000,200,-4000,+4000);  
   TH2D *hToFUpTrkPtXY = new TH2D("hToFUpTrkPtXY","hToFUpTrkPtXY",200,-2000,+2000,200,-4000,+4000);
   TH2D *hToFUpTrkPtXZ = new TH2D("hToFUpTrkPtXZ","hToFUpTrkPtXZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hToFUpTrkPtYZ = new TH2D("hToFUpTrkPtYZ","hToFUpTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hToFDownTrkPtXY = new TH2D("hToFDownTrkPtXY","hToFDownTrkPtXY",200,-2000,+2000,200,-4000,+4000);
   TH2D *hToFDownTrkPtXZ = new TH2D("hToFDownTrkPtXZ","hToFDownTrkPtXZ",200,-2000,+2000,200,-4000,+4000);
   TH2D *hToFDownTrkPtYZ = new TH2D("hToFDownTrkPtYZ","hToFDownTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
-
+  TH2D *hToFECalP0DTrkPtXY = new TH2D("hToFECalP0DTrkPtXY","hToFECalP0DTrkPtXY",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hToFECalP0DTrkPtXZ = new TH2D("hToFECalP0DTrkPtXZ","hToFECalP0DTrkPtXZ",200,-2000,+2000,200,-4000,+4000);
+  TH2D *hToFECalP0DTrkPtYZ = new TH2D("hToFECalP0DTrkPtYZ","hToFECalP0DTrkPtYZ",200,-2000,+2000,200,-4000,+4000);
   //
   
   // Check the inputs
@@ -612,22 +532,22 @@ void ToFND280UpEvent
           exit(1);
         }
 	
-	// Cut on X vertex position
-	if(doCutVtxX){
-	  if( VtxX < cut_xmin || 
-	      VtxX > cut_xmax ){
-	    PassCutVtx = false;
-	    FillVtxInFV = false;
-	  }
-	}	  
-	// Cut on Z vertex position
-	if(doCutVtxZ){
-	  if( VtxZ < cut_zmin || 
-	      VtxZ > cut_zmax ){
-	    PassCutVtx = false;
-	    FillVtxInFV = false;
-	  }
-	}
+	// // Cut on X vertex position
+	// if(doCutVtxX){
+	//   if( VtxX < cut_xmin || 
+	//       VtxX > cut_xmax ){
+	//     PassCutVtx = false;
+	//     FillVtxInFV = false;
+	//   }
+	// }	  
+	// // Cut on Z vertex position
+	// if(doCutVtxZ){
+	//   if( VtxZ < cut_zmin || 
+	//       VtxZ > cut_zmax ){
+	//     PassCutVtx = false;
+	//     FillVtxInFV = false;
+	//   }
+	// }
 		
 	//
 	// Fill this way because only 1 vertex per event!!!
@@ -736,7 +656,7 @@ void ToFND280UpEvent
       double length_forwtpc1 = nd280UpTrack->GetLengthForwTPC1();
       double length_forwtpc2 = nd280UpTrack->GetLengthForwTPC2();
       double length_forwtpc3 = nd280UpTrack->GetLengthForwTPC3();      
-      
+
       double length_dsecal    = nd280UpTrack->GetLengthDsECal();
       double length_brlecal   = nd280UpTrack->GetLengthBrlECal();
       double length_p0decal   = nd280UpTrack->GetLengthP0DECal();
@@ -789,6 +709,8 @@ void ToFND280UpEvent
       double EntrForwTPC3X = 0; double EntrForwTPC3Y = 0; double EntrForwTPC3Z = 0; double EntrForwTPC3Mom = -999;
       double EntrTPCUp1X = 0; double EntrTPCUp1Y = 0; double EntrTPCUp1Z = 0; double EntrTPCUp1Mom = -999;
       double EntrTPCUp2X = 0; double EntrTPCUp2Y = 0; double EntrTPCUp2Z = 0; double EntrTPCUp2Mom = -999;
+      double EntrTarget1X = 0; double EntrTarget1Y = 0; double EntrTarget1Z = 0; double EntrTarget1Mom = -999;
+      double EntrTarget2X = 0; double EntrTarget2Y = 0; double EntrTarget2Z = 0; double EntrTarget2Mom = -999;
       double EntrTPCDown1X = 0; double EntrTPCDown1Y = 0; double EntrTPCDown1Z = 0; double EntrTPCDown1Mom = -999;
       double EntrTPCDown2X = 0; double EntrTPCDown2Y = 0; double EntrTPCDown2Z = 0; double EntrTPCDown2Mom = -999;
       double EntrDsECalX = 0;   double EntrDsECalY = 0;   double EntrDsECalZ = 0;   double EntrDsECalMom = -999;
@@ -797,10 +719,13 @@ void ToFND280UpEvent
       double EntrUSECalP0DX = 0;double EntrUSECalP0DY = 0;double EntrUSECalP0DZ = 0;double EntrUSECalP0DMom = -999;
       double EntrToFUpX = 0;    double EntrToFUpY = 0;    double EntrToFUpZ = 0;   double EntrToFUpMom = -999;
       double EntrToFDownX = 0;  double EntrToFDownY = 0;  double EntrToFDownZ = 0; double EntrToFDownMom = -999;
-
+      double EntrToFECalP0DX = 0;  double EntrToFECalP0DY = 0;  double EntrToFECalP0DZ = 0; double EntrToFECalP0DMom = -999;
+      
       double ExForwTPC1X = 0;   double ExForwTPC1Y = 0;   double ExForwTPC1Z = 0;   double ExForwTPC1Mom = 999999999;
       double ExForwTPC2X = 0;   double ExForwTPC2Y = 0;   double ExForwTPC2Z = 0;   double ExForwTPC2Mom = 999999999;
       double ExForwTPC3X = 0;   double ExForwTPC3Y = 0;   double ExForwTPC3Z = 0;   double ExForwTPC3Mom = 999999999;
+      double ExTarget1X = 0;   double ExTarget1Y = 0;   double ExTarget1Z = 0;   double ExTarget1Mom = 999999999;
+      double ExTarget2X = 0;   double ExTarget2Y = 0;   double ExTarget2Z = 0;   double ExTarget2Mom = 999999999;
       double ExTPCUp1X = 0;   double ExTPCUp1Y = 0;   double ExTPCUp1Z = 0;   double ExTPCUp1Mom = 999999999;
       double ExTPCUp2X = 0;   double ExTPCUp2Y = 0;   double ExTPCUp2Z = 0;   double ExTPCUp2Mom = 999999999;
       double ExTPCDown1X = 0;   double ExTPCDown1Y = 0;   double ExTPCDown1Z = 0;   double ExTPCDown1Mom = 999999999;
@@ -811,15 +736,26 @@ void ToFND280UpEvent
       double ExUSECalP0DX = 0;  double ExUSECalP0DY = 0;  double ExUSECalP0DZ = 0;  double ExUSECalP0DMom = 999999999;      
       double ExToFUpX = 0;    double ExToFUpY = 0;    double ExToFUpZ = 0;   double ExToFUpMom = 999999999;
       double ExToFDownX = 0;  double ExToFDownY = 0;  double ExToFDownZ = 0; double ExToFDownMom = 999999999;
- 
-      double LastX = 0;         double LastY = 0;         double LastZ = 0; 
+      double ExToFECalP0DX = 0;  double ExToFECalP0DY = 0;  double ExToFECalP0DZ = 0; double ExToFECalP0DMom = 999999999;
 
-      double time_first = -999;   double time_curr = -999;  double time_prev = -999;
+      bool DoneTimeTarget1=false; bool DoneTimeTarget2=false; 
+      bool DoneTimeTPCUp1=false; bool DoneTimeTPCDown1=false; bool DoneTimeTPCUp2=false; bool DoneTimeTPCDown2=false;
+      bool DoneTimeForwTPC1=false; bool DoneTimeForwTPC2=false; bool DoneTimeForwTPC3=false;
+      bool DoneTimeDsECal=false; bool DoneTimeBrlECal=false; bool DoneTimeP0DECal=false; bool DoneTimeUSECalP0D=false;
+      bool DoneTimeToFTopUp=false; bool DoneTimeToFBotUp=false; bool DoneTimeToFRightUp=false; 
+      bool DoneTimeToFLeftUp=false; bool DoneTimeToFBackUp=false; bool DoneTimeToFFrontUp=false; 
+      bool DoneTimeToFTopDown=false; bool DoneTimeToFBotDown=false; bool DoneTimeToFRightDown=false; 
+      bool DoneTimeToFLeftDown=false; bool DoneTimeToFBackDown=false; bool DoneTimeToFFrontDown=false; 
+      bool DoneTimeToFECalP0D=false;
+      
+      double FirstX = -999;     double FirstY = -999;     double FirstZ = -999;
+      double LastX = -999;      double LastY = -999;      double LastZ = -999; 
 
+      double time_first = -999;   double time_curr = -999;  double time_prev = -999;      
       
       for(int ipt=0;ipt<NPoints;ipt++){
 	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
-	double length = nd280UpTrackPoint->GetStepLength();
+	double length_pt = nd280UpTrackPoint->GetStepLength();
        	double PtX = nd280UpTrackPoint->GetPostPosition().X();
        	double PtY = nd280UpTrackPoint->GetPostPosition().Y();
        	double PtZ = nd280UpTrackPoint->GetPostPosition().Z();	
@@ -828,7 +764,8 @@ void ToFND280UpEvent
 	string volname = nd280UpTrackPoint->GetLogVolName();
 	
 	double timediff = -999;
-
+	double mass_tof = -999;
+	
 	time_curr = nd280UpTrackPoint->GetTime();
 	
 	if(time_curr < time_prev){
@@ -836,17 +773,35 @@ void ToFND280UpEvent
 	  cout << "time_prev = " << time_prev << endl;
 	  exit(1);
 	}
-	if(ipt==0) time_first = time_curr; // store time of first trk point 
+	
+	if(ipt==0){
+	  time_first = time_curr; // store time of first trk point 
+	  FirstX = PtX;
+	  FirstY = PtY;
+	  FirstZ = PtZ;	  
+	}
 	
 	LastX = PtX;
 	LastY = PtY;
 	LastZ = PtZ;
-				  
+	
+	double dx = FirstX-LastX;
+	double dy = FirstY-LastY;
+	double dz = FirstZ-LastZ;
+	double l_curr_straight = sqrt(dx*dx + dy*dy + dz*dz);	
+	
 	if( (volname.find("DsECal") != string::npos) &&  
 		 (volname.find("Bar")    !=string::npos)  ){
 	  
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_DsECal->Fill(timediff);
+	  if(!DoneTimeDsECal){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_DsECal->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_DsECal->Fill(mass_tof);
+	    DoneTimeDsECal = true;			      
+	  }
 	  
 	  if(PtMom>EntrDsECalMom){
 	    EntrDsECalMom = PtMom;
@@ -864,8 +819,15 @@ void ToFND280UpEvent
 	else if( (volname.find("P0DECal") != string::npos) &&  
 		 (volname.find("Bar")    !=string::npos)  ){
 
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_P0DECal->Fill(timediff);
+	  if(!DoneTimeP0DECal){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_P0DECal->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_P0DECal->Fill(mass_tof);
+	    DoneTimeP0DECal = true;			      
+	  }
 
 	  if(PtMom>EntrP0DECalMom){
 	    EntrP0DECalMom = PtMom;
@@ -882,10 +844,17 @@ void ToFND280UpEvent
 	}
 	else if( (volname.find("BrlECal") != string::npos) &&  
 		 (volname.find("Bar")    !=string::npos)  ){
-	  
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_BrlECal->Fill(timediff);
 
+	  if(!DoneTimeBrlECal){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_BrlECal->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_BrlECal->Fill(mass_tof);
+	    DoneTimeBrlECal = true;			      
+	  }
+	  
 	  if(PtMom>EntrBrlECalMom){
 	    EntrBrlECalMom = PtMom;
 	    EntrBrlECalX = PtX;
@@ -902,9 +871,16 @@ void ToFND280UpEvent
 	else if( (volname.find("P0D/USECal") != string::npos) &&  
 		 (volname.find("Bar")    !=string::npos)  ){
 	  
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_USECalP0D->Fill(timediff);
-	  
+	  if(!DoneTimeUSECalP0D){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_USECalP0D->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_USECalP0D->Fill(mass_tof);
+	    DoneTimeUSECalP0D = true;			      
+	  }
+
 	  if(PtMom>EntrUSECalP0DMom){
 	    EntrUSECalP0DMom = PtMom;
 	    EntrUSECalP0DX = PtX;
@@ -922,10 +898,17 @@ void ToFND280UpEvent
 		 ( (volname.find("MM")     !=string::npos)  || 
 		   (volname.find("Half")   !=string::npos)   )  
 		 ){
-
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_ForwTPC1->Fill(timediff);
 	  
+	  if(!DoneTimeForwTPC1){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_ForwTPC1->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_ForwTPC1->Fill(mass_tof);
+	    DoneTimeForwTPC1 = true;			      
+	  }
+
 	  if(PtMom>EntrForwTPC1Mom){
 	    EntrForwTPC1Mom = PtMom;
 	    EntrForwTPC1X = PtX;
@@ -944,8 +927,15 @@ void ToFND280UpEvent
 		   (volname.find("Half")   !=string::npos)   )
 		 ){
 
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_ForwTPC2->Fill(timediff);
+	  if(!DoneTimeForwTPC2){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_ForwTPC2->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_ForwTPC2->Fill(mass_tof);
+	    DoneTimeForwTPC2 = true;			      
+	  }
 
 	  if(PtMom>EntrForwTPC2Mom){
 	    EntrForwTPC2Mom = PtMom;
@@ -965,8 +955,15 @@ void ToFND280UpEvent
 		   (volname.find("Half")   !=string::npos)   )
 		 ){
 
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_ForwTPC3->Fill(timediff);
+	  if(!DoneTimeForwTPC3){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_ForwTPC3->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_ForwTPC3->Fill(mass_tof);
+	    DoneTimeForwTPC3 = true;			      
+	  }
 
 	  if(PtMom>EntrForwTPC3Mom){
 	    EntrForwTPC3Mom = PtMom;
@@ -983,8 +980,15 @@ void ToFND280UpEvent
 	}
 	else if( (volname.find("TPCUp1") != string::npos) ){
 
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_TPCUp1->Fill(timediff);
+	  if(!DoneTimeTPCUp1){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_TPCUp1->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_TPCUp1->Fill(mass_tof);
+	    DoneTimeTPCUp1 = true;			      
+	  }
 
 	  if(PtMom>EntrTPCUp1Mom){
 	    EntrTPCUp1Mom = PtMom;
@@ -1001,8 +1005,15 @@ void ToFND280UpEvent
 	}
 	else if( (volname.find("TPCUp2") != string::npos) ){
 
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_TPCUp2->Fill(timediff);
+	  if(!DoneTimeTPCUp2){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_TPCUp2->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_TPCUp2->Fill(mass_tof);
+	    DoneTimeTPCUp2 = true;			      
+	  }
 
 	  if(PtMom>EntrTPCUp2Mom){
 	    EntrTPCUp2Mom = PtMom;
@@ -1019,8 +1030,15 @@ void ToFND280UpEvent
 	}
 	else if( (volname.find("TPCDown1") != string::npos) ){
 
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_TPCDown1->Fill(timediff);
+	  if(!DoneTimeTPCDown1){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_TPCDown1->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_TPCDown1->Fill(mass_tof);
+	    DoneTimeTPCDown1 = true;			      
+	  }
 
 	  if(PtMom>EntrTPCDown1Mom){
 	    EntrTPCDown1Mom = PtMom;
@@ -1036,9 +1054,16 @@ void ToFND280UpEvent
 	  }
 	}
 	else if( (volname.find("TPCDown2") != string::npos) ){
-	  
-	  timediff = time_curr - time_first;
-	  hTimeTarg1_TPCDown2->Fill(timediff);
+
+	  if(!DoneTimeTPCDown2){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_TPCDown2->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = length_target1 + length_tpcup1;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_TPCDown1->Fill(mass_tof);
+	    DoneTimeTPCDown1 = true;			      
+	  }
 
 	  if(PtMom>EntrTPCDown2Mom){
 	    EntrTPCDown2Mom = PtMom;
@@ -1054,100 +1079,236 @@ void ToFND280UpEvent
 	  }
 	}
 
-	else if( (volname.find("ToF") != string::npos) && 
-		 (volname.find("Up") != string::npos) ){
+
+
+
+	else if( (volname.find("Target1") != string::npos) ){
+
+	  if(!DoneTimeTarget1){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_Target1->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = ;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_Target1->Fill(mass_tof);
+	    DoneTimeTarget1 = true;			      
+	  }
+
+	  if(PtMom>EntrTarget1Mom){
+	    EntrTarget1Mom = PtMom;
+	    EntrTarget1X = PtX;
+	    EntrTarget1Y = PtY;
+	    EntrTarget1Z = PtZ;
+	  }
+	  if(PtMom<ExTarget1Mom){
+	    ExTarget1Mom = PtMom;
+	    ExTarget1X = PtX;
+	    ExTarget1Y = PtY;
+	    ExTarget1Z = PtZ;
+	  }
+	}
+	else if( (volname.find("Target2") != string::npos) ){
+
+	  if(!DoneTimeTarget2){
+	    timediff = time_curr - time_first;
+	    hTimeTarg1_Target2->Fill(timediff);	  	    
+	    double Ltof = l_curr_straight;
+	    //double Ltof = ;
+	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	    hMassTarg1_Target2->Fill(mass_tof);
+	    DoneTimeTarget2 = true;			      
+	  }
+
+	  if(PtMom>EntrTarget2Mom){
+	    EntrTarget2Mom = PtMom;
+	    EntrTarget2X = PtX;
+	    EntrTarget2Y = PtY;
+	    EntrTarget2Z = PtZ;
+	  }
+	  if(PtMom<ExTarget2Mom){
+	    ExTarget2Mom = PtMom;
+	    ExTarget2X = PtX;
+	    ExTarget2Y = PtY;
+	    ExTarget2Z = PtZ;
+	  }
+	}
+
+
+
+
+	else if( (volname.find("ToF") != string::npos) ){
 	  
 	  if(volname.find("TopUp") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFTopUp->Fill(timediff);
+	    
+	    if(!DoneTimeToFTopUp){
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFTopUp->Fill(timediff);	  	    
+	      double Ltof = l_curr_straight;
+	      //double Ltof = length_target1 + length_tpcup1;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFTopUp->Fill(mass_tof);
+	      DoneTimeToFTopUp = true;			      
+	    }
 	  }
 	  else if(volname.find("BotUp") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFBotUp->Fill(timediff);
+	    
+	    if(!DoneTimeToFBotUp){
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFBotUp->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = length_target1 + length_tpcdown1;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFBotUp->Fill(mass_tof);
+	      DoneTimeToFBotUp = true;
+	    }
 	  }
 	  else if(volname.find("RightUp") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFRightUp->Fill(timediff);
+	    
+	    if(!DoneTimeToFRightUp){
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFRightUp->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = length_target1 + length_tpcdown1 + length_tpcup1;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFRightUp->Fill(mass_tof);
+	      DoneTimeToFRightUp = true;
+	    }
 	  }
 	  else if(volname.find("LeftUp") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFLeftUp->Fill(timediff);
+	    	    
+	    if(!DoneTimeToFLeftUp){
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFLeftUp->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = length_target1 + length_tpcdown1 + length_tpcup1;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFLeftUp->Fill(mass_tof);
+	      DoneTimeToFLeftUp = true;
+	    }
 	  }
 	  else if(volname.find("BackUp") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFBackUp->Fill(timediff);
+	    
+	    if(!DoneTimeToFBackUp){	    
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFBackUp->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = length_target1 + length_tpcdown1 + length_tpcup1;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFBackUp->Fill(mass_tof);
+	      DoneTimeToFBackUp = true;
+	    }
 	  }
 	  else if(volname.find("FrontUp") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFFrontUp->Fill(timediff);
+
+	    if(!DoneTimeToFFrontUp){	    
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFFrontUp->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = length_target1 + length_tpcdown1 + length_tpcup1;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFFrontUp->Fill(mass_tof);
+	      DoneTimeToFFrontUp = true;
+	    }
 	  }
-	  
-	  if(PtMom>EntrToFUpMom){
-	    EntrToFUpMom = PtMom;
-	    EntrToFUpX = PtX;
-	    EntrToFUpY = PtY;
-	    EntrToFUpZ = PtZ;
+	  else if(volname.find("ECalP0D") != string::npos ){
+	    
+	    if(!DoneTimeToFECalP0D){	    
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFECalP0D->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = length_target1 + length_tpcdown1 + length_usecalp0d + length_forwtpc1;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFECalP0D->Fill(mass_tof);
+	      DoneTimeToFECalP0D = true;
+	    }
 	  }
-	  if(PtMom<ExToFUpMom){
-	    ExToFUpMom = PtMom;
-	    ExToFUpX = PtX;
-	    ExToFUpY = PtY;
-	    ExToFUpZ = PtZ;
-	  }
-	}
 
 
-
-	else if( (volname.find("ToF") != string::npos) && 
-		 (volname.find("Down") != string::npos) ){
 
 	  if(volname.find("TopDown") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFTopDown->Fill(timediff);
+	    
+	    if(!DoneTimeToFTopDown){
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFTopDown->Fill(timediff);	  	    
+	      double Ltof = l_curr_straight;
+	      //double Ltof = ;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFTopDown->Fill(mass_tof);
+	      DoneTimeToFTopDown = true;			      
+	    }
 	  }
 	  else if(volname.find("BotDown") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFBotDown->Fill(timediff);
+	    
+	    if(!DoneTimeToFBotDown){
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFBotDown->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = ;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFBotDown->Fill(mass_tof);
+	      DoneTimeToFBotDown = true;
+	    }
 	  }
 	  else if(volname.find("RightDown") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFRightDown->Fill(timediff);
+	    
+	    if(!DoneTimeToFRightDown){
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFRightDown->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = ;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFRightDown->Fill(mass_tof);
+	      DoneTimeToFRightDown = true;
+	    }
 	  }
 	  else if(volname.find("LeftDown") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFLeftDown->Fill(timediff);
+	    	    
+	    if(!DoneTimeToFLeftDown){
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFLeftDown->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = ;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFLeftDown->Fill(mass_tof);
+	      DoneTimeToFLeftDown = true;
+	    }
 	  }
 	  else if(volname.find("BackDown") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFBackDown->Fill(timediff);
+	    
+	    if(!DoneTimeToFBackDown){	    
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFBackDown->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = ;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFBackDown->Fill(mass_tof);
+	      DoneTimeToFBackDown = true;
+	    }
 	  }
 	  else if(volname.find("FrontDown") != string::npos){
-	    timediff = time_curr - time_first;
-	    hTimeTarg1_ToFFrontDown->Fill(timediff);
+
+	    if(!DoneTimeToFFrontDown){	    
+	      timediff = time_curr - time_first;
+	      hTimeTarg1_ToFFrontDown->Fill(timediff);
+	      double Ltof = l_curr_straight;
+	      //double Ltof = ;
+	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
+	      hMassTarg1_ToFFrontDown->Fill(mass_tof);
+	      DoneTimeToFFrontDown = true;
+	    }
 	  }
-	  
-	  if(PtMom>EntrToFDownMom){
-	    EntrToFDownMom = PtMom;
-	    EntrToFDownX = PtX;
-	    EntrToFDownY = PtY;
-	    EntrToFDownZ = PtZ;
-	  }
-	  if(PtMom<ExToFDownMom){
-	    ExToFDownMom = PtMom;
-	    ExToFDownX = PtX;
-	    ExToFDownY = PtY;
-	    ExToFDownZ = PtZ;
-	  }
-	}
 	
+	} // if ToF
+
 	//delete nd280UpTrackPoint;
 	//nd280UpTrackPoint = 0;
 	
 	time_prev = time_curr;
 
-      } // loop over points
+      } // loop over points for ToF
 
-     //
+
+      //
       // Fill entrance detector points
       //
       if(EntrForwTPC1Mom>0.){
@@ -1271,7 +1432,6 @@ void ToFND280UpEvent
 	hUSECalP0DTrkPtYZ->Fill(ExUSECalP0DY,ExUSECalP0DZ);	  
       }
       //
-
       if(EntrToFUpMom>0.){
 	hToFUpTrkPtXY->Fill(EntrToFUpX,EntrToFUpY);
 	hToFUpTrkPtXZ->Fill(EntrToFUpX,EntrToFUpZ);
@@ -1282,7 +1442,7 @@ void ToFND280UpEvent
 	hToFUpTrkPtXZ->Fill(ExToFUpX,ExToFUpZ);
 	hToFUpTrkPtYZ->Fill(ExToFUpY,ExToFUpZ);	  
       }
-
+      //
       if(EntrToFDownMom>0.){
 	hToFDownTrkPtXY->Fill(EntrToFDownX,EntrToFDownY);
 	hToFDownTrkPtXZ->Fill(EntrToFDownX,EntrToFDownZ);
@@ -1292,6 +1452,17 @@ void ToFND280UpEvent
 	hToFDownTrkPtXY->Fill(ExToFDownX,ExToFDownY);
 	hToFDownTrkPtXZ->Fill(ExToFDownX,ExToFDownZ);
 	hToFDownTrkPtYZ->Fill(ExToFDownY,ExToFDownZ);	  
+      }
+      //
+      if(EntrToFECalP0DMom>0.){
+	hToFECalP0DTrkPtXY->Fill(EntrToFECalP0DX,EntrToFECalP0DY);
+	hToFECalP0DTrkPtXZ->Fill(EntrToFECalP0DX,EntrToFECalP0DZ);
+	hToFECalP0DTrkPtYZ->Fill(EntrToFECalP0DY,EntrToFECalP0DZ);	  
+      }
+      if(ExToFECalP0DMom<9999999.){
+	hToFECalP0DTrkPtXY->Fill(ExToFECalP0DX,ExToFECalP0DY);
+	hToFECalP0DTrkPtXZ->Fill(ExToFECalP0DX,ExToFECalP0DZ);
+	hToFECalP0DTrkPtYZ->Fill(ExToFECalP0DY,ExToFECalP0DZ);	  
       }
       
       /////
@@ -1365,6 +1536,9 @@ void ToFND280UpEvent
   hToFUpTrkPtXY->Write();
   hToFUpTrkPtXZ->Write();
   hToFUpTrkPtYZ->Write();
+  hToFECalP0DTrkPtXY->Write();
+  hToFECalP0DTrkPtXZ->Write();
+  hToFECalP0DTrkPtYZ->Write();
   //
   hTimeTarg1_DsECal->Write();
   hTimeTarg1_BrlECal->Write();
@@ -1373,6 +1547,8 @@ void ToFND280UpEvent
   hTimeTarg1_ForwTPC1->Write();
   hTimeTarg1_ForwTPC2->Write();
   hTimeTarg1_ForwTPC3->Write();
+  hTimeTarg1_Target1->Write();
+  hTimeTarg1_Target2->Write();
   hTimeTarg1_TPCUp1->Write();
   hTimeTarg1_TPCUp2->Write();
   hTimeTarg1_TPCDown1->Write();
@@ -1389,6 +1565,34 @@ void ToFND280UpEvent
   hTimeTarg1_ToFLeftDown->Write();
   hTimeTarg1_ToFBackDown->Write();
   hTimeTarg1_ToFFrontDown->Write();
+  hTimeTarg1_ToFECalP0D->Write();
+  //
+  hMassTarg1_DsECal->Write();
+  hMassTarg1_BrlECal->Write();
+  hMassTarg1_P0DECal->Write();
+  hMassTarg1_USECalP0D->Write();
+  hMassTarg1_ForwTPC1->Write();
+  hMassTarg1_ForwTPC2->Write();
+  hMassTarg1_ForwTPC3->Write();
+  hMassTarg1_Target1->Write();
+  hMassTarg1_Target2->Write();
+  hMassTarg1_TPCUp1->Write();
+  hMassTarg1_TPCUp2->Write();
+  hMassTarg1_TPCDown1->Write();
+  hMassTarg1_TPCDown2->Write();
+  hMassTarg1_ToFTopUp->Write();
+  hMassTarg1_ToFBotUp->Write();
+  hMassTarg1_ToFRightUp->Write();
+  hMassTarg1_ToFLeftUp->Write();
+  hMassTarg1_ToFBackUp->Write();
+  hMassTarg1_ToFFrontUp->Write();
+  hMassTarg1_ToFTopDown->Write();
+  hMassTarg1_ToFBotDown->Write();
+  hMassTarg1_ToFRightDown->Write();
+  hMassTarg1_ToFLeftDown->Write();
+  hMassTarg1_ToFBackDown->Write();
+  hMassTarg1_ToFFrontDown->Write();
+  hMassTarg1_ToFECalP0D->Write();
   //
   out->Close();
   
@@ -1436,7 +1640,36 @@ void ToFND280UpEvent
 }
 
 
+//___________________________________________________________________________ 
 
+double GetToFMass(
+		  double mom,double momerr,// fractional error
+		  double length,double lengtherr, // absolute error
+		  double tof,double toferr, // absolute error
+		  bool doSmear){
+  double mass = -999;
+  double c = 299.792458; // mm / ns (Wikipedia: c = 299792458 m/s)
+  
+  double mom_smear = mom;
+  double length_smear = length;
+  double tof_smear = tof;
+
+  if(doSmear){
+    TRandom3 *rndm = new TRandom3(0);
+    mom_smear = rndm->Gaus(mom,momerr); // 10% momentum resolution
+    length_smear = rndm->Gaus(length,lengtherr); // 1cm length resolution
+    tof_smear = rndm->Gaus(tof,toferr); // 100 ps ToF resolution; 
+  }
+
+  double c2 = c*c;
+  double tof2 = tof_smear * tof_smear;
+  double length2 = length_smear * length_smear;
+  double p = mom_smear;
+
+  mass = p * sqrt( c2*tof2/length2 - 1 ); // mom not divided by c!!! (c=1 as the mass)
+  
+  return mass;
+}
 
 
 //___________________________________________________________________________ 
