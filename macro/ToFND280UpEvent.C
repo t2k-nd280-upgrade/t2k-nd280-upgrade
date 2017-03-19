@@ -795,11 +795,11 @@ void ToFND280UpEvent
 	  
 	  if(!DoneTimeDsECal){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_DsECal->Fill(timediff);	  	    
+	    if(timediff>0) hTimeTarg1_DsECal->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_DsECal->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_DsECal->Fill(mass_tof);
 	    DoneTimeDsECal = true;			      
 	  }
 	  
@@ -821,11 +821,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeP0DECal){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_P0DECal->Fill(timediff);	  	    
+	    if(timediff>0) hTimeTarg1_P0DECal->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_P0DECal->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_P0DECal->Fill(mass_tof);
 	    DoneTimeP0DECal = true;			      
 	  }
 
@@ -847,11 +847,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeBrlECal){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_BrlECal->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_BrlECal->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_BrlECal->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_BrlECal->Fill(mass_tof);
 	    DoneTimeBrlECal = true;			      
 	  }
 	  
@@ -873,11 +873,11 @@ void ToFND280UpEvent
 	  
 	  if(!DoneTimeUSECalP0D){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_USECalP0D->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_USECalP0D->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_USECalP0D->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_USECalP0D->Fill(mass_tof);
 	    DoneTimeUSECalP0D = true;			      
 	  }
 
@@ -901,11 +901,11 @@ void ToFND280UpEvent
 	  
 	  if(!DoneTimeForwTPC1){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_ForwTPC1->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_ForwTPC1->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_ForwTPC1->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_ForwTPC1->Fill(mass_tof);
 	    DoneTimeForwTPC1 = true;			      
 	  }
 
@@ -929,11 +929,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeForwTPC2){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_ForwTPC2->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_ForwTPC2->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_ForwTPC2->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_ForwTPC2->Fill(mass_tof);
 	    DoneTimeForwTPC2 = true;			      
 	  }
 
@@ -957,11 +957,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeForwTPC3){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_ForwTPC3->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_ForwTPC3->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_ForwTPC3->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_ForwTPC3->Fill(mass_tof);
 	    DoneTimeForwTPC3 = true;			      
 	  }
 
@@ -982,11 +982,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeTPCUp1){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_TPCUp1->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_TPCUp1->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_TPCUp1->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_TPCUp1->Fill(mass_tof);
 	    DoneTimeTPCUp1 = true;			      
 	  }
 
@@ -1007,11 +1007,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeTPCUp2){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_TPCUp2->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_TPCUp2->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_TPCUp2->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_TPCUp2->Fill(mass_tof);
 	    DoneTimeTPCUp2 = true;			      
 	  }
 
@@ -1032,11 +1032,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeTPCDown1){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_TPCDown1->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_TPCDown1->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_TPCDown1->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_TPCDown1->Fill(mass_tof);
 	    DoneTimeTPCDown1 = true;			      
 	  }
 
@@ -1057,11 +1057,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeTPCDown2){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_TPCDown2->Fill(timediff);	  	    
+	    if(timediff>0)hTimeTarg1_TPCDown2->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_TPCDown1->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_TPCDown1->Fill(mass_tof);
 	    DoneTimeTPCDown1 = true;			      
 	  }
 
@@ -1086,11 +1086,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeTarget1){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_Target1->Fill(timediff);	  	    
+	    if(timediff>0) hTimeTarg1_Target1->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = ;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_Target1->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_Target1->Fill(mass_tof);
 	    DoneTimeTarget1 = true;			      
 	  }
 
@@ -1111,11 +1111,11 @@ void ToFND280UpEvent
 
 	  if(!DoneTimeTarget2){
 	    timediff = time_curr - time_first;
-	    hTimeTarg1_Target2->Fill(timediff);	  	    
+	    if(timediff>0) hTimeTarg1_Target2->Fill(timediff);	  	    
 	    double Ltof = l_curr_straight;
 	    //double Ltof = ;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    hMassTarg1_Target2->Fill(mass_tof);
+	    if(mass_tof>0) hMassTarg1_Target2->Fill(mass_tof);
 	    DoneTimeTarget2 = true;			      
 	  }
 
@@ -1142,11 +1142,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFTopUp){
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFTopUp->Fill(timediff);	  	    
+	      if(timediff>0)hTimeTarg1_ToFTopUp->Fill(timediff);	  	    
 	      double Ltof = l_curr_straight;
 	      //double Ltof = length_target1 + length_tpcup1;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFTopUp->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFTopUp->Fill(mass_tof);
 	      DoneTimeToFTopUp = true;			      
 	    }
 	  }
@@ -1154,11 +1154,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFBotUp){
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFBotUp->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFBotUp->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = length_target1 + length_tpcdown1;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFBotUp->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFBotUp->Fill(mass_tof);
 	      DoneTimeToFBotUp = true;
 	    }
 	  }
@@ -1166,11 +1166,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFRightUp){
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFRightUp->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFRightUp->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = length_target1 + length_tpcdown1 + length_tpcup1;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFRightUp->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFRightUp->Fill(mass_tof);
 	      DoneTimeToFRightUp = true;
 	    }
 	  }
@@ -1178,11 +1178,11 @@ void ToFND280UpEvent
 	    	    
 	    if(!DoneTimeToFLeftUp){
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFLeftUp->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFLeftUp->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = length_target1 + length_tpcdown1 + length_tpcup1;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFLeftUp->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFLeftUp->Fill(mass_tof);
 	      DoneTimeToFLeftUp = true;
 	    }
 	  }
@@ -1190,11 +1190,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFBackUp){	    
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFBackUp->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFBackUp->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = length_target1 + length_tpcdown1 + length_tpcup1;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFBackUp->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFBackUp->Fill(mass_tof);
 	      DoneTimeToFBackUp = true;
 	    }
 	  }
@@ -1202,11 +1202,11 @@ void ToFND280UpEvent
 
 	    if(!DoneTimeToFFrontUp){	    
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFFrontUp->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFFrontUp->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = length_target1 + length_tpcdown1 + length_tpcup1;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFFrontUp->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFFrontUp->Fill(mass_tof);
 	      DoneTimeToFFrontUp = true;
 	    }
 	  }
@@ -1214,11 +1214,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFECalP0D){	    
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFECalP0D->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFECalP0D->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = length_target1 + length_tpcdown1 + length_usecalp0d + length_forwtpc1;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFECalP0D->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFECalP0D->Fill(mass_tof);
 	      DoneTimeToFECalP0D = true;
 	    }
 	  }
@@ -1229,11 +1229,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFTopDown){
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFTopDown->Fill(timediff);	  	    
+	      if(timediff>0)hTimeTarg1_ToFTopDown->Fill(timediff);	  	    
 	      double Ltof = l_curr_straight;
 	      //double Ltof = ;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFTopDown->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFTopDown->Fill(mass_tof);
 	      DoneTimeToFTopDown = true;			      
 	    }
 	  }
@@ -1241,11 +1241,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFBotDown){
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFBotDown->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFBotDown->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = ;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFBotDown->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFBotDown->Fill(mass_tof);
 	      DoneTimeToFBotDown = true;
 	    }
 	  }
@@ -1253,11 +1253,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFRightDown){
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFRightDown->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFRightDown->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = ;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFRightDown->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFRightDown->Fill(mass_tof);
 	      DoneTimeToFRightDown = true;
 	    }
 	  }
@@ -1265,11 +1265,11 @@ void ToFND280UpEvent
 	    	    
 	    if(!DoneTimeToFLeftDown){
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFLeftDown->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFLeftDown->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = ;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFLeftDown->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFLeftDown->Fill(mass_tof);
 	      DoneTimeToFLeftDown = true;
 	    }
 	  }
@@ -1277,11 +1277,11 @@ void ToFND280UpEvent
 	    
 	    if(!DoneTimeToFBackDown){	    
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFBackDown->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFBackDown->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = ;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFBackDown->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFBackDown->Fill(mass_tof);
 	      DoneTimeToFBackDown = true;
 	    }
 	  }
@@ -1289,11 +1289,11 @@ void ToFND280UpEvent
 
 	    if(!DoneTimeToFFrontDown){	    
 	      timediff = time_curr - time_first;
-	      hTimeTarg1_ToFFrontDown->Fill(timediff);
+	      if(timediff>0)hTimeTarg1_ToFFrontDown->Fill(timediff);
 	      double Ltof = l_curr_straight;
 	      //double Ltof = ;
 	      mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	      hMassTarg1_ToFFrontDown->Fill(mass_tof);
+	      if(mass_tof>0) hMassTarg1_ToFFrontDown->Fill(mass_tof);
 	      DoneTimeToFFrontDown = true;
 	    }
 	  }
@@ -1663,6 +1663,8 @@ double GetToFMass(
     tof_smear = rndm->Gaus(tof,toferr); // 100 ps ToF resolution; 
   }
 
+  if( (mom_smear<=0.) || (tof_smear<=0.) || (length_smear<=0.) ) return 0.;
+  
   double c2 = c*c;
   double tof2 = tof_smear * tof_smear;
   double length2 = length_smear * length_smear;
