@@ -22,21 +22,71 @@ void DrawToF
   gStyle->SetPadRightMargin(0.15);
   //gStyle->SetStatX(.4); gStyle->SetStatY(.6);
 
-  const int Nfiles = 4;
+  const int Nfiles = 12;
   string infilename[Nfiles];
   string label[Nfiles];
+  int color[Nfiles];
+  int rebin[Nfiles];
 
-  infilename[0] = "../../../files/pid_ToF/TimeRes_100ps/ToFND280Up_Ref_numu_1E21-Targ1-MuM-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.1ns_All.root";
-  label[0] = "#mu^{-} - #DeltaT=100ps";
+  infilename[0] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-MuM-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.05ns_All.root";
+  label[0] = "#mu^{-} - #DeltaT=50ps";
+  color[0] = kViolet;
+  rebin[0] = 1;
 
-  infilename[1] = "../../../files/pid_ToF/TimeRes_100ps/ToFND280Up_Ref_numu_1E21-Targ1-PiP-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.1ns_All.root";
-  label[1] = "#pi^{+} - #DeltaT=100ps";
+  infilename[1] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-MuM-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.1ns_All.root";
+  label[1] = "#mu^{-} - #DeltaT=100ps";
+  color[1] = kViolet+1;
+  rebin[1] = 1;
+
+  infilename[2] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-MuM-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.2ns_All.root";
+  label[2] = "#mu^{-} - #DeltaT=200ps";  
+  color[2] = kViolet+2;
+  rebin[2] = 1;
   
-  infilename[2] = "../../../files/pid_ToF/TimeRes_100ps/ToFND280Up_Ref_numu_1E21-Targ1-Prot-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.1ns_All.root";
-  label[2] = "p - #DeltaT=100ps";
+  infilename[3] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-PiP-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.05ns_All.root";
+  label[3] = "#pi^{+} - #DeltaT=50ps";
+  color[3] = kGreen;
+  rebin[3] = 1;
+
+  infilename[4] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-PiP-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.1ns_All.root";
+  label[4] = "#pi^{+} - #DeltaT=100ps";
+  color[4] = kGreen+1;
+  rebin[4] = 1;
+
+  infilename[5] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-PiP-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.2ns_All.root";
+  label[5] = "#pi^{+} - #DeltaT=200ps";
+  color[5] = kGreen+2;
+  rebin[5] = 1;
   
-  infilename[3] = "../../../files/pid_ToF/TimeRes_100ps/ToFND280Up_Ref_nue_1E21-Targ1-EleM-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.1ns_Evt0_NEvt10000.root";
-  label[3] = "e^{-} - #DeltaT=100ps";
+  infilename[6] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-Prot-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.05ns_All.root";
+  label[6] = "p - #DeltaT=50ps";
+  color[6] = kBlue;
+  rebin[6] = 1;
+
+  infilename[7] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-Prot-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.1ns_All.root";
+  label[7] = "p - #DeltaT=100ps";
+  color[7] = kBlue+1;
+  rebin[7] = 1;
+
+  infilename[8] = "../../../files/pid_ToF/ToFND280Up_Ref_numu_1E21-Targ1-Prot-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.2ns_All.root";
+  label[8] = "p - #DeltaT=200ps";
+  color[8] = kBlue+2;
+  rebin[8] = 1;
+  
+  infilename[9] = "../../../files/pid_ToF/ToFND280Up_Ref_nue_1E21-Targ1-EleM-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.05ns_Evt0_NEvt10000.root";
+  label[9] = "e^{-} - #DeltaT=50ps";
+  color[9] = kRed+1;
+  rebin[9] = 5;
+
+  infilename[10] = "../../../files/pid_ToF/ToFND280Up_Ref_nue_1E21-Targ1-EleM-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.1ns_Evt0_NEvt10000.root";
+  label[10] = "e^{-} - #DeltaT=100ps";
+  color[10] = kRed+1;
+  rebin[10] = 5;
+
+  infilename[11] = "../../../files/pid_ToF/ToFND280Up_Ref_nue_1E21-Targ1-EleM-ParID0-CC-SmearToF-dp0.1%-dl10mm-dt0.2ns_Evt0_NEvt10000.root";
+  label[11] = "e^{-} - #DeltaT=200ps";
+  color[11] = kRed+2;
+  rebin[11] = 5;
 
 
   TFile *infile[Nfiles];
@@ -133,61 +183,87 @@ void DrawToF
     hVtxOut_XZ[ifile] = (TH2D*)infile[ifile]->Get("hVtxOut_XZ");
     hVtxOut_YZ[ifile] = (TH2D*)infile[ifile]->Get("hVtxOut_YZ");
     //
-    hTimeTarg1_DsECal[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_DsECal");  
-    hTimeTarg1_BrlECal[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_BrlECal"); 
-    hTimeTarg1_P0DECal[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_P0DECal"); 
-    hTimeTarg1_USECalP0D[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_USECalP0D"); 
-    hTimeTarg1_ForwTPC1[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ForwTPC1"); 
-    hTimeTarg1_ForwTPC2[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ForwTPC2"); 
-    hTimeTarg1_ForwTPC3[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ForwTPC3"); 
-    hTimeTarg1_Target1[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_Target1"); 
-    hTimeTarg1_Target2[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_Target2"); 
-    hTimeTarg1_TPCUp1[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_TPCUp1"); 
-    hTimeTarg1_TPCUp2[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_TPCUp2"); 
-    hTimeTarg1_TPCDown1[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_TPCDown1"); 
-    hTimeTarg1_TPCDown2[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_TPCDown2"); 
-    hTimeTarg1_ToFTopUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFTopUp"); 
-    hTimeTarg1_ToFBotUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFBotUp"); 
-    hTimeTarg1_ToFRightUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFRightUp"); 
-    hTimeTarg1_ToFLeftUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFLeftUp"); 
-    hTimeTarg1_ToFBackUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFBackUp"); 
-    hTimeTarg1_ToFFrontUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFFrontUp"); 
-    hTimeTarg1_ToFTopDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFTopDown"); 
-    hTimeTarg1_ToFBotDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFBotDown"); 
-    hTimeTarg1_ToFRightDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFRightDown"); 
-    hTimeTarg1_ToFLeftDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFLeftDown"); 
-    hTimeTarg1_ToFBackDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFBackDown"); 
-    hTimeTarg1_ToFFrontDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFFrontDown"); 
-    hTimeTarg1_ToFECalP0D[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFECalP0D"); 
+    hTimeTarg1_DsECal[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_DsECal"); hTimeTarg1_DsECal[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_BrlECal[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_BrlECal"); hTimeTarg1_DsECal[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_P0DECal[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_P0DECal"); hTimeTarg1_P0DECal[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_USECalP0D[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_USECalP0D"); hTimeTarg1_USECalP0D[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ForwTPC1[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ForwTPC1"); hTimeTarg1_ForwTPC1[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ForwTPC2[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ForwTPC2"); hTimeTarg1_ForwTPC2[ifile] ->Rebin(rebin[ifile]);
+    hTimeTarg1_ForwTPC3[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ForwTPC3"); hTimeTarg1_ForwTPC3[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_Target1[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_Target1"); hTimeTarg1_Target1[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_Target2[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_Target2"); hTimeTarg1_Target2[ifile]->Rebin(rebin[ifile]);   
+    hTimeTarg1_TPCUp1[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_TPCUp1"); hTimeTarg1_TPCUp1[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_TPCUp2[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_TPCUp2"); hTimeTarg1_TPCUp2[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_TPCDown1[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_TPCDown1"); hTimeTarg1_TPCDown1[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_TPCDown2[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_TPCDown2"); hTimeTarg1_TPCDown2[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFTopUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFTopUp"); hTimeTarg1_ToFTopUp[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFBotUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFBotUp"); hTimeTarg1_ToFBotUp[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFRightUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFRightUp"); hTimeTarg1_ToFRightUp[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFLeftUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFLeftUp"); hTimeTarg1_ToFLeftUp[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFBackUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFBackUp"); hTimeTarg1_ToFBackUp[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFFrontUp[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFFrontUp"); hTimeTarg1_ToFFrontUp[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFTopDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFTopDown"); hTimeTarg1_ToFTopDown[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFBotDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFBotDown"); hTimeTarg1_ToFBotDown[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFRightDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFRightDown"); hTimeTarg1_ToFRightDown[ifile] ->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFLeftDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFLeftDown"); hTimeTarg1_ToFLeftDown[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFBackDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFBackDown"); hTimeTarg1_ToFBackDown[ifile] ->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFFrontDown[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFFrontDown"); hTimeTarg1_ToFFrontDown[ifile]->Rebin(rebin[ifile]);
+    hTimeTarg1_ToFECalP0D[ifile] = (TH1D*)infile[ifile]->Get("hTimeTarg1_ToFECalP0D"); hTimeTarg1_ToFECalP0D[ifile]->Rebin(rebin[ifile]);
     //
-    hMassTarg1_DsECal[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_DsECal");  hMassTarg1_ToFAll[ifile] = (TH1D*)hMassTarg1_DsECal[ifile]->Clone("hMassTarg1_ToFAll");
-    hMassTarg1_BrlECal[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_BrlECal"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_BrlECal[ifile]);
-    hMassTarg1_P0DECal[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_P0DECal"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_P0DECal[ifile]);
-    hMassTarg1_USECalP0D[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_USECalP0D"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_USECalP0D[ifile]);
-    hMassTarg1_ForwTPC1[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ForwTPC1"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ForwTPC1[ifile]);
-    hMassTarg1_ForwTPC2[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ForwTPC2"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ForwTPC2[ifile]);
-    hMassTarg1_ForwTPC3[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ForwTPC3"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ForwTPC3[ifile]);
-    hMassTarg1_Target1[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_Target1"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_Target1[ifile]);
-    hMassTarg1_Target2[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_Target2"); hMassTarg1_ToFAll[ifile]->Add( hMassTarg1_Target2[ifile]);
-    hMassTarg1_TPCUp1[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_TPCUp1"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_TPCUp1[ifile]);
-    hMassTarg1_TPCUp2[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_TPCUp2"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_TPCUp2[ifile]);
-    hMassTarg1_TPCDown1[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_TPCDown1"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_TPCDown1[ifile]);
-    hMassTarg1_TPCDown2[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_TPCDown2"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_TPCDown2[ifile]);
-    hMassTarg1_ToFTopUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFTopUp"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFTopUp[ifile]);
-    hMassTarg1_ToFBotUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFBotUp"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFBotUp[ifile]);
-    hMassTarg1_ToFRightUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFRightUp"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFRightUp[ifile]);
-    hMassTarg1_ToFLeftUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFLeftUp"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFLeftUp[ifile]);
-    hMassTarg1_ToFBackUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFBackUp"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFBackUp[ifile]);
-    hMassTarg1_ToFFrontUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFFrontUp"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFFrontUp[ifile]);
-    hMassTarg1_ToFTopDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFTopDown"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFTopDown[ifile]);
-    hMassTarg1_ToFBotDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFBotDown"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFBotDown[ifile]);
-    hMassTarg1_ToFRightDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFRightDown"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFRightDown[ifile]);
-    hMassTarg1_ToFLeftDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFLeftDown"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFLeftDown[ifile]);
-    hMassTarg1_ToFBackDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFBackDown"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFBackDown[ifile]);
-    hMassTarg1_ToFFrontDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFFrontDown"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFFrontDown[ifile]);
-    hMassTarg1_ToFECalP0D[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFECalP0D"); hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFECalP0D[ifile]);    
+    hMassTarg1_DsECal[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_DsECal"); hMassTarg1_DsECal[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_BrlECal[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_BrlECal"); hMassTarg1_BrlECal[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_P0DECal[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_P0DECal"); hMassTarg1_P0DECal[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_USECalP0D[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_USECalP0D"); hMassTarg1_USECalP0D[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_ForwTPC1[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ForwTPC1"); hMassTarg1_ForwTPC1[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_ForwTPC2[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ForwTPC2"); hMassTarg1_ForwTPC2[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_ForwTPC3[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ForwTPC3"); hMassTarg1_ForwTPC3[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_Target1[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_Target1"); hMassTarg1_Target1[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_Target2[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_Target2"); hMassTarg1_Target2[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_TPCUp1[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_TPCUp1"); hMassTarg1_TPCUp1[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_TPCUp2[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_TPCUp2"); hMassTarg1_TPCUp2[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_TPCDown1[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_TPCDown1"); hMassTarg1_TPCDown1[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_TPCDown2[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_TPCDown2"); hMassTarg1_TPCDown2[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_ToFTopUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFTopUp"); hMassTarg1_ToFTopUp[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_ToFBotUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFBotUp"); hMassTarg1_ToFBotUp[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_ToFRightUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFRightUp"); hMassTarg1_ToFRightUp[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_ToFLeftUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFLeftUp"); hMassTarg1_ToFLeftUp[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_ToFBackUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFBackUp"); hMassTarg1_ToFBackUp[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_ToFFrontUp[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFFrontUp"); hMassTarg1_ToFFrontUp[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_ToFTopDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFTopDown"); hMassTarg1_ToFTopDown[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_ToFBotDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFBotDown"); hMassTarg1_ToFBotDown[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_ToFRightDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFRightDown"); hMassTarg1_ToFRightDown[ifile]->Rebin(rebin[ifile]);
+    hMassTarg1_ToFLeftDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFLeftDown"); hMassTarg1_ToFLeftDown[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_ToFBackDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFBackDown"); hMassTarg1_ToFBackDown[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_ToFFrontDown[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFFrontDown"); hMassTarg1_ToFFrontDown[ifile]->Rebin(rebin[ifile]); 
+    hMassTarg1_ToFECalP0D[ifile] = (TH1D*)infile[ifile]->Get("hMassTarg1_ToFECalP0D"); hMassTarg1_ToFECalP0D[ifile]->Rebin(rebin[ifile]);
+    //
+    hMassTarg1_ToFAll[ifile] = (TH1D*)hMassTarg1_DsECal[ifile]->Clone("hMassTarg1_ToFAll"); 
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_P0DECal[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_BrlECal[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_USECalP0D[ifile]); 
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ForwTPC1[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ForwTPC2[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ForwTPC3[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_Target1[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_TPCUp1[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add( hMassTarg1_Target2[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_TPCUp2[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFECalP0D[ifile]);   
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFFrontDown[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFBackDown[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFLeftDown[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFRightDown[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFBotDown[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFTopDown[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFFrontUp[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFBackUp[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFLeftUp[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFRightUp[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFBotUp[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_ToFTopUp[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_TPCDown2[ifile]);
+    hMassTarg1_ToFAll[ifile]->Add(hMassTarg1_TPCDown1[ifile]);
 
-    
   }
     
 
@@ -198,7 +274,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_DsECal[ifile]->Draw();
     else        hTimeTarg1_DsECal[ifile]->Draw("same");
-    hTimeTarg1_DsECal[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_DsECal[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_DsECal[ifile]->SetLineWidth(2);
     hTimeTarg1_DsECal[ifile]->SetStats(0);
   }
@@ -217,7 +293,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_BrlECal[ifile]->Draw();
     else        hTimeTarg1_BrlECal[ifile]->Draw("same");
-    hTimeTarg1_BrlECal[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_BrlECal[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_BrlECal[ifile]->SetLineWidth(2);
     hTimeTarg1_BrlECal[ifile]->SetStats(0);
   }
@@ -235,7 +311,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_P0DECal[ifile]->Draw();
     else        hTimeTarg1_P0DECal[ifile]->Draw("same");
-    hTimeTarg1_P0DECal[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_P0DECal[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_P0DECal[ifile]->SetLineWidth(2);
     hTimeTarg1_P0DECal[ifile]->SetStats(0);
   }
@@ -253,7 +329,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_USECalP0D[ifile]->Draw();
     else        hTimeTarg1_USECalP0D[ifile]->Draw("same");
-    hTimeTarg1_USECalP0D[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_USECalP0D[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_USECalP0D[ifile]->SetLineWidth(2);
     hTimeTarg1_USECalP0D[ifile]->SetStats(0);
   }
@@ -271,7 +347,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ForwTPC1[ifile]->Draw();
     else        hTimeTarg1_ForwTPC1[ifile]->Draw("same");
-    hTimeTarg1_ForwTPC1[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ForwTPC1[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ForwTPC1[ifile]->SetLineWidth(2);
     hTimeTarg1_ForwTPC1[ifile]->SetStats(0);
   }
@@ -290,7 +366,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ForwTPC2[ifile]->Draw();
     else        hTimeTarg1_ForwTPC2[ifile]->Draw("same");
-    hTimeTarg1_ForwTPC2[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ForwTPC2[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ForwTPC2[ifile]->SetLineWidth(2);
     hTimeTarg1_ForwTPC2[ifile]->SetStats(0);
   }
@@ -308,7 +384,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ForwTPC3[ifile]->Draw();
     else        hTimeTarg1_ForwTPC3[ifile]->Draw("same");
-    hTimeTarg1_ForwTPC3[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ForwTPC3[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ForwTPC3[ifile]->SetLineWidth(2);
     hTimeTarg1_ForwTPC3[ifile]->SetStats(0);
   }
@@ -327,7 +403,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_Target1[ifile]->Draw();
     else        hTimeTarg1_Target1[ifile]->Draw("same");
-    hTimeTarg1_Target1[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_Target1[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_Target1[ifile]->SetLineWidth(2);
     hTimeTarg1_Target1[ifile]->SetStats(0);
   }
@@ -345,7 +421,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_Target2[ifile]->Draw();
     else        hTimeTarg1_Target2[ifile]->Draw("same");
-    hTimeTarg1_Target2[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_Target2[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_Target2[ifile]->SetLineWidth(2);
     hTimeTarg1_Target2[ifile]->SetStats(0);
   }
@@ -363,7 +439,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_TPCUp1[ifile]->Draw();
     else        hTimeTarg1_TPCUp1[ifile]->Draw("same");
-    hTimeTarg1_TPCUp1[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_TPCUp1[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_TPCUp1[ifile]->SetLineWidth(2);
     hTimeTarg1_TPCUp1[ifile]->SetStats(0);
   }
@@ -381,7 +457,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_TPCUp2[ifile]->Draw();
     else        hTimeTarg1_TPCUp2[ifile]->Draw("same");
-    hTimeTarg1_TPCUp2[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_TPCUp2[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_TPCUp2[ifile]->SetLineWidth(2);
     hTimeTarg1_TPCUp2[ifile]->SetStats(0);
   }
@@ -399,7 +475,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_TPCDown1[ifile]->Draw();
     else        hTimeTarg1_TPCDown1[ifile]->Draw("same");
-    hTimeTarg1_TPCDown1[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_TPCDown1[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_TPCDown1[ifile]->SetLineWidth(2);
     hTimeTarg1_TPCDown1[ifile]->SetStats(0);
   }
@@ -417,7 +493,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_TPCDown2[ifile]->Draw();
     else        hTimeTarg1_TPCDown2[ifile]->Draw("same");
-    hTimeTarg1_TPCDown2[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_TPCDown2[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_TPCDown2[ifile]->SetLineWidth(2);
     hTimeTarg1_TPCDown2[ifile]->SetStats(0);
   }
@@ -435,7 +511,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFTopUp[ifile]->Draw();
     else        hTimeTarg1_ToFTopUp[ifile]->Draw("same");
-    hTimeTarg1_ToFTopUp[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFTopUp[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFTopUp[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFTopUp[ifile]->SetStats(0);
   }
@@ -453,7 +529,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFBotUp[ifile]->Draw();
     else        hTimeTarg1_ToFBotUp[ifile]->Draw("same");
-    hTimeTarg1_ToFBotUp[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFBotUp[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFBotUp[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFBotUp[ifile]->SetStats(0);
   }
@@ -472,7 +548,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFRightUp[ifile]->Draw();
     else        hTimeTarg1_ToFRightUp[ifile]->Draw("same");
-    hTimeTarg1_ToFRightUp[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFRightUp[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFRightUp[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFRightUp[ifile]->SetStats(0);
   }
@@ -490,7 +566,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFLeftUp[ifile]->Draw();
     else        hTimeTarg1_ToFLeftUp[ifile]->Draw("same");
-    hTimeTarg1_ToFLeftUp[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFLeftUp[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFLeftUp[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFLeftUp[ifile]->SetStats(0);
   }
@@ -508,7 +584,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFBackUp[ifile]->Draw();
     else        hTimeTarg1_ToFBackUp[ifile]->Draw("same");
-    hTimeTarg1_ToFBackUp[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFBackUp[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFBackUp[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFBackUp[ifile]->SetStats(0);
   }
@@ -526,30 +602,11 @@ void DrawToF
 
 
 
-  TCanvas *cTimeTarg1_ToFFrontDown = new TCanvas("cTimeTarg1_ToFFrontDown","cTimeTarg1_ToFFrontDown");  
-  for(int ifile=0;ifile<Nfiles;ifile++){
-    if(ifile==0) hTimeTarg1_ToFFrontDown[ifile]->Draw();
-    else        hTimeTarg1_ToFFrontDown[ifile]->Draw("same");
-    hTimeTarg1_ToFFrontDown[ifile]->SetLineColor(ifile+1);
-    hTimeTarg1_ToFFrontDown[ifile]->SetLineWidth(2);
-    hTimeTarg1_ToFFrontDown[ifile]->SetStats(0);
-  }
-  TLegend *lTimeTarg1_ToFFrontDown = new TLegend(0.4,0.4,0.6,0.65);
-  lTimeTarg1_ToFFrontDown->SetFillColor(0);
-  lTimeTarg1_ToFFrontDown->SetLineColor(0);
-  lTimeTarg1_ToFFrontDown->SetTextFont(132);
-  lTimeTarg1_ToFFrontDown->SetTextSize(0.06);
-  for(int ifile=0;ifile<Nfiles;ifile++){
-    lTimeTarg1_ToFFrontDown->AddEntry(hTimeTarg1_ToFFrontDown[ifile],label[ifile].c_str(),"l");
-  }
-  lTimeTarg1_ToFFrontDown->Draw();
-
-
   TCanvas *cTimeTarg1_ToFTopDown = new TCanvas("cTimeTarg1_ToFTopDown","cTimeTarg1_ToFTopDown");  
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFTopDown[ifile]->Draw();
     else        hTimeTarg1_ToFTopDown[ifile]->Draw("same");
-    hTimeTarg1_ToFTopDown[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFTopDown[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFTopDown[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFTopDown[ifile]->SetStats(0);
   }
@@ -568,7 +625,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFBotDown[ifile]->Draw();
     else        hTimeTarg1_ToFBotDown[ifile]->Draw("same");
-    hTimeTarg1_ToFBotDown[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFBotDown[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFBotDown[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFBotDown[ifile]->SetStats(0);
   }
@@ -587,7 +644,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFRightDown[ifile]->Draw();
     else        hTimeTarg1_ToFRightDown[ifile]->Draw("same");
-    hTimeTarg1_ToFRightDown[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFRightDown[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFRightDown[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFRightDown[ifile]->SetStats(0);
   }
@@ -606,7 +663,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFLeftDown[ifile]->Draw();
     else        hTimeTarg1_ToFLeftDown[ifile]->Draw("same");
-    hTimeTarg1_ToFLeftDown[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFLeftDown[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFLeftDown[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFLeftDown[ifile]->SetStats(0);
   }
@@ -625,7 +682,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFBackDown[ifile]->Draw();
     else        hTimeTarg1_ToFBackDown[ifile]->Draw("same");
-    hTimeTarg1_ToFBackDown[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFBackDown[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFBackDown[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFBackDown[ifile]->SetStats(0);
   }
@@ -643,7 +700,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFFrontDown[ifile]->Draw();
     else        hTimeTarg1_ToFFrontDown[ifile]->Draw("same");
-    hTimeTarg1_ToFFrontDown[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFFrontDown[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFFrontDown[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFFrontDown[ifile]->SetStats(0);
   }
@@ -661,7 +718,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hTimeTarg1_ToFECalP0D[ifile]->Draw();
     else        hTimeTarg1_ToFECalP0D[ifile]->Draw("same");
-    hTimeTarg1_ToFECalP0D[ifile]->SetLineColor(ifile+1);
+    hTimeTarg1_ToFECalP0D[ifile]->SetLineColor(color[ifile]);
     hTimeTarg1_ToFECalP0D[ifile]->SetLineWidth(2);
     hTimeTarg1_ToFECalP0D[ifile]->SetStats(0);
   }
@@ -691,7 +748,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_DsECal[ifile]->Draw();
     else        hMassTarg1_DsECal[ifile]->Draw("same");
-    hMassTarg1_DsECal[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_DsECal[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_DsECal[ifile]->SetLineWidth(2);
     hMassTarg1_DsECal[ifile]->SetStats(0);
   }
@@ -710,7 +767,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_BrlECal[ifile]->Draw();
     else        hMassTarg1_BrlECal[ifile]->Draw("same");
-    hMassTarg1_BrlECal[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_BrlECal[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_BrlECal[ifile]->SetLineWidth(2);
     hMassTarg1_BrlECal[ifile]->SetStats(0);
   }
@@ -728,7 +785,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_P0DECal[ifile]->Draw();
     else        hMassTarg1_P0DECal[ifile]->Draw("same");
-    hMassTarg1_P0DECal[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_P0DECal[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_P0DECal[ifile]->SetLineWidth(2);
     hMassTarg1_P0DECal[ifile]->SetStats(0);
   }
@@ -746,7 +803,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_USECalP0D[ifile]->Draw();
     else        hMassTarg1_USECalP0D[ifile]->Draw("same");
-    hMassTarg1_USECalP0D[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_USECalP0D[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_USECalP0D[ifile]->SetLineWidth(2);
     hMassTarg1_USECalP0D[ifile]->SetStats(0);
   }
@@ -764,7 +821,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ForwTPC1[ifile]->Draw();
     else        hMassTarg1_ForwTPC1[ifile]->Draw("same");
-    hMassTarg1_ForwTPC1[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ForwTPC1[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ForwTPC1[ifile]->SetLineWidth(2);
     hMassTarg1_ForwTPC1[ifile]->SetStats(0);
   }
@@ -783,7 +840,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ForwTPC2[ifile]->Draw();
     else        hMassTarg1_ForwTPC2[ifile]->Draw("same");
-    hMassTarg1_ForwTPC2[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ForwTPC2[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ForwTPC2[ifile]->SetLineWidth(2);
     hMassTarg1_ForwTPC2[ifile]->SetStats(0);
   }
@@ -801,7 +858,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ForwTPC3[ifile]->Draw();
     else        hMassTarg1_ForwTPC3[ifile]->Draw("same");
-    hMassTarg1_ForwTPC3[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ForwTPC3[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ForwTPC3[ifile]->SetLineWidth(2);
     hMassTarg1_ForwTPC3[ifile]->SetStats(0);
   }
@@ -820,7 +877,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_Target1[ifile]->Draw();
     else        hMassTarg1_Target1[ifile]->Draw("same");
-    hMassTarg1_Target1[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_Target1[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_Target1[ifile]->SetLineWidth(2);
     hMassTarg1_Target1[ifile]->SetStats(0);
   }
@@ -838,7 +895,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_Target2[ifile]->Draw();
     else        hMassTarg1_Target2[ifile]->Draw("same");
-    hMassTarg1_Target2[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_Target2[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_Target2[ifile]->SetLineWidth(2);
     hMassTarg1_Target2[ifile]->SetStats(0);
   }
@@ -856,7 +913,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_TPCUp1[ifile]->Draw();
     else        hMassTarg1_TPCUp1[ifile]->Draw("same");
-    hMassTarg1_TPCUp1[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_TPCUp1[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_TPCUp1[ifile]->SetLineWidth(2);
     hMassTarg1_TPCUp1[ifile]->SetStats(0);
   }
@@ -874,7 +931,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_TPCUp2[ifile]->Draw();
     else        hMassTarg1_TPCUp2[ifile]->Draw("same");
-    hMassTarg1_TPCUp2[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_TPCUp2[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_TPCUp2[ifile]->SetLineWidth(2);
     hMassTarg1_TPCUp2[ifile]->SetStats(0);
   }
@@ -892,7 +949,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_TPCDown1[ifile]->Draw();
     else        hMassTarg1_TPCDown1[ifile]->Draw("same");
-    hMassTarg1_TPCDown1[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_TPCDown1[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_TPCDown1[ifile]->SetLineWidth(2);
     hMassTarg1_TPCDown1[ifile]->SetStats(0);
   }
@@ -910,7 +967,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_TPCDown2[ifile]->Draw();
     else        hMassTarg1_TPCDown2[ifile]->Draw("same");
-    hMassTarg1_TPCDown2[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_TPCDown2[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_TPCDown2[ifile]->SetLineWidth(2);
     hMassTarg1_TPCDown2[ifile]->SetStats(0);
   }
@@ -928,7 +985,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFTopUp[ifile]->Draw();
     else        hMassTarg1_ToFTopUp[ifile]->Draw("same");
-    hMassTarg1_ToFTopUp[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFTopUp[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFTopUp[ifile]->SetLineWidth(2);
     hMassTarg1_ToFTopUp[ifile]->SetStats(0);
   }
@@ -946,7 +1003,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFBotUp[ifile]->Draw();
     else        hMassTarg1_ToFBotUp[ifile]->Draw("same");
-    hMassTarg1_ToFBotUp[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFBotUp[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFBotUp[ifile]->SetLineWidth(2);
     hMassTarg1_ToFBotUp[ifile]->SetStats(0);
   }
@@ -965,7 +1022,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFRightUp[ifile]->Draw();
     else        hMassTarg1_ToFRightUp[ifile]->Draw("same");
-    hMassTarg1_ToFRightUp[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFRightUp[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFRightUp[ifile]->SetLineWidth(2);
     hMassTarg1_ToFRightUp[ifile]->SetStats(0);
   }
@@ -983,7 +1040,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFLeftUp[ifile]->Draw();
     else        hMassTarg1_ToFLeftUp[ifile]->Draw("same");
-    hMassTarg1_ToFLeftUp[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFLeftUp[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFLeftUp[ifile]->SetLineWidth(2);
     hMassTarg1_ToFLeftUp[ifile]->SetStats(0);
   }
@@ -1001,7 +1058,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFBackUp[ifile]->Draw();
     else        hMassTarg1_ToFBackUp[ifile]->Draw("same");
-    hMassTarg1_ToFBackUp[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFBackUp[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFBackUp[ifile]->SetLineWidth(2);
     hMassTarg1_ToFBackUp[ifile]->SetStats(0);
   }
@@ -1019,30 +1076,12 @@ void DrawToF
 
 
 
-  TCanvas *cMassTarg1_ToFFrontDown = new TCanvas("cMassTarg1_ToFFrontDown","cMassTarg1_ToFFrontDown");  
-  for(int ifile=0;ifile<Nfiles;ifile++){
-    if(ifile==0) hMassTarg1_ToFFrontDown[ifile]->Draw();
-    else        hMassTarg1_ToFFrontDown[ifile]->Draw("same");
-    hMassTarg1_ToFFrontDown[ifile]->SetLineColor(ifile+1);
-    hMassTarg1_ToFFrontDown[ifile]->SetLineWidth(2);
-    hMassTarg1_ToFFrontDown[ifile]->SetStats(0);
-  }
-  TLegend *lMassTarg1_ToFFrontDown = new TLegend(0.4,0.4,0.6,0.65);
-  lMassTarg1_ToFFrontDown->SetFillColor(0);
-  lMassTarg1_ToFFrontDown->SetLineColor(0);
-  lMassTarg1_ToFFrontDown->SetTextFont(132);
-  lMassTarg1_ToFFrontDown->SetTextSize(0.06);
-  for(int ifile=0;ifile<Nfiles;ifile++){
-    lMassTarg1_ToFFrontDown->AddEntry(hMassTarg1_ToFFrontDown[ifile],label[ifile].c_str(),"l");
-  }
-  lMassTarg1_ToFFrontDown->Draw();
-
 
   TCanvas *cMassTarg1_ToFTopDown = new TCanvas("cMassTarg1_ToFTopDown","cMassTarg1_ToFTopDown");  
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFTopDown[ifile]->Draw();
     else        hMassTarg1_ToFTopDown[ifile]->Draw("same");
-    hMassTarg1_ToFTopDown[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFTopDown[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFTopDown[ifile]->SetLineWidth(2);
     hMassTarg1_ToFTopDown[ifile]->SetStats(0);
   }
@@ -1061,7 +1100,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFBotDown[ifile]->Draw();
     else        hMassTarg1_ToFBotDown[ifile]->Draw("same");
-    hMassTarg1_ToFBotDown[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFBotDown[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFBotDown[ifile]->SetLineWidth(2);
     hMassTarg1_ToFBotDown[ifile]->SetStats(0);
   }
@@ -1080,7 +1119,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFRightDown[ifile]->Draw();
     else        hMassTarg1_ToFRightDown[ifile]->Draw("same");
-    hMassTarg1_ToFRightDown[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFRightDown[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFRightDown[ifile]->SetLineWidth(2);
     hMassTarg1_ToFRightDown[ifile]->SetStats(0);
   }
@@ -1099,7 +1138,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFLeftDown[ifile]->Draw();
     else        hMassTarg1_ToFLeftDown[ifile]->Draw("same");
-    hMassTarg1_ToFLeftDown[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFLeftDown[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFLeftDown[ifile]->SetLineWidth(2);
     hMassTarg1_ToFLeftDown[ifile]->SetStats(0);
   }
@@ -1118,7 +1157,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFBackDown[ifile]->Draw();
     else        hMassTarg1_ToFBackDown[ifile]->Draw("same");
-    hMassTarg1_ToFBackDown[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFBackDown[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFBackDown[ifile]->SetLineWidth(2);
     hMassTarg1_ToFBackDown[ifile]->SetStats(0);
   }
@@ -1136,7 +1175,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFFrontDown[ifile]->Draw();
     else        hMassTarg1_ToFFrontDown[ifile]->Draw("same");
-    hMassTarg1_ToFFrontDown[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFFrontDown[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFFrontDown[ifile]->SetLineWidth(2);
     hMassTarg1_ToFFrontDown[ifile]->SetStats(0);
   }
@@ -1154,7 +1193,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFECalP0D[ifile]->Draw();
     else        hMassTarg1_ToFECalP0D[ifile]->Draw("same");
-    hMassTarg1_ToFECalP0D[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFECalP0D[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFECalP0D[ifile]->SetLineWidth(2);
     hMassTarg1_ToFECalP0D[ifile]->SetStats(0);
   }
@@ -1173,7 +1212,7 @@ void DrawToF
   for(int ifile=0;ifile<Nfiles;ifile++){
     if(ifile==0) hMassTarg1_ToFAll[ifile]->Draw();
     else        hMassTarg1_ToFAll[ifile]->Draw("same");
-    hMassTarg1_ToFAll[ifile]->SetLineColor(ifile+1);
+    hMassTarg1_ToFAll[ifile]->SetLineColor(color[ifile]);
     hMassTarg1_ToFAll[ifile]->SetLineWidth(2);
     hMassTarg1_ToFAll[ifile]->SetStats(0);
   }
