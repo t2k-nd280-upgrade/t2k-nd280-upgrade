@@ -125,8 +125,8 @@ $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
 $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
 $cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
 $cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
-$cut_fv1_minZ    = -1787.                    unless defined $cut_fv1_minZ;
-$cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
+$cut_fv1_minZ    = -1737.                    unless defined $cut_fv1_minZ; #-1787
+$cut_fv1_maxZ    = -537.                    unless defined $cut_fv1_maxZ; #-487
 # Target 2 
 # $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
 # $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
@@ -216,7 +216,7 @@ $docut_fgd2    = 0                             unless defined $docut_fgd2;
 
 # select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
 $docut_pdg       = 1                             unless defined $docut_pdg;
-$cut_pdg         = +13                          unless defined $cut_pdg; 
+$cut_pdg         = +2212                          unless defined $cut_pdg; 
 
 # select track parent ID. If 0 --> primary particle,
 $docut_parid     = 1                             unless defined $docut_parid;
@@ -239,7 +239,7 @@ $cut_dlyz_tpc      = 200                         unless defined $cut_dlyz_tpc;
 $doToFsmear    = 1                           unless defined $doToFsmear;
 $tof_mom_err = 0.1                        unless defined $tof_mom_err; # fractional error
 $tof_length_err = 10.                        unless defined $tof_length_err; # mm
-$tof_time_err = 0.1                        unless defined $tof_time_err; # ns
+$tof_time_err = 0.05                        unless defined $tof_time_err; # ns
 
 ##################################
 

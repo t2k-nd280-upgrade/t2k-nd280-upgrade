@@ -1650,6 +1650,8 @@ double GetToFMass(
   double mass = -999;
   double c = 299.792458; // mm / ns (Wikipedia: c = 299792458 m/s)
   
+  if( (mom<=0.) || (tof<=0.) || (length<=0.) ) return 0.;
+
   double mom_smear = mom;
   double length_smear = length;
   double tof_smear = tof;
