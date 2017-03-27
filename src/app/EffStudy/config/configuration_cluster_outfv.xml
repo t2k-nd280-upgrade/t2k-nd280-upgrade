@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root
+    GENIE/14_3_17/GENIE_geometry_current_1E21POT.root
   </filename>
 
   <treename>  
@@ -41,7 +41,7 @@
    <forwTPCdefault>
      false
    </forwTPCdefault>
-
+   
    <forwTPCPos1_X>
      0
    </forwTPCPos1_X>
@@ -77,11 +77,11 @@
    <!-- Side TPCs 1 -->
 
    <sideTPCdefault1>
-     false
+     true
    </sideTPCdefault1>
 
    <sideTPClength1>
-     1994
+     1300  
    </sideTPClength1>
    <sideTPCwidth1>  
      2300
@@ -97,7 +97,7 @@
      725.75
    </sideTPCUpPos1_Y>
    <sideTPCUpPos1_Z>
-     -1695
+     -1487
    </sideTPCUpPos1_Z>
    
    <sideTPCDownPos1_X>
@@ -107,13 +107,13 @@
      -725.75
    </sideTPCDownPos1_Y>
    <sideTPCDownPos1_Z>
-     -1695
+     -1487
    </sideTPCDownPos1_Z>
 
    <!-- Side TPCs 2 -->
 
    <sideTPCdefault2>
-     false
+     true
    </sideTPCdefault2>
    <sideTPClength2>
      1300
@@ -132,7 +132,7 @@
      725.75
    </sideTPCUpPos2_Y>
    <sideTPCUpPos2_Z>
-     +1206
+     +1487
    </sideTPCUpPos2_Z>
    
    <sideTPCDownPos2_X>
@@ -142,14 +142,14 @@
      -725.75
    </sideTPCDownPos2_Y>
    <sideTPCDownPos2_Z>
-     +1206
+     +1487
    </sideTPCDownPos2_Z>
 
 
    <!-- Target 1 -->
 
    <Targetdefault1>
-     false
+     true
    </Targetdefault1>
    
    <TargetMaterial1>
@@ -157,7 +157,7 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     1994
+     1300
    </Targetlength1>
    <Targetwidth1>  
      1864
@@ -173,14 +173,14 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1695
+     -1487
    </TargetPos1_Z>
 
    
    <!-- Target 2 -->
 
    <Targetdefault2> 
-     false
+     true
    </Targetdefault2>
 
    <TargetMaterial2>
@@ -204,7 +204,7 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1206
+     +1487
    </TargetPos2_Z>
 
    <!-- FGD 1 -->
@@ -267,6 +267,8 @@
    <FGDPos2_Z>
      +1704.5
    </FGDPos2_Z>
+
+
 
    <!-- ToF Top Downstream -->    
    <ToFdefault_TopDown>
@@ -762,42 +764,46 @@
      -512
    </ToFPosZ_FrontUp>
 
+
+
+
    <!-- Include detectors -->
 
    <UseForwTPC1>
-     true
+     false
    </UseForwTPC1>
    <UseForwTPC2>
-     true
+     false
    </UseForwTPC2>
    <UseForwTPC3>
-     true
+     false
    </UseForwTPC3>
 
    <UseTarget1>
-     true
+     false
    </UseTarget1>
    <UseTarget2>
      false
    </UseTarget2>
 
    <UseTPCDown1>
-     true
+     false
    </UseTPCDown1>
    <UseTPCDown2>
      false
    </UseTPCDown2>
    <UseTPCUp1>
-     true
+     false
    </UseTPCUp1>
    <UseTPCUp2>
      false
    </UseTPCUp2>
+
    <UseFGD1>
-    true
+    false
    </UseFGD1>
    <UseFGD2>
-    true
+    false
    </UseFGD2>
 
    <UseToF_TopDown>
@@ -843,27 +849,27 @@
    </UseToF_FrontUp>
 
    <UseMagnet>
-    false
+    true
    </UseMagnet>
    <!-- <UseSMRD> -->
    <!-- true --> 
    <!-- </UseSMRD> -->
    <UseBasket>
-     false
+    true
    </UseBasket>
-   
+
    <UseDsECal>
-     false
+    true
    </UseDsECal>
    <UseBrlECal>
-    false
+    true
    </UseBrlECal>
    <UseP0DECal>
-    false
+    true
    </UseP0DECal>
 
    <UseP0D>
-    false
+    true
    </UseP0D>
 
    <!-- Invisible detectors -->
@@ -903,7 +909,7 @@
    <InvisFGD2>
      false
    </InvisFGD2>
-   
+
    <InvisToF_TopDown>
      false
    </InvisToF_TopDown>
@@ -945,7 +951,7 @@
    <InvisToF_FrontUp>
      false
    </InvisToF_FrontUp>
-
+   
    <InvisMagnet>
      true
    </InvisMagnet>

@@ -1061,8 +1061,8 @@ void ToFND280UpEvent
 	    double Ltof = l_curr_straight;
 	    //double Ltof = length_target1 + length_tpcup1;
 	    mass_tof = GetToFMass(mom,momerr,Ltof,lengtherr,timediff,toferr,doToFSmear);
-	    if(mass_tof>0) hMassTarg1_TPCDown1->Fill(mass_tof);
-	    DoneTimeTPCDown1 = true;			      
+	    if(mass_tof>0) hMassTarg1_TPCDown2->Fill(mass_tof);
+	    DoneTimeTPCDown2 = true;			      
 	  }
 
 	  if(PtMom>EntrTPCDown2Mom){
