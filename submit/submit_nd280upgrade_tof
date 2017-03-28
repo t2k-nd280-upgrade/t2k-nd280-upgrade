@@ -38,7 +38,6 @@ foreach (@ARGV) {
     elsif($_ eq '--docut-reac'       ) { $docut_reac      = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-cc'         ) { $docut_cc        = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-reac'         ) { $cut_reac        = $ARGV[$iarg+1]; }
-    elsif($_ eq '--docut-mater'      ) { $docut_mater     = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-vertex'     ) { $docut_vertex    = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-target1'    ) { $docut_target1   = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-target2'    ) { $docut_target2   = $ARGV[$iarg+1]; }
@@ -72,13 +71,6 @@ foreach (@ARGV) {
     elsif($_ eq '--cut-fgd-fv2-maxY'  ) { $cut_fgd_fv2_maxY = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-fgd-fv2-minZ'  ) { $cut_fgd_fv2_minZ = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-fgd-fv2-maxZ'  ) { $cut_fgd_fv2_maxZ = $ARGV[$iarg+1]; }
-
-    elsif($_ eq '--docut-vtxX'       ) { $docut_vtxX      = $ARGV[$iarg+1]; }
-    elsif($_ eq '--cut-xmin'         ) { $cut_xmin        = $ARGV[$iarg+1]; }
-    elsif($_ eq '--cut-xmax'         ) { $cut_xmax        = $ARGV[$iarg+1]; }
-    elsif($_ eq '--docut-vtxZ'       ) { $docut_vtxZ      = $ARGV[$iarg+1]; }
-    elsif($_ eq '--cut-zmin'         ) { $cut_zmin        = $ARGV[$iarg+1]; }
-    elsif($_ eq '--cut-zmax'         ) { $cut_zmax        = $ARGV[$iarg+1]; }
      
     elsif($_ eq '--docut-pdg'        ) { $docut_pdg       = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-pdg'          ) { $cut_pdg         = $ARGV[$iarg+1]; }
@@ -90,7 +82,12 @@ foreach (@ARGV) {
     elsif($_ eq '--cut-dl-target'    ) { $cut_dl_target    = $ARGV[$iarg+1]; }
     elsif($_ eq '--docut-dlyz-tpc'   ) { $docut_dlyz_tpc   = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-dlyz-tpc'     ) { $cut_dlyz_tpc     = $ARGV[$iarg+1]; }
-    
+
+    elsif($_ eq '--do-tof-smear'     ) { $doToFsmear       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tof-mom-err'      ) { $tof_mom_err      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tof-length-err'   ) { $tof_length_err   = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tof-time-err'     ) { $tof_time_err     = $ARGV[$iarg+1]; }
+
     else {
 	print "Unrecognised argument ".$_."\n"; exit;
     }
@@ -99,24 +96,26 @@ foreach (@ARGV) {
 
 $resource        = "interactive"                 unless defined $resource;
 
-$tag            = "SelND280Up_6E20_Classic_Ref_ToF_ECal_14_3_17" unless defined $tag;
+$tag            = "ToFND280Up_Ref_numu_1E21" unless defined $tag;
+#$tag            = "ToFND280Up_Ref_nue_1E21" unless defined $tag;
 
-$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/14_3_17/g4ND280Up_1E21_Reference_ECal_ToF_numu-All.root" unless defined $inputfile;
-
-
+$inputfile  = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/14_3_17/g4ND280Up_1E21_Reference_ECal_ToF_numu-All.root" unless defined $inputfile; #numu
+#$inputfile  = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/14_3_17/g4ND280Up_1E21_Reference_ECal_ToF_nue-All.root" unless defined $inputfile; # nue
+ 
 
 $first_expt      = 0                             unless defined $first_expt;
 
 # Numu Beam
-#$nruns           = 21                             unless defined $nruns; # TPC+Target+ECal 
-#$nexpts          = 20000                          unless defined $nexpts;
-$nruns           = 90                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
+$nruns           = 40                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
 $nexpts          = 10000                          unless defined $nexpts;
+
+# Nue Beam
+# $nruns           = 1                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
+# $nexpts          = 10000                          unless defined $nexpts;
 
 #
 # Selection cuts
 #
-
 
 #
 # Fiducial Volume ND280 upgrade classic (1864x600x1300 mm^3)
@@ -126,8 +125,8 @@ $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
 $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
 $cut_fv1_minY    = -316.                    unless defined $cut_fv1_minY;
 $cut_fv1_maxY    = +284.                    unless defined $cut_fv1_maxY;
-$cut_fv1_minZ    = -1787.                    unless defined $cut_fv1_minZ;
-$cut_fv1_maxZ    = -487.                    unless defined $cut_fv1_maxZ;
+$cut_fv1_minZ    = -1737.                    unless defined $cut_fv1_minZ; #-1787
+$cut_fv1_maxZ    = -537.                    unless defined $cut_fv1_maxZ; #-487
 # Target 2 
 # $cut_fv1_minX    = -932.                    unless defined $cut_fv1_minX;
 # $cut_fv1_maxX    = +932.                    unless defined $cut_fv1_maxX;
@@ -208,9 +207,6 @@ $docut_cc        = 1                             unless defined $docut_cc;
 $docut_reac      = 0                             unless defined $docut_reac;
 $cut_reac        = 0                             unless defined $cut_reac; 
 
-# select interactions only in target materials
-$docut_mater     = 0                             unless defined $docut_mater;
-
 # select interactions only in Fiducial Volume
 $docut_vertex  = 1                             unless defined $docut_vertex;
 $docut_target1 = 1                             unless defined $docut_target1;
@@ -218,26 +214,9 @@ $docut_target2 = 0                             unless defined $docut_target2;
 $docut_fgd1    = 0                            unless defined $docut_fgd1;
 $docut_fgd2    = 0                             unless defined $docut_fgd2;
 
-# select range of X vertex position
-$docut_vtxX      = 0                             unless defined $docut_vtxX;
-$cut_xmin        = -575                         unless defined $docut_xmin;
-$cut_xmax        = +575                         unless defined $docut_xmax;
- 
-# select range of Z vertex position
-$docut_vtxZ      = 0                             unless defined $docut_vtxZ;
-# 30cm downstream
-#$cut_zmin        = -2487                         unless defined $docut_zmin;
-#$cut_zmax        = -2487 + 300                   unless defined $docut_zmax;
-# 30cm upstream
-#$cut_zmin        = -487 - 300                    unless defined $docut_zmin;
-#$cut_zmax        = -487                          unless defined $docut_zmax;
-# 140cm middle
-$cut_zmin        = -2487 + 300                   unless defined $docut_zmin;
-$cut_zmax        = -487 - 300                    unless defined $docut_zmax;
- 
 # select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
 $docut_pdg       = 1                             unless defined $docut_pdg;
-$cut_pdg         = +13                           unless defined $cut_pdg; 
+$cut_pdg         = +2212                          unless defined $cut_pdg; 
 
 # select track parent ID. If 0 --> primary particle,
 $docut_parid     = 1                             unless defined $docut_parid;
@@ -255,6 +234,12 @@ $cut_dl_target      = 75                         unless defined $cut_dl_target;
 # select track DeltaLyz (mm) in TPCs
 $docut_dlyz_tpc    = 1                           unless defined $docut_dlyz_tpc;
 $cut_dlyz_tpc      = 200                         unless defined $cut_dlyz_tpc; 
+
+# do ToF smearing
+$doToFsmear    = 1                           unless defined $doToFsmear;
+$tof_mom_err = 0.1                        unless defined $tof_mom_err; # fractional error
+$tof_length_err = 10.                        unless defined $tof_length_err; # mm
+$tof_time_err = 0.05                        unless defined $tof_time_err; # ns
 
 ##################################
 
@@ -283,11 +268,15 @@ while($irun < $nruns) { # loop over the jobs
     if($docut_parid eq 1){ $newtag = "$newtag-ParID$cut_parid";}
     if($docut_cc    eq 1){ $newtag = "$newtag-CC";}
     if($docut_reac  eq 1){ $newtag = "$newtag-Reac$cut_reac";}
-    if($docut_vtxZ  eq 1){ $newtag = "$newtag-Zrange[$cut_zmin,$cut_zmax]";}
-    if($docut_vtxX  eq 1){ $newtag = "$newtag-Xrange[$cut_xmin,$cut_xmax]";}
+    
+    if($doToFsmear     eq 1){ 
+	$newtag = "$newtag-SmearToF";
+	$newtag = "$newtag-dp${tof_mom_err}%";
+	$newtag = "$newtag-dl${tof_length_err}mm";
+	$newtag = "$newtag-dt${tof_time_err}ns";
+    }
 
-    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/ToFND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$cut_fv1_minX,$cut_fv1_maxX,$cut_fv1_minY,$cut_fv1_maxY,$cut_fv1_minZ,$cut_fv1_maxZ,$docut_cc,$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_target1,$docut_target2,$docut_fgd1,$docut_fgd2,$docut_vtxX,$cut_xmin,$cut_xmax,$docut_vtxZ,$cut_zmin,$cut_zmax,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
-
+ $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/ToFND280UpEvent.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$cut_fv1_minX,$cut_fv1_maxX,$cut_fv1_minY,$cut_fv1_maxY,$cut_fv1_minZ,$cut_fv1_maxZ,$docut_cc,$docut_reac,$cut_reac,$docut_vertex,$docut_target1,$docut_target2,$docut_fgd1,$docut_fgd2,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc,$doToFsmear,$tof_mom_err,$tof_length_err,$tof_time_err)'";
 
     $command = "$arguments";
     

@@ -498,6 +498,44 @@
      +512
    </ToFPosZ_FrontDown>
 
+  <!-- ToF ECalP0D -->
+   <ToFdefault_ECalP0D>
+     false
+   </ToFdefault_ECalP0D>
+   <ToFPlaneXYNum_ECalP0D>
+     1
+   </ToFPlaneXYNum_ECalP0D>
+   <ToFLayerHorizNBar_ECalP0D>
+     91
+   </ToFLayerHorizNBar_ECalP0D>   
+   <ToFLayerVertNBar_ECalP0D>
+     88
+   </ToFLayerVertNBar_ECalP0D>
+   <ToFBarwidth_ECalP0D>
+     25
+   </ToFBarwidth_ECalP0D>
+   <ToFBarheight_ECalP0D>
+     25
+   </ToFBarheight_ECalP0D>
+   <ToFRotX_ECalP0D>
+     0
+   </ToFRotX_ECalP0D>
+   <ToFRotY_ECalP0D>
+     0
+   </ToFRotY_ECalP0D>
+   <ToFRotZ_ECalP0D>
+     0
+   </ToFRotZ_ECalP0D>
+   <ToFPosX_ECalP0D>
+     0
+   </ToFPosX_ECalP0D>
+   <ToFPosY_ECalP0D>
+     0
+   </ToFPosY_ECalP0D>
+   <ToFPosZ_ECalP0D>
+     -2800
+   </ToFPosZ_ECalP0D>
+
 
    <!-- ToF Top Upstream -->
    <ToFdefault_TopUp>
@@ -788,6 +826,10 @@
      false
    </UseToF_FrontDown>
 
+   <UseToF_ECalP0D>
+     false
+   </UseToF_ECalP0D>
+
    <UseToF_TopUp>
      false
    </UseToF_TopUp>
@@ -887,6 +929,10 @@
    <InvisToF_FrontDown>
      false
    </InvisToF_FrontDown>
+
+   <InvisToF_ECalP0D>
+     false
+   </InvisToF_ECalP0D>
 
    <InvisToF_TopUp>
      false

@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/AfterDetUpdates_9_12_16/GENIE_nd280mc_ECAL_6E20POT.root
+    GENIE/14_3_17/GENIE_geometry_ref_1E21POT.root
   </filename>
 
   <treename>  
@@ -458,7 +458,7 @@
      0
    </ToFPosY_BackDown>
    <ToFPosZ_BackDown>
-     +1762
+     +512 
    </ToFPosZ_BackDown>
 
    <!-- ToF Front Downstream -->
@@ -496,9 +496,46 @@
      0
    </ToFPosY_FrontDown>
    <ToFPosZ_FrontDown>
-     +512
+     +1762
    </ToFPosZ_FrontDown>
 
+  <!-- ToF ECalP0D -->
+   <ToFdefault_ECalP0D>
+     false
+   </ToFdefault_ECalP0D>
+   <ToFPlaneXYNum_ECalP0D>
+     1
+   </ToFPlaneXYNum_ECalP0D>
+   <ToFLayerHorizNBar_ECalP0D>
+     91
+   </ToFLayerHorizNBar_ECalP0D>   
+   <ToFLayerVertNBar_ECalP0D>
+     88
+   </ToFLayerVertNBar_ECalP0D>
+   <ToFBarwidth_ECalP0D>
+     25
+   </ToFBarwidth_ECalP0D>
+   <ToFBarheight_ECalP0D>
+     25
+   </ToFBarheight_ECalP0D>
+   <ToFRotX_ECalP0D>
+     0
+   </ToFRotX_ECalP0D>
+   <ToFRotY_ECalP0D>
+     0
+   </ToFRotY_ECalP0D>
+   <ToFRotZ_ECalP0D>
+     0
+   </ToFRotZ_ECalP0D>
+   <ToFPosX_ECalP0D>
+     0
+   </ToFPosX_ECalP0D>
+   <ToFPosY_ECalP0D>
+     0
+   </ToFPosY_ECalP0D>
+   <ToFPosZ_ECalP0D>
+     -2800
+   </ToFPosZ_ECalP0D>
 
    <!-- ToF Top Upstream -->
    <ToFdefault_TopUp>
@@ -733,32 +770,32 @@
    <!-- Include detectors -->
 
    <UseForwTPC1>
-     true
+     false
    </UseForwTPC1>
    <UseForwTPC2>
-     true
+     false
    </UseForwTPC2>
    <UseForwTPC3>
-     true
+     false
    </UseForwTPC3>
 
    <UseTarget1>
      true
    </UseTarget1>
    <UseTarget2>
-     true
+     false
    </UseTarget2>
    <UseTPCDown1>
-     true
+     false
    </UseTPCDown1>
    <UseTPCDown2>
-     true
+     false
    </UseTPCDown2>
    <UseTPCUp1>
-     true
+     false
    </UseTPCUp1>
    <UseTPCUp2>
-     true
+     false
    </UseTPCUp2>
    <UseFGD1>
     false
@@ -768,41 +805,45 @@
    </UseFGD2>
 
    <UseToF_TopDown>
-     true
+     false
    </UseToF_TopDown>
    <UseToF_BotDown>
-     true
+     false
    </UseToF_BotDown>
    <UseToF_RightDown>
-     true
+     false
    </UseToF_RightDown>
    <UseToF_LeftDown>
-     true
+     false
    </UseToF_LeftDown>
    <UseToF_BackDown>
-     true
+     false
    </UseToF_BackDown>
    <UseToF_FrontDown>
-     true
+     false
    </UseToF_FrontDown>
 
+   <UseToF_ECalP0D>
+     false
+   </UseToF_ECalP0D>
+
    <UseToF_TopUp>
-     true
+     false
    </UseToF_TopUp>
    <UseToF_BotUp>
-     true
+     false
    </UseToF_BotUp>
    <UseToF_RightUp>
-     true
+     false
    </UseToF_RightUp>
    <UseToF_LeftUp>
-     true
+     false
    </UseToF_LeftUp>
    <UseToF_BackUp>
-     true
+     false
    </UseToF_BackUp>
    <UseToF_FrontUp>
-     true
+     false
    </UseToF_FrontUp>
 
    <UseMagnet>
@@ -816,7 +857,7 @@
    </UseBasket>
 
    <UseDsECal>
-     true
+     false
    </UseDsECal>
    <UseBrlECal>
      false
@@ -826,7 +867,7 @@
    </UseP0DECal>
 
    <UseP0D>
-     true
+     false
    </UseP0D>
 
    <!-- Invisible detectors -->
@@ -885,6 +926,10 @@
    <InvisToF_FrontDown>
      false
    </InvisToF_FrontDown>
+
+   <InvisToF_ECalP0D>
+     false
+   </InvisToF_ECalP0D>
 
    <InvisToF_TopUp>
      false
