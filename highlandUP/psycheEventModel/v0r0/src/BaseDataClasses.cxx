@@ -114,6 +114,7 @@ AnaToFParticleB::~AnaToFParticleB(){
 AnaECalParticleB::AnaECalParticleB(){
 //********************************************************************
     DeltaLYZ=-9999;
+        IsReconstructed=false;
 
 }
 
@@ -121,6 +122,7 @@ AnaECalParticleB::AnaECalParticleB(){
 AnaECalParticleB::AnaECalParticleB(const AnaECalParticleB& seg):AnaParticleB(seg){
 //********************************************************************
     DeltaLYZ=seg.DeltaLYZ;
+    IsReconstructed=seg.IsReconstructed;
 
 }
 
@@ -133,6 +135,7 @@ void AnaECalParticleB::Print() const{
     AnaParticleB::Print();
 
     std::cout << "DeltaLYZ:          " << DeltaLYZ        << std::endl;
+    std::cout << "IsReconstructed:          " <<  IsReconstructed        << std::endl;
 
 }
 
@@ -374,12 +377,14 @@ AnaTrackB::AnaTrackB(): AnaParticleMomB(){
     nFGDSegments = 0;
     nTPCSegments = 0;
     nECalSegments = 0;
-
+    nToFSegments = 0;
+    
     EKin=-999;
     TargetSegmentsVect.clear();
     FGDSegmentsVect.clear();
     TPCSegmentsVect.clear();
     ECalSegmentsVect.clear();
+    ToFSegmentsVect.clear();   
 
 }
 
@@ -404,21 +409,28 @@ AnaTrackB::~AnaTrackB(){
         delete ECalSegments[i];    
         ECalSegments[i] = NULL;
     }
+    for (Int_t i=0;i<nToFSegments;i++){
+        delete ToFSegments[i];    
+        ToFSegments[i] = NULL;
+    }    
 
     if (TargetSegmentsVect.size()>0  && nTargetSegments ==0) for (UInt_t i=0;i<TargetSegmentsVect.size(); i++) delete TargetSegmentsVect[i];
     if (FGDSegmentsVect.size()>0  && nFGDSegments ==0) for (UInt_t i=0;i<FGDSegmentsVect.size(); i++) delete FGDSegmentsVect[i];
     if (TPCSegmentsVect.size()>0  && nTPCSegments ==0) for (UInt_t i=0;i<TPCSegmentsVect.size(); i++) delete TPCSegmentsVect[i];
     if (ECalSegmentsVect.size()>0  && nECalSegments ==0) for (UInt_t i=0;i<ECalSegmentsVect.size(); i++) delete ECalSegmentsVect[i];
+        if (ToFSegmentsVect.size()>0  && nToFSegments ==0) for (UInt_t i=0;i<ToFSegmentsVect.size(); i++) delete ToFSegmentsVect[i];
 
     nTargetSegments = 0;
-    nFGDSegments = 0;
-    nTPCSegments = 0;
-    nECalSegments = 0;
+    nFGDSegments    = 0;
+    nTPCSegments    = 0;
+    nECalSegments   = 0;
+    nToFSegments    = 0;
 
     TargetSegmentsVect.clear();
     FGDSegmentsVect.clear();
     TPCSegmentsVect.clear();
     ECalSegmentsVect.clear();
+    ToFSegmentsVect.clear();
 
 }
 
@@ -433,9 +445,10 @@ AnaTrackB::AnaTrackB(const AnaTrackB& track):AnaParticleMomB(track){
   TPCQualityCut     = track.TPCQualityCut;
 
   nTargetSegments  = track.nTargetSegments;
-  nFGDSegments  = track.nFGDSegments;
-  nTPCSegments  = track.nTPCSegments;
-  nECalSegments  = track.nECalSegments;
+  nFGDSegments     = track.nFGDSegments;
+  nTPCSegments     = track.nTPCSegments;
+  nECalSegments    = track.nECalSegments;
+  nToFSegments     = track.nToFSegments;
 
   EKin=track.EKin;
   for (Int_t i=0;i<track.nTargetSegments;i++)
@@ -450,11 +463,15 @@ AnaTrackB::AnaTrackB(const AnaTrackB& track):AnaParticleMomB(track){
   for (Int_t i=0;i<track.nECalSegments;i++)
     ECalSegments[i] = track.ECalSegments[i]->Clone();
 
+  for (Int_t i=0;i<track.nToFSegments;i++)
+    ToFSegments[i] = track.ToFSegments[i]->Clone();
+
 
   TargetSegmentsVect.clear();
   FGDSegmentsVect.clear();
   TPCSegmentsVect.clear();
   ECalSegmentsVect.clear();
+  ToFSegmentsVect.clear();
 
 }
 
@@ -657,9 +674,10 @@ AnaTrueVertexB::AnaTrueVertexB():AnaTrueObjectC(){
     Detector = 0;
 
     NuEnergy      = -999;
-    NuMom      = -999;
+    NuMom         = -999;
 
     NuPDG         = -999;
+    TargetPDG     = -999;
     Bunch         = -999;
 
     anaUtils::ReserveArray(Position, 4);
@@ -688,6 +706,7 @@ AnaTrueVertexB::AnaTrueVertexB(const AnaTrueVertexB& vertex):AnaTrueObjectC(vert
     NuEnergy      = vertex.NuEnergy;
     NuMom         = vertex.NuMom;
     NuPDG         = vertex.NuPDG;
+    TargetPDG     = vertex.TargetPDG;
     Bunch         = vertex.Bunch;
     Detector      = vertex.Detector;
 
@@ -713,8 +732,9 @@ void AnaTrueVertexB::Print() const{
     AnaTrueObjectC::Print();
 
     std::cout << "NuPDG:            " << NuPDG << std::endl;
+    std::cout << "TargetPDG:        " << TargetPDG << std::endl;
     std::cout << "NuEnergy:         " << NuEnergy << std::endl;
-    std::cout << "NuMom:         " << NuMom << std::endl;
+    std::cout << "NuMom:            " << NuMom << std::endl;
 
     std::cout << "Bunch:            " << Bunch << std::endl;
     std::cout << "Detector:         " << Detector << std::endl;
@@ -1044,7 +1064,11 @@ void AnaSpillB::CopyArraysIntoVectors(){
 
         track->TPCSegmentsVect.clear();
         for (Int_t j=0;j<track->nTPCSegments;j++)
-          track->TPCSegmentsVect.push_back(track->TPCSegments[j]);       
+          track->TPCSegmentsVect.push_back(track->TPCSegments[j]);
+
+	track->ToFSegmentsVect.clear();
+        for (Int_t j=0;j<track->nToFSegments;j++)
+          track->ToFSegmentsVect.push_back(track->ToFSegments[j]);
       }      
       for (UInt_t i=0;i<bunch->Vertices.size();i++){
         AnaVertexB* vertex = bunch->Vertices[i];
@@ -1100,6 +1124,10 @@ void AnaSpillB::CopyVectorsIntoArrays(){
       track->nTPCSegments=0;
       for (UInt_t j=0;j<track->TPCSegmentsVect.size();j++)
         track->TPCSegments[track->nTPCSegments++]=track->TPCSegmentsVect[j];
+
+      track->nToFSegments=0;
+      for (UInt_t j=0;j<track->ToFSegmentsVect.size();j++)
+        track->ToFSegments[track->nToFSegments++]=track->ToFSegmentsVect[j];     
     }
 
     for (UInt_t i=0;i<bunch->Vertices.size();i++){

@@ -34,10 +34,10 @@ public:
         kTarget2,
         kFGD1,     //9
         kFGD2,
-        kDsECal,
+        kDsECal,   //11
         kP0DECal,
         kBrlECal,
-	kToF,
+	kToF,      //14
         kInvalidSubdetector,
         kTPC,
         kTarget,

@@ -106,6 +106,15 @@ public:
     sel_MichelElectrons_mom,
     sel_PosPions_mom,
     sel_OtherPions_mom,
+
+    sel_NegativePionTPCtracks_pos,
+    sel_PositivePionTPCtracks_pos,
+    sel_IsoTargetPiontracks_pos,
+    sel_PosPi0TPCtracks_pos,
+    sel_ElPi0TPCtracks_pos,
+    sel_MichelElectrons_pos,
+    sel_PosPions_pos,
+    sel_OtherPions_pos,
     
     /*
       selmu_1hit_pos,
@@ -161,6 +170,7 @@ public:
     true_part,
     true_parentID,
     true_Nu_pdg,
+    true_Target_pdg,
     true_Nu_mom,
     true_reaction_code,
     true_vertex_position,

@@ -96,21 +96,22 @@ int SubDetId::GetECal(unsigned long BitField){
 }
 
 void SubDetId::SetDetectorSystemFields(unsigned long &BitField){
-    for(int i = SubDetId::kTPCUp1; i < SubDetId::kInvalidSubdetector; ++i){ //loop through sub-detectors list
-        if (GetDetectorUsed(BitField, static_cast<SubDetId::SubDetEnum>(i))){
-            // Subdet1
-            }else if (i == SubDetId::kTPCUp1 || i == SubDetId::kTPCUp1 || i == SubDetId::kForwTPC1 || i == SubDetId::kForwTPC2 || i == SubDetId::kForwTPC3 || i == SubDetId::kTPCDown2 || i == SubDetId::kTPCDown1){
-              SetDetectorUsed(BitField, SubDetId::kTPC);
-            // Subdet2
-            }else if (i == SubDetId::kTarget1 || i == SubDetId::kTarget2){
-                SetDetectorUsed(BitField, SubDetId::kTarget);
-            }else if (i == SubDetId::kFGD1 || i == SubDetId::kFGD2){
-                SetDetectorUsed(BitField, SubDetId::kFGD);
-            }else if (i == SubDetId::kDsECal || i == SubDetId::kBrlECal || i == SubDetId::kP0DECal ){
-                SetDetectorUsed(BitField, SubDetId::kECAL);
-
-        }
+  for(int i = SubDetId::kTPCUp1; i < SubDetId::kInvalidSubdetector; ++i){ //loop through sub-detectors list
+    if (GetDetectorUsed(BitField, static_cast<SubDetId::SubDetEnum>(i))){
+      // Subdet1
+    }else if (i == SubDetId::kTPCUp1 || i == SubDetId::kTPCUp1 || i == SubDetId::kForwTPC1 || i == SubDetId::kForwTPC2 || i == SubDetId::kForwTPC3 || i == SubDetId::kTPCDown2 || i == SubDetId::kTPCDown1){
+      SetDetectorUsed(BitField, SubDetId::kTPC);
+      // Subdet2
+    }else if (i == SubDetId::kTarget1 || i == SubDetId::kTarget2){
+      SetDetectorUsed(BitField, SubDetId::kTarget);
+    }else if (i == SubDetId::kFGD1 || i == SubDetId::kFGD2){
+      SetDetectorUsed(BitField, SubDetId::kFGD);
+    }else if (i == SubDetId::kDsECal || i == SubDetId::kBrlECal || i == SubDetId::kP0DECal ){
+      SetDetectorUsed(BitField, SubDetId::kECAL);	
+    }else if (i == SubDetId::kToF ){
+      SetDetectorUsed(BitField, SubDetId::kToF);	
     }
+  }
 }
 int SubDetId::NumberOfSetBits(unsigned long v){
     int c; // c accumulates the total bits set in v

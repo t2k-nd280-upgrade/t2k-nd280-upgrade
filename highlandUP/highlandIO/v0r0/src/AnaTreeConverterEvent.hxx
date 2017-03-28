@@ -26,8 +26,11 @@
 #include "TH2D.h"
 #include "TND280UpEvent.hxx"
 #include "BaseDataClasses.hxx"
-//#include "LArSoftReaderHeaders.h"
+
+#include "BinnedParams.hxx"
+
 #include <TRandom.h>
+#include "TRandom3.h"
 
 class AnaTreeConverterEvent: public InputConverter{
 
@@ -51,19 +54,20 @@ class AnaTreeConverterEvent: public InputConverter{
   virtual AnaSpillB*        MakeSpill()       { return new AnaSpill(); }
   virtual AnaBunch*         MakeBunch()       { return new AnaBunch(); }
   virtual AnaBeamB*         MakeBeam()        { return new AnaBeam(); }
-  virtual AnaEventInfo*    MakeEventInfo()   { return new AnaEventInfo(); }
+  virtual AnaEventInfo*     MakeEventInfo()   { return new AnaEventInfo(); }
  
   virtual AnaTrueParticle*  MakeTrueParticle(){ return new AnaTrueParticle(); }
-  virtual AnaTrackB*  MakeTrack(){ return new AnaTrack(); }
+  virtual AnaTrackB*        MakeTrack()       { return new AnaTrack(); }
   virtual AnaParticleMomB*  MakeParticleMomB(){ return new AnaParticleMomB(); }
 
   virtual AnaTrueVertex*    MakeTrueVertex()  { return new AnaTrueVertex(); }
   virtual AnaParticle*      MakeParticle()    { return new AnaParticle(); }
-  virtual AnaVertexB*        MakeVertex()      { return new AnaVertexB(); }
-  virtual AnaParticleB*        MakeTPCTrack()      { return new AnaTPCParticleB();}
-  virtual AnaParticleB*        MakeTargetTrack()      { return new AnaTargetParticleB();}
-  virtual AnaParticleB*        MakeFGDTrack()      { return new AnaFGDParticleB();}
-  virtual AnaParticleB*        MakeECalTrack()      { return new AnaECalParticleB();}
+  virtual AnaVertexB*       MakeVertex()      { return new AnaVertexB(); }
+  virtual AnaParticleB*     MakeTPCTrack()    { return new AnaTPCParticleB(); }
+  virtual AnaParticleB*     MakeTargetTrack() { return new AnaTargetParticleB(); }
+  virtual AnaParticleB*     MakeFGDTrack()    { return new AnaFGDParticleB(); }
+  virtual AnaParticleB*     MakeECalTrack()   { return new AnaECalParticleB(); }
+  virtual AnaParticleB*     MakeToFTrack()    { return new AnaToFParticleB(); }
 
   virtual AnaDetCrossingB*        MakeAnaDetCrossing()      { return new AnaDetCrossingB();}
 
@@ -73,18 +77,20 @@ class AnaTreeConverterEvent: public InputConverter{
   virtual void FillBeamInfo(AnaBeam * beam);
   virtual void FillTrueInfo(AnaSpill * spill);
   virtual void FillBunchInfo(std::vector<AnaTrueVertexB*>& TrueVertices, AnaBunch * bunch);
-//  virtual void FillParticleInfo(std::vector<AnaTrueParticleB*>& trueParticles,           Int_t itrk, AnaParticle* part);
+  //  virtual void FillParticleInfo(std::vector<AnaTrueParticleB*>& trueParticles,           Int_t itrk, AnaParticle* part);
   virtual void FillTrueParticleInfo(TND280UpVertex * trueVertex, TND280UpTrack * upTrack, AnaTrueParticleB * truePart);
   virtual void Fill_Tracks_Recon_From_True(AnaTrueParticleB* trueParticles, AnaTrack* reconParticle);
 
- virtual void FillVertexInfo(AnaTrueVertexB * truevertex, AnaVertexB* vertex, int bunch);
+  virtual void FillVertexInfo(AnaTrueVertexB * truevertex, AnaVertexB* vertex, int bunch);
   virtual void FillTrueVertexInfo(TND280UpVertex * trueVertex, AnaTrueVertex * vertex);
   virtual void FindSegments(TND280UpTrack * upTrack, AnaTrueParticleB * truePart);
- AnaTrueObjectC* FindTrueParticle(Int_t g4id, std::vector<AnaTrueParticleB*>& trueParticles);
- virtual bool GetEfficiency(double length,double theta);
+  AnaTrueObjectC* FindTrueParticle(Int_t g4id, std::vector<AnaTrueParticleB*>& trueParticles);
+
+  virtual bool IsReconstructedTarget(double length, double theta);
+  virtual bool IsReconstructedECal(TVector3 P, TString det);
+  
 protected:
-
-
+  
   AnaSpill* _spill;
   
   std::string _previousFile;
@@ -99,8 +105,7 @@ protected:
   TChain *FileIndexTree;
   TND280UpEvent *nd280UpEvent;
   Int_t Entries; 
-  Int_t Counter; 
-  TH2D *hefficiency_target;
+  Int_t Counter;
   Bool_t _isMC;
   std::string _softwareVersion;
 
@@ -110,7 +115,13 @@ protected:
   std::vector<Float_t> _dedx_shw;
 
   TList *fListOfTracks;
+  
   TFile* fefficiency_target;
+  TH2D *hefficiency_target;
+
+  TRandom3* _randomGen;
+  BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
+  
   // Header's
   Int_t EventTime;
   Int_t TriggerWord;

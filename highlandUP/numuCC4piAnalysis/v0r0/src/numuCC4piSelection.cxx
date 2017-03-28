@@ -10,6 +10,8 @@
 
 #include "TH2F.h"
 
+#include <utility>
+#include <map>
 
 //********************************************************************
 numuCC4piSelection::numuCC4piSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
@@ -26,11 +28,13 @@ numuCC4piSelection::numuCC4piSelection(bool forceBreak): SelectionBase(forceBrea
 					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC); 
 
   _randomGen = new TRandom3();
+  
 }
 
 //********************************************************************
 void numuCC4piSelection::DefineSteps(){
   //********************************************************************
+
 
   //last true means that if that cut is not fulfill the sequence is stop
   AddStep(StepBase::kAction, "find true vertex",      new numuCC4piUtils::FindTrueVertexAction());
@@ -49,32 +53,51 @@ void numuCC4piSelection::DefineSteps(){
 
   AddStep(0, StepBase::kCut, "Fwd TPC Quality Cut",  new numuCC4piUtils::FwdTPC_Quality());
   AddStep(0, StepBase::kCut, "Fwd TPC PID Cut",      new numuCC4piUtils::FwdTPC_PID());
-  AddSplit(3, 0);
+  AddSplit(4, 0);
   AddStep(0, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
   AddStep(0, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
   AddStep(0, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
+  
+  AddStep(0, 0, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(0, 1, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(0, 2, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(0, 3, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
 
   AddStep(1, StepBase::kCut, "Bwd TPC Quality Cut",    new numuCC4piUtils::BwdTPC_Quality());
   AddStep(1, StepBase::kCut, "Bwd TPC PID Cut",        new numuCC4piUtils::BwdTPC_PID());
-  AddSplit(3, 1);
+  AddSplit(4, 1);
   AddStep(1, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
   AddStep(1, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
   AddStep(1, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
+  AddStep(1, 0, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(1, 1, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(1, 2, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(1, 3, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+
   AddStep(2, StepBase::kCut, "HA TPC Quality Cut",    new numuCC4piUtils::HATPC_Quality());
   AddStep(2, StepBase::kCut, "HA TPC PID Cut",        new numuCC4piUtils::HATPC_PID());
-  AddSplit(3, 2);
+  AddSplit(4, 2);
   AddStep(2, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
   AddStep(2, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
   AddStep(2, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
+  AddStep(2, 0, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(2, 1, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(2, 2, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(2, 3, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+
   AddStep(3, StepBase::kCut, "ECal Quality Cut",  new numuCC4piUtils::ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff));
   AddStep(3, StepBase::kCut, "ECal PID Cut",      new numuCC4piUtils::ECal_PID(_file_ECAL_PDF));
-  AddSplit(3, 3);
+  AddSplit(4, 3);
   AddStep(3, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
   AddStep(3, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
   AddStep(3, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
+  AddStep(3, 0, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(3, 1, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(3, 2, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
+  AddStep(3, 3, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
   
   SetBranchAlias(0,  "CC0pi Fwd TPC",  0,0);
   SetBranchAlias(1,  "CC0pi Bwd TPC",  1,0);
@@ -90,6 +113,11 @@ void numuCC4piSelection::DefineSteps(){
   SetBranchAlias(9,  "CCoth Bwd TPC",  1,2);
   SetBranchAlias(10, "CCoth HA TPC",   2,2);
   SetBranchAlias(11, "CCoth ECal",     3,2);
+
+  SetBranchAlias(12, "CCinc Fwd TPC",  0,3);
+  SetBranchAlias(13, "CCinc Bwd TPC",  1,3);
+  SetBranchAlias(14, "CCinc HA TPC",   2,3);
+  SetBranchAlias(15, "CCinc ECal",     3,3);
 
   SetPreSelectionAccumLevel(0);
 
@@ -542,6 +570,11 @@ namespace numuCC4piUtils{
     if (!cutUtils::StoppingECALCut( *cc4pibox->MainTrack ))
       return false;
 
+    for (unsigned int i=0; i<cc4pibox->MainTrack->nECalSegments; i++)
+      if (cc4pibox->MainTrack->ECalSegments[i]->IsReconstructed)
+	return true;
+    
+    /*
     double mom = cc4pibox->MainTrack->Momentum;
     double cos = cc4pibox->MainTrack->DirectionStart[2];
     float reco_eff, FGDmatch_eff;
@@ -558,6 +591,7 @@ namespace numuCC4piUtils{
     // by applying the reconstruction/FGD-ECal match efficiencies
     if (r_eff[0] < reco_eff && r_eff[1] < FGDmatch_eff)
       return true;
+    */
 	
     return false;
   }
@@ -676,6 +710,111 @@ namespace numuCC4piUtils{
     ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
     return (box->nPosPions > 1 || box->nOtherPions > 0);
 
+  }
+
+  
+  //**************************************************
+  bool ToF_senseDetermination::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //**************************************************
+
+    (void)event;
+    ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
+    if (!box->MainTrack) return false;
+
+    Float_t cut_length_target = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
+    cut_length_target=0;
+    std::map< unsigned long, std::vector<float> > detTiming;
+  
+    for (int i=0; i<box->MainTrack->nTargetSegments; i++)
+      if (box->MainTrack->TargetSegments[i]->DeltaLYZ > cut_length_target) {
+	float    z = box->MainTrack->TargetSegments[i]->PositionStart[2];
+	float time = box->MainTrack->TargetSegments[i]->PositionStart[3];
+	unsigned long det = box->MainTrack->TargetSegments[i]->Detectors;
+	float sigma = 1/sqrt(box->MainTrack->TargetSegments[i]->DeltaLYZ/20);
+	time = _randomGen->Gaus(time, sigma);
+
+	std::vector<float> vec;
+	vec.push_back(z); vec.push_back(time); vec.push_back(sigma);
+	if ( detTiming.count(det) == 0 )
+	  detTiming[det] = vec;
+      }
+
+    for (int i=0; i<box->MainTrack->nFGDSegments; i++)
+      if (box->MainTrack->FGDSegments[i]->DeltaLYZ > cut_length_target) {
+	float    z = box->MainTrack->FGDSegments[i]->PositionStart[2];
+	float time = box->MainTrack->FGDSegments[i]->PositionStart[3];
+	unsigned long det = box->MainTrack->FGDSegments[i]->Detectors;
+	float sigma = 1/sqrt(box->MainTrack->FGDSegments[i]->DeltaLYZ/10);
+	time = _randomGen->Gaus(time, sigma);
+
+	std::vector<float> vec;
+	vec.push_back(z); vec.push_back(time); vec.push_back(sigma);
+	if ( detTiming.count(det) == 0 )
+	  detTiming[det] = vec;
+      }
+    for (int i=0; i<box->MainTrack->nECalSegments; i++) {
+      if (box->MainTrack->ECalSegments[i]->IsReconstructed) {
+	float    z = box->MainTrack->ECalSegments[i]->PositionStart[2];
+	float time = box->MainTrack->ECalSegments[i]->PositionStart[3];
+	unsigned long det = box->MainTrack->ECalSegments[i]->Detectors;
+	float sigma = 1;
+	time = _randomGen->Gaus(time, sigma);
+
+	std::vector<float> vec;
+	vec.push_back(z); vec.push_back(time); vec.push_back(sigma);
+	if ( detTiming.count(det) == 0 )
+	  detTiming[det] = vec;
+      }
+    }
+
+    for (int i=0; i<box->MainTrack->nToFSegments; i++) {
+      float    z = box->MainTrack->ToFSegments[i]->PositionStart[2];
+      float time = box->MainTrack->ToFSegments[i]->PositionStart[3];
+      unsigned long det = box->MainTrack->ToFSegments[i]->Detectors;
+      float sigma = 0.6;
+      time = _randomGen->Gaus(time, sigma);
+
+      std::vector<float> vec;
+      vec.push_back(z); vec.push_back(time); vec.push_back(sigma);
+      if ( detTiming.count(det) == 0 )
+	detTiming[det] = vec;
+    }
+    
+    if (detTiming.size() < 2)
+      return false;
+
+    float deltaZ = 0, ToF = 0, max_t_over_s = 0;
+    unsigned long det1 = 0, det2 = 0;
+    for (std::map< unsigned long, std::vector<float> >::iterator i=detTiming.begin(); i!=detTiming.end(); ++i){
+      for (std::map< unsigned long, std::vector<float> >::iterator j=detTiming.begin(); j!=detTiming.end(); ++j){
+	if (i == j) continue;
+
+	float z1 = i->second[0], z2 = j->second[0];
+	float t1 = i->second[1], t2 = j->second[1];
+	float s1 = i->second[2], s2 = j->second[2];
+	float t_over_s = fabs( (t2-t1)/sqrt(s1*s1+s2*s2) );
+
+	if ( t_over_s > max_t_over_s ){
+	  max_t_over_s = t_over_s;
+	  deltaZ = z2 - z1;
+	  ToF =    t2 - t1;
+	  det1 = i->first; det2 = j->first;
+	}
+      }
+    }
+
+    //std::cout << deltaZ << " " << ToF << " " << SubDetId::GetSubdetectorEnum(det1) << " " << SubDetId::GetSubdetectorEnum(det2) << std::endl;
+
+    if (deltaZ < 1e-6)
+      return false;
+
+    if (numuCC4pi_utils::IsForward(*box->MainTrack))
+      return (deltaZ/ToF > 0);
+    else
+      return (deltaZ/ToF < 0);
+
+    return false;
+    
   }
 
 }

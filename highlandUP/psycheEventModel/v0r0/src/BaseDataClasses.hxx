@@ -123,6 +123,7 @@ class AnaTrueVertexB: public AnaTrueObjectC{
   
   /// The PDG code of the incoming neutrino.
   Int_t NuPDG;
+  Int_t TargetPDG;
 
   /// The true energy of the incoming neutrino.
   Float_t NuEnergy;
@@ -252,23 +253,22 @@ class AnaParticleB: public AnaRecObjectC{
 
  public:
 
-  Int_t NHits;  
+  Int_t NHits;
+  
   /// The reconstructed start direction of the particle.
   Float_t DirectionStart[3];
-
   /// The reconstructed end direction of the particle.
   Float_t DirectionEnd[3];
   
   /// The reconstructed start position of the particle.
   Float_t PositionStart[4];
-
   /// The reconstructed end position of the particle.
   Float_t PositionEnd[4];
 
   Float_t EDeposit;
-
   Float_t CosTheta;
   unsigned long Detectors;
+  
   /// Objects can be manipulated by input variations (which apply corrections
   /// and systematics). There are three copies of each spill and this member
   /// provides links between the different versions of this object. The link
@@ -350,12 +350,10 @@ class AnaTargetParticleB:public AnaParticleB {
   virtual void Print() const;
 
  protected:
-
   /// Copy constructor is protected, as Clone() should be used to copy this object.
   AnaTargetParticleB(const AnaTargetParticleB& seg);
 
  public:
-
   Float_t DeltaLYZ;
   Float_t SegLength;
   Bool_t IsReconstructed;
@@ -378,12 +376,10 @@ class AnaFGDParticleB:public AnaParticleB {
   virtual void Print() const;
 
  protected:
-
   /// Copy constructor is protected, as Clone() should be used to copy this object.
   AnaFGDParticleB(const AnaFGDParticleB& seg);
 
  public:
-
   Float_t DeltaLYZ;
   Float_t SegLength;
   Bool_t IsReconstructed;
@@ -406,12 +402,10 @@ class AnaToFParticleB:public AnaParticleB {
   virtual void Print() const;
 
  protected:
-
   /// Copy constructor is protected, as Clone() should be used to copy this object.
   AnaToFParticleB(const AnaToFParticleB& seg);
 
  public:
-
   Float_t DeltaLYZ;
   Float_t SegLength;
   Bool_t IsReconstructed;
@@ -434,16 +428,13 @@ class AnaECalParticleB:public AnaParticleB {
   virtual void Print() const;
 
  protected:
-
   /// Copy constructor is protected, as Clone() should be used to copy this object.
   AnaECalParticleB(const AnaECalParticleB& seg);
 
  public:
-
   Float_t DeltaLYZ;
-
-//  Float_t SegLength;
-
+  Float_t SegLength;
+  Bool_t IsReconstructed;
 
 };
 
@@ -464,7 +455,6 @@ class AnaTPCParticleB:public AnaParticleMomB {
   virtual void Print() const;
 
  protected:
-
   /// Copy constructor is protected, as Clone() should be used to copy this object.
   AnaTPCParticleB(const AnaTPCParticleB& seg);
 
@@ -575,7 +565,7 @@ class AnaTrackB: public AnaParticleMomB{
   AnaFGDParticleB* FGDSegments[NMAXTARGET]; //!
   int nFGDSegments; //!
 
-  AnaToFParticleB* ToFSegments[NMAXTARGET]; //!
+  AnaToFParticleB* ToFSegments[NMAXTOF]; //!
   int nToFSegments; //!
 
   Float_t EKin;
@@ -586,11 +576,11 @@ class AnaTrackB: public AnaParticleMomB{
   int nECalSegments; //!
 
   /// A copy of the segment arrays but using an std::vector, which can be saved into a tree
-  std::vector<AnaTargetParticleB*>  TargetSegmentsVect; 
-  std::vector<AnaFGDParticleB*>  FGDSegmentsVect; 
-  std::vector<AnaToFParticleB*>  ToFSegmentsVect; 
-  std::vector<AnaTPCParticleB*>  TPCSegmentsVect; 
-  std::vector<AnaECalParticleB*>  ECalSegmentsVect; 
+  std::vector<AnaTargetParticleB*> TargetSegmentsVect; 
+  std::vector<AnaFGDParticleB*>    FGDSegmentsVect; 
+  std::vector<AnaToFParticleB*>    ToFSegmentsVect; 
+  std::vector<AnaTPCParticleB*>    TPCSegmentsVect; 
+  std::vector<AnaECalParticleB*>   ECalSegmentsVect; 
 
 };
 

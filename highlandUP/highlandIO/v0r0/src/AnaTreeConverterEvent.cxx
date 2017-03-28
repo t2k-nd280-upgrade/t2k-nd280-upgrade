@@ -6,7 +6,7 @@
 #include "PIDUtils.hxx"
 //********************************************************************
 AnaTreeConverterEvent::AnaTreeConverterEvent():InputConverter("ND280upEvents"){
-//********************************************************************
+  //********************************************************************
 
   _spill = NULL;
 
@@ -23,8 +23,8 @@ AnaTreeConverterEvent::AnaTreeConverterEvent():InputConverter("ND280upEvents"){
 
 //********************************************************************
 bool AnaTreeConverterEvent::Initialize(){
-//********************************************************************
-    AddChain("ND280upEvents");
+  //********************************************************************
+  AddChain("ND280upEvents");
 
   ND280upEvents = GetChain("ND280upEvents");
 
@@ -33,8 +33,8 @@ bool AnaTreeConverterEvent::Initialize(){
   // Set branch addresses and branch pointers
   nd280UpEvent = new TND280UpEvent();
   if (!ND280upEvents) {
-  std::cout<<"non fChain"<<std::endl;
-  return false;}
+    std::cout<<"non fChain"<<std::endl;
+    return false;}
   fCurrent = -1;
   //-------------- Header ---------------------------------
   if (ND280upEvents) {
@@ -44,12 +44,20 @@ bool AnaTreeConverterEvent::Initialize(){
   fefficiency_target = new TFile("$HIGHLANDIOROOT/data/target_recon_efficiency.root");
   hefficiency_target = (TH2D*)fefficiency_target->Get("theta_length_Eff");
 
+  _ECal_reco_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
+				    "ECal_recoEff", BinnedParams::k1D_SYMMETRIC); 
+  
+  _ECal_FGDmatch_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
+					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC);
+  
+  _randomGen = new TRandom3();
+  
   return true;
 }
 
 //********************************************************************
 AnaTreeConverterEvent::~AnaTreeConverterEvent(){
-//********************************************************************
+  //********************************************************************
 
   if (!fChain) return;
   delete nd280UpEvent;
@@ -62,7 +70,7 @@ AnaTreeConverterEvent::~AnaTreeConverterEvent(){
 
 //****************************************************************************
 bool AnaTreeConverterEvent::AddFileToTChain(const std::string& inputString){
-//****************************************************************************
+  //****************************************************************************
 
   std::cout << "AnaTreeConverterEvent::AddFileToTChain(). Adding file: " << inputString << std::endl;
 
@@ -81,13 +89,13 @@ bool AnaTreeConverterEvent::AddFileToTChain(const std::string& inputString){
   _previousSubrunID     = 0;
   
   
- return 1;
-  }
+  return 1;
+}
 
 
 //*****************************************************************************
 Int_t AnaTreeConverterEvent::ReadEntries(Long64_t& entry) {
-//*****************************************************************************
+  //*****************************************************************************
   
   Int_t entry_temp = ND280upEvents->GetEntry(entry);
 
@@ -106,7 +114,7 @@ Int_t AnaTreeConverterEvent::ReadEntries(Long64_t& entry) {
 
 //*****************************************************************************
 Int_t AnaTreeConverterEvent::GetSpill(Long64_t& entry, AnaSpillC*& spill){
-//*****************************************************************************
+  //*****************************************************************************
 
   static std::string currentfilename("");
 
@@ -143,19 +151,19 @@ Int_t AnaTreeConverterEvent::GetSpill(Long64_t& entry, AnaSpillC*& spill){
   entry++;
 
   if (entry%1000==0 || entry == _nentries)
-      std::cout << "entry: " << entry << " of " << _nentries << " (" << (100*entry/_nentries) << "%)" << std::endl;
+    std::cout << "entry: " << entry << " of " << _nentries << " (" << (100*entry/_nentries) << "%)" << std::endl;
   return entry_temp;
 }
 
 //********************************************************************
 void AnaTreeConverterEvent::IncrementPOTBySpill() {
-//********************************************************************
+  //********************************************************************
   
 }
 
 //*****************************************************************************
 void AnaTreeConverterEvent::FillInfo(AnaSpill* spill, Int_t entry){
-//*****************************************************************************
+  //*****************************************************************************
   
   spill->EventInfo = MakeEventInfo();
   AnaEventInfo& info = *dynamic_cast<AnaEventInfo*>(spill->EventInfo);
@@ -183,16 +191,16 @@ void AnaTreeConverterEvent::FillInfo(AnaSpill* spill, Int_t entry){
 }
 //*****************************************************************************
 void AnaTreeConverterEvent::FillBeamInfo(AnaBeam* beam){
-//*****************************************************************************
+  //*****************************************************************************
 
-    beam->GoodSpill = true;
+  beam->GoodSpill = true;
 }
 
 //*****************************************************************************
 void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
-//*****************************************************************************
+  //*****************************************************************************
 
- // Fill the true vertices vector
+  // Fill the true vertices vector
   spill->TrueVertices.clear();
   spill->TrueParticles.clear();
   int NTracks = nd280UpEvent->GetNTracks();
@@ -201,95 +209,95 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
   if(NVertices>1) return;
 
   int nVertices = std::min((int)NMAXTRUEVERTICES, 1);
-      TND280UpVertex *nd280UpVertex = dynamic_cast<TND280UpVertex*>(nd280UpEvent->GetVertex(0));
+  TND280UpVertex *nd280UpVertex = dynamic_cast<TND280UpVertex*>(nd280UpEvent->GetVertex(0));
 
-    AnaTrueVertex* trueVertex = MakeTrueVertex();
-    FillTrueVertexInfo(nd280UpVertex, trueVertex);
+  AnaTrueVertex* trueVertex = MakeTrueVertex();
+  FillTrueVertexInfo(nd280UpVertex, trueVertex);
     
-    trueVertex->nTrueParticles = 0;
+  trueVertex->nTrueParticles = 0;
 
-    // allocate a big array. Once it is filled we will resize it
-    anaUtils::CreateArray(trueVertex->TrueParticles, NMAXTRUEPARTICLES);
+  // allocate a big array. Once it is filled we will resize it
+  anaUtils::CreateArray(trueVertex->TrueParticles, NMAXTRUEPARTICLES);
 
-    AnaTrueParticleB* highestMomTrack=0;
-    for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
-      TND280UpTrack *nd280UpTrack = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
+  AnaTrueParticleB* highestMomTrack=0;
+  for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
+    TND280UpTrack *nd280UpTrack = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
 
-      AnaTrueParticleB* truePart = MakeTrueParticle();
+    AnaTrueParticleB* truePart = MakeTrueParticle();
 
-      if (!highestMomTrack ||
-	  highestMomTrack->Momentum < truePart->Momentum)
-	highestMomTrack = truePart;
+    if (!highestMomTrack ||
+	highestMomTrack->Momentum < truePart->Momentum)
+      highestMomTrack = truePart;
 
-      if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
-	   (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
-	   (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
-	   (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) ) {
-	if(nd280UpTrack->GetInitMom().Mag() > 0){
-	  //std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
-	  trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
-	  trueVertex->LeptonPDG = nd280UpTrack->GetPDG();
-	  trueVertex->Q2 = - (nd280UpTrack->GetInitMom() - nd280UpVertex->GetInTrack(0)->GetInitMom()).Mag2();
-	  trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
+    if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
+	 (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
+	 (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
+	 (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) ) {
+      if(nd280UpTrack->GetInitMom().Mag() > 0){
+	//std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
+	trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
+	trueVertex->LeptonPDG = nd280UpTrack->GetPDG();
+	trueVertex->Q2 = - (nd280UpTrack->GetInitMom() - nd280UpVertex->GetInTrack(0)->GetInitMom()).Mag2();
+	trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
            
-	}
-      } else if (  nd280UpTrack->GetPDG() == 2212 && nd280UpTrack->GetParentID() == 0) {
-	// if many, take the first one, that should be the first primary one (not from FSI)
-	if (trueVertex->ProtonMom < 0) {
-	  trueVertex->ProtonMom = nd280UpTrack->GetInitMom().Mag();
-	  if (trueVertex->ProtonMom > 0)
-            anaUtils::VectorToArray((1. / trueVertex->ProtonMom) * nd280UpTrack->GetInitMom(), trueVertex->ProtonDir);
-	}
-      } // end if proton
+      }
+    } else if (  nd280UpTrack->GetPDG() == 2212 && nd280UpTrack->GetParentID() == 0) {
+      // if many, take the first one, that should be the first primary one (not from FSI)
+      if (trueVertex->ProtonMom < 0) {
+	trueVertex->ProtonMom = nd280UpTrack->GetInitMom().Mag();
+	if (trueVertex->ProtonMom > 0)
+	  anaUtils::VectorToArray((1. / trueVertex->ProtonMom) * nd280UpTrack->GetInitMom(), trueVertex->ProtonDir);
+      }
+    } // end if proton
       // If no rooTrackerVtx, fill true pion vars, using the TruthTrajectoryModule (old way)
-      else if (  (nd280UpTrack->GetPDG() == 211  || nd280UpTrack->GetPDG() == -211) && nd280UpTrack->GetParentID() == 0) {
-	// if many, take the highest momentum one, that should be most likely to be reconstructed
-	if (trueVertex->PionMom < nd280UpTrack->GetInitMom().Mag()) {
-	  trueVertex->PionMom = nd280UpTrack->GetInitMom().Mag();
-	  if (trueVertex->PionMom > 0)
-            anaUtils::VectorToArray((1. / trueVertex->PionMom) * nd280UpTrack->GetInitMom(), trueVertex->PionDir);
-	}
-      } // end if pion
+    else if (  (nd280UpTrack->GetPDG() == 211  || nd280UpTrack->GetPDG() == -211) && nd280UpTrack->GetParentID() == 0) {
+      // if many, take the highest momentum one, that should be most likely to be reconstructed
+      if (trueVertex->PionMom < nd280UpTrack->GetInitMom().Mag()) {
+	trueVertex->PionMom = nd280UpTrack->GetInitMom().Mag();
+	if (trueVertex->PionMom > 0)
+	  anaUtils::VectorToArray((1. / trueVertex->PionMom) * nd280UpTrack->GetInitMom(), trueVertex->PionDir);
+      }
+    } // end if pion
 
-      FillTrueParticleInfo(nd280UpVertex, nd280UpTrack, truePart);
-      spill->TrueParticles.push_back(truePart);
-      truePart->TrueVertex = trueVertex;
-      trueVertex->TrueParticlesVect.push_back(truePart);
+    FillTrueParticleInfo(nd280UpVertex, nd280UpTrack, truePart);
+    spill->TrueParticles.push_back(truePart);
+    truePart->TrueVertex = trueVertex;
+    trueVertex->TrueParticlesVect.push_back(truePart);
 
-      int index = ParticleId::GetParticle(nd280UpTrack->GetPDG(),false);
-      trueVertex->NPrimaryParticles[index]++;
-      if (abs(nd280UpTrack->GetPDG()) > 1000 && abs(nd280UpTrack->GetPDG()) < 10000) trueVertex->NPrimaryParticles[ParticleId::kBaryons]++;
-      if (abs(nd280UpTrack->GetPDG()) > 100 && abs(nd280UpTrack->GetPDG()) < 1000) trueVertex->NPrimaryParticles[ParticleId::kMesons]++;
-      if (abs(nd280UpTrack->GetPDG()) > 10 && abs(nd280UpTrack->GetPDG()) < 19) trueVertex->NPrimaryParticles[ParticleId::kLeptons]++;
-      if (nd280UpTrack->GetPDG() == +12 || nd280UpTrack->GetPDG() == +14 || nd280UpTrack->GetPDG() == +16) trueVertex->NPrimaryParticles[ParticleId::kNeutrinos]++;
-      if (nd280UpTrack->GetPDG() == -12 || nd280UpTrack->GetPDG() == -14 || nd280UpTrack->GetPDG() == -16) trueVertex->NPrimaryParticles[ParticleId::kAntiNeutrinos]++;
+    int index = ParticleId::GetParticle(nd280UpTrack->GetPDG(),false);
+    trueVertex->NPrimaryParticles[index]++;
+    if (abs(nd280UpTrack->GetPDG()) > 1000 && abs(nd280UpTrack->GetPDG()) < 10000) trueVertex->NPrimaryParticles[ParticleId::kBaryons]++;
+    if (abs(nd280UpTrack->GetPDG()) > 100 && abs(nd280UpTrack->GetPDG()) < 1000) trueVertex->NPrimaryParticles[ParticleId::kMesons]++;
+    if (abs(nd280UpTrack->GetPDG()) > 10 && abs(nd280UpTrack->GetPDG()) < 19) trueVertex->NPrimaryParticles[ParticleId::kLeptons]++;
+    if (nd280UpTrack->GetPDG() == +12 || nd280UpTrack->GetPDG() == +14 || nd280UpTrack->GetPDG() == +16) trueVertex->NPrimaryParticles[ParticleId::kNeutrinos]++;
+    if (nd280UpTrack->GetPDG() == -12 || nd280UpTrack->GetPDG() == -14 || nd280UpTrack->GetPDG() == -16) trueVertex->NPrimaryParticles[ParticleId::kAntiNeutrinos]++;
 
-      //delete nd280UpTrack;
-    }
+    //delete nd280UpTrack;
+  }
 
-    if (highestMomTrack)
-      if (highestMomTrack->DetCrossingsVect.size()>0)
-	trueVertex->Detector = highestMomTrack->DetCrossingsVect[0]->Detector;
+  if (highestMomTrack)
+    if (highestMomTrack->DetCrossingsVect.size()>0)
+      trueVertex->Detector = highestMomTrack->DetCrossingsVect[0]->Detector;
 
-    trueVertex->NPrimaryParticles[ParticleId::kPions] = trueVertex->NPrimaryParticles[ParticleId::kPi0]   +
-      trueVertex->NPrimaryParticles[ParticleId::kPiPos] +
-      trueVertex->NPrimaryParticles[ParticleId::kPiNeg] ;
-    trueVertex->NPrimaryParticles[ParticleId::kKaons] = trueVertex->NPrimaryParticles[ParticleId::kK0]     +
-      trueVertex->NPrimaryParticles[ParticleId::kAntiK0] +
-      trueVertex->NPrimaryParticles[ParticleId::kK0L]    +
-      trueVertex->NPrimaryParticles[ParticleId::kK0S]    +
-      trueVertex->NPrimaryParticles[ParticleId::kKPos]   +
-      trueVertex->NPrimaryParticles[ParticleId::kKNeg]   ;
+  trueVertex->NPrimaryParticles[ParticleId::kPions] = trueVertex->NPrimaryParticles[ParticleId::kPi0]   +
+    trueVertex->NPrimaryParticles[ParticleId::kPiPos] +
+    trueVertex->NPrimaryParticles[ParticleId::kPiNeg] ;
+  trueVertex->NPrimaryParticles[ParticleId::kKaons] = trueVertex->NPrimaryParticles[ParticleId::kK0]     +
+    trueVertex->NPrimaryParticles[ParticleId::kAntiK0] +
+    trueVertex->NPrimaryParticles[ParticleId::kK0L]    +
+    trueVertex->NPrimaryParticles[ParticleId::kK0S]    +
+    trueVertex->NPrimaryParticles[ParticleId::kKPos]   +
+    trueVertex->NPrimaryParticles[ParticleId::kKNeg]   ;
 	  
-    //delete nd280UpVertex;
+  //delete nd280UpVertex;
 
-    spill->TrueVertices.push_back(trueVertex);
+  spill->TrueVertices.push_back(trueVertex);
 
 }
 
 //*****************************************************************************
 void AnaTreeConverterEvent::FillTrueVertexInfo(TND280UpVertex* ndtrueVertex, AnaTrueVertex* trueVertex){
-//*****************************************************************************
+  //*****************************************************************************
 
   trueVertex->ID       = ndtrueVertex->GetVertexID();
   trueVertex->NuPDG    = ndtrueVertex->GetInTrack(0)->GetPDG();
@@ -298,20 +306,21 @@ void AnaTreeConverterEvent::FillTrueVertexInfo(TND280UpVertex* ndtrueVertex, Ana
   trueVertex->NuDir[0] = ndtrueVertex->GetInTrack(0)->GetInitMom().X()/trueVertex->NuMom;
   trueVertex->NuDir[1] = ndtrueVertex->GetInTrack(0)->GetInitMom().Y()/trueVertex->NuMom;
   trueVertex->NuDir[2] = ndtrueVertex->GetInTrack(0)->GetInitMom().Z()/trueVertex->NuMom;
+  trueVertex->TargetPDG= ndtrueVertex->GetInTrack(1)->GetPDG();
 
   trueVertex->Position[0] = ndtrueVertex->GetPosition().X(); //*units::mm;
-  trueVertex->Position[1] =ndtrueVertex->GetPosition().Y();//*units::mm;
-  trueVertex->Position[2] =ndtrueVertex->GetPosition().Z();//*units::mm;
-  trueVertex->Position[3] =ndtrueVertex->GetTime();//*units::s;
+  trueVertex->Position[1] = ndtrueVertex->GetPosition().Y();//*units::mm;
+  trueVertex->Position[2] = ndtrueVertex->GetPosition().Z();//*units::mm;
+  trueVertex->Position[3] = ndtrueVertex->GetTime();//*units::s;
     
   trueVertex->ReacCode  =ndtrueVertex->GetReacMode();
 
- }
+}
 
 
 //*****************************************************************************
 void AnaTreeConverterEvent::FillBunchInfo(std::vector<AnaTrueVertexB*>& TrueVertices, AnaBunch* bunch){
-//*****************************************************************************
+  //*****************************************************************************
 
   bunch->Bunch  = 1;
   bunch->Weight = 1;
@@ -320,7 +329,7 @@ void AnaTreeConverterEvent::FillBunchInfo(std::vector<AnaTrueVertexB*>& TrueVert
 
     std::vector<AnaTrueParticleB*> trueParticles = (*it)->TrueParticlesVect;
   
-  for (std::vector<AnaTrueParticleB*>::const_iterator itp = trueParticles.begin(); itp != trueParticles.end(); ++itp) {
+    for (std::vector<AnaTrueParticleB*>::const_iterator itp = trueParticles.begin(); itp != trueParticles.end(); ++itp) {
       AnaTrackB* part = NULL;
       if ( fabs( (*itp)->Charge )<1e-3 ) continue;
       if (*itp) {
@@ -347,7 +356,7 @@ void AnaTreeConverterEvent::FillBunchInfo(std::vector<AnaTrueVertexB*>& TrueVert
 
 //*****************************************************************************
 void AnaTreeConverterEvent::FillVertexInfo(AnaTrueVertexB * truevertex, AnaVertexB* vertex, int bunch){
-//*****************************************************************************
+  //*****************************************************************************
 
   anaUtils::CopyArray(truevertex->Position,vertex->Position,4);
   vertex->Bunch         = bunch;
@@ -356,7 +365,7 @@ void AnaTreeConverterEvent::FillVertexInfo(AnaTrueVertexB * truevertex, AnaVerte
 }
 //*****************************************************************************
 AnaTrueObjectC* AnaTreeConverterEvent::FindTrueParticle(Int_t g4id, std::vector<AnaTrueParticleB*>& trueParticles){
-//*****************************************************************************
+  //*****************************************************************************
 
 
   for (UInt_t i=0;i<trueParticles.size();i++){
@@ -368,7 +377,7 @@ AnaTrueObjectC* AnaTreeConverterEvent::FindTrueParticle(Int_t g4id, std::vector<
 
 //*****************************************************************************
 void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND280UpTrack* upTrack, AnaTrueParticleB* truePart){
-//*****************************************************************************
+  //*****************************************************************************
   
   if (upTrack == NULL ) {
     truePart->ID = 0;
@@ -385,10 +394,10 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
   truePart->PDG = upTrack->GetPDG();
   truePart->ParentID = upTrack->GetParentID();
   truePart->CosTheta=upTrack->GetInitCosTheta();
-double tmpp=-9999;
-double tmpd=9999;
-int ti=-1;
-int td=-1;
+  double tmpp=-9999;
+  double tmpd=9999;
+  int ti=-1;
+  int td=-1;
   if (upTrack->GetNPoints() > 0) {
     for (int ipt = 0; ipt < upTrack->GetNPoints(); ipt++) {
 
@@ -403,7 +412,7 @@ int td=-1;
     }
   }
   if(ti>=0 && td>=0){
-  anaUtils::VectorToArray(upTrack->GetPoint(td)->GetPostPosition(), truePart->Position);
+    anaUtils::VectorToArray(upTrack->GetPoint(td)->GetPostPosition(), truePart->Position);
  
     anaUtils::VectorToArray(upTrack->GetPoint(ti)->GetPostPosition(), truePart->PositionEnd);
     truePart->PositionEnd[3]=upTrack->GetPoint(ti)->GetTime();
@@ -433,123 +442,122 @@ int td=-1;
   
 }
 void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB* truePart){
- double TPCUp1Length=0;
-double TPCUp2Length=0;
-double TPCDown1Length=0;
-double TPCDown2Length=0;
-double ForwTPC1Length=0;
-double ForwTPC2Length=0;
-double ForwTPC3Length=0;
-double Target1Length=0;
-double Target2Length=0;
-double FGD1Length=0;
-double FGD2Length=0;
-double DsECalLength=0;
-double P0DECalLength=0;
-double BrlECalLength=0;
+  
+  double TPCUp1Length=0;
+  double TPCUp2Length=0;
+  double TPCDown1Length=0;
+  double TPCDown2Length=0;
+  double ForwTPC1Length=0;
+  double ForwTPC2Length=0;
+  double ForwTPC3Length=0;
+  double Target1Length=0;
+  double Target2Length=0;
+  double FGD1Length=0;
+  double FGD2Length=0;
+  double DsECalLength=0;
+  double P0DECalLength=0;
+  double BrlECalLength=0;
+  double ToFLength=0;
 
+  double TPCUp1Z=9999;
+  double TPCUp2Z=9999;
+  double TPCDown1Z=9999;
+  double TPCDown2Z=9999;
+  double ForwTPC1Z=9999;
+  double ForwTPC2Z=9999;
+  double ForwTPC3Z=9999;
+  double Target1Z=9999;
+  double Target2Z=9999;
+  double FGD1Z=9999;
+  double FGD2Z=9999;
+  double DsECalZ=9999;
+  double P0DECalZ=9999;
+  double BrlECalZ=9999;
+  double ToFZ=9999;
 
+  double TPCUp1fZ=-9999;
+  double TPCUp2fZ=-9999;
+  double TPCDown1fZ=-9999;
+  double TPCDown2fZ=-9999;
+  double ForwTPC1fZ=-9999;
+  double ForwTPC2fZ=-9999;
+  double ForwTPC3fZ=-9999;
+  double Target1fZ=-9999;
+  double Target2fZ=-9999;
+  double FGD1fZ=-9999;
+  double FGD2fZ=-9999;
+  double DsECalfZ=-9999;
+  double P0DECalfZ=-9999;
+  double BrlECalfZ=-9999;
+  double ToFfZ=-9999;
+  
+  double TPCUp1LengthYZ=0;
+  double TPCUp2LengthYZ=0;
+  double TPCDown1LengthYZ=0;
+  double TPCDown2LengthYZ=0;
+  double ForwTPC1LengthYZ=0;
+  double ForwTPC2LengthYZ=0;
+  double ForwTPC3LengthYZ=0;
+  double Target1LengthYZ=0;
+  double Target2LengthYZ=0;
+  double FGD1LengthYZ=0;
+  double FGD2LengthYZ=0;
+  double DsECalLengthYZ=0;
+  double P0DECalLengthYZ=0;
+  double BrlECalLengthYZ=0;
+  double ToFLengthYZ=0;
+  
+  double TPCUp1Edep=0;
+  double TPCUp2Edep=0;
+  double TPCDown1Edep=0;
+  double TPCDown2Edep=0;
+  double ForwTPC1Edep=0;
+  double ForwTPC2Edep=0;
+  double ForwTPC3Edep=0;
+  double Target1Edep=0;
+  double Target2Edep=0;
+  double FGD1Edep=0;
+  double FGD2Edep=0;
+  double DsECalEdep=0;
+  double P0DECalEdep=0;
+  double BrlECalEdep=0;
+  double ToFEdep=0;
 
-double TPCUp1Z=9999;
-double TPCUp2Z=9999;
-double TPCDown1Z=9999;
-double TPCDown2Z=9999;
-double ForwTPC1Z=9999;
-double ForwTPC2Z=9999;
-double ForwTPC3Z=9999;
-double Target1Z=9999;
-double Target2Z=9999;
-double FGD1Z=9999;
-double FGD2Z=9999;
-double DsECalZ=9999;
-double P0DECalZ=9999;
-double BrlECalZ=9999;
-
-
-double TPCUp1fZ=-9999;
-double TPCUp2fZ=-9999;
-double TPCDown1fZ=-9999;
-double TPCDown2fZ=-9999;
-double ForwTPC1fZ=-9999;
-double ForwTPC2fZ=-9999;
-double ForwTPC3fZ=-9999;
-double Target1fZ=-9999;
-double Target2fZ=-9999;
-double FGD1fZ=-9999;
-double FGD2fZ=-9999;
-double DsECalfZ=-9999;
-double P0DECalfZ=-9999;
-double BrlECalfZ=-9999;
-
-
-
-double TPCUp1LengthYZ=0;
-double TPCUp2LengthYZ=0;
-double TPCDown1LengthYZ=0;
-double TPCDown2LengthYZ=0;
-double ForwTPC1LengthYZ=0;
-double ForwTPC2LengthYZ=0;
-double ForwTPC3LengthYZ=0;
-double Target1LengthYZ=0;
-double Target2LengthYZ=0;
-double FGD1LengthYZ=0;
-double FGD2LengthYZ=0;
-double DsECalLengthYZ=0;
-double P0DECalLengthYZ=0;
-double BrlECalLengthYZ=0;
-
-
-double TPCUp1Edep=0;
-double TPCUp2Edep=0;
-double TPCDown1Edep=0;
-double TPCDown2Edep=0;
-double ForwTPC1Edep=0;
-double ForwTPC2Edep=0;
-double ForwTPC3Edep=0;
-double Target1Edep=0;
-double Target2Edep=0;
-double FGD1Edep=0;
-double FGD2Edep=0;
-double DsECalEdep=0;
-double P0DECalEdep=0;
-double BrlECalEdep=0;
-
-
-TND280UpTrackPoint* lastTPCUp1=NULL;
-TND280UpTrackPoint* lastTPCUp2=NULL;
-TND280UpTrackPoint* lastTPCDown1=NULL;
-TND280UpTrackPoint* lastTPCDown2=NULL;
-TND280UpTrackPoint* lastForwTPC1=NULL;
-TND280UpTrackPoint* lastForwTPC2=NULL;
-TND280UpTrackPoint* lastForwTPC3=NULL;
-TND280UpTrackPoint* lastTarget1=NULL;
-TND280UpTrackPoint* lastTarget2=NULL;
-TND280UpTrackPoint* lastFGD1=NULL;
-TND280UpTrackPoint* lastFGD2=NULL;
-TND280UpTrackPoint* lastDsECal=NULL;
-TND280UpTrackPoint* lastP0DECal=NULL;
-TND280UpTrackPoint* lastBrlECal=NULL;
-
-
-TND280UpTrackPoint* firstTPCUp1=NULL;
-TND280UpTrackPoint* firstTPCUp2=NULL;
-TND280UpTrackPoint* firstTPCDown1=NULL;
-TND280UpTrackPoint* firstTPCDown2=NULL;
-TND280UpTrackPoint* firstForwTPC1=NULL;
-TND280UpTrackPoint* firstForwTPC2=NULL;
-TND280UpTrackPoint* firstForwTPC3=NULL;
-TND280UpTrackPoint* firstTarget1=NULL;
-TND280UpTrackPoint* firstTarget2=NULL;
-TND280UpTrackPoint* firstFGD1=NULL;
-TND280UpTrackPoint* firstFGD2=NULL;
-TND280UpTrackPoint* firstDsECal=NULL;
-TND280UpTrackPoint* firstP0DECal=NULL;
-TND280UpTrackPoint* firstBrlECal=NULL;
-
+  TND280UpTrackPoint* lastTPCUp1=NULL;
+  TND280UpTrackPoint* lastTPCUp2=NULL;
+  TND280UpTrackPoint* lastTPCDown1=NULL;
+  TND280UpTrackPoint* lastTPCDown2=NULL;
+  TND280UpTrackPoint* lastForwTPC1=NULL;
+  TND280UpTrackPoint* lastForwTPC2=NULL;
+  TND280UpTrackPoint* lastForwTPC3=NULL;
+  TND280UpTrackPoint* lastTarget1=NULL;
+  TND280UpTrackPoint* lastTarget2=NULL;
+  TND280UpTrackPoint* lastFGD1=NULL;
+  TND280UpTrackPoint* lastFGD2=NULL;
+  TND280UpTrackPoint* lastDsECal=NULL;
+  TND280UpTrackPoint* lastP0DECal=NULL;
+  TND280UpTrackPoint* lastBrlECal=NULL;
+  TND280UpTrackPoint* lastToF=NULL;
+  
+  TND280UpTrackPoint* firstTPCUp1=NULL;
+  TND280UpTrackPoint* firstTPCUp2=NULL;
+  TND280UpTrackPoint* firstTPCDown1=NULL;
+  TND280UpTrackPoint* firstTPCDown2=NULL;
+  TND280UpTrackPoint* firstForwTPC1=NULL;
+  TND280UpTrackPoint* firstForwTPC2=NULL;
+  TND280UpTrackPoint* firstForwTPC3=NULL;
+  TND280UpTrackPoint* firstTarget1=NULL;
+  TND280UpTrackPoint* firstTarget2=NULL;
+  TND280UpTrackPoint* firstFGD1=NULL;
+  TND280UpTrackPoint* firstFGD2=NULL;
+  TND280UpTrackPoint* firstDsECal=NULL;
+  TND280UpTrackPoint* firstP0DECal=NULL;
+  TND280UpTrackPoint* firstBrlECal=NULL;
+  TND280UpTrackPoint* firstToF=NULL;
 
   for (int ip = 0; ip < upTrack->GetNPoints(); ip++) {
     TND280UpTrackPoint* Tpoint = upTrack->GetPoint(ip);
-//    std:;cout<<Tpoint->GetPhysVolName()<<std::endl;
+    //    std:;cout<<Tpoint->GetPhysVolName()<<std::endl;
     if (Tpoint->GetPhysVolName().find("TPCUp1") != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < TPCUp1Z) {
         lastTPCUp1 = Tpoint;
@@ -573,13 +581,13 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     }
-     if (Tpoint->GetPhysVolName().find("TPCDown1") != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("TPCDown1") != std::string::npos) {
 
       if (Tpoint->GetMomentum().Mag() < TPCDown1Z) {
         lastTPCDown1 = Tpoint;
         TPCDown1Z = Tpoint->GetMomentum().Mag();
       }
-     if (Tpoint->GetMomentum().Mag() > TPCDown1fZ) {
+      if (Tpoint->GetMomentum().Mag() > TPCDown1fZ) {
         firstTPCDown1 = Tpoint;
         TPCDown1fZ = Tpoint->GetMomentum().Mag();
       }
@@ -643,7 +651,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
         lastTarget1 = Tpoint;
         Target1Z = Tpoint->GetMomentum().Mag();
       }
-    if (Tpoint->GetMomentum().Mag() > Target1fZ) {
+      if (Tpoint->GetMomentum().Mag() > Target1fZ) {
         firstTarget1 = Tpoint;
         Target1fZ = Tpoint->GetMomentum().Mag();
       }
@@ -666,7 +674,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
         lastFGD1 = Tpoint;
         FGD1Z = Tpoint->GetMomentum().Mag();
       }
-    if (Tpoint->GetMomentum().Mag() > FGD1fZ) {
+      if (Tpoint->GetMomentum().Mag() > FGD1fZ) {
         firstFGD1 = Tpoint;
         FGD1fZ = Tpoint->GetMomentum().Mag();
       }
@@ -721,60 +729,74 @@ TND280UpTrackPoint* firstBrlECal=NULL;
       }
 
     }
+    if (Tpoint->GetPhysVolName().find("ToF") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < ToFZ) {
+        lastToF = Tpoint;
+        ToFZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > ToFfZ) {
+        firstToF = Tpoint;
+        ToFfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
 
 
-}
+  }
   int nCrossers=0;
   if(firstTPCUp1){
-        nCrossers++;
+    nCrossers++;
   }
   if(firstTPCUp2){
-       nCrossers++;
+    nCrossers++;
   }
   if(firstTPCDown1){
-       nCrossers++;
+    nCrossers++;
   }
-   if(firstTPCDown2){
-       nCrossers++;
+  if(firstTPCDown2){
+    nCrossers++;
   }
-   if(firstForwTPC1){
-       nCrossers++;
+  if(firstForwTPC1){
+    nCrossers++;
   }
-   if(firstForwTPC2){
-       nCrossers++;
+  if(firstForwTPC2){
+    nCrossers++;
   }
-   if(firstForwTPC3){
-       nCrossers++;
+  if(firstForwTPC3){
+    nCrossers++;
   }
   if(firstTarget1){
-       nCrossers++;
+    nCrossers++;
   }
-   if(firstTarget2){
-       nCrossers++;
+  if(firstTarget2){
+    nCrossers++;
   }
   if(firstFGD1){
-       nCrossers++;
+    nCrossers++;
   }
-   if(firstFGD2){
-       nCrossers++;
+  if(firstFGD2){
+    nCrossers++;
   }
-   if(firstDsECal){
-       nCrossers++;
+  if(firstDsECal){
+    nCrossers++;
   }
-   if(firstP0DECal){
-       nCrossers++;
+  if(firstP0DECal){
+    nCrossers++;
   }
-
-   if(firstBrlECal){
-       nCrossers++;
+  if(firstBrlECal){
+    nCrossers++;
+  }
+  if(firstToF){
+    nCrossers++;
   }
 
   truePart->nDetCrossings=0;
 
-//  anaUtils::CreateArray(truePart->DetCrossings, nCrossers);
+  //  anaUtils::CreateArray(truePart->DetCrossings, nCrossers);
   if(firstTPCUp1){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
-   // firstTPCUp1->PrintTrackPoint();
+    // firstTPCUp1->PrintTrackPoint();
     //lastTPCUp1->PrintTrackPoint();
     detCross->EntrancePosition[0] = firstTPCUp1->GetPostPosition().X();
     detCross->EntrancePosition[1] = firstTPCUp1->GetPostPosition().Y();
@@ -793,7 +815,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCUp1();
     detCross->EDeposit=upTrack->GetEdepTPCUp1();
     detCross->SegLength=upTrack->GetLengthTPCUp1();
-	detCross->Detector_name=TString(firstTPCUp1->GetPhysVolName());
+    detCross->Detector_name=TString(firstTPCUp1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCUp1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -818,7 +840,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCUp2();
     detCross->EDeposit=upTrack->GetEdepTPCUp2();
     detCross->SegLength=upTrack->GetLengthTPCUp2();
-	detCross->Detector_name=TString(firstTPCUp2->GetPhysVolName());
+    detCross->Detector_name=TString(firstTPCUp2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCUp2);
     truePart->DetCrossingsVect.push_back(detCross);
   }
@@ -843,7 +865,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCDown1();
     detCross->EDeposit=upTrack->GetEdepTPCDown1();
     detCross->SegLength=upTrack->GetLengthTPCDown1();
-	detCross->Detector_name=TString(firstTPCDown1->GetPhysVolName());
+    detCross->Detector_name=TString(firstTPCDown1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCDown1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -869,7 +891,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzTPCDown2();
     detCross->EDeposit=upTrack->GetEdepTPCDown2();
     detCross->SegLength=upTrack->GetLengthTPCDown2();
-	detCross->Detector_name=TString(firstTPCDown2->GetPhysVolName());
+    detCross->Detector_name=TString(firstTPCDown2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCDown2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -894,7 +916,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzForwTPC1();
     detCross->EDeposit=upTrack->GetEdepForwTPC1();
     detCross->SegLength=upTrack->GetLengthForwTPC1();
-	detCross->Detector_name=TString(firstForwTPC1->GetPhysVolName());
+    detCross->Detector_name=TString(firstForwTPC1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC1);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -919,7 +941,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->DeltaLYZ=upTrack->GetLyzForwTPC2();
     detCross->EDeposit=upTrack->GetEdepForwTPC2();
     detCross->SegLength=upTrack->GetLengthForwTPC2();
-	detCross->Detector_name=TString(firstForwTPC2->GetPhysVolName());
+    detCross->Detector_name=TString(firstForwTPC2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -943,7 +965,7 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[2] = lastForwTPC3->GetMomentum().Z();
     detCross->DeltaLYZ=upTrack->GetLyzForwTPC3();
     detCross->EDeposit=upTrack->GetEdepForwTPC3();
-	detCross->Detector_name=TString(firstForwTPC3->GetPhysVolName());
+    detCross->Detector_name=TString(firstForwTPC3->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC3);
     detCross->SegLength=upTrack->GetLengthForwTPC3();
     truePart->DetCrossingsVect.push_back(detCross);
@@ -966,9 +988,10 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[0] = lastTarget1->GetMomentum().X();
     detCross->ExitMomentum[1] = lastTarget1->GetMomentum().Y();
     detCross->ExitMomentum[2] = lastTarget1->GetMomentum().Z();
+    detCross->SegLength=upTrack->GetLengthTarget1();
     detCross->DeltaLYZ=upTrack->GetLengthTarget1();
     detCross->EDeposit=upTrack->GetEdepTarget1();
-	detCross->Detector_name=TString(firstTarget1->GetPhysVolName());
+    detCross->Detector_name=TString(firstTarget1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTarget1);
 
     truePart->DetCrossingsVect.push_back(detCross);
@@ -991,9 +1014,10 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[0] = lastTarget2->GetMomentum().X();
     detCross->ExitMomentum[1] = lastTarget2->GetMomentum().Y();
     detCross->ExitMomentum[2] = lastTarget2->GetMomentum().Z();
+    detCross->SegLength=upTrack->GetLengthTarget2();
     detCross->DeltaLYZ=upTrack->GetLengthTarget2();
     detCross->EDeposit=upTrack->GetEdepTarget2();
-	detCross->Detector_name=TString(firstTarget2->GetPhysVolName());
+    detCross->Detector_name=TString(firstTarget2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTarget2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -1015,9 +1039,10 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[0] = lastFGD1->GetMomentum().X();
     detCross->ExitMomentum[1] = lastFGD1->GetMomentum().Y();
     detCross->ExitMomentum[2] = lastFGD1->GetMomentum().Z();
+    detCross->SegLength=upTrack->GetLengthFGD1();
     detCross->DeltaLYZ=upTrack->GetLengthFGD1();
     detCross->EDeposit=upTrack->GetEdepFGD1();
-	detCross->Detector_name=TString(firstFGD1->GetPhysVolName());
+    detCross->Detector_name=TString(firstFGD1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kFGD1);
 
     truePart->DetCrossingsVect.push_back(detCross);
@@ -1040,9 +1065,10 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[0] = lastFGD2->GetMomentum().X();
     detCross->ExitMomentum[1] = lastFGD2->GetMomentum().Y();
     detCross->ExitMomentum[2] = lastFGD2->GetMomentum().Z();
+    detCross->SegLength=upTrack->GetLengthFGD2();
     detCross->DeltaLYZ=upTrack->GetLengthFGD2();
     detCross->EDeposit=upTrack->GetEdepFGD2();
-	detCross->Detector_name=TString(firstFGD2->GetPhysVolName());
+    detCross->Detector_name=TString(firstFGD2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kFGD2);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -1064,9 +1090,10 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[0] = lastDsECal->GetMomentum().X();
     detCross->ExitMomentum[1] = lastDsECal->GetMomentum().Y();
     detCross->ExitMomentum[2] = lastDsECal->GetMomentum().Z();
+    detCross->SegLength=upTrack->GetLengthDsECal();
     detCross->DeltaLYZ=upTrack->GetLengthDsECal();
     detCross->EDeposit=upTrack->GetEdepDsECal();
-	detCross->Detector_name=TString(firstDsECal->GetPhysVolName());
+    detCross->Detector_name=TString(firstDsECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kDsECal);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -1088,9 +1115,10 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[0] = lastP0DECal->GetMomentum().X();
     detCross->ExitMomentum[1] = lastP0DECal->GetMomentum().Y();
     detCross->ExitMomentum[2] = lastP0DECal->GetMomentum().Z();
+    detCross->SegLength=upTrack->GetLengthP0DECal();
     detCross->DeltaLYZ=upTrack->GetLengthP0DECal();
     detCross->EDeposit=upTrack->GetEdepP0DECal();
-	detCross->Detector_name=TString(firstP0DECal->GetPhysVolName());
+    detCross->Detector_name=TString(firstP0DECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kP0DECal);
     truePart->DetCrossingsVect.push_back(detCross);
 
@@ -1112,26 +1140,109 @@ TND280UpTrackPoint* firstBrlECal=NULL;
     detCross->ExitMomentum[0] = lastBrlECal->GetMomentum().X();
     detCross->ExitMomentum[1] = lastBrlECal->GetMomentum().Y();
     detCross->ExitMomentum[2] = lastBrlECal->GetMomentum().Z();
+    detCross->SegLength=upTrack->GetLengthBrlECal();
     detCross->DeltaLYZ=upTrack->GetLengthBrlECal();
     detCross->EDeposit=upTrack->GetEdepBrlECal();
-	detCross->Detector_name=TString(firstBrlECal->GetPhysVolName());
+    detCross->Detector_name=TString(firstBrlECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kBrlECal);
     truePart->DetCrossingsVect.push_back(detCross);
 
   }
+  if(firstToF){
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    //std::cout<<"firstToF->GetPostPosition().X() "<<lastToF->GetPostPosition().X()<<" "<<lastToF->GetPostPosition().Y()<<" "<<lastToF->GetPostPosition().Z()<<std::endl;
+    detCross->EntrancePosition[0] = firstToF->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstToF->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstToF->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstToF->GetTime();
+    detCross->ExitPosition[0] = lastToF->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastToF->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastToF->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastToF->GetTime();
+    detCross->EntranceMomentum[0] = firstToF->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstToF->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstToF->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastToF->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastToF->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastToF->GetMomentum().Z();
+    //detCross->SegLength=upTrack->GetLengthToF();
+    //detCross->DeltaLYZ=upTrack->GetLengthToF();
+    //detCross->EDeposit=upTrack->GetEdepToF();
+    detCross->Detector_name=TString(firstToF->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+  
 
 }
-bool AnaTreeConverterEvent::GetEfficiency(double length,double theta){
-    int bin =hefficiency_target->FindBin(theta,length);
 
-    double prob=hefficiency_target->GetBinContent(bin);
+
+bool AnaTreeConverterEvent::IsReconstructedTarget(double length,double theta){
+  int bin =hefficiency_target->FindBin(theta,length);
+
+  double prob=hefficiency_target->GetBinContent(bin);
  
-    if(gRandom->Uniform()>prob){
-      return 1;
-    }else{
-      return 0;
-    }
+  if(gRandom->Uniform()>prob)
+    return 1;
+  else
+    return 0;
+  
 }
+
+
+bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, TString det){
+
+  float reco_eff_Brl, FGDmatch_eff_Brl;
+  float reco_eff_Ds,  FGDmatch_eff_Ds;
+
+  TVector3 entryNormal_vect(0,0,0);
+    
+  if (det.Contains("RightClam") &&
+      det.Contains("BotLeftTopRight"))
+    entryNormal_vect.SetY(1);  // (+Y)
+  else if (det.Contains("RightClam") &&
+	   det.Contains("TopLeftBotRight"))
+    entryNormal_vect.SetY(-1); // (-Y)
+  else if (det.Contains("LeftClam") &&
+	   det.Contains("BotLeftTopRight"))
+    entryNormal_vect.SetY(-1); // (-Y)
+  else if (det.Contains("LeftClam") &&
+	   det.Contains("TopLeftBotRight"))
+    entryNormal_vect.SetY(1);  // (+Y)
+  else if (det.Contains("LeftSide"))
+    entryNormal_vect.SetX(1);  // (+X)
+  else if (det.Contains("RightSide"))
+    entryNormal_vect.SetX(-1); // (-X)
+  else if (det.Contains("POD/USECal"))
+    entryNormal_vect.SetZ(-1); // (-Z)
+  else
+    entryNormal_vect.SetZ(1);  // (+Z)
+
+  float mom = P.Mag();
+  float cos = P.Dot(entryNormal_vect)/mom;
+  
+  if (!_ECal_reco_eff->GetBinValues(mom, reco_eff_Brl, reco_eff_Ds)) return false;
+  if (!_ECal_FGDmatch_eff->GetBinValues(cos, FGDmatch_eff_Brl, FGDmatch_eff_Ds)) return false;
+
+  // throw two random numbers between 0 and 1
+  double r_eff[2];
+  _randomGen->RndmArray(2, r_eff);
+
+  // select artificially only a fraction of the events, 
+  // by applying the reconstruction/FGD-ECal match efficiencies
+  if (det.Contains("DsECal")) {
+    if (r_eff[1] < FGDmatch_eff_Ds)
+      return true;
+  }
+  else {
+    if (r_eff[0] < reco_eff_Brl && r_eff[1] < FGDmatch_eff_Brl)
+      return true;
+  }
+  return false;
+  
+}
+
 
 void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* trueParticle, AnaTrack* reconParticle) {
   
@@ -1139,8 +1250,8 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   reconParticle->Momentum       = trueParticle->Momentum;
   reconParticle->Charge         = trueParticle->Charge;
   reconParticle->Length         = trueParticle->Length;
-  reconParticle->EDeposit         = trueParticle->EDeposit;
-  reconParticle->EKin             = trueParticle->EKin;
+  reconParticle->EDeposit       = trueParticle->EDeposit;
+  reconParticle->EKin           = trueParticle->EKin;
   anaUtils::CopyArray(trueParticle->Direction, reconParticle->DirectionStart, 3);
   anaUtils::CopyArray(trueParticle->Position,  reconParticle->PositionStart, 4);
   anaUtils::CopyArray(trueParticle->PositionEnd,   reconParticle->PositionEnd, 4);
@@ -1164,7 +1275,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
- 
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
  
       seg->Detectors=trueParticle->DetCrossingsVect[i]->Detector;
@@ -1173,7 +1283,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       seg->Momentum = mom;
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
-    //  anaUtils::ComputeTPCPull(*seg,*reconParticle);
+      //  anaUtils::ComputeTPCPull(*seg,*reconParticle);
       reconParticle->TPCSegments[reconParticle->nTPCSegments++] = seg;
 
     }
@@ -1185,13 +1295,12 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
-
+      seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
- 
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
-      seg->IsReconstructed = GetEfficiency(seg->DeltaLYZ, trueParticle->CosTheta);
+      seg->IsReconstructed = IsReconstructedTarget(seg->DeltaLYZ, trueParticle->CosTheta);
       reconParticle->TargetSegments[reconParticle->nTargetSegments++] = seg;
 
     }
@@ -1203,13 +1312,12 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
-
+      seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
- 
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
-      seg->IsReconstructed = GetEfficiency(seg->DeltaLYZ, trueParticle->CosTheta);
+      seg->IsReconstructed = IsReconstructedTarget(seg->DeltaLYZ, trueParticle->CosTheta);
       reconParticle->FGDSegments[reconParticle->nFGDSegments++] = seg;
 
     }
@@ -1221,16 +1329,32 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
-
+      seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
- 
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
-    //  seg->IsReconstructed = GetEfficiency(seg->DeltaLYZ, trueParticle->CosTheta);
+      seg->IsReconstructed =
+	IsReconstructedECal(anaUtils::ArrayToTVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum),
+			    trueParticle->DetCrossingsVect[i]->Detector_name);
       reconParticle->ECalSegments[reconParticle->nECalSegments++] = seg;
 
     }
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToF)) {
+      AnaToFParticleB* seg = dynamic_cast<AnaToFParticleB*>(MakeToFTrack() );
+      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
+      anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
+      anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
+      seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
+      seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
+      seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
+      SubDetId::SetDetectorUsed(reconParticle->Detectors, SubDetId::kToF);
+      seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
+      reconParticle->ToFSegments[reconParticle->nToFSegments++] = seg;
 
+    }
   }
+
 }

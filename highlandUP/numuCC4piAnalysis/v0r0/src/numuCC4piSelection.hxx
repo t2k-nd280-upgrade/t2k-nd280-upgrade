@@ -114,198 +114,210 @@ inline ToyBoxB* numuCC4piSelection::MakeToyBox() {return new ToyBoxCC4pi();}
 
 namespace numuCC4piUtils{
 
-class TotalMultiplicityCut: public StepBase{
-public:
-  TotalMultiplicityCut() {
-    useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
-    useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
-    useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
-    useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+  class TotalMultiplicityCut: public StepBase{
+  public:
+    TotalMultiplicityCut() {
+      useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
+      useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+      useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+      useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+    };
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new TotalMultiplicityCut();}
+  private:
+    bool useTarget1, useTarget2;
+    bool useFGD1, useFGD2;
   };
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new TotalMultiplicityCut();}
-private:
-  bool useTarget1, useTarget2;
-  bool useFGD1, useFGD2;
-};
 
-class SortTracksAction: public StepBase{
-public:
-  SortTracksAction() {
-    useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
-    useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
-    useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
-    useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+  class SortTracksAction: public StepBase{
+  public:
+    SortTracksAction() {
+      useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
+      useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+      useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+      useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+    };
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new SortTracksAction();}
+  private:
+    bool useTarget1, useTarget2;
+    bool useFGD1, useFGD2;
   };
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new SortTracksAction();}
-private:
-  bool useTarget1, useTarget2;
-  bool useFGD1, useFGD2;
-};
 
-class TrackGQandFVCut: public StepBase{
-public:
-  TrackGQandFVCut() {
-    useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
-    useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
-    useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
-    useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+  class TrackGQandFVCut: public StepBase{
+  public:
+    TrackGQandFVCut() {
+      useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
+      useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+      useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+      useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+    };
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new TrackGQandFVCut();}
+
+  private:
+    bool useTarget1, useTarget2;
+    bool useFGD1, useFGD2;
   };
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new TrackGQandFVCut();}
 
-private:
-  bool useTarget1, useTarget2;
-  bool useFGD1, useFGD2;
-};
-
-class VetoAction: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new VetoAction();}
-};
-/// Find the Vertex. For the moment it's just the Star position of the longest track
-class TrueVertexInTargetCut: public StepBase{
-public:
-  TrueVertexInTargetCut() {
-    useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
-    useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
-    useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
-    useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+  class VetoAction: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new VetoAction();}
   };
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new TrueVertexInTargetCut();}
+  /// Find the Vertex. For the moment it's just the Star position of the longest track
+  class TrueVertexInTargetCut: public StepBase{
+  public:
+    TrueVertexInTargetCut() {
+      useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
+      useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
+      useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
+      useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
+    };
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new TrueVertexInTargetCut();}
 
-private:
-  bool useTarget1, useTarget2;
-  bool useFGD1, useFGD2;
-};
+  private:
+    bool useTarget1, useTarget2;
+    bool useFGD1, useFGD2;
+  };
 
-/// Find the True Vertex. For the moment it's just start position of the true particle associated to the longest track
-class FindTrueVertexAction: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new FindTrueVertexAction();}
-};
+  /// Find the True Vertex. For the moment it's just start position of the true particle associated to the longest track
+  class FindTrueVertexAction: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new FindTrueVertexAction();}
+  };
 
-class FindVertexAction: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new FindVertexAction();}
-};
+  class FindVertexAction: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new FindVertexAction();}
+  };
 
-class FillSummaryAction_numuCC4pi: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;  
-  StepBase* MakeClone(){return new FillSummaryAction_numuCC4pi();}
-};
+  class FillSummaryAction_numuCC4pi: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;  
+    StepBase* MakeClone(){return new FillSummaryAction_numuCC4pi();}
+  };
 
-class FindPionsAction: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new FindPionsAction();}
-};
+  class FindPionsAction: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new FindPionsAction();}
+  };
 
-class FwdTPC_Quality: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new FwdTPC_Quality();}
-};
+  class FwdTPC_Quality: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new FwdTPC_Quality();}
+  };
 
-class FwdTPC_PID: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new FwdTPC_PID();}
-};
-
-
-class BwdTPC_Quality: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new BwdTPC_Quality();}
-};
-
-class BwdTPC_PID: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new BwdTPC_PID();}
-};
+  class FwdTPC_PID: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new FwdTPC_PID();}
+  };
 
 
-class HATPC_Quality: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new HATPC_Quality();}
-};
+  class BwdTPC_Quality: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new BwdTPC_Quality();}
+  };
 
-class HATPC_PID: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new HATPC_PID();}
-};
+  class BwdTPC_PID: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new BwdTPC_PID();}
+  };
 
 
-class ECal_Quality: public StepBase{
-public:
-  ECal_Quality(TRandom3 *r, BinnedParams* b1, BinnedParams* b2){
-	  _randomGen = r;
-	  _ECal_reco_eff = b1;
-	  _ECal_FGDmatch_eff = b2;
-  }
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff);}
-private:
-  TRandom3* _randomGen;
-  BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
-};
+  class HATPC_Quality: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new HATPC_Quality();}
+  };
 
-class ECal_PID: public StepBase{
-public:
-  ECal_PID(TFile *f){_file_ECAL_PDF=f;}
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new ECal_PID(_file_ECAL_PDF);}
-private:
-  TFile* _file_ECAL_PDF; 
-};
+  class HATPC_PID: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new HATPC_PID();}
+  };
 
-class CC0pi: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new CC0pi();}
-};
 
-class CC1pi: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new CC1pi();}
-};
+  class ECal_Quality: public StepBase{
+  public:
+    ECal_Quality(TRandom3 *r, BinnedParams* b1, BinnedParams* b2){
+      _randomGen = r;
+      _ECal_reco_eff = b1;
+      _ECal_FGDmatch_eff = b2;
+    }
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff);}
+  private:
+    TRandom3* _randomGen;
+    BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
+  };
 
-class CCoth: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new CCoth();}
-};
+  class ECal_PID: public StepBase{
+  public:
+    ECal_PID(TFile *f){_file_ECAL_PDF=f;}
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new ECal_PID(_file_ECAL_PDF);}
+  private:
+    TFile* _file_ECAL_PDF; 
+  };
+
+  class CC0pi: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new CC0pi();}
+  };
+
+  class CC1pi: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new CC1pi();}
+  };
+
+  class CCoth: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new CCoth();}
+  };
+
+  class ToF_senseDetermination: public StepBase{
+  public:
+    ToF_senseDetermination(){
+      _randomGen = new TRandom3(0);
+    }
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new ToF_senseDetermination();}
+  private:
+    TRandom3* _randomGen;
+  };
 
 }
   
