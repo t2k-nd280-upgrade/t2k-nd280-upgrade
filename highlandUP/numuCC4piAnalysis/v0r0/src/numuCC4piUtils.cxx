@@ -396,8 +396,8 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
     ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
     box->nIsoTargetPiontracks = 0;
 
-    Float_t cut_length = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
-    
+//    Float_t cut_length = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
+    Float_t cut_length=50;
     EventBox::RecObjectGroupEnum groupID;
     if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
     else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTarget2;
@@ -452,8 +452,8 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
   ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
   box->nMichelElectrons = 0;
   
-  Float_t ME_eff = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.Efficiency");
-
+//  Float_t ME_eff = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.Efficiency");
+Float_t ME_eff=0.8;
   EventBox::RecObjectGroupEnum groupID;
   if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
   else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTarget2;

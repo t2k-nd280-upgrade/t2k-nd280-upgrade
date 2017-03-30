@@ -442,122 +442,174 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
   
 }
 void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB* truePart){
-  
-  double TPCUp1Length=0;
-  double TPCUp2Length=0;
-  double TPCDown1Length=0;
-  double TPCDown2Length=0;
-  double ForwTPC1Length=0;
-  double ForwTPC2Length=0;
-  double ForwTPC3Length=0;
-  double Target1Length=0;
-  double Target2Length=0;
-  double FGD1Length=0;
-  double FGD2Length=0;
-  double DsECalLength=0;
-  double P0DECalLength=0;
-  double BrlECalLength=0;
-  double ToFLength=0;
 
-  double TPCUp1Z=9999;
-  double TPCUp2Z=9999;
-  double TPCDown1Z=9999;
-  double TPCDown2Z=9999;
-  double ForwTPC1Z=9999;
-  double ForwTPC2Z=9999;
-  double ForwTPC3Z=9999;
-  double Target1Z=9999;
-  double Target2Z=9999;
-  double FGD1Z=9999;
-  double FGD2Z=9999;
-  double DsECalZ=9999;
-  double P0DECalZ=9999;
-  double BrlECalZ=9999;
-  double ToFZ=9999;
+  double TPCUp1Length = 0;
+  double TPCUp2Length = 0;
+  double TPCDown1Length = 0;
+  double TPCDown2Length = 0;
+  double ForwTPC1Length = 0;
+  double ForwTPC2Length = 0;
+  double ForwTPC3Length = 0;
+  double Target1Length = 0;
+  double Target2Length = 0;
+  double FGD1Length = 0;
+  double FGD2Length = 0;
+  double DsECalLength = 0;
+  double P0DECalLength = 0;
+  double BrlECalLength = 0;
+  double ToFLength = 0;
+  double TopUpZ = 9999;
+  double TopDownZ = 9999;
+  double BotUpZ = 9999;
+  double BotDownZ = 9999;
+  double LeftUpZ = 9999;
+  double LeftDownZ = 9999;
+  double RightUpZ = 9999;
+  double RightDownZ = 9999;
+  double BackUpZ = 9999;
+  double BackDownZ = 9999;
+  double FrontUpZ = 9999;
+  double FrontDownZ = 9999;
 
-  double TPCUp1fZ=-9999;
-  double TPCUp2fZ=-9999;
-  double TPCDown1fZ=-9999;
-  double TPCDown2fZ=-9999;
-  double ForwTPC1fZ=-9999;
-  double ForwTPC2fZ=-9999;
-  double ForwTPC3fZ=-9999;
-  double Target1fZ=-9999;
-  double Target2fZ=-9999;
-  double FGD1fZ=-9999;
-  double FGD2fZ=-9999;
-  double DsECalfZ=-9999;
-  double P0DECalfZ=-9999;
-  double BrlECalfZ=-9999;
-  double ToFfZ=-9999;
-  
-  double TPCUp1LengthYZ=0;
-  double TPCUp2LengthYZ=0;
-  double TPCDown1LengthYZ=0;
-  double TPCDown2LengthYZ=0;
-  double ForwTPC1LengthYZ=0;
-  double ForwTPC2LengthYZ=0;
-  double ForwTPC3LengthYZ=0;
-  double Target1LengthYZ=0;
-  double Target2LengthYZ=0;
-  double FGD1LengthYZ=0;
-  double FGD2LengthYZ=0;
-  double DsECalLengthYZ=0;
-  double P0DECalLengthYZ=0;
-  double BrlECalLengthYZ=0;
-  double ToFLengthYZ=0;
-  
-  double TPCUp1Edep=0;
-  double TPCUp2Edep=0;
-  double TPCDown1Edep=0;
-  double TPCDown2Edep=0;
-  double ForwTPC1Edep=0;
-  double ForwTPC2Edep=0;
-  double ForwTPC3Edep=0;
-  double Target1Edep=0;
-  double Target2Edep=0;
-  double FGD1Edep=0;
-  double FGD2Edep=0;
-  double DsECalEdep=0;
-  double P0DECalEdep=0;
-  double BrlECalEdep=0;
-  double ToFEdep=0;
+  double TPCUp1Z = 9999;
+  double TPCUp2Z = 9999;
+  double TPCDown1Z = 9999;
+  double TPCDown2Z = 9999;
+  double ForwTPC1Z = 9999;
+  double ForwTPC2Z = 9999;
+  double ForwTPC3Z = 9999;
+  double Target1Z = 9999;
+  double Target2Z = 9999;
+  double FGD1Z = 9999;
+  double FGD2Z = 9999;
+  double DsECalZ = 9999;
+  double P0DECalZ = 9999;
+  double BrlECalZ = 9999;
+  double ToFZ = 9999;
 
-  TND280UpTrackPoint* lastTPCUp1=NULL;
-  TND280UpTrackPoint* lastTPCUp2=NULL;
-  TND280UpTrackPoint* lastTPCDown1=NULL;
-  TND280UpTrackPoint* lastTPCDown2=NULL;
-  TND280UpTrackPoint* lastForwTPC1=NULL;
-  TND280UpTrackPoint* lastForwTPC2=NULL;
-  TND280UpTrackPoint* lastForwTPC3=NULL;
-  TND280UpTrackPoint* lastTarget1=NULL;
-  TND280UpTrackPoint* lastTarget2=NULL;
-  TND280UpTrackPoint* lastFGD1=NULL;
-  TND280UpTrackPoint* lastFGD2=NULL;
-  TND280UpTrackPoint* lastDsECal=NULL;
-  TND280UpTrackPoint* lastP0DECal=NULL;
-  TND280UpTrackPoint* lastBrlECal=NULL;
-  TND280UpTrackPoint* lastToF=NULL;
-  
-  TND280UpTrackPoint* firstTPCUp1=NULL;
-  TND280UpTrackPoint* firstTPCUp2=NULL;
-  TND280UpTrackPoint* firstTPCDown1=NULL;
-  TND280UpTrackPoint* firstTPCDown2=NULL;
-  TND280UpTrackPoint* firstForwTPC1=NULL;
-  TND280UpTrackPoint* firstForwTPC2=NULL;
-  TND280UpTrackPoint* firstForwTPC3=NULL;
-  TND280UpTrackPoint* firstTarget1=NULL;
-  TND280UpTrackPoint* firstTarget2=NULL;
-  TND280UpTrackPoint* firstFGD1=NULL;
-  TND280UpTrackPoint* firstFGD2=NULL;
-  TND280UpTrackPoint* firstDsECal=NULL;
-  TND280UpTrackPoint* firstP0DECal=NULL;
-  TND280UpTrackPoint* firstBrlECal=NULL;
-  TND280UpTrackPoint* firstToF=NULL;
+  double TPCUp1fZ = -9999;
+  double TPCUp2fZ = -9999;
+  double TPCDown1fZ = -9999;
+  double TPCDown2fZ = -9999;
+  double ForwTPC1fZ = -9999;
+  double ForwTPC2fZ = -9999;
+  double ForwTPC3fZ = -9999;
+  double Target1fZ = -9999;
+  double Target2fZ = -9999;
+  double FGD1fZ = -9999;
+  double FGD2fZ = -9999;
+  double DsECalfZ = -9999;
+  double P0DECalfZ = -9999;
+  double BrlECalfZ = -9999;
+  double ToFfZ = -9999;
+  double TopUpfZ = -9999;
+  double TopDownfZ = -9999;
+  double BotUpfZ = -9999;
+  double BotDownfZ = -9999;
+  double LeftUpfZ = -9999;
+  double LeftDownfZ = -9999;
+  double RightUpfZ = -9999;
+  double RightDownfZ = -9999;
+  double BackUpfZ = -9999;
+  double BackDownfZ = -9999;
+  double FrontUpfZ = -9999;
+  double FrontDownfZ = -9999;
+
+  double TPCUp1LengthYZ = 0;
+  double TPCUp2LengthYZ = 0;
+  double TPCDown1LengthYZ = 0;
+  double TPCDown2LengthYZ = 0;
+  double ForwTPC1LengthYZ = 0;
+  double ForwTPC2LengthYZ = 0;
+  double ForwTPC3LengthYZ = 0;
+  double Target1LengthYZ = 0;
+  double Target2LengthYZ = 0;
+  double FGD1LengthYZ = 0;
+  double FGD2LengthYZ = 0;
+  double DsECalLengthYZ = 0;
+  double P0DECalLengthYZ = 0;
+  double BrlECalLengthYZ = 0;
+  double ToFLengthYZ = 0;
+
+  double TPCUp1Edep = 0;
+  double TPCUp2Edep = 0;
+  double TPCDown1Edep = 0;
+  double TPCDown2Edep = 0;
+  double ForwTPC1Edep = 0;
+  double ForwTPC2Edep = 0;
+  double ForwTPC3Edep = 0;
+  double Target1Edep = 0;
+  double Target2Edep = 0;
+  double FGD1Edep = 0;
+  double FGD2Edep = 0;
+  double DsECalEdep = 0;
+  double P0DECalEdep = 0;
+  double BrlECalEdep = 0;
+  double ToFEdep = 0;
+
+  TND280UpTrackPoint* lastTPCUp1 = NULL;
+  TND280UpTrackPoint* lastTPCUp2 = NULL;
+  TND280UpTrackPoint* lastTPCDown1 = NULL;
+  TND280UpTrackPoint* lastTPCDown2 = NULL;
+  TND280UpTrackPoint* lastForwTPC1 = NULL;
+  TND280UpTrackPoint* lastForwTPC2 = NULL;
+  TND280UpTrackPoint* lastForwTPC3 = NULL;
+  TND280UpTrackPoint* lastTarget1 = NULL;
+  TND280UpTrackPoint* lastTarget2 = NULL;
+  TND280UpTrackPoint* lastFGD1 = NULL;
+  TND280UpTrackPoint* lastFGD2 = NULL;
+  TND280UpTrackPoint* lastDsECal = NULL;
+  TND280UpTrackPoint* lastP0DECal = NULL;
+  TND280UpTrackPoint* lastBrlECal = NULL;
+  TND280UpTrackPoint* lastToF = NULL;
+
+  TND280UpTrackPoint* lastTopUp = NULL;
+  TND280UpTrackPoint* lastTopDown = NULL;
+  TND280UpTrackPoint* lastBotUp = NULL;
+  TND280UpTrackPoint* lastBotDown = NULL;
+  TND280UpTrackPoint* lastLeftUp = NULL;
+  TND280UpTrackPoint* lastLeftDown = NULL;
+  TND280UpTrackPoint* lastRightUp = NULL;
+  TND280UpTrackPoint* lastRightDown = NULL;
+  TND280UpTrackPoint* lastBackUp = NULL;
+  TND280UpTrackPoint* lastBackDown = NULL;
+  TND280UpTrackPoint* lastFrontUp = NULL;
+  TND280UpTrackPoint* lastFrontDown = NULL;
+
+  TND280UpTrackPoint* firstTPCUp1 = NULL;
+  TND280UpTrackPoint* firstTPCUp2 = NULL;
+  TND280UpTrackPoint* firstTPCDown1 = NULL;
+  TND280UpTrackPoint* firstTPCDown2 = NULL;
+  TND280UpTrackPoint* firstForwTPC1 = NULL;
+  TND280UpTrackPoint* firstForwTPC2 = NULL;
+  TND280UpTrackPoint* firstForwTPC3 = NULL;
+  TND280UpTrackPoint* firstTarget1 = NULL;
+  TND280UpTrackPoint* firstTarget2 = NULL;
+  TND280UpTrackPoint* firstFGD1 = NULL;
+  TND280UpTrackPoint* firstFGD2 = NULL;
+  TND280UpTrackPoint* firstDsECal = NULL;
+  TND280UpTrackPoint* firstP0DECal = NULL;
+  TND280UpTrackPoint* firstBrlECal = NULL;
+  TND280UpTrackPoint* firstToF = NULL;
+
+  TND280UpTrackPoint* firstTopUp = NULL;
+  TND280UpTrackPoint* firstTopDown = NULL;
+  TND280UpTrackPoint* firstBotUp = NULL;
+  TND280UpTrackPoint* firstBotDown = NULL;
+  TND280UpTrackPoint* firstLeftUp = NULL;
+  TND280UpTrackPoint* firstLeftDown = NULL;
+  TND280UpTrackPoint* firstRightUp = NULL;
+  TND280UpTrackPoint* firstRightDown = NULL;
+  TND280UpTrackPoint* firstBackUp = NULL;
+  TND280UpTrackPoint* firstBackDown = NULL;
+  TND280UpTrackPoint* firstFrontUp = NULL;
+  TND280UpTrackPoint* firstFrontDown = NULL;
+
+
 
   for (int ip = 0; ip < upTrack->GetNPoints(); ip++) {
     TND280UpTrackPoint* Tpoint = upTrack->GetPoint(ip);
-    //    std:;cout<<Tpoint->GetPhysVolName()<<std::endl;
+//    std:;cout<<Tpoint->GetPhysVolName()<<std::endl;
     if (Tpoint->GetPhysVolName().find("TPCUp1") != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < TPCUp1Z) {
         lastTPCUp1 = Tpoint;
@@ -581,13 +633,13 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
       }
 
     }
-    if (Tpoint->GetPhysVolName().find("TPCDown1") != std::string::npos) {
+     if (Tpoint->GetPhysVolName().find("TPCDown1") != std::string::npos) {
 
       if (Tpoint->GetMomentum().Mag() < TPCDown1Z) {
         lastTPCDown1 = Tpoint;
         TPCDown1Z = Tpoint->GetMomentum().Mag();
       }
-      if (Tpoint->GetMomentum().Mag() > TPCDown1fZ) {
+     if (Tpoint->GetMomentum().Mag() > TPCDown1fZ) {
         firstTPCDown1 = Tpoint;
         TPCDown1fZ = Tpoint->GetMomentum().Mag();
       }
@@ -651,7 +703,7 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
         lastTarget1 = Tpoint;
         Target1Z = Tpoint->GetMomentum().Mag();
       }
-      if (Tpoint->GetMomentum().Mag() > Target1fZ) {
+    if (Tpoint->GetMomentum().Mag() > Target1fZ) {
         firstTarget1 = Tpoint;
         Target1fZ = Tpoint->GetMomentum().Mag();
       }
@@ -669,30 +721,6 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
       }
 
     }
-    if (Tpoint->GetPhysVolName().find("FGD1") != std::string::npos) {
-      if (Tpoint->GetMomentum().Mag() < FGD1Z) {
-        lastFGD1 = Tpoint;
-        FGD1Z = Tpoint->GetMomentum().Mag();
-      }
-      if (Tpoint->GetMomentum().Mag() > FGD1fZ) {
-        firstFGD1 = Tpoint;
-        FGD1fZ = Tpoint->GetMomentum().Mag();
-      }
-
-    } 
-    if (Tpoint->GetPhysVolName().find("FGD2") != std::string::npos) {
-    
-      if (Tpoint->GetMomentum().Mag() < FGD2Z) {
-        lastFGD2 = Tpoint;
-        FGD2Z = Tpoint->GetMomentum().Mag();
-      }
-      if (Tpoint->GetMomentum().Mag() > FGD2fZ) {
-        firstFGD2 = Tpoint;
-        FGD2fZ = Tpoint->GetMomentum().Mag();
-      }
-
-    }
-
     if (Tpoint->GetPhysVolName().find("DsECal") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
     
       if (Tpoint->GetMomentum().Mag() < DsECalZ) {
@@ -729,66 +757,236 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
       }
 
     }
-    if (Tpoint->GetPhysVolName().find("ToF") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+
+    if (Tpoint->GetPhysVolName().find("ToF/TopUp") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
     
-      if (Tpoint->GetMomentum().Mag() < ToFZ) {
-        lastToF = Tpoint;
-        ToFZ = Tpoint->GetMomentum().Mag();
+      if (Tpoint->GetMomentum().Mag() < TopUpZ) {
+        lastTopUp = Tpoint;
+        TopUpZ = Tpoint->GetMomentum().Mag();
       }
-      if (Tpoint->GetMomentum().Mag() > ToFfZ) {
-        firstToF = Tpoint;
-        ToFfZ = Tpoint->GetMomentum().Mag();
+      if (Tpoint->GetMomentum().Mag() > TopUpfZ) {
+        firstTopUp = Tpoint;
+        TopUpfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+    if (Tpoint->GetPhysVolName().find("ToF/TopDown") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < TopDownZ) {
+        lastTopDown = Tpoint;
+        TopDownZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > TopDownfZ) {
+        firstTopDown = Tpoint;
+        TopDownfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+  if (Tpoint->GetPhysVolName().find("ToF/BotUp") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < TopUpZ) {
+        lastBotUp = Tpoint;
+        BotUpZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > TopUpfZ) {
+        firstBotUp = Tpoint;
+        BotUpfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+  if (Tpoint->GetPhysVolName().find("ToF/BotDown") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < TopDownZ) {
+        lastBotDown = Tpoint;
+        BotDownZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > TopDownfZ) {
+        firstBotDown = Tpoint;
+        BotDownfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+  if (Tpoint->GetPhysVolName().find("ToF/LeftUp") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+      if (Tpoint->GetMomentum().Mag() < LeftUpZ) {
+        lastLeftUp = Tpoint;
+        LeftUpZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > LeftUpfZ) {
+        firstLeftUp = Tpoint;
+        LeftUpfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+  if (Tpoint->GetPhysVolName().find("ToF/RightUp") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+  
+      if (Tpoint->GetMomentum().Mag() < RightUpZ) {
+        lastRightUp = Tpoint;
+        RightUpZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > RightUpfZ) {
+        firstRightUp = Tpoint;
+        RightUpfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+  if (Tpoint->GetPhysVolName().find("ToF/RightDown") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < RightDownZ) {
+        lastRightDown = Tpoint;
+        RightDownZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > RightDownfZ) {
+        firstRightDown = Tpoint;
+        RightDownfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+  if (Tpoint->GetPhysVolName().find("ToF/LeftDown") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < LeftDownZ) {
+        lastLeftDown = Tpoint;
+        LeftDownZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > LeftDownfZ) {
+        firstLeftDown = Tpoint;
+        LeftDownfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+  if (Tpoint->GetPhysVolName().find("ToF/BackDown") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+   
+      if (Tpoint->GetMomentum().Mag() < BackDownZ) {
+        lastBackDown = Tpoint;
+        BackDownZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > BackDownfZ) {
+        firstBackDown = Tpoint;
+        BackDownfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+  if (Tpoint->GetPhysVolName().find("ToF/BackUp") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+  
+      if (Tpoint->GetMomentum().Mag() < BackUpZ) {
+        lastBackUp = Tpoint;
+        BackUpZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > BackUpfZ) {
+        firstBackUp = Tpoint;
+        BackUpfZ = Tpoint->GetMomentum().Mag();
       }
 
     }
 
 
-  }
+
+  if (Tpoint->GetPhysVolName().find("ToF/FrontDown") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+  
+      if (Tpoint->GetMomentum().Mag() < FrontDownZ) {
+        lastFrontDown = Tpoint;
+        FrontDownZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > FrontDownfZ) {
+        firstFrontDown = Tpoint;
+        FrontDownfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+  if (Tpoint->GetPhysVolName().find("ToF/FrontUp") != std::string::npos && Tpoint->GetPhysVolName().find("Bar")!= std::string::npos) {
+   
+      if (Tpoint->GetMomentum().Mag() < FrontUpZ) {
+        lastFrontUp = Tpoint;
+        FrontUpZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > FrontUpfZ) {
+        firstFrontUp = Tpoint;
+        FrontUpfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+
+
+
+}
   int nCrossers=0;
   if(firstTPCUp1){
-    nCrossers++;
+        nCrossers++;
   }
   if(firstTPCUp2){
-    nCrossers++;
+       nCrossers++;
   }
   if(firstTPCDown1){
-    nCrossers++;
+       nCrossers++;
   }
-  if(firstTPCDown2){
-    nCrossers++;
+   if(firstTPCDown2){
+       nCrossers++;
   }
-  if(firstForwTPC1){
-    nCrossers++;
+   if(firstForwTPC1){
+       nCrossers++;
   }
-  if(firstForwTPC2){
-    nCrossers++;
+   if(firstForwTPC2){
+       nCrossers++;
   }
-  if(firstForwTPC3){
-    nCrossers++;
+   if(firstForwTPC3){
+       nCrossers++;
   }
   if(firstTarget1){
-    nCrossers++;
+       nCrossers++;
   }
-  if(firstTarget2){
-    nCrossers++;
+   if(firstTarget2){
+       nCrossers++;
   }
-  if(firstFGD1){
-    nCrossers++;
+   if(firstDsECal){
+       nCrossers++;
   }
-  if(firstFGD2){
-    nCrossers++;
+   if(firstP0DECal){
+       nCrossers++;
   }
-  if(firstDsECal){
-    nCrossers++;
+
+   if(firstBrlECal){
+       nCrossers++;
   }
-  if(firstP0DECal){
-    nCrossers++;
+
+   if(firstTopUp){
+       nCrossers++;
   }
-  if(firstBrlECal){
-    nCrossers++;
+   if(firstTopDown){
+       nCrossers++;
   }
-  if(firstToF){
-    nCrossers++;
+
+   if(firstBotUp){
+       nCrossers++;
+  }
+   if(firstBotDown){
+       nCrossers++;
+  }
+   if(firstLeftUp){
+       nCrossers++;
+  }
+   if(firstLeftDown){
+       nCrossers++;
+  }
+   if(firstFrontDown){
+       nCrossers++;
+  }
+   if(firstFrontUp){
+       nCrossers++;
+  }
+
+   if(firstBackDown){
+       nCrossers++;
+  }
+   if(firstBackUp){
+       nCrossers++;
   }
 
   truePart->nDetCrossings=0;
@@ -1148,28 +1346,266 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
     truePart->DetCrossingsVect.push_back(detCross);
 
   }
-  if(firstToF){
+  if (firstTopUp) {
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
-    //std::cout<<"firstToF->GetPostPosition().X() "<<lastToF->GetPostPosition().X()<<" "<<lastToF->GetPostPosition().Y()<<" "<<lastToF->GetPostPosition().Z()<<std::endl;
-    detCross->EntrancePosition[0] = firstToF->GetPostPosition().X();
-    detCross->EntrancePosition[1] = firstToF->GetPostPosition().Y();
-    detCross->EntrancePosition[2] = firstToF->GetPostPosition().Z();
-    detCross->EntrancePosition[3] = firstToF->GetTime();
-    detCross->ExitPosition[0] = lastToF->GetPostPosition().X();
-    detCross->ExitPosition[1] = lastToF->GetPostPosition().Y();
-    detCross->ExitPosition[2] = lastToF->GetPostPosition().Z();
-    detCross->ExitPosition[3] = lastToF->GetTime();
-    detCross->EntranceMomentum[0] = firstToF->GetMomentum().X();
-    detCross->EntranceMomentum[1] = firstToF->GetMomentum().Y();
-    detCross->EntranceMomentum[2] = firstToF->GetMomentum().Z();
-    detCross->ExitMomentum[0] = lastToF->GetMomentum().X();
-    detCross->ExitMomentum[1] = lastToF->GetMomentum().Y();
-    detCross->ExitMomentum[2] = lastToF->GetMomentum().Z();
-    //detCross->SegLength=upTrack->GetLengthToF();
-    //detCross->DeltaLYZ=upTrack->GetLengthToF();
-    //detCross->EDeposit=upTrack->GetEdepToF();
-    detCross->Detector_name=TString(firstToF->GetPhysVolName());
-    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
+    detCross->EntrancePosition[0] = firstTopUp->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstTopUp->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstTopUp->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstTopUp->GetTime();
+    detCross->ExitPosition[0] = lastTopUp->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastTopUp->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastTopUp->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastTopUp->GetTime();
+    detCross->EntranceMomentum[0] = firstTopUp->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstTopUp->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstTopUp->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastTopUp->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastTopUp->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastTopUp->GetMomentum().Z();
+    detCross->Detector_name = TString(firstTopUp->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTopUp);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+
+  if (firstBotUp) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstBotUp->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstBotUp->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstBotUp->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstBotUp->GetTime();
+    detCross->ExitPosition[0] = lastBotUp->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastBotUp->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastBotUp->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastBotUp->GetTime();
+    detCross->EntranceMomentum[0] = firstBotUp->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstBotUp->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstBotUp->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastBotUp->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastBotUp->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastBotUp->GetMomentum().Z();
+    detCross->Detector_name = TString(firstBotUp->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kBotUp);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+
+  if (firstTopDown) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstTopDown->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstTopDown->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstTopDown->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstTopDown->GetTime();
+    detCross->ExitPosition[0] = lastTopDown->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastTopDown->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastTopDown->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastTopDown->GetTime();
+    detCross->EntranceMomentum[0] = firstTopDown->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstTopDown->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstTopDown->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastTopDown->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastTopDown->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastTopDown->GetMomentum().Z();
+    detCross->Detector_name = TString(firstTopDown->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTopDown);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+
+  if (firstBotDown) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstBotDown->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstBotDown->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstBotDown->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstBotDown->GetTime();
+    detCross->ExitPosition[0] = lastBotDown->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastBotDown->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastBotDown->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastBotDown->GetTime();
+    detCross->EntranceMomentum[0] = firstBotDown->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstBotDown->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstBotDown->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastBotDown->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastBotDown->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastBotDown->GetMomentum().Z();
+    detCross->Detector_name = TString(firstBotDown->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kBotDown);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+
+  if (firstLeftUp) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstLeftUp->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstLeftUp->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstLeftUp->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstLeftUp->GetTime();
+    detCross->ExitPosition[0] = lastLeftUp->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastLeftUp->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastLeftUp->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastLeftUp->GetTime();
+    detCross->EntranceMomentum[0] = firstLeftUp->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstLeftUp->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstLeftUp->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastLeftUp->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastLeftUp->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastLeftUp->GetMomentum().Z();
+    detCross->Detector_name = TString(firstLeftUp->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kLeftUp);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+  if (firstLeftDown) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstLeftDown->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstLeftDown->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstLeftDown->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstLeftDown->GetTime();
+    detCross->ExitPosition[0] = lastLeftDown->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastLeftDown->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastLeftDown->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastLeftDown->GetTime();
+    detCross->EntranceMomentum[0] = firstLeftDown->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstLeftDown->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstLeftDown->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastLeftDown->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastLeftDown->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastLeftDown->GetMomentum().Z();
+    detCross->Detector_name = TString(firstLeftDown->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kLeftDown);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+  if (firstRightUp) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstRightUp->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstRightUp->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstRightUp->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstRightUp->GetTime();
+    detCross->ExitPosition[0] = lastRightUp->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastRightUp->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastRightUp->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastRightUp->GetTime();
+    detCross->EntranceMomentum[0] = firstRightUp->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstRightUp->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstRightUp->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastRightUp->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastRightUp->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastRightUp->GetMomentum().Z();
+    detCross->Detector_name = TString(firstRightUp->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kRightUp);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+  if (firstRightDown) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstRightDown->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstRightDown->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstRightDown->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstRightDown->GetTime();
+    detCross->ExitPosition[0] = lastRightDown->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastRightDown->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastRightDown->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastRightDown->GetTime();
+    detCross->EntranceMomentum[0] = firstRightDown->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstRightDown->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstRightDown->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastRightDown->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastRightDown->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastRightDown->GetMomentum().Z();
+    detCross->Detector_name = TString(firstRightDown->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kRightDown);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+
+
+  if (firstBackDown) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstBackDown->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstBackDown->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstBackDown->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstBackDown->GetTime();
+    detCross->ExitPosition[0] = lastBackDown->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastBackDown->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastBackDown->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastBackDown->GetTime();
+    detCross->EntranceMomentum[0] = firstBackDown->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstBackDown->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstBackDown->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastBackDown->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastBackDown->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastBackDown->GetMomentum().Z();
+    detCross->Detector_name = TString(firstBackDown->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kBackDown);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+
+  if (firstBackUp) {
+
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstBackUp->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstBackUp->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstBackUp->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstBackUp->GetTime();
+    detCross->ExitPosition[0] = lastBackUp->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastBackUp->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastBackUp->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastBackUp->GetTime();
+    detCross->EntranceMomentum[0] = firstBackUp->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstBackUp->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstBackUp->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastBackUp->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastBackUp->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastBackUp->GetMomentum().Z();
+    detCross->Detector_name = TString(firstBackUp->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kBackUp);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+
+  if (firstFrontDown) {
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+
+    detCross->EntrancePosition[0] = firstFrontDown->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstFrontDown->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstFrontDown->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstFrontDown->GetTime();
+    detCross->ExitPosition[0] = lastFrontDown->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastFrontDown->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastFrontDown->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastFrontDown->GetTime();
+    detCross->EntranceMomentum[0] = firstFrontDown->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstFrontDown->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstFrontDown->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastFrontDown->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastFrontDown->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastFrontDown->GetMomentum().Z();
+    detCross->Detector_name = TString(firstFrontDown->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kFrontDown);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+  if (firstFrontUp) {
+
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+    detCross->EntrancePosition[0] = firstFrontUp->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstFrontUp->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstFrontUp->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstFrontUp->GetTime();
+    detCross->ExitPosition[0] = lastFrontUp->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastFrontUp->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastFrontUp->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastFrontUp->GetTime();
+    detCross->EntranceMomentum[0] = firstFrontUp->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstFrontUp->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstFrontUp->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastFrontUp->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastFrontUp->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastFrontUp->GetMomentum().Z();
+    detCross->Detector_name = TString(firstFrontUp->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kFrontUp);
     truePart->DetCrossingsVect.push_back(detCross);
 
   }
@@ -1340,7 +1776,20 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       reconParticle->ECalSegments[reconParticle->nECalSegments++] = seg;
 
     }
-    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToF)) {
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kFrontUp)||
+       SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kBackUp) ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTopUp)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kBotUp)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kLeftUp)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kRightUp)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kFrontDown)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kBackDown) ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTopDown)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kBotDown)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kLeftDown)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kRightDown)
+        ) {
+          std::cout<<"tof"<<std::endl;
       AnaToFParticleB* seg = dynamic_cast<AnaToFParticleB*>(MakeToFTrack() );
       Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
       anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
@@ -1350,7 +1799,8 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
-      SubDetId::SetDetectorUsed(reconParticle->Detectors, SubDetId::kToF);
+      SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
+      SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
       reconParticle->ToFSegments[reconParticle->nToFSegments++] = seg;
 

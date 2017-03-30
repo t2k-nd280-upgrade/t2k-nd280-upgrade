@@ -7,7 +7,7 @@ class SubDetId {
 
 private:
     /// Bit mask array to select different subdetectors and systems
-    const static unsigned long DetMask[28];
+    const static unsigned long DetMask[34];
 
     /// Method to make detector bit masks
     static unsigned long MakeMask(int msb, int lsb) {return (((1 << (((msb) - (lsb)) + 1)) - 1) << (lsb));}
@@ -25,23 +25,35 @@ public:
     enum SubDetEnum {
         kTPCUp1 = 0,
         kTPCUp2,
-        kForwTPC1, //2
+        kForwTPC1,
         kForwTPC2,
         kForwTPC3,       
-        kTPCDown1, //5
+        kTPCDown1,
         kTPCDown2,
-        kTarget1,  //7
+        kTarget1,
         kTarget2,
-        kFGD1,     //9
+        kFGD1,
         kFGD2,
-        kDsECal,   //11
+        kDsECal,
         kP0DECal,
         kBrlECal,
-	kToF,      //14
+        kTopDown,
+        kTopUp,
+        kBotDown,
+        kBotUp,
+        kLeftDown,
+        kLeftUp,
+        kRightDown,
+        kRightUp,
+        kBackDown,
+        kBackUp,
+        kFrontDown,
+        kFrontUp,
         kInvalidSubdetector,
+        kToF,
         kTPC,
+        kFGD,
         kTarget,
-	kFGD,
         kECAL,
         kInvalid
     };
@@ -61,18 +73,19 @@ public:
     /// Returns the TPCUp number (TPCUp1 = 1, TPCUp2 = 2 etc.) of the track
     /// Does not check whether track passed through more than one TPCUp module, just returns the first TPCUp it finds 
     static int GetTPC(unsigned long BitField);
-
     /// Returns the Target number (Target1 = 1, Target2 = 2 etc.) of the track
     /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
     static int GetTarget(unsigned long BitField);
-
-    /// Returns the FGD number (FGD1 = 1, FGD2 = 2 etc.) of the track
-    /// Does not check whether track passed through more than one FGD module, just returns the first FGD it finds 
-    static int GetFGD(unsigned long BitField);
-
-    /// Returns the ECal number (DsECal = 1, P0DECal = 2 etc.) of the track
+    /// Returns the Target number (DsECal = 1, P0DECal = 2 etc.) of the track
     /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
     static int GetECal(unsigned long BitField);
+    /// Returns the Target number (DsECal = 1, P0DECal = 2 etc.) of the track
+    /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
+    static int GetFGD(unsigned long BitField);
+
+    /// Returns the Target number (DsECal = 1, P0DECal = 2 etc.) of the track
+    /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
+    static int GetTOF(unsigned long BitField);
  
     /// Method to set the detector system bits using the individual subdetector bits.
     /// e.g. If SetDetectorUsed(BitField, SubDetId::kTPC1) had been called, this function
@@ -86,16 +99,17 @@ public:
     /// Check whether a track only uses a specified subdetector or detector system
     static bool TrackUsesOnlyDet(unsigned long BitFIeld, SubDetId::SubDetEnum det);
 
-    /// Check if a detector enumeration refers to a Target or not
-    static bool IsTarget(SubDetId::SubDetEnum det);
-    /// Check if a detector enumeration refers to a FGD or not
-    static bool IsFGD(SubDetId::SubDetEnum det);
-
     /// Check if a detector enumeration refers to a TPC or not
+    static bool IsTarget(SubDetId::SubDetEnum det);
+
+    /// Check if a detector enumeration refers to a FGD or not
     static bool IsTPC(SubDetId::SubDetEnum det);
-    /// Check if a detector enumeration refers to a ECal or not
+    /// Check if a detector enumeration refers to a FGD or not
     static bool IsECal(SubDetId::SubDetEnum det);
-   
+    /// Check if a detector enumeration refers to a FGD or not
+    static bool IsTOF(SubDetId::SubDetEnum det);
+    /// Check if a detector enumeration refers to a FGD or not
+    static bool IsFGD(SubDetId::SubDetEnum det);   
     /// Get the single subdetector that this track is from
     static SubDetId::SubDetEnum GetSubdetectorEnum(unsigned long BitField);
 

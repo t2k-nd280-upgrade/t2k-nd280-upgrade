@@ -10,6 +10,7 @@
 #include "MomRangeCorrection.hxx"
 #include "TruthUtils.hxx"
 #include "PIDCorrection.hxx"
+#include "TargetEffCorrection.hxx"
 #include "PIDUtils.hxx"
 //********************************************************************
 testtimeAnalysis::testtimeAnalysis(AnalysisAlgorithm* ana) : baseAnalysis(ana) {
@@ -55,6 +56,7 @@ void testtimeAnalysis::DefineCorrections() {
   baseAnalysis::DefineCorrections();
   corr().AddCorrection("mom_corr",          new MomRangeCorrection(SubDetId::kTPC));
   corr().AddCorrection("pid_corr",          new PIDCorrection(SubDetId::kTPC));
+  corr().AddCorrection("target_corr",          new TargetEffCorrection(SubDetId::kTarget));
 
 }
 
@@ -197,6 +199,8 @@ void testtimeAnalysis::FillMicroTrees(bool addBase) {
 
         AnaTrackB* track = static_cast<AnaTrackB*>(bunch->Particles[j]);
         AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
+
+
         ///   output().FillVectorVar(muon_pdg, trueP->PDG);
         // output().FillVectorVar(muon_charge, trueP->Charge);
         // output().FillVectorVar(muon_mom, track->SmearedMomentum);
@@ -266,13 +270,13 @@ void testtimeAnalysis::FillMicroTrees(bool addBase) {
          output().FillVectorVar(muon_pidlikelihood2, PIDLikelihood[1]);
          output().FillVectorVar(muon_pidlikelihood3, PIDLikelihood[2]);
          output().FillVectorVar(muon_pidlikelihood4, PIDLikelihood[3]);*/
-        if (trueP->PDG == 13) {
-          for (int subdet = 0; subdet < 7; subdet++) {
-            AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *track, static_cast<SubDetId::SubDetEnum >(subdet)));
-            if (TPCSegment) {
+//        if (trueP->PDG == 13) {
+  //        for (int subdet = 0; subdet < 7; subdet++) {
+    //        AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *track, static_cast<SubDetId::SubDetEnum >(subdet)));
+      //      if (TPCSegment) {
               //      output().FillVectorVar(muon_tpc_det, subdet);
 //
-              anaUtils::ComputeTPCPull(*TPCSegment,*track);
+        //      anaUtils::ComputeTPCPull(*TPCSegment,*track);
 //        output().FillVectorVar(tpc_pull_muon, pulls[0]);
               //   output().FillMatrixVar(tpc_pull_muon, pulls[0], -1, subdet);
               //  output().FillMatrixVar(tpc_pull_electron, pulls[1], -1, subdet);
@@ -280,9 +284,11 @@ void testtimeAnalysis::FillMicroTrees(bool addBase) {
               // output().FillMatrixVar(tpc_pull_proton, pulls[2], -1, subdet);
 
 
-            }
+          //  }
 
-          }
+         // }
+              for (int subdet = 0; subdet < 7; subdet++) {
+
               for (int i = 0; i < trueP->DetCrossingsVect.size(); i++) {
                // std::cout<<"trutP"<<std::endl;
                 if(SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2) ||SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)  ){

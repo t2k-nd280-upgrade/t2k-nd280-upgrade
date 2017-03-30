@@ -693,8 +693,8 @@ AnaTrueVertexB::~AnaTrueVertexB(){
 //********************************************************************
 
   // Must delete array of pointers, since we re-create this every time we apply a selection
- // if(TrueParticles != NULL) delete [] TrueParticles;
-  //TrueParticles = NULL;      
+  if(TrueParticles != NULL) delete [] TrueParticles;
+  TrueParticles = NULL;      
 
   TrueParticlesVect.clear();
 }
@@ -716,6 +716,10 @@ AnaTrueVertexB::AnaTrueVertexB(const AnaTrueVertexB& vertex):AnaTrueObjectC(vert
     TrueParticlesVect.clear();
     for (UInt_t i = 0; i < vertex.TrueParticlesVect.size(); i++) {
         TrueParticlesVect.push_back(vertex.TrueParticlesVect[i]);
+    }
+    anaUtils::CreateArray(TrueParticles, vertex.nTrueParticles);
+    for (Int_t i = 0; i < vertex.nTrueParticles; i++) {
+        TrueParticles[i]=vertex.TrueParticles[i];
     }
 
     nTrueParticles = vertex.nTrueParticles;

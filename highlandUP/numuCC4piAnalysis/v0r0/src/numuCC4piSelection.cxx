@@ -721,8 +721,8 @@ namespace numuCC4piUtils{
     ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
     if (!box->MainTrack) return false;
 
-    Float_t cut_length_target = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
-    cut_length_target=0;
+//    Float_t cut_length_target = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
+    Float_t cut_length_target=0;
     std::map< unsigned long, std::vector<float> > detTiming;
   
     for (int i=0; i<box->MainTrack->nTargetSegments; i++)

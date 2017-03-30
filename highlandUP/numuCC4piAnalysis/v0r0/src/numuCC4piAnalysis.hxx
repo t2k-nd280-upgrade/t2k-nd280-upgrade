@@ -20,11 +20,13 @@ public:
   void FillMicroTrees(bool addBase = true);
   void FillToyVarsInMicroTrees(bool addBase = true);
   bool CheckFillTruthTree(const AnaTrueVertex & vtx);
+    virtual const ToyBoxCC4pi& cc4pibox(Int_t isel=-1) const {return *dynamic_cast<const ToyBoxCC4pi*>(&boxB(isel));}
+
   // Return the vertex from the ToyBox (some ToyBox derived classes could not have that member)
-  virtual AnaVertexB * GetVertex() const { return new AnaVertexB();} //box().Vertex;};
+  virtual AnaVertexB * GetVertex() const { return cc4pibox().Vertex;} //box().Vertex;};
 
   // Return the true vertex from the ToyBox (some ToyBox derived classes could not have that member)
-  virtual AnaTrueVertexB * GetTrueVertex() const { return new AnaTrueVertexB();} //box().TrueVertex;};
+  virtual AnaTrueVertexB * GetTrueVertex() const { return cc4pibox().TrueVertex;} //box().TrueVertex;};
 
   using baseAnalysis::FillTruthTree;
   using baseAnalysis::FillTruthTreeBase;
@@ -34,7 +36,6 @@ public:
   void AddCategories();
   void FillCategories();
 
-  const ToyBoxCC4pi& cc4pibox(Int_t isel = -1) {return *static_cast<const ToyBoxCC4pi*>(&boxB(isel));}
 
 public:
 
