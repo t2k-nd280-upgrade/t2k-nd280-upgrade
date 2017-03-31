@@ -20,7 +20,8 @@ public:
   void FillMicroTrees(bool addBase = true);
   void FillToyVarsInMicroTrees(bool addBase = true);
   bool CheckFillTruthTree(const AnaTrueVertex & vtx);
-    virtual const ToyBoxCC4pi& cc4pibox(Int_t isel=-1) const {return *dynamic_cast<const ToyBoxCC4pi*>(&boxB(isel));}
+
+  virtual const ToyBoxCC4pi& cc4pibox(Int_t isel=-1) const {return *dynamic_cast<const ToyBoxCC4pi*>(&boxB(isel));}
 
   // Return the vertex from the ToyBox (some ToyBox derived classes could not have that member)
   virtual AnaVertexB * GetVertex() const { return cc4pibox().Vertex;} //box().Vertex;};
@@ -35,7 +36,6 @@ public:
   bool Initialize();
   void AddCategories();
   void FillCategories();
-
 
 public:
 
@@ -116,6 +116,9 @@ public:
     sel_MichelElectrons_pos,
     sel_PosPions_pos,
     sel_OtherPions_pos,
+
+    selmu_ToF_mass,
+    selmu_ToF_true_mass,
     
     /*
       selmu_1hit_pos,

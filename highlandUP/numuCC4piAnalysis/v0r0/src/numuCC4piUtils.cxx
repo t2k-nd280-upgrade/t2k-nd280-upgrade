@@ -396,8 +396,8 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
     ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
     box->nIsoTargetPiontracks = 0;
 
-//    Float_t cut_length = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
-    Float_t cut_length=50;
+    Float_t cut_length = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
+    
     EventBox::RecObjectGroupEnum groupID;
     if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
     else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTarget2;
@@ -452,8 +452,8 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
   ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
   box->nMichelElectrons = 0;
   
-//  Float_t ME_eff = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.Efficiency");
-Float_t ME_eff=0.8;
+  Float_t ME_eff = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.Efficiency");
+
   EventBox::RecObjectGroupEnum groupID;
   if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
   else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTarget2;
@@ -508,6 +508,89 @@ Float_t ME_eff=0.8;
       
   }
 
+}
+
+
+//*********************************************************************
+float numuCC4pi_utils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, TRandom3* gen){
+//*********************************************************************
+
+  if (!track) return -1.;
+
+  Float_t cut_length_target = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
+  std::vector< std::pair<AnaParticleB*, std::vector<float> > > detTiming;
   
-  
+  // find timing information in Targets
+  for (int i=0; i<track->nTargetSegments; i++)
+    if (track->TargetSegments[i]->DeltaLYZ > cut_length_target) {
+      float true_time = track->TargetSegments[i]->PositionStart[3];
+      float     sigma = 3/sqrt(track->TargetSegments[i]->DeltaLYZ/25); // 3ns/sqrt(NHits)
+      float      time = gen->Gaus(true_time, sigma);
+
+      std::vector<float> vec;
+      vec.push_back(time); vec.push_back(sigma);
+      detTiming.push_back(std::make_pair(track->TargetSegments[i], vec));
+    }
+
+  // find timing information in FGDs
+  for (int i=0; i<track->nFGDSegments; i++)
+    if (track->FGDSegments[i]->DeltaLYZ > cut_length_target) {
+      float true_time = track->FGDSegments[i]->PositionStart[3];
+      float     sigma = 3/sqrt(track->FGDSegments[i]->DeltaLYZ/25); // 3ns/sqrt(NHits)
+      float      time = gen->Gaus(true_time, sigma);
+
+      std::vector<float> vec;
+      vec.push_back(time); vec.push_back(sigma);
+      detTiming.push_back(std::make_pair(track->FGDSegments[i], vec));
+    }
+
+  // find timing information in ECal
+  for (int i=0; i<track->nECalSegments; i++) {
+    if (track->ECalSegments[i]->IsReconstructed) {
+      float true_time = track->ECalSegments[i]->PositionStart[3];
+      float     sigma = 5; // 5ns
+      float      time = gen->Gaus(true_time, sigma);
+
+      std::vector<float> vec;
+      vec.push_back(time); vec.push_back(sigma);
+      detTiming.push_back(std::make_pair(track->ECalSegments[i], vec));
+    }
+  }
+
+  // find timing information in ToF counters
+  for (int i=0; i<track->nToFSegments; i++) {
+    float true_time = track->ToFSegments[i]->PositionStart[3];
+    float     sigma = 0.6; // 0.6ns
+    float      time = gen->Gaus(true_time, sigma);
+
+    std::vector<float> vec;
+    vec.push_back(time); vec.push_back(sigma);
+    detTiming.push_back(std::make_pair(track->ToFSegments[i], vec));
+  }
+    
+  // if we don't have 2, give up
+  if (detTiming.size() < 2)
+    return -1.;
+
+  float ToF = -1., max_t_over_s = 0;
+  for (unsigned int i=0; i<detTiming.size(); i++){
+    for (unsigned int j=i+1; j<detTiming.size(); j++){
+
+      float  t1 = detTiming[i].second[0],  t2 = detTiming[j].second[0];
+      float  s1 = detTiming[i].second[1],  s2 = detTiming[j].second[1];
+      float t_over_s = fabs( (t2-t1)/sqrt(s1*s1+s2*s2) );
+
+      if ( t_over_s > max_t_over_s ){
+	max_t_over_s = t_over_s;
+	ToF = t2-t1;
+	seg1 = detTiming[i].first;
+	seg2 = detTiming[j].first;
+      }
+      
+    } // end second loop on timing info
+  } // end first loop on timing info
+
+
+  return ToF;
+
 }

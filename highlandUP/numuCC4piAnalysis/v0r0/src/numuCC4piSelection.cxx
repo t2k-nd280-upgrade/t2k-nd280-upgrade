@@ -712,7 +712,6 @@ namespace numuCC4piUtils{
 
   }
 
-  
   //**************************************************
   bool ToF_senseDetermination::Apply(AnaEventC& event, ToyBoxB& boxB) const{
     //**************************************************
@@ -720,101 +719,49 @@ namespace numuCC4piUtils{
     (void)event;
     ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
     if (!box->MainTrack) return false;
+    bool ok = false;
 
-//    Float_t cut_length_target = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
-    Float_t cut_length_target=0;
-    std::map< unsigned long, std::vector<float> > detTiming;
-  
-    for (int i=0; i<box->MainTrack->nTargetSegments; i++)
-      if (box->MainTrack->TargetSegments[i]->DeltaLYZ > cut_length_target) {
-	float    z = box->MainTrack->TargetSegments[i]->PositionStart[2];
-	float time = box->MainTrack->TargetSegments[i]->PositionStart[3];
-	unsigned long det = box->MainTrack->TargetSegments[i]->Detectors;
-	float sigma = 1/sqrt(box->MainTrack->TargetSegments[i]->DeltaLYZ/20);
-	time = _randomGen->Gaus(time, sigma);
+    // do not consider for truly forward-going track
+    if (box->MainTrack->TrueObject && box->MainTrack->GetTrueParticle()->Direction[2] > 0)
+      ok = true;
 
-	std::vector<float> vec;
-	vec.push_back(z); vec.push_back(time); vec.push_back(sigma);
-	if ( detTiming.count(det) == 0 )
-	  detTiming[det] = vec;
-      }
+    AnaParticleB *p1=0, *p2=0;
+    float ToF = numuCC4pi_utils::GetToF(box->MainTrack, p1, p2, _randomGen);
+    if (!p1 or !p2)
+      return ok;
 
-    for (int i=0; i<box->MainTrack->nFGDSegments; i++)
-      if (box->MainTrack->FGDSegments[i]->DeltaLYZ > cut_length_target) {
-	float    z = box->MainTrack->FGDSegments[i]->PositionStart[2];
-	float time = box->MainTrack->FGDSegments[i]->PositionStart[3];
-	unsigned long det = box->MainTrack->FGDSegments[i]->Detectors;
-	float sigma = 1/sqrt(box->MainTrack->FGDSegments[i]->DeltaLYZ/10);
-	time = _randomGen->Gaus(time, sigma);
+    float true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
 
-	std::vector<float> vec;
-	vec.push_back(z); vec.push_back(time); vec.push_back(sigma);
-	if ( detTiming.count(det) == 0 )
-	  detTiming[det] = vec;
-      }
-    for (int i=0; i<box->MainTrack->nECalSegments; i++) {
-      if (box->MainTrack->ECalSegments[i]->IsReconstructed) {
-	float    z = box->MainTrack->ECalSegments[i]->PositionStart[2];
-	float time = box->MainTrack->ECalSegments[i]->PositionStart[3];
-	unsigned long det = box->MainTrack->ECalSegments[i]->Detectors;
-	float sigma = 1;
-	time = _randomGen->Gaus(time, sigma);
+    // ==========
+    // ToF mass
+    // ==========
 
-	std::vector<float> vec;
-	vec.push_back(z); vec.push_back(time); vec.push_back(sigma);
-	if ( detTiming.count(det) == 0 )
-	  detTiming[det] = vec;
-      }
-    }
+    double c = 299.792458; // mm/ns
 
-    for (int i=0; i<box->MainTrack->nToFSegments; i++) {
-      float    z = box->MainTrack->ToFSegments[i]->PositionStart[2];
-      float time = box->MainTrack->ToFSegments[i]->PositionStart[3];
-      unsigned long det = box->MainTrack->ToFSegments[i]->Detectors;
-      float sigma = 0.6;
-      time = _randomGen->Gaus(time, sigma);
+    // smear the momentum
+    float true_mom = box->MainTrack->Momentum;
+    float mom = box->MainTrack->SmearedMomentum;
+    if (box->MainTrack->Momentum != box->MainTrack->SmearedMomentum)
+      mom = _randomGen->Gaus(mom, 0.10*mom);
 
-      std::vector<float> vec;
-      vec.push_back(z); vec.push_back(time); vec.push_back(sigma);
-      if ( detTiming.count(det) == 0 )
-	detTiming[det] = vec;
-    }
-    
-    if (detTiming.size() < 2)
-      return false;
+    // smear the length
+    TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
+    TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
+    float true_length = (pos1-pos2).Mag();
+    float length = _randomGen->Gaus(true_length, 10);
 
-    float deltaZ = 0, ToF = 0, max_t_over_s = 0;
-    unsigned long det1 = 0, det2 = 0;
-    for (std::map< unsigned long, std::vector<float> >::iterator i=detTiming.begin(); i!=detTiming.end(); ++i){
-      for (std::map< unsigned long, std::vector<float> >::iterator j=detTiming.begin(); j!=detTiming.end(); ++j){
-	if (i == j) continue;
-
-	float z1 = i->second[0], z2 = j->second[0];
-	float t1 = i->second[1], t2 = j->second[1];
-	float s1 = i->second[2], s2 = j->second[2];
-	float t_over_s = fabs( (t2-t1)/sqrt(s1*s1+s2*s2) );
-
-	if ( t_over_s > max_t_over_s ){
-	  max_t_over_s = t_over_s;
-	  deltaZ = z2 - z1;
-	  ToF =    t2 - t1;
-	  det1 = i->first; det2 = j->first;
-	}
-      }
-    }
-
-    //std::cout << deltaZ << " " << ToF << " " << SubDetId::GetSubdetectorEnum(det1) << " " << SubDetId::GetSubdetectorEnum(det2) << std::endl;
-
-    if (deltaZ < 1e-6)
-      return false;
-
-    if (numuCC4pi_utils::IsForward(*box->MainTrack))
-      return (deltaZ/ToF > 0);
+    if (mom<0 || length<0) 
+      box->ToF_mass = 0;
     else
-      return (deltaZ/ToF < 0);
+      box->ToF_mass = mom*sqrt(pow(c*ToF/length, 2) -1);
+    box->ToF_true_mass = true_mom*sqrt(pow(c*true_ToF/true_length, 2) -1);
 
-    return false;
-    
+    // ==========
+    // ==========
+
+    ok = ok || (true_ToF*ToF > 0);
+    return ok;
+
   }
 
 }

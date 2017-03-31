@@ -37,18 +37,18 @@ public:
         kDsECal,
         kP0DECal,
         kBrlECal,
-        kTopDown,
-        kTopUp,
-        kBotDown,
-        kBotUp,
-        kLeftDown,
-        kLeftUp,
-        kRightDown,
-        kRightUp,
-        kBackDown,
-        kBackUp,
-        kFrontDown,
-        kFrontUp,
+        kToFTopDown,
+        kToFTopUp,
+        kToFBotDown,
+        kToFBotUp,
+        kToFLeftDown,
+        kToFLeftUp,
+        kToFRightDown,
+        kToFRightUp,
+        kToFBackDown,
+        kToFBackUp,
+        kToFFrontDown,
+        kToFFrontUp,
         kInvalidSubdetector,
         kToF,
         kTPC,
@@ -69,22 +69,10 @@ public:
     static bool GetDetectorUsed(unsigned long BitField, SubDetId_h det);
     static bool GetDetectorArrayUsed(unsigned long BitField, SubDetId_h dets[], int nDet);
 
-
-    /// Returns the TPCUp number (TPCUp1 = 1, TPCUp2 = 2 etc.) of the track
-    /// Does not check whether track passed through more than one TPCUp module, just returns the first TPCUp it finds 
     static int GetTPC(unsigned long BitField);
-    /// Returns the Target number (Target1 = 1, Target2 = 2 etc.) of the track
-    /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
     static int GetTarget(unsigned long BitField);
-    /// Returns the Target number (DsECal = 1, P0DECal = 2 etc.) of the track
-    /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
     static int GetECal(unsigned long BitField);
-    /// Returns the Target number (DsECal = 1, P0DECal = 2 etc.) of the track
-    /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
     static int GetFGD(unsigned long BitField);
-
-    /// Returns the Target number (DsECal = 1, P0DECal = 2 etc.) of the track
-    /// Does not check whether track passed through more than one Target module, just returns the first Target it finds 
     static int GetTOF(unsigned long BitField);
  
     /// Method to set the detector system bits using the individual subdetector bits.

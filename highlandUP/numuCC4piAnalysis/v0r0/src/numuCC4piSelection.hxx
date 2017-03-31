@@ -64,6 +64,7 @@ public:
     PosPions.clear();
     OtherPions.clear();
     TPC_det = SubDetId::kInvalid;
+    ToF_mass = ToF_true_mass = -999.;
   }
 
   virtual void Reset(){
@@ -81,6 +82,7 @@ public:
     PosPions.clear();
     OtherPions.clear();
     TPC_det = SubDetId::kInvalid;
+    ToF_mass = ToF_true_mass = -999.;
   }
 
   virtual ~ToyBoxCC4pi(){}
@@ -90,6 +92,7 @@ public:
   AnaTrackB* MainTrack;
   std::vector<AnaTrackB*> TPCTracks, ECalTracks;
   SubDetId::SubDetEnum TPC_det;
+  float ToF_mass, ToF_true_mass;
 
   int nNegativePionTPCtracks;
   std::vector<AnaTrackB*> NegativePionTPCtracks;

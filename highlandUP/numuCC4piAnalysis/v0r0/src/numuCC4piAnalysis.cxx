@@ -178,6 +178,8 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVarF(output(),  selmu_likemu,       ""); 
   AddVarF(output(),  selmu_likemip,      ""); 
   //AddToyVarI(output(),  selmu_end_ecal,     "");
+  AddVarF(output(), selmu_ToF_mass,      "");
+  AddVarF(output(), selmu_ToF_true_mass, "");
   
   //--- info from true vertex
   AddVarI(output(),   truelepton_PDG,      "");
@@ -311,11 +313,13 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selmu_ecal_mipem,                cc4pibox().track_ECal_MipEM);
     output().FillVar(selmu_ecal_EneOnL,               cc4pibox().track_ECal_EneOnL);
     output().FillVar(selmu_longestTPC,                cc4pibox().TPC_det);
-    
+
+    output().FillVar(selmu_ToF_mass,                  cc4pibox().ToF_mass);
+    output().FillVar(selmu_ToF_true_mass,             cc4pibox().ToF_true_mass);
+
     output().FillVar(sel_nOtherPions,      cc4pibox().nOtherPions);
     output().FillVar(sel_nPosPions,        cc4pibox().nPosPions);
 
-    
     for (int i=0; i<cc4pibox().nMichelElectrons; i++) {
       AnaTrackB *track = cc4pibox().MichelElectrons[i];
       output().FillVectorVar(sel_MichelElectrons_mom, track->GetTrueParticle()->Momentum);

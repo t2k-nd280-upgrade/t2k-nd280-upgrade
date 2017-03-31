@@ -41,6 +41,8 @@ namespace numuCC4pi_utils{
   void FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
   void FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
 
+  float GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, TRandom3* gen);
+
 }
 
 
