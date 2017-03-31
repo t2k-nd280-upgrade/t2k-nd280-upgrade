@@ -21,11 +21,11 @@
   </Generator>
 
   <Path2file>
-    /t2k1/users/ovsyanik/ND280/neut/ 
+    /neutrino/data7/davide/files/ND280Upgrade/ 
   </Path2file>
 
   <filename>
-    GENIE_geometry_ref_1E21POT.root
+    GENIE/14_3_17/GENIE_geometry_ref_1E21POT.root
   </filename>
 
   <treename>  
@@ -69,7 +69,7 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     +2275
+     +2274
    </forwTPCPos3_Z>
 
 
