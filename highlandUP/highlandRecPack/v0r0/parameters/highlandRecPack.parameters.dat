@@ -1,0 +1,43 @@
+
+--- ROOT Geom File--------
+
+  < highlandRecPack.RootGeometryFile = $(HIGHLANDRECPACKROOT)/data/geometry.root >  a file with ROOT geometry
+ 
+--- Trim Values for PRange ------ 
+
+
+  < highlandRecPack.PRange.FGD1TrimZ_start  = 0. >
+  < highlandRecPack.PRange.FGD1TrimZ_end    = 0. >
+  < highlandRecPack.PRange.FGD2TrimZ        = 0. > // on top of water layer thing !?!  
+  < highlandRecPack.PRange.P0DTrimZ         = 0. >
+  < highlandRecPack.PRange.DsECalTrimZ      = 0. >  
+  < highlandRecPack.PRange.BrlECalTrimXY    = 0. >
+  < highlandRecPack.PRange.P0DECalTrimXY    = 0. >
+  < highlandRecPack.PRange.SMRDTrimXY       = 32. > // from analysis checks 
+
+--- BField strength default at (0, 0, 0) ------
+
+  < highlandRecPack.BField.FieldStrengthX  = 0.2 >
+ 
+
+--- Debug ------
+  < highlandRecPack.Debug      = 0 >
+  
+ 
+--- Whether to use pre-defined prod 5 like surface making ------
+ 
+  < highlandRecPack.Surfaces.UseProd5SurfaceMaking = 1 >
+  
+--- Whether to exclude TPC dead material surrounding the drift volume (prod 5 like)
+ 
+  < highlandRecPack.ExcludeTPCDeadMaterial = 0 >
+  
+--- Whether to use three separate volumes for each SMRD side (DONT USE IT NORMALLY) 
+ 
+  < highlandRecPack.SplitSMRDSideVolumes = 0 >
+ 
+--- Whether to include TPC MM volumes (DONT USE IT NORMALLY) 
+ 
+  < highlandRecPack.IncludeTPCMMVolumes = 0 >
+ 
+ 

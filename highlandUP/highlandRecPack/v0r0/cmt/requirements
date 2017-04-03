@@ -1,0 +1,48 @@
+package highlandUP/highlandRecPack
+version v2r2
+
+
+
+branches cmt src doc app
+
+use RECPACK
+use highlandCore * highlandUP
+use psycheNDUPUtils * highlandUP
+
+
+# Build methods to include.
+make_fragment doxygen -header=doxygen_header 
+document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
+document rootcint dictionary *_LinkDef.h
+
+
+
+# Build information used by packages that use this one.
+macro highlandRecPack_cppflags "-DHIGHLANDRECPACK_USED -fPIC"
+macro highlandRecPack_linkopts "-L$(HIGHLANDRECPACKROOT)/$(highlandRecPack_tag) -lhighlandRecPack "
+macro highlandRecPack_stamps " $(HIGHLANDRECPACKROOT)/$(highlandRecPack_tag)/highlandRecPack.stamp"
+
+# The paths to find this library.
+path_remove PATH "$(HIGHLANDRECPACKROOT)"
+path_prepend PATH "$(HIGHLANDRECPACKROOT)/$(highlandRecPack_tag)"
+path_remove LD_LIBRARY_PATH "$(HIGHLANDRECPACKROOT)"
+path_prepend LD_LIBRARY_PATH "$(HIGHLANDRECPACKROOT)/$(highlandRecPack_tag)"
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "$(HIGHLANDRECPACKROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+	     Darwin	       "$(HIGHLANDRECPACKROOT)/$(highlandRecPack_tag)"
+
+
+# The library to build
+library highlandRecPack *.cxx *.cpp  ../dict/*.cxx
+
+application DumpGeometry ../app/DumpGeometry.cxx
+
+# tests
+document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
+
+# Define a setup script to check for geometries and download them if required.
+setup_script geometry_setup
+ 
+ 
+
