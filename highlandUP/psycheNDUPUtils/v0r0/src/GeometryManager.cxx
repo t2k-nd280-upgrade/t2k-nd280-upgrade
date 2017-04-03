@@ -41,8 +41,8 @@ GeometryManager::GeometryManager(){
   //*****************************************************************************
 
   _GeoManagers.clear();
-  _defaultFileName = "$(PSYCHEUTILSROOT)/data/v5r1p3-baseline-2010-11_geom-aa7ba9d3-c9bce01d-1965fe02-bb7afdbf-6c35814b.root";
-  _useDefaultGeometry = ND::params().GetParameterD("psycheDUNEUtils.Geometry.UseDefaultGeometry");
+  _defaultFileName = "$(PSYCHENDUPUTILSROOT)/data/geometry.root";
+  _useDefaultGeometry = ND::params().GetParameterD("psycheNDUPUtils.Geometry.UseDefaultGeometry");
   _currentGeomID=-1;
   
   
@@ -135,9 +135,9 @@ bool GeometryManager::LoadGeometry(const std::string& file_name0, Int_t geomID, 
   // deal with  the top volume.
   TGeoVolume* top = gGeoManager->GetTopVolume();
   std::string topName(top->GetName());
-  if (topName != "World") {
+  if (topName != "t2k") {
     std::cout<<"Geometry top volume has changed from t2k " << topName<<std::endl;
-    top = gGeoManager->GetVolume("World_1");
+    top = gGeoManager->GetVolume("t2k");
     if (!top)
       throw NoGeometryManagerException();
 
@@ -171,14 +171,37 @@ void GeometryManager::InitializeGeometry(bool IsMC) const {
   // has not yet been changed)
   // so set the appropriate values (substitute MC with data) when needed 
 
-  if (IsMC)
-    return;
+ // if (IsMC)
+//    return;
 
   // only prod6 should be affected
-  if (!versionUtils::prod6_corrections)
-    return;
+ // if (!versionUtils::prod6_corrections)
+   // return;
 
+//  anaUtils::CopyArray(DetDef::tecalLmin_p6_data,   DetDef::tecalLmin,  3);
 
+  //anaUtils::CopyArray(DetDef::tecalLmax_p6_data,   DetDef::tecalLmax,  3);
+
+  //anaUtils::CopyArray(DetDef::tecalRmin_p6_data,   DetDef::tecalRmin,  3);
+
+  //anaUtils::CopyArray(DetDef::tecalRmax_p6_data,   DetDef::tecalRmax,  3);
+/*
+  anaUtils::CopyArray(DetDef::tecalTLmin_p6_data,  DetDef::tecalTLmin, 3);
+
+  anaUtils::CopyArray(DetDef::tecalTLmax_p6_data,  DetDef::tecalTLmax, 3);
+
+  anaUtils::CopyArray(DetDef::tecalTRmin_p6_data,  DetDef::tecalTRmin, 3);
+
+  anaUtils::CopyArray(DetDef::tecalTRmax_p6_data,  DetDef::tecalTRmax, 3);
+
+  anaUtils::CopyArray(DetDef::tecalBLmin_p6_data,  DetDef::tecalBLmin, 3);
+
+  anaUtils::CopyArray(DetDef::tecalBLmax_p6_data,  DetDef::tecalBLmax, 3);
+
+  anaUtils::CopyArray(DetDef::tecalBRmin_p6_data,  DetDef::tecalBRmin, 3);
+
+  anaUtils::CopyArray(DetDef::tecalBRmax_p6_data,  DetDef::tecalBRmax, 3);
+*/
   return;
 
 } 
@@ -192,38 +215,59 @@ void GeometryManager::InitializeDetectorDefinitionFromROOTGeometry() const {
 
   FillVolumesWithGeometryLoop();
 
-  //  if (ND::params().GetParameterI("psycheDUNEUtils.Geometry.DetectorDefinitionFromROOTGeometry.FillSubdet1Info"))
-  //    FillSubdet1InfoFromROOTGeometry(); 
+  //if (ND::params().GetParameterI("psycheNDUPUtils.Geometry.DetectorDefinitionFromROOTGeometry.FillFGDInfo"))
+   // FillFGDInfoFromROOTGeometry(); 
 
 
   /* 
-  // Get the SUBDET1_1 boundaries from the ROOT geometry
-  SetDetectorBoundaries("SUBDET1_1",DetDef::Subdet1_1min, DetDef::Subdet1_1max, 
-  "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/SUBDET1_1_0/ScintX_0",
-  "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/SUBDET1_1_0/ScintY_14");
+  // Get the FGD1 boundaries from the ROOT geometry
+  SetDetectorBoundaries("FGD1",DetDef::fgd1min, DetDef::fgd1max, 
+  "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/FGD1_0/ScintX_0",
+  "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/FGD1_0/ScintY_14");
 
-  // Get the SUBDET1_2 boundaries from the ROOT geometry
-  SetDetectorBoundaries("SUBDET1_2", DetDef::Subdet1_2min, DetDef::Subdet1_2max, 
-  "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/SUBDET1_2_0/ScintX_0",
-  "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/SUBDET1_2_0/ScintY_6");
+  // Get the FGD2 boundaries from the ROOT geometry
+  SetDetectorBoundaries("FGD2", DetDef::fgd2min, DetDef::fgd2max, 
+  "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/FGD2_0/ScintX_0",
+  "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/FGD2_0/ScintY_6");
 
+  // Get the DSECAL boundaries from the ROOT geometry
+  SetDetectorBoundaries("DsECAL", DetDef::dsecalmin, DetDef::dsecalmax, "/t2k_1/OA_0/Magnet_0/Basket_0/DsECal_0/Active_0");
+
+  // Get the TrECAL Right boundaries from the ROOT geometry
+  SetDetectorBoundaries("TrECAL R", DetDef::tecalRmin, DetDef::tecalRmax, "/t2k_1/OA_0/Magnet_0/RightClam_0/BrlECal_1/Side_0/Active_0");
+
+  // Get the TrECAL Left boundaries from the ROOT geometry
+  SetDetectorBoundaries("TrECAL L", DetDef::tecalLmin, DetDef::tecalLmax, "/t2k_1/OA_0/Magnet_0/LeftClam_0/BrlECal_1/Side_0/Active_0");
+
+  // Get the TrECAL Top Right boundaries from the ROOT geometry
+  SetDetectorBoundaries("TrECAL TR", DetDef::tecalRmin, DetDef::tecalRmax, "/t2k_1/OA_0/Magnet_0/RightClam_0/BrlECal_0/Top_0/Active_0");
+
+  // Get the TrECAL Top Left boundaries from the ROOT geometry
+  SetDetectorBoundaries("TrECAL TL", DetDef::tecalTLmin, DetDef::tecalTLmax, "/t2k_1/OA_0/Magnet_0/LeftClam_0/BrlECal_0/Top_0/Active_0");
+
+  // Get the TrECAL Bottom Right boundaries from the ROOT geometry
+  SetDetectorBoundaries("TrECAL BR", DetDef::tecalRmin, DetDef::tecalRmax, "/t2k_1/OA_0/Magnet_0/RightClam_0/BrlECal_2/Bottom_0/Active_0");
+
+  // Get the TrECAL Bottom Left boundaries from the ROOT geometry
+  SetDetectorBoundaries("TrECAL BL", DetDef::tecalBLmin, DetDef::tecalBLmax, "/t2k_1/OA_0/Magnet_0/LeftClam_0/BrlECal_2/Bottom_0/Active_0");
+
+  std::cout << "---------------------------------------------------------------------------------------" << std::endl;
   */
 }
 
 //*****************************************************************************
-void GeometryManager::FillTargetInfoFromROOTGeometry() const {
+void GeometryManager::FillFGDInfoFromROOTGeometry() const {
   //*****************************************************************************
  
-  /*
-  std::string full_path1 = "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/SUBDET1_1_0/";
-  std::string full_path2 = "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/SUBDET1_2_0/";
+ /* std::string full_path1 = "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/FGD1_0/";
+  std::string full_path2 = "/t2k_1/OA_0/Magnet_0/Basket_0/Tracker_0/FGD2_0/";
 
   Double_t pos[3];
   Double_t size[3];
 
   int index = 0;
   
-  // SUBDET1_1  
+  // FGD1  
   // loop through the layers,  fill bars
   for (int i=0; i<15; i++){
     std::stringstream sstream;
@@ -231,15 +275,15 @@ void GeometryManager::FillTargetInfoFromROOTGeometry() const {
 
     // get two positions
     // X layer
-    //    GetVolumeProperties(full_path1 + "ScintX_" + sstream.str(), pos, size);
-    //    DetDef::Subdet1_1BarCenter[index++] = pos[2];
+    GetVolumeProperties(full_path1 + "ScintX_" + sstream.str(), pos, size);
+    DetDef::fgd1BarCenter[index++] = pos[2];
 
     // Y layer
-    //    GetVolumeProperties(full_path1 + "ScintY_" + sstream.str(), pos, size);
-    //    DetDef::Subdet1_1BarCenter[index++] = pos[2];  
+    GetVolumeProperties(full_path1 + "ScintY_" + sstream.str(), pos, size);
+    DetDef::fgd1BarCenter[index++] = pos[2];  
   }
   
-  // SUBDET1_2  
+  // FGD2  
   // loop through the layers,  fill bars
   for (int i=0; i<7; i++){
     std::stringstream sstream;
@@ -247,16 +291,73 @@ void GeometryManager::FillTargetInfoFromROOTGeometry() const {
 
     // get two positions
     // X layer
-    //    GetVolumeProperties(full_path2 + "ScintX_" + sstream.str(), pos, size);
-    //    DetDef::Subdet1_2BarCenter[index++] = pos[2];
+    GetVolumeProperties(full_path2 + "ScintX_" + sstream.str(), pos, size);
+    DetDef::fgd2BarCenter[index++] = pos[2];
 
     // Y layer
-    //    GetVolumeProperties(full_path2 + "ScintY_" + sstream.str(), pos, size);
-    //    DetDef::Subdet1_2BarCenter[index++] = pos[2];  
+    GetVolumeProperties(full_path2 + "ScintY_" + sstream.str(), pos, size);
+    DetDef::fgd2BarCenter[index++] = pos[2];  
   }
 
+  // water bags
+  for (int i=0; i<6; i++){
+    std::stringstream sstream;
+    sstream << i;
+
+    GetVolumeProperties(full_path2 + "WaterGap_" + sstream.str(), pos, size);
+    DetDef::fgd2WaterCenter[i] = pos[2];
+
+  }
+  
   //various module vars
-  */  
+  
+  // bar width in Z
+  GetVolumeProperties(full_path2 + "ScintX_0/Bar_0", pos, size);
+  DetDef::fgdXYBarWidth = 2*fabs(size[2]);
+  
+  // glue between X and Y layers
+  GetVolumeProperties(full_path2 + "GlueGap1_0", pos, size);
+  DetDef::fgdXYGlueWidth = 2*fabs(size[2]);
+  
+  // glue before/after X/Y layers
+  GetVolumeProperties(full_path2 + "GlueGap2_0", pos, size);
+  DetDef::fgdXYMiddleGlueWidth = 2*fabs(size[2]);
+  
+  // glue for water bags
+  GetVolumeProperties(full_path2 + "GlueGap3_0", pos, size);
+  DetDef::fgdWaterGlueWidth = 2*fabs(size[2]);
+  
+  // air before/after X/Y layers
+  GetVolumeProperties(full_path2 + "AirGap1_0", pos, size);
+  DetDef::fgdXYAirWidth = 2*fabs(size[2]);
+ 
+  // air before/after water bags
+  GetVolumeProperties(full_path2 + "AirGap2_0", pos, size);
+  DetDef::fgdWaterAirWidth = 2*fabs(size[2]);
+  
+  // G10 skin before/after X/Y layers 
+  GetVolumeProperties(full_path2 + "G10Gap_0", pos, size);
+  DetDef::fgdXYSkinWidth = 2*fabs(size[2]);
+  
+  // polypropelene skin
+  GetVolumeProperties(full_path2 + "PropyleneGap_0", pos, size);
+  DetDef::fgdWaterSkinWidth = 2*fabs(size[2]);
+  
+  // water bag
+  GetVolumeProperties(full_path2 + "WaterGap_0", pos, size);
+  DetDef::fgdWaterPCWidth = 2*fabs(size[2]);
+  
+  // XY module = G10_sheets + glue  + X layer + glue  + Y layer + glue  + G10_sheets
+  DetDef::fgdXYModuleWidth = DetDef::fgdXYSkinWidth  +  DetDef::fgdXYGlueWidth + DetDef::fgdXYBarWidth +
+    DetDef::fgdXYMiddleGlueWidth + DetDef::fgdXYBarWidth +   DetDef::fgdXYGlueWidth +  DetDef::fgdXYSkinWidth; 
+  
+  // water module = polypropylene + glue   + water/PC(polycarbonate) + glue   + polypropylene
+  DetDef::fgdWaterModuleWidth = DetDef::fgdWaterSkinWidth + DetDef::fgdWaterGlueWidth + DetDef::fgdWaterPCWidth + 
+    DetDef::fgdWaterGlueWidth + DetDef::fgdWaterSkinWidth; 
+
+  
+  //dump the results
+  DetDef::DumpFGDInfo();*/
 }
 
 //*****************************************************************************
@@ -425,77 +526,190 @@ bool GeometryManager::VisitNode(const std::string& name, const TGeoNode* node) c
   std::copy(low_tmp,  low_tmp   + 3, low);
   std::copy(high_tmp, high_tmp  + 3, high);
   
-  //Subdet2
+  //Tracker overall envelop
+  if (name.find("FGD")    != std::string::npos 
+      || name.find("TPC") != std::string::npos){
+    UpdateVolumeBound(DetDef::trackerAllmin,  DetDef::trackerAllmax,  low, high);
+  }
+
+  //P0D 
+  //ToDo: review
+  if (name.find("P0D_") != std::string::npos
+      && name.find("Bar_") != std::string::npos) {
+    UpdateVolumeBound(DetDef::usecalpmin, DetDef::usecalpmax, low, high);
+    return false;
+  }
+
+  //TPC
   //Should be split into left and right across the cathode!!!
-  if (name.find("ForwTPC1_0")     != std::string::npos
+  if (name.find("ForwTPC1")     != std::string::npos
     //  && name.find("Drift") != std::string::npos) {
     ){
     UpdateVolumeBound(DetDef::ForwTPC1min, DetDef::ForwTPC1max, low, high);
     return false;
   }
-  if (name.find("ForwTPC2_0")     != std::string::npos
+  if (name.find("ForwTPC2")     != std::string::npos
      // && name.find("Drift") != std::string::npos) {
     ){
     UpdateVolumeBound(DetDef::ForwTPC2min, DetDef::ForwTPC2max, low, high);
     return false;
   }
-  if (name.find("ForwTPC3_0")     != std::string::npos
+  if (name.find("ForwTPC3")     != std::string::npos
    //   && name.find("Drift") != std::string::npos) {
   ){
     UpdateVolumeBound(DetDef::ForwTPC3min, DetDef::ForwTPC3max, low, high);
     return false;
   }
- if (name.find("TPCUp1_0")     != std::string::npos
+  if (name.find("TPCUp1")     != std::string::npos
    //   && name.find("Drift") != std::string::npos) {
   ){
     UpdateVolumeBound(DetDef::TPCUp1min, DetDef::TPCUp1max, low, high);
     return false;
   }
- if (name.find("TPCUp2_0")     != std::string::npos
+  if (name.find("TPCUp2")     != std::string::npos
    //   && name.find("Drift") != std::string::npos) {
   ){
-    UpdateVolumeBound(DetDef::TPCUp2min, DetDef::TPCUp2max, low, high);
+    UpdateVolumeBound(DetDef::TPCUp1min, DetDef::TPCUp2max, low, high);
     return false;
   }
- if (name.find("TPCDown1_0")     != std::string::npos
-   //   && name.find("Drift") != std::string::npos) {
-  ){
-    UpdateVolumeBound(DetDef::TPCDown1min, DetDef::TPCDown1max, low, high);
-    return false;
-  }
- if (name.find("TPCDown2_0")     != std::string::npos
+  if (name.find("TPCDown2")     != std::string::npos
    //   && name.find("Drift") != std::string::npos) {
   ){
     UpdateVolumeBound(DetDef::TPCDown2min, DetDef::TPCDown2max, low, high);
     return false;
   }
- if (name.find("Target1_0")     != std::string::npos
+  if (name.find("TPCDown1")     != std::string::npos
    //   && name.find("Drift") != std::string::npos) {
   ){
-    UpdateVolumeBound(DetDef::Target1min, DetDef::Target1max, low, high);
+    UpdateVolumeBound(DetDef::TPCDown1min, DetDef::TPCDown1max, low, high);
     return false;
   }
- if (name.find("Target2_0")     != std::string::npos
-   //   && name.find("Drift") != std::string::npos) {
-  ){
-    UpdateVolumeBound(DetDef::Target2min, DetDef::Target2max, low, high);
-    return false;
-  }
- if (name.find("FGD1_0")     != std::string::npos
-   //   && name.find("Drift") != std::string::npos) {
-  ){
+
+  //FGD1 
+  if (name.find("FGD1")       != std::string::npos
+      /*&& name.find("/Scint")  != std::string::npos*/) {
     UpdateVolumeBound(DetDef::FGD1min, DetDef::FGD1max, low, high);
     return false;
   }
- if (name.find("FGD2_0")     != std::string::npos
-   //   && name.find("Drift") != std::string::npos) {
-  ){
+
+  //FGD2
+  if (name.find("FGD2")       != std::string::npos
+     /* && name.find("/Scint")  != std::string::npos*/) {
     UpdateVolumeBound(DetDef::FGD2min, DetDef::FGD2max, low, high);
     return false;
   }
 
-   
 
+  //FGD1 
+  if (name.find("Target1")       != std::string::npos
+     /* && name.find("/Scint")  != std::string::npos*/) {
+    UpdateVolumeBound(DetDef::Target1min, DetDef::Target1max, low, high);
+    return false;
+  }
+
+  //FGD2
+  if (name.find("Target2")       != std::string::npos
+     /* && name.find("/Scint")  != std::string::npos*/) {
+    UpdateVolumeBound(DetDef::Target2min, DetDef::Target2max, low, high);
+    return false;
+  }
+   
+  //DsECal
+  if (name.find("DsECal")     != std::string::npos
+      && name.find("/Active") != std::string::npos) {
+    UpdateVolumeBound(DetDef::dsecalmin, DetDef::dsecalmax, low, high);
+    return false;
+  }
+
+  //P0DECal
+  if (name.find("/LeftClam_")   != std::string::npos
+      && name.find("/P0DECal_") != std::string::npos
+      && name.find("/Top_")     != std::string::npos
+      && name.find("/Active")   != std::string::npos) {
+    UpdateVolumeBound(DetDef::pecalTLmin, DetDef::pecalTLmax, low, high);
+    return false;
+  }
+  if (name.find("/LeftClam_")   != std::string::npos
+      && name.find("/P0DECal_") != std::string::npos
+      && name.find("/Side_")    != std::string::npos
+      && name.find("/Active")   != std::string::npos) {
+    UpdateVolumeBound(DetDef::pecalLmin, DetDef::pecalLmax, low, high);
+    return false;
+  }
+  if (name.find("/LeftClam_")   != std::string::npos
+      && name.find("/P0DECal_") != std::string::npos
+      && name.find("/Bottom_")  != std::string::npos
+      && name.find("/Active_")  != std::string::npos) {
+    UpdateVolumeBound(DetDef::pecalBLmin, DetDef::pecalBLmax, low, high);
+    return false;
+  }
+  if (name.find("/RightClam_")  != std::string::npos
+      && name.find("/P0DECal_") != std::string::npos
+      && name.find("/Top_")     != std::string::npos
+      && name.find("/Active")   != std::string::npos) {
+    UpdateVolumeBound(DetDef::pecalTRmin, DetDef::pecalTRmax, low, high);
+    return false;
+  }
+  if (name.find("/RightClam_")  != std::string::npos
+      && name.find("/P0DECal_") != std::string::npos
+      && name.find("/Side_")    != std::string::npos
+      && name.find("/Active")   != std::string::npos) {
+    UpdateVolumeBound(DetDef::pecalRmin, DetDef::pecalRmax, low, high);
+    return false;
+  }
+  if (name.find("/RightClam_")  != std::string::npos
+      && name.find("/P0DECal_") != std::string::npos
+      && name.find("/Bottom_")  != std::string::npos
+      && name.find("/Active_")  != std::string::npos) {
+    UpdateVolumeBound(DetDef::pecalBRmin, DetDef::pecalBRmax, low, high);
+    return false;
+  }
+
+  //BarrelECal
+  if (name.find("/LeftClam_")   != std::string::npos
+      && name.find("/BrlECal_") != std::string::npos
+      && name.find("/Top_")     != std::string::npos
+      && name.find("/Active")   != std::string::npos) {
+    UpdateVolumeBound(DetDef::tecalTLmin, DetDef::tecalTLmax, low, high);
+    return false;
+  }
+  if (name.find("/LeftClam_")   != std::string::npos
+      && name.find("/BrlECal_") != std::string::npos
+      && name.find("/Side_")    != std::string::npos
+      && name.find("/Active")   != std::string::npos) {
+    UpdateVolumeBound(DetDef::tecalLmin, DetDef::tecalLmax, low, high);
+    return false;
+  }
+  if (name.find("/LeftClam_")   != std::string::npos
+      && name.find("/BrlECal_") != std::string::npos
+      && name.find("/Bottom_")  != std::string::npos
+      && name.find("/Active_")  != std::string::npos) {
+    UpdateVolumeBound(DetDef::tecalBLmin, DetDef::tecalBLmax, low, high);
+    return false;
+  }
+  if (name.find("/RightClam_")  != std::string::npos
+      && name.find("/BrlECal_") != std::string::npos
+      && name.find("/Top_")     != std::string::npos
+      && name.find("/Active")   != std::string::npos) {
+    UpdateVolumeBound(DetDef::tecalTRmin, DetDef::tecalTRmax, low, high);
+    return false;
+  }
+  if (name.find("/RightClam_")  != std::string::npos
+      && name.find("/BrlECal_") != std::string::npos
+      && name.find("/Side_")    != std::string::npos
+      && name.find("/Active")   != std::string::npos) {
+    UpdateVolumeBound(DetDef::tecalRmin, DetDef::tecalRmax, low, high);
+    return false;
+  }
+  if (name.find("/RightClam_")  != std::string::npos
+      && name.find("/BrlECal_") != std::string::npos
+      && name.find("/Bottom_")  != std::string::npos
+      && name.find("/Active_")  != std::string::npos) {
+    UpdateVolumeBound(DetDef::tecalBRmin, DetDef::tecalBRmax, low, high);
+    return false;
+  }
+
+  
 
   //keeping digging the geometry down the hierarchy
   return true;
@@ -523,32 +737,70 @@ void GeometryManager::ResetVolumeDefinitions() const {
   Float_t min[3] = {1e10, 1e10, 1e10};
   Float_t max[3] = {-1e10, -1e10, -1e10};
 
-  //SUBDET1_1
-  SetDetectorBoundaries(DetDef::TPCUp1min,      DetDef::TPCUp1max,    min, max); 
+  //FGD1
+  SetDetectorBoundaries(DetDef::FGD1min,      DetDef::FGD1max,    min, max); 
 
-  //SUBDET1_2
-  SetDetectorBoundaries(DetDef::TPCUp2min,      DetDef::TPCUp2max,    min, max); 
+  //FGD2
+  SetDetectorBoundaries(DetDef::FGD2min,      DetDef::FGD2max,    min, max); 
 
-  //Subdet2_1
-  SetDetectorBoundaries(DetDef::TPCDown1min,      DetDef::TPCDown1max,    min, max); 
+  //Target1
+  SetDetectorBoundaries(DetDef::Target1min,      DetDef::Target1max,    min, max); 
 
-  //Subdet2_2
-  SetDetectorBoundaries(DetDef::TPCDown2min,      DetDef::TPCDown2max,    min, max); 
+  //Target2
+  SetDetectorBoundaries(DetDef::Target2min,      DetDef::Target2max,    min, max); 
 
-  //Subdet2_3
-  SetDetectorBoundaries(DetDef::ForwTPC1min,      DetDef::ForwTPC1max,    min, max);
 
-  SetDetectorBoundaries(DetDef::ForwTPC2min,      DetDef::ForwTPC2max,    min, max);
+  //TPC1
+  SetDetectorBoundaries(DetDef::ForwTPC1min,      DetDef::ForwTPC1max,    min, max); 
 
+  //TPC2
+  SetDetectorBoundaries(DetDef::ForwTPC2min,      DetDef::ForwTPC2max,    min, max); 
+
+  //TPC3
   SetDetectorBoundaries(DetDef::ForwTPC3min,      DetDef::ForwTPC3max,    min, max);
 
-  SetDetectorBoundaries(DetDef::Target1min,      DetDef::Target1max,    min, max);
 
-  SetDetectorBoundaries(DetDef::Target2min,      DetDef::Target2max,    min, max);
+  //TPC1
+  SetDetectorBoundaries(DetDef::TPCUp1min,      DetDef::TPCUp1max,    min, max); 
 
-  SetDetectorBoundaries(DetDef::FGD1min,      DetDef::FGD1max,    min, max);
+  //TPC2
+  SetDetectorBoundaries(DetDef::TPCUp2min,      DetDef::TPCUp2max,    min, max); 
 
-  SetDetectorBoundaries(DetDef::FGD2min,      DetDef::FGD2max,    min, max);
+  //TPC3
+  SetDetectorBoundaries(DetDef::TPCDown1min,      DetDef::TPCDown1max,    min, max);
+  //TPC3
+  SetDetectorBoundaries(DetDef::TPCDown2min,      DetDef::TPCDown2max,    min, max);
 
+
+  //P0D
+  SetDetectorBoundaries(DetDef::usecalpmin,       DetDef::usecalpmin,     min, max);
+
+  //DsECal
+  SetDetectorBoundaries(DetDef::dsecalmin,    DetDef::dsecalmax,  min, max);
+
+  //BarrelECal
+  SetDetectorBoundaries(DetDef::tecalLmin,    DetDef::tecalLmax,  min, max);
+  SetDetectorBoundaries(DetDef::tecalRmin,    DetDef::tecalRmax,  min, max);
+
+  SetDetectorBoundaries(DetDef::tecalTLmin,   DetDef::tecalTLmax,  min, max);
+  SetDetectorBoundaries(DetDef::tecalTRmin,   DetDef::tecalTRmax,  min, max);
+
+  SetDetectorBoundaries(DetDef::tecalBLmin,   DetDef::tecalBLmax,  min, max);
+  SetDetectorBoundaries(DetDef::tecalBRmin,   DetDef::tecalBRmax,  min, max);
+
+  //P0DECal
+  SetDetectorBoundaries(DetDef::pecalLmin,    DetDef::pecalLmax,  min, max);
+  SetDetectorBoundaries(DetDef::pecalRmin,    DetDef::pecalRmax,  min, max);
+
+  SetDetectorBoundaries(DetDef::pecalTLmin,   DetDef::pecalTLmax,  min, max);
+  SetDetectorBoundaries(DetDef::pecalTRmin,   DetDef::pecalTRmax,  min, max);
+
+  SetDetectorBoundaries(DetDef::pecalBLmin,   DetDef::pecalBLmax,  min, max);
+  SetDetectorBoundaries(DetDef::pecalBRmin,   DetDef::pecalBRmax,  min, max);
+
+  
+  //Tracker overall envelop
+  SetDetectorBoundaries(DetDef::trackerAllmin,  DetDef::trackerAllmax,  min, max);
+  
 
 }

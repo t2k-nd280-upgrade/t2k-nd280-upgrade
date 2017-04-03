@@ -157,6 +157,19 @@ namespace DetDef {
   /// Maximum of the Bottom P0DECal det. See definition in AnalysisUtils.cxx for default value.
   extern Float_t pecalBRmax[3];
 
+  /// Minimum of the Bottom P0DECal det. See definition in AnalysisUtils.cxx for default value.
+  extern Float_t usecalpmin[3];
+
+  /// Maximum of the Bottom P0DECal det. See definition in AnalysisUtils.cxx for default value.
+  extern Float_t usecalpmax[3];
+  
+  /// Minimum of overall tracker envelope: FGDs+TPCs + their dead material
+  extern Float_t trackerAllmin[3];
+  
+  /// Maximum of overall tracker envelope: FGDs+TPCs + their dead material
+  extern Float_t trackerAllmax[3];
+  
+
   /// Dump volume definitions
   void DumpVolumes();  
 }

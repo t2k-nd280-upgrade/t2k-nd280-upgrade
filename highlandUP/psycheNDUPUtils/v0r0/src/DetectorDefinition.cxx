@@ -20,20 +20,20 @@ namespace DetDef {
   // (note that DetDef::Subdet1_1min = {x,y,z} works only with old compilers)
   // Fiducial volume is defined by removing the edge volumes in FiducialVolumeDefinition.cxx
 
-  Float_t TPCUp1min[3]   = {-1150.00, -1150.0, -885.0};
-  Float_t TPCUp1max[3]   = { 1150.00,  1230.0,   89.0};
-  Float_t TPCUp2min[3]   = {-1150.00, -1170.0,  474.0};
-  Float_t TPCUp2max[3]   = { 1150.00,  1230.0, 1448.0};
-  Float_t TPCDown1min[3] = {-1150.00, -1170.0, 1833.0};
-  Float_t TPCDown1max[3] = { 1150.00,  1230.0, 2807.0};
-  Float_t TPCDown2min[3] = {-1150.00, -1170.0, 1833.0};
-  Float_t TPCDown2max[3] = { 1150.00,  1230.0, 2807.0};
-  Float_t ForwTPC1min[3] = {-1150.00, -1170.0, -885.0};
-  Float_t ForwTPC1max[3] = { 1150.00,  1230.0,   89.0};
-  Float_t ForwTPC2min[3] = {-1150.00, -1170.0, -885.0};
-  Float_t ForwTPC2max[3] = { 1150.00,  1230.0,   89.0};
-  Float_t ForwTPC3min[3] = {-1150.00, -1170.0, -885.0};
-  Float_t ForwTPC3max[3] = { 1150.00,  1230.0,   89.0};
+  Float_t TPCUp1min[3]   = {-1100.00, 280.0, -1760.0};
+  Float_t TPCUp1max[3]   = { 1100.00,  -1140.0,   -520.0};
+  Float_t TPCUp2min[3]   = {-1100.00, 280.0,  520.0};
+  Float_t TPCUp2max[3]   = { 1100.00,  -1140.0, 1760.0};
+  Float_t TPCDown1min[3] = {-1100.00, -1160.0, -1760.0};
+  Float_t TPCDown1max[3] = { 1100.00,  -300.0, -520.0};
+  Float_t TPCDown2min[3] = {-1100.00, -1160.0, 520.0};
+  Float_t TPCDown2max[3] = { 1100.00,  -300.0, 1760.0};
+  Float_t ForwTPC1min[3] = {-1130.00, -920.0, -2680.0};
+  Float_t ForwTPC1max[3] = { 1130.00,  920.0,   -1880.0};
+  Float_t ForwTPC2min[3] = {-1130.00, -920.0, -400.0};
+  Float_t ForwTPC2max[3] = { 1130.00,  920.0,   400.0};
+  Float_t ForwTPC3min[3] = {-1130.00, -920.0, 1880.0};
+  Float_t ForwTPC3max[3] = { 1130.00,  920.0,   2690.0};
 
   Float_t Target1min[3] = {-932.00, -316.0, -1787.0};
   Float_t Target1max[3] = { 932.00,  284.0,  -487.0};
@@ -83,6 +83,11 @@ namespace DetDef {
   Float_t pecalBRmin[3] = {-1676.00,  -1597.00, -3270.00};
   Float_t pecalBRmax[3] = {136.00,    -1510.00, -890.00};
 
+  Float_t usecalpmin[3] = {-1858.05,    -1174.1, 3308.50};
+  Float_t usecalpmax[3] = {1846.85,   1264.7, 2997.87};
+
+  Float_t trackerAllmin[3] = {-1160.00, -1256.0,  -885.0};
+  Float_t trackerAllmax[3] = { 1160.00,  1230.0,  2807.0};
 
   //**********************************
   void DumpVolumes(){
@@ -154,6 +159,8 @@ namespace DetDef {
     dump_array3(pecalBRmin);
     dump_array3(pecalBRmax);
 
+    dump_array3(usecalpmin);
+    dump_array3(usecalpmax);
 
     std::cout << "\n******************************************************* \n" << std::endl;
 

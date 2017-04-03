@@ -14,9 +14,20 @@ const unsigned long SubDetId::DetMask[] = {
     1<<SubDetId::kTarget2,
     1<<SubDetId::kFGD1,
     1<<SubDetId::kFGD2,
+    1<<SubDetId::kP0D,
     1<<SubDetId::kDsECal,
     1<<SubDetId::kP0DECal,
     1<<SubDetId::kBrlECal,
+
+    1<<SubDetId::kTopTECAL,
+    1<<SubDetId::kBottomTECAL,
+    1<<SubDetId::kLeftTECAL,
+    1<<SubDetId::kRightTECAL,
+    1<<SubDetId::kTopPECAL,
+    1<<SubDetId::kBottomPECAL,
+    1<<SubDetId::kLeftPECAL,
+    1<<SubDetId::kRightPECAL,
+
     1<<SubDetId::kToFTopDown,
     1<<SubDetId::kToFTopUp,
     1<<SubDetId::kToFBotDown,
@@ -33,7 +44,11 @@ const unsigned long SubDetId::DetMask[] = {
     1<<SubDetId::kTPC     | SubDetId::MakeMask(SubDetId::kTPCUp1,       SubDetId::kTPCDown2),
     1<<SubDetId::kTarget    | SubDetId::MakeMask(SubDetId::kTarget1,       SubDetId::kTarget2),
     1<<SubDetId::kFGD    | SubDetId::MakeMask(SubDetId::kFGD1,       SubDetId::kFGD2),
-    1<<SubDetId::kECAL    | SubDetId::MakeMask(SubDetId::kDsECal,       SubDetId::kBrlECal),
+
+    1<<SubDetId::kBrlECal    | SubDetId::MakeMask(SubDetId::kRightTECAL, SubDetId::kTopTECAL),
+    1<<SubDetId::kP0DECal    | SubDetId::MakeMask(SubDetId::kRightPECAL, SubDetId::kTopPECAL),
+    1<<SubDetId::kECAL    | SubDetId::MakeMask(SubDetId::kRightPECAL, SubDetId::kDsECal),
+
     1<<SubDetId::kToF     | SubDetId::MakeMask(SubDetId::kToFTopDown,       SubDetId::kToFFrontUp),
 
     1<<SubDetId::kInvalid
@@ -134,9 +149,22 @@ void SubDetId::SetDetectorSystemFields(unsigned long &BitField){
             // Subdet2
             }else if (i == SubDetId::kTarget1 || i == SubDetId::kTarget2){
                 SetDetectorUsed(BitField, SubDetId::kTarget);
-            }else if (i == SubDetId::kDsECal || i == SubDetId::kBrlECal || i == SubDetId::kP0DECal ){
-                SetDetectorUsed(BitField, SubDetId::kECAL);
-            }else if (i == SubDetId::kToFTopUp || i == SubDetId::kToFTopDown || i == SubDetId::kToFBotUp ||  i == SubDetId::kToFBotDown ||  i == SubDetId::kToFLeftUp || i == SubDetId::kToFLeftDown || i == SubDetId::kToFRightUp || i == SubDetId::kToFRightDown || i == SubDetId::kToFBackUp || i == SubDetId::kToFBackDown || i == SubDetId::kToFFrontUp || i == SubDetId::kToFFrontDown ){
+            }else if (i == SubDetId::kFGD1 || i == SubDetId::kFGD2){
+                SetDetectorUsed(BitField, SubDetId::kFGD);
+            
+             }else if (i == SubDetId::kP0D) continue;
+            else if (i >= SubDetId::kDsECal && i <= SubDetId::kRightPECAL){
+              SetDetectorUsed(BitField, SubDetId::kECAL);
+              //TECal
+              if (i >= SubDetId::kTopTECAL && i <= SubDetId::kRightTECAL) SetDetectorUsed(BitField, SubDetId::kBrlECal);
+              //PECal
+              else if(i >= SubDetId::kTopPECAL && i <= SubDetId::kRightPECAL) SetDetectorUsed(BitField, SubDetId::kP0DECal);
+            
+            }else if (i == SubDetId::kToFTopUp || i == SubDetId::kToFTopDown || i == SubDetId::kToFBotUp ||  i == SubDetId::kToFBotDown || 
+             i == SubDetId::kToFLeftUp || i == SubDetId::kToFLeftDown ||
+              i == SubDetId::kToFRightUp || i == SubDetId::kToFRightDown ||
+               i == SubDetId::kToFBackUp || i == SubDetId::kToFBackDown || 
+               i == SubDetId::kToFFrontUp || i == SubDetId::kToFFrontDown ){
                 SetDetectorUsed(BitField, SubDetId::kToF);
 
         }
@@ -155,7 +183,7 @@ int SubDetId::GetNSegmentsInDet(unsigned long BitField, SubDetId::SubDetEnum det
 }
 
 bool SubDetId::TrackUsesOnlyDet(unsigned long BitField, SubDetId::SubDetEnum det){
-    BitField = BitField & MakeMask(SubDetId::kTarget2, SubDetId::kTPCUp1);
+    BitField = BitField & MakeMask(SubDetId::kToFFrontUp, SubDetId::kTPCUp1);
     return !(BitField & ~DetMask[det]);
 }
 
@@ -172,13 +200,23 @@ bool SubDetId::IsFGD(SubDetId::SubDetEnum det){
 }
 
 bool SubDetId::IsECal(SubDetId::SubDetEnum det){
-    return ((det <= SubDetId::kBrlECal && det >= SubDetId::kDsECal) || det == SubDetId::kECAL);
-}
 
+    return ((det <= SubDetId::kRightPECAL  && det >= SubDetId::kDsECal) || det >= SubDetId::kECAL);
+}
+bool SubDetId::IsTECAL(SubDetId::SubDetEnum det){
+     return (det <= SubDetId::kRightTECAL && det >= SubDetId::kTopTECAL);
+ }
+    
+     bool SubDetId::IsPECAL(SubDetId::SubDetEnum det){
+     return (det <= SubDetId::kRightPECAL && det >= SubDetId::kTopPECAL);
+     }
+     
 bool SubDetId::IsTOF(SubDetId::SubDetEnum det){
-    return ((det <= SubDetId::kToFFrontUp && det >= SubDetId::kToFTopDown) || det == SubDetId::kToF);
+    return ((det <= SubDetId::kToFTopUp && det >= SubDetId::kToFFrontUp) || det >= SubDetId::kToF);
 }
-
+ bool SubDetId::IsP0D(SubDetId::SubDetEnum det){
+    return (det ==kP0D);
+     }
 SubDetId::SubDetEnum SubDetId::GetSubdetectorEnum(unsigned long BitField){
  
     BitField = BitField & MakeMask(SubDetId::kToFFrontUp, SubDetId::kTPCUp1);

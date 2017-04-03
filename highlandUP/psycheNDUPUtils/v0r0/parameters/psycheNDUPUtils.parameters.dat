@@ -9,3 +9,12 @@
 
  < psycheNDUPUtils.mom_corrections.x0           = 115.103 >	
 
+------- Geometry -------
+
+--- Use the default geometry file even if the input file contains geometry
+ < psycheNDUPUtils.Geometry.UseDefaultGeometry = 1 >
+
+--- Use the ROOT geometry to overrride the harcoded values in detectorDefinition (DetDef namespace)
+ < psycheNDUPUtils.Geometry.DetectorDefinitionFromROOTGeometry = 0 >
+ < psycheNDUPUtils.Geometry.DetectorDefinitionFromROOTGeometry.FillFGDInfo = 0 > //fill FGD info: bar centers etc 
+

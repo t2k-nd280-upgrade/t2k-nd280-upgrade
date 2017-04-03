@@ -73,8 +73,8 @@ public:
   /// Overrride the values in DetectorDefinion with the ones extracted from the ROOT geometry
   void InitializeDetectorDefinitionFromROOTGeometry() const;
   
-  /// Fill Subdet1 info
-  void FillTargetInfoFromROOTGeometry() const;
+  /// Fill FGD info
+  void FillFGDInfoFromROOTGeometry() const;
 
   /// Get the volume position and size from the ROOT geometry
   void GetVolumeProperties(const std::string& name, Double_t* pos, Double_t* size) const;

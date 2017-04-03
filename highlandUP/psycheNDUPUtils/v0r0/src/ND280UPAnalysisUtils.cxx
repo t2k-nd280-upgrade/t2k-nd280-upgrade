@@ -6,7 +6,6 @@
 #include <typeinfo>
 #include "DataClasses.hxx"
 #include "DetectorDefinition.hxx"
-#include "PionInteractionSystematic.hxx"
 #include "Parameters.hxx"
 
 //ND280BeamBunching bunching;

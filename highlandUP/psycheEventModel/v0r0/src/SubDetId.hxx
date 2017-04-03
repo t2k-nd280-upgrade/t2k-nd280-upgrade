@@ -7,7 +7,7 @@ class SubDetId {
 
 private:
     /// Bit mask array to select different subdetectors and systems
-    const static unsigned long DetMask[34];
+    const static unsigned long DetMask[50];
 
     /// Method to make detector bit masks
     static unsigned long MakeMask(int msb, int lsb) {return (((1 << (((msb) - (lsb)) + 1)) - 1) << (lsb));}
@@ -34,9 +34,18 @@ public:
         kTarget2,
         kFGD1,
         kFGD2,
+        kP0D,
         kDsECal,
         kP0DECal,
         kBrlECal,
+        kTopTECAL,
+        kBottomTECAL,
+        kLeftTECAL,
+        kRightTECAL,
+        kTopPECAL,
+        kBottomPECAL,
+        kLeftPECAL,
+        kRightPECAL,
         kToFTopDown,
         kToFTopUp,
         kToFBotDown,
@@ -94,10 +103,16 @@ public:
     static bool IsTPC(SubDetId::SubDetEnum det);
     /// Check if a detector enumeration refers to a FGD or not
     static bool IsECal(SubDetId::SubDetEnum det);
+    static bool IsTECAL(SubDetId::SubDetEnum det);
+    static bool IsPECAL(SubDetId::SubDetEnum det);
+
     /// Check if a detector enumeration refers to a FGD or not
     static bool IsTOF(SubDetId::SubDetEnum det);
     /// Check if a detector enumeration refers to a FGD or not
     static bool IsFGD(SubDetId::SubDetEnum det);   
+    /// Check if a detector enumeration refers to a FGD or not
+    static bool IsP0D(SubDetId::SubDetEnum det);   
+
     /// Get the single subdetector that this track is from
     static SubDetId::SubDetEnum GetSubdetectorEnum(unsigned long BitField);
 
