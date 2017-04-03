@@ -14,3 +14,6 @@
  < numuCC4piAnalysis.MuonPID.Cut.Lmip  = 0.80 >
  < numuCC4piAnalysis.MuonPID.Cut.Lmu   = 0.05 >
  < numuCC4piAnalysis.MuonPID.Cut.p_mip = 500  >
+
+ < numuCC4piAnalysis.IsoTargetPi.Cut.Length = 50 >
+ < numuCC4piAnalysis.MEPions.ME.Efficiency = 0.5 >
