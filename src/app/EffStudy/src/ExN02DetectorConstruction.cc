@@ -66,6 +66,8 @@
 #include "ND280OffAxisConstructor.hh"
 // ToF
 #include "ND280ToFConstructor.hh"
+// SuperFGD
+#include "ND280SuperFGDConstructor.hh"
 
 
 //#ifdef USE_PAI
@@ -341,7 +343,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     logicToF_TopDown = fToFConstructor_TopDown->GetPiece();
     physiToF_TopDown = new G4PVPlacement(
-					 rotation_tof_TopDown,               // rotation
+					 rotation_tof_TopDown, // rotation
 					 GetToFPos_TopDown(),
 					 logicToF_TopDown,// logical volume
 					 nameToF_TopDown, // name   
@@ -1286,6 +1288,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
   }
 
+
+  
   /*
     
   //------------------------------ 
@@ -1671,6 +1675,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseTarget1() ){ 
     
     if( ND280XMLInput->GetXMLTargetdefault1() ){ // default
+      
       G4double Target1_Z = 0.;    
       if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
 	Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.);
@@ -1698,24 +1703,76 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				     logicBasket,
 				     false,             // no boolean operations
 				     0);                 // copy number 
-    //fCheckOverlaps);   
+    //fCheckOverlaps); 		      
     
-    G4cout << "Target 1: " << G4endl
-	   << " - dimensions: "
-	   << GetTargetFullWidth1()/mm  << " (width) x " 
-	   << GetTargetFullHeight1()/mm << " (height) x " 
-	   << GetTargetFullLength1()/mm << " (length) mm^3" 
-	   << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl; 
-    G4cout << " name: " << logicTarget1->GetName() << G4endl;
-    G4cout << " - position: ( " 
-	   << GetTargetPos1().x()/mm << ", "
-	   << GetTargetPos1().y()/mm << ", "
-	   << GetTargetPos1().z()/mm << " ) mm"  
-	   << G4endl << G4endl;
   }
   
+  // Implement the SuperFGD
   
+  G4String cNameLogicSuperFGD1 =  cParentNameTarget+"/SuperFGD1";
+  ND280SuperFGDConstructor *fSuperFGDConstructor1 = new ND280SuperFGDConstructor(cNameLogicSuperFGD1,this);
+  G4String nameSuperFGD1 = fSuperFGDConstructor1->GetName();
+
+  if( ND280XMLInput->GetXMLUseSuperFGD1() ){
+  
+    double edge = ND280XMLInput->GetXMLSuperFGDCubeEdge1();
+    int cubenumX = ND280XMLInput->GetXMLSuperFGDCubeNum1_X();
+    int cubenumY = ND280XMLInput->GetXMLSuperFGDCubeNum1_Y();
+    int cubenumZ = ND280XMLInput->GetXMLSuperFGDCubeNum1_Z();
+    
+    G4double x = ND280XMLInput->GetXMLSuperFGDPos1_X();
+    G4double y = ND280XMLInput->GetXMLSuperFGDPos1_Y();
+    G4double z = ND280XMLInput->GetXMLSuperFGDPos1_Z();
+
+    fSuperFGDConstructor1->SetEdge(edge*mm);
+    fSuperFGDConstructor1->SetCubeNumX(cubenumX);
+    fSuperFGDConstructor1->SetCubeNumY(cubenumY);
+    fSuperFGDConstructor1->SetCubeNumZ(cubenumZ);
+    fSuperFGDConstructor1->SetPosX(x);
+    fSuperFGDConstructor1->SetPosY(y);
+    fSuperFGDConstructor1->SetPosZ(z);
+    
+    logicSuperFGD1 = fSuperFGDConstructor1->GetPiece();
+    physiSuperFGD1 
+      = new G4PVPlacement(
+			  0, // no rotation
+			  G4ThreeVector(0,0,0), // position (0,0,0)
+			  logicSuperFGD1,       // its logical volume    
+			  nameSuperFGD1,  // its name
+			  logicBasket,
+			  false,             // no boolean operations
+			  0);                 // copy number     
+  }
+
+    /*
+      G4cout << "Target 1: " << G4endl
+      << " - dimensions: "
+      << GetTargetFullWidth1()/mm  << " (width) x " 
+      << GetTargetFullHeight1()/mm << " (height) x " 
+      << GetTargetFullLength1()/mm << " (length) mm^3" 
+      << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
+      G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl; 
+      G4cout << " name: " << logicTarget1->GetName() << G4endl;
+      G4cout << " - position: ( " 
+      << GetTargetPos1().x()/mm << ", "
+      << GetTargetPos1().y()/mm << ", "
+      << GetTargetPos1().z()/mm << " ) mm"  
+      << G4endl << G4endl;
+    */
+  
+  
+
+
+
+ 
+  
+  
+
+
+
+
+
+
   //------------------------------ 
   // Target 2 - Upstream - Water 
   //------------------------------
@@ -2112,15 +2169,21 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetVisAttributes(FGDScintVisAtt);
   if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetVisAttributes(FGDWaterVisAtt);
 
+  
+  //--------- Set Step Limiter -------------------------------
+  //
+  // NO EFFECT BECAUSE NOT USED IN THE MAIN 
+  //
+  // Sets a max Step length in the drift region, with G4StepLimiter 
+  // Each step limiter must be attached to each physics list in ExN02PhysicsList
+  //logicSideTPCUp  ->SetUserLimits(new G4UserLimits(cStepLimit));
+  //logicSideTPCDown->SetUserLimits(new G4UserLimits(cStepLimit));
 
-  // //--------- Set Step Limiter -------------------------------
-  // //
-  // // NO EFFECT BECAUSE NOT USED IN THE MAIN 
-  // //
-  // // Sets a max Step length in the drift region, with G4StepLimiter 
-  // // Each step limiter must be attached to each physics list in ExN02PhysicsList
-  // //logicSideTPCUp  ->SetUserLimits(new G4UserLimits(cStepLimit));
-  // //logicSideTPCDown->SetUserLimits(new G4UserLimits(cStepLimit));
+
+  // My
+  //G4UserLimits *WorldUserLimits = new G4UserLimits();
+  //WorldUserLimits->SetUserMinEkine(10*MeV);
+  //logicWorld->SetUserLimits(WorldUserLimits);
 
 
   if(ND280XMLInput->GetXMLStoreGeometry()){

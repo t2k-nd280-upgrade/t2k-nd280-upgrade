@@ -68,7 +68,11 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   // energy deposit
   G4double edep = step->GetTotalEnergyDeposit();
   if(edep==0.) return;
-  
+
+
+  G4cout << "edep = " << edep << G4endl;
+
+
   G4StepPoint* prestep  = step->GetPreStepPoint();
   //G4StepPoint* poststep = step->GetPostStepPoint();
   G4Track *track = step->GetTrack(); // it's PostStepPoint!!!
@@ -82,6 +86,7 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
     stepLength = step->GetStepLength();
   }
 
+    
   G4String namedet = prestep->GetTouchableHandle()->GetVolume()->GetName();        
   fEventAction->AddAbsTot(edep,stepLength);    
   if(namedet=="/World/Basket/Tracker/TPCUp1")
@@ -109,14 +114,17 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   else if( namedet=="/World/Basket/Tracker/ForwTPC3/Half" || 
 	   namedet=="/World/Basket/Tracker/ForwTPC3/MM" ) 
     fEventAction->AddAbsForwTPC3(edep,stepLength);
-  
+
   //if(namedet=="ForwTPC1/Half")
   //G4cout << "stepLength = " << stepLength << G4endl;
 
+
+
   // Get track info    
-  fEventAction->SetTrack(step);
+  //fEventAction->SetTrack(step); // IT CRASHES
 
 
+    
   // // Take track informations from its first step
   // G4int newtrkid      = track->GetTrackID();
   // G4int newparentid   = track->GetParentID();
@@ -142,6 +150,8 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   //   //<< " - PreStep Mom: = " << prestep->GetMomentum().mag()
   //   //<< " - PostStep Mom: = " << poststep->GetMomentum().mag()
   //  	    << std::endl;  
+
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......      

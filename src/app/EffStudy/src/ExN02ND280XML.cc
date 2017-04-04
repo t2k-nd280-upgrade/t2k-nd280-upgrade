@@ -119,6 +119,24 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("FGDPos2_Y"   ,fFGDPos2_Y);
     XML2Double("FGDPos2_Z"   ,fFGDPos2_Z);
     
+    // SuperFGD 1
+    XML2Double("SuperFGDCubeEdge1" ,fSuperFGDCubeEdge1);
+    XML2Int("SuperFGDCubeNum1_X",fSuperFGDCubeNum1_X);
+    XML2Int("SuperFGDCubeNum1_Y",fSuperFGDCubeNum1_Y);
+    XML2Int("SuperFGDCubeNum1_Z",fSuperFGDCubeNum1_Z);
+    XML2Double("SuperFGDPos1_X"    ,fSuperFGDPos1_X);
+    XML2Double("SuperFGDPos1_Y"    ,fSuperFGDPos1_Y);
+    XML2Double("SuperFGDPos1_Z"    ,fSuperFGDPos1_Z);
+
+    // SuperFGD 2
+    XML2Double("SuperFGDCubeEdge2" ,fSuperFGDCubeEdge2);
+    XML2Int("SuperFGDCubeNum2_X",fSuperFGDCubeNum2_X);
+    XML2Int("SuperFGDCubeNum2_Y",fSuperFGDCubeNum2_Y);
+    XML2Int("SuperFGDCubeNum2_Z",fSuperFGDCubeNum2_Z);
+    XML2Double("SuperFGDPos2_X"    ,fSuperFGDPos2_X);
+    XML2Double("SuperFGDPos2_Y"    ,fSuperFGDPos2_Y);
+    XML2Double("SuperFGDPos2_Z"    ,fSuperFGDPos2_Z);
+
     // ToF Top Downstream 
     XML2Bool("ToFdefault_TopDown"      ,fToFdefault_TopDown);
     XML2Int("ToFPlaneXYNum_TopDown"    ,fToFPlaneXYNum_TopDown);
@@ -320,6 +338,9 @@ void ExN02ND280XML::SetInputs(){
     // Use FGDs
     XML2Bool("UseFGD1",fUseFGD1);
     XML2Bool("UseFGD2",fUseFGD2);
+    // Use SuperFGDs
+    XML2Bool("UseSuperFGD1",fUseSuperFGD1);
+    XML2Bool("UseSuperFGD2",fUseSuperFGD2);
     // Use Downstream ToFs
     XML2Bool("UseToF_TopDown" ,fUseToF_TopDown);
     XML2Bool("UseToF_BotDown" ,fUseToF_BotDown);
@@ -360,6 +381,8 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("InvisTPCUp2"   ,fInvisTPCUp2);
     XML2Bool("InvisFGD1"     ,fInvisFGD1);
     XML2Bool("InvisFGD2"     ,fInvisFGD2);
+    XML2Bool("InvisSuperFGD",fInvisSuperFGD);
+    //XML2Bool("InvisSuperFGD2",fInvisSuperFGD2);
     //
     XML2Bool("InvisToF_TopDown"     ,fInvisToF_TopDown);
     XML2Bool("InvisToF_BotDown"     ,fInvisToF_BotDown);

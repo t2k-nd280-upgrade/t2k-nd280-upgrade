@@ -80,7 +80,7 @@ void ExN02ActionInitialization::Build() const
 
   SetUserAction(new ND280UserTrackingAction);
 
-  //SetUserAction(new ExN02SteppingAction(fDetConstruction,eventAction));
+  SetUserAction(new ExN02SteppingAction(fDetConstruction,eventAction));
 }
   
 

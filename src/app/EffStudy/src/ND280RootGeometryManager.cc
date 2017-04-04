@@ -117,14 +117,20 @@ ND280RootGeometryManager::ND280RootGeometryManager() {
   ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC1");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC2");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/ForwTPC3");
-  ShouldPrintMass("/t2k/OA/Magnet/Basket/Target1");
-  ShouldPrintMass("/t2k/OA/Magnet/Basket/Target2");
+
   ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCUp1");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCUp2");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCDown1");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/TPCDown2");
+
   ShouldPrintMass("/t2k/OA/Magnet/Basket/FGD1");
   ShouldPrintMass("/t2k/OA/Magnet/Basket/FGD2");  
+
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/Target1");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/Target2");
+  
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/SuperFGD1");
+  ShouldPrintMass("/t2k/OA/Magnet/Basket/SuperFGD2");
 }
 
 ND280RootGeometryManager* ND280RootGeometryManager::Get() {

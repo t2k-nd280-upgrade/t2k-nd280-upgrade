@@ -173,7 +173,7 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1137
+     0
    </TargetPos1_Z>
 
    
@@ -204,7 +204,7 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +1137
+     +0
    </TargetPos2_Z>
 
 
@@ -269,6 +269,56 @@
    <FGDPos2_Z>
      +2648.5
    </FGDPos2_Z>
+
+   <!-- SuperFGD 1 -->
+   <SuperFGDCubeEdge1>
+     10
+   </SuperFGDCubeEdge1>
+   <SuperFGDCubeNum1_X>
+     18
+   </SuperFGDCubeNum1_X>
+   <SuperFGDCubeNum1_Y>
+     6
+   </SuperFGDCubeNum1_Y>
+   <SuperFGDCubeNum1_Z>
+     13
+   </SuperFGDCubeNum1_Z>
+   <SuperFGDPos1_X>
+     0
+   </SuperFGDPos1_X>
+   <SuperFGDPos1_Y>
+     0
+   </SuperFGDPos1_Y>
+   <SuperFGDPos1_Z>
+     0
+   </SuperFGDPos1_Z>
+
+   <!-- SuperFGD 2 -->
+   <SuperFGDCubeEdge2>
+     10
+   </SuperFGDCubeEdge2>
+
+   <SuperFGDCubeNum2_X>
+     10
+   </SuperFGDCubeNum2_X>
+   <SuperFGDCubeNum2_Y>
+     10
+   </SuperFGDCubeNum2_Y>
+   <SuperFGDCubeNum2_Z>
+     10
+   </SuperFGDCubeNum2_Z>
+
+   <SuperFGDPos2_X>
+     0
+   </SuperFGDPos2_X>
+   <SuperFGDPos2_Y>
+     0
+   </SuperFGDPos2_Y>
+   <SuperFGDPos2_Z>
+     0
+   </SuperFGDPos2_Z>
+
+
 
 
    <!-- ToF Top Downstream -->    
@@ -780,7 +830,7 @@
    </UseForwTPC3>
 
    <UseTarget1>
-     true
+     false
    </UseTarget1>
    <UseTarget2>
      false
@@ -803,6 +853,13 @@
    <UseFGD2>
     false
    </UseFGD2>
+
+   <UseSuperFGD1>
+    true
+   </UseSuperFGD1>
+   <UseSuperFGD2>
+    false
+   </UseSuperFGD2>
 
    <UseToF_TopDown>
      false
@@ -908,6 +965,10 @@
      false
    </InvisFGD2>
    
+   <InvisSuperFGD>
+     false
+   </InvisSuperFGD>
+  
    <InvisToF_TopDown>
      false
    </InvisToF_TopDown>
