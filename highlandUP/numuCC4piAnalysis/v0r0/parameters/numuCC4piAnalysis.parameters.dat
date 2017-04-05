@@ -3,6 +3,7 @@
  < numuCC4piAnalysis.ForceBreak = 1 > 
 
  < numuCC4piAnalysis.Configuration = 0 >
+ < numuCC4piAnalysis.ToF           = 1 >
  
  < numuCC4piAnalysis.EnableTarget1 = 0 >
  < numuCC4piAnalysis.EnableTarget2 = 0 >
