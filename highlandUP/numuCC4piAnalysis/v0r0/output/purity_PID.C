@@ -23,35 +23,36 @@
 TString confName[6] = {"ND280 current", 
 		       "ND280 upgrade ref.", 
 		       "ND280 upgrade alt. Target(60cm)->TPC",
+		       "ND280 upgrade alt. TPC->Target(60cm)",		       
 		       "ND280 upgrade alt. Target(40cm)->TPC",
-		       "ND280 upgrade alt. TPC->Target(60cm)",
 		       "ND280 upgrade alt. TPC->Target(40cm)"};
 
 TString modeName[4] = {"FwdTPC", "BwdTPC", "HATPC", "ECal"};
 
 int NTargets[6] = {2, 2, 3, 3, 3, 3};
 
-void computeEffPurVSCut(int target, int config, int mode, int branch, int cut_level, 
+void computeEffPurVSCut(int target, int config, int branch, int cut_level, 
 			TString var, TString var_title, 
 			int ncuts=100, float cut_min=0, float cut_max=1, bool below=false) {
     
-  TFile* f = new TFile(TString::Format("jobs/files/config%i_Target%i_%i.root",
-				       config, target, mode));
+  TFile* f = new TFile(TString::Format("jobs/files/config%i_Target%i.root",
+				       config, target));
   TTree* t = (TTree*)f->Get("default");
 
   float* cut = new float[ncuts];
   float* eff = new float[ncuts];
   float* pur = new float[ncuts];
+  float* nTrueSel = new float[ncuts];
+  float* nTrue    = new float[ncuts];
+  float* nSel     = new float[ncuts];
+
   for (int i=0; i<ncuts; i++) {
     cut[i] = cut_min + (cut_max-cut_min)*(float)i/(ncuts);
-    eff[i] = 0; pur[i] = 0;
+    eff[i] = pur[i] = 0;
+    nTrueSel[i] = nTrue[i] = nSel[i] = 0;
   }
 
-  TH1F* h        = new TH1F("h1", "h1", ncuts, cut_min, cut_max);
-  TH1F* hCorrect = new TH1F("h2", "h2", ncuts, cut_min, cut_max);
-
-  
-  Int_t accum_level[1][1];
+  Int_t accum_level[1][12];
   Float_t variable;
   int reaction, particle;
   
@@ -60,29 +61,36 @@ void computeEffPurVSCut(int target, int config, int mode, int branch, int cut_le
   t->SetBranchAddress("reaction",    &reaction);
   t->SetBranchAddress("particle",    &particle);
 
-  for (Int_t ient=0; ient < t->GetEntries(); ient++) {
-    t->GetEntry(ient);
+  for (int i=0; i<ncuts; i++) {
+	  
+    for (Int_t ient=0; ient < t->GetEntries(); ient++) {
+      t->GetEntry(ient);
     
-    if (accum_level[0][branch]>cut_level)
-      h->Fill(variable);
-    if (accum_level[0][branch]>cut_level && reaction>=0 && reaction<=3 && particle==13)
-      hCorrect->Fill(variable);
+      bool cutPassed=false;
+      if (below)
+	cutPassed = (variable<cut[i]);
+      else
+	cutPassed = (variable>cut[i]);
+
+      if (accum_level[0][branch]>cut_level && cutPassed)
+	nSel[i]++;
+      if (accum_level[0][branch]>cut_level && reaction>=0 && reaction<=3)
+	nTrue[i]++;
+      if (accum_level[0][branch]>cut_level && cutPassed && reaction>=0 && reaction<=3)
+	nTrueSel[i]++;
+    }
+	
   }
 
-  h->Sumw2();
-  hCorrect->Sumw2();
 
   for (int i=0; i<ncuts; i++) {
-    if (below) {
-      eff[i] = (float)hCorrect->Integral(1, h->FindBin(cut[i]))/(float)hCorrect->Integral();
-      if (h->Integral(1, h->FindBin(cut[i])) != 0)
-		  pur[i] = (float)hCorrect->Integral(1, h->FindBin(cut[i]))/(float)h->Integral(1, h->FindBin(cut[i]));
-    }
-    else {
-      eff[i] = (float)hCorrect->Integral(h->FindBin(cut[i]), ncuts)/(float)hCorrect->Integral();
-	  if (h->Integral(h->FindBin(cut[i]), ncuts) != 0)
-      pur[i] = (float)hCorrect->Integral(h->FindBin(cut[i]), ncuts)/(float)h->Integral(h->FindBin(cut[i]), ncuts);
-    }
+    if (nTrue[i]==0) eff[i] = 1;
+    else             eff[i] = (float)nTrueSel[i]/(float)nTrue[i];
+    if (nSel[i]==0)  pur[i] = 0;
+    else             pur[i] = (float)nTrueSel[i]/(float)nSel[i];
+	  
+    cout << nSel[i] << " " << nTrueSel[i] << " " << nTrue[i] << endl;
+    cout << eff[i] << " " << pur[i] << endl;
   }
   
   TCanvas* c = new TCanvas("c");
@@ -96,7 +104,7 @@ void computeEffPurVSCut(int target, int config, int mode, int branch, int cut_le
 			       confName[config].Data(), 
 			       (config!=1 && target!=3) ? "FGD":"Target",
 			       (target!=3) ? target : 1,
-			       modeName[mode].Data()));
+			       modeName[branch].Data()));
   gE->GetXaxis()->SetTitle(TString::Format("cut on %s", var_title.Data()));
   gE->GetXaxis()->SetTitleSize(0.05);
   gE->GetXaxis()->SetTitleOffset(0.9);
@@ -114,7 +122,7 @@ void computeEffPurVSCut(int target, int config, int mode, int branch, int cut_le
   leg->Draw("same");
 
   c->SaveAs(TString::Format("fig/lkl/purOpt/opt_%s_config%i_Target%i_%s.eps", 
-			    var.Data(), config, target, modeName[mode].Data()));
+			    var.Data(), config, target, modeName[branch].Data()));
 
 }
 
@@ -123,17 +131,10 @@ void plotEffPurVSCut() {
 
   for (int ic=0; ic<6; ic++)
     for (int it=1; it<=NTargets[ic]; it++) {
-      for (int im=0; im<3; im++)
-	computeEffPurVSCut(it, ic, im, 0, 3, 
-			   "selmu_likemu", "L_{#mu}", 
-			   100, 0, 1);
-      	computeEffPurVSCut(it, ic, 3, 0, 3, 
-			   "selmu_ecal_mipem", "MipEM", 
-			   100, -40, 40, true);
-      	computeEffPurVSCut(it, ic, 3, 0, 3, 
-			   "selmu_ecal_EneOnL", "E/L", 
-			   100, 0, 2, true);
-      }
-
-  
+      for (int im=0; im<3; im++) 
+	computeEffPurVSCut(it, ic, im, 3, "selmu_likemu", "L_{#mu}", 100, 0, 1);
+      
+      computeEffPurVSCut(it, ic, 3, 3, "selmu_ecal_mipem", "MipEM", 100, -40, 40, true);
+      computeEffPurVSCut(it, ic, 3, 3, "selmu_ecal_EneOnL", "E/L", 100, 0, 2, true);
+    }
 }

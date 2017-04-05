@@ -18,7 +18,7 @@ class MomRangeCorrection: public CorrectionBase {
 		void Apply(AnaSpillC& spill);
     
   protected:
-    bool IsRelevantTrack(const AnaTrackB& track) const; 
+    bool IsRelevantTrack(AnaTrackB& track) const; 
     SubDetId::SubDetEnum _det;
 
 };

@@ -119,6 +119,14 @@ public:
 
     selmu_ToF_mass,
     selmu_ToF_true_mass,
+    selmu_dedx_tpc,
+
+    selAll_ToF_mass,
+    selAll_ToF_true_mass,
+    selAll_mom,
+    selAll_true_mom,
+    selAll_PDG,
+    selAll_nTracks,
     
     /*
       selmu_1hit_pos,

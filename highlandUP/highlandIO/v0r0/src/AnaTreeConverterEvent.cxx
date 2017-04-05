@@ -559,7 +559,6 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
   TND280UpTrackPoint* lastDsECal = NULL;
   TND280UpTrackPoint* lastP0DECal = NULL;
   TND280UpTrackPoint* lastBrlECal = NULL;
-  //TND280UpTrackPoint* lastToF = NULL;
   TND280UpTrackPoint* lastToFTopUp = NULL;
   TND280UpTrackPoint* lastToFTopDown = NULL;
   TND280UpTrackPoint* lastToFBotUp = NULL;
@@ -587,7 +586,6 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
   TND280UpTrackPoint* firstDsECal = NULL;
   TND280UpTrackPoint* firstP0DECal = NULL;
   TND280UpTrackPoint* firstBrlECal = NULL;
-  //TND280UpTrackPoint* firstToF = NULL;
   TND280UpTrackPoint* firstToFTopUp = NULL;
   TND280UpTrackPoint* firstToFTopDown = NULL;
   TND280UpTrackPoint* firstToFBotUp = NULL;
@@ -714,6 +712,29 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
       if (Tpoint->GetMomentum().Mag() > Target2fZ) {
         firstTarget2 = Tpoint;
         Target2fZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+    if (Tpoint->GetPhysVolName().find("FGD1") != std::string::npos) {
+      if (Tpoint->GetMomentum().Mag() < FGD1Z) {
+        lastFGD1 = Tpoint;
+        FGD1Z = Tpoint->GetMomentum().Mag();
+      }
+    if (Tpoint->GetMomentum().Mag() > FGD1fZ) {
+        firstFGD1 = Tpoint;
+        FGD1fZ = Tpoint->GetMomentum().Mag();
+      }
+
+    } 
+    if (Tpoint->GetPhysVolName().find("FGD2") != std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < FGD2Z) {
+        lastFGD2 = Tpoint;
+        FGD2Z = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > FGD2fZ) {
+        firstFGD2 = Tpoint;
+        FGD2fZ = Tpoint->GetMomentum().Mag();
       }
 
     }
@@ -939,6 +960,12 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
        nCrossers++;
   }
    if(firstTarget2){
+       nCrossers++;
+  }
+  if(firstFGD1){
+       nCrossers++;
+  }
+   if(firstFGD2){
        nCrossers++;
   }
    if(firstDsECal){

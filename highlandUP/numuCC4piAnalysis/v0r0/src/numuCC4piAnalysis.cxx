@@ -169,7 +169,7 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddToyVarI(output(),  NTPC,               "");
   AddToyVarI(output(),  NECal,              "");
   AddToyVarI(output(),  Toy_CC4pi,          "");
-  AddToyVarF(output(),  selmu_mom,          "");
+
   //AddToyVarF(output(),  selmu_MomRangeMuon, "");
   AddToyVarF(output(),  selmu_costheta,     "");
   //AddToyVarF(output(),  selmu_ToF_PoD,      "");
@@ -191,6 +191,7 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   //--- info from true track
   AddVarI(output(),   selmu_ID,           "");
   AddVarI(output(),   selmu_PDG,          "");
+  AddVarF(output(),   selmu_mom,          "");
   AddVarF(output(),   selmu_truemom,      "");
   AddVar4VF(output(), selmu_truepos,      "");
   AddVar4VF(output(), selmu_trueendpos,   "");
@@ -204,11 +205,20 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVar4VF(output(), selmu_pos,       "");
   AddVar4VF(output(), selmu_endpos,    "");
   AddVarI(output(),   selmu_longestTPC,"");
+  AddVarF(output(),   selmu_dedx_tpc,  "");
 
   //--- ECal
   AddVarF(output(),   selmu_ecal_mipem,     "");
   AddVarF(output(),   selmu_ecal_EneOnL,    "");
   AddVarI(output(),   selmu_ecal_stopping,  "");
+
+  //--- All tracks (used for ToF check)
+
+  AddVarVF(output(), selAll_ToF_mass,       "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_true_mass,  "", selAll_nTracks);
+  AddVarVF(output(), selAll_mom,            "", selAll_nTracks);
+  AddVarVF(output(), selAll_true_mom,       "", selAll_nTracks);
+  AddVarVI(output(), selAll_PDG,            "", selAll_nTracks);
 
   //--- Pion multiplicity
   
@@ -298,10 +308,11 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
 
     }
 
-    AnaTrack* track = static_cast<AnaTrack*>( cc4pibox().MainTrack );
+    AnaTrackB* track = cc4pibox().MainTrack;
 
     //output().FillVar(selmu_detectors,                 track->Detectors);
     output().FillVar(selmu_charge,                    track->Charge);
+    output().FillVar(selmu_mom,                       track->SmearedMomentum);
     output().FillVectorVarFromArray(selmu_dir,        track->DirectionStart, 3);
     output().FillVectorVarFromArray(selmu_enddir,     track->DirectionEnd, 3);
     output().FillVectorVarFromArray(selmu_pos,        track->PositionStart, 4);
@@ -313,6 +324,11 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selmu_ecal_mipem,                cc4pibox().track_ECal_MipEM);
     output().FillVar(selmu_ecal_EneOnL,               cc4pibox().track_ECal_EneOnL);
     output().FillVar(selmu_longestTPC,                cc4pibox().TPC_det);
+
+    if (track->nTPCSegments > 0) {
+      AnaTPCParticleB *TPCSegment = static_cast<AnaTPCParticleB*>(track->TPCSegments[0]);
+      output().FillVar(selmu_dedx_tpc, TPCSegment->dEdxMeas);                 
+    }
 
     output().FillVar(selmu_ToF_mass,                  cc4pibox().ToF_mass);
     output().FillVar(selmu_ToF_true_mass,             cc4pibox().ToF_true_mass);
@@ -378,6 +394,15 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().IncrementCounter(sel_nElPi0TPCtracks);
     }
 
+    for (int i=0; i<cc4pibox().All_ToF_mass.size(); i++) {
+      output().FillVectorVar(selAll_ToF_mass,      cc4pibox().All_ToF_mass[i]);
+      output().FillVectorVar(selAll_ToF_true_mass, cc4pibox().All_ToF_true_mass[i]);
+      output().FillVectorVar(selAll_PDG,           cc4pibox().All_PDG[i]);
+      output().FillVectorVar(selAll_mom,           cc4pibox().All_mom[i]);
+      output().FillVectorVar(selAll_true_mom,      cc4pibox().All_true_mom[i]);
+      output().IncrementCounter(selAll_nTracks);
+    }
+
   }
 
 }
@@ -394,10 +419,10 @@ void numuCC4piAnalysis::FillToyVarsInMicroTrees(bool addBase){
     output().FillToyVar(NECal,   (int)cc4pibox().ECalTracks.size() );
 
     AnaTrack* track = static_cast<AnaTrack*>( cc4pibox().MainTrack );
-    output().FillToyVar(Toy_CC4pi,           numuCC4pi_utils::CC4piCategory(track));
+    output().FillToyVar(Toy_CC4pi, numuCC4pi_utils::CC4piCategory(track));
 
-    output().FillToyVar(selmu_mom,           track->Momentum);
     //output().FillToyVar(selmu_MomRangeMuon,  track->RangeMomentumMuon);
+
     TVector3 nuDirVec = anaUtils::GetNuDirRec(track->PositionStart);
     TVector3 muDirVec = anaUtils::ArrayToTVector3(track->DirectionStart);
     double costheta_mu_nu = nuDirVec.Dot(muDirVec);

@@ -63,6 +63,11 @@ public:
     MichelElectrons.clear();
     PosPions.clear();
     OtherPions.clear();
+    All_ToF_mass.clear();
+    All_ToF_true_mass.clear();
+    All_mom.clear();
+    All_true_mom.clear();
+    All_PDG.clear();
     TPC_det = SubDetId::kInvalid;
     ToF_mass = ToF_true_mass = -999.;
   }
@@ -81,6 +86,11 @@ public:
     MichelElectrons.clear();
     PosPions.clear();
     OtherPions.clear();
+    All_ToF_mass.clear();
+    All_ToF_true_mass.clear();
+    All_mom.clear();
+    All_true_mom.clear();
+    All_PDG.clear();
     TPC_det = SubDetId::kInvalid;
     ToF_mass = ToF_true_mass = -999.;
   }
@@ -110,6 +120,12 @@ public:
   std::vector<AnaTrackB*> PosPions;
   int nOtherPions;
   std::vector<AnaTrackB*> OtherPions;
+
+  std::vector<float> All_ToF_mass;
+  std::vector<float> All_ToF_true_mass;
+  std::vector<float> All_mom;
+  std::vector<float> All_true_mom;
+  std::vector<int>   All_PDG;
   
 };
 

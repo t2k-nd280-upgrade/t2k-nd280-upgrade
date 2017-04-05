@@ -1,23 +1,40 @@
 #! /bin/csh -f
 
+set file_dir = /sps/t2k/mlamoure/dev/Upgrade/t2k-nd280-upgrade/files 
 set code_dir = /sps/t2k/mlamoure/dev/Upgrade/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
 set original_parfile = ${code_dir}/parameters/numuCC4piAnalysis.parameters.dat
 
 set par_dir = ${code_dir}/output/jobs/parameters
 set log_dir = ${code_dir}/output/jobs/logs
-set job_dir = ${code_dir}/output/jobs
+set job_dir = ${code_dir}/output/jobs/jobs
+set out_dir = ${code_dir}/output/jobs/files
 
-rm -rf ${par_dir}/*
-rm -rf ${log_dir}/*
-rm -rf ${job_dir}/job_*.sh
-rm launchJobs
-touch launchJobs
+set launcher = launchJobs
+set conc = ${out_dir}/concatenate
+
+set ext = ""
+if ($1 != "") then
+    set ext = "_$1"
+endif
 
 set j=0 # job number
+if ($2) then
+    set j=$2
+else
+    rm -rf ${par_dir}/*
+    rm -rf ${log_dir}/*
+    rm -rf ${job_dir}/*
+    rm -f $launcher
+    touch $launcher
+    rm -f ${conc}
+    touch ${conc}
+endif
+
+set max_job=100 # maximum of simultaneous job
 cd ${code_dir}/output/jobs
 
 set i_conf=0
-while ($i_conf < 6)
+while ($i_conf < 4)
 
     set i_target  = 1
 	set N_targets = 2
@@ -27,19 +44,14 @@ while ($i_conf < 6)
 		
     while ($i_target <= $N_targets)
 
-		set i_branch=0
-		while ($i_branch < 4)
-
 			set parfile = ${par_dir}/par_$j.dat
 			cp -f $original_parfile $parfile
 
-			if ($i_conf == 0) then
-			set name = "current"
-			else 
-			set name = "upgrade${i_conf}"
+			set name = "config${i_conf}_Target${i_target}${ext}"
+
+			if ($2 == 1) then
+			    sed -i "/numuCC4piAnalysis.ToF =/c\ < numuCC4piAnalysis.ToF = 1 >" $parfile
 			endif
-			
-			set name = "${name}_Target${i_target}_${i_branch}"
 			
 			if ($i_conf == 0) then
 				set file = "g4ND280Up_6E20_current_ECalAll_1_2_17.root"
@@ -83,18 +95,37 @@ while ($i_conf < 6)
 				endif
 			endif
 			
-			sed -i "/Branch =/c\ < numuCC4piAnalysis.Branch = ${i_branch} >" $parfile
 			sed -i "/Configuration =/c\ < numuCC4piAnalysis.Configuration = ${i_conf} >" $parfile
 
-			echo "${code_dir}/output/jobs/jobBase $j $name $file" > job_$j.sh
-			chmod +x job_$j.sh
+			set f=0
 
-			echo "qsub -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=10:00:00,s_fsize=4G,sps=1,s_rss=3G job_$j.sh" >> launchJobs
+			foreach input_file (`ls ${file_dir}/config${i_conf}/*.root | sed -r 's/^.+\///'`)
+			    echo "${code_dir}/output/jobs/jobBase $parfile ${out_dir}/${name}_split_$f.root ${file_dir}/config${i_conf}/${input_file}" >> ${job_dir}/job_$j.sh			    
+			    @ f = $f + 1
+			end
 
+			chmod +x ${job_dir}/job_$j.sh
+
+			set dq = '"'
+			set job_name = "${dq}hUP_$j${dq}"
+			    set k = $j
+			    @ k = $k - $max_job
+			    set prev_job_name = "${dq}hUP_$k${dq}"
+
+			    if ($j < $max_job) then
+				echo "qsub -N $job_name -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=3:00:00,s_fsize=4G,sps=1 ${job_dir}/job_$j.sh" >> $launcher
+			    else
+				echo "qsub -N $job_name -hold_jid $prev_job_name -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=3:00:00,s_fsize=4G,sps=1 ${job_dir}/job_$j.sh" >> $launcher
+			    endif
+			
+			if ($f != 0) then
+			    echo "hadd -f ${name}.root ${name}_split_*.root" >> ${conc}
+			    echo "rm -f ${name}_split_*.root" >> ${conc}
+			endif
+
+	        
 			@ j = $j + 1
-			@ i_branch = $i_branch + 1
-
-		end
+	     
 
 	@ i_target = $i_target + 1
     end
@@ -103,3 +134,4 @@ while ($i_conf < 6)
 end
 
 chmod +x launchJobs
+chmod +x ${conc}

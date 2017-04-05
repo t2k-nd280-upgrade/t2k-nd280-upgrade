@@ -157,9 +157,9 @@ void numuCC4piSelection::InitializeEvent(AnaEventC& eventBB){
   // Create the appropriate EventBox if it does not exist yet
   if (!event.EventBoxes[EventBoxId::kEventBoxNDUP]) event.EventBoxes[EventBoxId::kEventBoxNDUP] = new EventBox();
 
-  boxUtils::FillTracksWithTPC(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
-  boxUtils::FillTracksWithTarget(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
-  boxUtils::FillTracksWithFGD(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
+  boxUtils::FillTracksWithTPC(event,    static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
+  boxUtils::FillTracksWithTarget(event, static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
+  boxUtils::FillTracksWithFGD(event,    static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
   boxUtils::FillTracksWithECal(event);
   
   //boxUtils::FillTrajsChargedInTPC(event);
@@ -418,7 +418,6 @@ namespace numuCC4piUtils{
     box.Vertex->Particles[box.Vertex->nParticles++] = box.MainTrack;
 
     for(int i = 0; i < 4; ++i) box.Vertex->Position[i] = box.MainTrack->PositionStart[i];
-
     if ( box.MainTrack->GetTrueParticle() ) box.TrueVertex = box.Vertex->TrueVertex = cc4pibox->MainTrack->GetTrueParticle()->TrueVertex;
 
     return true;
@@ -495,8 +494,9 @@ namespace numuCC4piUtils{
 	 !(cc4pibox->TPC_det == SubDetId::kTPCUp1 ||
 	  cc4pibox->TPC_det == SubDetId::kTPCUp2 || 
 	  cc4pibox->TPC_det == SubDetId::kTPCDown1 || 
-	  cc4pibox->TPC_det == SubDetId::kTPCDown2) )
+	   cc4pibox->TPC_det == SubDetId::kTPCDown2) ) {
       return true;
+    }
     return false;
   }
 
@@ -736,13 +736,11 @@ namespace numuCC4piUtils{
     // ToF mass
     // ==========
 
-    double c = 299.792458; // mm/ns
-
     // smear the momentum
-    float true_mom = box->MainTrack->Momentum;
+    float true_mom = box->MainTrack->GetTrueParticle()->Momentum;
     float mom = box->MainTrack->SmearedMomentum;
-    if (box->MainTrack->Momentum != box->MainTrack->SmearedMomentum)
-      mom = _randomGen->Gaus(mom, 0.10*mom);
+    if (fabs(true_mom-mom)<1e-3)
+      mom = _randomGen->Gaus(true_mom, 0.10*true_mom);
 
     // smear the length
     TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
@@ -750,14 +748,53 @@ namespace numuCC4piUtils{
     float true_length = (pos1-pos2).Mag();
     float length = _randomGen->Gaus(true_length, 10);
 
-    if (mom<0 || length<0) 
-      box->ToF_mass = 0;
-    else
-      box->ToF_mass = mom*sqrt(pow(c*ToF/length, 2) -1);
-    box->ToF_true_mass = true_mom*sqrt(pow(c*true_ToF/true_length, 2) -1);
+    box->ToF_mass      = numuCC4pi_utils::ComputeToFMass(mom, ToF, length);
+    box->ToF_true_mass = numuCC4pi_utils::ComputeToFMass(true_mom, true_ToF, true_length);
 
     // ==========
     // ==========
+
+    // ==========
+    // ToF mass for all particles (maybe very CPU consuming !)
+    // ==========
+
+    AnaEventB& eventB = static_cast<AnaEventB&>(event);
+
+    for (int i=0; i<eventB.nParticles; i++) {
+
+	AnaTrackB* track_i = static_cast<AnaTrackB*>(eventB.Particles[i]);
+      if (!track_i) continue;
+      if (!track_i->TrueObject) continue;
+
+      p1=0; p2=0;
+      float ToF_i = numuCC4pi_utils::GetToF(track_i, p1, p2, _randomGen);
+      if (!p1 or !p2)
+	continue;
+      float true_ToF_i = p2->PositionStart[3]-p1->PositionStart[3];
+
+      // smear the momentum
+      float true_mom = track_i->GetTrueParticle()->Momentum;
+      float mom = track_i->SmearedMomentum;
+      if (fabs(true_mom-mom)<1e-3)
+	mom = _randomGen->Gaus(true_mom, 0.10*true_mom);
+
+      // smear the length
+      TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
+      TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
+      float true_length = (pos1-pos2).Mag();
+      float length = _randomGen->Gaus(true_length, 10);
+
+      box->All_ToF_mass.push_back(numuCC4pi_utils::ComputeToFMass(mom, ToF_i, length));
+      box->All_ToF_true_mass.push_back(numuCC4pi_utils::ComputeToFMass(true_mom, true_ToF_i, true_length));
+      box->All_mom.push_back(mom);
+      box->All_true_mom.push_back(true_mom);
+      box->All_PDG.push_back(track_i->GetTrueParticle()->PDG);
+
+    }
+
+    // ==========
+    // ==========
+
 
     ok = ok || (true_ToF*ToF > 0);
     return ok;

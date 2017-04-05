@@ -453,6 +453,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
   box->nMichelElectrons = 0;
   
   Float_t ME_eff = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.Efficiency");
+  Float_t ME_mom = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.MomentumCut");
 
   EventBox::RecObjectGroupEnum groupID;
   if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
@@ -481,7 +482,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 	AnaTrueParticleB* true_part = track->GetTrueParticle();
 	if (!true_part) continue;
 	if (abs(true_part->PDG) == 11)
-	  if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > 2) {
+	  if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > ME_mom) {
 	    double r = rand()%1000/1000.;
 	    if (r < ME_eff) {
 	      box->nMichelElectrons++;
@@ -497,7 +498,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 	AnaTrueParticleB* true_part = track->GetTrueParticle();
 	if (!true_part) continue;
 	if (abs(true_part->PDG) == 11)
-	  if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > 2) {
+	  if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > ME_mom) {
 	    double r = rand()%1000/1000.;
 	    if (r < ME_eff) {
 	      box->nMichelElectrons++;
@@ -517,7 +518,8 @@ float numuCC4pi_utils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaPa
 
   if (!track) return -1.;
 
-  Float_t cut_length_target = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
+  Float_t cut_length_target   = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
+  Float_t ToF_time_resolution = ND::params().GetParameterD("numuCC4piAnalysis.ToF.TimeResolution");
   std::vector< std::pair<AnaParticleB*, std::vector<float> > > detTiming;
   
   // find timing information in Targets
@@ -560,7 +562,7 @@ float numuCC4pi_utils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaPa
   // find timing information in ToF counters
   for (int i=0; i<track->nToFSegments; i++) {
     float true_time = track->ToFSegments[i]->PositionStart[3];
-    float     sigma = 0.6; // 0.6ns
+    float     sigma = ToF_time_resolution; // 0.6ns
     float      time = gen->Gaus(true_time, sigma);
 
     std::vector<float> vec;
@@ -592,5 +594,18 @@ float numuCC4pi_utils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaPa
 
 
   return ToF;
+
+}
+
+//*********************************************************************
+float numuCC4pi_utils::ComputeToFMass(float mom, float ToF, float length){
+//*********************************************************************
+
+  double c = 299.792458; // mm/ns
+
+  if (mom<0 || length<0) 
+    return -999.;
+  else
+    return mom*sqrt(pow(c*ToF/length, 2) -1);
 
 }
