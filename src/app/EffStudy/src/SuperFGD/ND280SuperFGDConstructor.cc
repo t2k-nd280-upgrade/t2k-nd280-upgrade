@@ -5,6 +5,7 @@
 #include <G4VPhysicalVolume.hh>
 #include <G4PVPlacement.hh>
 #include <G4VisAttributes.hh>
+#include <G4PVReplica.hh>
 
 #include <G4Tubs.hh>
 
@@ -83,8 +84,8 @@ void ND280SuperFGDConstructor::Init(void) {
   SetHeight(fCubeNumY * fEdge);
   SetLength(fCubeNumZ * fEdge);
 
-  SetFiberRadius(0.5*mm);
-  SetFiberMaterial("FiberCore");
+  //SetFiberRadius(0.5*mm);
+  //SetFiberMaterial("FiberCore");
 
   // Position of the center of the SuperFGD detector
   fPosX = 0.;
@@ -112,16 +113,6 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
   SetLength(TotLength);
   SetHeight(TotHeight);
 
-  //
-  
-  G4LogicalVolume *logVolume
-    = new G4LogicalVolume(new G4Box(GetName(),
-				    GetWidth()/2.0,  
-				    GetHeight()/2.0,
-				    GetLength()/2.0),
-			  FindMaterial("Air"),
-			  GetName());
-
   // Build the plastic scintillator cube
 
   ND280CubeScintConstructor& cube
@@ -131,6 +122,7 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
   cube.SetLength(fEdge);
   cube.SetHeight(fEdge);  
   cube.SetHoleRadius(0.7*mm);
+  cube.SetFiberRadius(0.5*mm);
   cube.SetCoatingThickness(0.25*mm);
   cube.SetGap(0.0*mm);
   
@@ -144,10 +136,131 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
 
   G4LogicalVolume* cube_logical = cube.GetPiece();
   
-  //G4cout << "Cube base = " << cube.GetBase() << G4endl;
-  //G4cout << cube_logical->GetMaterial()->GetName() << G4endl; 
-  //G4cout << " mass="<<cube_logical->GetMass()/kg   <<" kg" << G4endl;
+  G4cout << "Cube base = " << cube.GetBase() << G4endl;
+  G4cout << " mass="<<cube_logical->GetMass()/kg   <<" kg" << G4endl;
+
+
+  
+  // Build bar Z of cubes
+  
+  G4VSolid *cubeDirZ_solid 
+    = new G4Box(GetName()+"/planeZ_solid", 
+		cube.GetBase()/2, 
+		cube.GetHeight()/2, 
+		GetLength()/2); 
+  
+  G4LogicalVolume *cubeDirZ_logical 
+    = new G4LogicalVolume(cubeDirZ_solid,
+			  FindMaterial("Air"),
+			  GetName()+"/cubeDirZ");
+  
+  cubeDirZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
+  
+  G4PVReplica *cubeDirZ
+    = new G4PVReplica(GetName()+"/cubeDirZ",    // its name
+		      cube_logical, // its logical volume
+		      cubeDirZ_logical,          // its mother volume
+		      kZAxis,             // axis along replication applied
+		      fCubeNumZ,          // number of replicated volumes
+		      cube.GetLength()    // width of single replica along axis 
+		      );
+  
+  
+  // Build layer XZ of cubes
+  
+  G4VSolid *cubeDirXZ_solid 
+    = new G4Box(GetName()+"/cubeDirXZ_solid", 
+		GetWidth()/2, 
+		cube.GetHeight()/2, 
+		GetLength()/2); 
+  
+  G4LogicalVolume *cubeDirXZ_logical 
+    = new G4LogicalVolume(cubeDirXZ_solid,
+			  FindMaterial("Air"),
+			  GetName()+"/cubeDirXZ");
+
+  cubeDirXZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
+  
+  G4PVReplica *cubeDirXZ
+    = new G4PVReplica(GetName()+"/cubeDirXZ",    // its name
+		      cubeDirZ_logical, // its logical volume
+		      cubeDirXZ_logical,          // its mother volume
+		      kXAxis,             // axis along replication applied
+		      fCubeNumX,          // number of replicated volumes
+		      cube.GetBase()    // width of single replica along axis 
+		      );
+  
+  
+  // Build box XYZ of cubes
+  
+  G4VSolid *cubeDirXYZ_solid 
+    = new G4Box(GetName()+"/cubeDirXYZ_solid", 
+		GetWidth()/2, 
+		GetHeight()/2, 
+		GetLength()/2); 
+  
+  G4LogicalVolume *cubeDirXYZ_logical 
+    = new G4LogicalVolume(cubeDirXYZ_solid,
+			  FindMaterial("Air"),
+			  GetName()+"/cubeDirXYZ");
+
+  cubeDirXYZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
+  
+  G4PVReplica *cubeDirXYZ
+    = new G4PVReplica(GetName()+"/cubeDirXYZ",    // its name
+		      cubeDirXZ_logical, // its logical volume
+		      cubeDirXYZ_logical,          // its mother volume
+		      kYAxis,             // axis along replication applied
+		      fCubeNumY,          // number of replicated volumes
+		      cube.GetHeight()    // width of single replica along axis 
+		      );
+  
+  return cubeDirXYZ_logical;
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //
+
+  /*
+    
+  G4LogicalVolume *logVolume
+    = new G4LogicalVolume(new G4Box(GetName(),
+				    GetWidth()/2.0,  
+				    GetHeight()/2.0,
+				    GetLength()/2.0),
+			  FindMaterial("Air"),
+			  GetName());
+
+  */
+  
+  /*
+
   // Build the fibers
 
   G4VisAttributes *visAtt_Fiber = new G4VisAttributes();
@@ -209,8 +322,10 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
       fiberAlongZVolume->SetVisAttributes(visAtt_Fiber);
     }
 
+
+      
     // Place the fibers along Z --> loop in the XY plane   
-    
+
     int FiberIdxZ=0;
 
     for(int iFiberY=0;iFiberY<fCubeNumY;iFiberY++){
@@ -239,7 +354,7 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
       } // end loop over X fibers
     } // end loop over Y fibers
 
-	
+
     // Place the fibers along X --> loop in the YZ plane   
 
     int FiberIdxX=0;
@@ -312,9 +427,12 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
     } // end loop over Z fibers
 
 
-    
-    
-    
+  */
+
+
+
+  /*
+
     // Place the plastic scintillator cubes    
 
     int CubeIdx = 0;
@@ -342,10 +460,16 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
 	}
       }
     }
+    
+    //} // if fiber radius > hole radius
   
-  }
+    
+    logVolume->SetVisAttributes(G4VisAttributes::Invisible);  
+    
+    return logVolume;
+  
+  */    
+    
 
-  logVolume->SetVisAttributes(G4VisAttributes::Invisible);  
-  
-  return logVolume;
+
 }

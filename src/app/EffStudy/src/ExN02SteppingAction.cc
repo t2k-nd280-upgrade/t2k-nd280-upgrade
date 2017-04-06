@@ -69,10 +69,15 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   G4double edep = step->GetTotalEnergyDeposit();
   if(edep==0.) return;
 
+  
 
-  G4cout << "edep = " << edep << G4endl;
+  // //G4cout << "edep = " << edep << G4endl;
+  // G4cout << "ParentID = " << step->GetTrack()->GetParentID() << G4endl;
+  // return;
 
 
+
+  
   G4StepPoint* prestep  = step->GetPreStepPoint();
   //G4StepPoint* poststep = step->GetPostStepPoint();
   G4Track *track = step->GetTrack(); // it's PostStepPoint!!!

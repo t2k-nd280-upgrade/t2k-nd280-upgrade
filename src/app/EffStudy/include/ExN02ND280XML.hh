@@ -110,8 +110,24 @@ public :
   G4double GetXMLFGDPos2_Y()     {return fFGDPos2_Y;};
   G4double GetXMLFGDPos2_Z()     {return fFGDPos2_Z;};
 
-  // ToF Downstream
+  G4double GetXMLSuperFGDCubeEdge1() {return fSuperFGDCubeEdge1;};
+  G4int    GetXMLSuperFGDCubeNum1_X(){return fSuperFGDCubeNum1_X;};
+  G4int    GetXMLSuperFGDCubeNum1_Y(){return fSuperFGDCubeNum1_Y;};
+  G4int    GetXMLSuperFGDCubeNum1_Z(){return fSuperFGDCubeNum1_Z;};
+  G4double GetXMLSuperFGDPos1_X()    {return fSuperFGDPos1_X;};
+  G4double GetXMLSuperFGDPos1_Y()    {return fSuperFGDPos1_Y;};
+  G4double GetXMLSuperFGDPos1_Z()    {return fSuperFGDPos1_Z;};
 
+  G4double GetXMLSuperFGDCubeEdge2() {return fSuperFGDCubeEdge2;};
+  G4int    GetXMLSuperFGDCubeNum2_X(){return fSuperFGDCubeNum2_X;};
+  G4int    GetXMLSuperFGDCubeNum2_Y(){return fSuperFGDCubeNum2_Y;};
+  G4int    GetXMLSuperFGDCubeNum2_Z(){return fSuperFGDCubeNum2_Z;};
+  G4double GetXMLSuperFGDPos2_X()    {return fSuperFGDPos2_X;};
+  G4double GetXMLSuperFGDPos2_Y()    {return fSuperFGDPos2_Y;};
+  G4double GetXMLSuperFGDPos2_Z()    {return fSuperFGDPos2_Z;};
+  
+  // ToF Downstream
+  
   G4bool   GetXMLToFdefault_TopDown()       {return fToFdefault_TopDown;};
   G4int    GetXMLToFLayerHorizNBar_TopDown()   {return fToFLayerHorizNBar_TopDown;};  
   G4int    GetXMLToFLayerVertNBar_TopDown()    {return fToFLayerVertNBar_TopDown;};
@@ -297,6 +313,8 @@ public :
   G4bool   GetXMLUseTPCDown2()   {return fUseTPCDown2;};
   G4bool   GetXMLUseFGD1()       {return fUseFGD1;};
   G4bool   GetXMLUseFGD2()       {return fUseFGD2;};
+  G4bool   GetXMLUseSuperFGD1()  {return fUseSuperFGD1;};
+  G4bool   GetXMLUseSuperFGD2()  {return fUseSuperFGD2;};
   G4bool   GetXMLUseToF_TopDown()       {return fUseToF_TopDown;};
   G4bool   GetXMLUseToF_BotDown()       {return fUseToF_BotDown;};
   G4bool   GetXMLUseToF_RightDown()       {return fUseToF_RightDown;};
@@ -330,6 +348,8 @@ public :
   G4bool   GetXMLInvisTPCDown2() {return fInvisTPCDown2;};
   G4bool   GetXMLInvisFGD1()     {return fInvisFGD1;};
   G4bool   GetXMLInvisFGD2()     {return fInvisFGD2;};
+  G4bool   GetXMLInvisSuperFGD(){return fInvisSuperFGD;};
+  //G4bool   GetXMLInvisSuperFGD2(){return fInvisSuperFGD2;};
   G4bool   GetXMLInvisToF_TopDown()     {return fInvisToF_TopDown;};  
   G4bool   GetXMLInvisToF_BotDown()     {return fInvisToF_BotDown;};
   G4bool   GetXMLInvisToF_RightDown()     {return fInvisToF_RightDown;};  
@@ -434,6 +454,24 @@ private :
   G4double fFGDPos2_Y;
   G4double fFGDPos2_Z;
   
+ G4double fSuperFGDCubeEdge1;
+ G4int    fSuperFGDCubeNum1_X;
+ G4int    fSuperFGDCubeNum1_Y;
+ G4int    fSuperFGDCubeNum1_Z;
+ G4double fSuperFGDPos1_X;
+ G4double fSuperFGDPos1_Y;
+ G4double fSuperFGDPos1_Z;
+
+ G4double fSuperFGDCubeEdge2;
+ G4int    fSuperFGDCubeNum2_X;
+ G4int    fSuperFGDCubeNum2_Y;
+ G4int    fSuperFGDCubeNum2_Z;
+ G4double fSuperFGDPos2_X;
+ G4double fSuperFGDPos2_Y;
+ G4double fSuperFGDPos2_Z;
+
+
+
   // ToF Downstream
 
   G4bool   fToFdefault_TopDown;
@@ -648,6 +686,8 @@ private :
   G4bool fUseTPCDown2;
   G4bool fUseFGD1;
   G4bool fUseFGD2;
+  G4bool fUseSuperFGD1;
+  G4bool fUseSuperFGD2;
   G4bool fUseMagnet;
   G4bool fUseToF_TopDown;
   G4bool fUseToF_BotDown;
@@ -680,6 +720,8 @@ private :
   G4bool fInvisTPCDown2;
   G4bool fInvisFGD1;
   G4bool fInvisFGD2;
+  G4bool fInvisSuperFGD;
+  //G4bool fInvisSuperFGD2;
   G4bool fInvisToF_TopDown;
   G4bool fInvisToF_BotDown;
   G4bool fInvisToF_RightDown;

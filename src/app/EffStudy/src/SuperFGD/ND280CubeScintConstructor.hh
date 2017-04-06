@@ -90,21 +90,32 @@ public:
   virtual G4ThreeVector GetHolePosition_Z(void) {return fHolePositionZ;};
 
 
+  /// Set the WLS fiber radius
+  virtual void SetFiberRadius(double rad){fFiberRadius = rad;};
+  /// Get the WLS fiber radius
+  double GetFiberRadius(){return fFiberRadius;};
 
-  // // Set rotation for the Fiber Hole along X axis
-  // virtual void SetHoleRot_X(G4RotationMatrix rot) {fHoleRotX = rot;};
-  // // Get rotation for the Fiber Hole along X axis
-  // virtual G4RotationMatrix GetHoleRot_X(void) {return fHoleRotX;};
+  /// Set the WLS fiber material
+  virtual void SetFiberMaterial(std::string mat){fFiberMaterial = mat;};
+  /// Get the WLS fiber material
+  std::string GetFiberMaterial(){return fFiberMaterial;};
 
-  // // Set rotation for the Fiber Hole along Y axis
-  // virtual void SetHoleRot_Y(G4RotationMatrix rot) {fHoleRotY = rot;};
-  // // Get rotation for the Fiber Hole along Y axis
-  // virtual G4RotationMatrix GetHoleRot_Y(void) {return fHoleRotY;};
 
-  // // Set rotation for the Fiber Hole along Z axis
-  // virtual void SetHoleRot_Z(G4RotationMatrix rot) {fHoleRotZ = rot;};
-  // // Get rotation for the Fiber Hole along Z axis
-  // virtual G4RotationMatrix GetHoleRot_Z(void) {return fHoleRotZ;};
+
+  // Set rotation for the Fiber Hole along X axis
+  virtual void SetHoleRot_X(G4RotationMatrix rot) {fHoleRotX = rot;};
+  // Get rotation for the Fiber Hole along X axis
+  virtual G4RotationMatrix GetHoleRot_X(void) {return fHoleRotX;};
+
+  // Set rotation for the Fiber Hole along Y axis
+  virtual void SetHoleRot_Y(G4RotationMatrix rot) {fHoleRotY = rot;};
+  // Get rotation for the Fiber Hole along Y axis
+  virtual G4RotationMatrix GetHoleRot_Y(void) {return fHoleRotY;};
+
+  // Set rotation for the Fiber Hole along Z axis
+  virtual void SetHoleRot_Z(G4RotationMatrix rot) {fHoleRotZ = rot;};
+  // Get rotation for the Fiber Hole along Z axis
+  virtual G4RotationMatrix GetHoleRot_Z(void) {return fHoleRotZ;};
 
 
 
@@ -112,9 +123,9 @@ public:
 
   
   /// Get the thickness of the reflective coating.
-    virtual double GetCoatingThickness(void) {return fCoatingThickness;}
-
-    /// Set the thickness of the reflective coating.
+  virtual double GetCoatingThickness(void) {return fCoatingThickness;}
+  
+  /// Set the thickness of the reflective coating.
     virtual void SetCoatingThickness(double t) {fCoatingThickness=t;}
 
   ///// Get the inner radius of the corner reflective coating for FGD scints.
@@ -205,10 +216,10 @@ private:
   G4ThreeVector fHolePositionY;
   G4ThreeVector fHolePositionZ;
 
-  // // Rotation for the Fiber Hole along X, Y and Z axes
-  // G4ThreeVector fHoleRotX;
-  // G4ThreeVector fHoleRotY;
-  // G4ThreeVector fHoleRotZ;
+  // Rotation for the Fiber Hole along X, Y and Z axes
+  G4RotationMatrix fHoleRotX;
+  G4RotationMatrix fHoleRotY;
+  G4RotationMatrix fHoleRotZ;
   
     /// The thickness of the material that is wrapping the scintillator (this
     /// may be extruded).
@@ -236,6 +247,12 @@ private:
     /// The sensitive detector for this extruded bar.
     G4VSensitiveDetector* fSensitiveDetector;
 
+  /// The WLS fiber material
+  std::string fFiberMaterial;
+
+  /// The WLS fiber radius
+  double fFiberRadius;
+  
   ExN02ND280XML *fND280XMLInput;
 };
 #endif

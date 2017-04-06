@@ -36,8 +36,9 @@
 #include "ExN02RunAction.hh"
 #include "ExN02EventAction.hh"
 #include "ExN02SteppingAction.hh"
-#include "ND280UserTrackingAction.hh"
+#include "ND280UserStackingAction.hh"
 #include "ExN02DetectorConstruction.hh"
+#include "ND280UserTrackingAction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -76,6 +77,9 @@ void ExN02ActionInitialization::Build() const
   SetUserAction(primgen);
   ExN02EventAction* eventAction = new ExN02EventAction;
   SetUserAction(eventAction);
+
+  SetUserAction(new ND280UserStackingAction);
+
   SetUserAction(new ExN02RunAction(eventAction));
 
   SetUserAction(new ND280UserTrackingAction);

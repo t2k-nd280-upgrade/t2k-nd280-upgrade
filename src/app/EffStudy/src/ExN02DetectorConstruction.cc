@@ -161,6 +161,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   BoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
   FGDWaterVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   FGDScintVisAtt = new G4VisAttributes(G4Color(0.,0.7,0.));
+  SuperFGDScintVisAtt = new G4VisAttributes(G4Colour::Grey);
   TargetWaterVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   TargetScintVisAtt = new G4VisAttributes(G4Color(0.,0.7,0.));
   TPCVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
@@ -1670,8 +1671,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   G4double HalfTargetHeight1  = 0.5 * GetTargetFullHeight1();
   
-
-
   if( ND280XMLInput->GetXMLUseTarget1() ){ 
     
     if( ND280XMLInput->GetXMLTargetdefault1() ){ // default
@@ -1703,10 +1702,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				     logicBasket,
 				     false,             // no boolean operations
 				     0);                 // copy number 
-    //fCheckOverlaps); 		      
-    
+    //fCheckOverlaps); 		          
   }
+
   
+  
+  
+
+
   // Implement the SuperFGD
   
   G4String cNameLogicSuperFGD1 =  cParentNameTarget+"/SuperFGD1";
@@ -1742,6 +1745,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 			  logicBasket,
 			  false,             // no boolean operations
 			  0);                 // copy number     
+
   }
 
     /*
@@ -2160,14 +2164,19 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //logicTracker->SetVisAttributes(BoxVisAtt);
   //logicBasket ->SetVisAttributes(BoxVisAtt);
   //logicND280MC ->SetVisAttributes(G4VisAttributes::Invisible);
-  if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetVisAttributes(TPCVisAtt);
-  if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
-  if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
-  if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetVisAttributes(TPCVisAtt);
-  if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
-  if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
-  if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetVisAttributes(FGDScintVisAtt);
-  if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetVisAttributes(FGDWaterVisAtt);
+  if( ND280XMLInput->GetXMLUseTPCUp1() )    logicSideTPCUp1->SetVisAttributes(TPCVisAtt);
+  if( ND280XMLInput->GetXMLUseTPCUp2() )    logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
+  if( ND280XMLInput->GetXMLUseTPCDown1() )  logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
+  if( ND280XMLInput->GetXMLUseTPCDown2() )  logicSideTPCDown2->SetVisAttributes(TPCVisAtt);
+  if( ND280XMLInput->GetXMLUseTarget1() )   logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
+  if( ND280XMLInput->GetXMLUseTarget2() )   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
+  if( ND280XMLInput->GetXMLUseFGD1() )      logicFGD1->SetVisAttributes(FGDScintVisAtt);
+  if( ND280XMLInput->GetXMLUseFGD2() )      logicFGD2->SetVisAttributes(FGDWaterVisAtt);
+  
+  //if( ND280XMLInput->GetXMLUseSuperFGD1() ) 
+  if(logicSuperFGD1) logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
+  //if( ND280XMLInput->GetXMLUseSuperFGD2() ) 
+  if(logicSuperFGD2) logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
 
   
   //--------- Set Step Limiter -------------------------------

@@ -394,6 +394,12 @@ private:
   G4LogicalVolume*   logicFGD2;   // pointer to the logical FGD 
   G4VPhysicalVolume* physiFGD2;   // pointer to the physical FGD 
 
+  G4LogicalVolume*   logicSuperFGD1;
+  G4VPhysicalVolume* physiSuperFGD1; 
+
+  G4LogicalVolume*   logicSuperFGD2;
+  G4VPhysicalVolume* physiSuperFGD2;
+
   G4Box*             solidTracker;  // pointer to the solid Tracker
   G4LogicalVolume*   logicTracker;  // pointer to the logical Tracker
   G4VPhysicalVolume* physiTracker;  // pointer to the physical Tracker
@@ -608,6 +614,7 @@ private:
   G4VisAttributes* TargetScintVisAtt;
   G4VisAttributes* FGDWaterVisAtt;
   G4VisAttributes* FGDScintVisAtt;
+  G4VisAttributes* SuperFGDScintVisAtt;
   G4VisAttributes* TPCVisAtt;
   G4VisAttributes* TPCCO2;
   G4VisAttributes* TPCDeadMat;
