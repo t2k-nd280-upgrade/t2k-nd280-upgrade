@@ -142,7 +142,7 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
   InitializeManagerGeometry(m);
 
   // set the RecPack verbosity  for this manager (IT NEEDS THE SETUP)
-  SetVerbosity(0,0,0,0,0);    
+  SetVerbosity(5,7,5,5,0);    
 
   // Set the model corresponding to this manager
   SetModel(model);
@@ -534,7 +534,6 @@ bool AnaRecPackManager::BuildPropagationDetSurface(const TVector3& pos, const TV
   //for ECal, P0D for now keep "pre-defined" surfaces with fixed normals based on detector geometry
 
   std::string volname = ND::tman().get_volume_name(pos);
-
   //make sure that measurement has an accosiated volume
   if (volname==""){
     if (fDebug)
@@ -791,7 +790,7 @@ bool AnaRecPackManager::ExtrapolateToDetector(SubDetId::SubDetEnum det,
 
   //ECALs
   else if (det==SubDetId::kDsECal) volname = "/t2k_1/OA_0/Magnet_0/Basket_0/DsECal_0/Active_0";
-
+/*
   else if (det==SubDetId::kTopTECAL){
 
     //this one is used to build an extrapolated surface of an infinite side
@@ -841,7 +840,7 @@ bool AnaRecPackManager::ExtrapolateToDetector(SubDetId::SubDetEnum det,
 
   else if (det==SubDetId::kRightPECAL)
     volname = "/t2k_1/OA_0/Magnet_0/RightClam_0/P0DECal_1/Side_0/Active_0";	
-
+*/
   else if (det==SubDetId::kToFTopUp)
 
     //this one is used to build an extrapolated surface of an infinite side
@@ -1083,6 +1082,40 @@ bool AnaRecPackManager::GetMomentumFromRangeLinear(const AnaParticleB& track, co
   return treturn(true);
 }
 
+
+
+
+//*****************************************************************************
+bool AnaRecPackManager::GetMomentumFromRangeLinear(const AnaTrueParticleB& track, const TVector3& point_pos, 
+    double& prange, 
+    ParticleId::ParticleEnum pid){
+  //*****************************************************************************
+  
+  TVector3 pos_start; // for prange -- end of the track
+  
+  //if (!GetTrimPosition(track, pos_start, kEnd))
+    pos_start = TVector3(track.Position[0], track.Position[1], track.Position[2]); 
+ 
+  double prange_tmp = 0.;
+  
+  if (!CorrectEnergyLossLinear(pos_start, 
+        point_pos, // up to a given point
+        prange_tmp, 
+        pid, 
+        kBwd) // go in bwd direction
+     )
+    return treturn(false);
+  
+  prange = prange_tmp;   
+
+  if(fDebug){
+    std::cout << "AnaRecPackManager::GetMomentumFromRangeLinear(point) -- prange is  \t"  << prange << " MeV " << std::endl;
+  }
+
+  return treturn(true);
+}
+
+
 //*****************************************************************************
 bool AnaRecPackManager::CorrectEnergyLossLinear(const TVector3& start, const TVector3& end, 
     double& momentum, 
@@ -1109,7 +1142,6 @@ bool AnaRecPackManager::CorrectEnergyLossLinear(const TVector3& start, const TVe
     std::cout << "AnaRecPackManager::CorrectEnergyLossLinear() -- failed to propagate " << std::endl;
     return treturn(false);
   }
-
   if (!GetPRange(state, momentum))
     return treturn(false); 
 

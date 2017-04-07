@@ -100,6 +100,13 @@ public:
       double& prange, 
       ParticleId::ParticleEnum pid); 
 
+  /// Get momentum from range from the end point to a point given (assuming it is a point along the trajectory)
+  /// may be useful for checks of stopping tracks
+  bool GetMomentumFromRangeLinear(const AnaTrueParticleB& track, 
+      const TVector3& point_pos,  
+      double& prange, 
+      ParticleId::ParticleEnum pid); 
+
   /// Apply trim values
   void TrimPosition(TVector3& pos, const TVector3& dir, TrackEndDef endType);
 

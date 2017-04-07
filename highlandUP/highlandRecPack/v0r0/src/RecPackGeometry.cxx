@@ -295,7 +295,7 @@ void RecPackGeometry::FillInformation(void) {
   //  GetSetup().AddVolume("FluxReturn");
   //  GetSetup().AddVolume("MRD");
 
-  //  GetSetup().AddVolume("Basket_0");
+    GetSetup().AddVolume("Basket_0");
 
 
 
@@ -304,7 +304,7 @@ void RecPackGeometry::FillInformation(void) {
   //NEED TO REVIEW
 //  unsigned int NFGDVOLUMES = fFGDMODULES.size();
   volumes_to_exclude.clear();
-
+/*
   if (fFGDMODULES1.size() > 0) {
     // The FGD parent volume
     GetSetup().AddVolume(TRACKERBASE, "FGD1_0");
@@ -319,20 +319,20 @@ void RecPackGeometry::FillInformation(void) {
 
   }
 
-
-  if (fTARGET1.size() > 0) {
+*/
+  //if (fTARGET1.size() > 0) {
     // The FGD parent volume
     GetSetup().AddVolume(TRACKERBASE, "Target1_0");
 
     SetPropertiesToVolume(TRACKERBASE + "/Target1_0",       volumes_to_exclude, volumes_to_exclude, false);
 
-  }
-  if (fTARGET2.size() > 0) {
+ // }
+ // if (fTARGET2.size() > 0) {
     // The FGD parent volume
     GetSetup().AddVolume(TRACKERBASE, "Target2_0");
     SetPropertiesToVolume(TRACKERBASE + "/Target2_0",       volumes_to_exclude, volumes_to_exclude, false);
 
-  }
+  //}
   unsigned int NTPCMODULES1 = fTPCMODULES1.size();
   for (unsigned int i = 0; i < NTPCMODULES1; i++) { // The FGD parent volume
 
@@ -525,9 +525,10 @@ void RecPackGeometry::FillInformation(void) {
 
   // Check and solve overlaps smaller than 10 mm and leaving a tolerance of 0.01 mm
   GetSetup().solve_overlaps(10 * mm, 0.01 * mm);
+  std::string magnet_name_ = GetSetup().GetVolumePath("Magnet_0");
 
-  if (magnet_name == "")
-    magnet_name = mother_name + "/Basket_0";
+  if (magnet_name_ == "")
+    magnet_name_ = mother_name + "/Basket_0";
 
 
   //*************************** Set Volume and surface properties **************************************
@@ -535,15 +536,16 @@ void RecPackGeometry::FillInformation(void) {
   //---- Set the magnetic field
   _Bfield = EVector(3, 0);
 
-  if ( magnet_name == mother_name + "/Basket_0" ) {
+  if ( magnet_name_ == mother_name + "/Basket_0" ) {
     _Bfield[0] = 0.0001 * tesla;  _Bfield[1] = 0.0 * tesla;  _Bfield[2] = 0.0 * tesla;
-    GetSetup().set_volume_property_to_sons(magnet_name, RP::BField, _Bfield);
+    GetSetup().set_volume_property_to_sons(magnet_name_, RP::BField, _Bfield);
   }
   else {
     // set this volume property to all sons including the volume itself
-    GetSetup().set_volume_property_to_sons(magnet_name, RP::BFieldMap, _BfieldMap);
+    GetSetup().set_volume_property_to_sons(magnet_name_, RP::BFieldMap, _BfieldMap);
     EVector pos(3, 0);
     EVector bv2 = _BfieldMap.compute_vector(pos);
+
     std::cout << "RecPackGeometry: used B field at pos 0: " << print(bv2) << std::endl;
   }
 

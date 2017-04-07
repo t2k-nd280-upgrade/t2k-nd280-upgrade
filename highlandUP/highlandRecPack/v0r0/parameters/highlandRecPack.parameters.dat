@@ -15,6 +15,11 @@
   < highlandRecPack.PRange.P0DECalTrimXY    = 0. >
   < highlandRecPack.PRange.SMRDTrimXY       = 32. > // from analysis checks 
 
+
+  < highlandRecPack.PRange.Target1TrimZ_start  = 0. >
+  < highlandRecPack.PRange.Target1TrimZ_end    = 0. >
+  < highlandRecPack.PRange.Target2TrimZ        = 0. > // on top of water layer thing !?!  
+
 --- BField strength default at (0, 0, 0) ------
 
   < highlandRecPack.BField.FieldStrengthX  = 0.2 >

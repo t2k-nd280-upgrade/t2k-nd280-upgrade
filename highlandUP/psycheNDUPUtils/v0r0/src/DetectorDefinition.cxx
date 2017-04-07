@@ -38,7 +38,7 @@ namespace DetDef {
   Float_t Target1min[3] = {-932.00, -316.0, -1787.0};
   Float_t Target1max[3] = { 932.00,  284.0,  -487.0};
   Float_t Target2min[3] = {-932.00, -316.0,   487.0};
-  Float_t Target2max[3] = { 932.00,  284.0,  1787.0};
+  Float_t Target2max[3] = { 932.00,  283.0,  1787.0};
 
  Float_t FGD1min[3] = {-932.15, -948.15,  276.0};
  Float_t FGD1max[3] = { 932.15,  916.15,  579.0};
