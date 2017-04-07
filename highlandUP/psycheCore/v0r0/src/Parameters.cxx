@@ -263,7 +263,7 @@ void  Parameters::CheckReadParamOverrideFilePointPassed(string parameterName){
               << "should no be accessed in analysis algorithm constructors or globally" << std::endl
               << "since it will not be overwritten when an override parameter file is used (-p option)" << std::endl
               << "Please move the GetParameter calls to the Initialize method of the analysis algorithm." << std::endl;
-   // exit(1);
+    exit(1);
   }
 
 }
