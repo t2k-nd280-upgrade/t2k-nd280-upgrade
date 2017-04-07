@@ -1710,7 +1710,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
 
 
-  // Implement the SuperFGD
+
+
+
+  // Implement the SuperFGD 1
   
   G4String cNameLogicSuperFGD1 =  cParentNameTarget+"/SuperFGD1";
   ND280SuperFGDConstructor *fSuperFGDConstructor1 = new ND280SuperFGDConstructor(cNameLogicSuperFGD1,this);
@@ -1745,24 +1748,90 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 			  logicBasket,
 			  false,             // no boolean operations
 			  0);                 // copy number     
-
+    
+    G4cout << "SuperFGD 1: " << G4endl
+	   << " - Cube size: "
+	   << fSuperFGDConstructor1->GetEdge() << G4endl;
+    G4cout << " - # of cubes: " << G4endl
+	   << "   " << fSuperFGDConstructor1->GetCubeNumX() << " (width) "
+	   << "   " << fSuperFGDConstructor1->GetCubeNumY() << " (height) "
+	   << "   " << fSuperFGDConstructor1->GetCubeNumZ() << " (length) "
+	   << G4endl;
+    G4cout << " mass="<<logicSuperFGD1->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " name: " << logicSuperFGD1->GetName() << G4endl;
+    G4cout << " - position inside the Basket: ( " 
+	   << fSuperFGDConstructor1->GetPosX()/mm << ", "
+	   << fSuperFGDConstructor1->GetPosY()/mm << ", "
+	   << fSuperFGDConstructor1->GetPosZ()/mm << ") "
+	   << G4endl << G4endl;
   }
 
-    /*
-      G4cout << "Target 1: " << G4endl
-      << " - dimensions: "
-      << GetTargetFullWidth1()/mm  << " (width) x " 
-      << GetTargetFullHeight1()/mm << " (height) x " 
-      << GetTargetFullLength1()/mm << " (length) mm^3" 
-      << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-      G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl; 
-      G4cout << " name: " << logicTarget1->GetName() << G4endl;
-      G4cout << " - position: ( " 
-      << GetTargetPos1().x()/mm << ", "
-      << GetTargetPos1().y()/mm << ", "
-      << GetTargetPos1().z()/mm << " ) mm"  
-      << G4endl << G4endl;
-    */
+
+
+
+
+  // Implement the SuperFGD 2
+  
+  G4String cNameLogicSuperFGD2 =  cParentNameTarget+"/SuperFGD2";
+  ND280SuperFGDConstructor *fSuperFGDConstructor2 = new ND280SuperFGDConstructor(cNameLogicSuperFGD2,this);
+  G4String nameSuperFGD2 = fSuperFGDConstructor2->GetName();
+
+  if( ND280XMLInput->GetXMLUseSuperFGD2() ){
+  
+    double edge = ND280XMLInput->GetXMLSuperFGDCubeEdge2();
+    int cubenumX = ND280XMLInput->GetXMLSuperFGDCubeNum2_X();
+    int cubenumY = ND280XMLInput->GetXMLSuperFGDCubeNum2_Y();
+    int cubenumZ = ND280XMLInput->GetXMLSuperFGDCubeNum2_Z();
+    
+    G4double x = ND280XMLInput->GetXMLSuperFGDPos2_X();
+    G4double y = ND280XMLInput->GetXMLSuperFGDPos2_Y();
+    G4double z = ND280XMLInput->GetXMLSuperFGDPos2_Z();
+
+    fSuperFGDConstructor2->SetEdge(edge*mm);
+    fSuperFGDConstructor2->SetCubeNumX(cubenumX);
+    fSuperFGDConstructor2->SetCubeNumY(cubenumY);
+    fSuperFGDConstructor2->SetCubeNumZ(cubenumZ);
+    fSuperFGDConstructor2->SetPosX(x);
+    fSuperFGDConstructor2->SetPosY(y);
+    fSuperFGDConstructor2->SetPosZ(z);
+    
+    logicSuperFGD2 = fSuperFGDConstructor2->GetPiece();
+    physiSuperFGD2 
+      = new G4PVPlacement(
+			  0, // no rotation
+			  G4ThreeVector(0,0,0), // position (0,0,0)
+			  logicSuperFGD2,       // its logical volume    
+			  nameSuperFGD2,  // its name
+			  logicBasket,
+			  false,             // no boolean operations
+			  0);                 // copy number     
+    
+    G4cout << "SuperFGD 2: " << G4endl
+	   << " - Cube size: "
+	   << fSuperFGDConstructor2->GetEdge() << G4endl;
+    G4cout << " - # of cubes: " << G4endl
+	   << "   " << fSuperFGDConstructor2->GetCubeNumX() << " (width) "
+	   << "   " << fSuperFGDConstructor2->GetCubeNumY() << " (height) "
+	   << "   " << fSuperFGDConstructor2->GetCubeNumZ() << " (length) "
+	   << G4endl;
+    G4cout << " mass="<<logicSuperFGD2->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " name: " << logicSuperFGD2->GetName() << G4endl;
+    G4cout << " - position inside the Basket: ( " 
+	   << fSuperFGDConstructor2->GetPosX()/mm << ", "
+	   << fSuperFGDConstructor2->GetPosY()/mm << ", "
+	   << fSuperFGDConstructor2->GetPosZ()/mm << ") "
+	   << G4endl << G4endl;
+  }
+
+
+
+
+
+
+
+
+
+  // Implement WAGASCI Empty
   
   
 
@@ -1771,6 +1840,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
  
   
   
+
+
+
+
+
+
+
 
 
 
