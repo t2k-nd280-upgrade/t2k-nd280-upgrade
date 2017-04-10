@@ -456,7 +456,6 @@ AnaTrackB::AnaTrackB(const AnaTrackB& track):AnaParticleMomB(track){
 
   for (Int_t i=0;i<track.nFGDSegments;i++)
     FGDSegments[i] = track.FGDSegments[i]->Clone();
-
   for (Int_t i=0;i<track.nTPCSegments;i++)
     TPCSegments[i] = track.TPCSegments[i]->Clone();
 
