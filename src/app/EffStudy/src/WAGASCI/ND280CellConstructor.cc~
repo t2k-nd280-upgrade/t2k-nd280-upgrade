@@ -11,18 +11,18 @@
 #include <G4Trap.hh>
 #include <G4SubtractionSolid.hh>
 
-#include "ND280CubeScintConstructor.hh"
+#include "ND280CellConstructor.hh"
 
 // used to keep a list of SD logical volumes
 #include "G4RegionStore.hh"
 #include <G4Region.hh> 
 //
 
-class ND280CubeScintMessenger: public ND280ConstructorMessenger {
+class ND280CellMessenger: public ND280ConstructorMessenger {
 
 private:
     
-  ND280CubeScintConstructor *fConstructor;
+  ND280CellConstructor *fConstructor;
   
   G4UIcmdWithAString*        fShapeCMD;
   G4UIcmdWithADoubleAndUnit* fLengthCMD;
@@ -37,7 +37,7 @@ private:
 
 public:
 
-  ND280CubeScintMessenger(ND280CubeScintConstructor* c) 
+  ND280CellMessenger(ND280CellConstructor* c) 
     : ND280ConstructorMessenger(c,"Control the T2K world geometry."),
       fConstructor(c) {
     
@@ -99,7 +99,7 @@ public:
   }
   
   
-  ~ND280CubeScintMessenger() {
+  ~ND280CellMessenger() {
     //delete fShapeCMD;
     delete fLengthCMD;
     delete fBaseCMD;
@@ -137,11 +137,11 @@ public:
     //else if (cmd == fShapeCMD) {
     //if (val == "triangle") {
     //	fConstructor->SetShape(
-    //			       ND280CubeScintConstructor::eTriangle);
+    //			       ND280CellConstructor::eTriangle);
     //}
     //else if (val == "rectangle") {
     //fConstructor->SetShape(
-    //			     ND280CubeScintConstructor::eRectangle);
+    //			     ND280CellConstructor::eRectangle);
     //}
     //}
     else if (cmd == fFiberRadiusCMD) {
@@ -158,9 +158,9 @@ public:
   }
 };
   
-  ND280CubeScintConstructor::~ND280CubeScintConstructor() {;};
+  ND280CellConstructor::~ND280CellConstructor() {;};
 
-void ND280CubeScintConstructor::Init() {
+void ND280CellConstructor::Init() {
   
   //SetShape(eTriangle);
   SetLength(10*cm);
@@ -174,6 +174,8 @@ void ND280CubeScintConstructor::Init() {
   //SetCoatingRadius(0.0*mm);
   SetGap(0.0*mm);
   
+  SetScintThickness(3.0*mm);
+
   //SetSensitiveDetector(NULL);
   SetVisibility(false);
 
@@ -182,10 +184,10 @@ void ND280CubeScintConstructor::Init() {
   SetScintillatorMaterial("FGDScintillator");  
   SetFiberMaterial("FiberCore");
 
-  SetMessenger(new ND280CubeScintMessenger(this));
+  SetMessenger(new ND280CellMessenger(this));
 }
 
-G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
+G4LogicalVolume* ND280CellConstructor::GetPiece(void) {
   
   // NEW ND280UPGRADE
   G4Region* SDRegion = G4RegionStore::GetInstance()->
@@ -199,8 +201,8 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   G4VSolid* cube = NULL;
   G4VSolid* extrusion = NULL;
   G4VSolid* scintillator = NULL;
-  G4VSolid* scintside = NULL;
-  G4VSolid* scintcrnr = NULL;
+  G4VSolid* core = NULL;
+
   G4VSolid* fiberHole = NULL;
   G4VSolid* scintWithHole = NULL;
   G4VSolid* extrusionWithHole = NULL;
@@ -214,7 +216,8 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   //G4cout << "SuperFGD Hole radius = " << GetHoleRadius() << G4endl;
   
   G4VisAttributes *visAtt_Scint = new G4VisAttributes();
-  visAtt_Scint->SetColor(0.5,0.5,0.5,0.); // gray
+  visAtt_Scint->SetColor(1.0,1.0,1.0); // white
+  //visAtt_Scint->SetColor(0.5,0.5,0.5,0.); // gray
   visAtt_Scint->SetForceSolid(true);
   G4VisAttributes *visAtt_Coat = new G4VisAttributes();
   visAtt_Coat->SetColor(1.0,1.0,1.0); // white
@@ -223,94 +226,49 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
 
   // Build G4VSolid the plastic cube with coating and holes for WLS fibers
 
-  cube = new G4Box(GetName(),
-		   GetBase()/2,
-		   GetHeight()/2,
-		   GetLength()/2
-		   );
-  
+  cube = new G4Box(GetName()+"/Cube",
+			GetBase()/2,
+			GetHeight()/2,
+			GetLength()/2
+			);
+
+  /*
   extrusion = new G4Box(GetName()+"/Extrusion",
 			GetBase()/2,
 			GetHeight()/2,
 			GetLength()/2
 			);
-  
-  scintillator = new G4Box(GetName()+"/Core",
-   			   GetBase()/2-GetCoatingThickness(),
-  			   GetHeight()/2-GetCoatingThickness(),
-  			   GetLength()/2-GetCoatingThickness()
+  */
+
+  scintillator = new G4Box(GetName()+"/Scint",
+			   GetBase()/2-GetCoatingThickness(),
+			   GetHeight()/2-GetCoatingThickness(),
+			   GetLength()/2-GetCoatingThickness()
 			   );
 
-  fiberHole = new G4Tubs(GetName()+"/Core/Hole",
-			 0.0*cm,
-			 GetHoleRadius(),
-			 GetLength()/2*2.,
-			 0.*deg,
-			 360.*deg);
+  core = new G4Box(GetName()+"/Core",
+		   GetBase()/2-GetScintThickness(),
+		   GetHeight()/2-GetScintThickness(),
+		   GetLength()/2-GetScintThickness()
+		   );
+  
+  /*
+    fiberHole = new G4Tubs(GetName()+"/Core/Hole",
+    0.0*cm,
+    GetHoleRadius(),
+    GetLength()/2*2.,
+    0.*deg,
+    360.*deg);
+  */
 
+			 
   // Define shifts of the 3 holes wrt each other (WLS fibers must not overlap)
   G4ThreeVector Pos_X = GetHolePosition_X(); // hole along X
   G4ThreeVector Pos_Y = GetHolePosition_Y(); // hole along Y
   G4ThreeVector Pos_Z = GetHolePosition_Z(); // hole along Z
   
-  extrusionWithHole = extrusion;
-  scintWithHole = scintillator;
-
-  // subtract hole along Z
-  extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
-					     extrusionWithHole,
-					     fiberHole,
-					     0,
-					     Pos_Z
-					     );
-  scintWithHole = new G4SubtractionSolid(GetName()+"/Core",
-  					 scintWithHole,
-  					 fiberHole,
-  					 0,
-					 Pos_Z
-  					 );
-
-    
-  // subtract hole along X
-
-  G4RotationMatrix* rotationAlongX = new G4RotationMatrix();
-  rotationAlongX->rotateX(0 *degree); 
-  rotationAlongX->rotateY(90*degree); 
-  rotationAlongX->rotateZ(0 *degree);      
-
-  extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
-					     extrusionWithHole,
-					     fiberHole,
-					     rotationAlongX,
-					     Pos_X
-					     );
-  scintWithHole = new G4SubtractionSolid(GetName()+"/Core",
-  					 scintWithHole,
-  					 fiberHole,
-  					 rotationAlongX,
-					 Pos_X
-  					 );
-
-
-  // subtract hole along Y
-
-  G4RotationMatrix* rotationAlongY = new G4RotationMatrix();
-  rotationAlongY->rotateX(90 *degree); 
-  rotationAlongY->rotateY(0 *degree); 
-  rotationAlongY->rotateZ(0 *degree);      
-  extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
-					     extrusionWithHole,
-					     fiberHole,
-					     rotationAlongY,
-					     Pos_Y
-					     );
-  scintWithHole = new G4SubtractionSolid(GetName()+"/Core",
-  					 scintWithHole,
-  					 fiberHole,
-  					 rotationAlongY,
-					 Pos_Y
-  					 );  
-
+  
+  
   // logical volumes
 
   coreOffset = 0.0;
@@ -318,28 +276,49 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   G4LogicalVolume* logVolume
     = new G4LogicalVolume(cube,
 			  FindMaterial("Air"),
-			  GetName());
+			  GetName()+"/Cube");
 
-  G4LogicalVolume* extrusionVolume
-    = new G4LogicalVolume(extrusionWithHole,
+  /*
+    G4LogicalVolume* extrusionVolume
+    = new G4LogicalVolume(extrusion,
 			  FindMaterial(GetCoatingMaterial()),
-			  GetName()+"/Extrusion");
+			  GetName()+"/Extrusion");  
+  */
+
 
   G4LogicalVolume *scintVolume;
-  scintVolume = new G4LogicalVolume(scintWithHole,
+  scintVolume = new G4LogicalVolume(scintillator,
 				    FindMaterial(GetScintillatorMaterial()),
 				    GetName()+"/Core");
 
+  G4LogicalVolume *coreVolume; 
+  coreVolume = new G4LogicalVolume(core,
+				   //FindMaterial(GetScintillatorMaterial()),
+				   FindMaterial("Air"),
+				   GetName()+"/Core");
+  
   
   // Place the scintillator inside the extrusion volume
   new G4PVPlacement(0,                   // no rotation
 		    G4ThreeVector(0,coreOffset,0),     // position
 		    scintVolume,         // its logical volume
-		    GetName()+"/Core",   // its name
-		    extrusionVolume,     // its mother  volume
+		    GetName()+"/Scint",   // its name
+		    //extrusionVolume,     // its mother  volume
+		    logVolume,     // its mother  volume
 		    false,               // no boolean operations
 		    0);                  // copy number
 
+  // Place the core (air or water) inside the scintillator volume
+  new G4PVPlacement(0,                   // no rotation
+   		    G4ThreeVector(0,0,0),     // position
+   		    coreVolume,         // its logical volume
+   		    GetName()+"/Core",   // its name
+   		    scintVolume,     // its mother  volume
+   		    false,               // no boolean operations
+   		    0);                  // copy number
+
+
+  /*
   // Place the extrusion inside the logVolume
   new G4PVPlacement(0,                   // no rotation
 		    G4ThreeVector(0,coreOffset,0),     // position
@@ -348,18 +327,28 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
 		    logVolume,     // its mother  volume
 		    false,               // no boolean operations
 		    0);                  // copy number
+  */
   
 
   if( GetND280XML()->GetXMLInvisSuperFGD() ){
-    extrusionVolume->SetVisAttributes(G4VisAttributes::Invisible);
+    //extrusionVolume->SetVisAttributes(G4VisAttributes::Invisible);
     scintVolume    ->SetVisAttributes(G4VisAttributes::Invisible);
   }
   else{
-    extrusionVolume->SetVisAttributes(visAtt_Coat); 
+    //extrusionVolume->SetVisAttributes(visAtt_Coat); 
     scintVolume    ->SetVisAttributes(visAtt_Scint);
   }
-  logVolume      ->SetVisAttributes(G4VisAttributes::Invisible);
-  
+  logVolume ->SetVisAttributes(G4VisAttributes::Invisible);
+
+  coreVolume->SetVisAttributes(kGray+3);
+
+
+
+
+
+
+
+  /*
 
   //
   // Build the WLS fiber
@@ -375,7 +364,7 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   visAtt_Fiber->SetForceSolid(true);
   
   if (GetFiberRadius()>GetHoleRadius()) { 
-    G4Exception("ND280CubeScintConstructor::GetPiece",
+    G4Exception("ND280CellConstructor::GetPiece",
   		"MyCode0002",FatalException,
   		"Fiber radius > Hole radius !");
   }
@@ -456,33 +445,34 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
 		      false,               // no boolean operations
 		      0);           // copy number
 
-    
-  }
+		      }
+  */
+  
 
   return logVolume;
 }
 
 
   
-//  double ND280CubeScintConstructor::GetTop(void) {
+//  double ND280CellConstructor::GetTop(void) {
 //  double top = 0.001*mm;
 //if (fShape == eRectangle) top = fBase;
 //    return top;
 //}
 
-//double ND280CubeScintConstructor::GetCenterToCenter(void) {
+//double ND280CellConstructor::GetCenterToCenter(void) {
 //  return GetBase()/2 + GetTop()/2 + GetGap();
 //}
 
-void ND280CubeScintConstructor::SetBase(double base) {
+void ND280CellConstructor::SetBase(double base) {
     fBase = base;
 }
 
-void ND280CubeScintConstructor::SetHeight(double height) {
+void ND280CellConstructor::SetHeight(double height) {
     fHeight = height;
 }
 
-//void ND280CubeScintConstructor::SetSensitiveDetector(
+//void ND280CellConstructor::SetSensitiveDetector(
 //  G4VSensitiveDetector* s) {
 //  fSensitiveDetector = s;
 //}

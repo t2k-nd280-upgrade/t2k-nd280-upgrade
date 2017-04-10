@@ -9,24 +9,24 @@
 
 #include <G4Tubs.hh>
 
-#include "ND280SuperFGDConstructor.hh"
-#include "ND280CubeScintConstructor.hh"
+#include "ND280WAGASCIConstructor.hh"
+#include "ND280CellConstructor.hh"
 
 //
 // Davide Sgalaberna 28/3/17
 //
-// Constructor of the SuperFGD detector
+// Constructor of the WAGASCI detector
 //
 
-class ND280SuperFGDMessenger: public ND280ConstructorMessenger {
+class ND280WAGASCIMessenger: public ND280ConstructorMessenger {
 private:
-  ND280SuperFGDConstructor* fConstructor;
+  ND280WAGASCIConstructor* fConstructor;
   G4UIcmdWithADoubleAndUnit* fWidthCMD;
   G4UIcmdWithADoubleAndUnit* fHeightCMD;
   G4UIcmdWithADoubleAndUnit* fLengthCMD;
   
 public:
-    ND280SuperFGDMessenger(ND280SuperFGDConstructor* c) 
+    ND280WAGASCIMessenger(ND280WAGASCIConstructor* c) 
         : ND280ConstructorMessenger(c,"Control the off axis geometry."),
           fConstructor(c) {
         fWidthCMD = new G4UIcmdWithADoubleAndUnit(CommandName("width"),this);
@@ -46,7 +46,7 @@ public:
         fLengthCMD->SetUnitCategory("Length");
     }
 
-    virtual ~ND280SuperFGDMessenger() {
+    virtual ~ND280WAGASCIMessenger() {
         delete fWidthCMD;
         delete fHeightCMD;
         delete fLengthCMD;
@@ -68,12 +68,12 @@ public:
     }
 };
 
-ND280SuperFGDConstructor::~ND280SuperFGDConstructor() {;}
+ND280WAGASCIConstructor::~ND280WAGASCIConstructor() {;}
 
-void ND280SuperFGDConstructor::Init(void) {
+void ND280WAGASCIConstructor::Init(void) {
   
-  /// The edge of a cube of the SuperFGD detector 
-  fEdge = 1*cm;
+  /// The edge of a cube of the WAGASCI detector 
+  fEdge = 25*mm;
 
   // Number of cubes along each axis 
   fCubeNumX = 1;
@@ -87,135 +87,166 @@ void ND280SuperFGDConstructor::Init(void) {
   //SetFiberRadius(0.5*mm);
   //SetFiberMaterial("FiberCore");
 
-  // Position of the center of the SuperFGD detector
+  // Position of the center of the WAGASCI detector
   fPosX = 0.;
   fPosY = 0.;
   fPosZ = 0.;
   
-  AddConstructor(new ND280CubeScintConstructor("CubeScint", this)); 
+  AddConstructor(new ND280CellConstructor("/cellDirXYZ/cellDirXZ/cellDirZ/Cell", this)); 
   
-  SetMessenger(new ND280SuperFGDMessenger(this));
+  SetMessenger(new ND280WAGASCIMessenger(this));
 }
 
-G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
+G4LogicalVolume *ND280WAGASCIConstructor::GetPiece(void) {
 
   ND280RootPersistencyManager* InputPersistencyManager
     = ND280RootPersistencyManager::GetInstance();
   fND280XMLInput = InputPersistencyManager->GetXMLInput();
 
+  //
+  
+  G4LogicalVolume *logVolume
+    = new G4LogicalVolume(new G4Box(GetName(),
+				    GetWidth()/2.0,  
+				    GetHeight()/2.0,
+				    GetLength()/2.0),
+			  FindMaterial("Air"),
+			  GetName());
+  
+  // Build the plastic scintillator cell
+
+  ND280CellConstructor& cell
+    = Get<ND280CellConstructor>("/cellDirXYZ/cellDirXZ/cellDirZ/Cell");
+  
+  cell.SetHoleRadius(0.7*mm);
+  cell.SetFiberRadius(0.5*mm);
+  cell.SetCoatingThickness(0.25*mm);
+  cell.SetScintThickness(3.0*mm);
+  cell.SetGap(0.0*mm);
+  cell.SetSpaceLayerY(1.*mm);
+
+  cell.SetBase(fEdge);
+  cell.SetLength(fEdge);
+  cell.SetHeight(fEdge+
+   		 cell.GetScintThickness()+
+   		 cell.GetSpaceLayerY()); // height of 1 bar + horiz bar thick
+  
+  double shift = cell.GetHoleRadius();
+  G4ThreeVector HolePosAlongX = G4ThreeVector(0.    , shift , shift); // hole along X
+  G4ThreeVector HolePosAlongY = G4ThreeVector(shift , 0.    , -shift); // hole along Y
+  G4ThreeVector HolePosAlongZ = G4ThreeVector(-shift, -shift, 0.    ); // hole along Z
+  cell.SetHolePosition_X(HolePosAlongX); 
+  cell.SetHolePosition_Y(HolePosAlongY); 
+  cell.SetHolePosition_Z(HolePosAlongZ); 
+    
+  G4LogicalVolume* cell_logical = cell.GetPiece();
+
+
   // Set total size of the Super-FGD
 
-  double TotWidth  = fCubeNumX * fEdge; 
-  double TotHeight = fCubeNumY * fEdge; 
-  double TotLength = fCubeNumZ * fEdge; 
-
+  double TotWidth  = fCubeNumX * cell.GetBase(); 
+  double TotHeight = fCubeNumY * cell.GetHeight(); 
+  double TotLength = fCubeNumZ * cell.GetLength(); 
   SetWidth(TotWidth);
   SetLength(TotLength);
   SetHeight(TotHeight);
 
-  // Build the plastic scintillator cube
-
-  ND280CubeScintConstructor& cube
-    = Get<ND280CubeScintConstructor>("CubeScint");
   
-  cube.SetBase(fEdge);
-  cube.SetLength(fEdge);
-  cube.SetHeight(fEdge);  
-  cube.SetHoleRadius(0.7*mm);
-  cube.SetFiberRadius(0.5*mm);
-  cube.SetCoatingThickness(0.25*mm);
-  cube.SetGap(0.0*mm);
-  
-  double shift = cube.GetHoleRadius();
-  G4ThreeVector HolePosAlongX = G4ThreeVector(0.    , shift , shift); // hole along X
-  G4ThreeVector HolePosAlongY = G4ThreeVector(shift , 0.    , -shift); // hole along Y
-  G4ThreeVector HolePosAlongZ = G4ThreeVector(-shift, -shift, 0.    ); // hole along Z
-  cube.SetHolePosition_X(HolePosAlongX); 
-  cube.SetHolePosition_Y(HolePosAlongY); 
-  cube.SetHolePosition_Z(HolePosAlongZ); 
-
-  G4LogicalVolume* cube_logical = cube.GetPiece();
-  
-  //G4cout << "Cube base = " << cube.GetBase() << G4endl;
-  //G4cout << " mass="<<cube_logical->GetMass()/kg   <<" kg" << G4endl;
+  //G4cout << "Cell base = " << cell.GetBase() << G4endl;
+  //G4cout << " mass="<<cell_logical->GetMass()/kg   <<" kg" << G4endl;
 
 
   
-  // Build bar Z of cubes
+  // Build bar Z of cells
   
-  G4VSolid *cubeDirZ_solid 
-    = new G4Box(GetName()+"/planeZ_solid", 
-		cube.GetBase()/2, 
-		cube.GetHeight()/2, 
+  G4VSolid *cellDirZ_solid 
+    = new G4Box(GetName()+"/cellDirZ_solid", 
+		cell.GetBase()/2, 
+		cell.GetHeight()/2, 
 		GetLength()/2); 
   
-  G4LogicalVolume *cubeDirZ_logical 
-    = new G4LogicalVolume(cubeDirZ_solid,
+  G4LogicalVolume *cellDirZ_logical 
+    = new G4LogicalVolume(cellDirZ_solid,
 			  FindMaterial("Air"),
-			  GetName()+"/cubeDirZ");
+			  GetName()+"/cellDirZ");
   
-  cubeDirZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
+  cellDirZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
   
-  G4PVReplica *cubeDirZ
-    = new G4PVReplica(GetName()+"/cubeDirZ",    // its name
-		      cube_logical, // its logical volume
-		      cubeDirZ_logical,          // its mother volume
+  G4PVReplica *cellDirZ
+    = new G4PVReplica(GetName()+"/cellDirZ",    // its name
+		      cell_logical, // its logical volume
+		      cellDirZ_logical,          // its mother volume
 		      kZAxis,             // axis along replication applied
 		      fCubeNumZ,          // number of replicated volumes
-		      cube.GetLength()    // width of single replica along axis 
+		      cell.GetLength()    // width of single replica along axis 
 		      );
   
   
-  // Build layer XZ of cubes
+  // Build layer XZ of cells
   
-  G4VSolid *cubeDirXZ_solid 
-    = new G4Box(GetName()+"/cubeDirXZ_solid", 
+  G4VSolid *cellDirXZ_solid 
+    = new G4Box(GetName()+"/cellDirXZ_solid", 
 		GetWidth()/2, 
-		cube.GetHeight()/2, 
+		cell.GetHeight()/2, 
 		GetLength()/2); 
   
-  G4LogicalVolume *cubeDirXZ_logical 
-    = new G4LogicalVolume(cubeDirXZ_solid,
+  G4LogicalVolume *cellDirXZ_logical 
+    = new G4LogicalVolume(cellDirXZ_solid,
 			  FindMaterial("Air"),
-			  GetName()+"/cubeDirXZ");
+			  GetName()+"/cellDirXZ");
 
-  cubeDirXZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
+  cellDirXZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
   
-  G4PVReplica *cubeDirXZ
-    = new G4PVReplica(GetName()+"/cubeDirXZ",    // its name
-		      cubeDirZ_logical, // its logical volume
-		      cubeDirXZ_logical,          // its mother volume
+  G4PVReplica *cellDirXZ
+    = new G4PVReplica(GetName()+"/cellDirXZ",    // its name
+		      cellDirZ_logical, // its logical volume
+		      cellDirXZ_logical,          // its mother volume
 		      kXAxis,             // axis along replication applied
 		      fCubeNumX,          // number of replicated volumes
-		      cube.GetBase()    // width of single replica along axis 
+		      cell.GetBase()    // width of single replica along axis 
 		      );
   
   
-  // Build box XYZ of cubes
+  // Build box XYZ of cells
   
-  G4VSolid *cubeDirXYZ_solid 
-    = new G4Box(GetName()+"/cubeDirXYZ_solid", 
+  G4VSolid *cellDirXYZ_solid 
+    = new G4Box(GetName()+"/cellDirXYZ_solid", 
 		GetWidth()/2, 
 		GetHeight()/2, 
 		GetLength()/2); 
   
-  G4LogicalVolume *cubeDirXYZ_logical 
-    = new G4LogicalVolume(cubeDirXYZ_solid,
+  G4LogicalVolume *cellDirXYZ_logical 
+    = new G4LogicalVolume(cellDirXYZ_solid,
 			  FindMaterial("Air"),
-			  GetName()+"/cubeDirXYZ");
+			  GetName()+"/cellDirXYZ");
 
-  cubeDirXYZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
+  cellDirXYZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
   
-  G4PVReplica *cubeDirXYZ
-    = new G4PVReplica(GetName()+"/cubeDirXYZ",    // its name
-		      cubeDirXZ_logical, // its logical volume
-		      cubeDirXYZ_logical,          // its mother volume
+  G4PVReplica *cellDirXYZ
+    = new G4PVReplica(GetName()+"/cellDirXYZ",    // its name
+		      cellDirXZ_logical, // its logical volume
+		      cellDirXYZ_logical,          // its mother volume
 		      kYAxis,             // axis along replication applied
 		      fCubeNumY,          // number of replicated volumes
-		      cube.GetHeight()    // width of single replica along axis 
+		      cell.GetHeight()    // width of single replica along axis 
 		      );
+
+  // new G4PVPlacement(
+  // 		    0, // rotation
+  // 		    G4ThreeVector(0.0,0.0,0.0), // position       
+  // 		    cellDirXYZ_logical, // logical volume
+  // 		    GetName(), // name       
+  // 		    logVolume, // mother volume
+  // 		    false,   // no boolean operations
+  // 		    CubeIdx    // copy number
+  // 		    );
+
+ 
+
+
+
   
-  return cubeDirXYZ_logical;
+  return cellDirXYZ_logical;
     
 
 
@@ -249,13 +280,6 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
 
   /*
     
-  G4LogicalVolume *logVolume
-    = new G4LogicalVolume(new G4Box(GetName(),
-				    GetWidth()/2.0,  
-				    GetHeight()/2.0,
-				    GetLength()/2.0),
-			  FindMaterial("Air"),
-			  GetName());
 
   */
   
@@ -311,7 +335,7 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
 			    GetName()+"/FiberZ");
 
     
-    if( GetND280XML()->GetXMLInvisSuperFGD() ){
+    if( GetND280XML()->GetXMLInvisWAGASCI() ){
       fiberAlongXVolume->SetVisAttributes(G4VisAttributes::Invisible);
       fiberAlongYVolume->SetVisAttributes(G4VisAttributes::Invisible);
       fiberAlongZVolume->SetVisAttributes(G4VisAttributes::Invisible);
