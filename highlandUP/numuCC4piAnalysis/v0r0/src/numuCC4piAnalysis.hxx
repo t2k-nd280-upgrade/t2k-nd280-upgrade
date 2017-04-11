@@ -125,8 +125,12 @@ public:
     selAll_ToF_true_mass,
     selAll_mom,
     selAll_true_mom,
+    selAll_ToF_det_used,
     selAll_PDG,
     selAll_nTracks,
+    selAll_TPC_Edep,
+    selAll_TPC_Length,
+    selAll_TPC_dedx,
     
     /*
       selmu_1hit_pos,

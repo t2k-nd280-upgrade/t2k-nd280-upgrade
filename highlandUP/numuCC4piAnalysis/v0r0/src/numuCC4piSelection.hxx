@@ -67,7 +67,11 @@ public:
     All_ToF_true_mass.clear();
     All_mom.clear();
     All_true_mom.clear();
+    All_ToF_det_used.clear();
     All_PDG.clear();
+    All_TPC_Edep.clear();
+    All_TPC_Length.clear();
+    All_TPC_dedx.clear();
     TPC_det = SubDetId::kInvalid;
     ToF_mass = ToF_true_mass = -999.;
   }
@@ -90,7 +94,11 @@ public:
     All_ToF_true_mass.clear();
     All_mom.clear();
     All_true_mom.clear();
+    All_ToF_det_used.clear();
     All_PDG.clear();
+    All_TPC_Edep.clear();
+    All_TPC_Length.clear();
+    All_TPC_dedx.clear();
     TPC_det = SubDetId::kInvalid;
     ToF_mass = ToF_true_mass = -999.;
   }
@@ -125,7 +133,11 @@ public:
   std::vector<float> All_ToF_true_mass;
   std::vector<float> All_mom;
   std::vector<float> All_true_mom;
+  std::vector<int>   All_ToF_det_used;
   std::vector<int>   All_PDG;
+  std::vector<float> All_TPC_Edep;
+  std::vector<float> All_TPC_Length;
+  std::vector<float> All_TPC_dedx;
   
 };
 

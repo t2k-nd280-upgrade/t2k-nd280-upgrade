@@ -185,7 +185,7 @@ bool SubDetId::IsECal(SubDetId::SubDetEnum det){
 }
     
 bool SubDetId::IsTOF(SubDetId::SubDetEnum det){
-  return ((det <= SubDetId::kToFTopUp && det >= SubDetId::kToFFrontUp) || det == SubDetId::kToF);
+  return ((det <= SubDetId::kToFFrontUp && det >= SubDetId::kToFTopDown) || det == SubDetId::kToF);
 }
 
 bool SubDetId::IsP0D(SubDetId::SubDetEnum det){

@@ -32,11 +32,9 @@ void MomRangeCorrection::Apply(AnaSpillC& spillBB) {
       track->SmearedMomentum = track->Momentum;
       track->MomentumError = 0;
 
-      if (!IsRelevantTrack(*track)) {
-	//if (track->Momentum>50) std::cout << "not: " << track->Momentum << " " << track->SmearedMomentum << std::endl;
+      if (!IsRelevantTrack(*track))
 	continue;
-      }
-
+ 
       AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
       double length = 0.;
 
@@ -53,7 +51,6 @@ void MomRangeCorrection::Apply(AnaSpillC& spillBB) {
 	double Momentum_dif = track->Momentum-TPCSegment->Momentum;
 	track->SmearedMomentum = TPCSegment->SmearedMomentum + Momentum_dif;
 	track->MomentumError = TPCSegment->MomentumError;
-	//if (track->Momentum>50) std::cout << " ok: " << track->Momentum << " " << track->SmearedMomentum << std::endl;
 
       }
 
@@ -74,8 +71,6 @@ double MomRangeCorrection::SmearMomentum( AnaTPCParticleB *cross, ParticleId::Pa
   double p_smeared     = (1/pt_iv_smeared)*(1/u_t);
   
   cross->MomentumError=sigma;
-
-  //if (cross->Momentum > 50) std::cout << "In SmearMomentum(): " << cross->Momentum << " " << p_smeared << " " << sigma << std::endl;
   return p_smeared;
 }
 

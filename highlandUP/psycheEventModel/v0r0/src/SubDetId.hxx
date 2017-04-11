@@ -30,27 +30,27 @@ public:
         kForwTPC3,       
         kTPCDown1,
         kTPCDown2,
-        kTarget1,
+        kTarget1,  //7
         kTarget2,
         kFGD1,
         kFGD2,
         kP0D,
-        kDsECal,
+        kDsECal,  //12
         kP0DECal,
         kBrlECal,
-        kToFTopDown,
+        kToFTopDown, //15
         kToFTopUp,
         kToFBotDown,
         kToFBotUp,
         kToFLeftDown,
-        kToFLeftUp,
+        kToFLeftUp,  //20
         kToFRightDown,
         kToFRightUp,
         kToFBackDown,
         kToFBackUp,
         kToFFrontDown,
         kToFFrontUp,
-        kInvalidSubdetector,
+        kInvalidSubdetector, //27
         kTPC,
 	kTarget,
         kFGD,

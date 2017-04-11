@@ -790,6 +790,27 @@ namespace numuCC4piUtils{
       box->All_true_mom.push_back(true_mom);
       box->All_PDG.push_back(track_i->GetTrueParticle()->PDG);
 
+      SubDetId::SubDetEnum det1 = SubDetId::GetSubdetectorEnum(p1->Detectors);
+      SubDetId::SubDetEnum det2 = SubDetId::GetSubdetectorEnum(p2->Detectors);
+      if (SubDetId::IsTOF(det1))
+	box->All_ToF_det_used.push_back(det1);
+      else if (SubDetId::IsTOF(det2))
+	box->All_ToF_det_used.push_back(det2);
+      else 
+	box->All_ToF_det_used.push_back(-1);
+
+      AnaTPCParticleB* tpc_seg = static_cast<AnaTPCParticleB*>(anaUtils::GetSegmentWithMostNodesInClosestTPC(*track_i));
+      if (tpc_seg){
+	box->All_TPC_Edep.push_back(tpc_seg->EDeposit);
+	box->All_TPC_Length.push_back(tpc_seg->SegLength);
+	box->All_TPC_dedx.push_back(tpc_seg->dEdxMeas);
+      }
+      else{
+	box->All_TPC_Edep.push_back(-1);
+	box->All_TPC_Length.push_back(-1);
+	box->All_TPC_dedx.push_back(-1);
+      }
+
     }
 
     // ==========

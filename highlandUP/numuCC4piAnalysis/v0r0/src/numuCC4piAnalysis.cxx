@@ -219,6 +219,10 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVarVF(output(), selAll_mom,            "", selAll_nTracks);
   AddVarVF(output(), selAll_true_mom,       "", selAll_nTracks);
   AddVarVI(output(), selAll_PDG,            "", selAll_nTracks);
+  AddVarVI(output(), selAll_ToF_det_used,   "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_Edep,       "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_Length,     "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_dedx,       "", selAll_nTracks);
 
   //--- Pion multiplicity
   
@@ -400,6 +404,10 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVar(selAll_PDG,           cc4pibox().All_PDG[i]);
       output().FillVectorVar(selAll_mom,           cc4pibox().All_mom[i]);
       output().FillVectorVar(selAll_true_mom,      cc4pibox().All_true_mom[i]);
+      output().FillVectorVar(selAll_ToF_det_used,  cc4pibox().All_ToF_det_used[i]);
+      output().FillVectorVar(selAll_TPC_Edep,      cc4pibox().All_TPC_Edep[i]);
+      output().FillVectorVar(selAll_TPC_Length,    cc4pibox().All_TPC_Length[i]);
+      output().FillVectorVar(selAll_TPC_dedx,      cc4pibox().All_TPC_dedx[i]);
       output().IncrementCounter(selAll_nTracks);
     }
 
