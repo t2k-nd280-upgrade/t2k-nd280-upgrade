@@ -138,6 +138,21 @@ private:
   std::vector<RP::Key>  fTPCMODULES6;
   std::vector<RP::Key>  fTPCMODULES7;
 
+
+
+  std::vector<RP::Key>  fTOFMODULES1;
+  std::vector<RP::Key>  fTOFMODULES2;
+  std::vector<RP::Key>  fTOFMODULES3;
+  std::vector<RP::Key>  fTOFMODULES4;
+  std::vector<RP::Key>  fTOFMODULES5;
+  std::vector<RP::Key>  fTOFMODULES6;
+  std::vector<RP::Key>  fTOFMODULES7;
+  std::vector<RP::Key>  fTOFMODULES8;
+  std::vector<RP::Key>  fTOFMODULES9;
+  std::vector<RP::Key>  fTOFMODULES10;
+  std::vector<RP::Key>  fTOFMODULES11;
+  std::vector<RP::Key>  fTOFMODULES12;
+
   std::vector<RP::Key>  fFGDMODULES1;
   std::vector<RP::Key>  fFGDMODULES2;
   std::vector<RP::Key>  fTARGET1;

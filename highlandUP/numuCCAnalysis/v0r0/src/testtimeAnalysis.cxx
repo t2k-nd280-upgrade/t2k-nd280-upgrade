@@ -10,8 +10,11 @@
 #include "MomRangeCorrection.hxx"
 #include "TruthUtils.hxx"
 #include "PIDCorrection.hxx"
-#include "TargetEffCorrection.hxx"
+//#include "TargetEffCorrection.hxx"
 #include "PIDUtils.hxx"
+#include "ToFUtils.hxx"
+#include "AnaRecPackManager.hxx"
+
 //********************************************************************
 testtimeAnalysis::testtimeAnalysis(AnalysisAlgorithm* ana) : baseAnalysis(ana) {
 //********************************************************************
@@ -28,7 +31,7 @@ bool testtimeAnalysis::Initialize() {
   if (!baseAnalysis::Initialize()) return false;
 
   // Minimum accum level to save event into the output tree
-  SetMinAccumCutLevelToSave(ND::params().GetParameterI("ndupAnalysis.MinAccumLevelToSave"));
+  SetMinAccumCutLevelToSave(ND::params().GetParameterI("numuCCAnalysis.MinAccumLevelToSave"));
 
   // Define categories
   anaUtils::AddStandardCategories();
@@ -56,7 +59,7 @@ void testtimeAnalysis::DefineCorrections() {
   baseAnalysis::DefineCorrections();
   corr().AddCorrection("mom_corr",          new MomRangeCorrection(SubDetId::kTPC));
   corr().AddCorrection("pid_corr",          new PIDCorrection(SubDetId::kTPC));
-  corr().AddCorrection("target_corr",          new TargetEffCorrection(SubDetId::kTarget));
+  //corr().AddCorrection("target_corr",          new TargetEffCorrection(SubDetId::kTarget));
 
 }
 
@@ -90,72 +93,6 @@ void testtimeAnalysis::DefineMicroTrees(bool addBase) {
 
   // Variables from baseAnalysis (run, event, ...)
   if (addBase) baseAnalysis::DefineMicroTrees(addBase);
-  AddVarI(output(), Nu_pdg,         "nu pdg");
-  AddVarF(output(), Nu_mom,         "nu momentum");
-  AddVarI(output(), reaction_code,         "reaction_code");
-  AddVarI(output(), current_code,         "current_code");
-
-  AddVar4VF(output(), vertex_position,         "vertex position");
-
-  AddVarVI(output(), muon_pdg,         "muon pdg",true_part);
-  AddVarVF(output(), muon_SDLength,         "muon SD Length",true_part);
-  AddVarVF(output(), muon_mom,         "muon momentum",true_part);
-  AddVarVF(output(), muon_costheta,         "muon costheta",true_part);
-  AddVarVF(output(), muon_cosphi,         "muon cosphi",true_part);
-  AddVarVF(output(), muon_theta,         "muon theta",true_part);
-  AddVarVF(output(), muon_phi,         "muon phi",true_part);
-  AddVarVF(output(), muon_time,         "muon phi",true_part);
-  AddVarVF(output(), muon_time_l,         "muon phi",true_part);
-  AddVarVF(output(), muon_range,         "muon phi",true_part);
-
- // AddVarVF(output(), muon_length,         "muon phi",true_part);
-
-  AddVarVF(output(), muon_pidlikelihood1,         "muon_pidlikelihood1",true_part);
-  AddVarVF(output(), muon_pidlikelihood2,         "muon_pidlikelihood2",true_part);
-  AddVarVF(output(), muon_pidlikelihood3,         "muon_pidlikelihood3",true_part);
-  AddVarVF(output(), muon_pidlikelihood4,         "muon_pidlikelihood4",true_part);
- AddVarVF(output(), mip_pidlikelihood,         "mip_pidlikelihood",true_part);
-
-  AddVarVF(output(), muon_charge,         "muon charge",true_part);
-  AddVarVF(output(), muon_ekin,         "muon kinetic energy",true_part);
-  AddVarVI(output(), muon_stopped,         "muon is length cut in tpc",true_part);
-  AddVarVI(output(), muon_tpc,         "muon is length cut in tpc",true_part);
-
-  AddVarMF(output(), muon_entrancepos,         "muon is length cut in tpc",true_part,-3000,4);
-  AddVarMF(output(), muon_exitpos,         "muon is length cut in tpc",true_part,-3000,4);
-
-  AddVarVI(output(), muon_istarget1,         "muon is length cut in target1",true_part);
-  AddVarVI(output(), muon_istarget2,         "muon is length cut in target2",true_part);
- AddVarMF(output(), tpc_pull_muon,         "true_tpc_pull_muon", true_part, -4000, 7);
-  AddVarMF(output(), tpc_pull_proton,         "true_tpc_pull_proton", true_part, -4000, 7);
-  AddVarMF(output(), tpc_pull_pion,         "true_tpc_pull_pion", true_part, -4000, 7);
-  AddVarMF(output(), tpc_pull_electron,         "true_tpc_pull_electron", true_part, -4000, 7);
- 
-//  AddVarMF(output(), muon_tpc_entrancepos,    "muon entrance position in tpc", tpc_muon, -300, 4);
-
- // AddVarMF(output(), muon_tpc_exitpos,    "muon exit position in tpc", tpc_muon, -300, 4);
- // AddVarVI(output(), muon_tpc_det,         "muon tpc det id", tpc_muon);
- // AddVarVF(output(), muon_LYZTPC,         "muon LYTPC", tpc_muon);
- 
-//  AddVarVF(output(), muon_tpc_length,         "muon tpc segmentLength", tpc_muon);
-//  AddVarVF(output(), muon_tpc_EDep,         "muon tpc EDeposit", tpc_muon);/
-//  AddVarVF(output(), muon_tpc_smeared_momentum,         "muon tpc smeared momentum", tpc_muon);
- // AddVarVF(output(), muon_tpc_momentum_error,         "muon tpc smeared momentum error", tpc_muon);
- // AddVarVF(output(), tpc_pull_muon,         "muon tpc pull ", tpc_muon);
- // AddVarVF(output(), muon_tpc_momentum,         "muon tpc true momentum", tpc_muon);
-
-//  AddVarF(output(), muon_EDep_Target1,         "muon EDep in Target1");
- // AddVarF(output(), muon_EDep_Target2,         "muon EDep in Target2");
- // AddVarF(output(), muon_LTarget1,         "muon LTarget1");
- // AddVarF(output(), muon_LTarget2,         "muon LTarget2");
- // AddVarI(output(), muon_isLastinTarget1,         " is the muon track end postion in target1");
-//  AddVarI(output(), muon_isLastinTarget2,         "is the muon track end postion in target2");
-
-//  AddVar4VF(output(), muon_target1_entrancepos,         "muon target1 entrance position");
-//  AddVar4VF(output(), muon_target1_exitpos,         "muon target1 exit position");
-//  AddVar4VF(output(), muon_target2_entrancepos,         "muon target2 entrance position");
-  //AddVar4VF(output(), muon_target2_exitpos,         "muon target2 exit position");
-
 
 }
 
@@ -169,6 +106,26 @@ void testtimeAnalysis::DefineTruthTree() {
   AddVarF(output(), true_Nu_mom,         "nu momentum");
   AddVarI(output(), true_reaction_code,         "reaction_code");
   AddVar4VF(output(), true_vertex_position,         "vertex position");
+  AddVarVI(output(), true_pdg,         "muon charge",true_in);
+  AddVarVF(output(), true_mom,         "muon charge",true_in);
+  AddVarVI(output(), true_parentID,         "muon charge",true_in);
+  AddVarVF(output(), true_costheta,         "muon charge",true_in);
+  AddVarVF(output(), true_length_BU,         "muon charge",true_in);
+  AddVarVF(output(), true_length_FU,         "muon charge",true_in);
+  AddVarVF(output(), true_length_BcD,         "muon charge",true_in);
+  AddVarVF(output(), true_length_LU,         "muon charge",true_in);
+  AddVarVF(output(), true_length_UE,         "muon charge",true_in);
+  AddVarVF(output(), true_mass_BU,         "muon charge",true_in);
+  AddVarVF(output(), true_mass_FU,         "muon charge",true_in);
+  AddVarVF(output(), true_mass_BcD,         "muon charge",true_in);
+  AddVarVF(output(), true_mass_LU,         "muon charge",true_in);
+  AddVarVF(output(), true_mass_UE,         "muon charge",true_in);
+  AddVarVF(output(), true_time_diff_BU,         "muon charge",true_in);
+  AddVarVF(output(), true_time_diff_FU,         "muon charge",true_in);
+  AddVarVF(output(), true_time_diff_BcD,         "muon charge",true_in);
+  AddVarVF(output(), true_time_diff_LU,         "muon charge",true_in);
+  AddVarVF(output(), true_time_diff_UE,         "muon charge",true_in);
+
 
 
 
@@ -183,127 +140,6 @@ void testtimeAnalysis::FillMicroTrees(bool addBase) {
 
   // Variables from baseAnalysis (run, event, ...)
   if (addBase) baseAnalysis::FillMicroTreesBase(addBase);
-  if (box().Vertex) {
-    output().FillVar(Nu_pdg, (box().Vertex->TrueVertex)->NuPDG);
-    AnaTrueVertex *vtx = dynamic_cast<AnaTrueVertex*>(box().Vertex->TrueVertex);
-    output().FillVar(Nu_mom, (box().Vertex->TrueVertex)->NuMom);
-
-    output().FillVar(reaction_code, vtx->ReacCode);
-    output().FillVar(current_code, anaUtils::GetReacAll(vtx->ReacCode));
-    output().FillVectorVarFromArray(vertex_position, (box().Vertex)->Position, 4);
-    std::vector<AnaParticleB*> Particles = box().Vertex->ParticlesVect;
-    AnaSpill& spill = GetSpill();
-    for (UInt_t i = 0; i < spill.Bunches.size(); i++) {
-      AnaBunch* bunch = static_cast<AnaBunch*>(spill.Bunches[i]);
-      for (UInt_t j = 0; j < bunch->Particles.size(); j++) {
-
-        AnaTrackB* track = static_cast<AnaTrackB*>(bunch->Particles[j]);
-        AnaTrueParticle *trueP = dynamic_cast<AnaTrueParticle*>(track->GetTrueParticle());
-
-
-        ///   output().FillVectorVar(muon_pdg, trueP->PDG);
-        // output().FillVectorVar(muon_charge, trueP->Charge);
-        // output().FillVectorVar(muon_mom, track->SmearedMomentum);
-        // output().FillVectorVar(muon_costheta, (track)->DirectionStart[2]);
-        // output().FillVectorVar(muon_theta, (float)acos((track)->DirectionStart[2]));
-        // output().FillVectorVar(muon_SDLength, trueP->Length);
-
-        //  output().FillVectorVar(muon_istpccut, cutUtils::DeltaLYZTPCCut(*track));
-//      output().FillVectorVar(muon_istarget1, (int)cutUtils::DeltaLYZTargetCut(*track, SubDetId::kTarget1));
-        // float tmpp = -9999;
-        //float tmpd = 9999;
-        //  int ip=-1;
-        //bool tpcnon=-999;
-        /*        for (int i = 0; i < trueP->DetCrossingsVect.size(); i++) {
-                  if (SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2 || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2 || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)  )  ) ) {
-                    tpcnon=0;
-                  }else{
-                    tpcnon=1;
-                  }
-                  if (trueP->DetCrossingsVect[i]->ExitPosition[3] > tmpp ) {
-                    tmpp = trueP->DetCrossingsVect[i]->ExitPosition[3];
-                    ip=i;
-                  }
-                  if (trueP->DetCrossingsVect[i]->EntrancePosition[3] < tmpd) {
-                    tmpd = trueP->DetCrossingsVect[i]->EntrancePosition[3];
-
-                  }
-
-                  // output().IncrementCounterForVar(true_target1_det);
-                }*/
-
-        //  output().FillVectorVar(muon_time, tmpp - tmpd);
-        //  output().FillVectorVar(muon_stopped, trueP->stopped);
-        //  output().FillVectorVar(muon_tpc,tpcnon);
-
-        // output().FillMatrixVarFromArray(muon_entrancepos, track->PositionStart, 4);
-        // if (ip >= 0) {
-        // output().FillMatrixVarFromArray(muon_exitpos, trueP->DetCrossingsVect[ip]->ExitPosition, 4);
-        //}
-        // Float_t range=anaUtils::ScalarProduct(trueP->DetCrossingsVect[ip]->ExitPosition,track->PositionStart,3);
-        //  output().FillVectorVar(muon_range, range);
-        /*
-                double mass=0;
-                if     (trueP->PDG == 211)  mass = 139.570; // pi+-
-                else if (trueP->PDG == 13)   mass = 105.658; // muon
-                else if (trueP->PDG == 2212) mass = 938.272; // proton
-                else if (trueP->PDG == 11)   mass = 0.511; // electron
-
-                double bg =trueP->Momentum / mass;
-                double betta = bg / sqrt(1. + bg * bg);
-                float v=betta*3*1000;*/
-        //  if (trueP->Length) {
-        //   if(trueP->PDG==2212 && trueP->ParentID==0){
-        //  std::cout<<"trueP->Length/v"<<trueP->Length/v<<std::endl;
-        // }
-        //  output().FillVectorVar(muon_time_l, (float)trueP->Length/v);
-        // }
-
-        //    output().FillVectorVar(muon_istarget2, (int)cutUtils::DeltaLYZTargetCut(*track, SubDetId::kTarget2));
-        //   Float_t PIDLikelihood[4];
-//          std::cout << "tpc" << std::endl;
-        Float_t pulls[4];
-
-        //  anaUtils::GetPIDLikelihood(*track, PIDLikelihood, 0);
-        /* output().FillVectorVar(mip_pidlikelihood, (PIDLikelihood[0] + PIDLikelihood[3]) / (1 - PIDLikelihood[2]));
-         output().FillVectorVar(muon_pidlikelihood1, PIDLikelihood[0]);
-         output().FillVectorVar(muon_pidlikelihood2, PIDLikelihood[1]);
-         output().FillVectorVar(muon_pidlikelihood3, PIDLikelihood[2]);
-         output().FillVectorVar(muon_pidlikelihood4, PIDLikelihood[3]);*/
-//        if (trueP->PDG == 13) {
-  //        for (int subdet = 0; subdet < 7; subdet++) {
-    //        AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( *track, static_cast<SubDetId::SubDetEnum >(subdet)));
-      //      if (TPCSegment) {
-              //      output().FillVectorVar(muon_tpc_det, subdet);
-//
-        //      anaUtils::ComputeTPCPull(*TPCSegment,*track);
-//        output().FillVectorVar(tpc_pull_muon, pulls[0]);
-              //   output().FillMatrixVar(tpc_pull_muon, pulls[0], -1, subdet);
-              //  output().FillMatrixVar(tpc_pull_electron, pulls[1], -1, subdet);
-              //  output().FillMatrixVar(tpc_pull_pion, pulls[3], -1, subdet);
-              // output().FillMatrixVar(tpc_pull_proton, pulls[2], -1, subdet);
-
-
-          //  }
-
-         // }
-              for (int subdet = 0; subdet < 7; subdet++) {
-
-              for (int i = 0; i < trueP->DetCrossingsVect.size(); i++) {
-               // std::cout<<"trutP"<<std::endl;
-                if(SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2) ||SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueP->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)  ){
-                  anaUtils::ComputeTPCPull(*trueP->DetCrossingsVect[i], *trueP, pulls);
-              
-                }
-              }
-
-        }
-
-        //  output().IncrementCounterForVar(muon_pdg);
-
-      }
-    }
-  }
 // Muon information
 }
 
@@ -333,169 +169,191 @@ void testtimeAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
   // workaround to use the same code for the antuNumu package
   // calling testtimeAnalysis::FillTruthTreeBase(vtx,true)
   bool IsAntinu = false;
+
   std::vector<AnaTrueParticleB*> TrueParticles = vtx.TrueParticlesVect;
   output().FillVar(true_Nu_pdg, vtx.NuPDG);
   output().FillVar(true_Nu_mom, vtx.NuMom);
 
   output().FillVar(true_reaction_code, vtx.ReacCode);
   output().FillVectorVarFromArray(true_vertex_position, vtx.Position, 4);
-/*
   for (Int_t i = 0; i < TrueParticles.size(); i++) {
-
     AnaTrueParticleB* trueTrack = dynamic_cast<AnaTrueParticleB*>(TrueParticles[i]);
-    output().FillVectorVar(true_parentID, TrueParticles[i]->ParentID);
     output().FillVectorVar(true_pdg, trueTrack->PDG);
     output().FillVectorVar(true_mom, trueTrack->Momentum);
-    output().FillVectorVar(true_Edep, trueTrack->EDeposit);
-    output().FillVectorVar(true_SDlength, trueTrack->Length);
     output().FillVectorVar(true_costheta, trueTrack->CosTheta);
-    output().FillVectorVar(true_ekin, trueTrack->EKin);
-    output().FillVectorVar(true_charge, trueTrack->Charge);
-    Float_t pulls[4];
+    double mom=trueTrack->Momentum;
+    std::cout<<trueTrack->PDG<<" "<<trueTrack->Charge<<std::endl;
+      if (cutUtils::FiducialCut(trueTrack->Position, SubDetId::kTarget1)) {
 
+    double  DeltaLYZ = -999;
     for (int i = 0; i < trueTrack->DetCrossingsVect.size(); i++) {
+        //FrontUP
+      std::cout<<trueTrack->DetCrossingsVect[i]->Detector_name<<std::endl;
+        if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kToFFrontUp)) {
+            std::cout<<"front ToF"<<std::endl;
+                     double dx = trueTrack->Position[0]-trueTrack->DetCrossingsVect[i]->EntrancePosition[0];
+          double dy = trueTrack->Position[1]-trueTrack->DetCrossingsVect[i]->EntrancePosition[1];
+          double dz = trueTrack->Position[2]-trueTrack->DetCrossingsVect[i]->EntrancePosition[2];
+          double l_curr_straight = sqrt(dx*dx + dy*dy + dz*dz); 
 
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTarget1)   ) {
+         // double mom = anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i]));
+          TVector3 point(trueTrack->DetCrossingsVect[i]->EntrancePosition[0], trueTrack->DetCrossingsVect[i]->EntrancePosition[1], trueTrack->DetCrossingsVect[i]->EntrancePosition[2]);
+          TVector3 normal(0, 0, 1);
+          RP::State state1;
 
-        output().FillVectorVar(true_target1_det, SubDetId::GetTarget(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_target1_length,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        output().FillVectorVar(true_target1_Edep, trueTrack->DetCrossingsVect[i]->EDeposit);
-        // output().IncrementCounterForVar(true_target1_det);
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTarget2)) {
+          double length = -9999;
+          double time_diff = -9999;
+          time_diff = trueTrack->DetCrossingsVect[i]->EntrancePosition[3] - trueTrack->Position[3];
+          if (ND::tman().AnaTrueParticleB_to_RPState(*trueTrack, state1)) {
+                      //  std::cout<<"convert "<<l_curr_straight<<std::endl;
 
-        output().FillVectorVar(true_target2_det, SubDetId::GetTarget(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_target2_length,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        output().FillVectorVar(true_target2_Edep, trueTrack->DetCrossingsVect[i]->EDeposit);
-        // output().IncrementCounterForVar(true_target2_det);
-      }
+            if (ND::tman().PropagateToSurface( point, normal, state1, length)) {
+                        //    std::cout<<"length "<<length<<std::endl;
 
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1)) {
-        output().FillVectorVar(true_tpcup1_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_tpcup1_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 0);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 0);
+              output().FillVectorVar(true_length_FU, (float)length);
+              output().FillVectorVar(true_time_diff_FU, (float)time_diff);
+              double  mass = ToFUtils::GetToFMass(mom, length, time_diff);
+              output().FillVectorVar(true_mass_FU, (float)mass);
 
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 0);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 0);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 0);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 0);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 0);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 0);
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2)) {
-        output().FillVectorVar(true_tpcup2_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_tpcup2_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 1);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 1);
+            };
+          }
 
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 1);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 1);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 1);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 1);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 1);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 1);
+        }
 
+        //Bottom up
+        if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kToFBotUp)) {
+           std::cout<<"bot ToF"<<std::endl;
+                     double dx = trueTrack->Position[0]-trueTrack->DetCrossingsVect[i]->EntrancePosition[0];
+          double dy = trueTrack->Position[1]-trueTrack->DetCrossingsVect[i]->EntrancePosition[1];
+          double dz = trueTrack->Position[2]-trueTrack->DetCrossingsVect[i]->EntrancePosition[2];
+          double l_curr_straight = sqrt(dx*dx + dy*dy + dz*dz); 
 
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1)) {
-        output().FillVectorVar(true_tpcdown1_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_tpcdown1_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 2);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 2);
+         //// double mom = anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i]));
+          TVector3 point(trueTrack->DetCrossingsVect[i]->EntrancePosition[0], trueTrack->DetCrossingsVect[i]->EntrancePosition[1], trueTrack->DetCrossingsVect[i]->EntrancePosition[2]);
+          TVector3 normal(0, 1, 0);
+          RP::State state1;
+          double length = -9999;
+          double time_diff = -9999;
+          time_diff = trueTrack->DetCrossingsVect[i]->EntrancePosition[3] - trueTrack->Position[3];
+          if (ND::tman().AnaTrueParticleB_to_RPState(*trueTrack, state1)) {
+                   //     std::cout<<"convert "<<l_curr_straight<<std::endl;
 
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 2);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 2);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 2);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 2);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 2);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 2);
+            if (ND::tman().PropagateToSurface( point, normal, state1, length)) {
+             // std::cout<<"length "<<length<<std::endl;
+              output().FillVectorVar(true_length_BU, (float)length);
+              output().FillVectorVar(true_time_diff_BU, (float)time_diff);
+              double  mass = ToFUtils::GetToFMass(mom, length, time_diff);
+              output().FillVectorVar(true_mass_BU, (float)mass);
 
+            };
+          }
 
+        }
 
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2)) {
-        output().FillVectorVar(true_tpcdown2_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_tpcdown2_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 3);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 3);
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 3);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 3);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 3);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 3);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 3);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 3);
+        //Left up
+        if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kToFLeftUp)) {
+         // double mom = anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i]));
+          std::cout<<"left ToF"<<std::endl;
+          TVector3 point(trueTrack->DetCrossingsVect[i]->ExitPosition[0], trueTrack->DetCrossingsVect[i]->ExitPosition[1], trueTrack->DetCrossingsVect[i]->ExitPosition[2]);
+          TVector3 normal(1, 0, 0);
+          RP::State state1;
+          double length = -9999;
+          double time_diff = -9999;
+                    double dx = trueTrack->Position[0]-trueTrack->DetCrossingsVect[i]->EntrancePosition[0];
+          double dy = trueTrack->Position[1]-trueTrack->DetCrossingsVect[i]->EntrancePosition[1];
+          double dz = trueTrack->Position[2]-trueTrack->DetCrossingsVect[i]->EntrancePosition[2];
+          double l_curr_straight = sqrt(dx*dx + dy*dy + dz*dz); 
 
+          time_diff = trueTrack->DetCrossingsVect[i]->EntrancePosition[3] - trueTrack->Position[3];
+          if (ND::tman().AnaTrueParticleB_to_RPState(*trueTrack, state1)) {
+           // std::cout<<"convert "<<l_curr_straight<<std::endl;
+            if (ND::tman().PropagateToSurface( point, normal, state1, length)) {
+              output().FillVectorVar(true_length_LU, (float)length);
+              output().FillVectorVar(true_time_diff_LU, (float)time_diff);
+              double  mass = ToFUtils::GetToFMass(mom, length, time_diff);
+           //   std::cout<<"length "<<length<<std::endl;
 
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1)) {
-        output().FillVectorVar(true_forwtpc1_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_forwtpc1_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 4);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 4);
+              output().FillVectorVar(true_mass_LU, (float)mass);
 
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 4);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 4);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 4);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 4);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 4);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 4);
+            };
+          }
+
+        }
 
 
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2)) {
-        output().FillVectorVar(true_forwtpc2_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_forwtpc2_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 5);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 5);
+        //Back down
+        if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kToFBackDown)) {
+         // double mom = anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i]));
+           std::cout<<"back ToF"<<std::endl;
+                     double dx = trueTrack->Position[0]-trueTrack->DetCrossingsVect[i]->EntrancePosition[0];
+          double dy = trueTrack->Position[1]-trueTrack->DetCrossingsVect[i]->EntrancePosition[1];
+          double dz = trueTrack->Position[2]-trueTrack->DetCrossingsVect[i]->EntrancePosition[2];
+          double l_curr_straight = sqrt(dx*dx + dy*dy + dz*dz); 
 
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 5);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 5);
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 5);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 5);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 5);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 5);
+          TVector3 point(trueTrack->DetCrossingsVect[i]->EntrancePosition[0], trueTrack->DetCrossingsVect[i]->EntrancePosition[1], trueTrack->DetCrossingsVect[i]->EntrancePosition[2]);
+          TVector3 normal(0, 0, 1);
+          RP::State state1;
+          double length = -9999;
+          double time_diff = -9999;
+          time_diff = trueTrack->DetCrossingsVect[i]->EntrancePosition[3] - trueTrack->Position[3];
+          if (ND::tman().AnaTrueParticleB_to_RPState(*trueTrack, state1)) {
+                 //       std::cout<<"convert "<<l_curr_straight<<std::endl;
+
+            if (ND::tman().PropagateToSurface( point, normal, state1, length)) {
+                     //       std::cout<<"length "<<length<<std::endl;
+
+              output().FillVectorVar(true_length_BcD, (float)length);
+              output().FillVectorVar(true_time_diff_BcD, (float)time_diff);
+              double  mass = ToFUtils::GetToFMass(mom, length, time_diff);
+              output().FillVectorVar(true_mass_BcD, (float)mass);
+
+            };
+          }
 
 
-      }
-      if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)) {
-        output().FillVectorVar(true_forwtpc3_det, SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector));
-        output().FillVectorVar(true_forwtpc3_DeltaLYZ,  trueTrack->DetCrossingsVect[i]->DeltaLYZ);
-        float de_dx = (trueTrack->DetCrossingsVect[i]->EDeposit / units::keV) / (trueTrack->DetCrossingsVect[i]->SegLength / units::cm);
-        output().FillMatrixVar(true_tpc_de_dx, de_dx, -1, 6);
-        output().FillMatrixVar(true_tpc_length, trueTrack->DetCrossingsVect[i]->SegLength, -1, 6);
+        }
+        //Back down
 
-        output().FillMatrixVar(true_tpc_momentum, anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 6);
-        output().FillMatrixVar(true_tpc_exitmomentum, anaUtils::GetExitMomentum(*(trueTrack->DetCrossingsVect[i])), -1, 6);
+        if (SubDetId::GetDetectorUsed(trueTrack->DetCrossingsVect[i]->Detector, SubDetId::kP0D)) {
+         //// double mom = anaUtils::GetEntranceMomentum(*(trueTrack->DetCrossingsVect[i]));
+              std::cout<<"P0D ToF"<<std::endl;
+                     double dx = trueTrack->Position[0]-trueTrack->DetCrossingsVect[i]->EntrancePosition[0];
+          double dy = trueTrack->Position[1]-trueTrack->DetCrossingsVect[i]->EntrancePosition[1];
+          double dz = trueTrack->Position[2]-trueTrack->DetCrossingsVect[i]->EntrancePosition[2];
+          double l_curr_straight = sqrt(dx*dx + dy*dy + dz*dz); 
 
-        anaUtils::ComputeTPCPull(*trueTrack->DetCrossingsVect[i], *trueTrack, pulls);
-        output().FillMatrixVar(true_tpc_pull_muon, pulls[0], -1, 6);
-        output().FillMatrixVar(true_tpc_pull_electron, pulls[1], -1, 6);
-        output().FillMatrixVar(true_tpc_pull_pion, pulls[3], -1, 6);
-        output().FillMatrixVar(true_tpc_pull_proton, pulls[2], -1, 6);
+          TVector3 point(trueTrack->DetCrossingsVect[i]->EntrancePosition[0], trueTrack->DetCrossingsVect[i]->EntrancePosition[1], trueTrack->DetCrossingsVect[i]->EntrancePosition[2]);
+          TVector3 normal(0, 0, 1);
+          RP::State state1;
+          double length = -9999;
+          double time_diff = -9999;
+          time_diff = trueTrack->DetCrossingsVect[i]->EntrancePosition[3] - trueTrack->Position[3];
+          if (ND::tman().AnaTrueParticleB_to_RPState(*trueTrack, state1)) {
+                    //    std::cout<<"convert "<<l_curr_straight<<std::endl;
+
+            if (ND::tman().PropagateToSurface( point, normal, state1, length)) {
+              output().FillVectorVar(true_length_UE, (float)length);
+              output().FillVectorVar(true_time_diff_UE, (float)time_diff);
+              double  mass = ToFUtils::GetToFMass(mom, length, time_diff);
+              output().FillVectorVar(true_mass_UE, (float)mass);
+
+            };
+          }
+
+        }
+
 
       }
 
     }
-    output().IncrementCounterForVar(true_parentID);
 
-  }*/
-  return FillTruthTreeBase(vtx, IsAntinu);
+      ///next track
+      output().IncrementCounterForVar(true_pdg);
+
+    return FillTruthTreeBase(vtx, IsAntinu);
+  }
+
 }
-
-
 //********************************************************************
 void testtimeAnalysis::FillTruthTreeBase(const AnaTrueVertex& vtx, bool IsAntinu) {
 //********************************************************************

@@ -228,7 +228,6 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     if (!highestMomTrack ||
 	highestMomTrack->Momentum < truePart->Momentum)
       highestMomTrack = truePart;
-
     if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
 	 (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
 	 (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
@@ -290,7 +289,6 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     trueVertex->NPrimaryParticles[ParticleId::kKNeg]   ;
 	  
   //delete nd280UpVertex;
-
   spill->TrueVertices.push_back(trueVertex);
 
 }
@@ -471,6 +469,8 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
   double DsECalZ = 9999;
   double P0DECalZ = 9999;
   double BrlECalZ = 9999;
+  double USECalZ = 9999;
+
   //double ToFZ = 9999;
   double ToFTopUpZ = 9999;
   double ToFTopDownZ = 9999;
@@ -499,6 +499,8 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
   double DsECalfZ = -9999;
   double P0DECalfZ = -9999;
   double BrlECalfZ = -9999;
+    double USECalfZ = -9999;
+
   //double ToFfZ = -9999;
   double ToFTopUpfZ = -9999;
   double ToFTopDownfZ = -9999;
@@ -571,6 +573,7 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
   TND280UpTrackPoint* lastToFBackDown = NULL;
   TND280UpTrackPoint* lastToFFrontUp = NULL;
   TND280UpTrackPoint* lastToFFrontDown = NULL;
+  TND280UpTrackPoint* lastUSECal = NULL;
 
   TND280UpTrackPoint* firstTPCUp1 = NULL;
   TND280UpTrackPoint* firstTPCUp2 = NULL;
@@ -598,6 +601,7 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
   TND280UpTrackPoint* firstToFBackDown = NULL;
   TND280UpTrackPoint* firstToFFrontUp = NULL;
   TND280UpTrackPoint* firstToFFrontDown = NULL;
+  TND280UpTrackPoint* firstUSECal = NULL;
 
 
 
@@ -771,6 +775,17 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
       if (Tpoint->GetMomentum().Mag() > BrlECalfZ) {
         firstBrlECal = Tpoint;
         BrlECalfZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
+    if (Tpoint->GetPhysVolName().find("P0D/USECal") != std::string::npos  &&  Tpoint->GetPhysVolName().find("Bar") != std::string::npos ) {
+      if (Tpoint->GetMomentum().Mag() < USECalZ) {
+        lastUSECal = Tpoint;
+        USECalZ = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > USECalfZ) {
+        firstUSECal = Tpoint;
+        USECalfZ = Tpoint->GetMomentum().Mag();
       }
 
     }
@@ -976,6 +991,9 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
   }
 
    if(firstBrlECal){
+       nCrossers++;
+  }
+   if(firstUSECal){
        nCrossers++;
   }
 
@@ -1369,6 +1387,35 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
     truePart->DetCrossingsVect.push_back(detCross);
 
   }
+
+  if(firstUSECal){
+    AnaDetCrossingB* detCross = MakeAnaDetCrossing();
+        //  std::cout<<"USECal"<<std::endl;
+
+    //std::cout<<"firstUSECal->GetPostPosition().X() "<<lastUSECal->GetPostPosition().X()<<" "<<lastUSECal->GetPostPosition().Y()<<" "<<lastUSECal->GetPostPosition().Z()<<std::endl;
+    detCross->EntrancePosition[0] = firstUSECal->GetPostPosition().X();
+    detCross->EntrancePosition[1] = firstUSECal->GetPostPosition().Y();
+    detCross->EntrancePosition[2] = firstUSECal->GetPostPosition().Z();
+    detCross->EntrancePosition[3] = firstUSECal->GetTime();
+    detCross->ExitPosition[0] = lastUSECal->GetPostPosition().X();
+    detCross->ExitPosition[1] = lastUSECal->GetPostPosition().Y();
+    detCross->ExitPosition[2] = lastUSECal->GetPostPosition().Z();
+    detCross->ExitPosition[3] = lastUSECal->GetTime();
+    detCross->EntranceMomentum[0] = firstUSECal->GetMomentum().X();
+    detCross->EntranceMomentum[1] = firstUSECal->GetMomentum().Y();
+    detCross->EntranceMomentum[2] = firstUSECal->GetMomentum().Z();
+    detCross->ExitMomentum[0] = lastUSECal->GetMomentum().X();
+    detCross->ExitMomentum[1] = lastUSECal->GetMomentum().Y();
+    detCross->ExitMomentum[2] = lastUSECal->GetMomentum().Z();
+  //  detCross->SegLength=upTrack->GetLengthUSECal();
+  //  detCross->DeltaLYZ=upTrack->GetLengthUSECal();
+   // detCross->EDeposit=upTrack->GetEdepUSECal();
+    detCross->Detector_name=TString(firstUSECal->GetPhysVolName());
+    SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kP0D);
+    truePart->DetCrossingsVect.push_back(detCross);
+
+  }
+
   if (firstToFTopUp) {
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
     detCross->EntrancePosition[0] = firstToFTopUp->GetPostPosition().X();
@@ -1810,7 +1857,9 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
         SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFTopDown)||
         SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBotDown)||
         SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFLeftDown)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFRightDown)
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFRightDown)||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kP0D)
+
         ) {
       AnaToFParticleB* seg = dynamic_cast<AnaToFParticleB*>(MakeToFTrack() );
       Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);

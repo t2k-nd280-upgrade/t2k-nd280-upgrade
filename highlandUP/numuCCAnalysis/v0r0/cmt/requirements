@@ -9,6 +9,7 @@ branches cmt src doc app
 use baseAnalysis * highlandUP
 use psycheSelections * highlandUP
 use highlandCorrections * highlandUP
+use highlandRecPack * highlandUP
 
 # Build methods to include.
 document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
@@ -33,9 +34,11 @@ path_prepend DYLD_LIBRARY_PATH "" \
 library numuCCAnalysis *.cxx  ../dict/*.cxx
 library testtimeAnalysis *.cxx  ../dict/*.cxx
 
-application RunNumuCCAnalysis ../app/RunNumuCCAnalysis*.cxx
+#application RunNumuCCAnalysis ../app/RunNumuCCAnalysis*.cxx
 application RunTestAnalysis ../app/RunTestAnalysis*.cxx
-application RunTrueNumuCCAnalysis ../app/RunTrueNumuCCAnalysis*.cxx
+application RunPrangeAnalysis ../app/RunPrangeAnalysis*.cxx
+
+#application RunTrueNumuCCAnalysis ../app/RunTrueNumuCCAnalysis*.cxx
 # tests
 document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
 

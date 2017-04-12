@@ -180,14 +180,14 @@ int main(int argc, char **argv) {
   }
  } 
   
-  //std::cout << RecPackGeometry::Get(_verb).GetSetup() << std::endl;
+  std::cout << RecPackGeometry::Get(_verb).GetSetup() << std::endl;
   std::cout<<"DumpVolumeProperties"<<std::endl;
- //s RecPackGeometry::Get().DumpVolumeProperties();
+  RecPackGeometry::Get().DumpVolumeProperties();
 double prange=0;
 TVector3 point_start(-827.343, 249, -1737);
 TVector3 point_end(-878.903, 378.169, -2033.4);
 
-ND::tman().CorrectEnergyLossLinear( point_start,point_end, prange, ParticleId::kMuon, AnaRecPackManager::kBwd);
+//ND::tman().CorrectEnergyLossLinear( point_start,point_end, prange, ParticleId::kMuon, AnaRecPackManager::kBwd);
   int argc2 = 0;
   char **argv2 = NULL;
     

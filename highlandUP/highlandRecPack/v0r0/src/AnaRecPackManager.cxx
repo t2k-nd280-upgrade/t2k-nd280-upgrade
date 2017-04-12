@@ -113,7 +113,7 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
 
 
   // initialize geometrical limits
-  man(m).geometry_svc().set_zero_length(1e-3 * mm);
+  man(m).geometry_svc().set_zero_length(1e-5 * mm);
   man(m).geometry_svc().set_infinite_length(1e12 * mm);
 
   // enable multiple scattering by default
@@ -123,7 +123,7 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
   man(m).model_svc().enable_noiser(model, RP::eloss, false);
 
   // disable electron energy loss fluctuations (bremsstrahlung) by default
-  man(m).model_svc().enable_noiser(model, RP::electron_eloss, false);
+  man(m).model_svc().enable_noiser(model, RP::electron_eloss, true);
 
   // disable electron energy loss correction (bremsstrahlung) by default
   man(m).model_svc().enable_correction(model, RP::brem_eloss, false);
@@ -142,7 +142,7 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
   InitializeManagerGeometry(m);
 
   // set the RecPack verbosity  for this manager (IT NEEDS THE SETUP)
-  SetVerbosity(5,7,5,5,0);    
+  SetVerbosity(0,0,0,0,0);    
 
   // Set the model corresponding to this manager
   SetModel(model);
@@ -1060,7 +1060,7 @@ bool AnaRecPackManager::GetMomentumFromRangeLinear(const AnaParticleB& track, co
   
   TVector3 pos_start; // for prange -- end of the track
   
-  if (!GetTrimPosition(track, pos_start, kEnd))
+ // if (!GetTrimPosition(track, pos_start, kEnd))
     pos_start = TVector3(track.PositionEnd[0], track.PositionEnd[1], track.PositionEnd[2]); 
  
   double prange_tmp = 0.;
@@ -1396,13 +1396,13 @@ bool AnaRecPackManager::CreateState(const TVector3& pos, const TVector3& dir,
   state.clear();
 
   if (p == 0.){
-    if(fDebug)
+   // if(fDebug)
       std::cout << " AnaRecPackManager::CreateState() -- zero momentum " << std::endl;
     return treturn(false);
   }
 
   if ( q == 0){
-    if(fDebug)
+   // if(fDebug)
       std::cout << " AnaRecPackManager::CreateState() -- zero charge " << std::endl;
     return treturn(false);
   }
@@ -1410,7 +1410,7 @@ bool AnaRecPackManager::CreateState(const TVector3& pos, const TVector3& dir,
   double deno = dir.Mag();
 
   if ( deno == 0.){
-    if(fDebug)
+    //if(fDebug)
       std::cout << " AnaRecPackManager::CreateState() -- zero direction " << std::endl;
     return treturn(false);
   }

@@ -187,6 +187,67 @@ bool RecPackGeometry::VisitNode(int depth, const std::string& name, const TGeoNo
     return false;
 
   }
+  if ( name.find("TopUp_0" ) != std::string::npos  && fTOFMODULES1.size() < 1) {
+    fTOFMODULES1.push_back(name);
+    return false;
+
+  }
+  if ( name.find("BotUp_0" ) != std::string::npos  && fTOFMODULES2.size() < 1) {
+    fTOFMODULES2.push_back(name);
+    return false;
+
+  }
+  if ( name.find("RightUp_0" ) != std::string::npos  && fTOFMODULES3.size() < 1) {
+    fTOFMODULES3.push_back(name);
+    return false;
+
+  }
+  if ( name.find("LeftUp_0" ) != std::string::npos  && fTOFMODULES4.size() < 1) {
+    fTOFMODULES4.push_back(name);
+    return false;
+
+  }
+  if ( name.find("BackUp_0" ) != std::string::npos  && fTOFMODULES5.size() < 1) {
+    fTOFMODULES5.push_back(name);
+    return false;
+
+  }
+  if ( name.find("FrontUp_0" ) != std::string::npos  && fTOFMODULES6.size() < 1) {
+    fTOFMODULES6.push_back(name);
+    return false;
+
+  }
+
+  if ( name.find("TopDown_0" ) != std::string::npos  && fTOFMODULES7.size() < 1) {
+    fTOFMODULES7.push_back(name);
+    return false;
+
+  }
+  if ( name.find("BotDown_0" ) != std::string::npos  && fTOFMODULES8.size() < 1) {
+    fTOFMODULES8.push_back(name);
+    return false;
+
+  }
+  if ( name.find("RightDown_0" ) != std::string::npos  && fTOFMODULES9.size() < 1) {
+    fTOFMODULES9.push_back(name);
+    return false;
+
+  }
+  if ( name.find("LeftDown_0" ) != std::string::npos  && fTOFMODULES10.size() < 1) {
+    fTOFMODULES10.push_back(name);
+    return false;
+
+  }
+  if ( name.find("BackDown_0" ) != std::string::npos  && fTOFMODULES11.size() < 1) {
+    fTOFMODULES11.push_back(name);
+    return false;
+
+  }
+  if ( name.find("FrontDown_0" ) != std::string::npos  && fTOFMODULES12.size() < 1) {
+    fTOFMODULES12.push_back(name);
+    return false;
+
+  }
 
   //oh!...ECals
   if (name.find("DsECal") != std::string::npos) {
@@ -332,6 +393,10 @@ void RecPackGeometry::FillInformation(void) {
     GetSetup().AddVolume(TRACKERBASE, "Target2_0");
     SetPropertiesToVolume(TRACKERBASE + "/Target2_0",       volumes_to_exclude, volumes_to_exclude, false);
 
+
+    GetSetup().AddVolume(TRACKERBASE, "Target2_0");
+    SetPropertiesToVolume(TRACKERBASE + "/Target2_0",       volumes_to_exclude, volumes_to_exclude, false);
+
   //}
   unsigned int NTPCMODULES1 = fTPCMODULES1.size();
   for (unsigned int i = 0; i < NTPCMODULES1; i++) { // The FGD parent volume
@@ -382,6 +447,89 @@ void RecPackGeometry::FillInformation(void) {
 
   }
 
+
+
+  if (fTOFMODULES1.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "TopUp_0");
+    SetPropertiesToVolume(TRACKERBASE + "/TopUp_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+
+  if (fTOFMODULES2.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "BotUp_0");
+    SetPropertiesToVolume(TRACKERBASE + "/BotUp_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+
+  if (fTOFMODULES3.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "RightUp_0");
+    SetPropertiesToVolume(TRACKERBASE + "/RightUp_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+  if (fTOFMODULES4.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "LeftUp_0");
+    SetPropertiesToVolume(TRACKERBASE + "/LeftUp_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+  if (fTOFMODULES5.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "BackUp_0");
+    SetPropertiesToVolume(TRACKERBASE + "/BackUp_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+
+  if (fTOFMODULES6.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "FrontUp_0");
+    SetPropertiesToVolume(TRACKERBASE + "/FrontUp_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+
+
+
+  if (fTOFMODULES7.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "TopDown_0");
+    SetPropertiesToVolume(TRACKERBASE + "/TopDown_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+
+  if (fTOFMODULES8.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "BotDown_0");
+    SetPropertiesToVolume(TRACKERBASE + "/BotDown_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+
+  if (fTOFMODULES9.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "RightDown_0");
+    SetPropertiesToVolume(TRACKERBASE + "/RightDown_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+  if (fTOFMODULES10.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "LeftDown_0");
+    SetPropertiesToVolume(TRACKERBASE + "/LeftDown_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+  if (fTOFMODULES11.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "BackDown_0");
+    SetPropertiesToVolume(TRACKERBASE + "/BackDown_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
+
+  if (fTOFMODULES12.size() > 0) {
+    // The FGD parent volume
+    GetSetup().AddVolume(TRACKERBASE, "FrontDown_0");
+    SetPropertiesToVolume(TRACKERBASE + "/FrontDown_0",       volumes_to_exclude, volumes_to_exclude, false);
+
+  }
 
 
   unsigned int NP0DVOLUMES = fP0DMODULES.size();

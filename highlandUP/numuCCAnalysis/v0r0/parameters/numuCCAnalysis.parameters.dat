@@ -20,5 +20,8 @@ need to be enabled in baseAnalysis parameter file
  < numuCCAnalysis.Variations.EnabledEdx            = 1 >	
  < numuCCAnalysis.Selection.tpcLYZCut            = 200 >	
  < numuCCAnalysis.Selection.targetLYZCut            = 50 >	
- < numuCCAnalysis.Selection.target            = 0 >	
+
+ < numuCCAnalysis.ToF.momErr           = 0.1 >	
+ < numuCCAnalysis.ToF.tofErr            = 0.6 >	
+ < numuCCAnalysis.ToF.doSmear           = 1 >	
  
