@@ -219,7 +219,17 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVarVF(output(), selAll_mom,            "", selAll_nTracks);
   AddVarVF(output(), selAll_true_mom,       "", selAll_nTracks);
   AddVarVI(output(), selAll_PDG,            "", selAll_nTracks);
-  AddVarVI(output(), selAll_ToF_det_used,   "", selAll_nTracks);
+  AddVarVI(output(), selAll_ToF_det_used1,  "", selAll_nTracks);
+  AddVarVI(output(), selAll_ToF_det_used2,  "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_reco,  "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_muon,  "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_pion,  "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_electron,  "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_proton,"", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_sigma_muon, "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_sigma_pion, "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_sigma_electron, "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_time_sigma_proton, "", selAll_nTracks);
   AddVarVF(output(), selAll_TPC_Edep,       "", selAll_nTracks);
   AddVarVF(output(), selAll_TPC_Length,     "", selAll_nTracks);
   AddVarVF(output(), selAll_TPC_dedx,       "", selAll_nTracks);
@@ -399,15 +409,25 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     }
 
     for (int i=0; i<cc4pibox().All_ToF_mass.size(); i++) {
-      output().FillVectorVar(selAll_ToF_mass,      cc4pibox().All_ToF_mass[i]);
-      output().FillVectorVar(selAll_ToF_true_mass, cc4pibox().All_ToF_true_mass[i]);
-      output().FillVectorVar(selAll_PDG,           cc4pibox().All_PDG[i]);
-      output().FillVectorVar(selAll_mom,           cc4pibox().All_mom[i]);
-      output().FillVectorVar(selAll_true_mom,      cc4pibox().All_true_mom[i]);
-      output().FillVectorVar(selAll_ToF_det_used,  cc4pibox().All_ToF_det_used[i]);
-      output().FillVectorVar(selAll_TPC_Edep,      cc4pibox().All_TPC_Edep[i]);
-      output().FillVectorVar(selAll_TPC_Length,    cc4pibox().All_TPC_Length[i]);
-      output().FillVectorVar(selAll_TPC_dedx,      cc4pibox().All_TPC_dedx[i]);
+      output().FillVectorVar(selAll_ToF_mass,          cc4pibox().All_ToF_mass[i]);
+      output().FillVectorVar(selAll_ToF_true_mass,     cc4pibox().All_ToF_true_mass[i]);
+      output().FillVectorVar(selAll_PDG,               cc4pibox().All_PDG[i]);
+      output().FillVectorVar(selAll_mom,               cc4pibox().All_mom[i]);
+      output().FillVectorVar(selAll_true_mom,          cc4pibox().All_true_mom[i]);
+      output().FillVectorVar(selAll_ToF_det_used1,     cc4pibox().All_ToF_det_used1[i]);
+      output().FillVectorVar(selAll_ToF_det_used2,     cc4pibox().All_ToF_det_used2[i]);
+      output().FillVectorVar(selAll_ToF_time_reco,     cc4pibox().All_ToF_time_reco[i]);
+      output().FillVectorVar(selAll_ToF_time_muon,     cc4pibox().All_ToF_time_muon[i]);
+      output().FillVectorVar(selAll_ToF_time_pion,     cc4pibox().All_ToF_time_pion[i]);
+      output().FillVectorVar(selAll_ToF_time_electron, cc4pibox().All_ToF_time_electron[i]);
+      output().FillVectorVar(selAll_ToF_time_proton,   cc4pibox().All_ToF_time_proton[i]);
+      output().FillVectorVar(selAll_ToF_time_sigma_muon,     cc4pibox().All_ToF_time_sigma_muon[i]);
+      output().FillVectorVar(selAll_ToF_time_sigma_pion,     cc4pibox().All_ToF_time_sigma_pion[i]);
+      output().FillVectorVar(selAll_ToF_time_sigma_electron, cc4pibox().All_ToF_time_sigma_electron[i]);
+      output().FillVectorVar(selAll_ToF_time_sigma_proton,   cc4pibox().All_ToF_time_sigma_proton[i]);
+      output().FillVectorVar(selAll_TPC_Edep,          cc4pibox().All_TPC_Edep[i]);
+      output().FillVectorVar(selAll_TPC_Length,        cc4pibox().All_TPC_Length[i]);
+      output().FillVectorVar(selAll_TPC_dedx,          cc4pibox().All_TPC_dedx[i]);
       output().IncrementCounter(selAll_nTracks);
     }
 
