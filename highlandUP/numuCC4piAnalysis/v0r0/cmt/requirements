@@ -9,6 +9,7 @@ branches cmt src doc app
 use baseAnalysis * highlandUP
 use psycheSelections * highlandUP
 use highlandCorrections * highlandUP
+use highlandRecPack * highlandUP
 
 # Build methods to include.
 document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox

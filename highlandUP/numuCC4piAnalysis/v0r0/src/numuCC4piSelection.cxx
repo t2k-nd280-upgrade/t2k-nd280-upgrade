@@ -751,11 +751,15 @@ namespace numuCC4piUtils{
     TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
     TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
     TVector3 dir1 = anaUtils::ArrayToTVector3(p1->DirectionStart);
-    TVector3 dir2 = anaUtils::ArrayToTVector3(p2->DirectionStart);	  
+    TVector3 dir2 = anaUtils::ArrayToTVector3(p2->DirectionStart);	 
+    TVector3 normal(0,0,1); 
     if (ND::tman().AnaTrueParticleB_to_RPState(*(box->MainTrack->GetTrueParticle()), state1))
-      if (ND::tman().PropagateToSurface(pos1, dir1, state1, length1))
+      if (ND::tman().PropagateToSurface(pos1, normal, state1, length1))
+            std::cout<<"prob 2"<<dir1[0]<<" "<<dir1[1]<<" "<<dir1[2]<<std::endl;
+;
+
 	if (ND::tman().AnaTrueParticleB_to_RPState(*(box->MainTrack->GetTrueParticle()), state2))
-	  if (ND::tman().PropagateToSurface(pos2, dir2, state2, length2)) {
+	  if (ND::tman().PropagateToSurface(pos2, normal, state2, length2)) {
 	    float true_length = length2-length1;
 	    float length = _randomGen->Gaus(true_length, 10); 
 	    box->ToF_mass      = numuCC4pi_utils::ComputeToFMass(mom, ToF, length);

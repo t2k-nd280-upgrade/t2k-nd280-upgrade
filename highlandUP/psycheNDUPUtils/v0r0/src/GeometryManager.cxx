@@ -718,6 +718,7 @@ bool GeometryManager::VisitNode(const std::string& name, const TGeoNode* node) c
 //*****************************************************************************
 void GeometryManager::UpdateVolumeBound(Float_t* detMin, Float_t* detMax, const Float_t* low, const Float_t* high) const{
   //*****************************************************************************
+std::cout<<"update geometry"<<std::endl;
 
   for (int i=0; i<3; i++){
     //min
@@ -733,7 +734,7 @@ void GeometryManager::UpdateVolumeBound(Float_t* detMin, Float_t* detMax, const 
 //*****************************************************************************
 void GeometryManager::ResetVolumeDefinitions() const {
   //*****************************************************************************     
-
+std::cout<<"reset geometry"<<std::endl;
   Float_t min[3] = {1e10, 1e10, 1e10};
   Float_t max[3] = {-1e10, -1e10, -1e10};
 

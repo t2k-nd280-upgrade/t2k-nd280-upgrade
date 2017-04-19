@@ -113,7 +113,7 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
 
 
   // initialize geometrical limits
-  man(m).geometry_svc().set_zero_length(1e-5 * mm);
+  man(m).geometry_svc().set_zero_length(1e-3 * mm);
   man(m).geometry_svc().set_infinite_length(1e12 * mm);
 
   // enable multiple scattering by default
@@ -123,7 +123,7 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
   man(m).model_svc().enable_noiser(model, RP::eloss, false);
 
   // disable electron energy loss fluctuations (bremsstrahlung) by default
-  man(m).model_svc().enable_noiser(model, RP::electron_eloss, true);
+  man(m).model_svc().enable_noiser(model, RP::electron_eloss, false);
 
   // disable electron energy loss correction (bremsstrahlung) by default
   man(m).model_svc().enable_correction(model, RP::brem_eloss, false);

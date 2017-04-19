@@ -356,7 +356,7 @@ void RecPackGeometry::FillInformation(void) {
   //  GetSetup().AddVolume("FluxReturn");
   //  GetSetup().AddVolume("MRD");
 
-    GetSetup().AddVolume("Basket_0");
+    //GetSetup().AddVolume("Basket_0");
 
 
 
