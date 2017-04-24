@@ -11,6 +11,9 @@
 #include <G4Trap.hh>
 #include <G4SubtractionSolid.hh>
 
+#include "G4SDManager.hh"
+#include "ExN02TrackerSD.hh"
+
 #include "ND280CubeScintConstructor.hh"
 
 // used to keep a list of SD logical volumes
@@ -186,12 +189,12 @@ void ND280CubeScintConstructor::Init() {
 }
 
 G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
-  
-  // NEW ND280UPGRADE
-  G4Region* SDRegion = G4RegionStore::GetInstance()->
-    GetRegion("SDRegion",false);
-  //
 
+  // Get the SD defined in ExN02DetectorConstrucion  
+  G4SDManager* SDman = G4SDManager::GetSDMpointer();
+  ExN02TrackerSD *aTrackerSD = (ExN02TrackerSD*)SDman->FindSensitiveDetector("ExN02/Tracker"); 
+  //
+  
   ND280RootPersistencyManager* InputPersistencyManager
     = ND280RootPersistencyManager::GetInstance();
   fND280XMLInput = InputPersistencyManager->GetXMLInput();
@@ -223,25 +226,19 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
 
   // Build G4VSolid the plastic cube with coating and holes for WLS fibers
 
-  cube = new G4Box(GetName(),
-		   GetBase()/2,
-		   GetHeight()/2,
-		   GetLength()/2
-		   );
-  
   extrusion = new G4Box(GetName()+"/Extrusion",
 			GetBase()/2,
 			GetHeight()/2,
 			GetLength()/2
 			);
   
-  scintillator = new G4Box(GetName()+"/Core",
+  scintillator = new G4Box(GetName()+"/Extrusion/Core",
    			   GetBase()/2-GetCoatingThickness(),
   			   GetHeight()/2-GetCoatingThickness(),
   			   GetLength()/2-GetCoatingThickness()
 			   );
 
-  fiberHole = new G4Tubs(GetName()+"/Core/Hole",
+  fiberHole = new G4Tubs(GetName()+"/Extrusion/Core/Hole",
 			 0.0*cm,
 			 GetHoleRadius(),
 			 GetLength()/2*2.,
@@ -257,18 +254,18 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   scintWithHole = scintillator;
 
   // subtract hole along Z
-  extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
-					     extrusionWithHole,
-					     fiberHole,
-					     0,
-					     Pos_Z
-					     );
-  scintWithHole = new G4SubtractionSolid(GetName()+"/Core",
-  					 scintWithHole,
-  					 fiberHole,
-  					 0,
+  //extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
+  //extrusionWithHole,
+  //fiberHole,
+  //0,
+  //Pos_Z
+  //);
+  scintWithHole = new G4SubtractionSolid(GetName()+"/Extrusion/Core",
+					 scintWithHole,
+					 fiberHole,
+					 0,
 					 Pos_Z
-  					 );
+					 );
 
     
   // subtract hole along X
@@ -278,18 +275,18 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   rotationAlongX->rotateY(90*degree); 
   rotationAlongX->rotateZ(0 *degree);      
 
-  extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
-					     extrusionWithHole,
-					     fiberHole,
-					     rotationAlongX,
-					     Pos_X
-					     );
-  scintWithHole = new G4SubtractionSolid(GetName()+"/Core",
-  					 scintWithHole,
-  					 fiberHole,
-  					 rotationAlongX,
+  //extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
+  //extrusionWithHole,
+  //fiberHole,
+  //rotationAlongX,
+  //Pos_X
+  //);
+  scintWithHole = new G4SubtractionSolid(GetName()+"/Extrusion/Core",
+					 scintWithHole,
+					 fiberHole,
+					 rotationAlongX,
 					 Pos_X
-  					 );
+					 );
 
 
   // subtract hole along Y
@@ -298,28 +295,24 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   rotationAlongY->rotateX(90 *degree); 
   rotationAlongY->rotateY(0 *degree); 
   rotationAlongY->rotateZ(0 *degree);      
-  extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
-					     extrusionWithHole,
-					     fiberHole,
-					     rotationAlongY,
-					     Pos_Y
-					     );
-  scintWithHole = new G4SubtractionSolid(GetName()+"/Core",
-  					 scintWithHole,
-  					 fiberHole,
-  					 rotationAlongY,
+  
+  //extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
+  //extrusionWithHole,
+  //fiberHole,
+  //rotationAlongY,
+  //Pos_Y
+  //);
+  scintWithHole = new G4SubtractionSolid(GetName()+"/Extrusion/Core",
+					 scintWithHole,
+					 fiberHole,
+					 rotationAlongY,
 					 Pos_Y
-  					 );  
+					 );  
 
   // logical volumes
 
   coreOffset = 0.0;
   
-  G4LogicalVolume* logVolume
-    = new G4LogicalVolume(cube,
-			  FindMaterial("Air"),
-			  GetName());
-
   G4LogicalVolume* extrusionVolume
     = new G4LogicalVolume(extrusionWithHole,
 			  FindMaterial(GetCoatingMaterial()),
@@ -328,27 +321,20 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   G4LogicalVolume *scintVolume;
   scintVolume = new G4LogicalVolume(scintWithHole,
 				    FindMaterial(GetScintillatorMaterial()),
-				    GetName()+"/Core");
+				    GetName()+"/Extrusion/Core");
+
+  // Define the volume of plastic scintillator as sensitive detector
+  scintVolume->SetSensitiveDetector( aTrackerSD ); 
 
   
   // Place the scintillator inside the extrusion volume
   new G4PVPlacement(0,                   // no rotation
 		    G4ThreeVector(0,coreOffset,0),     // position
 		    scintVolume,         // its logical volume
-		    GetName()+"/Core",   // its name
+		    GetName()+"/Extrusion/Core",   // its name
 		    extrusionVolume,     // its mother  volume
 		    false,               // no boolean operations
 		    0);                  // copy number
-
-  // Place the extrusion inside the logVolume
-  new G4PVPlacement(0,                   // no rotation
-		    G4ThreeVector(0,coreOffset,0),     // position
-		    extrusionVolume,         // its logical volume
-		    GetName()+"/Extrusion",   // its name
-		    logVolume,     // its mother  volume
-		    false,               // no boolean operations
-		    0);                  // copy number
-  
 
   if( GetND280XML()->GetXMLInvisSuperFGD() ){
     extrusionVolume->SetVisAttributes(G4VisAttributes::Invisible);
@@ -358,8 +344,6 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
     extrusionVolume->SetVisAttributes(visAtt_Coat); 
     scintVolume    ->SetVisAttributes(visAtt_Scint);
   }
-  logVolume      ->SetVisAttributes(G4VisAttributes::Invisible);
-  
 
   //
   // Build the WLS fiber
@@ -381,21 +365,21 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   }
   else{
     
-    G4VSolid* fiberAlongX = new G4Tubs(GetName()+"/FiberX",
+    G4VSolid* fiberAlongX = new G4Tubs(GetName()+"/Extrusion/FiberX",
 				       0.0*cm,
 				       GetFiberRadius(),
 				       GetBase()/2,
 				       0.*deg,
 				       360.*deg);
 
-    G4VSolid* fiberAlongY = new G4Tubs(GetName()+"/FiberY",
+    G4VSolid* fiberAlongY = new G4Tubs(GetName()+"/Extrusion/FiberY",
 				       0.0*cm,
 				       GetFiberRadius(),
 				       GetHeight()/2,
 				       0.*deg,
 				       360.*deg);
     
-    G4VSolid* fiberAlongZ = new G4Tubs(GetName()+"/FiberZ",
+    G4VSolid* fiberAlongZ = new G4Tubs(GetName()+"/Extrusion/FiberZ",
 				       0.0*cm,
 				       GetFiberRadius(),
 				       GetLength()/2,
@@ -405,17 +389,17 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
     G4LogicalVolume *fiberAlongXVolume
       = new G4LogicalVolume(fiberAlongX,
 			    FindMaterial(GetFiberMaterial()),
-			    GetName()+"/FiberX");
+			    GetName()+"/Extrusion/FiberX");
     
     G4LogicalVolume *fiberAlongYVolume
       = new G4LogicalVolume(fiberAlongY,
 			    FindMaterial(GetFiberMaterial()),
-			    GetName()+"/FiberY");
+			    GetName()+"/Extrusion/FiberY");
     
     G4LogicalVolume *fiberAlongZVolume
       = new G4LogicalVolume(fiberAlongZ,
 			    FindMaterial(GetFiberMaterial()),
-			    GetName()+"/FiberZ");
+			    GetName()+"/Extrusion/FiberZ");
     
     if( GetND280XML()->GetXMLInvisSuperFGD() ){
       fiberAlongXVolume->SetVisAttributes(G4VisAttributes::Invisible);
@@ -429,37 +413,35 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
     }
 
     
-    
     // Place the WLS fibers inside the logVolume
     
     new G4PVPlacement(rotationAlongX,                  // no rotation         
 		      GetHolePosition_X(),
 		      fiberAlongXVolume,         // its logical volume
-		      GetName()+"/FiberX",  // its name
-		      logVolume,          // its mother  volume
+		      GetName()+"/Extrusion/FiberX",  // its name
+		      extrusionVolume,     // its mother  volume
 		      false,               // no boolean operations
 		      0);           // copy number
     
     new G4PVPlacement(rotationAlongY,                  // no rotation         
 		      GetHolePosition_Y(),
 		      fiberAlongYVolume,         // its logical volume
-		      GetName()+"/FiberY",  // its name
-		      logVolume,          // its mother  volume
+		      GetName()+"/Extrusion/FiberY",  // its name
+		      extrusionVolume,     // its mother  volume
 		      false,               // no boolean operations
 		      0);           // copy number
 
     new G4PVPlacement(0,                  // no rotation         
 		      GetHolePosition_Z(),
 		      fiberAlongZVolume,         // its logical volume
-		      GetName()+"/FiberZ",  // its name
-		      logVolume,          // its mother  volume
+		      GetName()+"/Extrusion/FiberZ",  // its name
+		      extrusionVolume,     // its mother  volume
 		      false,               // no boolean operations
 		      0);           // copy number
-
-    
+ 
   }
 
-  return logVolume;
+  return extrusionVolume;
 }
 
 
