@@ -113,7 +113,7 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
 
 
   // initialize geometrical limits
-  man(m).geometry_svc().set_zero_length(1e-5 * mm);
+  man(m).geometry_svc().set_zero_length(1e-3 * mm);
   man(m).geometry_svc().set_infinite_length(1e12 * mm);
 
   // enable multiple scattering by default
@@ -123,7 +123,7 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
   man(m).model_svc().enable_noiser(model, RP::eloss, false);
 
   // disable electron energy loss fluctuations (bremsstrahlung) by default
-  man(m).model_svc().enable_noiser(model, RP::electron_eloss, true);
+  man(m).model_svc().enable_noiser(model, RP::electron_eloss, false);
 
   // disable electron energy loss correction (bremsstrahlung) by default
   man(m).model_svc().enable_correction(model, RP::brem_eloss, false);
@@ -142,7 +142,8 @@ void AnaRecPackManager::InitializeManager(const std::string& m, const std::strin
   InitializeManagerGeometry(m);
 
   // set the RecPack verbosity  for this manager (IT NEEDS THE SETUP)
-  SetVerbosity(0,0,0,0,0);    
+  SetVerbosity(0,0,0,0,0); 
+  //SetVerbosity(1,1,1,1,1); 
 
   // Set the model corresponding to this manager
   SetModel(model);
@@ -419,12 +420,16 @@ bool AnaRecPackManager::EVector3_to_TVector(const EVector& v, TLorentzVector& lv
 bool AnaRecPackManager::TMatrix_to_EMatrix(const TMatrix& TM, EMatrix& M){
   //*****************************************************************************
 
+  std::cout << "AnaRecPackManager::TMatrix_to_EMatrix" << std::endl;
+
   M = EMatrix(TM.GetNrows(),TM.GetNcols(),0);
 
   // retrieve the covariance matrix
   for(int ii = 0;ii < TM.GetNrows();ii++)
     for(int jj = 0;jj < TM.GetNcols();jj++)
       M[ii][jj] = TM[ii][jj];
+
+  std::cout << "end" << std::endl;
 
   return true;
 }
@@ -433,12 +438,16 @@ bool AnaRecPackManager::TMatrix_to_EMatrix(const TMatrix& TM, EMatrix& M){
 bool AnaRecPackManager::TMatrix_to_EMatrix(const TMatrix& TM, int nrows, int ncols, EMatrix& M){
   //*****************************************************************************
 
+  std::cout << "AnaRecPackManager::TMatrix_to_EMatrix 2" << std::endl;
+
   M = EMatrix(nrows,ncols,0);
 
   // retrieve the covariance matrix
   for(int ii = 0;ii < nrows;ii++)
     for(int jj = 0;jj < ncols;jj++)
       M[ii][jj] = TM[ii][jj];
+
+  std::cout << "end" << std::endl;
 
   return true;
 }
@@ -447,12 +456,16 @@ bool AnaRecPackManager::TMatrix_to_EMatrix(const TMatrix& TM, int nrows, int nco
 bool AnaRecPackManager::EMatrix_to_TMatrix(const EMatrix& M, TMatrix& TM){
   //*****************************************************************************
 
+  std::cout << "AnaRecPackManager::EMatrix_to_TMatrix" << std::endl;
+
   TM = TMatrix(M.num_row(), M.num_col());
 
   // retrieve the covariance matrix
   for(int ii = 0;ii < M.num_row();ii++)
     for(int jj = 0;jj < M.num_col();jj++)
       TM[ii][jj] = M[ii][jj];
+
+  std::cout << "end" << std::endl;
 
   return true;
 }
@@ -675,6 +688,7 @@ bool AnaRecPackManager::PropagateToSurface(const TVector3& pos, const TVector3& 
     RP::State& state, double& length, 
     bool propagateCov){
   //*****************************************************************************
+  
   if(fDebug)
     std::cout << "AnaRecPackManager::PropagateToSurface(State)" << std::endl;
 
@@ -691,14 +705,16 @@ bool AnaRecPackManager::PropagateToSurface(const TVector3& pos, const TVector3& 
 
   // propagate the track to that surface
   // check whether one needs to propagate the covariance matrix
-  if (propagateCov) 
+  if (propagateCov){ 
     ok = ND::rpman().navigation_svc().propagate(surf, state, length);
-  else
-    ok = ND::rpman().navigation_svc().propagate_vector(surf, state, length); //covariance matrix is not propagated
-
-  if(fDebug){
-    std::cout << "  length: " << length << std::endl;
   }
+  else{
+    ok = ND::rpman().navigation_svc().propagate_vector(surf, state, length); //covariance matrix is not propagated
+  }
+
+  if(fDebug)
+    std::cout << "  length: " << length << std::endl;
+  
 
   // remove the surface from the setup
   ND::rpman().geometry_svc().setup().remove_surface(surfname);
@@ -1327,7 +1343,7 @@ bool AnaRecPackManager::ReverseStateSenseAndCharge(RP::State& state){
   // If fail to convert
   if (state.name(RP::representation) != rep_ini)
     return treturn( false );
-    
+
   return treturn(true); 
 
 }

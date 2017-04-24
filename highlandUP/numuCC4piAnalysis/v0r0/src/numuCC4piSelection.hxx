@@ -67,7 +67,17 @@ public:
     All_ToF_true_mass.clear();
     All_mom.clear();
     All_true_mom.clear();
-    All_ToF_det_used.clear();
+    All_ToF_det_used1.clear();
+    All_ToF_det_used2.clear();
+    All_ToF_time_reco.clear();
+    All_ToF_time_muon.clear();
+    All_ToF_time_pion.clear();
+    All_ToF_time_electron.clear();
+    All_ToF_time_proton.clear();
+    All_ToF_time_sigma_muon.clear();
+    All_ToF_time_sigma_pion.clear();
+    All_ToF_time_sigma_electron.clear();
+    All_ToF_time_sigma_proton.clear();
     All_PDG.clear();
     All_TPC_Edep.clear();
     All_TPC_Length.clear();
@@ -94,7 +104,17 @@ public:
     All_ToF_true_mass.clear();
     All_mom.clear();
     All_true_mom.clear();
-    All_ToF_det_used.clear();
+    All_ToF_det_used1.clear();
+    All_ToF_det_used2.clear();
+    All_ToF_time_reco.clear();
+    All_ToF_time_muon.clear();
+    All_ToF_time_pion.clear();
+    All_ToF_time_electron.clear();
+    All_ToF_time_proton.clear();
+    All_ToF_time_sigma_muon.clear();
+    All_ToF_time_sigma_pion.clear();
+    All_ToF_time_sigma_electron.clear();
+    All_ToF_time_sigma_proton.clear();
     All_PDG.clear();
     All_TPC_Edep.clear();
     All_TPC_Length.clear();
@@ -131,9 +151,11 @@ public:
 
   std::vector<float> All_ToF_mass;
   std::vector<float> All_ToF_true_mass;
-  std::vector<float> All_mom;
-  std::vector<float> All_true_mom;
-  std::vector<int>   All_ToF_det_used;
+  std::vector<int>   All_ToF_det_used1, All_ToF_det_used2;
+  std::vector<float> All_mom, All_true_mom;
+  std::vector<float> All_ToF_time_reco, All_ToF_time_muon, All_ToF_time_pion, All_ToF_time_electron, All_ToF_time_proton;
+  std::vector<float> All_ToF_time_sigma_muon, All_ToF_time_sigma_pion, All_ToF_time_sigma_electron, All_ToF_time_sigma_proton;
+
   std::vector<int>   All_PDG;
   std::vector<float> All_TPC_Edep;
   std::vector<float> All_TPC_Length;

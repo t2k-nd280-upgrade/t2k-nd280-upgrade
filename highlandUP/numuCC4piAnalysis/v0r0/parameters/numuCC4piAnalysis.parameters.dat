@@ -2,12 +2,13 @@
  < numuCC4piAnalysis.Branch = 0 >
  < numuCC4piAnalysis.ForceBreak = 1 > 
 
- < numuCC4piAnalysis.Configuration = 0 >
+ < numuCC4piAnalysis.Configuration = 1 >
  < numuCC4piAnalysis.ToF           = 1 >
+ < numuCC4piAnalysis.AddToFOnTargets = 0 >
  
- < numuCC4piAnalysis.EnableTarget1 = 0 >
+ < numuCC4piAnalysis.EnableTarget1 = 1 >
  < numuCC4piAnalysis.EnableTarget2 = 0 >
- < numuCC4piAnalysis.EnableFGD1 = 1 >
+ < numuCC4piAnalysis.EnableFGD1 = 0 >
  < numuCC4piAnalysis.EnableFGD2 = 0 >
 
  < numuCC4piAnalysis.MinAccumLevelToSave = 0 >
@@ -17,7 +18,9 @@
  < numuCC4piAnalysis.MuonPID.Cut.p_mip = 500  >
 
  < numuCC4piAnalysis.IsoTargetPi.Cut.Length = 50 >
+ < numuCC4piAnalysis.IsoTargetPi.PerfectPID = 1  >
+
  < numuCC4piAnalysis.MEPions.ME.Efficiency = 0.5 >
  < numuCC4piAnalysis.MEPions.ME.MomentumCut = 2. >
 
- < numuCC4piAnalysis.ToF.TimeResolution = 0.6 >
+ < numuCC4piAnalysis.ToF.TimeResolution = 0.600 >
