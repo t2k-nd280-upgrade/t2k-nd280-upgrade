@@ -85,14 +85,16 @@ public:
   const G4NavigationHistory *GetNavigHistoTarg1(){return fNavigHistoTarg1;};  
 
   G4String GetNavigHistoVolName();
-
+  
   G4bool fIsHistoMovedTarg1;
   void   SetHistoMovedTarg1(bool val){fIsHistoMovedTarg1=val;};
   G4bool GetHistoMovedTarg1(){return fIsHistoMovedTarg1;};
   
   G4String fNavigDetName_Targ1;
-  void SetNavigDetName_Targ1(G4String name){fNavigDetName_Targ1=name;};
+  void SetNavigDetName_Targ1(G4String name);
   G4String GetNavigDetName_Targ1(){return fNavigDetName_Targ1;};
+  G4bool fNavigDetExist;
+  G4bool doNavigDetExist(){return fNavigDetExist;};
 
   // Define the position of the Target MPPCs  
   // Same reference system as the navigator 

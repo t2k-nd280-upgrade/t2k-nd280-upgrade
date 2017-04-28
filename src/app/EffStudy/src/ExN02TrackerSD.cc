@@ -98,91 +98,98 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 
   ND280RootPersistencyManager* persistencyManager
     = ND280RootPersistencyManager::GetInstance();
-  
-  if( !persistencyManager->GetNavigTarg1() ){     
-    persistencyManager->InitNavigator(worldVolumePointer,preStepPoint->GetPosition()); 
-  }
 
-  if( !persistencyManager->GetHistoMovedTarg1() ){
-    G4Exception("ExN02TrackerSD::ProcessHits",
-		"MyCode0002",FatalException,
-		"Navigator is initialized but no movement through history has been done!");    
-  }
+  
+  //if(persistencyManager->doNavigDetExist()) G4cout << "it's true!!!" << G4endl;
+  //else G4cout << "it's false!!!" << G4endl;
 
-  //G4cout << "The local coordinate system is: "  << persistencyManager->GetNavigHistoVolName() << G4endl;
+  if( persistencyManager->doNavigDetExist() ){
 
-  const G4NavigationHistory *pmHistory = persistencyManager->GetNavigHistoTarg1();
-  
-  
-  G4String pm_namedet_0 = pmHistory->GetVolume(0)->GetName();
-  G4String pm_namedet_2 = pmHistory->GetVolume(2)->GetName(); 
-  G4int pm_historyDepth = pmHistory->GetDepth();
-  G4int pm_maxDepth     = pmHistory->GetMaxDepth();
-  G4String pm_namedet   = pmHistory->GetVolume(pm_historyDepth)->GetName();
-  
-  //G4cout << " "
-  //<< "pm_historyDepth = " << pm_historyDepth << " --> " << pmHistory->GetVolume(pm_historyDepth)->GetLogicalVolume()->GetName() << G4endl
-  //<< " - touch_namedet = " << touch_namedet << G4endl
-  //<< " - pm_namedet_0 = " << pm_namedet_0
-  //<< " - pm_namedet_2 = " << pm_namedet_2
-  //<< G4endl;
-  
-  G4ThreeVector PMworldPosition = preStepPoint->GetPosition();
-  G4ThreeVector PMlocalPosition = pmHistory->
-    GetTopTransform().TransformPoint(PMworldPosition);
-  
-  //  G4cout << "PMWorldPosition = " 
-  //	 << PMworldPosition.x() << ", "
-  //	 << PMworldPosition.y() << ", "
-  //	 << PMworldPosition.z() << G4endl;
-  //
-  // G4cout << "PMLocPosition = " 
-  // 	 << PMlocalPosition.x() << ", "
-  // 	 << PMlocalPosition.y() << ", "
-  // 	 << PMlocalPosition.z() << G4endl;
-  // G4cout << G4endl;
-
-
-
-  // Get the light position in the local frame and 
-  // calculate the position of the correspding MPPC (at it's bin center) 
-  
-  double lightX = PMlocalPosition.x();
-  double lightY = PMlocalPosition.y();
-  double lightZ = PMlocalPosition.z();
-  // G4cout << "lightX = " << lightX << ", lightY = " << lightY << ", lightZ = " << lightZ << G4endl;
-  
-  double mppcX = -9999999999;
-  double mppcY = -9999999999;
-  double mppcZ = -9999999999;
-  persistencyManager->GetMPPCPosXY(lightX,lightY,mppcX,mppcY);
-  //G4cout << "mppc pos: X = " << mppcX << ", Y = " << mppcY << G4endl;
-  //persistencyManager->GetMPPCPosXZ(lightX,lightZ,mppcX,mppcZ);
-  //G4cout << "mppc pos: X = " << mppcX << ", Z = " << mppcZ << G4endl;
-  persistencyManager->GetMPPCPosYZ(lightY,lightZ,mppcY,mppcZ);
-  //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
-  
-  G4ThreeVector MPPCLocalPosition = G4ThreeVector(mppcX,mppcY,mppcZ);  
-  G4Track* track       = aStep->GetTrack();  
-  G4int trackid        = track->GetTrackID();
-  G4int parentid       = track->GetParentID();
-  G4double particle    = track->GetDefinition()->GetPDGEncoding();
-  G4double prestepTime = preStepPoint->GetGlobalTime();
-
-  G4double edep_q      = edep;
+    if( !persistencyManager->GetNavigTarg1() ){  // initialize only once   
+      persistencyManager->InitNavigator(worldVolumePointer,preStepPoint->GetPosition()); 
+    }
     
-  /////// 
-  // used in WAGASCI code
-  //
-  // volume information must be extracted from Touchable of "PreStepPoint" 
-  const G4VTouchable* Touchable = aStep->GetPreStepPoint()->GetTouchable();
-  G4int detID = Touchable->GetVolume(0)->GetCopyNo();
-
-  ExN02TrackerHit* aHit  
-    = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);
-  aHit->SetNameDet    (touch_namedet);
-  //aHit->SetNameDet    (pm_namedet);  
-  trackerCollection->insert( aHit );
+    if( !persistencyManager->GetHistoMovedTarg1() ){
+      G4Exception("ExN02TrackerSD::ProcessHits",
+		  "MyCode0002",FatalException,
+		  "Navigator is initialized but no movement through history has been done!");    
+    }
+    
+    //G4cout << "The local coordinate system is: "  << persistencyManager->GetNavigHistoVolName() << G4endl;
+    
+    const G4NavigationHistory *pmHistory = persistencyManager->GetNavigHistoTarg1();
+    
+    G4String pm_namedet_0 = pmHistory->GetVolume(0)->GetName();
+    G4String pm_namedet_2 = pmHistory->GetVolume(2)->GetName(); 
+    G4int pm_historyDepth = pmHistory->GetDepth();
+    G4int pm_maxDepth     = pmHistory->GetMaxDepth();
+    G4String pm_namedet   = pmHistory->GetVolume(pm_historyDepth)->GetName();
+    
+    //G4cout << " "
+    //<< "pm_historyDepth = " << pm_historyDepth << " --> " << pmHistory->GetVolume(pm_historyDepth)->GetLogicalVolume()->GetName() << G4endl
+    //<< " - touch_namedet = " << touch_namedet << G4endl
+    //<< " - pm_namedet_0 = " << pm_namedet_0
+    //<< " - pm_namedet_2 = " << pm_namedet_2
+    //<< G4endl;
+    
+    G4ThreeVector PMworldPosition = preStepPoint->GetPosition();
+    G4ThreeVector PMlocalPosition = pmHistory->
+      GetTopTransform().TransformPoint(PMworldPosition);
+    
+    //  G4cout << "PMWorldPosition = " 
+    //	 << PMworldPosition.x() << ", "
+    //	 << PMworldPosition.y() << ", "
+    //	 << PMworldPosition.z() << G4endl;
+    //
+    // G4cout << "PMLocPosition = " 
+    // 	 << PMlocalPosition.x() << ", "
+    // 	 << PMlocalPosition.y() << ", "
+    // 	 << PMlocalPosition.z() << G4endl;
+    // G4cout << G4endl;
+    
+    
+    
+    // Get the light position in the local frame and 
+    // calculate the position of the correspding MPPC (at it's bin center) 
+    
+    double lightX = PMlocalPosition.x();
+    double lightY = PMlocalPosition.y();
+    double lightZ = PMlocalPosition.z();
+    // G4cout << "lightX = " << lightX << ", lightY = " << lightY << ", lightZ = " << lightZ << G4endl;
+    
+    double mppcX = -9999999999;
+    double mppcY = -9999999999;
+    double mppcZ = -9999999999;
+    persistencyManager->GetMPPCPosXY(lightX,lightY,mppcX,mppcY);
+    //G4cout << "mppc pos: X = " << mppcX << ", Y = " << mppcY << G4endl;
+    //persistencyManager->GetMPPCPosXZ(lightX,lightZ,mppcX,mppcZ);
+    //G4cout << "mppc pos: X = " << mppcX << ", Z = " << mppcZ << G4endl;
+    persistencyManager->GetMPPCPosYZ(lightY,lightZ,mppcY,mppcZ);
+    //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
+    
+    G4ThreeVector MPPCLocalPosition = G4ThreeVector(mppcX,mppcY,mppcZ);  
+    G4Track* track       = aStep->GetTrack();  
+    G4int trackid        = track->GetTrackID();
+    G4int parentid       = track->GetParentID();
+    G4double particle    = track->GetDefinition()->GetPDGEncoding();
+    G4double prestepTime = preStepPoint->GetGlobalTime();
+    
+    G4double edep_q      = edep;
+    
+    /////// 
+    // used in WAGASCI code
+    //
+    // volume information must be extracted from Touchable of "PreStepPoint" 
+    const G4VTouchable* Touchable = aStep->GetPreStepPoint()->GetTouchable();
+    G4int detID = Touchable->GetVolume(0)->GetCopyNo();
+    
+    ExN02TrackerHit* aHit  
+      = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);
+    aHit->SetNameDet    (touch_namedet);
+    //aHit->SetNameDet    (pm_namedet);  
+    trackerCollection->insert( aHit );
+  
+  } // if( persistencyManager->GetNavigDetName_Targ1()!="" )
 
   
   

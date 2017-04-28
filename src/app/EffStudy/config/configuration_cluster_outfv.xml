@@ -269,6 +269,100 @@
    </FGDPos2_Z>
 
 
+   <!-- SuperFGD 1 -->
+   <SuperFGDCubeEdge1>
+     10
+   </SuperFGDCubeEdge1>
+   <SuperFGDCubeNum1_X>
+     180
+   </SuperFGDCubeNum1_X>
+   <SuperFGDCubeNum1_Y>
+     60
+   </SuperFGDCubeNum1_Y>
+   <SuperFGDCubeNum1_Z>
+     130
+   </SuperFGDCubeNum1_Z>
+   <SuperFGDPos1_X>
+     0
+   </SuperFGDPos1_X>
+   <SuperFGDPos1_Y>
+     0
+   </SuperFGDPos1_Y>
+   <SuperFGDPos1_Z>
+     -1487 
+   </SuperFGDPos1_Z>
+
+   <!-- SuperFGD 2 -->
+   <SuperFGDCubeEdge2>
+     10
+   </SuperFGDCubeEdge2>
+
+   <SuperFGDCubeNum2_X>
+     10
+   </SuperFGDCubeNum2_X>
+   <SuperFGDCubeNum2_Y>
+     10
+   </SuperFGDCubeNum2_Y>
+   <SuperFGDCubeNum2_Z>
+     10
+   </SuperFGDCubeNum2_Z>
+
+   <SuperFGDPos2_X>
+     0
+   </SuperFGDPos2_X>
+   <SuperFGDPos2_Y>
+     0
+   </SuperFGDPos2_Y>
+   <SuperFGDPos2_Z>
+     0
+   </SuperFGDPos2_Z>
+
+
+
+   <!-- WAGASCI Empty -->
+
+   <WAGASCIEmptylength>
+     60
+   </WAGASCIEmptylength>
+   <WAGASCIEmptywidth>  
+     60
+   </WAGASCIEmptywidth>
+   <WAGASCIEmptyheight> 
+     60
+   </WAGASCIEmptyheight>
+
+   <WAGASCIEmptyPos_X>
+     0
+   </WAGASCIEmptyPos_X>
+   <WAGASCIEmptyPos_Y>
+     0
+   </WAGASCIEmptyPos_Y>
+   <WAGASCIEmptyPos_Z>
+     0
+   </WAGASCIEmptyPos_Z>
+
+   <!-- WAGASCI Water -->
+
+   <WAGASCIWaterlength>
+     130
+   </WAGASCIWaterlength>
+   <WAGASCIWaterwidth>  
+     186
+   </WAGASCIWaterwidth>
+   <WAGASCIWaterheight> 
+     60
+   </WAGASCIWaterheight>
+
+   <WAGASCIWaterPos_X>
+     0
+   </WAGASCIWaterPos_X>
+   <WAGASCIWaterPos_Y>
+     0
+   </WAGASCIWaterPos_Y>
+   <WAGASCIWaterPos_Z>
+     0
+   </WAGASCIWaterPos_Z>
+
 
    <!-- ToF Top Downstream -->    
    <ToFdefault_TopDown>
@@ -806,6 +900,19 @@
     false
    </UseFGD2>
 
+   <UseSuperFGD1>
+    false
+   </UseSuperFGD1>
+   <UseSuperFGD2>
+    false
+   </UseSuperFGD2>
+   <UseWAGASCIEmpty>
+    false
+   </UseWAGASCIEmpty>
+   <UseWAGASCIWater>
+    false
+   </UseWAGASCIWater>
+
    <UseToF_TopDown>
      false
    </UseToF_TopDown>
@@ -909,6 +1016,13 @@
    <InvisFGD2>
      false
    </InvisFGD2>
+
+   <InvisSuperFGD>
+     true
+   </InvisSuperFGD>
+   <InvisWAGASCI>
+     true
+   </InvisWAGASCI>
 
    <InvisToF_TopDown>
      false

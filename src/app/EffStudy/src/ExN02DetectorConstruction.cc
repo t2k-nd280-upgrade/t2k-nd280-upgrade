@@ -1667,19 +1667,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   const G4String cNamePhysiTarget2     = cParentNameTarget+"/Target2";
 
  
-
-
-  // 
-  // Set the detector name where the hit distance in target 
-  // is calculated with the PersistencyManager G4Navigator
-  //
-
-  InputPersistencyManager->SetHistoMovedTarg1(false);
-  InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);
-  
-  ///////////
-
-
   //------------------------------ 
   // Target 1 - Upstream - Carbon 
   //------------------------------
@@ -1824,7 +1811,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4String nameSuperFGD1 = fSuperFGDConstructor1->GetName();
 
   if( ND280XMLInput->GetXMLUseSuperFGD1() ){
-  
+        
     double edge = ND280XMLInput->GetXMLSuperFGDCubeEdge1();
     int cubenumX = ND280XMLInput->GetXMLSuperFGDCubeNum1_X();
     int cubenumY = ND280XMLInput->GetXMLSuperFGDCubeNum1_Y();
@@ -1857,6 +1844,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				     false,             // no boolean operations
 				     0);                 // copy number 
 
+    // 
+    // Set the detector name where the hit distance in target 
+    // is calculated with the PersistencyManager G4Navigator
+    //    
+    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
+    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
     //
     // Set histogram for MPPC positions
     // The MPPC size is the same as for the SuperFGD cube
@@ -2423,6 +2416,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   //--------- Visualization attributes ------------------------------- 
 
+  G4cout << "Visualization attributes" << G4endl;
+ 
   //logicWorld  ->SetVisAttributes(BoxVisAtt);  
   logicWorld->SetVisAttributes(G4VisAttributes::Invisible);
   //logicTracker->SetVisAttributes(BoxVisAtt);
@@ -2436,11 +2431,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseTarget2() )   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
   if( ND280XMLInput->GetXMLUseFGD1() )      logicFGD1->SetVisAttributes(FGDScintVisAtt);
   if( ND280XMLInput->GetXMLUseFGD2() )      logicFGD2->SetVisAttributes(FGDWaterVisAtt);
-  
-  //if( ND280XMLInput->GetXMLUseSuperFGD1() ) 
-  if(logicSuperFGD1) logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
-  //if( ND280XMLInput->GetXMLUseSuperFGD2() ) 
-  if(logicSuperFGD2) logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
+
+  if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
+  if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
 
   
   //--------- Set Step Limiter -------------------------------
@@ -2452,12 +2445,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //logicSideTPCUp  ->SetUserLimits(new G4UserLimits(cStepLimit));
   //logicSideTPCDown->SetUserLimits(new G4UserLimits(cStepLimit));
 
-
   // My
   //G4UserLimits *WorldUserLimits = new G4UserLimits();
   //WorldUserLimits->SetUserMinEkine(10*MeV);
   //logicWorld->SetUserLimits(WorldUserLimits);
 
+
+  // Store the geometry in the ROOT file
+
+  G4cout << "Store the geometry in the ROOT file" << G4endl;
 
   if(ND280XMLInput->GetXMLStoreGeometry()){
 

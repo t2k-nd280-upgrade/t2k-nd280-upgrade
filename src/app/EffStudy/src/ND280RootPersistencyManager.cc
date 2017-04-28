@@ -54,7 +54,7 @@ ND280RootPersistencyManager::ND280RootPersistencyManager()
       fEventTree(NULL), fND280UpEvent(NULL), 
       fND280XMLInput(),fEventFirst(-99999),fNEvents(-99999),
       fEventsNotSaved(0),
-      fNavigTarg1(NULL),fIsHistoMovedTarg1(false),
+      fNavigTarg1(NULL),fIsHistoMovedTarg1(false),fNavigDetExist(false),
       fMPPCProj2D_XY(NULL),fMPPCProj2D_XZ(NULL),fMPPCProj2D_YZ(NULL),
       fIsMPPCProjXY(true),fIsMPPCProjXZ(true),fIsMPPCProjYZ(true)
 {}
@@ -121,8 +121,8 @@ void ND280RootPersistencyManager::InitNavigator(G4VPhysicalVolume *logvolume,G4T
  
   if(GetNavigDetName_Targ1()==""){
     G4Exception("ND280RootPersistencyManager::InitNavigator",
-		"MyCode0002",FatalException,
-		"The volume for coordinate system has not been set yet!!!");
+    		"MyCode0002",FatalException,
+    		"The volume for coordinate system has not been set yet!!!");
   }
 
   if( !fNavigTarg1 ){     
@@ -183,6 +183,13 @@ void ND280RootPersistencyManager::InitNavigator(G4VPhysicalVolume *logvolume,G4T
 G4String ND280RootPersistencyManager::GetNavigHistoVolName(){ 
   int depth = fNavigHistoTarg1->GetDepth();
   return fNavigHistoTarg1->GetVolume(depth)->GetLogicalVolume()->GetName();
+};
+
+void ND280RootPersistencyManager::SetNavigDetName_Targ1(G4String name){
+  fNavigDetName_Targ1=name;
+  if(name=="") fNavigDetExist=false;
+  else         fNavigDetExist=true;
+  return;
 };
 
 
@@ -941,18 +948,6 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //   fEventsNotSaved = 0;
   // }  
 
-
-
-
-  // Store histograms
-  
-
-
-
-
-
-
-  
   return true;
 }
 
@@ -972,19 +967,25 @@ bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
   
   // Store histograms with MPPC 2D readout binning
 
-  TH2F *OutMPPCProj2D_XY = new TH2F(*fMPPCProj2D_XY);
-  OutMPPCProj2D_XY->Write();
-  OutMPPCProj2D_XY->SetName("OutMPPCProj2D_XY");
-  OutMPPCProj2D_XY->SetTitle("OutMPPCProj2D_XY");
-  TH2F *OutMPPCProj2D_XZ = new TH2F(*fMPPCProj2D_XZ);
-  OutMPPCProj2D_XZ->Write();
-  OutMPPCProj2D_XZ->SetName("OutMPPCProj2D_XZ");
-  OutMPPCProj2D_XZ->SetTitle("OutMPPCProj2D_XZ");  
-  TH2F *OutMPPCProj2D_YZ = new TH2F(*fMPPCProj2D_YZ);
-  OutMPPCProj2D_YZ->SetName("OutMPPCProj2D_YZ");
-  OutMPPCProj2D_YZ->SetTitle("OutMPPCProj2D_YZ");
-  OutMPPCProj2D_YZ->Write();
-
+  TH2F *OutMPPCProj2D_XY;
+  TH2F *OutMPPCProj2D_XZ;
+  TH2F *OutMPPCProj2D_YZ;
+  
+  if(fMPPCProj2D_XY){
+    OutMPPCProj2D_XY = new TH2F(*fMPPCProj2D_XY);
+    OutMPPCProj2D_XY->Write();
+    OutMPPCProj2D_XY->SetName("OutMPPCProj2D_XY");
+    OutMPPCProj2D_XY->SetTitle("OutMPPCProj2D_XY");
+    OutMPPCProj2D_XZ = new TH2F(*fMPPCProj2D_XZ);
+    OutMPPCProj2D_XZ->Write();
+    OutMPPCProj2D_XZ->SetName("OutMPPCProj2D_XZ");
+    OutMPPCProj2D_XZ->SetTitle("OutMPPCProj2D_XZ");  
+    OutMPPCProj2D_YZ = new TH2F(*fMPPCProj2D_YZ);
+    OutMPPCProj2D_YZ->SetName("OutMPPCProj2D_YZ");
+    OutMPPCProj2D_YZ->SetTitle("OutMPPCProj2D_YZ");
+    OutMPPCProj2D_YZ->Write();
+  }
+  
   return true;
 }
 
