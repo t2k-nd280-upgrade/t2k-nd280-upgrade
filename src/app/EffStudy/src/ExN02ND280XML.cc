@@ -127,7 +127,6 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("SuperFGDPos1_X"    ,fSuperFGDPos1_X);
     XML2Double("SuperFGDPos1_Y"    ,fSuperFGDPos1_Y);
     XML2Double("SuperFGDPos1_Z"    ,fSuperFGDPos1_Z);
-
     // SuperFGD 2
     XML2Double("SuperFGDCubeEdge2" ,fSuperFGDCubeEdge2);
     XML2Int("SuperFGDCubeNum2_X",fSuperFGDCubeNum2_X);
@@ -136,6 +135,21 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("SuperFGDPos2_X"    ,fSuperFGDPos2_X);
     XML2Double("SuperFGDPos2_Y"    ,fSuperFGDPos2_Y);
     XML2Double("SuperFGDPos2_Z"    ,fSuperFGDPos2_Z);
+
+    // WAGASCI Empty
+    XML2Double("WAGASCIEmptylength"   ,fWAGASCIEmptylength);
+    XML2Double("WAGASCIEmptywidth"    ,fWAGASCIEmptywidth);
+    XML2Double("WAGASCIEmptyheight"   ,fWAGASCIEmptyheight);
+    XML2Double("WAGASCIEmptyPos_X"    ,fWAGASCIEmptyPos_X);
+    XML2Double("WAGASCIEmptyPos_Y"    ,fWAGASCIEmptyPos_Y);
+    XML2Double("WAGASCIEmptyPos_Z"    ,fWAGASCIEmptyPos_Z);
+    // WAGASCI Water
+    XML2Double("WAGASCIWaterlength"   ,fWAGASCIWaterlength);
+    XML2Double("WAGASCIWaterwidth"    ,fWAGASCIWaterwidth);
+    XML2Double("WAGASCIWaterheight"   ,fWAGASCIWaterheight);
+    XML2Double("WAGASCIWaterPos_X"    ,fWAGASCIWaterPos_X);
+    XML2Double("WAGASCIWaterPos_Y"    ,fWAGASCIWaterPos_Y);
+    XML2Double("WAGASCIWaterPos_Z"    ,fWAGASCIWaterPos_Z);
 
     // ToF Top Downstream 
     XML2Bool("ToFdefault_TopDown"      ,fToFdefault_TopDown);
@@ -341,6 +355,10 @@ void ExN02ND280XML::SetInputs(){
     // Use SuperFGDs
     XML2Bool("UseSuperFGD1",fUseSuperFGD1);
     XML2Bool("UseSuperFGD2",fUseSuperFGD2);
+    // Use WAGASCI Empty
+    XML2Bool("UseWAGASCIEmpty",fUseWAGASCIEmpty);
+    // Use WAGASCI Water
+    XML2Bool("UseWAGASCIWater",fUseWAGASCIWater);
     // Use Downstream ToFs
     XML2Bool("UseToF_TopDown" ,fUseToF_TopDown);
     XML2Bool("UseToF_BotDown" ,fUseToF_BotDown);
@@ -382,7 +400,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("InvisFGD1"     ,fInvisFGD1);
     XML2Bool("InvisFGD2"     ,fInvisFGD2);
     XML2Bool("InvisSuperFGD",fInvisSuperFGD);
-    //XML2Bool("InvisSuperFGD2",fInvisSuperFGD2);
+    XML2Bool("InvisWAGASCI",fInvisWAGASCI);
     //
     XML2Bool("InvisToF_TopDown"     ,fInvisToF_TopDown);
     XML2Bool("InvisToF_BotDown"     ,fInvisToF_BotDown);

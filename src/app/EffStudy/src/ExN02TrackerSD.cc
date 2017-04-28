@@ -39,7 +39,12 @@
 #include "G4SDManager.hh"
 #include "G4ios.hh"
 
+#include "G4Navigator.hh"
+#include "G4NavigationHistory.hh"
 
+#include "ND280RootPersistencyManager.hh"
+
+#include <TH2F.h>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -72,13 +77,253 @@ void ExN02TrackerSD::Initialize(G4HCofThisEvent* HCE)
 
 G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 {
-  
+
   //if(NSteps_==0){
 
   G4double edep = aStep->GetTotalEnergyDeposit();
   
   if(edep==0.) return false;
+
+  G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+    
+
+  // Volume information must be extracted from Touchable of "PreStepPoint"
+
+  G4TouchableHandle theTouchable = preStepPoint->GetTouchableHandle();
+  G4String touch_namedet = theTouchable->GetVolume()->GetLogicalVolume()->GetName();
+  G4VPhysicalVolume * worldVolumePointer = theTouchable->GetHistory()->GetVolume(0);
+ 
   
+  // Take the position in the local coordinate system (defined in DetectorConstruction)
+
+  ND280RootPersistencyManager* persistencyManager
+    = ND280RootPersistencyManager::GetInstance();
+  
+  if( !persistencyManager->GetNavigTarg1() ){     
+    persistencyManager->InitNavigator(worldVolumePointer,preStepPoint->GetPosition()); 
+  }
+
+  if( !persistencyManager->GetHistoMovedTarg1() ){
+    G4Exception("ExN02TrackerSD::ProcessHits",
+		"MyCode0002",FatalException,
+		"Navigator is initialized but no movement through history has been done!");    
+  }
+
+  //G4cout << "The local coordinate system is: "  << persistencyManager->GetNavigHistoVolName() << G4endl;
+
+  const G4NavigationHistory *pmHistory = persistencyManager->GetNavigHistoTarg1();
+  
+  
+  G4String pm_namedet_0 = pmHistory->GetVolume(0)->GetName();
+  G4String pm_namedet_2 = pmHistory->GetVolume(2)->GetName(); 
+  G4int pm_historyDepth = pmHistory->GetDepth();
+  G4int pm_maxDepth     = pmHistory->GetMaxDepth();
+  G4String pm_namedet   = pmHistory->GetVolume(pm_historyDepth)->GetName();
+  
+  //G4cout << " "
+  //<< "pm_historyDepth = " << pm_historyDepth << " --> " << pmHistory->GetVolume(pm_historyDepth)->GetLogicalVolume()->GetName() << G4endl
+  //<< " - touch_namedet = " << touch_namedet << G4endl
+  //<< " - pm_namedet_0 = " << pm_namedet_0
+  //<< " - pm_namedet_2 = " << pm_namedet_2
+  //<< G4endl;
+  
+  G4ThreeVector PMworldPosition = preStepPoint->GetPosition();
+  G4ThreeVector PMlocalPosition = pmHistory->
+    GetTopTransform().TransformPoint(PMworldPosition);
+  
+  //  G4cout << "PMWorldPosition = " 
+  //	 << PMworldPosition.x() << ", "
+  //	 << PMworldPosition.y() << ", "
+  //	 << PMworldPosition.z() << G4endl;
+  //
+  // G4cout << "PMLocPosition = " 
+  // 	 << PMlocalPosition.x() << ", "
+  // 	 << PMlocalPosition.y() << ", "
+  // 	 << PMlocalPosition.z() << G4endl;
+  // G4cout << G4endl;
+
+
+
+  // Get the light position in the local frame and 
+  // calculate the position of the correspding MPPC (at it's bin center) 
+  
+  double lightX = PMlocalPosition.x();
+  double lightY = PMlocalPosition.y();
+  double lightZ = PMlocalPosition.z();
+  // G4cout << "lightX = " << lightX << ", lightY = " << lightY << ", lightZ = " << lightZ << G4endl;
+  
+  double mppcX = -9999999999;
+  double mppcY = -9999999999;
+  double mppcZ = -9999999999;
+  persistencyManager->GetMPPCPosXY(lightX,lightY,mppcX,mppcY);
+  //G4cout << "mppc pos: X = " << mppcX << ", Y = " << mppcY << G4endl;
+  //persistencyManager->GetMPPCPosXZ(lightX,lightZ,mppcX,mppcZ);
+  //G4cout << "mppc pos: X = " << mppcX << ", Z = " << mppcZ << G4endl;
+  persistencyManager->GetMPPCPosYZ(lightY,lightZ,mppcY,mppcZ);
+  //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
+  
+  G4ThreeVector MPPCLocalPosition = G4ThreeVector(mppcX,mppcY,mppcZ);  
+  G4Track* track       = aStep->GetTrack();  
+  G4int trackid        = track->GetTrackID();
+  G4int parentid       = track->GetParentID();
+  G4double particle    = track->GetDefinition()->GetPDGEncoding();
+  G4double prestepTime = preStepPoint->GetGlobalTime();
+
+  G4double edep_q      = edep;
+    
+  /////// 
+  // used in WAGASCI code
+  //
+  // volume information must be extracted from Touchable of "PreStepPoint" 
+  const G4VTouchable* Touchable = aStep->GetPreStepPoint()->GetTouchable();
+  G4int detID = Touchable->GetVolume(0)->GetCopyNo();
+
+  ExN02TrackerHit* aHit  
+    = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);
+  aHit->SetNameDet    (touch_namedet);
+  //aHit->SetNameDet    (pm_namedet);  
+  trackerCollection->insert( aHit );
+
+  
+  
+  
+  
+
+
+
+  /*
+
+  //////////////// My Navigator ////////////////
+  
+  G4Navigator* myNavigator = new G4Navigator();
+  myNavigator->SetWorldVolume(worldVolumePointer);
+  myNavigator->LocateGlobalPointAndSetup(preStepPoint->GetPosition()); // Set it to lowest daughter that contains that position
+  G4TouchableHistoryHandle myTouchable =
+    myNavigator->CreateTouchableHistoryHandle();
+
+  
+  G4int PMdepth = myTouchable->GetHistory()->GetDepth();
+  for (G4int i = 0; i<PMdepth-1; ++i) {
+    G4String touch_detname = myTouchable->GetVolume()->GetLogicalVolume()->GetName();
+    G4cout << "touch_detname = " << touch_detname << G4endl;
+    if(touch_detname == "/t2k/OA/Magnet/Basket/Target1") break;    
+    myTouchable->MoveUpHistory(1);
+  }
+  
+
+  G4int my_detID_0 = myTouchable->GetCopyNumber(0); // "/t2k/.../SuperFGD1/CubeScint/Core"
+  G4int my_detID_2 = myTouchable->GetCopyNumber(2); // "/t2k/.../SuperFGD1/cubeDirZ"
+  G4String my_namedet_0 = myTouchable->GetVolume(0)->GetName();
+  G4String my_namedet_2 = myTouchable->GetVolume(2)->GetName(); 
+  G4int my_historyDepth = myTouchable->GetHistory()->GetDepth();
+  G4int my_maxDepth     = myTouchable->GetHistory()->GetMaxDepth();
+
+  //G4cout << my_namedet_0 << " " << my_namedet_2 << G4endl;
+  
+  //G4cout << G4endl;
+  //G4cout << "my_historyDepth = " << my_historyDepth << " --> " << myTouchable->GetHistory()->GetVolume(my_historyDepth)->GetLogicalVolume()->GetName() << G4endl
+  //<< G4endl;  
+
+  G4ThreeVector myworldPosition = preStepPoint->GetPosition();
+  G4ThreeVector mylocalPosition = myTouchable->GetHistory()->
+    GetTopTransform().TransformPoint(myworldPosition);
+  
+  G4cout << "myWorldPosition = " 
+	 << myworldPosition.x() << ", "
+	 << myworldPosition.y() << ", "
+	 << myworldPosition.z() << G4endl;
+
+  G4cout << "myLocPosition = " 
+	 << mylocalPosition.x() << ", "
+	 << mylocalPosition.y() << ", "
+	 << mylocalPosition.z() << G4endl;
+  G4cout << G4endl;
+
+
+  if(PMlocalPosition.x() != mylocalPosition.x() || 
+     PMlocalPosition.y() != mylocalPosition.y() ||
+     PMlocalPosition.z() != mylocalPosition.z()
+     ){
+
+    G4cout << "PMlocalPosition: " 
+	   << PMlocalPosition.x() << " " 
+	   << PMlocalPosition.y() << " " 
+	   << PMlocalPosition.z() << " " 
+	   << G4endl;
+
+    G4cout << "mylocalPosition: " 
+	   << mylocalPosition.x() << " " 
+	   << mylocalPosition.y() << " " 
+	   << mylocalPosition.z() << " " 
+	   << G4endl;
+    
+    exit(1);
+  }
+*/
+
+
+  
+  /////////////////////////////////////////////////////
+  //                                                 //
+  // N.B. MyNavigator should be deleted by myself!!! //
+  //                                                 //
+  /////////////////////////////////////////////////////
+
+  /////////////////////////////////// 
+
+
+
+  /*
+
+  G4int detID_0 = theTouchable->GetCopyNumber(0); // "/t2k/.../SuperFGD1/CubeScint/Core"
+  G4int detID_2 = theTouchable->GetCopyNumber(2); // "/t2k/.../SuperFGD1/cubeDirZ"
+  G4String namedet_0 = theTouchable->GetVolume(0)->GetName();
+  G4String namedet_2 = theTouchable->GetVolume(2)->GetName(); 
+  G4int historyDepth = theTouchable->GetHistory()->GetDepth();
+  G4int maxDepth     = theTouchable->GetHistory()->GetMaxDepth();
+  
+  G4cout << "historyDepth = " << historyDepth << " --> " << theTouchable->GetHistory()->GetVolume(historyDepth)->GetLogicalVolume()->GetName() << G4endl
+	 << G4endl;  
+  
+  // Look at http://geant4.cern.ch/support/faq.shtml
+  G4ThreeVector worldPosition = preStepPoint->GetPosition();
+  G4ThreeVector localPosition = theTouchable->GetHistory()->
+    GetTopTransform().TransformPoint(worldPosition);
+  
+  G4cout << "WorldPosition = " 
+	 << worldPosition.x() << ", "
+	 << worldPosition.y() << ", "
+	 << worldPosition.z() << G4endl;
+
+  G4cout << "LocPosition = " 
+	 << localPosition.x() << ", "
+	 << localPosition.y() << ", "
+	 << localPosition.z() << G4endl;
+  G4cout << G4endl;
+
+  */
+
+  // G4int nphysdaught = Touchable->GetVolume(0)->GetNoDaughters();
+  // for(int i=0;i<nphysdaught;i++){
+  //   G4VPhysicalVolume *PhysDaughter = Touchable->GetVolume(0)->GetDaughter(i);    
+  // }
+  
+  /*  
+  G4cout << "detID_0 = " << detID_0 << " --> " << namedet_0 
+	 << " / detID_2 = " << detID_2 << " --> " << namedet_2
+	 << G4endl;
+  */
+
+
+
+
+
+  
+  
+
+
+  /*
+
   // The geometry is stored in the PreStepPoint()
   
   G4StepPoint* prestep  = aStep->GetPreStepPoint();
@@ -153,7 +398,7 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   ExN02TrackerHit* newHit = new ExN02TrackerHit();
   //newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
   //->GetCopyNumber());
-    
+ 
   newHit->SetTrackID    (trackid);
   newHit->SetParentID   (parentid);
   newHit->SetEdep       (edep);
@@ -173,13 +418,18 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   trackerCollection->insert( newHit );
   
   //newHit->Print();
-  //newHit->Draw();
-  
+  //newHit->Draw();  
   //}
-  
+
+  */
+
+
+
+
   NSteps_++;
-  
+
   return true;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

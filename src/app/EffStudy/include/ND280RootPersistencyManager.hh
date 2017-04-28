@@ -25,6 +25,13 @@ class G4VHitsCollection;
 #include <TND280UpTrack.hh>
 #include <TND280UpTrackPoint.hh>
 
+#include "G4Navigator.hh"
+#include "G4NavigationHistory.hh"
+#include "G4LogicalVolume.hh"
+#include "G4VPhysicalVolume.hh"
+
+#include <TH2F.h> 
+
 /// Provide a root output for the geant 4 events.
 class ND280RootPersistencyManager : public ND280PersistencyManager {
 public:
@@ -62,6 +69,64 @@ public:
   void OpenXML(G4String filename);
   ExN02ND280XML *GetXMLInput(){return fND280XMLInput;};
   /////
+
+  // 
+  // Attach the Navigator to this singleton class to reach it from everywhere 
+  // Needed to compute the distance of the hit in the target 
+  // (WAGASCI, SuperFGD, etc...) in the light read-out reference
+  // system, i.e. the mother volume of the Target (see DetectorConstruction)
+  //
+  void InitNavigator(G4VPhysicalVolume *logvolume,G4ThreeVector position);
+
+  G4Navigator *fNavigTarg1;
+  G4Navigator *GetNavigTarg1(){return fNavigTarg1;};  
+
+  const G4NavigationHistory *fNavigHistoTarg1;
+  const G4NavigationHistory *GetNavigHistoTarg1(){return fNavigHistoTarg1;};  
+
+  G4String GetNavigHistoVolName();
+
+  G4bool fIsHistoMovedTarg1;
+  void   SetHistoMovedTarg1(bool val){fIsHistoMovedTarg1=val;};
+  G4bool GetHistoMovedTarg1(){return fIsHistoMovedTarg1;};
+  
+  G4String fNavigDetName_Targ1;
+  void SetNavigDetName_Targ1(G4String name){fNavigDetName_Targ1=name;};
+  G4String GetNavigDetName_Targ1(){return fNavigDetName_Targ1;};
+
+  // Define the position of the Target MPPCs  
+  // Same reference system as the navigator 
+  // i.e. set in DetectorConstruction
+  //
+
+  TH2F *fMPPCProj2D_XY;
+  TH2F *fMPPCProj2D_XZ;
+  TH2F *fMPPCProj2D_YZ;
+
+  TH2F *GetMPPCProj2D_XY(){ return fMPPCProj2D_XY;};
+  TH2F *GetMPPCProj2D_XZ(){ return fMPPCProj2D_XZ;};
+  TH2F *GetMPPCProj2D_YZ(){ return fMPPCProj2D_YZ;};
+
+  void InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY, bool IsProjXZ, bool IsProjYZ); 
+
+  G4bool fIsMPPCProjXY;  
+  void SetIsMPPCProjXY(bool isproj){fIsMPPCProjXY=isproj;}
+  G4bool GetIsMPPCProjXY(){return fIsMPPCProjXY;}
+
+  G4bool fIsMPPCProjXZ;  
+  void SetIsMPPCProjXZ(bool isproj){fIsMPPCProjXZ=isproj;}
+  G4bool GetIsMPPCProjXZ(){return fIsMPPCProjXZ;}
+
+  G4bool fIsMPPCProjYZ;  
+  void SetIsMPPCProjYZ(bool isproj){fIsMPPCProjYZ=isproj;}
+  G4bool GetIsMPPCProjYZ(){return fIsMPPCProjYZ;}
+ 
+  void GetMPPCPosXY(double lightX, double lightY, double &mppcX, double &mppcY);
+  void GetMPPCPosXZ(double lightX, double lightZ, double &mppcX, double &mppcZ);
+  void GetMPPCPosYZ(double lightY, double lightZ, double &mppcY, double &mppcZ);
+  
+  /////
+
   
   void SetEventFirst(int first){fEventFirst=first;};
   void SetNEvents(int num){fNEvents=num;};

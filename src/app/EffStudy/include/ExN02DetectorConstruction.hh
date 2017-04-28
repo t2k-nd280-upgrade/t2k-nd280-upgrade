@@ -400,6 +400,14 @@ private:
   G4LogicalVolume*   logicSuperFGD2;
   G4VPhysicalVolume* physiSuperFGD2;
 
+  G4Box*             solidWAGASCIEmpty;  
+  G4LogicalVolume*   logicWAGASCIEmpty;
+  G4VPhysicalVolume* physiWAGASCIEmpty;
+
+  G4Box*             solidWAGASCIWater;  
+  G4LogicalVolume*   logicWAGASCIWater;
+  G4VPhysicalVolume* physiWAGASCIWater;
+
   G4Box*             solidTracker;  // pointer to the solid Tracker
   G4LogicalVolume*   logicTracker;  // pointer to the logical Tracker
   G4VPhysicalVolume* physiTracker;  // pointer to the physical Tracker

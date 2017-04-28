@@ -8,6 +8,8 @@
 #include "ExN02VertexInfo.hh"
 #include "ExN02Constants.hh"
 
+#include "ExN02TrackerHit.hh"
+
 #include <memory>
 #include <cmath>
 #include <algorithm>
@@ -42,13 +44,20 @@
 #include <TGeoMedium.h>
 #include <TGeoPgon.h>
 
+#include "G4HCofThisEvent.hh"
+#include "G4VHitsCollection.hh"
+
 TROOT root("ROOT","Root of Everything");
 
 ND280RootPersistencyManager::ND280RootPersistencyManager() 
     : ND280PersistencyManager(), fOutput(NULL),
       fEventTree(NULL), fND280UpEvent(NULL), 
       fND280XMLInput(),fEventFirst(-99999),fNEvents(-99999),
-      fEventsNotSaved(0) {}
+      fEventsNotSaved(0),
+      fNavigTarg1(NULL),fIsHistoMovedTarg1(false),
+      fMPPCProj2D_XY(NULL),fMPPCProj2D_XZ(NULL),fMPPCProj2D_YZ(NULL),
+      fIsMPPCProjXY(true),fIsMPPCProjXZ(true),fIsMPPCProjYZ(true)
+{}
 
 ND280RootPersistencyManager* ND280RootPersistencyManager::GetInstance() {
     ND280RootPersistencyManager *current 
@@ -71,10 +80,159 @@ bool ND280RootPersistencyManager::IsOpen() {
   return false;
 }
 
-
 void ND280RootPersistencyManager::OpenXML(G4String filename){
   fND280XMLInput = new ExN02ND280XML(filename); 
 }
+
+void ND280RootPersistencyManager::InitNavigator(G4VPhysicalVolume *logvolume,G4ThreeVector position){
+  
+  /*
+    //
+    // FROM GEANT4 GUIDE 4.10.1
+    //
+    G4Navigator methods:
+    - SetWorldVolume()
+      Sets the first volume in the hierarchy. It must be unrotated and untranslated from the origin.
+    - LocateGlobalPointAndSetup()
+      Locates the volume containing the specified global point. This involves a traverse of the hierarchy, 
+      requiring the computation of compound transformations, testing replicated and parameterised volumes (etc). 
+      To improve efficiency this search may be performed relative to the last, and this is the recommended way 
+      of calling the function. A 'relative' search may be used for the first call of the function which will 
+      result in the search defaulting to a search from the root node of the hierarchy. 
+      Searches may also be performed using a G4TouchableHistory.
+    - LocateGlobalPointAndUpdateTouchableHandle()
+      First, search the geometrical hierarchy like the above method LocateGlobalPointAndSetup(). Then
+      use the volume found and its navigation history to update the touchable.
+    - ComputeStep()
+      Computes the distance to the next boundary intersected along the specified unit 
+      direction from a specified point. The point must be have been located prior to calling ComputeStep().
+      When calling ComputeStep(), a proposed physics step is passed. If it can be determined that 
+      the first intersection lies at or beyond that distance then kInfinity is returned. 
+      In any case, if the returned step is greater than the physics step, the physics step must be taken.
+    - SetGeometricallyLimitedStep()
+      Informs the navigator that the last computed step was taken in its entirety. 
+      This enables entering/exiting optimisation, and should be called prior to calling LocateGlobalPointAndSetup().
+    - CreateTouchableHistory()
+    Creates a G4TouchableHistory object, for which the caller has deletion responsibility. 
+    The 'touchable' volume is the volume returned by the last Locate operation. 
+    The object includes a copy of the current NavigationHistory, enabling the efficient relocation 
+    of points in/close to the current volume in the hierarchy.  
+  */
+ 
+  if(GetNavigDetName_Targ1()==""){
+    G4Exception("ND280RootPersistencyManager::InitNavigator",
+		"MyCode0002",FatalException,
+		"The volume for coordinate system has not been set yet!!!");
+  }
+
+  if( !fNavigTarg1 ){     
+    fNavigTarg1 = new G4Navigator();
+  }
+
+  fNavigTarg1->SetWorldVolume(logvolume);
+  fNavigTarg1->LocateGlobalPointAndSetup(position); // This chooses the local volume. Update it at each new hit!!!  
+  
+  G4TouchableHistoryHandle Touchable =  
+    fNavigTarg1->CreateTouchableHistoryHandle(); 
+  
+  G4int depth = Touchable->GetHistory()->GetDepth();
+
+  bool CoorSystVolExist = false;
+
+  for (G4int i = 0; i<depth-1; ++i) {
+    G4String touch_detname = Touchable->GetVolume()->GetLogicalVolume()->GetName();
+    if(touch_detname == GetNavigDetName_Targ1()){
+      CoorSystVolExist = true;
+      break;            
+    }
+    Touchable->MoveUpHistory(1);
+  }
+
+  if(!CoorSystVolExist){
+    G4Exception("ND280RootPersistencyManager::InitNavigator",
+		"MyCode0002",FatalException,
+		"The volume for coordinate system doesn't exist!!!");
+  }
+
+  //fNavigHistoTarg1 = Touchable->GetHistory(); // if I do this at the next hit it starts again from the most daughter volume
+  fNavigHistoTarg1 = new G4NavigationHistory(*(Touchable->GetHistory()));
+  
+  SetHistoMovedTarg1(true); // define whether you can use the history or not
+
+
+  /*
+  G4String navig_namedet_0 = fNavigHistoTarg1->GetVolume(0)->GetName();
+  G4String navig_namedet_2 = fNavigHistoTarg1->GetVolume(2)->GetName(); 
+  G4cout << " "
+	 << " - navig_namedet_0 = " << navig_namedet_0
+	 << " - navig_namedet_2 = " << navig_namedet_2
+	 << G4endl;
+
+  G4String touch_namedet_0 = Touchable->GetVolume(0)->GetName();
+  G4String touch_namedet_2 = Touchable->GetVolume(2)->GetName(); 
+  G4cout << " "
+	 << " - touch_namedet_0 = " << touch_namedet_0
+	 << " - touch_namedet_2 = " << touch_namedet_2
+	 << G4endl;
+  exit(1);
+  */
+
+}
+
+
+G4String ND280RootPersistencyManager::GetNavigHistoVolName(){ 
+  int depth = fNavigHistoTarg1->GetDepth();
+  return fNavigHistoTarg1->GetVolume(depth)->GetLogicalVolume()->GetName();
+};
+
+
+void ND280RootPersistencyManager::InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY=true, bool IsProjXZ=true, bool IsProjYZ=true){
+  
+  SetIsMPPCProjXY(IsProjXY);
+  SetIsMPPCProjXZ(IsProjXZ);
+  SetIsMPPCProjYZ(IsProjYZ);
+  
+  double minX = -width/2.;
+  double maxX = +width/2.;
+  double minY = -height/2.;
+  double maxY = +height/2.;
+  double minZ = -length/2.;
+  double maxZ = +length/2.;
+ 
+  fMPPCProj2D_XY 
+    = new TH2F("fMPPCProj2D_XY","fMPPCProj2D_XY",numX,minX,maxX,numY,minY,maxY);
+  fMPPCProj2D_XZ 
+    = new TH2F("fMPPCProj2D_XZ","fMPPCProj2D_XZ",numX,minX,maxX,numZ,minZ,maxZ);
+  fMPPCProj2D_YZ 
+    = new TH2F("fMPPCProj2D_YZ","fMPPCProj2D_YZ",numY,minY,maxY,numZ,minZ,maxZ);
+};
+
+void ND280RootPersistencyManager::GetMPPCPosXY(double lightX,double lightY, double &mppcX,double &mppcY){  
+  int binX = fMPPCProj2D_XY->GetXaxis()->FindBin(lightX);
+  mppcX = fMPPCProj2D_XY->GetXaxis()->GetBinCenter(binX);
+  int binY = fMPPCProj2D_XY->GetYaxis()->FindBin(lightY);
+  mppcY = fMPPCProj2D_XY->GetYaxis()->GetBinCenter(binY);  
+};
+								  
+void ND280RootPersistencyManager::GetMPPCPosXZ(double lightX,double lightZ, double &mppcX,double &mppcZ){
+  int binX = fMPPCProj2D_XZ->GetXaxis()->FindBin(lightX);
+  mppcX = fMPPCProj2D_XZ->GetXaxis()->GetBinCenter(binX);  
+  int binZ = fMPPCProj2D_XZ->GetYaxis()->FindBin(lightZ);
+  mppcZ = fMPPCProj2D_XZ->GetYaxis()->GetBinCenter(binZ);  
+};
+
+void ND280RootPersistencyManager::GetMPPCPosYZ(double lightY,double lightZ, double &mppcY,double &mppcZ){
+  int binY = fMPPCProj2D_YZ->GetXaxis()->FindBin(lightY);
+  mppcY = fMPPCProj2D_YZ->GetXaxis()->GetBinCenter(binY);  
+  int binZ = fMPPCProj2D_YZ->GetYaxis()->FindBin(lightZ);
+  mppcZ = fMPPCProj2D_YZ->GetYaxis()->GetBinCenter(binZ);  
+};
+
+
+
+
+
+
 
 
 bool ND280RootPersistencyManager::Open(G4String filename) {
@@ -116,7 +274,7 @@ bool ND280RootPersistencyManager::Close() {
   }
   
   fOutput->cd();
-  fOutput->Write();
+  fOutput->Write(); // store the tree (actually all the tobjects in memory)
   fOutput->Close();
   
   G4cout << "Output file " << GetFilename() << " closed." << G4endl;
@@ -132,10 +290,40 @@ bool ND280RootPersistencyManager::Close() {
 }
 
 bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
- 
-  //G4cout << "ND280RootPersistencyManager::Store" << G4endl;
-  //return false;
-  //exit(1);
+
+  //
+  // Get the stored hits
+  //
+  
+  G4HCofThisEvent* hce = anEvent->GetHCofThisEvent();
+  if (!hce) 
+    {
+      G4ExceptionDescription msg;
+      msg << "No hits collection of this event found." << G4endl; 
+      G4Exception("ExN02EventAction::EndOfEventAction()",
+		  "ExN02Code001", JustWarning, msg);
+      return false;
+    }   
+  
+  if (!hce) return false;
+  G4SDManager *sdM = G4SDManager::GetSDMpointer();
+  G4HCtable *hcT = sdM->GetHCtable();
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
   
   if (!fOutput) {
     G4ExceptionDescription msg;
@@ -151,6 +339,81 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //std::auto_ptr<TND280UpEvent> fND280UpEvent(new TND280UpEvent());  
   fND280UpEvent->SetEventID(anEvent->GetEventID());  
   
+
+
+
+
+
+
+
+
+
+  //
+  // Store the hits
+  // 
+
+  for (int i=0; i<hcT->entries(); ++i) {                                          
+                                            
+    G4String SDname = hcT->GetSDname(i);
+    G4String HCname = hcT->GetHCname(i);
+    
+    // The collection name is given by <detector name>/<Primitive Scorer name>.    
+
+    G4cout << "Sensitive detector: " << SDname+"/"+HCname << G4endl;
+    
+    int HCId = sdM->GetCollectionID(SDname+"/"+HCname);
+    G4VHitsCollection* g4Hits = hce->GetHC(HCId);
+    if (g4Hits->GetSize()<1) continue;
+    
+    G4int n_hit = g4Hits->GetSize();
+    std::cout << "# of hits = " << n_hit << std::endl;
+    
+    for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {                 
+              
+      ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));    
+
+      G4int parentid = g4Hit->GetParentID();
+      G4int detid = g4Hit->GetDetID();
+      G4int pdg = g4Hit->GetParticle();
+      G4int trkid = g4Hit->GetTrackID();
+      G4double edep = g4Hit->GetEdep();
+      G4double edep_q = g4Hit->GetEdepQ();
+      G4ThreeVector pos = g4Hit->GetPosition();
+      
+      G4double time = g4Hit->GetTime();
+      string detname = g4Hit->GetNameDet();
+      
+      if(g4Hit->GetParentID()==0){
+	
+	TND280UpHit *nd280Hit = new TND280UpHit();
+	nd280Hit->SetHitID(h);
+	nd280Hit->SetDetID(detid);
+	nd280Hit->SetPDG(pdg);
+	nd280Hit->SetTrackID(trkid);
+	nd280Hit->SetParentID(parentid);	
+	nd280Hit->SetEdep(edep);
+	nd280Hit->SetEdep_Q(edep_q);
+	nd280Hit->SetLocPosX(pos.x());
+	nd280Hit->SetLocPosY(pos.y());
+	nd280Hit->SetLocPosZ(pos.z());
+	nd280Hit->SetTime(time);
+	nd280Hit->SetDetName(detname);
+	
+	fND280UpEvent->AddHit(nd280Hit);
+      }
+      
+    } // end loop over hits    
+  } // end loop over hit containers
+
+  
+
+
+
+
+
+
+
+
 
   //
   // Store the primary Vertices
@@ -677,12 +940,52 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   //   fEventTree->AutoSave("SaveSelf");
   //   fEventsNotSaved = 0;
   // }  
+
+
+
+
+  // Store histograms
+  
+
+
+
+
+
+
   
   return true;
 }
 
 bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
-  return false;
+  
+  // Not used in nd280mc
+
+  if (!fOutput) {
+    G4ExceptionDescription msg;
+    msg << "No Output File" << G4endl; 
+    G4Exception("ND280RootPersistencyManager::Store",
+   		"ExN02Code001",FatalException, msg);
+    return false;
+  }  
+
+  fOutput->cd();
+  
+  // Store histograms with MPPC 2D readout binning
+
+  TH2F *OutMPPCProj2D_XY = new TH2F(*fMPPCProj2D_XY);
+  OutMPPCProj2D_XY->Write();
+  OutMPPCProj2D_XY->SetName("OutMPPCProj2D_XY");
+  OutMPPCProj2D_XY->SetTitle("OutMPPCProj2D_XY");
+  TH2F *OutMPPCProj2D_XZ = new TH2F(*fMPPCProj2D_XZ);
+  OutMPPCProj2D_XZ->Write();
+  OutMPPCProj2D_XZ->SetName("OutMPPCProj2D_XZ");
+  OutMPPCProj2D_XZ->SetTitle("OutMPPCProj2D_XZ");  
+  TH2F *OutMPPCProj2D_YZ = new TH2F(*fMPPCProj2D_YZ);
+  OutMPPCProj2D_YZ->SetName("OutMPPCProj2D_YZ");
+  OutMPPCProj2D_YZ->SetTitle("OutMPPCProj2D_YZ");
+  OutMPPCProj2D_YZ->Write();
+
+  return true;
 }
 
 bool ND280RootPersistencyManager::Store(const G4VPhysicalVolume* aWorld) {

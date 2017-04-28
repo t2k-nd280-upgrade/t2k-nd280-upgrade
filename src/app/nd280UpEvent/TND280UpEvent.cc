@@ -26,6 +26,9 @@ TND280UpEvent::TND280UpEvent(){
 
   fNVertices = 0;
   fListOfVertices = new TList;
+
+  fNHits = 0;
+  fListOfHits = new TList;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -35,11 +38,20 @@ TND280UpEvent::~TND280UpEvent(){
 
   fEventID = -9999999;
 
+  //fListOfTracks->SetOwner(true);
   fListOfTracks->Delete();
   delete fListOfTracks;
+  //fListOfTracks = 0;
 
+  //fListOfVertices->SetOwner(true);
   fListOfVertices->Delete();
   delete fListOfVertices;
+  //fListOfVertices = 0;
+
+  //fListOfHits->SetOwner(true);
+  fListOfHits->Delete();
+  delete fListOfHits;
+  //fListOfHits = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   
@@ -93,6 +105,29 @@ TND280UpVertex * TND280UpEvent::GetVertex(int vtxid)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void TND280UpEvent::AddHit(TND280UpHit *hit)
+{
+  fListOfHits->Add(hit);
+  fNHits = fListOfHits->GetEntries(); // Update # of hits in the event
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  
+
+TND280UpHit * TND280UpEvent::GetHit(int hitid)
+{
+  TObject *objhit = fListOfHits->At(hitid);
+  if(!objhit){
+    cerr << endl;
+    cerr << "TND280UpEvent::GetHit" << endl;
+    cerr << "The index " << hitid << " is out of range" << endl;
+    cerr << endl;
+    exit(1);
+  }
+  TND280UpHit *hit = dynamic_cast<TND280UpHit*>(objhit); 
+  return hit;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo...... 
 void TND280UpEvent::PrintEvent()
 {
   cout << endl;
@@ -104,6 +139,7 @@ void TND280UpEvent::PrintEvent()
   for(int ivtx=0;ivtx<fNVertices;ivtx++){
     cout << " - " << GetVertex(ivtx)->GetVertexName() << endl;
   }
+  cout << "# of hits: " << fNHits << endl;
   cout << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;
   cout << endl;

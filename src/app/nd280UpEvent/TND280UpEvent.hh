@@ -22,6 +22,7 @@
 
 #include "TND280UpTrack.hh"
 #include "TND280UpVertex.hh"
+#include "TND280UpHit.hh"
 
 using namespace std;
 
@@ -39,6 +40,10 @@ public :
   void AddTrack(TND280UpTrack *track);
   TND280UpTrack *GetTrack(int trkid);
   int GetNTracks(){return fNTracks;};
+
+  void AddHit(TND280UpHit *hit);
+  TND280UpHit *GetHit(int hitid);
+  int GetNHits(){return fNHits;};
   
   void SetEventID(int id){fEventID=id;};  
   int  GetEventID(){return fEventID;};
@@ -55,6 +60,10 @@ private :
   int fNVertices;  
   TList *GetListOfVertices(){return fListOfVertices;};
   
+  TList *fListOfHits;
+  int fNHits;  
+  TList *GetListOfHits(){return fListOfHits;};
+
   int fEventID;
   
   ClassDef(TND280UpEvent,1)

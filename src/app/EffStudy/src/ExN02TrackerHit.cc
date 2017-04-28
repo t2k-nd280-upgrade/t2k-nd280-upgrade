@@ -37,7 +37,43 @@
 #include "G4Colour.hh"
 #include "G4VisAttributes.hh"
 
+#include <fstream>
+#include "Const.hh"
+
+#define SideView 0 // resolution of vertical-direction
+
 G4Allocator<ExN02TrackerHit> ExN02TrackerHitAllocator;
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+ExN02TrackerHit::ExN02TrackerHit(G4int dID0, G4int P0, G4int trkid, G4int parentid, G4double e, G4double eq, G4ThreeVector pos, G4double t) 
+{
+  fDetID = dID0;
+  fTrackID = trkid;
+  fParentID = parentid;
+  fEdep = e;
+  fEdep_q = eq;
+  fParticle = P0;
+  fPosition = pos;
+  fTime = t;  
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+ExN02TrackerHit::ExN02TrackerHit(G4int dID0, G4double e,G4int P0) 
+{
+  fDetID = dID0;
+  fEdep = e;
+  fParticle = P0;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+ExN02TrackerHit::ExN02TrackerHit(G4int dID0, G4double e) 
+{
+  fDetID = dID0;
+  fEdep = e;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -52,9 +88,21 @@ ExN02TrackerHit::~ExN02TrackerHit() {}
 ExN02TrackerHit::ExN02TrackerHit(const ExN02TrackerHit& right)
   : G4VHit()
 {
+  fDetID = right.fDetID;
+  fEdep     = right.fEdep;
+  fEdep_q     = right.fEdep_q;
+  fParticle = right.fParticle; 
+  for(int i=0;i<3;i++) fPosition[i] = right.fPosition[i];
+  fEventID = right.fEventID;
+  // My new
+  fTrackID = right.fTrackID;
+  fParentID = right.fParentID;
+  //
+
+  /*
+  // ND280 UPGRADE
   trackID      = right.trackID;
   parentID     = right.parentID;
-  chamberNb    = right.chamberNb;
   edep         = right.edep;
   prestepPos   = right.prestepPos;
   poststepPos  = right.poststepPos;
@@ -68,12 +116,27 @@ ExN02TrackerHit::ExN02TrackerHit(const ExN02TrackerHit& right)
   stepdeltalyz = right.stepdeltalyz;
   nsteps       = right.nsteps;  
   trackcostheta= right.trackcostheta;
+  ////
+  */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 const ExN02TrackerHit& ExN02TrackerHit::operator=(const ExN02TrackerHit& right)
 {
+  fDetID = right.fDetID;
+  fEdep       = right.fEdep;
+  fEdep_q      = right.fEdep_q;
+  fParticle = right.fParticle; 
+  for(int i=0;i<3;i++) fPosition[i] = right.fPosition[i];
+  fEventID = right.fEventID;
+  // My new
+  fTrackID = right.fTrackID;
+  fParentID = right.fParentID;
+  //
+
+  /*
+  // ND280 UPGRADE
   trackID      = right.trackID;
   parentID     = right.parentID;
   chamberNb    = right.chamberNb;
@@ -90,7 +153,9 @@ const ExN02TrackerHit& ExN02TrackerHit::operator=(const ExN02TrackerHit& right)
   stepdeltalyz = right.stepdeltalyz;
   nsteps       = right.nsteps;  
   trackcostheta= right.trackcostheta;
-  
+  ////
+  */
+
   return *this;
 }
 
@@ -103,8 +168,58 @@ G4int ExN02TrackerHit::operator==(const ExN02TrackerHit& right) const
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+G4int ExN02TrackerHit::CompareID(const ExN02TrackerHit right) 
+{
+  return (fDetID==right.fDetID) ? 1 : 0;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4int ExN02TrackerHit::CompareP(const ExN02TrackerHit right) 
+{
+  return (fParticle==right.fParticle) ? 1 : 0;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4int ExN02TrackerHit::isFaster(const ExN02TrackerHit right)
+{
+  return (fTime>right.fTime) ? 1 : 0;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4int ExN02TrackerHit::LargerEdep(const ExN02TrackerHit right)
+{
+  if(fParticle==11) return 1;
+  else if(right.fParticle==11) return 0;
+  else return (fEdep<right.fEdep) ? 1 : 0;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void ExN02TrackerHit::Draw()
 {
+  double size = fEdep + 7.;
+  if( fEdep>9 ) size = 16.;
+  #if 1
+  G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
+  if(pVVisManager)
+    {
+      G4ThreeVector pos; 
+      for(int i=0;i<3;i++) pos[i] = fPosition[i]/**mm*/;
+      G4Circle circle(pos);
+      circle.SetScreenSize(size); 
+      circle.SetFillStyle(G4Circle::filled);
+      G4Colour colour(0.,1.,1.3); //cyan
+      G4VisAttributes attribs(colour);
+      circle.SetVisAttributes(attribs);
+      pVVisManager->Draw(circle);
+    }
+  #endif
+
+  // ND280 UPGRADE
+  /*
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
   if(pVVisManager)
   {
@@ -116,14 +231,37 @@ void ExN02TrackerHit::Draw()
     circle.SetVisAttributes(attribs);
     pVVisManager->Draw(circle);
   }
+  */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02TrackerHit::Print()
 {
-  G4cout.precision(5);
+
+  G4cout.precision(4);
   
+  //G4cout << " Mod:" << mod 
+  G4cout << " detID:" << fDetID
+	 << " detName: " << fNameDet
+    //<< " Pln:" << pln 
+    //<< " Ch:" << ch 
+    //<< " Time:" << time
+    //<< "  Edep:" << G4BestUnit(edep,"Energy")
+	 << " Edep:" << fEdep
+    //<< " EdepQ:" << fEdep_q
+    //<< " p.e.:" << pe
+         << " PID:" << fParticle
+    //		 << G4endl;
+	 << " Trk:" << fTrackID
+	 << " Parent:" << fParentID
+         << " pos:{" << fPosition[0]/*/cm*/ << ", "
+         << fPosition[1]/*/cm*/ << ", " << fPosition[2]/*/cm*/
+         << "}" << G4endl;
+
+  
+  /*
+  G4cout.precision(5);  
   //if(namedet=="Target" || namedet=="TPC Up"){
   G4cout << "  trackID: " << trackID 
 	 << "  track length: " << G4BestUnit(tracklength,"Length") 
@@ -137,6 +275,7 @@ void ExN02TrackerHit::Print()
 	 << "  detector: " << namedet 
 	 << G4endl;
   //}
+  */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
