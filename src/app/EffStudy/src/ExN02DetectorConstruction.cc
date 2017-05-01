@@ -2433,7 +2433,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseFGD2() )      logicFGD2->SetVisAttributes(FGDWaterVisAtt);
 
   if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
-  if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
+  if(ND280XMLInput->GetXMLUseSuperFGD2())   logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
 
   
   //--------- Set Step Limiter -------------------------------
