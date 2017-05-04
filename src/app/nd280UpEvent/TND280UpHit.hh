@@ -41,10 +41,18 @@ public :
   void SetParentID(int id){fParentID=id;};
   void SetEdep(double edep){fEdep=edep;};
   void SetEdep_Q(double edep_q){fEdep_Q=edep_q;};
+  void SetPE(double pe){fPE=pe;};
+  void SetPEX(double pe){fPEX=pe;};
+  void SetPEY(double pe){fPEY=pe;};
+  void SetPEZ(double pe){fPEZ=pe;};
   void SetLocPosX(double x){fLocPosX=x;};
   void SetLocPosY(double y){fLocPosY=y;};
   void SetLocPosZ(double z){fLocPosZ=z;};
   void SetTime(double time){fTime=time;};
+  void SetTimePE(double time){fTimePE=time;};
+  void SetTimePEX(double time){fTimePEX=time;};
+  void SetTimePEY(double time){fTimePEY=time;};
+  void SetTimePEZ(double time){fTimePEZ=time;};
   void SetDetName(string name){fDetName=name;};
   
   int GetHitID() {return fHitID;};
@@ -56,10 +64,18 @@ public :
   int GetParentID() {return fParentID;};
   double GetEdep(){return fEdep;};
   double GetEdep_Q(){return fEdep_Q;};
+  double GetPE(){return fPE;};
+  double GetPEX(){return fPEX;};
+  double GetPEY(){return fPEY;};
+  double GetPEZ(){return fPEZ;};
   double GetLocPosX(){return fLocPosX;};
   double GetLocPosY(){return fLocPosY;};
   double GetLocPosZ(){return fLocPosZ;};
   double GetTime(){return fTime;};
+  double GetTimePE(){return fTimePE;};
+  double GetTimePEX(){return fTimePEX;};
+  double GetTimePEY(){return fTimePEY;};
+  double GetTimePEZ(){return fTimePEZ;};
   string GetDetName(){return fDetName;};
  
   void PrintHit();
@@ -75,10 +91,18 @@ private :
   int fParentID;
   double fEdep;
   double fEdep_Q;
+  double fPE;
+  double fPEX;
+  double fPEY;
+  double fPEZ;
   double fLocPosX;
   double fLocPosY;
   double fLocPosZ;
   double fTime;
+  double fTimePE;
+  double fTimePEX;
+  double fTimePEY;
+  double fTimePEZ;
   string fDetName;
 
   ClassDef(TND280UpHit,5)

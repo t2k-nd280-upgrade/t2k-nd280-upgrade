@@ -122,6 +122,9 @@ private:
   G4double fEdep;
   G4double fEdep_q;
   G4double fPE;
+  G4double fPEX;
+  G4double fPEY;
+  G4double fPEZ;
   G4double fLope;
   G4int fParticle;
   G4ThreeVector fPosition;
@@ -129,6 +132,9 @@ private:
   G4int fEventID;
   G4double fTime;
   G4double fDelayTime;
+  G4double fDelayTimeX;
+  G4double fDelayTimeY;
+  G4double fDelayTimeZ;
   G4int fGridCell_id_x1;//added by koga 2016/1/7
   G4int fGridCell_id_x2;//added by koga 2016/1/7
   G4int fGridCell_id_y1;//added by koga 2016/1/7
@@ -194,7 +200,13 @@ public:
   inline G4double GetTime() { return fTime; }
 
   inline void SetDelayTime(G4double dt) { fDelayTime = dt; }
+  inline void SetDelayTimeX(G4double dt) { fDelayTimeX = dt; }
+  inline void SetDelayTimeY(G4double dt) { fDelayTimeY = dt; }
+  inline void SetDelayTimeZ(G4double dt) { fDelayTimeZ = dt; }
   inline G4double GetDelayTime() { return fDelayTime; }
+  inline G4double GetDelayTimeX() { return fDelayTimeX; }
+  inline G4double GetDelayTimeY() { return fDelayTimeY; }
+  inline G4double GetDelayTimeZ() { return fDelayTimeZ; }
 
   inline void SetEventID(G4int evtid) { fEventID = evtid;}
   inline G4int GetEventID() { return fEventID; }
@@ -212,7 +224,13 @@ public:
   inline G4int GetCh() { return fCh; }
 
   inline void SetPE(G4double p) { fPE = p; }
+  inline void SetPEX(G4double p) { fPEX = p; }
+  inline void SetPEY(G4double p) { fPEY = p; }
+  inline void SetPEZ(G4double p) { fPEZ = p; }
   inline G4double GetPE() { return fPE; }
+  inline G4double GetPEX() { return fPEX; }
+  inline G4double GetPEY() { return fPEY; }
+  inline G4double GetPEZ() { return fPEZ; }
 
   inline void SetLOPE(G4double p) { fLope = p; }
   inline G4double GetLOPE() { return fLope; }

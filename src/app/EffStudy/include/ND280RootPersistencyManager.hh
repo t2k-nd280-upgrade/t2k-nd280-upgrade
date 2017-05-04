@@ -109,6 +109,11 @@ public:
   TH2F *GetMPPCProj2D_XZ(){ return fMPPCProj2D_XZ;};
   TH2F *GetMPPCProj2D_YZ(){ return fMPPCProj2D_YZ;};
 
+  // Assume the MPPC read-out plane is at x,y,z<0
+  G4double GetMPPCPosX(){return fMPPCProj2D_XY->GetXaxis()->GetBinLowEdge(1);};
+  G4double GetMPPCPosY(){return fMPPCProj2D_XY->GetYaxis()->GetBinLowEdge(1);};
+  G4double GetMPPCPosZ(){return fMPPCProj2D_YZ->GetYaxis()->GetBinLowEdge(1);};
+
   void InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY, bool IsProjXZ, bool IsProjYZ); 
 
   G4bool fIsMPPCProjXY;  

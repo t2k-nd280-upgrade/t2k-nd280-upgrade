@@ -385,11 +385,22 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       G4int trkid = g4Hit->GetTrackID();
       G4double edep = g4Hit->GetEdep();
       G4double edep_q = g4Hit->GetEdepQ();
+      G4double pe = g4Hit->GetPE();
+      G4double pex = g4Hit->GetPEX();
+      G4double pey = g4Hit->GetPEY();
+      G4double pez = g4Hit->GetPEZ();
       G4ThreeVector pos = g4Hit->GetPosition();
       
       G4double time = g4Hit->GetTime();
-      string detname = g4Hit->GetNameDet();
+      G4double timepe = g4Hit->GetDelayTime();
+      G4double timepex = g4Hit->GetDelayTimeX();
+      G4double timepey = g4Hit->GetDelayTimeY();
+      G4double timepez = g4Hit->GetDelayTimeZ();
       
+      string detname = g4Hit->GetNameDet();
+
+      //G4cout << "edep=" << edep << ", edep_q=" << edep_q << ", pe=" << pe << G4endl;
+    
       if(g4Hit->GetParentID()==0){
 	
 	TND280UpHit *nd280Hit = new TND280UpHit();
@@ -400,10 +411,18 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	nd280Hit->SetParentID(parentid);	
 	nd280Hit->SetEdep(edep);
 	nd280Hit->SetEdep_Q(edep_q);
+	nd280Hit->SetPE(pe);
+	nd280Hit->SetPEX(pex);
+	nd280Hit->SetPEY(pey);
+	nd280Hit->SetPEZ(pez);
 	nd280Hit->SetLocPosX(pos.x());
 	nd280Hit->SetLocPosY(pos.y());
 	nd280Hit->SetLocPosZ(pos.z());
 	nd280Hit->SetTime(time);
+	nd280Hit->SetTimePE(timepe);
+	nd280Hit->SetTimePEX(timepex);
+	nd280Hit->SetTimePEY(timepey);
+	nd280Hit->SetTimePEZ(timepez);
 	nd280Hit->SetDetName(detname);
 	
 	fND280UpEvent->AddHit(nd280Hit);

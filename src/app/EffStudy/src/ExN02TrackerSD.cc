@@ -44,7 +44,11 @@
 
 #include "ND280RootPersistencyManager.hh"
 
+#include "ExN02TargReadOut.hh"
+
 #include <TH2F.h>
+
+using namespace conv;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -173,9 +177,65 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     G4int parentid       = track->GetParentID();
     G4double particle    = track->GetDefinition()->GetPDGEncoding();
     G4double prestepTime = preStepPoint->GetGlobalTime();
+    G4double steplength = aStep->GetStepLength();
     
-    G4double edep_q      = edep;
+    G4double edep_q = edep;
+
+    // Calculate the # of p.e. that reach the MPPC (X,Y,Z)    
+
+    double peX=0.; G4double distX=0.; double timepeX=0.;// pe along fiber X
+    double peY=0.; G4double distY=0.; double timepeY=0.;// pe along fiber Y
+    double peZ=0.; G4double distZ=0.; double timepeZ=0.;// pe along fiber Z
+ 
+    distX = lightX - persistencyManager->GetMPPCPosX(); 
+    distY = lightY - persistencyManager->GetMPPCPosY(); 
+    distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
+
+    //////////////////////////////////////////////
+    //
+    // TODO: Add more checks on the hit position
+    //
+    //////////////////////////////////////////////
+
+    if(distX<0 || distY<0 || distZ<0){
+      G4cout << "distX = " << distX 
+	     << ", distY = " << distY 
+	     << ", distZ = " << distZ 
+	     << G4endl;
+      G4Exception("ExN02TrackerSD::ProcessHits",
+		  "MyCode0002",FatalException,
+		  "The hit is outside the target!!!");    
+    }
+
+    ExN02TargReadOut SuperFGDReadOut;
+    SuperFGDReadOut.SetTargType(conv::kSuperFGD); // set the target type
     
+    // light attenuation (Birks' formula)
+    double pe = SuperFGDReadOut.ApplyScintiResponse(edep_q,steplength,track);
+    peX = pe;
+    peY = pe;
+    peZ = pe;
+
+    // light collection + attenuation
+    SuperFGDReadOut.ApplyFiberResponse(peX,timepeX,distX); // along X fiber
+    SuperFGDReadOut.ApplyFiberResponse(peY,timepeY,distY); // along Y fiber
+    SuperFGDReadOut.ApplyFiberResponse(peZ,timepeZ,distZ); // along Z fiber
+     
+    // MPPC efficiency
+    SuperFGDReadOut.ApplyMPPCResponse(peX);
+    SuperFGDReadOut.ApplyMPPCResponse(peY);
+    SuperFGDReadOut.ApplyMPPCResponse(peZ);
+
+    //G4cout << "peX=" << peX << ", peY=" << peY << ", peZ=" << peZ << G4endl;
+    //G4cout << "timepeX=" << timepeX << ", timepeY=" << timepeY << ", timepeZ=" << timepeZ << G4endl;
+
+    
+    
+    ///
+   
+
+
+
     /////// 
     // used in WAGASCI code
     //
@@ -185,8 +245,15 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     
     ExN02TrackerHit* aHit  
       = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);
-    aHit->SetNameDet    (touch_namedet);
-    //aHit->SetNameDet    (pm_namedet);  
+    aHit->SetNameDet(touch_namedet);
+    aHit->SetPE(conv::kUndefined);
+    aHit->SetPEX(peX);
+    aHit->SetPEY(peY);
+    aHit->SetPEZ(peZ);
+    aHit->SetDelayTime(conv::kUndefined);
+    aHit->SetDelayTime(timepeX);
+    aHit->SetDelayTime(timepeY);
+    aHit->SetDelayTime(timepeZ);
     trackerCollection->insert( aHit );
   
   } // if( persistencyManager->GetNavigDetName_Targ1()!="" )

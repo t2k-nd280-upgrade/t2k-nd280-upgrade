@@ -905,7 +905,6 @@
    <UseSuperFGD2>
     false
    </UseSuperFGD2>
-
    <UseWAGASCIEmpty>
     false
    </UseWAGASCIEmpty>
@@ -1020,7 +1019,6 @@
    <InvisSuperFGD>
      false
    </InvisSuperFGD>
-
    <InvisWAGASCI>
      false
    </InvisWAGASCI>
