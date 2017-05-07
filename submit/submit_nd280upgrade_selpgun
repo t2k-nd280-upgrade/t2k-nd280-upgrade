@@ -101,7 +101,8 @@ $resource        = "interactive"                 unless defined $resource;
 $tag             = "SelND280Up_AllECal_PGun" unless defined $tag;
 
 # Particle guns
-$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/particlegun_muon_dsecal/g4ND280Up_6E20_classic_AfterDetUpdate_19_1_17_USECalP0D-Exp0-Nexpt50.root" unless defined $inputfile;
+#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/particlegun_muon_dsecal/g4ND280Up_6E20_classic_PGun_Muon_m0m0p2500_600MeV-Exp0-Nexpt50.root" unless defined $inputfile;
+$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/particlegun_muon_dsecal/g4ND280Up_6E20_classic_PGun_Muon_m0m0p2500_600MeV-Exp0-Nexpt1.root" unless defined $inputfile;
 
 
 $first_expt      = 0                             unless defined $first_expt;

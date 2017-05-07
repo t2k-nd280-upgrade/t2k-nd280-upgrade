@@ -268,11 +268,18 @@ void SelND280UpHit
       double mppcx = nd280UpHit->GetLocPosX();
       double mppcy = nd280UpHit->GetLocPosY();
       double mppcz = nd280UpHit->GetLocPosZ();
-      
+
+      double pex = nd280UpHit->GetPEX(); // along X
+      double pey = nd280UpHit->GetPEY(); // along Y
+      double pez = nd280UpHit->GetPEZ(); // along Z
+
+      //cout << pex << " " << pey << " " << pez << endl;
+      //cout << mppcx << " " << mppcy << " " << mppcz << endl;
+
       int ievtWithHit = NEvtWithHit-1;
-      hMPPCHits_XY[ievtWithHit]->Fill(mppcx,mppcy);
-      hMPPCHits_XZ[ievtWithHit]->Fill(mppcx,mppcz);
-      hMPPCHits_YZ[ievtWithHit]->Fill(mppcy,mppcz);  
+      hMPPCHits_XY[ievtWithHit]->Fill(mppcx,mppcy,pez); // pe along X
+      hMPPCHits_XZ[ievtWithHit]->Fill(mppcx,mppcz,pey); // pe along Y
+      hMPPCHits_YZ[ievtWithHit]->Fill(mppcy,mppcz,pex); // pe along Z 
     }
 
     //nd280UpEvent->PrintEvent();
@@ -294,10 +301,7 @@ void SelND280UpHit
   }
   //
   out->Close();
-  
-  // Print output
-  cout << endl;
-  //cout << "Total # of Tree events: " << NTreeEntries << endl;
+ 
 }
 
 

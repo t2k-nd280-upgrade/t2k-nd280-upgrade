@@ -400,34 +400,35 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       string detname = g4Hit->GetNameDet();
 
       //G4cout << "edep=" << edep << ", edep_q=" << edep_q << ", pe=" << pe << G4endl;
-    
-      if(g4Hit->GetParentID()==0){
-	
-	TND280UpHit *nd280Hit = new TND280UpHit();
-	nd280Hit->SetHitID(h);
-	nd280Hit->SetDetID(detid);
-	nd280Hit->SetPDG(pdg);
-	nd280Hit->SetTrackID(trkid);
-	nd280Hit->SetParentID(parentid);	
-	nd280Hit->SetEdep(edep);
-	nd280Hit->SetEdep_Q(edep_q);
-	nd280Hit->SetPE(pe);
-	nd280Hit->SetPEX(pex);
-	nd280Hit->SetPEY(pey);
-	nd280Hit->SetPEZ(pez);
-	nd280Hit->SetLocPosX(pos.x());
-	nd280Hit->SetLocPosY(pos.y());
-	nd280Hit->SetLocPosZ(pos.z());
-	nd280Hit->SetTime(time);
-	nd280Hit->SetTimePE(timepe);
-	nd280Hit->SetTimePEX(timepex);
-	nd280Hit->SetTimePEY(timepey);
-	nd280Hit->SetTimePEZ(timepez);
-	nd280Hit->SetDetName(detname);
-	
-	fND280UpEvent->AddHit(nd280Hit);
-      }
+    	
+      //
+      // TODO: store MPPC hits for each different track ID not steps 
+      //
       
+      TND280UpHit *nd280Hit = new TND280UpHit();
+      nd280Hit->SetHitID(h);
+      nd280Hit->SetDetID(detid);
+      nd280Hit->SetPDG(pdg);
+      nd280Hit->SetTrackID(trkid);
+      nd280Hit->SetParentID(parentid);	
+      nd280Hit->SetEdep(edep);
+      nd280Hit->SetEdep_Q(edep_q);
+      nd280Hit->SetPE(pe);
+      nd280Hit->SetPEX(pex);
+      nd280Hit->SetPEY(pey);
+      nd280Hit->SetPEZ(pez);
+      nd280Hit->SetLocPosX(pos.x());
+      nd280Hit->SetLocPosY(pos.y());
+      nd280Hit->SetLocPosZ(pos.z());
+      nd280Hit->SetTime(time);
+      nd280Hit->SetTimePE(timepe);
+      nd280Hit->SetTimePEX(timepex);
+      nd280Hit->SetTimePEY(timepey);
+      nd280Hit->SetTimePEZ(timepez);
+      nd280Hit->SetDetName(detname);
+      
+      fND280UpEvent->AddHit(nd280Hit);
+  
     } // end loop over hits    
   } // end loop over hit containers
 

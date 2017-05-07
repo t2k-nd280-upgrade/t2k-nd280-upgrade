@@ -9,6 +9,7 @@ AUX_SOURCE_DIRECTORY(EffStudy/nd280mc/p0d sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/ToF sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/SuperFGD sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/WAGASCI sourcefile) ###
+AUX_SOURCE_DIRECTORY(EffStudy/src/ReadOutSim sourcefile) ###
 
 message(STATUS "sourcefile ${sourcefile}") ###
 

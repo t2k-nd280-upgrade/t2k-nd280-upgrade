@@ -61,6 +61,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc/p0d) ### inc
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/ToF) ### include ToF class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/SuperFGD) ### include SuperFGD class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/WAGASCI) ### include WAGASCI class
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/ReadOutSim) ### include ReadOutSim class
 
 
 message(STATUS "C flags      : " ${CMAKE_C_FLAGS})

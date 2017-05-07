@@ -104,7 +104,7 @@ G4double ExN02TargReadOut::EdepToPhot(G4double edep)
   if(GetTargType() == conv::kSuperFGD){    
     
     // Account for the 3 fibers in the same scintillator cube
-    double collfact = CollFactor_SingleClad;
+    double collfact = CollFactor_DoubleClad;
     double fact_fib1 = collfact;
     double fact_fib2 = (1-fact_fib1)*collfact;
     double fact_fib3 = (1-fact_fib2)*collfact;
@@ -130,21 +130,6 @@ G4double ExN02TargReadOut::EdepToPhot(G4double edep)
 
 void ExN02TargReadOut::ApplyFiberResponse(G4double &nphot, G4double &time, G4double x)
 {
-  // Apply collection factor  
-  // if(GetTargType() == conv::kSuperFGD){
-  //   // Account for the 3 fibers in the same scintillator cube
-  //   double fact_fib1 = CollFactor_FGD;
-  //   double fact_fib2 = (1-fact_fib1)*CollFactor_FGD;
-  //   double fact_fib3 = (1-fact_fib2)*CollFactor_FGD;
-  //   double CollFactAve = (fact_fib1+fact_fib2+fact_fib3)/3.;
-  //   nphot *= CollFactAve;
-  // }
-  // else{
-  //   G4Exception("ExN02TargReadOut::ApplyFiberResponse",
-  // 		"MyCode0002",FatalException,
-  // 		"The selected Target type does not exist!!!");
-  // }
-  
   // Apply the light attenuation to the collected photons
   ApplyFiberAttenuation(nphot,x);
 

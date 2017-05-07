@@ -245,6 +245,11 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     
     ExN02TrackerHit* aHit  
       = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);
+
+    
+    //G4cout << peX << " " << peY << " " << peZ << G4endl;
+    
+    //if(parentid==0){
     aHit->SetNameDet(touch_namedet);
     aHit->SetPE(conv::kUndefined);
     aHit->SetPEX(peX);
@@ -255,7 +260,8 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     aHit->SetDelayTime(timepeY);
     aHit->SetDelayTime(timepeZ);
     trackerCollection->insert( aHit );
-  
+    //}
+
   } // if( persistencyManager->GetNavigDetName_Targ1()!="" )
 
   
