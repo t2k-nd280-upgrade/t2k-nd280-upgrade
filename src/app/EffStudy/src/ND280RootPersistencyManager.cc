@@ -397,6 +397,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       G4double timepey = g4Hit->GetDelayTimeY();
       G4double timepez = g4Hit->GetDelayTimeZ();
       
+      //G4cout << "timepex = " << timepex << G4endl;
+      
       string detname = g4Hit->GetNameDet();
 
       //G4cout << "edep=" << edep << ", edep_q=" << edep_q << ", pe=" << pe << G4endl;
