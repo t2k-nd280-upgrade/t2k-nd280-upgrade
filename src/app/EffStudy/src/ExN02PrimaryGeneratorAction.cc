@@ -116,7 +116,8 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
 		  "MyCode0002",FatalException, msg);
     } 
-    
+
+    /*
     G4LogicalVolume* targetLV
       = G4LogicalVolumeStore::GetInstance()->GetVolume("/t2k/OA/Magnet/Basket/Target1");
     G4Box* targetBox = 0;
@@ -132,7 +133,8 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
 		  "MyCode0002",FatalException, msg);
     } 
-        
+    */
+  
     fParticleGun->GeneratePrimaryVertex(anEvent);
   }
   

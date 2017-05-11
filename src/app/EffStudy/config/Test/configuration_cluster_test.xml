@@ -13,7 +13,7 @@
   </StoreGeometry>
   
   <IsRandomSeed>
-    1
+    0
   </IsRandomSeed>
   
   <Generator>      
@@ -173,7 +173,7 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     0
+     -1487
    </TargetPos1_Z>
 
    
@@ -290,7 +290,7 @@
      0
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     0
+     -1487 
    </SuperFGDPos1_Z>
 
    <!-- SuperFGD 2 -->
@@ -900,14 +900,13 @@
    </UseFGD2>
 
    <UseSuperFGD1>
-    false
+    true
    </UseSuperFGD1>
    <UseSuperFGD2>
     false
    </UseSuperFGD2>
-
    <UseWAGASCIEmpty>
-    true
+    false
    </UseWAGASCIEmpty>
    <UseWAGASCIWater>
     false
@@ -1020,7 +1019,6 @@
    <InvisSuperFGD>
      false
    </InvisSuperFGD>
-
    <InvisWAGASCI>
      false
    </InvisWAGASCI>

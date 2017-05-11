@@ -91,9 +91,25 @@ void ND280SuperFGDConstructor::Init(void) {
   fPosX = 0.;
   fPosY = 0.;
   fPosZ = 0.;
+
+  //
+  // Note:
+  // GetName() is the SuperFGD name given in DetectorConstruction  
+  // i.e. /t2k/OA/.../SuperFGD
+  //
+
+  G4String nameRepXYZ = "RepY"; // replica of single cube along Z
+  G4String nameRepXZ  = nameRepXYZ+"/RepX"; // replica of single row  along X
+  G4String nameRepZ   = nameRepXZ +"/RepZ"; // replica of single layer along Y
+  G4String nameCube   = nameRepZ+"/CubeScint";
   
-  AddConstructor(new ND280CubeScintConstructor("CubeScint", this)); 
-  
+  SetNameRepXYZ(nameRepXYZ);
+  SetNameRepXZ(nameRepXZ);
+  SetNameRepZ(nameRepZ);
+  SetNameCube(nameCube);
+
+  AddConstructor(new ND280CubeScintConstructor(GetNameCube(), this)); 
+
   SetMessenger(new ND280SuperFGDMessenger(this));
 }
 
@@ -116,7 +132,7 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
   // Build the plastic scintillator cube
 
   ND280CubeScintConstructor& cube
-    = Get<ND280CubeScintConstructor>("CubeScint");
+    = Get<ND280CubeScintConstructor>(GetNameCube());
   
   cube.SetBase(fEdge);
   cube.SetLength(fEdge);
@@ -126,7 +142,7 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
   cube.SetCoatingThickness(0.25*mm);
   cube.SetGap(0.0*mm);
   
-  double shift = cube.GetHoleRadius();
+  double shift = 1.5*mm; //cube.GetHoleRadius();
   G4ThreeVector HolePosAlongX = G4ThreeVector(0.    , shift , shift); // hole along X
   G4ThreeVector HolePosAlongY = G4ThreeVector(shift , 0.    , -shift); // hole along Y
   G4ThreeVector HolePosAlongZ = G4ThreeVector(-shift, -shift, 0.    ); // hole along Z
@@ -135,341 +151,134 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
   cube.SetHolePosition_Z(HolePosAlongZ); 
 
   G4LogicalVolume* cube_logical = cube.GetPiece();
-  
-  //G4cout << "Cube base = " << cube.GetBase() << G4endl;
-  //G4cout << " mass="<<cube_logical->GetMass()/kg   <<" kg" << G4endl;
 
+  //
+  // Make the logical volumes for the replicas
+  //
+ 
+  // Build row of cubes along Z (replica of single cube along Z)
 
-  
-  // Build bar Z of cubes
-  
-  G4VSolid *cubeDirZ_solid 
-    = new G4Box(GetName()+"/planeZ_solid", 
+  G4VSolid *repZ_solid 
+    = new G4Box(GetName()+"/"+GetNameRepZ(), 
 		cube.GetBase()/2, 
 		cube.GetHeight()/2, 
 		GetLength()/2); 
-  
-  G4LogicalVolume *cubeDirZ_logical 
-    = new G4LogicalVolume(cubeDirZ_solid,
+  G4LogicalVolume *repZ_logical 
+    = new G4LogicalVolume(repZ_solid,
 			  FindMaterial("Air"),
-			  GetName()+"/cubeDirZ");
-  
-  cubeDirZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
-  
-  G4PVReplica *cubeDirZ
-    = new G4PVReplica(GetName()+"/cubeDirZ",    // its name
-		      cube_logical, // its logical volume
-		      cubeDirZ_logical,          // its mother volume
-		      kZAxis,             // axis along replication applied
-		      fCubeNumZ,          // number of replicated volumes
-		      cube.GetLength()    // width of single replica along axis 
-		      );
-  
-  
-  // Build layer XZ of cubes
-  
-  G4VSolid *cubeDirXZ_solid 
-    = new G4Box(GetName()+"/cubeDirXZ_solid", 
+			  GetName()+"/"+GetNameRepZ());
+  repZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
+     
+  // Build layer of cubes XZ (replica of single row of cubes along X)  
+
+  G4VSolid *repXZ_solid 
+    = new G4Box(GetName()+"/"+GetNameRepXZ(), 
 		GetWidth()/2, 
 		cube.GetHeight()/2, 
-		GetLength()/2); 
-  
-  G4LogicalVolume *cubeDirXZ_logical 
-    = new G4LogicalVolume(cubeDirXZ_solid,
+		GetLength()/2);   
+  G4LogicalVolume *repXZ_logical 
+    = new G4LogicalVolume(repXZ_solid,
 			  FindMaterial("Air"),
-			  GetName()+"/cubeDirXZ");
+			  GetName()+"/"+GetNameRepXZ());
+  repXZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
 
-  cubeDirXZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
-  
-  G4PVReplica *cubeDirXZ
-    = new G4PVReplica(GetName()+"/cubeDirXZ",    // its name
-		      cubeDirZ_logical, // its logical volume
-		      cubeDirXZ_logical,          // its mother volume
-		      kXAxis,             // axis along replication applied
-		      fCubeNumX,          // number of replicated volumes
-		      cube.GetBase()    // width of single replica along axis 
-		      );
-  
-  
   // Build box XYZ of cubes
-  
-  G4VSolid *cubeDirXYZ_solid 
-    = new G4Box(GetName()+"/cubeDirXYZ_solid", 
+
+  G4VSolid *repXYZ_solid 
+    = new G4Box(GetName()+"/"+GetNameRepXYZ(), 
 		GetWidth()/2, 
 		GetHeight()/2, 
 		GetLength()/2); 
-  
-  G4LogicalVolume *cubeDirXYZ_logical 
-    = new G4LogicalVolume(cubeDirXYZ_solid,
+  G4LogicalVolume *repXYZ_logical 
+    = new G4LogicalVolume(repXYZ_solid,
 			  FindMaterial("Air"),
-			  GetName()+"/cubeDirXYZ");
-
-  cubeDirXYZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
-  
-  G4PVReplica *cubeDirXYZ
-    = new G4PVReplica(GetName()+"/cubeDirXYZ",    // its name
-		      cubeDirXZ_logical, // its logical volume
-		      cubeDirXYZ_logical,          // its mother volume
-		      kYAxis,             // axis along replication applied
-		      fCubeNumY,          // number of replicated volumes
-		      cube.GetHeight()    // width of single replica along axis 
-		      );
-  
-  return cubeDirXYZ_logical;
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+			  GetName()+"/"+GetNameRepXYZ());
+  repXYZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
 
   //
-
-  /*
-    
-  G4LogicalVolume *logVolume
-    = new G4LogicalVolume(new G4Box(GetName(),
-				    GetWidth()/2.0,  
-				    GetHeight()/2.0,
-				    GetLength()/2.0),
-			  FindMaterial("Air"),
-			  GetName());
-
-  */
+  // Place the cubes:
+  // 1) replica of cubes along Z --> single row
+  // 2) replica of rows along X --> single layer
+  // 3) replica of layers along Y --> SuperFGD
+  //
   
-  /*
+  new G4PVReplica(GetName()+"/"+GetNameRepZ(),        // its name
+		  cube_logical,    // its logical volume
+		  repZ_logical, // its mother volume
+		  kZAxis,          // axis along replication applied
+		  fCubeNumZ,       // number of replicated volumes
+		  cube.GetLength() // width of single replica along axis 
+		  );
 
-  // Build the fibers
+  new G4PVReplica(GetName()+"/"+GetNameRepXZ(),        // its name
+		  repZ_logical,  // its logical volume
+		  repXZ_logical, // its mother volume
+		  kXAxis,           // axis along replication applied
+		  fCubeNumX,        // number of replicated volumes
+		  cube.GetBase()    // width of single replica along axis 
+		  );
 
-  G4VisAttributes *visAtt_Fiber = new G4VisAttributes();
-  visAtt_Fiber->SetColor(0.0,1.0,0.0); // green
-  visAtt_Fiber->SetForceSolid(true);
+  new G4PVReplica(GetName()+"/"+GetNameRepXYZ(),        // its name
+		  repXZ_logical,  // its logical volume
+		  repXYZ_logical, // its mother volume
+		  kYAxis,            // axis along replication applied
+		  fCubeNumY,         // number of replicated volumes
+		  cube.GetHeight()   // width of single replica along axis 
+		  );
 
-  if (GetFiberRadius()>cube.GetHoleRadius()) { 
-    G4Exception("ND280CubeScintConstructor::GetPiece",
-  		"MyCode0002",FatalException,
-  		"Fiber radius > Hole radius !");
+  return repXYZ_logical;
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*    
+  // Place the plastic scintillator cubes    
+  int CubeIdx = 0;
+  for(int icubeX=0;icubeX<fCubeNumX;icubeX++){
+  for(int icubeY=0;icubeY<fCubeNumY;icubeY++){
+  for(int icubeZ=0;icubeZ<fCubeNumZ;icubeZ++){	
+  double Xcube = GetPosX() -GetWidth()/2 + fEdge/2. + fEdge*icubeX;
+  double Ycube = GetPosY() -GetHeight()/2 + fEdge/2. + fEdge*icubeY;
+  double Zcube = GetPosZ() -GetLength()/2 + fEdge/2. + fEdge*icubeZ;	  	  
+  new G4PVPlacement(
+  0, // rotation
+  //G4ThreeVector(0.0,0.0,Zcube), // position       
+  G4ThreeVector(Xcube,Ycube,Zcube), // position       
+  cube_logical, // logical volume
+  cube.GetName(), // name       
+  logVolume, // mother volume
+  false,   // no boolean operations
+  CubeIdx    // copy number
+  );
+  CubeIdx++;	  
   }
-  else{
-    
-    G4VSolid* fiberAlongX = new G4Tubs(GetName()+"/FiberX",
-				       0.0*cm,
-				       GetFiberRadius(),
-				       GetWidth()/2,
-				       0.*deg,
-				       360.*deg);
-
-    G4VSolid* fiberAlongY = new G4Tubs(GetName()+"/FiberY",
-				       0.0*cm,
-				       GetFiberRadius(),
-				       GetHeight()/2,
-				       0.*deg,
-				       360.*deg);
-
-    G4VSolid* fiberAlongZ = new G4Tubs(GetName()+"/FiberZ",
-				       0.0*cm,
-				       GetFiberRadius(),
-				       GetLength()/2,
-				       0.*deg,
-				       360.*deg);
-    
-    G4LogicalVolume *fiberAlongXVolume
-      = new G4LogicalVolume(fiberAlongX,
-			    FindMaterial(GetFiberMaterial()),
-			    GetName()+"/FiberX");
-
-    G4LogicalVolume *fiberAlongYVolume
-      = new G4LogicalVolume(fiberAlongY,
-			    FindMaterial(GetFiberMaterial()),
-			    GetName()+"/FiberY");
-
-    G4LogicalVolume *fiberAlongZVolume
-      = new G4LogicalVolume(fiberAlongZ,
-			    FindMaterial(GetFiberMaterial()),
-			    GetName()+"/FiberZ");
-
-    
-    if( GetND280XML()->GetXMLInvisSuperFGD() ){
-      fiberAlongXVolume->SetVisAttributes(G4VisAttributes::Invisible);
-      fiberAlongYVolume->SetVisAttributes(G4VisAttributes::Invisible);
-      fiberAlongZVolume->SetVisAttributes(G4VisAttributes::Invisible);
-    }
-    else{
-      fiberAlongXVolume->SetVisAttributes(visAtt_Fiber);
-      fiberAlongYVolume->SetVisAttributes(visAtt_Fiber);
-      fiberAlongZVolume->SetVisAttributes(visAtt_Fiber);
-    }
-
-
-      
-    // Place the fibers along Z --> loop in the XY plane   
-
-    int FiberIdxZ=0;
-
-    for(int iFiberY=0;iFiberY<fCubeNumY;iFiberY++){
-      for(int iFiberX=0;iFiberX<fCubeNumX;iFiberX++){
-	
-	// The fiber position is shifted with respect to the cube center (along Z)
-
-	double Xcube = GetPosX() -GetWidth()/2. + fEdge/2. + fEdge*iFiberX;
-	double Ycube = GetPosY() -GetHeight()/2. + fEdge/2. + fEdge*iFiberY;
-	double Zcube = GetPosZ();
-	
-	double Xfiber = Xcube + HolePosAlongZ.x();
-	double Yfiber = Ycube + HolePosAlongZ.y();
-	double Zfiber = Zcube + HolePosAlongZ.z();
-	
-	new G4PVPlacement(0,                  // no rotation         
-			  G4ThreeVector(Xfiber,Yfiber,Zfiber), 
-			  fiberAlongZVolume,         // its logical volume
-			  GetName()+"/FiberZ",  // its name
-			  logVolume,          // its mother  volume
-			  false,               // no boolean operations
-			  FiberIdxZ);           // copy number
-	
-	FiberIdxZ++;
-	
-      } // end loop over X fibers
-    } // end loop over Y fibers
-
-
-    // Place the fibers along X --> loop in the YZ plane   
-
-    int FiberIdxX=0;
-
-    for(int iFiberY=0;iFiberY<fCubeNumY;iFiberY++){
-      for(int iFiberZ=0;iFiberZ<fCubeNumZ;iFiberZ++){
-	
-	G4RotationMatrix* rotationAlongX = new G4RotationMatrix();
-	rotationAlongX->rotateX(0  *degree); 
-	rotationAlongX->rotateY(90 *degree); 
-	rotationAlongX->rotateZ(0  *degree);      
-
-	// The fiber position is shifted with respect to the cube center (along X)
-
-	double Xcube = GetPosX();
-	double Ycube = GetPosY() -GetHeight()/2. + fEdge/2. + fEdge*iFiberY;
-	double Zcube = GetPosZ() -GetLength()/2. + fEdge/2. + fEdge*iFiberZ;
-	
-	double Xfiber = Xcube + HolePosAlongX.x();
-	double Yfiber = Ycube + HolePosAlongX.y();
-	double Zfiber = Zcube + HolePosAlongX.z();
-	
-	new G4PVPlacement(rotationAlongX,                           
-			  G4ThreeVector(Xfiber,Yfiber,Zfiber), 
-			  fiberAlongXVolume,         // its logical volume
-			  GetName()+"/FiberX",  // its name
-			  logVolume,          // its mother  volume
-			  false,               // no boolean operations
-			  FiberIdxX);                  // copy number
-	
-	FiberIdxX++;
-
-      } // end loop over Y fibers
-    } // end loop over Z fibers
-
-
-    // Place the fibers along Y --> loop in the XZ plane   
-
-    int FiberIdxY=0;
-
-    for(int iFiberX=0;iFiberX<fCubeNumX;iFiberX++){
-      for(int iFiberZ=0;iFiberZ<fCubeNumZ;iFiberZ++){
-	
-	G4RotationMatrix* rotationAlongY = new G4RotationMatrix();
-	rotationAlongY->rotateX(90 *degree); 
-	rotationAlongY->rotateY(0  *degree); 
-	rotationAlongY->rotateZ(0  *degree);      
-
-	// The fiber position is shifted with respect to the cube center (along X)
-
-	double Xcube = GetPosX() -GetWidth()/2. + fEdge/2. + fEdge*iFiberX;
-	double Ycube = GetPosY();
-	double Zcube = GetPosZ() -GetLength()/2. + fEdge/2. + fEdge*iFiberZ;
-	
-	double Xfiber = Xcube + HolePosAlongY.x();
-	double Yfiber = Ycube + HolePosAlongY.y();
-	double Zfiber = Zcube + HolePosAlongY.z();
-	
-     	new G4PVPlacement(rotationAlongY,                           
-			  G4ThreeVector(Xfiber,Yfiber,Zfiber), 
-			  fiberAlongYVolume,         // its logical volume
-			  GetName()+"/FiberY",  // its name
-			  logVolume,          // its mother  volume
-			  false,               // no boolean operations
-			  FiberIdxY);          // copy number
-
-	FiberIdxY++;
-	
-      } // end loop over X fibers
-    } // end loop over Z fibers
-
-
-  */
-
-
-
-  /*
-
-    // Place the plastic scintillator cubes    
-
-    int CubeIdx = 0;
-    
-    for(int icubeX=0;icubeX<fCubeNumX;icubeX++){
-      for(int icubeY=0;icubeY<fCubeNumY;icubeY++){
-	for(int icubeZ=0;icubeZ<fCubeNumZ;icubeZ++){
-	  
-	  double Xcube = GetPosX() -GetWidth()/2 + fEdge/2. + fEdge*icubeX;
-	  double Ycube = GetPosY() -GetHeight()/2 + fEdge/2. + fEdge*icubeY;
-	  double Zcube = GetPosZ() -GetLength()/2 + fEdge/2. + fEdge*icubeZ;	  
-	  
-	  new G4PVPlacement(
-			    0, // rotation
-			    //G4ThreeVector(0.0,0.0,Zcube), // position       
-			    G4ThreeVector(Xcube,Ycube,Zcube), // position       
-			    cube_logical, // logical volume
-			    cube.GetName(), // name       
-			    logVolume, // mother volume
-			    false,   // no boolean operations
-			    CubeIdx    // copy number
-			    );
-	  
-	  CubeIdx++;	  
-	}
-      }
-    }
-    
-    //} // if fiber radius > hole radius
-  
-    
-    logVolume->SetVisAttributes(G4VisAttributes::Invisible);  
-    
-    return logVolume;
-  
+  }
+  }
+  //} // if fiber radius > hole radius
+  logVolume->SetVisAttributes(G4VisAttributes::Invisible);  
+  return logVolume;
   */    
-    
-
 
 }

@@ -674,6 +674,8 @@ void SelND280UpEvent
     }
 
     TND280UpVertex *nd280UpVertex;
+
+    double time_vtx = -999;
     for(int ivtx=0;ivtx<NVertices;ivtx++){
       nd280UpVertex = nd280UpEvent->GetVertex(ivtx);
       //TND280UpVertex *nd280UpVertex = new TND280UpVertex();
@@ -688,6 +690,8 @@ void SelND280UpEvent
       int reacmode_all = GetReacAll(reacmode);
       int cut_reac_all = GetReacAll(cut_reac); 
 
+      time_vtx = nd280UpVertex->GetTime();
+      
       //
       // Cut 0: don't consider NC events
       //
@@ -1019,7 +1023,10 @@ void SelND280UpEvent
 	double PtMom = nd280UpTrackPoint->GetMomentum().Mag();
 	//string volname = nd280UpTrackPoint->GetPhysVolName();
 	string volname = nd280UpTrackPoint->GetLogVolName();
-	
+
+	double time = nd280UpTrackPoint->GetTime();
+	double time_delta = time - time_vtx;
+
 	LastX = PtX;
 	LastY = PtY;
 	LastZ = PtZ;

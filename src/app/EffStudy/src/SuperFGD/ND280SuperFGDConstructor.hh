@@ -92,11 +92,19 @@ public:
     return fFiberMaterial.c_str();}
   /// @}
 
+  // Set and Get the detectors name
+  virtual void SetNameRepXYZ(G4String name){fNameRepXYZ=name;};
+  virtual void SetNameRepXZ (G4String name){fNameRepXZ =name;};
+  virtual void SetNameRepZ  (G4String name){fNameRepZ  =name;};
+  virtual void SetNameCube  (G4String name){fNameCube  =name;};
 
-  // Set and Get the detector name
-  //  void SetName(string name) {fName = name;}
-  //string GetName() {return fName;}
-  
+  virtual G4String GetNameRepXYZ(){return fNameRepXYZ;};
+  virtual G4String GetNameRepXZ (){return fNameRepXZ;};
+  virtual G4String GetNameRepZ  (){return fNameRepZ;};
+  virtual G4String GetNameCube  (){return fNameCube;};
+
+  //
+
   ExN02ND280XML * GetND280XML() const {return fND280XMLInput;};
 
 private:
@@ -124,9 +132,12 @@ private:
   /// The name of the material to use for the fiber.
   std::string fFiberMaterial;
   
-  // Detector name
-  //string fName;
-  
+  // Detector names
+  G4String fNameRepXYZ; // Replica of layers along Y
+  G4String fNameRepXZ;  // Replica of rows along X
+  G4String fNameRepZ;   // Replica of cubes along Z
+  G4String fNameCube;   // Single cube
+
   void Init(void);
 
   ExN02ND280XML *fND280XMLInput;

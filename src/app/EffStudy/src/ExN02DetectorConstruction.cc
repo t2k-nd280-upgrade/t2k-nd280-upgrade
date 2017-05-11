@@ -70,6 +70,12 @@
 #include "ND280SuperFGDConstructor.hh"
 
 
+// WAGASCI
+#include "ND280WAGASCIConstructor.hh" // My version
+//#include "ND280WAGASCIActiveConstructor.hh"
+//#include "ND280WaffleActiveConstructor.hh"
+//#define DEBUG
+
 //#ifdef USE_PAI
 #include <G4Region.hh> // used also to keep a list of SD logical volumes
 //#endif  
@@ -95,6 +101,8 @@
 //#include "Cintex/Cintex.h"
 
 //#include "ExN02GeoTree.hh"
+
+#include <TH2F.h>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
@@ -157,7 +165,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     = ND280RootPersistencyManager::GetInstance();
   ND280XMLInput = InputPersistencyManager->GetXMLInput();
   //
-  
+
   BoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
   FGDWaterVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   FGDScintVisAtt = new G4VisAttributes(G4Color(0.,0.7,0.));
@@ -694,7 +702,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_FrontDown() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_FrontDown() * mm;                        
+    G4double x = ND280XMLInput->GetXMLToFPosX_FrontDown() * mm; 
     G4double y = ND280XMLInput->GetXMLToFPosY_FrontDown() * mm;
     G4double z = ND280XMLInput->GetXMLToFPosZ_FrontDown() * mm;
     SetToFPos_FrontDown(x,y,z);
@@ -1646,21 +1654,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
+  //
+  // Names used for all the kind of targets
+  //
+  
+  G4String cParentNameTarget = logicBasket->GetName();
+  const G4String cNameSolidTarget1     = cParentNameTarget+"/target1";
+  const G4String cNameLogicTarget1     = cParentNameTarget+"/Target1";
+  const G4String cNamePhysiTarget1     = cParentNameTarget+"/Target1";
+  const G4String cNameSolidTarget2     = cParentNameTarget+"/target2";
+  const G4String cNameLogicTarget2     = cParentNameTarget+"/Target2";
+  const G4String cNamePhysiTarget2     = cParentNameTarget+"/Target2";
 
-
+ 
   //------------------------------ 
   // Target 1 - Upstream - Carbon 
   //------------------------------
   
-  //G4String cParentNameTarget = physiTracker->GetName();
-  G4String cParentNameTarget = logicBasket->GetName();
-  
-  const G4String cNameSolidTarget1     = cParentNameTarget+"/target1";
-  const G4String cNameLogicTarget1     = cParentNameTarget+"/Target1";
-  const G4String cNamePhysiTarget1     = cParentNameTarget+"/Target1";
-  
   //const G4String cTargetMater1  = "ActiveWater";     //fgd active water  
-  //const G4String cTargetMater1 = "Water"; // WAGASHI water
+  //const G4String cTargetMater1 = "Water"; // WAGASCI water
   //const G4String cTargetMater1 = "FGDScintillator"; 
   const G4String cTargetMater1 = ND280XMLInput->GetXMLTargetMaterial1();
   TargetMater1  = FindMaterial(cTargetMater1);  
@@ -1705,22 +1717,101 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     //fCheckOverlaps); 		          
   }
 
+
+  //------------------------------ 
+  // Target 2 - Upstream - Water 
+  //------------------------------
   
+  //const G4String cTargetMater2  = "FGDScintillator";  
+  //const G4String cTargetMater2 = "WAGASCIScintillatorEmpty"; 
+  //const G4String cTargetMater2 = "Water";  
+  //const G4String cTargetMater2 = "FGD2Uniform";  
+  const G4String cTargetMater2 = ND280XMLInput->GetXMLTargetMaterial2(); 
+  TargetMater2  = FindMaterial(cTargetMater2);  
   
+  G4double targetSizeLength2  = 0.5 * GetTargetFullLength2();    // Half length of the Target 1
+  G4double targetSizeWidth2   = 0.5 * GetTargetFullWidth2();     // Half width of the Target 1
+  G4double targetSizeHeight2  = 0.5 * GetTargetFullHeight2();    // Half height of the Target 1
+
+  G4double HalfTargetHeight2  = 0.5 * GetTargetFullHeight2();
   
+  if( ND280XMLInput->GetXMLUseTarget2() ){ 
+    
+    if( ND280XMLInput->GetXMLTargetdefault2() ){ // default
+      //G4double Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
+      //SetTargetPos2(0,0,Target2_Z);
+      G4double Target2_Z = 0.;    
+      if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
+	Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
+      }
+      else{
+	Target2_Z = + (GetLengthForwTPC()/2. + GetFGDFullLength2() + GetTargetFullLength2()/2.);
+      }
+      SetTargetPos2(0,0,Target2_Z);
+    }
+    else { // from XML file
+      G4double x = ND280XMLInput->GetXMLTargetPos2_X();
+      G4double y = ND280XMLInput->GetXMLTargetPos2_Y();
+      G4double z = ND280XMLInput->GetXMLTargetPos2_Z();
+      SetTargetPos2(x,y,z);
+    }
+    
+    solidTarget2 = new G4Box(cNameSolidTarget2,targetSizeWidth2,targetSizeHeight2,targetSizeLength2);
+    logicTarget2 = new G4LogicalVolume(solidTarget2,TargetMater2,cNameLogicTarget2,0,0,0);    
+    physiTarget2 = new G4PVPlacement(0,                 // no rotation
+				     GetTargetPos2(),    // at (x,y,z)
+				     logicTarget2,       // its logical volume  
+				     cNamePhysiTarget2,  // its name
+				     //logicTracker,      // its mother  volume
+				     //logicND280MC,      // its mother  volume
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+    //fCheckOverlaps);   
+    
+    G4cout << "Target 2: " << G4endl
+	   << " - dimensions: "
+	   << GetTargetFullWidth2()/mm  << " (width) x " 
+	   << GetTargetFullHeight2()/mm << " (height) x " 
+	   << GetTargetFullLength2()/mm << " (length) mm^3" 
+	   << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
+    G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicTarget2->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << GetTargetPos2().x()/mm << ", "
+	   << GetTargetPos2().y()/mm << ", "
+	   << GetTargetPos2().z()/mm << " ) mm"  
+	   << G4endl << G4endl;
+  }
 
 
 
 
 
-  // Implement the SuperFGD 1
-  
-  G4String cNameLogicSuperFGD1 =  cParentNameTarget+"/SuperFGD1";
+
+
+
+
+
+
+
+
+
+
+
+  //
+  //------------------------------ 
+  // SuperFGD 1
+  //------------------------------ 
+  //
+
+  //G4String cNameLogicSuperFGD1 =  cParentNameTarget+"/SuperFGD1";
+  G4String cNameLogicSuperFGD1 = cNameSolidTarget1+"/SuperFGD1";
   ND280SuperFGDConstructor *fSuperFGDConstructor1 = new ND280SuperFGDConstructor(cNameLogicSuperFGD1,this);
   G4String nameSuperFGD1 = fSuperFGDConstructor1->GetName();
 
   if( ND280XMLInput->GetXMLUseSuperFGD1() ){
-  
+        
     double edge = ND280XMLInput->GetXMLSuperFGDCubeEdge1();
     int cubenumX = ND280XMLInput->GetXMLSuperFGDCubeNum1_X();
     int cubenumY = ND280XMLInput->GetXMLSuperFGDCubeNum1_Y();
@@ -1734,20 +1825,47 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fSuperFGDConstructor1->SetCubeNumX(cubenumX);
     fSuperFGDConstructor1->SetCubeNumY(cubenumY);
     fSuperFGDConstructor1->SetCubeNumZ(cubenumZ);
-    fSuperFGDConstructor1->SetPosX(x);
-    fSuperFGDConstructor1->SetPosY(y);
-    fSuperFGDConstructor1->SetPosZ(z);
+
+    logicSuperFGD1 = fSuperFGDConstructor1->GetPiece(); // SuperFGD logical volume (define the real size here!!!)
+
+    // Target mother volume --> use it in TrackerSD to calculate the distance from the hit to the MPPC plane
     
-    logicSuperFGD1 = fSuperFGDConstructor1->GetPiece();
-    physiSuperFGD1 
-      = new G4PVPlacement(
-			  0, // no rotation
-			  G4ThreeVector(0,0,0), // position (0,0,0)
-			  logicSuperFGD1,       // its logical volume    
-			  nameSuperFGD1,  // its name
-			  logicBasket,
-			  false,             // no boolean operations
-			  0);                 // copy number     
+    double width  = fSuperFGDConstructor1->GetWidth(); // dimensions set inside ND280SuperFGDConstructor based on the # of cubes and its size
+    double length = fSuperFGDConstructor1->GetLength();
+    double height = fSuperFGDConstructor1->GetHeight();
+
+    solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
+    logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
+    physiTarget1 = new G4PVPlacement(0,                 // no rotation
+				     G4ThreeVector(x,y,z),
+				     logicTarget1,       // its logical volume 
+				     cNamePhysiTarget1,  // its name
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+
+    // 
+    // Set the detector name where the hit distance in target 
+    // is calculated with the PersistencyManager G4Navigator
+    //    
+    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
+    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
+    //
+    // Set histogram for MPPC positions
+    // The MPPC size is the same as for the SuperFGD cube
+    // Same reference system as the Navigator!!!
+    //
+    InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true);
+    //
+    
+    physiSuperFGD1 = new G4PVPlacement(
+				       0, // no rotation
+				       G4ThreeVector(0,0,0), // same origin as Target1
+				       logicSuperFGD1,       // its logical volume    
+				       nameSuperFGD1,  // its name
+				       logicTarget1,
+				       false,             // no boolean operations
+				       0);                 // copy number     
     
     G4cout << "SuperFGD 1: " << G4endl
 	   << " - Cube size: "
@@ -1763,15 +1881,21 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << fSuperFGDConstructor1->GetPosX()/mm << ", "
 	   << fSuperFGDConstructor1->GetPosY()/mm << ", "
 	   << fSuperFGDConstructor1->GetPosZ()/mm << ") "
-	   << G4endl << G4endl;
+	   << G4endl << G4endl;    
   }
 
 
 
 
 
-  // Implement the SuperFGD 2
-  
+  /*
+
+  //
+  //------------------------------ 
+  // SuperFGD 2
+  //------------------------------ 
+  //
+
   G4String cNameLogicSuperFGD2 =  cParentNameTarget+"/SuperFGD2";
   ND280SuperFGDConstructor *fSuperFGDConstructor2 = new ND280SuperFGDConstructor(cNameLogicSuperFGD2,this);
   G4String nameSuperFGD2 = fSuperFGDConstructor2->GetName();
@@ -1822,6 +1946,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << fSuperFGDConstructor2->GetPosZ()/mm << ") "
 	   << G4endl << G4endl;
   }
+  */
 
 
 
@@ -1831,98 +1956,152 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
-  // Implement WAGASCI Empty
-  
-  
-
-
-
- 
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //------------------------------ 
-  // Target 2 - Upstream - Water 
-  //------------------------------
-
-  const G4String cNameSolidTarget2     = cParentNameTarget+"/target2";
-  const G4String cNameLogicTarget2     = cParentNameTarget+"/Target2";
-  const G4String cNamePhysiTarget2     = cParentNameTarget+"/Target2";
-  
-  //const G4String cTargetMater2  = "FGDScintillator";  
-  //const G4String cTargetMater2 = "WAGASHIScintillatorEmpty"; 
-  //const G4String cTargetMater2 = "Water";  
-  //const G4String cTargetMater2 = "FGD2Uniform";  
-  const G4String cTargetMater2 = ND280XMLInput->GetXMLTargetMaterial2(); 
-  TargetMater2  = FindMaterial(cTargetMater2);  
-  
-  G4double targetSizeLength2  = 0.5 * GetTargetFullLength2();    // Half length of the Target 1
-  G4double targetSizeWidth2   = 0.5 * GetTargetFullWidth2();     // Half width of the Target 1
-  G4double targetSizeHeight2  = 0.5 * GetTargetFullHeight2();    // Half height of the Target 1
-
-  G4double HalfTargetHeight2  = 0.5 * GetTargetFullHeight2();
-
-  if( ND280XMLInput->GetXMLUseTarget2() ){ 
+  /*
     
-    if( ND280XMLInput->GetXMLTargetdefault2() ){ // default
-      //G4double Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
-      //SetTargetPos2(0,0,Target2_Z);
-      G4double Target2_Z = 0.;    
-      if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
-	Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
-      }
-      else{
-	Target2_Z = + (GetLengthForwTPC()/2. + GetFGDFullLength2() + GetTargetFullLength2()/2.);
-      }
-      SetTargetPos2(0,0,Target2_Z);
-    }
-    else { // from XML file
-      G4double x = ND280XMLInput->GetXMLTargetPos2_X();
-      G4double y = ND280XMLInput->GetXMLTargetPos2_Y();
-      G4double z = ND280XMLInput->GetXMLTargetPos2_Z();
-      SetTargetPos2(x,y,z);
-    }
+  // Implement WAGASCI Empty (MY VERSION)
+  
+  G4String cNameLogicWAGASCIEmpty =  cParentNameTarget+"/WAGASCIEmpty";
+  ND280WAGASCIConstructor *fWAGASCIEmptyConstructor = new ND280WAGASCIConstructor(cNameLogicWAGASCIEmpty,this);
+  
+  if( ND280XMLInput->GetXMLUseWAGASCIEmpty() ){
+      
+    int cubenumX = 3;
+    int cubenumY = 3;
+    int cubenumZ = 3;
+    double edge = 25*mm;
+    double spaceLayerY = 1*mm; 
+
+    G4double x = ND280XMLInput->GetXMLWAGASCIEmptyPos_X();
+    G4double y = ND280XMLInput->GetXMLWAGASCIEmptyPos_Y();
+    G4double z = ND280XMLInput->GetXMLWAGASCIEmptyPos_Z();
+
+    fWAGASCIEmptyConstructor->SetEdge(edge);
+    fWAGASCIEmptyConstructor->SetCubeNumX(cubenumX);
+    fWAGASCIEmptyConstructor->SetCubeNumY(cubenumY);
+    fWAGASCIEmptyConstructor->SetCubeNumZ(cubenumZ);
+    fWAGASCIEmptyConstructor->SetPosX(x);
+    fWAGASCIEmptyConstructor->SetPosY(y);
+    fWAGASCIEmptyConstructor->SetPosZ(z);
     
-    solidTarget2 = new G4Box(cNameSolidTarget2,targetSizeWidth2,targetSizeHeight2,targetSizeLength2);
-    logicTarget2 = new G4LogicalVolume(solidTarget2,TargetMater2,cNameLogicTarget2,0,0,0);
-    physiTarget2 = new G4PVPlacement(0,                 // no rotation
-				     GetTargetPos2(),    // at (x,y,z)
-				     logicTarget2,       // its logical volume  	  
-				     cNamePhysiTarget2,  // its name
-				     //logicTracker,      // its mother  volume
-				     //logicND280MC,      // its mother  volume
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number 
-    //fCheckOverlaps);   
+    logicWAGASCIEmpty = fWAGASCIEmptyConstructor->GetPiece();
     
-    G4cout << "Target 2: " << G4endl
+    //G4String nameWAGASCIEmpty = fWAGASCIEmptyConstructor->GetName();
+    G4String nameWAGASCIEmpty = logicWAGASCIEmpty->GetName();
+    
+    physiWAGASCIEmpty 
+      = new G4PVPlacement(
+			  0, // no rotation
+			  G4ThreeVector(0,0,0), // position (0,0,0)
+			  logicWAGASCIEmpty,       // its logical volume    
+			  nameWAGASCIEmpty,  // its name
+			  logicBasket,
+			  false,             // no boolean operations
+			  0);                 // copy number     
+    
+    G4cout << "WAGASCI Empty: " << G4endl
+	   << " - Cube size: "
+	   << fWAGASCIEmptyConstructor->GetEdge() << G4endl;
+    G4cout << " - # of cubes: " << G4endl
+	   << "   " << fWAGASCIEmptyConstructor->GetCubeNumX() << " (width) "
+	   << "   " << fWAGASCIEmptyConstructor->GetCubeNumY() << " (height) "
+	   << "   " << fWAGASCIEmptyConstructor->GetCubeNumZ() << " (length) "
+	   << G4endl;
+    G4cout << " mass="<<logicWAGASCIEmpty->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " name: " << logicWAGASCIEmpty->GetName() << G4endl;
+    G4cout << " - position inside the Basket: ( " 
+	   << fWAGASCIEmptyConstructor->GetPosX()/mm << ", "
+	   << fWAGASCIEmptyConstructor->GetPosY()/mm << ", "
+	   << fWAGASCIEmptyConstructor->GetPosZ()/mm << ") "
+	   << G4endl << G4endl;
+	   }
+  */
+
+
+
+  
+  /*
+  // Benjamin's version
+  G4cout << "WAGASCI tracker: " << endl;
+  //Create the logical volume:
+  G4String cNameLogicWAGASCIEmpty =  cParentNameTarget+"/WAGASCIEmpty";
+  G4double length = ND280XMLInput->GetXMLWAGASCIEmptylength();
+  G4double width  = ND280XMLInput->GetXMLWAGASCIEmptywidth();
+  G4double height = ND280XMLInput->GetXMLWAGASCIEmptyheight();
+  G4double posX = ND280XMLInput->GetXMLWAGASCIEmptyPos_X();
+  G4double posY = ND280XMLInput->GetXMLWAGASCIEmptyPos_Y();
+  G4double posZ = ND280XMLInput->GetXMLWAGASCIEmptyPos_Z();
+  G4ThreeVector ModuleSize (width,height,length);    
+  solidWAGASCIEmpty 
+  = new G4Box(cNameLogicWAGASCIEmpty,
+  width/2,
+  height/2,
+		  length/2);    
+    logicWAGASCIEmpty 
+      = new G4LogicalVolume(solidWAGASCIEmpty,
+			    //TargetMater2,
+			    FindMaterial("Air"),
+			    cNameLogicWAGASCIEmpty,
+			    0,
+			    0,
+			    0);
+    logicWAGASCIEmpty->SetVisAttributes(G4VisAttributes::Invisible);
+    physiWAGASCIEmpty 
+      = new G4PVPlacement(0,
+			  G4ThreeVector(posX,posY,posZ),
+			  logicWAGASCIEmpty,
+			  cNameLogicWAGASCIEmpty,
+			  logicBasket,
+			  false,
+			  0);
+    ND280WAGASCIActiveConstructor * WAGASCI = new ND280WAGASCIActiveConstructor();
+    WAGASCI->ND280WAGASCIActiveConstructor::Construct(logicWAGASCIEmpty,G4ThreeVector(posX,posY,posZ),ModuleSize,cNameLogicWAGASCIEmpty);    
+    //ND280WaffleActiveConstructor * Waffle = new ND280WaffleActiveConstructor();
+    //Waffle->ND280WaffleActiveConstructor::Construct(logicWAGASCIEmpty,GetTargetPos2(),ModuleSize,cNameLogicWAGASCIEmpty);    
+    G4cout << "WAGASCI Empty: " << G4endl
 	   << " - dimensions: "
-	   << GetTargetFullWidth2()/mm  << " (width) x " 
-	   << GetTargetFullHeight2()/mm << " (height) x " 
-	   << GetTargetFullLength2()/mm << " (length) mm^3" 
-	   << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicTarget2->GetName() << G4endl;
-    G4cout << " - position: ( " 
+	   << width/mm  << " (width) x " 
+	   << height/mm << " (height) x " 
+	   << length/mm << " (length) mm^3" << G4endl;
+    G4cout << " mass="<<logicWAGASCIEmpty->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " name: " << logicWAGASCIEmpty->GetName() << G4endl;
+    G4cout << " - position inside the Basket: ( " 
 	   << GetTargetPos2().x()/mm << ", "
 	   << GetTargetPos2().y()/mm << ", "
 	   << GetTargetPos2().z()/mm << " ) mm"  
 	   << G4endl << G4endl;
-  }
- 
+	  
+    */
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
   //
   //------------------------------ 
   // Side TPCs 
@@ -2220,11 +2399,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
   if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
   if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );
-  
+  //if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );  
+  //if( ND280XMLInput->GetXMLUseSuperFGD1() )logicSuperFGD1->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseSuperFGD2() )logicSuperFGD2->SetSensitiveDetector( GetSensitiveDetector() );
+
   // Construct the field creator - this will register the field it creates
   if (!fEmFieldSetup.Get()) {
     ExN02FieldSetup* fieldSetup
@@ -2235,6 +2416,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   //--------- Visualization attributes ------------------------------- 
 
+  G4cout << "Visualization attributes" << G4endl;
+ 
   //logicWorld  ->SetVisAttributes(BoxVisAtt);  
   logicWorld->SetVisAttributes(G4VisAttributes::Invisible);
   //logicTracker->SetVisAttributes(BoxVisAtt);
@@ -2248,11 +2431,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseTarget2() )   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
   if( ND280XMLInput->GetXMLUseFGD1() )      logicFGD1->SetVisAttributes(FGDScintVisAtt);
   if( ND280XMLInput->GetXMLUseFGD2() )      logicFGD2->SetVisAttributes(FGDWaterVisAtt);
-  
-  //if( ND280XMLInput->GetXMLUseSuperFGD1() ) 
-  if(logicSuperFGD1) logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
-  //if( ND280XMLInput->GetXMLUseSuperFGD2() ) 
-  if(logicSuperFGD2) logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
+
+  if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
+  if(ND280XMLInput->GetXMLUseSuperFGD2())   logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
 
   
   //--------- Set Step Limiter -------------------------------
@@ -2264,12 +2445,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //logicSideTPCUp  ->SetUserLimits(new G4UserLimits(cStepLimit));
   //logicSideTPCDown->SetUserLimits(new G4UserLimits(cStepLimit));
 
-
   // My
   //G4UserLimits *WorldUserLimits = new G4UserLimits();
   //WorldUserLimits->SetUserMinEkine(10*MeV);
   //logicWorld->SetUserLimits(WorldUserLimits);
 
+
+  // Store the geometry in the ROOT file
+
+  G4cout << "Store the geometry in the ROOT file" << G4endl;
 
   if(ND280XMLInput->GetXMLStoreGeometry()){
 
@@ -3059,23 +3243,23 @@ void ExN02DetectorConstruction::DefineMaterials() {
   FGD2Uniform->AddMaterial(fgdScintillator,fractionmass = 48.753*perCent);
   gMan->SetDrawAtt(FGD2Uniform,kAzure+8);
   
-  // WAGASHI
+  // WAGASCI
   
   //Scintillator
   density = 1.032*g/cm3;
-  G4Material *WAGASHIScint 
-    = new G4Material(name="WAGASHIScintillator", density, nel=2);
-  WAGASHIScint->AddElement(elC, 9);
-  WAGASHIScint->AddElement(elH, 10);
-  gMan->SetDrawAtt(WAGASHIScint,kAzure+8);//ND280 class
+  G4Material *WAGASCIScint 
+    = new G4Material(name="WAGASCIScintillator", density, nel=2);
+  WAGASCIScint->AddElement(elC, 9);
+  WAGASCIScint->AddElement(elH, 10);
+  gMan->SetDrawAtt(WAGASCIScint,kAzure+8);//ND280 class
 
   //Scintillator empty --> average density ~40% of normal one
   density = 1.032*g/cm3 * 0.3;
-  G4Material *WAGASHIScint_Empty 
-    = new G4Material(name="WAGASHIScintillatorEmpty", density,nel=2);
-  WAGASHIScint_Empty->AddElement(elC, 9);
-  WAGASHIScint_Empty->AddElement(elH, 10);
-  gMan->SetDrawAtt(WAGASHIScint_Empty,kGreen);//ND280 class
+  G4Material *WAGASCIScint_Empty 
+    = new G4Material(name="WAGASCIScintillatorEmpty", density,nel=2);
+  WAGASCIScint_Empty->AddElement(elC, 9);
+  WAGASCIScint_Empty->AddElement(elH, 10);
+  gMan->SetDrawAtt(WAGASCIScint_Empty,kGreen);//ND280 class
   
 }
 
