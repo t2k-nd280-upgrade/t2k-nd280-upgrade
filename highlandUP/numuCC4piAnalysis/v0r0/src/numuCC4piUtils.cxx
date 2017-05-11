@@ -413,13 +413,13 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
       AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[groupID][i]);
       if (track == box->MainTrack) continue;
       if (cutUtils::DeltaLYZTPCCut(*track)) continue;
-      //if (!anaUtils::InFiducialVolume(det, track->PositionEnd)) continue;
 
       if (det==SubDetId::kTarget1 || det==SubDetId::kTarget2) {
 	AnaTargetParticleB* TargetSegment = 
 	  dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
 	if (!TargetSegment) continue;
-	if (TargetSegment->DeltaLYZ < cut_length) continue;
+	//if (TargetSegment->DeltaLYZ < cut_length) continue;
+	if (!TargetSegment->IsReconstructed) continue;
 	  
 	AnaTrueParticleB* true_part = track->GetTrueParticle();
 	if (!true_part) continue;
@@ -432,7 +432,8 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
 	AnaFGDParticleB* FGDSegment = 
 	  dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
 	if (!FGDSegment) continue;
-	if (FGDSegment->DeltaLYZ < cut_length) continue;
+	//if (FGDSegment->DeltaLYZ < cut_length) continue;
+	if (!FGDSegment->IsReconstructed) continue;
 	  
 	AnaTrueParticleB* true_part = track->GetTrueParticle();
 	if (!true_part) continue;
@@ -526,7 +527,7 @@ float numuCC4pi_utils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaPa
   
   // find timing information in Targets
   for (int i=0; i<track->nTargetSegments; i++)
-    if (track->TargetSegments[i]->DeltaLYZ > cut_length_target) {
+    if (track->TargetSegments[i]->IsReconstructed) {
       float true_time = track->TargetSegments[i]->PositionStart[3];
       float     sigma = sqrt(pow(3/sqrt(track->TargetSegments[i]->DeltaLYZ/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
       float      time = gen->Gaus(true_time, sigma);
@@ -544,20 +545,25 @@ float numuCC4pi_utils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaPa
 	  SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown1 ||
 	  SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown2 ){
 
-	float true_time = track->TPCSegments[0]->PositionStart[3];
-	float     sigma = ToF_time_resolution;
-	float      time = gen->Gaus(true_time, sigma);
+	if ( fabs(track->TPCSegments[0]->PositionStart[1]+316)<1 ||
+	     fabs(track->TPCSegments[0]->PositionStart[1]-284)<1 ) {
 
-	std::vector<float> vec;
-	vec.push_back(time); vec.push_back(sigma);
-	detTiming.push_back(std::make_pair(track->TPCSegments[0], vec));
+	  float true_time = track->TPCSegments[0]->PositionStart[3];
+	  float     sigma = ToF_time_resolution;
+	  float      time = gen->Gaus(true_time, sigma);
+
+	  std::vector<float> vec;
+	  vec.push_back(time); vec.push_back(sigma);
+	  detTiming.push_back(std::make_pair(track->TPCSegments[0], vec));
+
+	}
       }
     }
   }
 
   // find timing information in FGDs
   for (int i=0; i<track->nFGDSegments; i++)
-    if (track->FGDSegments[i]->DeltaLYZ > cut_length_target) {
+    if (track->FGDSegments[i]->IsReconstructed) {
       float true_time = track->FGDSegments[i]->PositionStart[3];
       float     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->DeltaLYZ/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
       float      time = gen->Gaus(true_time, sigma);
@@ -583,7 +589,7 @@ float numuCC4pi_utils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaPa
   // find timing information in ToF counters
   for (int i=0; i<track->nToFSegments; i++) {
     float true_time = track->ToFSegments[i]->PositionStart[3];
-    float     sigma = ToF_time_resolution; // 0.6ns
+    float     sigma = ToF_time_resolution; // 0.6ns by default
     float      time = gen->Gaus(true_time, sigma);
 
     std::vector<float> vec;
@@ -632,11 +638,7 @@ float numuCC4pi_utils::ComputeToFMass(float mom, float ToF, float length){
 //*********************************************************************
 
   double c = 299.792458; // mm/ns
-
-  if (mom<0 || length<0) 
-    return -999.;
-  else
-    return mom*sqrt(pow(c*ToF/length, 2) -1);
+  return mom*sqrt(pow(c*ToF/length, 2) -1);
 
 }
 
@@ -645,10 +647,6 @@ float numuCC4pi_utils::ComputeToFTime(float mom, float mass, float length){
 //*********************************************************************
 
   double c = 299.792458; // mm/ns
-
-  if (mom<0 || length<0) 
-    return -999.;
-  else
-    return length/c*sqrt(pow(mass/mom, 2) +1);
+  return length/c*sqrt(pow(mass/mom, 2) +1);
 
 }

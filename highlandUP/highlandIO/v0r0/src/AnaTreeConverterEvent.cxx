@@ -379,6 +379,9 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
     truePart->ID = 0;
     truePart->PDG = 0;
     truePart->ParentID = 0;
+    truePart->GParentID = 0;
+    truePart->ParentPDG = 0;
+    truePart->GParentPDG = 0;
     anaUtils::VectorToArray(TLorentzVector(0, 0, 0, 0), truePart->Position);
     truePart->Momentum = 0;
     anaUtils::VectorToArray(TVector3(0, 0, 0), truePart->Direction);
@@ -390,6 +393,8 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
   truePart->PDG = upTrack->GetPDG();
   truePart->ParentID = upTrack->GetParentID();
   truePart->CosTheta=upTrack->GetInitCosTheta();
+
+
   double tmpp=-9999;
   double tmpd=9999;
   int ti=-1;
@@ -434,6 +439,25 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
   truePart->EDeposit=upTrack->GetSDTotalEnergyDeposit();
   truePart->EKin=mass+upTrack->GetInitKinEnergy();
   FindSegments(upTrack,truePart);
+
+
+  // look for and store Grand parent ID
+  if (truePart->ParentID != 0 && truePart->Momentum>10) {
+    for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
+      TND280UpTrack *track = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
+      if (track->GetTrackID() == truePart->ParentID){
+	truePart->ParentPDG = track->GetPDG();
+	truePart->GParentID = track->GetParentID();
+      }
+    }
+  }
+  /*
+  for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
+    TND280UpTrack *track = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
+    if (track->GetTrackID() == truePart->GParentID)
+      truePart->GParentPDG = track->GetPDG();
+  }
+  */
 
   
 }
@@ -1683,16 +1707,36 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
 
 }
 
+bool AnaTreeConverterEvent::IsReconstructedFGD(float* pos_start, float* pos_end, double length){
 
-bool AnaTreeConverterEvent::IsReconstructedTarget(double length,double theta){
-  int bin =hefficiency_target->FindBin(theta,length);
+  if (length<50.)
+    return false;
 
-  double prob=hefficiency_target->GetBinContent(bin);
+  double layer_width = 10.1; //mm
+  int number_of_layers = 4;
+  if (fabs(pos_start[2]-pos_end[2]) > number_of_layers*layer_width)
+    return true;
+
+    return false;
+  
+}
+
+
+bool AnaTreeConverterEvent::IsReconstructedTarget(double length, double theta){
+
+  if (length>50.)
+    return true;
+  return false;
+
+  /*
+  int bin = hefficiency_target->FindBin(theta,length);
+  double prob = hefficiency_target->GetBinContent(bin);
  
   if(gRandom->Uniform()>prob)
     return 1;
   else
     return 0;
+  */
   
 }
 
@@ -1758,9 +1802,9 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   reconParticle->Length         = trueParticle->Length;
   reconParticle->EDeposit       = trueParticle->EDeposit;
   reconParticle->EKin           = trueParticle->EKin;
-  anaUtils::CopyArray(trueParticle->Direction, reconParticle->DirectionStart, 3);
-  anaUtils::CopyArray(trueParticle->Position,  reconParticle->PositionStart, 4);
-  anaUtils::CopyArray(trueParticle->PositionEnd,   reconParticle->PositionEnd, 4);
+  anaUtils::CopyArray(trueParticle->Direction,   reconParticle->DirectionStart, 3);
+  anaUtils::CopyArray(trueParticle->Position,    reconParticle->PositionStart,  4);
+  anaUtils::CopyArray(trueParticle->PositionEnd, reconParticle->PositionEnd,    4);
   reconParticle->MomentumEle = -10000;
   reconParticle->MomentumMuon = -10000;
   reconParticle->MomentumProton = -10000;
@@ -1773,31 +1817,50 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   reconParticle->TrueObject=dynamic_cast<AnaTrueObjectC*>(trueParticle);
   for (int i = 0; i < trueParticle->DetCrossingsVect.size(); i++) {
 
-    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3)) {
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1)   || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2)   || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown1) || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCDown2) || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC1) || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC2) || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kForwTPC3) ) {
       AnaTPCParticleB* seg = dynamic_cast<AnaTPCParticleB*>(MakeTPCTrack());
-      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
+      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
  
       seg->Detectors=trueParticle->DetCrossingsVect[i]->Detector;
- 
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       seg->Momentum = mom;
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
-      //  anaUtils::ComputeTPCPull(*seg,*reconParticle);
+
+      //anaUtils::ComputeTPCPull(*seg,*reconParticle);
       reconParticle->TPCSegments[reconParticle->nTPCSegments++] = seg;
 
     }
-    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTarget1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTarget2)) {
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTarget1) || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTarget2) ) {
       AnaTargetParticleB* seg = dynamic_cast<AnaTargetParticleB*>(MakeTargetTrack() );
-      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
+      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
@@ -1806,15 +1869,22 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
-      seg->IsReconstructed = IsReconstructedTarget(seg->DeltaLYZ, trueParticle->CosTheta);
+      seg->IsReconstructed = IsReconstructedTarget(seg->SegLength, trueParticle->CosTheta);
       reconParticle->TargetSegments[reconParticle->nTargetSegments++] = seg;
 
     }
-    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kFGD1) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kFGD2)) {
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kFGD1) || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kFGD2) ) {
       AnaFGDParticleB* seg = dynamic_cast<AnaFGDParticleB*>(MakeFGDTrack() );
-      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
+      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
@@ -1823,15 +1893,25 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
-      seg->IsReconstructed = IsReconstructedTarget(seg->DeltaLYZ, trueParticle->CosTheta);
+      seg->IsReconstructed = IsReconstructedFGD(trueParticle->DetCrossingsVect[i]->EntrancePosition, 
+						trueParticle->DetCrossingsVect[i]->ExitPosition,
+						seg->SegLength);
       reconParticle->FGDSegments[reconParticle->nFGDSegments++] = seg;
 
     }
-    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kDsECal) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kBrlECal) || SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kP0DECal)) {
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kDsECal)  || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kBrlECal) || 
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kP0DECal) ) {
       AnaECalParticleB* seg = dynamic_cast<AnaECalParticleB*>(MakeECalTrack() );
-      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
+      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
@@ -1846,27 +1926,31 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       reconParticle->ECalSegments[reconParticle->nECalSegments++] = seg;
 
     }
-    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFFrontUp)||
-	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBackUp) ||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFTopUp)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBotUp)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFLeftUp)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFRightUp)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFFrontDown)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBackDown) ||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFTopDown)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBotDown)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFLeftDown)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFRightDown)||
-        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kP0D)
-
-        ) {
+    if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFFrontUp)   ||
+	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBackUp)    ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFTopUp)     ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBotUp)     ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFLeftUp)    ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFRightUp)   ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFFrontDown) ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBackDown)  ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFTopDown)   ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFBotDown)   ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFLeftDown)  ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kToFRightDown) ||
+        SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kP0D)          ) {
       AnaToFParticleB* seg = dynamic_cast<AnaToFParticleB*>(MakeToFTrack() );
-      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
-      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
+      Float_t mom = sqrt(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] + 
+			 trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] * trueParticle->DetCrossingsVect[i]->EntranceMomentum[2]);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
+      anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, 
+				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
-      anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
+      anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,     seg->PositionEnd, 4);
       seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;

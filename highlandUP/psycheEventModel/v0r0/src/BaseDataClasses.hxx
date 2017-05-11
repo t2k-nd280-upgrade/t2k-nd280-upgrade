@@ -181,6 +181,9 @@ class AnaTrueParticleB: public AnaTrueObjectC{
   /// The ID of this particle's immediate parent, or 0 if there is no parent.
   Int_t ParentID;
 
+  /// The ID of this particle's grandparent, or 0 if there is no grandparent.
+  Int_t GParentID;
+
   /// The PDG code of this particle's immediate parent, or 0 if there is no parent.
   Int_t ParentPDG;
 

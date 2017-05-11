@@ -86,18 +86,18 @@ bool numuCC4piAnalysis::Initialize(){
   }
 
   /*
-  if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 4) {
+    if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 4) {
     DetDef::Target1min[1] =   -216.00;
     DetDef::Target1max[1] =    184.00;  
     DetDef::Target1min[2] =  -2692.00;
     DetDef::Target1max[2] =   -698.00;
-  }
-  if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 5) {
+    }
+    if (ND::params().GetParameterI("numuCC4piAnalysis.Configuration") == 5) {
     DetDef::Target1min[1] =   -216.00;
     DetDef::Target1max[1] =    184.00;  
     DetDef::Target1min[2] =  -1718.00;
     DetDef::Target1max[2] =    276.00;
-  }
+    }
   */
   
   return true;
@@ -217,25 +217,43 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVarVF(output(), selAll_ToF_mass,       "", selAll_nTracks);
   AddVarVF(output(), selAll_ToF_true_mass,  "", selAll_nTracks);
   AddVarVF(output(), selAll_mom,            "", selAll_nTracks);
+  AddVarVF(output(), selAll_cos,            "", selAll_nTracks);
   AddVarVF(output(), selAll_true_mom,       "", selAll_nTracks);
   AddVarVI(output(), selAll_PDG,            "", selAll_nTracks);
   AddVarVI(output(), selAll_ToF_det_used1,  "", selAll_nTracks);
   AddVarVI(output(), selAll_ToF_det_used2,  "", selAll_nTracks);
   AddVarVF(output(), selAll_ToF_time_reco,  "", selAll_nTracks);
-  AddVarVF(output(), selAll_ToF_time_muon,  "", selAll_nTracks);
-  AddVarVF(output(), selAll_ToF_time_pion,  "", selAll_nTracks);
-  AddVarVF(output(), selAll_ToF_time_electron,  "", selAll_nTracks);
-  AddVarVF(output(), selAll_ToF_time_proton,"", selAll_nTracks);
-  AddVarVF(output(), selAll_ToF_time_sigma_muon, "", selAll_nTracks);
-  AddVarVF(output(), selAll_ToF_time_sigma_pion, "", selAll_nTracks);
-  AddVarVF(output(), selAll_ToF_time_sigma_electron, "", selAll_nTracks);
-  AddVarVF(output(), selAll_ToF_time_sigma_proton, "", selAll_nTracks);
-  AddVarVF(output(), selAll_TPC_Edep,       "", selAll_nTracks);
-  AddVarVF(output(), selAll_TPC_Length,     "", selAll_nTracks);
-  AddVarVF(output(), selAll_TPC_dedx,       "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_pull_muon,     "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_pull_pion,     "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_pull_electron, "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_pull_proton,   "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_lkl_muon,      "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_lkl_pion,      "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_lkl_electron,  "", selAll_nTracks);
+  AddVarVF(output(), selAll_ToF_lkl_proton,    "", selAll_nTracks);
+
+  AddVarVF(output(), selAll_TPC_pull_muon,     "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_pull_pion,     "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_pull_electron, "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_pull_proton,   "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_lkl_muon,      "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_lkl_pion,      "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_lkl_electron,  "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_lkl_proton,    "", selAll_nTracks);
+  AddVarVF(output(), selAll_TPC_dedx,          "", selAll_nTracks);
 
   //--- Pion multiplicity
   
+  AddVarVI(output(),  sel_TruePiPlus_reco,  "", sel_nTruePiPlus);
+  AddVarVI(output(),  sel_TruePiMinus_reco, "", sel_nTruePiMinus);
+  AddVarVI(output(),  sel_TruePiZero_reco,  "", sel_nTruePiZero);
+  AddVarVF(output(),  sel_TruePiPlus_mom,   "", sel_nTruePiPlus);
+  AddVarVF(output(),  sel_TruePiMinus_mom,  "", sel_nTruePiMinus);
+  AddVarVF(output(),  sel_TruePiZero_mom,   "", sel_nTruePiZero);
+  AddVarVF(output(),  sel_TruePiPlus_cos,   "", sel_nTruePiPlus);
+  AddVarVF(output(),  sel_TruePiMinus_cos,  "", sel_nTruePiMinus);
+  AddVarVF(output(),  sel_TruePiZero_cos,   "", sel_nTruePiZero);
+
   AddVarI(output(),   sel_nOtherPions,      "");
   AddVarI(output(),   sel_nPosPions,        "");
   
@@ -247,6 +265,13 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVarVI(output(),   sel_IsoTargetPiontracks_PDG,    "", sel_nIsoTargetPiontracks);
   AddVarVI(output(),   sel_PosPi0TPCtracks_PDG,        "", sel_nPosPi0TPCtracks);
   AddVarVI(output(),   sel_ElPi0TPCtracks_PDG,         "", sel_nElPi0TPCtracks);
+
+  AddVarVI(output(),   sel_MichelElectrons_ParPDG,        "", sel_nMichelElectrons);
+  AddVarVI(output(),   sel_NegativePionTPCtracks_ParPDG,  "", sel_nNegativePionTPCtracks);
+  AddVarVI(output(),   sel_PositivePionTPCtracks_ParPDG,  "", sel_nPositivePionTPCtracks);
+  AddVarVI(output(),   sel_IsoTargetPiontracks_ParPDG,    "", sel_nIsoTargetPiontracks);
+  AddVarVI(output(),   sel_PosPi0TPCtracks_ParPDG,        "", sel_nPosPi0TPCtracks);
+  AddVarVI(output(),   sel_ElPi0TPCtracks_ParPDG,         "", sel_nElPi0TPCtracks);
 
   //AddVarVF(output(),   sel_OtherPions_mom,             "", sel_nOtherPions);
   //AddVarVF(output(),   sel_PosPions_mom,               "", sel_nPosPions);
@@ -290,6 +315,8 @@ void numuCC4piAnalysis::DefineTruthTree(){
   AddVarF(output(), true_ekin,        "kinetic energy");
   AddVarF(output(), true_Q2,          "Q2");
   AddVarI(output(), true_TPC,         "TPC detector");
+
+  AddVarI(output(), trueHMN_pdg,         "pdg");
 
 }
 
@@ -350,13 +377,119 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(sel_nOtherPions,      cc4pibox().nOtherPions);
     output().FillVar(sel_nPosPions,        cc4pibox().nPosPions);
 
+
+    //--
+
+    int nu_mode = ND::params().GetParameterI("numuCC4piAnalysis.NeutrinoMode");
+
+
+    for (unsigned j=0; j<cc4pibox().TruePiPlus.size(); j++) {
+      AnaTrueParticleB *part = cc4pibox().TruePiPlus[j];
+      int found=0;
+
+      for (int i=0; i<cc4pibox().nMichelElectrons; i++) {
+	AnaTrackB *track = cc4pibox().MichelElectrons[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ID        == part->ID ||
+	    track->GetTrueParticle()->ParentID  == part->ID ||
+	    track->GetTrueParticle()->GParentID == part->ID)
+	  found=nu_mode*3;
+      }
+      for (int i=0; i<cc4pibox().nIsoTargetPiontracks; i++) {
+	AnaTrackB *track = cc4pibox().IsoTargetPiontracks[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ID       == part->ID ||
+	    track->GetTrueParticle()->ParentID == part->ID )
+	  found=nu_mode*2;
+      }
+      for (int i=0; i<cc4pibox().nPositivePionTPCtracks; i++) {
+	AnaTrackB *track = cc4pibox().PositivePionTPCtracks[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ID       == part->ID ||
+	    track->GetTrueParticle()->ParentID == part->ID )
+	  found=1;
+      }
+
+      output().FillVectorVar(sel_TruePiPlus_reco, found);
+      output().FillVectorVar(sel_TruePiPlus_mom, part->Momentum);
+      output().FillVectorVar(sel_TruePiPlus_cos, part->Direction[2]);
+      output().IncrementCounter(sel_nTruePiPlus);
+    }
+
+    //--
+
+    for (unsigned j=0; j<cc4pibox().TruePiMinus.size(); j++) {
+      AnaTrueParticleB *part = cc4pibox().TruePiMinus[j];
+      int found=0;
+
+      for (int i=0; i<cc4pibox().nMichelElectrons; i++) {
+	AnaTrackB *track = cc4pibox().MichelElectrons[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ID       == part->ID ||
+	    track->GetTrueParticle()->ParentID == part->ID ||
+	    track->GetTrueParticle()->GParentID == part->ID)
+	  found=nu_mode*(-3);
+      }
+      for (int i=0; i<cc4pibox().nIsoTargetPiontracks; i++) {
+	AnaTrackB *track = cc4pibox().IsoTargetPiontracks[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ID       == part->ID ||
+	    track->GetTrueParticle()->ParentID == part->ID )
+	  found=nu_mode*(-2);
+      }
+      for (int i=0; i<cc4pibox().nNegativePionTPCtracks; i++) {
+	AnaTrackB *track = cc4pibox().NegativePionTPCtracks[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ID       == part->ID ||
+	    track->GetTrueParticle()->ParentID == part->ID )
+	  found=1;
+      }
+
+      output().FillVectorVar(sel_TruePiMinus_reco, found);
+      output().FillVectorVar(sel_TruePiMinus_mom, part->Momentum);
+      output().FillVectorVar(sel_TruePiMinus_cos, part->Direction[2]);
+      output().IncrementCounter(sel_nTruePiMinus);
+    }
+
+    //--
+
+    for (unsigned j=0; j<cc4pibox().TruePiZero.size(); j++) {
+      AnaTrueParticleB *part = cc4pibox().TruePiZero[j];
+      int found=0;
+
+      for (int i=0; i<cc4pibox().nPosPi0TPCtracks; i++) {
+	AnaTrackB *track = cc4pibox().PosPi0TPCtracks[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ParentID  == part->ID ||
+	    track->GetTrueParticle()->GParentID == part->ID )
+	  found=1;
+      }
+      for (int i=0; i<cc4pibox().nElPi0TPCtracks; i++) {
+	AnaTrackB *track = cc4pibox().ElPi0TPCtracks[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ParentID  == part->ID ||
+	    track->GetTrueParticle()->GParentID == part->ID )
+	  found=2;
+      }
+
+      output().FillVectorVar(sel_TruePiZero_reco, found);
+      output().FillVectorVar(sel_TruePiZero_mom, part->Momentum);
+      output().FillVectorVar(sel_TruePiZero_cos, part->Direction[2]);
+      output().IncrementCounter(sel_nTruePiZero);
+    }
+
+    //--
+
+
     for (int i=0; i<cc4pibox().nMichelElectrons; i++) {
       AnaTrackB *track = cc4pibox().MichelElectrons[i];
       output().FillVectorVar(sel_MichelElectrons_mom, track->GetTrueParticle()->Momentum);
       if (i==0)
 	output().FillVectorVarFromArray(sel_MichelElectrons_pos, track->PositionStart, 4);
-      if (track->TrueObject)
+      if (track->TrueObject){
 	output().FillVectorVar(sel_MichelElectrons_PDG, track->GetTrueParticle()->PDG);
+	output().FillVectorVar(sel_MichelElectrons_ParPDG, track->GetTrueParticle()->ParentPDG);
+      }
       output().IncrementCounter(sel_nMichelElectrons);
     }
 
@@ -365,16 +498,20 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVar(sel_NegativePionTPCtracks_mom, track->GetTrueParticle()->Momentum);
       if (i==0)
 	output().FillVectorVarFromArray(sel_NegativePionTPCtracks_pos, track->PositionStart, 4);
-      if (track->TrueObject)
+      if (track->TrueObject){
 	output().FillVectorVar(sel_NegativePionTPCtracks_PDG, track->GetTrueParticle()->PDG);
+	output().FillVectorVar(sel_NegativePionTPCtracks_ParPDG, track->GetTrueParticle()->ParentPDG);
+      }
       output().IncrementCounter(sel_nNegativePionTPCtracks);
     }
 
     for (int i=0; i<cc4pibox().nPositivePionTPCtracks; i++) {
       AnaTrackB *track = cc4pibox().PositivePionTPCtracks[i];
       output().FillVectorVar(sel_PositivePionTPCtracks_mom, track->GetTrueParticle()->Momentum);
-      if (track->TrueObject)
+      if (track->TrueObject){
 	output().FillVectorVar(sel_PositivePionTPCtracks_PDG, track->GetTrueParticle()->PDG);
+	output().FillVectorVar(sel_PositivePionTPCtracks_ParPDG, track->GetTrueParticle()->ParentPDG);
+      }
       output().IncrementCounter(sel_nPositivePionTPCtracks);
     }
 
@@ -383,8 +520,10 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVar(sel_IsoTargetPiontracks_mom, track->GetTrueParticle()->Momentum);
       if (i==0)
 	output().FillVectorVarFromArray(sel_IsoTargetPiontracks_pos, track->PositionStart, 4);
-      if (track->TrueObject)
+      if (track->TrueObject){
 	output().FillVectorVar(sel_IsoTargetPiontracks_PDG, track->GetTrueParticle()->PDG);
+	output().FillVectorVar(sel_IsoTargetPiontracks_ParPDG, track->GetTrueParticle()->ParentPDG);
+      }
       output().IncrementCounter(sel_nIsoTargetPiontracks);
     }
 
@@ -393,8 +532,10 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVar(sel_PosPi0TPCtracks_mom, track->GetTrueParticle()->Momentum);
       if (i==0)
 	output().FillVectorVarFromArray(sel_PosPi0TPCtracks_pos, track->PositionStart, 4);
-      if (track->TrueObject)
+      if (track->TrueObject){
 	output().FillVectorVar(sel_PosPi0TPCtracks_PDG, track->GetTrueParticle()->PDG);
+	output().FillVectorVar(sel_PosPi0TPCtracks_ParPDG, track->GetTrueParticle()->ParentPDG);
+      }
       output().IncrementCounter(sel_nPosPi0TPCtracks);
     }
 
@@ -403,8 +544,10 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVar(sel_ElPi0TPCtracks_mom, track->GetTrueParticle()->Momentum);
       if (i==0)
 	output().FillVectorVarFromArray(sel_ElPi0TPCtracks_pos, track->PositionStart, 4);
-      if (track->TrueObject)
+      if (track->TrueObject){
 	output().FillVectorVar(sel_ElPi0TPCtracks_PDG, track->GetTrueParticle()->PDG);
+	output().FillVectorVar(sel_ElPi0TPCtracks_ParPDG, track->GetTrueParticle()->ParentPDG);
+      }
       output().IncrementCounter(sel_nElPi0TPCtracks);
     }
 
@@ -413,21 +556,31 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVar(selAll_ToF_true_mass,     cc4pibox().All_ToF_true_mass[i]);
       output().FillVectorVar(selAll_PDG,               cc4pibox().All_PDG[i]);
       output().FillVectorVar(selAll_mom,               cc4pibox().All_mom[i]);
+      output().FillVectorVar(selAll_cos,               cc4pibox().All_cos[i]);
       output().FillVectorVar(selAll_true_mom,          cc4pibox().All_true_mom[i]);
       output().FillVectorVar(selAll_ToF_det_used1,     cc4pibox().All_ToF_det_used1[i]);
       output().FillVectorVar(selAll_ToF_det_used2,     cc4pibox().All_ToF_det_used2[i]);
       output().FillVectorVar(selAll_ToF_time_reco,     cc4pibox().All_ToF_time_reco[i]);
-      output().FillVectorVar(selAll_ToF_time_muon,     cc4pibox().All_ToF_time_muon[i]);
-      output().FillVectorVar(selAll_ToF_time_pion,     cc4pibox().All_ToF_time_pion[i]);
-      output().FillVectorVar(selAll_ToF_time_electron, cc4pibox().All_ToF_time_electron[i]);
-      output().FillVectorVar(selAll_ToF_time_proton,   cc4pibox().All_ToF_time_proton[i]);
-      output().FillVectorVar(selAll_ToF_time_sigma_muon,     cc4pibox().All_ToF_time_sigma_muon[i]);
-      output().FillVectorVar(selAll_ToF_time_sigma_pion,     cc4pibox().All_ToF_time_sigma_pion[i]);
-      output().FillVectorVar(selAll_ToF_time_sigma_electron, cc4pibox().All_ToF_time_sigma_electron[i]);
-      output().FillVectorVar(selAll_ToF_time_sigma_proton,   cc4pibox().All_ToF_time_sigma_proton[i]);
-      output().FillVectorVar(selAll_TPC_Edep,          cc4pibox().All_TPC_Edep[i]);
-      output().FillVectorVar(selAll_TPC_Length,        cc4pibox().All_TPC_Length[i]);
+
+      output().FillVectorVar(selAll_ToF_pull_muon,     cc4pibox().All_ToF_pull_muon[i]);
+      output().FillVectorVar(selAll_ToF_pull_pion,     cc4pibox().All_ToF_pull_pion[i]);
+      output().FillVectorVar(selAll_ToF_pull_electron, cc4pibox().All_ToF_pull_electron[i]);
+      output().FillVectorVar(selAll_ToF_pull_proton,   cc4pibox().All_ToF_pull_proton[i]);
+      output().FillVectorVar(selAll_ToF_lkl_muon,      cc4pibox().All_ToF_lkl_muon[i]);
+      output().FillVectorVar(selAll_ToF_lkl_pion,      cc4pibox().All_ToF_lkl_pion[i]);
+      output().FillVectorVar(selAll_ToF_lkl_electron,  cc4pibox().All_ToF_lkl_electron[i]);
+      output().FillVectorVar(selAll_ToF_lkl_proton,    cc4pibox().All_ToF_lkl_proton[i]);
+
+      output().FillVectorVar(selAll_TPC_pull_muon,     cc4pibox().All_TPC_pull_muon[i]);
+      output().FillVectorVar(selAll_TPC_pull_pion,     cc4pibox().All_TPC_pull_pion[i]);
+      output().FillVectorVar(selAll_TPC_pull_electron, cc4pibox().All_TPC_pull_electron[i]);
+      output().FillVectorVar(selAll_TPC_pull_proton,   cc4pibox().All_TPC_pull_proton[i]);
+      output().FillVectorVar(selAll_TPC_lkl_muon,      cc4pibox().All_TPC_lkl_muon[i]);
+      output().FillVectorVar(selAll_TPC_lkl_pion,      cc4pibox().All_TPC_lkl_pion[i]);
+      output().FillVectorVar(selAll_TPC_lkl_electron,  cc4pibox().All_TPC_lkl_electron[i]);
+      output().FillVectorVar(selAll_TPC_lkl_proton,    cc4pibox().All_TPC_lkl_proton[i]);
       output().FillVectorVar(selAll_TPC_dedx,          cc4pibox().All_TPC_dedx[i]);
+
       output().IncrementCounter(selAll_nTracks);
     }
 
@@ -476,7 +629,9 @@ bool numuCC4piAnalysis::CheckFillTruthTree(const AnaTrueVertex& vtx) {
   bool useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
   bool useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
 
-  bool TrueNuMuCC = vtx.ReacCode > 0 && vtx.ReacCode < 30 && vtx.NuPDG == 14;
+  int nu_mode = ND::params().GetParameterI("numuCC4piAnalysis.NeutrinoMode");
+
+  bool TrueNuMuCC = nu_mode*vtx.ReacCode > 0 && nu_mode*vtx.ReacCode < 30 && nu_mode*vtx.NuPDG == 14;
   bool TrueVtxFV = ( (useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position )) ||
 		     (useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, vtx.Position )) ||
 		     (useFGD1    && anaUtils::InFiducialVolume( SubDetId::kFGD1,    vtx.Position )) ||
@@ -520,7 +675,7 @@ bool numuCC4piAnalysis::CheckFillTruthTree(const AnaTrueVertex& vtx) {
 void numuCC4piAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
   //********************************************************************
 
-  bool IsAntinu = false;
+  bool IsAntinu = (ND::params().GetParameterI("numuCC4piAnalysis.NeutrinoMode")==-1);
   baseAnalysis::FillTruthTreeBase(vtx, SubDetId::kTarget, IsAntinu);
 
   std::vector<AnaTrueParticleB*> TrueParticles = vtx.TrueParticlesVect;
@@ -531,10 +686,18 @@ void numuCC4piAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
   output().FillVar(true_reaction_code, vtx.ReacCode);
   output().FillVectorVarFromArray(true_vertex_position, vtx.Position, 4);
   AnaTrueParticleB* trueTrack=NULL;
+  AnaTrueParticleB* trueHMNTrack=NULL; float max_mom=0;
+
+  int nu_mode = ND::params().GetParameterI("numuCC4piAnalysis.NeutrinoMode");
+
   for (unsigned int i = 0; i < TrueParticles.size(); i++) {
-    if (TrueParticles[i]->PDG == 13) {
+    if (TrueParticles[i]->PDG == nu_mode*13)
       trueTrack = dynamic_cast<AnaTrueParticleB*>(TrueParticles[i]);
+    if (TrueParticles[i]->Momentum > max_mom && nu_mode*TrueParticles[i]->Charge<0){
+      trueHMNTrack = TrueParticles[i];
+      max_mom = TrueParticles[i]->Momentum;
     }
+     
   }
   if (trueTrack) {
     output().FillVar(true_parentID, trueTrack->ParentID);
@@ -563,6 +726,9 @@ void numuCC4piAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
     float Q2 = -(P_mu-P_nu).Mag2()/1e6; // in GeV^2/c^2
     output().FillVar(true_Q2, Q2);
 
+  }
+  if (trueHMNTrack) {
+    output().FillVar(trueHMN_pdg, trueHMNTrack->PDG);
   }
 
   bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
@@ -615,24 +781,26 @@ void numuCC4piAnalysis::FillCategories(){
   AnaTrack* track = static_cast<AnaTrack*>( cc4pibox().MainTrack );
   if(!track){return;}
 
+  bool IsAntinu = (ND::params().GetParameterI("numuCC4piAnalysis.NeutrinoMode")==-1);
+
   bool useTarget1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget1");
   bool useTarget2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableTarget2");
   bool useFGD1 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD1");
   bool useFGD2 = ND::params().GetParameterI("numuCC4piAnalysis.EnableFGD2");
 
   if ( useTarget1 && !useTarget2)
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget1);
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget1, IsAntinu);
   if (!useTarget1 &&  useTarget2)
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget2);
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget2, IsAntinu);
   if ( useTarget1 &&  useTarget2)
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget);
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget, IsAntinu);
 
   if ( useFGD1 && !useFGD2)
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD1);
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD1, IsAntinu);
   if (!useFGD1 &&  useFGD2)
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD2);
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD2, IsAntinu);
   if ( useFGD1 &&  useFGD2)
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD);
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD, IsAntinu);
   
   anaUtils::_categ->SetCode("CC4pi",      numuCC4pi_utils::CC4piCategory(track) );
   //	anaUtils::_categ->SetCode("OOFV_Fwd",   numuCC4pi_utils::OOFVCategory(track,0) );

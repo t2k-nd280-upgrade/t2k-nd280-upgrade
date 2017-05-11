@@ -86,6 +86,7 @@ class AnaTreeConverterEvent: public InputConverter{
   virtual void FindSegments(TND280UpTrack * upTrack, AnaTrueParticleB * truePart);
   AnaTrueObjectC* FindTrueParticle(Int_t g4id, std::vector<AnaTrueParticleB*>& trueParticles);
 
+  virtual bool IsReconstructedFGD(float* pos_start, float* pos_end, double length);
   virtual bool IsReconstructedTarget(double length, double theta);
   virtual bool IsReconstructedECal(TVector3 P, TString det);
   

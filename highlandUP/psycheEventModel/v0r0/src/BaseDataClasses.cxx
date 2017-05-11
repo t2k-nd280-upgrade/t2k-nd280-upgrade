@@ -568,6 +568,7 @@ AnaTrueParticleB::AnaTrueParticleB():AnaTrueObjectC(){
 
     PDG           = -999;
     ParentID      = 0; // These are 0 as it has a special meaning
+    GParentID     = 0; // These are 0 as it has a special meaning
     ParentPDG     = 0; // These are 0 as it has a special meaning
     GParentPDG    = 0;
     stopped =-999;
@@ -616,6 +617,7 @@ AnaTrueParticleB::AnaTrueParticleB(const AnaTrueParticleB& truePart):AnaTrueObje
 
     PDG        = truePart.PDG;
     ParentID   = truePart.ParentID;
+    GParentID  = truePart.GParentID;
     ParentPDG  = truePart.ParentPDG;
     GParentPDG = truePart.GParentPDG;
     stopped=truePart.stopped;

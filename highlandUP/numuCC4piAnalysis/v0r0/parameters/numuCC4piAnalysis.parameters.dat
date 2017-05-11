@@ -5,6 +5,8 @@
  < numuCC4piAnalysis.Configuration = 1 >
  < numuCC4piAnalysis.ToF           = 1 >
  < numuCC4piAnalysis.AddToFOnTargets = 0 >
+
+ < numuCC4piAnalysis.NeutrinoMode = 1 >
  
  < numuCC4piAnalysis.EnableTarget1 = 1 >
  < numuCC4piAnalysis.EnableTarget2 = 0 >
