@@ -4,6 +4,9 @@
 #include "Units.hxx"
 #include "ND280UPAnalysisUtils.hxx"
 #include "PIDUtils.hxx"
+
+#include "Parameters.hxx"
+
 //********************************************************************
 AnaTreeConverterEvent::AnaTreeConverterEvent():InputConverter("ND280upEvents"){
   //********************************************************************
@@ -1709,11 +1712,12 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
 
 bool AnaTreeConverterEvent::IsReconstructedFGD(float* pos_start, float* pos_end, double length){
 
-  if (length<50.)
+  float cut_length = ND::params().GetParameterD("highlandIO.FGD.CutLength");
+  if (length<cut_length)
     return false;
 
-  double layer_width = 10.1; //mm
-  int number_of_layers = 4;
+  double layer_width = ND::params().GetParameterD("highlandIO.FGD.LayerWidth"); //mm
+  int number_of_layers = ND::params().GetParameterI("highlandIO.FGD.CutNumLayers");
   if (fabs(pos_start[2]-pos_end[2]) > number_of_layers*layer_width)
     return true;
 
@@ -1724,19 +1728,10 @@ bool AnaTreeConverterEvent::IsReconstructedFGD(float* pos_start, float* pos_end,
 
 bool AnaTreeConverterEvent::IsReconstructedTarget(double length, double theta){
 
-  if (length>50.)
+float cut_length = ND::params().GetParameterD("highlandIO.Target.CutLength");
+  if (length>cut_length)
     return true;
   return false;
-
-  /*
-  int bin = hefficiency_target->FindBin(theta,length);
-  double prob = hefficiency_target->GetBinContent(bin);
- 
-  if(gRandom->Uniform()>prob)
-    return 1;
-  else
-    return 0;
-  */
   
 }
 

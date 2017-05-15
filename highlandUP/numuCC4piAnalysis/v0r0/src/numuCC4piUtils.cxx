@@ -396,7 +396,6 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
     ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
     box->nIsoTargetPiontracks = 0;
 
-    Float_t cut_length = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.Cut.Length");
     Int_t perfect_PID  = ND::params().GetParameterI("numuCC4piAnalysis.IsoTargetPi.PerfectPID");
     
     EventBox::RecObjectGroupEnum groupID;
@@ -418,7 +417,6 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
 	AnaTargetParticleB* TargetSegment = 
 	  dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
 	if (!TargetSegment) continue;
-	//if (TargetSegment->DeltaLYZ < cut_length) continue;
 	if (!TargetSegment->IsReconstructed) continue;
 	  
 	AnaTrueParticleB* true_part = track->GetTrueParticle();
@@ -432,7 +430,6 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
 	AnaFGDParticleB* FGDSegment = 
 	  dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
 	if (!FGDSegment) continue;
-	//if (FGDSegment->DeltaLYZ < cut_length) continue;
 	if (!FGDSegment->IsReconstructed) continue;
 	  
 	AnaTrueParticleB* true_part = track->GetTrueParticle();
@@ -454,8 +451,9 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
   ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
   box->nMichelElectrons = 0;
   
-  Float_t ME_eff = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.Efficiency");
-  Float_t ME_mom = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.MomentumCut");
+  Float_t ME_eff_Target = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.EfficiencyTarget");
+  Float_t ME_eff_FGD    = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.EfficiencyFGD");
+  Float_t ME_mom        = ND::params().GetParameterD("numuCC4piAnalysis.MEPions.ME.MomentumCut");
 
   EventBox::RecObjectGroupEnum groupID;
   if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
@@ -486,7 +484,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 	if (abs(true_part->PDG) == 11)
 	  if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > ME_mom) {
 	    double r = rand()%1000/1000.;
-	    if (r < ME_eff) {
+	    if (r < ME_eff_Target) {
 	      box->nMichelElectrons++;
 	      box->MichelElectrons.push_back(track);
 	    }
@@ -502,7 +500,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 	if (abs(true_part->PDG) == 11)
 	  if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > ME_mom) {
 	    double r = rand()%1000/1000.;
-	    if (r < ME_eff) {
+	    if (r < ME_eff_FGD) {
 	      box->nMichelElectrons++;
 	      box->MichelElectrons.push_back(track);
 	    }

@@ -1,0 +1,5 @@
+ < highlandIO.Target.CutLength = 50. >
+
+ < highlandIO.FGD.CutLength = 50. >
+ < highlandIO.FGD.LayerWidth = 10.1 >
+ < highlandIO.FGD.CutNumLayers = 4  >

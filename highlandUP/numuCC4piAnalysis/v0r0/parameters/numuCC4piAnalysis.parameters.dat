@@ -22,7 +22,13 @@
  < numuCC4piAnalysis.IsoTargetPi.Cut.Length = 50 >
  < numuCC4piAnalysis.IsoTargetPi.PerfectPID = 1  >
 
- < numuCC4piAnalysis.MEPions.ME.Efficiency = 0.5 >
+ < numuCC4piAnalysis.MEPions.ME.EfficiencyTarget = 0.5 >
+ < numuCC4piAnalysis.MEPions.ME.EfficiencyFGD    = 0.5 >
  < numuCC4piAnalysis.MEPions.ME.MomentumCut = 2. >
+
+ < highlandIO.Target.CutLength = 50. >
+ < highlandIO.FGD.CutLength = 50. >
+ < highlandIO.FGD.LayerWidth = 10.1 >
+ < highlandIO.FGD.CutNumLayers = 4  >
 
  < numuCC4piAnalysis.ToF.TimeResolution = 0.600 >

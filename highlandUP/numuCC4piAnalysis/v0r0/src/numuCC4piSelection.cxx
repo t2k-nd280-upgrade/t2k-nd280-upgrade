@@ -164,10 +164,6 @@ void numuCC4piSelection::InitializeEvent(AnaEventC& eventBB){
   boxUtils::FillTracksWithFGD(event,    static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
   boxUtils::FillTracksWithECal(event);
   
-  //boxUtils::FillTrajsChargedInTPC(event);
-  //boxUtils::FillTrajsChargedInFGDAndNoTPC(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
-  //boxUtils::FillTrajsChargedHATracker(event,  static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
-
 }
 
 //********************************************************************
@@ -606,26 +602,7 @@ namespace numuCC4piUtils{
     for (unsigned int i=0; i<cc4pibox->MainTrack->nECalSegments; i++)
       if (cc4pibox->MainTrack->ECalSegments[i]->IsReconstructed)
 	return true;
-    
-    /*
-    double mom = cc4pibox->MainTrack->Momentum;
-    double cos = cc4pibox->MainTrack->DirectionStart[2];
-    float reco_eff, FGDmatch_eff;
-    float reco_err, FGDmatch_err;
-	
-    if (!_ECal_reco_eff->GetBinValues(mom, reco_eff, reco_err)) return false;
-    if (!_ECal_FGDmatch_eff->GetBinValues(cos, FGDmatch_eff, FGDmatch_err)) return false;
-
-    // throw two random numbers between 0 and 1
-    double r_eff[2];
-    _randomGen->RndmArray(2, r_eff);
-	
-    // select artificially only a fraction of the events, 
-    // by applying the reconstruction/FGD-ECal match efficiencies
-    if (r_eff[0] < reco_eff && r_eff[1] < FGDmatch_eff)
-      return true;
-    */
-	
+   	
     return false;
   }
 
@@ -833,17 +810,19 @@ namespace numuCC4piUtils{
     ok = ok || (true_ToF*ToF > 0);
 
     // ==========
-    // ToF mass for all particles (maybe very CPU consuming !)
+    // ToF mass for all particles
     // ==========
 
     AnaEventB& eventB = static_cast<AnaEventB&>(event);
 
     for (int i=0; i<eventB.nParticles; i++) {
 
+      // take the track
       AnaTrackB* track_i = static_cast<AnaTrackB*>(eventB.Particles[i]);
       if (!track_i) continue;
       if (!track_i->TrueObject) continue;
 
+      // find the two segments giving the ToF and compute it
       p1=0; p2=0;
       float ToF = numuCC4pi_utils::GetToF(track_i, p1, p2, sigma, _randomGen);
       if (!p1 or !p2)
@@ -860,37 +839,43 @@ namespace numuCC4piUtils{
 	true_mom = track_i->TPCSegments[0]->Momentum;
       }     
 
+      // otherwise, we smear the momentum by 10%, saying it has been measured by range
       if (fabs(true_mom-mom)<1e-3)
 	mom = _randomGen->Gaus(true_mom, 0.10*true_mom);
 
       
-      // compute the length using RecPack + smear it
+      // compute the length using RecPack, which is
+      // lenght = lenght2-lenght1
+      // where length1 is the length between track beginning and segment 1
+      //   and length2 is the length between track beginning and segment 2
+
       double length1 = 0, length2 = 0;
       RP::State state1, state2;
 	  
-	  TVector3 pos  = anaUtils::ArrayToTVector3(track_i->PositionStart);
-	  TVector3 pose = anaUtils::ArrayToTVector3(track_i->PositionEnd);
+      TVector3 pos  = anaUtils::ArrayToTVector3(track_i->PositionStart);
+      TVector3 pose = anaUtils::ArrayToTVector3(track_i->PositionEnd);
       TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
       TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
       TVector3 dir1 = anaUtils::ArrayToTVector3(p1->DirectionStart);
       TVector3 dir2 = anaUtils::ArrayToTVector3(p2->DirectionStart);	
       
-      //float true_length = (pos2-pos1).Mag();
-      //float length = _randomGen->Gaus(true_length, 10); 
-      
+      // if we manage to extrapolate length with RECPACK, we use it
+      // it can fail if we are trying to extrapolate from one point to the same point
+      // in this case, I put a protection, by taking length=0
       if (!ND::tman().AnaTrueParticleB_to_RPState(*(track_i->GetTrueParticle()), state1) ||
           !ND::tman().PropagateToSurface(pos1, dir1, state1, length1, false)             ){
-		  if ((pos-pos1).Mag()<2) length1=0;
-		  else 	                  {continue;}
-	  }
+	if ((pos-pos1).Mag()<2) length1=0;
+	else 	                  {continue;}
+      }
       if (!ND::tman().AnaTrueParticleB_to_RPState(*(track_i->GetTrueParticle()), state2) ||
-		  !ND::tman().PropagateToSurface(pos2, dir2, state2, length2, false)             ){
-		  if ((pos-pos2).Mag()<2) length2=0;
-		  else 	                  {continue;}
-	  }
+	  !ND::tman().PropagateToSurface(pos2, dir2, state2, length2, false)             ){
+	if ((pos-pos2).Mag()<2) length2=0;
+	else 	                  {continue;}
+      }
 		  
       float true_length = fabs(length2-length1);
 
+      // smear the length
       float sigma_length = 10;
       if (cutUtils::DeltaLYZTPCCut(*track_i))
 	sigma_length = 1;
@@ -899,64 +884,63 @@ namespace numuCC4piUtils{
       SubDetId::SubDetEnum det1 = SubDetId::GetSubdetectorEnum(p1->Detectors);
       SubDetId::SubDetEnum det2 = SubDetId::GetSubdetectorEnum(p2->Detectors);
 
+      // compute the reco mass using smeared length, smeared ToF and smeared momentum
       float m_reco = numuCC4pi_utils::ComputeToFMass(mom, ToF, length);
+      // compute the true mass using true length, true ToF and true momentum
+      // !!! may be different from the true mass of the particle because of multiple scattering, energy loss...
+      float m_true = numuCC4pi_utils::ComputeToFMass(true_mom, true_ToF, true_length);
+
+
+      // store all information related to the track
       box->All_ToF_mass.push_back(m_reco);
-      box->All_ToF_true_mass.push_back(numuCC4pi_utils::ComputeToFMass(true_mom, true_ToF, true_length));
+      box->All_ToF_true_mass.push_back(m_true);
+
       box->All_mom.push_back(track_i->SmearedMomentum);
       box->All_cos.push_back(track_i->DirectionStart[2]);
       box->All_true_mom.push_back(track_i->GetTrueParticle()->Momentum);
+
       box->All_PDG.push_back(track_i->GetTrueParticle()->PDG);
       box->All_ToF_det_used1.push_back(det1);
       box->All_ToF_det_used2.push_back(det2);
       box->All_ToF_time_reco.push_back(ToF);
 
+      // inverse momentum
       float invp = 1/mom;
       float dinvp = track_i->MomentumError;
       if (dinvp==0) dinvp=0.10*invp;
-
-      float m = units::pdgBase->GetParticle(13)->Mass()*1000;
-      float t_exp = numuCC4pi_utils::ComputeToFTime(mom, m, length);
-      float sigma_exp = t_exp*sqrt( pow(sigma_length/length,2) + pow(m*m*invp*dinvp/(m*m*invp*invp+1),2) );
+      // expected mass
+      float m = 0;
+      // factor which is defined here to clarify the code
       float a = 1+pow(mom/m_reco, 2);
+      // resolution on reconstructed mass
       float sigma_m = m_reco*sqrt(pow(dinvp/invp,2)+pow(a*sigma/ToF,2)+pow(a*sigma_length/length,2));
-      //box->All_ToF_pull_muon.push_back((ToF-t_exp)/sqrt(sigma*sigma+sigma_exp*sigma_exp));
+
+      // compute the pull for each particle hypothesis
+      m = units::pdgBase->GetParticle(13)->Mass()*1000; // muon
       box->All_ToF_pull_muon.push_back((m_reco-m)/sigma_m);
- 
-      m = units::pdgBase->GetParticle(211)->Mass()*1000;
-      t_exp = numuCC4pi_utils::ComputeToFTime(mom, m, length);
-      sigma_exp = t_exp*sqrt( pow(sigma_length/length,2) + pow(m*m*invp*dinvp/(m*m*invp*invp+1),2) );
-      //box->All_ToF_pull_pion.push_back((ToF-t_exp)/sqrt(sigma*sigma+sigma_exp*sigma_exp));
+      m = units::pdgBase->GetParticle(211)->Mass()*1000; // pion
       box->All_ToF_pull_pion.push_back((m_reco-m)/sigma_m);
-
-      m = units::pdgBase->GetParticle(11)->Mass()*1000;
-      t_exp = numuCC4pi_utils::ComputeToFTime(mom, m, length);
-      sigma_exp = t_exp*sqrt( pow(sigma_length/length,2) + pow(m*m*invp*dinvp/(m*m*invp*invp+1),2) );
-      //box->All_ToF_pull_electron.push_back((ToF-t_exp)/sqrt(sigma*sigma+sigma_exp*sigma_exp));
+      m = units::pdgBase->GetParticle(11)->Mass()*1000; // electron
       box->All_ToF_pull_electron.push_back((m_reco-m)/sigma_m);
-
-      m = units::pdgBase->GetParticle(2212)->Mass()*1000;
-      t_exp = numuCC4pi_utils::ComputeToFTime(mom, m, length);
-      sigma_exp = t_exp*sqrt( pow(sigma_length/length,2) + pow(m*m*invp*dinvp/(m*m*invp*invp+1),2) );
-      //box->All_ToF_pull_proton.push_back((ToF-t_exp)/sqrt(sigma*sigma+sigma_exp*sigma_exp));
+      m = units::pdgBase->GetParticle(2212)->Mass()*1000; // proton
       box->All_ToF_pull_proton.push_back((m_reco-m)/sigma_m);
 
-
+      // compute the likelihood for each particle hypothesis
       float P_mu = exp(-pow(box->All_ToF_pull_muon.back(),2)/2);
       float P_pi = exp(-pow(box->All_ToF_pull_pion.back(),2)/2);
       float P_e  = exp(-pow(box->All_ToF_pull_electron.back(),2)/2);
       float P_p  = exp(-pow(box->All_ToF_pull_proton.back(),2)/2);
       float sum_prob = P_mu+P_pi+P_e+P_p;
-
       box->All_ToF_lkl_muon.push_back(P_mu/sum_prob);
       box->All_ToF_lkl_pion.push_back(P_pi/sum_prob);
       box->All_ToF_lkl_electron.push_back(P_e/sum_prob);
       box->All_ToF_lkl_proton.push_back(P_p/sum_prob);
 
+      // store the TPC pulls and likelihood if we have a TPC segment
       if (track_i->nTPCSegments>0){
 	Float_t pulls[4], lkl[4];
 	anaUtils::ComputeTPCPull(*track_i->TPCSegments[0], pulls);
 	anaUtils::GetPIDLikelihood(*track_i, lkl);
-
 	box->All_TPC_pull_muon.push_back(pulls[0]);
 	box->All_TPC_pull_pion.push_back(pulls[3]);
 	box->All_TPC_pull_electron.push_back(pulls[1]);
@@ -978,7 +962,6 @@ namespace numuCC4piUtils{
 	box->All_TPC_lkl_proton.push_back(-999.);
 	box->All_TPC_dedx.push_back(-999.);
       }
-
 
     }
 
