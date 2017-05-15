@@ -2,7 +2,7 @@
 #include "CutUtils.hxx"
 #include "BaseDataClasses.hxx"
 #include "Parameters.hxx"
-#include <TRandom.h>
+#include <TRandom3.h>
 #include "Units.hxx"
 //#define UseRecPack
 #ifdef  UseRecPack
@@ -51,6 +51,13 @@ void MomRangeCorrection::Apply(AnaSpillC& spillBB) {
 	double Momentum_dif = track->Momentum-TPCSegment->Momentum;
 	track->SmearedMomentum = TPCSegment->SmearedMomentum + Momentum_dif;
 	track->MomentumError = TPCSegment->MomentumError;
+
+	// Additional smearing for electrons starting in the target only - this is done fast and is only approximate
+	if( abs(trueP->PDG) == 11){
+	  float momcorr = ElectronMomentumCorrection(trueP);
+	  if(momcorr > 0.0)
+	    track->SmearedMomentum = track->SmearedMomentum - momcorr;
+	}
 
       }
 
@@ -117,5 +124,52 @@ double MomRangeCorrection::Sigma(AnaTPCParticleB *cross, ParticleId::ParticleEnu
   //std::cout << "sigma comp.: " << LYZ << " " << cos_lambda << " " << N << " " << 1/p_iv << " " << sigma_inv_p_point << " " << sigma_inv_p_MS << " " << sigma_inv_p << std::endl;
 
   return sigma_inv_p;
+
+}
+
+//********************************************************************
+float MomRangeCorrection::ElectronMomentumCorrection(AnaTrueParticle *trueparticle){
+  //********************************************************************
+
+  AnaTrueVertex *vtx = static_cast<AnaTrueVertex*>(trueparticle->TrueVertex);
+  if(!vtx) return 0.0;
+
+  // Electrons should start in the target
+  SubDetId::SubDetEnum det = SubDetId::kInvalid;
+
+  if(anaUtils::InDetVolume(SubDetId::kTarget1, trueparticle->Position))
+    det = SubDetId::kTarget1;
+  else if(anaUtils::InDetVolume(SubDetId::kTarget2, trueparticle->Position))
+    det = SubDetId::kTarget2;
+  else if(anaUtils::InDetVolume(SubDetId::kFGD1, trueparticle->Position))
+    det = SubDetId::kFGD1;
+  else if(anaUtils::InDetVolume(SubDetId::kFGD2, trueparticle->Position))
+    det = SubDetId::kFGD2;
+  
+  if(det == SubDetId::kInvalid) return 0.0;
+
+  Int_t id = trueparticle->ID;
+  Float_t mom = trueparticle->Momentum;
+  std::vector<AnaTrueParticleB*> TrueParticles = vtx->TrueParticlesVect;
+
+  Float_t mom2 = mom;
+  for (unsigned int i = 0; i < TrueParticles.size(); i++) {
+    if(!anaUtils::InDetVolume(det, TrueParticles[i]->Position)) continue;
+    if(TrueParticles[i]->ParentID == id)
+      mom2 = mom2 - TrueParticles[i]->Momentum;
+  }
+
+  Float_t momcorr = mom-mom2;
+
+  // Additional correction based on ND280
+  TRandom3 rand;
+  Float_t extracorr = (Float_t)rand.Gaus(0.02*mom2, 0.15*mom2);
+  
+  if(extracorr < 0 || extracorr > mom2)
+    extracorr = 0.0;
+
+  momcorr = momcorr + extracorr;
+
+  return momcorr;
 
 }
