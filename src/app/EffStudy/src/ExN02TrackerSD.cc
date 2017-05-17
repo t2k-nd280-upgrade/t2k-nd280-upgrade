@@ -254,17 +254,21 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
       TargetReadOut.SetTargType(conv::kSuperFGD); 
     }
-    if( ND280XMLInput->GetXMLUseFGDlike() ){ // FGDlike
+    else if( ND280XMLInput->GetXMLUseFGDlike() ){ // FGDlike
       TargetReadOut.SetTargType(conv::kFGDlike);
     }
     else{ // SciFi --> need to add the new response functions
-      //TargetReadOut.SetTargType(conv::kSciFi);
       TargetReadOut.SetTargType(conv::kSciFi);
     }
     
     // light attenuation (Birks' formula)
     double pe = TargetReadOut.ApplyScintiResponse(edep_q,steplength,track);
-
+    
+    //G4cout << "TrkID = " << trackid << G4endl;
+    //G4cout << " - dist: " << distX << ", " << distY << ", " << distZ << G4endl;
+    //G4cout << " - edep = " << edep << G4endl;
+    //G4cout << " - pe (no att) = " << pe << G4endl;
+    
     if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
       peX = pe;
       peY = pe;

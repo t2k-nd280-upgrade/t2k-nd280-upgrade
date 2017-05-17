@@ -24,12 +24,12 @@ void DrawTarget
   TH2D *hMPPCHits_YZ = (TH2D*)infile->Get(TString::Format("hMPPCHits_YZ_%d",histonum));
   hMPPCHits_YZ->SetTitle("Projection on the YZ readout plane");
 
-  TH2D *hMPPCHitsVsTime_XY = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_XY_%d",histonum));
-  hMPPCHitsVsTime_XY->SetTitle("Projection on the XY readout plane Vs Time");
-  TH2D *hMPPCHitsVsTime_XZ = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_XZ_%d",histonum));
-  hMPPCHitsVsTime_XZ->SetTitle("Projection on the XZ readout plane Vs Time");
-  TH2D *hMPPCHitsVsTime_YZ = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_YZ_%d",histonum));
-  hMPPCHitsVsTime_YZ->SetTitle("Projection on the YZ readout plane Vs Time");
+  //TH2D *hMPPCHitsVsTime_XY = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_XY_%d",histonum));
+  //hMPPCHitsVsTime_XY->SetTitle("Projection on the XY readout plane Vs Time");
+  //TH2D *hMPPCHitsVsTime_XZ = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_XZ_%d",histonum));
+  //hMPPCHitsVsTime_XZ->SetTitle("Projection on the XZ readout plane Vs Time");
+  //TH2D *hMPPCHitsVsTime_YZ = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_YZ_%d",histonum));
+  //hMPPCHitsVsTime_YZ->SetTitle("Projection on the YZ readout plane Vs Time");
 
   TH2D *hMPPCHitsDelay100ns_XY = (TH2D*)infile->Get(TString::Format("hMPPCHitsDelay100ns_XY_%d",histonum));
   hMPPCHitsDelay100ns_XY->SetTitle("Projection on the XY readout plane (delay 100 ns)");
@@ -64,24 +64,24 @@ void DrawTarget
   hMPPCHits_YZ->DrawClone("colz");
   if(doPrint) cMPPCHits_YZ->Print(TString::Format("%s_MPPCHits_YZ.pdf",tag.c_str()).Data());
 
-  TCanvas *cMPPCHitsVsTime_XY = new TCanvas("cMPPCHitsVsTime_XY","cMPPCHitsVsTime_XY");
-  hMPPCHitsVsTime_XY->GetXaxis()->SetTitle("X position (mm)");
-  hMPPCHitsVsTime_XY->GetYaxis()->SetTitle("Y position (mm)");
-  hMPPCHitsVsTime_XY->SetStats(0);
-  hMPPCHitsVsTime_XY->DrawClone("colz");
-  if(doPrint) cMPPCHitsVsTime_XY->Print(TString::Format("%s_MPPCHitsVsTime_XY.pdf",tag.c_str()).Data());
-  TCanvas *cMPPCHitsVsTime_XZ = new TCanvas("cMPPCHitsVsTime_XZ","cMPPCHitsVsTime_XZ");
-  hMPPCHitsVsTime_XZ->GetXaxis()->SetTitle("X position (mm)");
-  hMPPCHitsVsTime_XZ->GetYaxis()->SetTitle("Z position (mm)");
-  hMPPCHitsVsTime_XZ->SetStats(0);
-  hMPPCHitsVsTime_XZ->DrawClone("colz");
-  if(doPrint) cMPPCHitsVsTime_XZ->Print(TString::Format("%s_MPPCHitsVsTime_XZ.pdf",tag.c_str()).Data());
-    TCanvas *cMPPCHitsVsTime_YZ = new TCanvas("cMPPCHitsVsTime_YZ","cMPPCHitsVsTime_YZ");
-  hMPPCHitsVsTime_YZ->GetXaxis()->SetTitle("Y position (mm)");
-  hMPPCHitsVsTime_YZ->GetYaxis()->SetTitle("Z position (mm)");
-  hMPPCHitsVsTime_YZ->SetStats(0);
-  hMPPCHitsVsTime_YZ->DrawClone("colz");
-  if(doPrint) cMPPCHitsVsTime_YZ->Print(TString::Format("%s_MPPCHitsVsTime_YZ.pdf",tag.c_str()).Data());
+  //TCanvas *cMPPCHitsVsTime_XY = new TCanvas("cMPPCHitsVsTime_XY","cMPPCHitsVsTime_XY");
+  //hMPPCHitsVsTime_XY->GetXaxis()->SetTitle("X position (mm)");
+  //hMPPCHitsVsTime_XY->GetYaxis()->SetTitle("Y position (mm)");
+  //hMPPCHitsVsTime_XY->SetStats(0);
+  //hMPPCHitsVsTime_XY->DrawClone("colz");
+  //if(doPrint) cMPPCHitsVsTime_XY->Print(TString::Format("%s_MPPCHitsVsTime_XY.pdf",tag.c_str()).Data());
+  //TCanvas *cMPPCHitsVsTime_XZ = new TCanvas("cMPPCHitsVsTime_XZ","cMPPCHitsVsTime_XZ");
+  //hMPPCHitsVsTime_XZ->GetXaxis()->SetTitle("X position (mm)");
+  //hMPPCHitsVsTime_XZ->GetYaxis()->SetTitle("Z position (mm)");
+  //hMPPCHitsVsTime_XZ->SetStats(0);
+  //hMPPCHitsVsTime_XZ->DrawClone("colz");
+  //if(doPrint) cMPPCHitsVsTime_XZ->Print(TString::Format("%s_MPPCHitsVsTime_XZ.pdf",tag.c_str()).Data());
+  //TCanvas *cMPPCHitsVsTime_YZ = new TCanvas("cMPPCHitsVsTime_YZ","cMPPCHitsVsTime_YZ");
+  //hMPPCHitsVsTime_YZ->GetXaxis()->SetTitle("Y position (mm)");
+  //hMPPCHitsVsTime_YZ->GetYaxis()->SetTitle("Z position (mm)");
+  //hMPPCHitsVsTime_YZ->SetStats(0);
+  //hMPPCHitsVsTime_YZ->DrawClone("colz");
+  //if(doPrint) cMPPCHitsVsTime_YZ->Print(TString::Format("%s_MPPCHitsVsTime_YZ.pdf",tag.c_str()).Data());
 
   TCanvas *cMPPCHitsDelay100ns_XY = new TCanvas("cMPPCHitsDelay100ns_XY","cMPPCHitsDelay100ns_XY");
   hMPPCHitsDelay100ns_XY->GetXaxis()->SetTitle("X position after 100ns (mm)");

@@ -1876,9 +1876,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				       false,             // no boolean operations
 				       0);                 // copy number     
     
+    G4cout << "Target 1: " << G4endl;
+    G4cout << " - Total size (mm^3): " 
+	   << width / mm << " (width) x " 
+	   << height / mm << " (height) x " 
+	   << length / mm << " (length) x " 
+	   << G4endl;
     G4cout << "SuperFGD 1: " << G4endl
 	   << " - Cube size: "
-	   << fSuperFGDConstructor1->GetEdge() << G4endl;
+	   << fSuperFGDConstructor1->GetEdge() / mm << G4endl;
     G4cout << " - # of cubes: " << G4endl
 	   << "   " << fSuperFGDConstructor1->GetCubeNumX() << " (width) "
 	   << "   " << fSuperFGDConstructor1->GetCubeNumY() << " (height) "
@@ -1886,11 +1892,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl;
     G4cout << " mass="<<logicSuperFGD1->GetMass()/kg   <<" kg" << G4endl; 
     G4cout << " name: " << logicSuperFGD1->GetName() << G4endl;
-    G4cout << " - position inside the Basket: ( " 
-	   << fSuperFGDConstructor1->GetPosX()/mm << ", "
-	   << fSuperFGDConstructor1->GetPosY()/mm << ", "
-	   << fSuperFGDConstructor1->GetPosZ()/mm << ") "
-	   << G4endl << G4endl;    
+    //G4cout << " - position inside the Basket: ( " 
+    //<< fSuperFGDConstructor1->GetPosX()/mm << ", "
+    //<< fSuperFGDConstructor1->GetPosY()/mm << ", "
+    //<< fSuperFGDConstructor1->GetPosZ()/mm << ") "
+    //<< G4endl << G4endl;   
+
   }
 
 
