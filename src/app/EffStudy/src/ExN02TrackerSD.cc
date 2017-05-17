@@ -81,6 +81,12 @@ void ExN02TrackerSD::Initialize(G4HCofThisEvent* HCE)
 
 G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 {
+  // Take inputs
+  ND280RootPersistencyManager* InputPersistencyManager
+    = ND280RootPersistencyManager::GetInstance();
+  ND280XMLInput = InputPersistencyManager->GetXMLInput();
+  //
+
 
   //if(NSteps_==0){
 
@@ -164,19 +170,27 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     double mppcX = -9999999999;
     double mppcY = -9999999999;
     double mppcZ = -9999999999;
-    persistencyManager->GetMPPCPosXY(lightX,lightY,mppcX,mppcY);
-    //G4cout << "mppc pos: X = " << mppcX << ", Y = " << mppcY << G4endl;
-    //persistencyManager->GetMPPCPosXZ(lightX,lightZ,mppcX,mppcZ);
-    //G4cout << "mppc pos: X = " << mppcX << ", Z = " << mppcZ << G4endl;
-    persistencyManager->GetMPPCPosYZ(lightY,lightZ,mppcY,mppcZ);
-    //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
+
+    if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
+      persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
+      //G4cout << "mppc pos: X = " << mppcX << ", Y = " << mppcY << G4endl;
+      //persistencyManager->GetHitPosXZ(lightX,lightZ,mppcX,mppcZ);
+      //G4cout << "mppc pos: X = " << mppcX << ", Z = " << mppcZ << G4endl;
+      persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
+      //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
+    }
+    else{ // SciFi_XZ or FGDlike_XZ
+      persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
+      persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
+    }
+ 
     
     G4ThreeVector MPPCLocalPosition = G4ThreeVector(mppcX,mppcY,mppcZ);  
     G4Track* track       = aStep->GetTrack();  
     G4int trackid        = track->GetTrackID();
     G4int parentid       = track->GetParentID();
     G4double particle    = track->GetDefinition()->GetPDGEncoding();
-    G4double prestepTime = preStepPoint->GetGlobalTime();
+    G4double prestepTime = preStepPoint->GetGlobalTime() * ns;
     G4double steplength = aStep->GetStepLength();
     
     G4double edep_q = edep;
@@ -186,10 +200,35 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     double peX=0.; G4double distX=0.; double timepeX=0.;// pe along fiber X
     double peY=0.; G4double distY=0.; double timepeY=0.;// pe along fiber Y
     double peZ=0.; G4double distZ=0.; double timepeZ=0.;// pe along fiber Z
- 
-    distX = lightX - persistencyManager->GetMPPCPosX(); 
-    distY = lightY - persistencyManager->GetMPPCPosY(); 
-    distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
+
+    if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
+      distX = lightX - persistencyManager->GetMPPCPosX(); 
+      distY = lightY - persistencyManager->GetMPPCPosY(); 
+      distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
+    }
+    else{ // SciFi_XZ or FGDlike_XZ
+     
+      distX = lightX - persistencyManager->GetMPPCPosX(); 
+      distY = lightY - persistencyManager->GetMPPCPosY(); 
+      distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
+
+      //G4cout << touch_namedet << G4endl;
+
+      /*
+      // fiber along X --> Z coordinate + Y layer 
+      if(touch_namedet.contains("FiberScintHoriz")){
+	distX = conv::kUndefined; 
+	distY = lightY - persistencyManager->GetMPPCPosY();
+	distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
+      }
+      // fiber along Z --> X coordinate + Y layer 
+      else if(touch_namedet.contains("FiberScintVert")){ // along Z
+	distX = lightX - persistencyManager->GetMPPCPosX(); 
+	distY = lightY - persistencyManager->GetMPPCPosY();
+	distZ = conv::kUndefined; 
+      }
+      */
+    }
 
     //////////////////////////////////////////////
     //
@@ -197,7 +236,9 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     //
     //////////////////////////////////////////////
 
-    if(distX<0 || distY<0 || distZ<0){
+    if( (distX<0 && distX!=conv::kUndefined) || 
+	(distY<0 && distY!=conv::kUndefined) || 
+	(distZ<0 && distZ!=conv::kUndefined) ){
       G4cout << "distX = " << distX 
 	     << ", distY = " << distY 
 	     << ", distZ = " << distZ 
@@ -207,33 +248,92 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 		  "The hit is outside the target!!!");    
     }
 
-    ExN02TargReadOut SuperFGDReadOut;
-    SuperFGDReadOut.SetTargType(conv::kSuperFGD); // set the target type
+    // Set the target type
+    
+    ExN02TargReadOut TargetReadOut;
+    if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
+      TargetReadOut.SetTargType(conv::kSuperFGD); 
+    }
+    if( ND280XMLInput->GetXMLUseFGDlike() ){ // FGDlike
+      TargetReadOut.SetTargType(conv::kFGDlike);
+    }
+    else{ // SciFi --> need to add the new response functions
+      //TargetReadOut.SetTargType(conv::kSciFi);
+      TargetReadOut.SetTargType(conv::kSciFi);
+    }
     
     // light attenuation (Birks' formula)
-    double pe = SuperFGDReadOut.ApplyScintiResponse(edep_q,steplength,track);
-    peX = pe;
-    peY = pe;
-    peZ = pe;
+    double pe = TargetReadOut.ApplyScintiResponse(edep_q,steplength,track);
 
-    // light collection + attenuation
-    SuperFGDReadOut.ApplyFiberResponse(peX,timepeX,distX); // along X fiber
-    SuperFGDReadOut.ApplyFiberResponse(peY,timepeY,distY); // along Y fiber
-    SuperFGDReadOut.ApplyFiberResponse(peZ,timepeZ,distZ); // along Z fiber
-     
-    // MPPC efficiency
-    SuperFGDReadOut.ApplyMPPCResponse(peX);
-    SuperFGDReadOut.ApplyMPPCResponse(peY);
-    SuperFGDReadOut.ApplyMPPCResponse(peZ);
+    if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
+      peX = pe;
+      peY = pe;
+      peZ = pe;
 
-    //G4cout << "peX=" << peX << ", peY=" << peY << ", peZ=" << peZ << G4endl;
-    //G4cout << "timepeX=" << timepeX << ", timepeY=" << timepeY << ", timepeZ=" << timepeZ << G4endl;
+      timepeX = prestepTime;
+      timepeY = prestepTime;
+      timepeZ = prestepTime;
+
+      //G4cout << "pdg: " << particle << ", det:" << touch_namedet << ", time: " << prestepTime << G4endl;
+      
+      // light collection + attenuation
+      TargetReadOut.ApplyFiberResponse(peX,timepeX,distX); // along X fiber
+      TargetReadOut.ApplyFiberResponse(peY,timepeY,distY); // along Y fiber
+      TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ); // along Z fiber
+      
+      // MPPC efficiency
+      TargetReadOut.ApplyMPPCResponse(peX);
+      TargetReadOut.ApplyMPPCResponse(peY);
+      TargetReadOut.ApplyMPPCResponse(peZ);
+      
+      //G4cout << "peX=" << peX << ", peY=" << peY << ", peZ=" << peZ << G4endl;
+      //G4cout << "timepeX=" << timepeX << ", timepeY=" << timepeY << ", timepeZ=" << timepeZ << G4endl;
+    }
+    else{ // SciFi_XZ or FGDlike_XZ (i.e. built in XY and rotated by 90deg on X axis)
+
+      // Take the detector name along X and Z
+      G4String DetNameAlongX = InputPersistencyManager->GetDetNameAlongX(); 
+      G4String DetNameAlongZ = InputPersistencyManager->GetDetNameAlongZ();
+      
+      // Propagation only along X
+      if(touch_namedet.contains(DetNameAlongX)){ // "FiberScintHoriz"
+     	peX = pe; timepeX = prestepTime;
+	peY = 0.; timepeY = 0.;
+	peZ = 0.; timepeZ = 0.;	
+	// light collection + attenuation
+	TargetReadOut.ApplyFiberResponse(peX,timepeX,distX);	
+	// MPPC efficiency
+	TargetReadOut.ApplyMPPCResponse(peX);
+      }
+      // Propagation only along Z
+      else if(touch_namedet.contains(DetNameAlongZ)){ //"FiberScintVert"
+     	peX = 0.; timepeX = 0.;
+	peY = 0.; timepeY = 0.;
+	peZ = pe; timepeZ = prestepTime;	
+	// light collection + attenuation
+	TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ);	
+	// MPPC efficiency
+	TargetReadOut.ApplyMPPCResponse(peZ);
+      }
+      else{
+	G4Exception("ExN02TrackerSD::ProcessHits",
+		    "MyCode0002",FatalException,
+		    "The hit is outside both direction fibers!!!");    
+      }            
+    } // if SuperFGD || SciFi ...
+
 
     
+    //G4cout << touch_namedet << G4endl;
+    //G4cout << peX << " " << peY << " " << peZ << G4endl;
+    //G4cout << prestepTime << ": " 
+    //<< timepeX << " " << timepeY << " " << timepeZ << G4endl;
+    //G4cout << lightX << " " << lightY << " " << lightZ << G4endl;
+    //G4cout << MPPCLocalPosition.x() << " "
+    //<< MPPCLocalPosition.y() << " "
+    //<< MPPCLocalPosition.z() << G4endl;
+    //G4cout << G4endl;
     
-    ///
-   
-
 
 
     /////// 
@@ -244,25 +344,21 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     G4int detID = Touchable->GetVolume(0)->GetCopyNo();
     
     ExN02TrackerHit* aHit  
-      = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);
-
-    
-    //G4cout << peX << " " << peY << " " << peZ << G4endl;
-    
-    //if(parentid==0){
+      = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);    
     aHit->SetNameDet(touch_namedet);
     aHit->SetPE(conv::kUndefined);
     aHit->SetPEX(peX);
     aHit->SetPEY(peY);
     aHit->SetPEZ(peZ);
     aHit->SetDelayTime(conv::kUndefined);
-    aHit->SetDelayTime(timepeX);
-    aHit->SetDelayTime(timepeY);
-    aHit->SetDelayTime(timepeZ);
-    trackerCollection->insert( aHit );
-    //}
+    aHit->SetDelayTimeX(timepeX);
+    aHit->SetDelayTimeY(timepeY);
+    aHit->SetDelayTimeZ(timepeZ);
+    trackerCollection->insert( aHit );   
 
   } // if( persistencyManager->GetNavigDetName_Targ1()!="" )
+
+
 
   
   

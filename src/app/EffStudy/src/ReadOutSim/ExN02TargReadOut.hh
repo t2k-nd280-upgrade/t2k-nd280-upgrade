@@ -15,7 +15,8 @@ namespace conv {
       kFGD,
       kFGD3D,
       kWAGASCI,
-      kSciFi
+      kSciFi,
+      kFGDlike
     }
     TargetType_t;
 } // conv
@@ -37,9 +38,6 @@ public:
   void ApplyFiberResponse(G4double &nphot, G4double &time, G4double x);
   void ApplyMPPCResponse(G4double &npe);
 
-  //void ApplyADCResponse(G4double* pe, G4double* lope, G4int* adc, G4int* loadc);
-  //void ApplyTDCResponse(G4double time, G4int* tdc);
-  
 private:
  
   void BirksSaturation(G4double &edeposit, G4double steplength, G4Track *aTrack);
@@ -48,6 +46,7 @@ private:
   void ApplyFiberAttenuation(G4double &nphot, G4double x);
   void ApplyFiberTime(G4double &time,G4double x);
   G4double GetPhotAtt_FGD(G4double Nphot0,G4double x);
+  G4double GetPhotAtt_SciFi(G4double Nphot0,G4double x);
 
   G4double fAttLength;
   TargetType_t fTargetID;

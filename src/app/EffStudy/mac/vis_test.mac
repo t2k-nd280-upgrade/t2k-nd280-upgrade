@@ -42,7 +42,7 @@
 #/N02/det/setTargetMate2 Water #ActiveWater
 
 # Test geometry (overlaps...)	
-#/geometry/test/run
+/geometry/test/run
 #/geometry/test/verbosity 1
 #/geometry/test/tolerance 1000 mm
 
@@ -58,3 +58,6 @@
 #/gun/position 0 0 2500 mm  # starting position
 /gun/position -500 -500 2500 mm  # starting position
 /gun/number   1      # number of particles
+
+
+/vis/disable

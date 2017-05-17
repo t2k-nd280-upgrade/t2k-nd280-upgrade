@@ -36,6 +36,8 @@
 #include "G4VSensitiveDetector.hh"
 #include "ExN02TrackerHit.hh"
 
+#include "ExN02ND280XML.hh"
+
 class G4Step;
 class G4HCofThisEvent;
 
@@ -55,6 +57,9 @@ private:
   ExN02TrackerHitsCollection* trackerCollection;
   
   G4int NSteps_;
+  
+  // Define the XML input parser
+  ExN02ND280XML *ND280XMLInput;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

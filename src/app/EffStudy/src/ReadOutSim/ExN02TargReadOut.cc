@@ -55,6 +55,10 @@ const G4double Lbar_FGD = 1864.3 * mm;
 // SuperFGD constants
 const G4double MPPCEff_SuperFGD = 0.38;
 
+// SciFi constants
+const G4double EdepToPhotConv_SciFi_SingleClad_2mm = 23.7 / MeV; 
+const G4double MPPCEff_SciFi = 0.38;
+
 // Approximate collection factors from PDG2016 (Detectors and accelerators section)
 const G4double CollFactor_SingleClad = 0.06;
 const G4double CollFactor_DoubleClad = 0.10;
@@ -71,6 +75,7 @@ G4String ExN02TargReadOut::AsStringTargType(TargetType_t targetid){
   if(targetid == conv::kUndefined)     return "Undefined"; 
   else if(targetid == conv::kSuperFGD) return "SuperFGD";
   else if(targetid == conv::kFGD)      return "FGD";
+  else if(targetid == conv::kFGDlike)  return "FGDlike";
   else if(targetid == conv::kWAGASCI)  return "WAGASCI";
   else if(targetid == conv::kSciFi)    return "SciFi";
   else{
@@ -90,6 +95,7 @@ G4double ExN02TargReadOut::ApplyScintiResponse(G4double &edep, G4double stepleng
   
   return nphot;
 }
+
 void ExN02TargReadOut::BirksSaturation(G4double &edep, G4double steplength, G4Track *aTrack)
 {
   G4ParticleDefinition* particle = aTrack->GetDefinition(); 
@@ -99,10 +105,10 @@ void ExN02TargReadOut::BirksSaturation(G4double &edep, G4double steplength, G4Tr
 
   return;
 }
+
 G4double ExN02TargReadOut::EdepToPhot(G4double edep)
 {
-  if(GetTargType() == conv::kSuperFGD){    
-    
+  if(GetTargType() == conv::kSuperFGD){        
     // Account for the 3 fibers in the same scintillator cube
     double collfact = CollFactor_DoubleClad;
     double fact_fib1 = collfact;
@@ -110,9 +116,14 @@ G4double ExN02TargReadOut::EdepToPhot(G4double edep)
     double fact_fib3 = (1-fact_fib2)*collfact;
     double CollFactAve = (fact_fib1+fact_fib2+fact_fib3)/3.;
     double NormShadowLight = CollFactAve / collfact; // fraction 
-    //G4cout << "NormShadowLight = " << NormShadowLight << G4endl;
-   
+    //G4cout << "NormShadowLight = " << NormShadowLight << G4endl;   
     return edep * EdepToPhotConv_FGD * NormShadowLight;
+  }
+  else if(GetTargType() == conv::kFGDlike){
+    return edep * EdepToPhotConv_FGD;
+  }
+  else if(GetTargType() == conv::kSciFi){    
+    return edep * EdepToPhotConv_SciFi_SingleClad_2mm;
   }
   else{
     G4Exception("ExN02TargReadOut::ApplyFiberResponse",
@@ -123,10 +134,6 @@ G4double ExN02TargReadOut::EdepToPhot(G4double edep)
   return conv::kUndefined;
 }
 ////////
-
-
-
-
 
 void ExN02TargReadOut::ApplyFiberResponse(G4double &nphot, G4double &time, G4double x)
 {
@@ -139,11 +146,16 @@ void ExN02TargReadOut::ApplyFiberResponse(G4double &nphot, G4double &time, G4dou
   return;
 }
 
-
 void ExN02TargReadOut::ApplyFiberAttenuation(G4double &nphot, G4double x)
 {
-  if(GetTargType() == conv::kSuperFGD){
+  if(GetTargType() == conv::kSuperFGD ||
+     GetTargType() == conv::kFGDlike
+     ){
     nphot = GetPhotAtt_FGD(nphot,x);
+  }
+  else if(GetTargType() == conv::kSciFi){    
+    //nphot = GetPhotAtt_SciFi(nphot,x); // not available yet
+    nphot = GetPhotAtt_FGD(nphot,x);    
   }
   else{
     G4Exception("ExN02TargReadOut::ApplyFiberAttenuation",
@@ -181,17 +193,27 @@ G4double ExN02TargReadOut::GetPhotAtt_FGD(G4double Nphot0,G4double x){
   return Nphot;
 }
 
+G4double ExN02TargReadOut::GetPhotAtt_SciFi(G4double Nphot0,G4double x){
+  G4Exception("ExN02TargReadOut::GetPhotAtt_SciFi",
+	      "MyCode0002",FatalException,
+	      "This method has not been implemented yet!!!");
+  return conv::kUndefined;
+}
+
 void ExN02TargReadOut::ApplyFiberTime(G4double &time, G4double x)
 {
   time += TransTimeInFiber*x;
 }
-//
-
 
 void ExN02TargReadOut::ApplyMPPCResponse(G4double &npe)
 {
-  if(GetTargType() == conv::kSuperFGD){
+  if(GetTargType() == conv::kSuperFGD ||
+     GetTargType() == conv::kFGDlike
+     ){
     npe *= MPPCEff_SuperFGD;
+  }
+  else if(GetTargType() == conv::kSciFi){
+    npe *= MPPCEff_SciFi;
   }
   else{
     G4Exception("ExN02TargReadOut::ApplyMPPCResponse",
@@ -199,64 +221,6 @@ void ExN02TargReadOut::ApplyMPPCResponse(G4double &npe)
 		"The selected Target type does not exist!!!");
   }
   
-  /*
-  // MPPC linearity
-  npe = MPPCPixel * (1. - exp( Eff_PDE_WAGASCI * npe / MPPCPixel ));  
-  // Poisson statistics & 1 pe resolution
-  npe = (int) CLHEP::RandPoisson::shoot(npe);  
-  //modified cross-talk and after pulse
-  npe += (int) CLHEP::RandPoisson::shoot(npe*cross_after_rate);
-  npe = gRandom->Gaus(npe,npe*PixelGainVari);  
-  *pe = npe;
-  */
-
   return;
 }
 
-
-
-/*
-void ExN02TargReadOut::ApplyADCResponse(G4double *pe, G4double *lope, G4int* adc, G4int* loadc)
-{
-  G4double adc_tmp, loadc_tmp,Q,loQ;
-  
-  //PE to ADC
-  adc_tmp = Pedestal + (*pe)*Gain;
-  loadc_tmp = Pedestal + (*pe)*LowGain*14.29/13.55;
-  
-  //Electronics noise
-  adc_tmp = gRandom->Gaus(adc_tmp,ElecNoise);
-  loadc_tmp = gRandom->Gaus(loadc_tmp,LowElecNoise);
-
-  //ADC to Charge
-  //Q=(adc_tmp+53)/217;
-  //loQ=(loadc_tmp+82)/26;
-  Q=(adc_tmp)/135.5;
-  loQ=(loadc_tmp)/14.29;
-
-  //Non linearlity of high gain ADC
-  if(Q<0.65)*adc=135.5*Q;
-  else if(Q<3.2)*adc=217*Q-53;
-  else if(Q<4.2)*adc=158.6*Q+133.9;
-  else if(Q<14)*adc=5.1*Q+778.6;
-  else *adc=850;
-
-  //Non linearlity of low gain ADC
-  if(loQ<7)*loadc=14.29*loQ;
-  else if(loQ<27)*loadc=26*loQ-82;
-  else if(loQ<35.5)*loadc=21.12*loQ+48.24;
-  else if(loQ<178.4)*loadc=0.7*loQ+775.1;
-  else *loadc=900;
-
-  //ADC to PE
-  *pe = (float)((*adc) - Pedestal)/Gain;
-  *lope = (float)((*loadc) - Pedestal)/LowGain;
-}
-*/
-
- /*
-void ExN02TargReadOut::ApplyTDCResponse(G4double time, G4int* tdc)
-{
-  *tdc = 0;
-}
-*/

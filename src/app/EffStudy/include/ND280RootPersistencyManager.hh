@@ -105,14 +105,15 @@ public:
   TH2F *fMPPCProj2D_XZ;
   TH2F *fMPPCProj2D_YZ;
 
-  TH2F *GetMPPCProj2D_XY(){ return fMPPCProj2D_XY;};
-  TH2F *GetMPPCProj2D_XZ(){ return fMPPCProj2D_XZ;};
-  TH2F *GetMPPCProj2D_YZ(){ return fMPPCProj2D_YZ;};
+  TH2F *GetMPPCProj2D_XY();
+  TH2F *GetMPPCProj2D_XZ();
+  TH2F *GetMPPCProj2D_YZ();
 
   // Assume the MPPC read-out plane is at x,y,z<0
-  G4double GetMPPCPosX(){return fMPPCProj2D_XY->GetXaxis()->GetBinLowEdge(1);};
-  G4double GetMPPCPosY(){return fMPPCProj2D_XY->GetYaxis()->GetBinLowEdge(1);};
-  G4double GetMPPCPosZ(){return fMPPCProj2D_YZ->GetYaxis()->GetBinLowEdge(1);};
+  // Assume at least 2 projections exist
+  G4double GetMPPCPosX();
+  G4double GetMPPCPosY();
+  G4double GetMPPCPosZ();
 
   void InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY, bool IsProjXZ, bool IsProjYZ); 
 
@@ -127,13 +128,23 @@ public:
   G4bool fIsMPPCProjYZ;  
   void SetIsMPPCProjYZ(bool isproj){fIsMPPCProjYZ=isproj;}
   G4bool GetIsMPPCProjYZ(){return fIsMPPCProjYZ;}
- 
-  void GetMPPCPosXY(double lightX, double lightY, double &mppcX, double &mppcY);
-  void GetMPPCPosXZ(double lightX, double lightZ, double &mppcX, double &mppcZ);
-  void GetMPPCPosYZ(double lightY, double lightZ, double &mppcY, double &mppcZ);
-  
-  /////
 
+  // Position of the MPPC hits
+  void GetHitPosXY(double lightX, double lightY, double &mppcX, double &mppcY);
+  void GetHitPosXZ(double lightX, double lightZ, double &mppcX, double &mppcZ);
+  void GetHitPosYZ(double lightY, double lightZ, double &mppcY, double &mppcZ);
+  
+  G4String fDetNameAlongX;
+  G4String fDetNameAlongY;
+  G4String fDetNameAlongZ;
+  void SetDetNameAlongX(G4String name){fDetNameAlongX=name;};
+  void SetDetNameAlongY(G4String name){fDetNameAlongY=name;};
+  void SetDetNameAlongZ(G4String name){fDetNameAlongZ=name;};
+  G4String GetDetNameAlongX(){return fDetNameAlongX;};
+  G4String GetDetNameAlongY(){return fDetNameAlongY;};
+  G4String GetDetNameAlongZ(){return fDetNameAlongZ;};
+
+  /////
   
   void SetEventFirst(int first){fEventFirst=first;};
   void SetNEvents(int num){fNEvents=num;};

@@ -9,11 +9,10 @@ class G4LogicalVolume;
 
 #include "ND280Constructor.hh"
 
-// NEW ND280UPGRADE                                                                                                                                                                                     
-#include "ND280RootPersistencyManager.hh" // XML input file                                                                                                                                               
-#include "ExN02ND280XML.hh" // XML input file                                                                                                                                                             
-//                                                                                                                                                                                                       
-   
+// NEW ND280UPGRADE                     
+#include "ND280RootPersistencyManager.hh" // XML input file  
+#include "ExN02ND280XML.hh" // XML input file
+//   
 
 
 ///

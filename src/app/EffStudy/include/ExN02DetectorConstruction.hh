@@ -400,6 +400,12 @@ private:
   G4LogicalVolume*   logicSuperFGD2;
   G4VPhysicalVolume* physiSuperFGD2;
 
+  G4LogicalVolume*   logicSciFi1;
+  G4VPhysicalVolume* physiSciFi1; 
+
+  G4LogicalVolume*   logicFGDlike1;
+  G4VPhysicalVolume* physiFGDlike1; 
+
   G4Box*             solidWAGASCIEmpty;  
   G4LogicalVolume*   logicWAGASCIEmpty;
   G4VPhysicalVolume* physiWAGASCIEmpty;
@@ -623,6 +629,8 @@ private:
   G4VisAttributes* FGDWaterVisAtt;
   G4VisAttributes* FGDScintVisAtt;
   G4VisAttributes* SuperFGDScintVisAtt;
+  G4VisAttributes* SciFiScintVisAtt;
+  G4VisAttributes* FGDlikeScintVisAtt;
   G4VisAttributes* TPCVisAtt;
   G4VisAttributes* TPCCO2;
   G4VisAttributes* TPCDeadMat;

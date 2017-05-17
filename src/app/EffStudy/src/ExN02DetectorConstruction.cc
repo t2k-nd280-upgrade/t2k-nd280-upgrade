@@ -68,7 +68,10 @@
 #include "ND280ToFConstructor.hh"
 // SuperFGD
 #include "ND280SuperFGDConstructor.hh"
-
+// SciFi
+#include "ND280SciFiConstructor.hh"
+// FGD-like (horizontal target)
+#include "ND280FGDlikeConstructor.hh"
 
 // WAGASCI
 #include "ND280WAGASCIConstructor.hh" // My version
@@ -170,6 +173,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   FGDWaterVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   FGDScintVisAtt = new G4VisAttributes(G4Color(0.,0.7,0.));
   SuperFGDScintVisAtt = new G4VisAttributes(G4Colour::Grey);
+  SciFiScintVisAtt = new G4VisAttributes(G4Colour::Grey);
+  FGDlikeScintVisAtt = new G4VisAttributes(G4Colour::Grey);
   TargetWaterVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   TargetScintVisAtt = new G4VisAttributes(G4Color(0.,0.7,0.));
   TPCVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
@@ -1844,6 +1849,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				     false,             // no boolean operations
 				     0);                 // copy number 
 
+    //logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
+    //logicSuperFGD1->SetVisAttributes(G4VisAttributes::Invisible);
+    
+    
     // 
     // Set the detector name where the hit distance in target 
     // is calculated with the PersistencyManager G4Navigator
@@ -1888,65 +1897,341 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
-  /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   //
   //------------------------------ 
-  // SuperFGD 2
+  // SciFi 1
   //------------------------------ 
   //
-
-  G4String cNameLogicSuperFGD2 =  cParentNameTarget+"/SuperFGD2";
-  ND280SuperFGDConstructor *fSuperFGDConstructor2 = new ND280SuperFGDConstructor(cNameLogicSuperFGD2,this);
-  G4String nameSuperFGD2 = fSuperFGDConstructor2->GetName();
-
-  if( ND280XMLInput->GetXMLUseSuperFGD2() ){
   
-    double edge = ND280XMLInput->GetXMLSuperFGDCubeEdge2();
-    int cubenumX = ND280XMLInput->GetXMLSuperFGDCubeNum2_X();
-    int cubenumY = ND280XMLInput->GetXMLSuperFGDCubeNum2_Y();
-    int cubenumZ = ND280XMLInput->GetXMLSuperFGDCubeNum2_Z();
-    
-    G4double x = ND280XMLInput->GetXMLSuperFGDPos2_X();
-    G4double y = ND280XMLInput->GetXMLSuperFGDPos2_Y();
-    G4double z = ND280XMLInput->GetXMLSuperFGDPos2_Z();
+  //
+  // SciFi - along X (horizontal layer) and Z (vertical layer)
+  //
+  // The convention is a target of perpendicular fibers (vertical and horizontal)
+  // Horizontal fibers are built along X
+  // Vertical fibers are built along Y
+  // You get a vertical-like XY target, then rotate to obtain a horizontal target XZ
+  //
+  G4String cNameLogicSciFi1 = cNameSolidTarget1+"/SciFi1";
+  ND280SciFiConstructor *fSciFiConstructor1 = new ND280SciFiConstructor(cNameLogicSciFi1,this);
+  G4String nameSciFi1 = fSciFiConstructor1->GetName();
+  
+  G4RotationMatrix* rotation_SciFi = new G4RotationMatrix();
+  
+  rotX=0,rotY=0,rotZ=0;
 
-    fSuperFGDConstructor2->SetEdge(edge*mm);
-    fSuperFGDConstructor2->SetCubeNumX(cubenumX);
-    fSuperFGDConstructor2->SetCubeNumY(cubenumY);
-    fSuperFGDConstructor2->SetCubeNumZ(cubenumZ);
-    fSuperFGDConstructor2->SetPosX(x);
-    fSuperFGDConstructor2->SetPosY(y);
-    fSuperFGDConstructor2->SetPosZ(z);
+  // Build the target with fibers along X and Y, then rotate 
+
+  if( ND280XMLInput->GetXMLUseSciFi() ){
+
+    // Fibers length are defined by # of fibers in the other direction
     
-    logicSuperFGD2 = fSuperFGDConstructor2->GetPiece();
-    physiSuperFGD2 
-      = new G4PVPlacement(
-			  0, // no rotation
-			  G4ThreeVector(0,0,0), // position (0,0,0)
-			  logicSuperFGD2,       // its logical volume    
-			  nameSuperFGD2,  // its name
-			  logicBasket,
-			  false,             // no boolean operations
-			  0);                 // copy number     
+    double edge = ND280XMLInput->GetXMLSciFiFiberEdge();
+    int fiberhoriznum = ND280XMLInput->GetXMLSciFiNum_AlongX();
+    int fibervertnum = ND280XMLInput->GetXMLSciFiNum_AlongZ();
+    G4double x = ND280XMLInput->GetXMLSciFiPos_X();
+    G4double y = ND280XMLInput->GetXMLSciFiPos_Y();
+    G4double z = ND280XMLInput->GetXMLSciFiPos_Z();
+    int Nlayer = ND280XMLInput->GetXMLSciFiNum_Layer();
     
-    G4cout << "SuperFGD 2: " << G4endl
-	   << " - Cube size: "
-	   << fSuperFGDConstructor2->GetEdge() << G4endl;
-    G4cout << " - # of cubes: " << G4endl
-	   << "   " << fSuperFGDConstructor2->GetCubeNumX() << " (width) "
-	   << "   " << fSuperFGDConstructor2->GetCubeNumY() << " (height) "
-	   << "   " << fSuperFGDConstructor2->GetCubeNumZ() << " (length) "
+    fSciFiConstructor1->SetLayerNum(Nlayer); // # of layers along Y (fiberX + fiberZ)
+    fSciFiConstructor1->SetEdge(edge);
+    fSciFiConstructor1->SetFiberVertNum(fibervertnum); // # of vertical fibers (along x)
+    fSciFiConstructor1->SetFiberHorizNum(fiberhoriznum); // # of horizontal fibers (along y)
+    logicSciFi1 = fSciFiConstructor1->GetPiece(); // SciFi logical volume (define the real size here!!!)
+    
+    //
+    // Target mother volume --> use it in TrackerSD to calculate the distance from the hit to the MPPC plane
+    //
+    // - dimensions set inside ND280SciFiConstructor based on the # of fibers and its size
+    // - height and length are inverted because physiSciFi1 is rotated by 90deg on X axis
+    //
+    double width  = fSciFiConstructor1->GetWidth(); 
+    double height = fSciFiConstructor1->GetLength();
+    double length = fSciFiConstructor1->GetHeight();
+    
+    solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
+    logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
+    
+    rotX = 90*deg; // vertical bars are along Z
+    rotY = 0.;
+    rotZ = 0.;
+    G4RotationMatrix* rotation_scifi = new G4RotationMatrix();
+    rotation_scifi->rotateX(rotX);
+    rotation_scifi->rotateY(rotY);
+    rotation_scifi->rotateZ(rotZ);
+
+    physiSciFi1 = new G4PVPlacement(
+				    rotation_scifi, // no rotation
+				    G4ThreeVector(0,0,0), // same origin as Target1
+				    logicSciFi1,       // its logical volume    
+				    nameSciFi1,  // its name
+				    logicTarget1,
+				    false,             // no boolean operations
+				    0);                 // copy number     
+
+    physiTarget1 = new G4PVPlacement(0,      // no rotation
+				     G4ThreeVector(x,y,z),
+				     logicTarget1,       // its logical volume 
+				     cNamePhysiTarget1,  // its name
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+    
+    // 
+    // Set the detector name where the hit distance in target 
+    // is calculated with the PersistencyManager G4Navigator
+    //    
+    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
+    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
+    //
+    // Set histogram for MPPC positions
+    // The MPPC size is the same as for the SciFi fiber
+    // Same reference system as the Navigator!!!
+    //
+    // Be careful about the target rotation!!!
+    // Be careful about the # of fibers in the missing projection!!!
+    //
+    double binNumX = fibervertnum; // given by fiber position in layer  
+    double binNumY = Nlayer*2;        // given by layer position in target
+    double binNumZ = fiberhoriznum;  // given by fiber position in layer
+    bool IsProjXY=true; 
+    bool IsProjXZ=true; // I have all the projections!!!
+    bool IsProjYZ=true;
+    InputPersistencyManager->InitMPPCProj2D(width,height,length,binNumX,binNumY,binNumZ,IsProjXY,IsProjXZ,IsProjYZ);
+    //
+    // Set the detector name to define the direction where the light is collected
+    // Convention for names is "Vert" (along Y w/o rotation) or "Horiz" (along X w/o rotation)
+    // Detector names are defined for SciFi detector in ND280SciFiConstructor.cc
+    // Under rotation on X axis: "Vert"-->Along Z, "Horiz"-->Along X
+    //
+    InputPersistencyManager->SetDetNameAlongX("/FiberScintHoriz"); 
+    InputPersistencyManager->SetDetNameAlongY(""); 
+    InputPersistencyManager->SetDetNameAlongZ("/FiberScintVert"); 
+    
+    //G4cout << "Nbins MPPC X = " << InputPersistencyManager->GetMPPCProj2D_XZ()->GetXaxis()->GetNbins() << G4endl;
+    //G4cout << "Nbins MPPC Y = " << InputPersistencyManager->GetMPPCProj2D_YZ()->GetXaxis()->GetNbins() << G4endl;
+    //G4cout << "Nbins MPPC Z = " << InputPersistencyManager->GetMPPCProj2D_XZ()->GetYaxis()->GetNbins() << G4endl;
+
+    //
+    
+    G4cout << "Target 1: " << G4endl;
+    G4cout << " - Total size (mm^3): " 
+	   << width / mm << " (width) x " 
+	   << height / mm << " (height) x " 
+	   << length / mm << " (length) x " 
 	   << G4endl;
-    G4cout << " mass="<<logicSuperFGD2->GetMass()/kg   <<" kg" << G4endl; 
-    G4cout << " name: " << logicSuperFGD2->GetName() << G4endl;
+    G4cout << "SciFi 1: " << G4endl;
+    G4cout << " - Total size before rotation (mm^3): "
+	   << fSciFiConstructor1->GetWidth() / mm << " (width) x "
+	   << fSciFiConstructor1->GetHeight() / mm << " (height) x "
+	   << fSciFiConstructor1->GetLength() / mm << " (length)"
+	   << G4endl;
+    G4cout << " - Fiber edge: "
+	   << fSciFiConstructor1->GetEdge() / mm << " mm" << G4endl;
+    G4cout << " - # of fibers: " << G4endl
+	   << "   " << fSciFiConstructor1->GetFiberHorizNum() << " horizontal (along X) "
+	   << "   " << fSciFiConstructor1->GetFiberVertNum() << " vertical (along Y) "
+	   << G4endl;
+    G4cout << " - # of layers (XY each): " << G4endl
+	   << "   " << fSciFiConstructor1->GetLayerNum() << G4endl; 
+    G4cout << " - Rotation SciFi: ("
+	   << rotX / degree << ","
+	   << rotY / degree << ","
+	   << rotZ / degree << ")"
+	   << G4endl;
+    G4cout << " mass="<<logicSciFi1->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " name: " << logicSciFi1->GetName() << G4endl;
     G4cout << " - position inside the Basket: ( " 
-	   << fSuperFGDConstructor2->GetPosX()/mm << ", "
-	   << fSuperFGDConstructor2->GetPosY()/mm << ", "
-	   << fSuperFGDConstructor2->GetPosZ()/mm << ") "
-	   << G4endl << G4endl;
+	   << fSciFiConstructor1->GetPosX()/mm << ", "
+	   << fSciFiConstructor1->GetPosY()/mm << ", "
+	   << fSciFiConstructor1->GetPosZ()/mm << ") "
+	   << G4endl << G4endl;    
   }
-  */
+  
+
+
+
+
+
+
+
+
+  //
+  //------------------------------ 
+  // FGDlike 1
+  //------------------------------ 
+  //
+  
+  //
+  // FGDlike - along X (horizontal layer) and Z (vertical layer)
+  //
+  // Same structure as used for SciFi detector
+  // The convention is a target of perpendicular bars (vertical and horizontal)
+  // Horizontal bars are built along X
+  // Vertical bars are built along Y
+  // You get a vertical-like XY target, then rotate to obtain a horizontal target XZ
+  //
+  G4String cNameLogicFGDlike1 = cNameSolidTarget1+"/FGDlike1";
+  ND280FGDlikeConstructor *fFGDlikeConstructor1 = new ND280FGDlikeConstructor(cNameLogicFGDlike1,this);
+  G4String nameFGDlike1 = fFGDlikeConstructor1->GetName();
+  
+  G4RotationMatrix* rotation_FGDlike = new G4RotationMatrix();
+  
+  rotX=0,rotY=0,rotZ=0;
+
+  // Build the target with bars along X and Y, then rotate 
+
+  if( ND280XMLInput->GetXMLUseFGDlike() ){
+
+    // Bars length are defined by # of bars in the other direction
+    
+    double edge = ND280XMLInput->GetXMLFGDlikeBarEdge();
+    int barhoriznum = ND280XMLInput->GetXMLFGDlikeNum_AlongX();
+    int barvertnum = ND280XMLInput->GetXMLFGDlikeNum_AlongZ();
+    G4double x = ND280XMLInput->GetXMLFGDlikePos_X();
+    G4double y = ND280XMLInput->GetXMLFGDlikePos_Y();
+    G4double z = ND280XMLInput->GetXMLFGDlikePos_Z();
+    int Nlayer = ND280XMLInput->GetXMLFGDlikeNum_Layer();
+    
+    fFGDlikeConstructor1->SetLayerNum(Nlayer); // # of layers along Y (barX + barZ)
+    fFGDlikeConstructor1->SetEdge(edge);
+    fFGDlikeConstructor1->SetBarVertNum(barvertnum); // # of vertical bars (along x)
+    fFGDlikeConstructor1->SetBarHorizNum(barhoriznum); // # of horizontal bars (along y)
+    logicFGDlike1 = fFGDlikeConstructor1->GetPiece(); // FGDlike logical volume (define the real size here!!!)
+    
+    //
+    // Target mother volume --> use it in TrackerSD to calculate the distance from the hit to the MPPC plane
+    //
+    // - dimensions set inside ND280FGDlikeConstructor based on the # of bars and its size
+    // - height and length are inverted because physiFGDlike1 is rotated by 90deg on X axis
+    //
+    double width  = fFGDlikeConstructor1->GetWidth(); 
+    double height = fFGDlikeConstructor1->GetLength();
+    double length = fFGDlikeConstructor1->GetHeight();
+    
+    solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
+    logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
+    
+    rotX = 90*deg; // vertical bars are along Z
+    rotY = 0.;
+    rotZ = 0.;
+    G4RotationMatrix* rotation_fgdlike = new G4RotationMatrix();
+    rotation_fgdlike->rotateX(rotX);
+    rotation_fgdlike->rotateY(rotY);
+    rotation_fgdlike->rotateZ(rotZ);
+
+    //logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
+    //logicFGDlike1->SetVisAttributes(G4VisAttributes::Invisible);
+
+    physiFGDlike1 = new G4PVPlacement(
+				    rotation_fgdlike, // no rotation
+				    G4ThreeVector(0,0,0), // same origin as Target1
+				    logicFGDlike1,       // its logical volume    
+				    nameFGDlike1,  // its name
+				    logicTarget1,
+				    false,             // no boolean operations
+				    0);                 // copy number     
+
+    physiTarget1 = new G4PVPlacement(0,      // no rotation
+				     G4ThreeVector(x,y,z),
+				     logicTarget1,       // its logical volume 
+				     cNamePhysiTarget1,  // its name
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+    
+    // 
+    // Set the detector name where the hit distance in target 
+    // is calculated with the PersistencyManager G4Navigator
+    //    
+    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
+    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
+    //
+    // Set histogram for MPPC positions
+    // The MPPC size is the same as for the FGDlike bar
+    // Same reference system as the Navigator!!!
+    //
+    // Be careful about the target rotation!!!
+    // Be careful about the # of bars in the missing projection!!!
+    //
+    double binNumX = barvertnum; // given by bar position in layer  
+    double binNumY = Nlayer*2;        // given by layer position in target
+    double binNumZ = barhoriznum;  // given by bar position in layer
+    bool IsProjXY=true; 
+    bool IsProjXZ=true; // I have all the projections!!!
+    bool IsProjYZ=true;
+    InputPersistencyManager->InitMPPCProj2D(width,height,length,binNumX,binNumY,binNumZ,IsProjXY,IsProjXZ,IsProjYZ);
+    //
+    // Set the detector name to define the direction where the light is collected
+    // Convention for names is "Vert" (along Y w/o rotation) or "Horiz" (along X w/o rotation)
+    // Detector names are defined for FGDlike detector in ND280FGDlikeConstructor.cc
+    // Under rotation on X axis: "Vert"-->Along Z, "Horiz"-->Along X
+    //
+    InputPersistencyManager->SetDetNameAlongX("/BarScintHoriz"); 
+    InputPersistencyManager->SetDetNameAlongY(""); 
+    InputPersistencyManager->SetDetNameAlongZ("/BarScintVert"); 
+    
+    //G4cout << "Nbins MPPC X = " << InputPersistencyManager->GetMPPCProj2D_XZ()->GetXaxis()->GetNbins() << G4endl;
+    //G4cout << "Nbins MPPC Y = " << InputPersistencyManager->GetMPPCProj2D_YZ()->GetXaxis()->GetNbins() << G4endl;
+    //G4cout << "Nbins MPPC Z = " << InputPersistencyManager->GetMPPCProj2D_XZ()->GetYaxis()->GetNbins() << G4endl;
+
+    //
+    
+    G4cout << "Target 1: " << G4endl;
+    G4cout << " - Total size (mm^3): " 
+	   << width / mm << " (width) x " 
+	   << height / mm << " (height) x " 
+	   << length / mm << " (length) x " 
+	   << G4endl;
+    G4cout << "FGDlike 1: " << G4endl;
+    G4cout << " - Total size before rotation (mm^3): "
+	   << fFGDlikeConstructor1->GetWidth() / mm << " (width) x "
+	   << fFGDlikeConstructor1->GetHeight() / mm << " (height) x "
+	   << fFGDlikeConstructor1->GetLength() / mm << " (length)"
+	   << G4endl;
+    G4cout << " - Bar edge: "
+	   << fFGDlikeConstructor1->GetEdge() / mm << " mm" << G4endl;
+    G4cout << " - # of bars: " << G4endl
+	   << "   " << fFGDlikeConstructor1->GetBarHorizNum() << " horizontal (along X) "
+	   << "   " << fFGDlikeConstructor1->GetBarVertNum() << " vertical (along Y) "
+	   << G4endl;
+    G4cout << " - # of layers (XY each): " << G4endl
+	   << "   " << fFGDlikeConstructor1->GetLayerNum() << G4endl; 
+    G4cout << " - Rotation FGDlike: ("
+	   << rotX / degree << ","
+	   << rotY / degree << ","
+	   << rotZ / degree << ")"
+	   << G4endl;
+    G4cout << " mass="<<logicFGDlike1->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " name: " << logicFGDlike1->GetName() << G4endl;
+    G4cout << " - position inside the Basket: ( " 
+	   << fFGDlikeConstructor1->GetPosX()/mm << ", "
+	   << fFGDlikeConstructor1->GetPosY()/mm << ", "
+	   << fFGDlikeConstructor1->GetPosZ()/mm << ") "
+	   << G4endl << G4endl;    
+  }
+
+
+
+
+
+
+
 
 
 
@@ -2431,10 +2716,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseTarget2() )   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
   if( ND280XMLInput->GetXMLUseFGD1() )      logicFGD1->SetVisAttributes(FGDScintVisAtt);
   if( ND280XMLInput->GetXMLUseFGD2() )      logicFGD2->SetVisAttributes(FGDWaterVisAtt);
-
   if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
   if(ND280XMLInput->GetXMLUseSuperFGD2())   logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
 
+  //if(ND280XMLInput->GetXMLUseSciFi1())
+  //if(1) logicSciFi1->SetVisAttributes(SciFiScintVisAtt);
+ 
   
   //--------- Set Step Limiter -------------------------------
   //

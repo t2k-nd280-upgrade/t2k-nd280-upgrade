@@ -1,8 +1,8 @@
 
 void DrawTarget
 ( 
+ string infilename = "SelND280UpHit-PiP_1.root",
  int histonum = 0,
- string infilename = "Sel_Step-Targ1-MuM-ParID0-CC_Evt0_NEvt1.root",
  bool doPrint = false,
  string tag = "SuperFGD"
   )
@@ -23,6 +23,27 @@ void DrawTarget
   hMPPCHits_XZ->SetTitle("Projection on the XZ readout plane");
   TH2D *hMPPCHits_YZ = (TH2D*)infile->Get(TString::Format("hMPPCHits_YZ_%d",histonum));
   hMPPCHits_YZ->SetTitle("Projection on the YZ readout plane");
+
+  TH2D *hMPPCHitsVsTime_XY = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_XY_%d",histonum));
+  hMPPCHitsVsTime_XY->SetTitle("Projection on the XY readout plane Vs Time");
+  TH2D *hMPPCHitsVsTime_XZ = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_XZ_%d",histonum));
+  hMPPCHitsVsTime_XZ->SetTitle("Projection on the XZ readout plane Vs Time");
+  TH2D *hMPPCHitsVsTime_YZ = (TH2D*)infile->Get(TString::Format("hMPPCHitsVsTime_YZ_%d",histonum));
+  hMPPCHitsVsTime_YZ->SetTitle("Projection on the YZ readout plane Vs Time");
+
+  TH2D *hMPPCHitsDelay100ns_XY = (TH2D*)infile->Get(TString::Format("hMPPCHitsDelay100ns_XY_%d",histonum));
+  hMPPCHitsDelay100ns_XY->SetTitle("Projection on the XY readout plane (delay 100 ns)");
+  TH2D *hMPPCHitsDelay100ns_XZ = (TH2D*)infile->Get(TString::Format("hMPPCHitsDelay100ns_XZ_%d",histonum));
+  hMPPCHitsDelay100ns_XZ->SetTitle("Projection on the XZ readout plane (delay 100 ns)");
+  TH2D *hMPPCHitsDelay100ns_YZ = (TH2D*)infile->Get(TString::Format("hMPPCHitsDelay100ns_YZ_%d",histonum));
+  hMPPCHitsDelay100ns_YZ->SetTitle("Projection on the YZ readout plane (delay 100 ns)");
+
+  TH2D *hPEVsTime_x = (TH2D*)infile->Get(TString::Format("hPEVsTime_x_%d",histonum));
+  hPEVsTime_x->SetTitle("Time at end of X fiber");
+  TH2D *hPEVsTime_y = (TH2D*)infile->Get(TString::Format("hPEVsTime_y_%d",histonum));
+  hPEVsTime_y->SetTitle("Time at end of Y fiber");
+  TH2D *hPEVsTime_z = (TH2D*)infile->Get(TString::Format("hPEVsTime_z_%d",histonum));
+  hPEVsTime_z->SetTitle("Time at end of Z fiber");
   
   TCanvas *cMPPCHits_XY = new TCanvas("cMPPCHits_XY","cMPPCHits_XY");
   hMPPCHits_XY->GetXaxis()->SetTitle("X position (mm)");
@@ -30,14 +51,12 @@ void DrawTarget
   hMPPCHits_XY->SetStats(0);
   hMPPCHits_XY->DrawClone("colz");
   if(doPrint) cMPPCHits_XY->Print(TString::Format("%s_MPPCHits_XY.pdf",tag.c_str()).Data());
-
   TCanvas *cMPPCHits_XZ = new TCanvas("cMPPCHits_XZ","cMPPCHits_XZ");
   hMPPCHits_XZ->GetXaxis()->SetTitle("X position (mm)");
   hMPPCHits_XZ->GetYaxis()->SetTitle("Z position (mm)");
   hMPPCHits_XZ->SetStats(0);
   hMPPCHits_XZ->DrawClone("colz");
   if(doPrint) cMPPCHits_XZ->Print(TString::Format("%s_MPPCHits_XZ.pdf",tag.c_str()).Data());
-
   TCanvas *cMPPCHits_YZ = new TCanvas("cMPPCHits_YZ","cMPPCHits_YZ");
   hMPPCHits_YZ->GetXaxis()->SetTitle("Y position (mm)");
   hMPPCHits_YZ->GetYaxis()->SetTitle("Z position (mm)");
@@ -45,7 +64,59 @@ void DrawTarget
   hMPPCHits_YZ->DrawClone("colz");
   if(doPrint) cMPPCHits_YZ->Print(TString::Format("%s_MPPCHits_YZ.pdf",tag.c_str()).Data());
 
+  TCanvas *cMPPCHitsVsTime_XY = new TCanvas("cMPPCHitsVsTime_XY","cMPPCHitsVsTime_XY");
+  hMPPCHitsVsTime_XY->GetXaxis()->SetTitle("X position (mm)");
+  hMPPCHitsVsTime_XY->GetYaxis()->SetTitle("Y position (mm)");
+  hMPPCHitsVsTime_XY->SetStats(0);
+  hMPPCHitsVsTime_XY->DrawClone("colz");
+  if(doPrint) cMPPCHitsVsTime_XY->Print(TString::Format("%s_MPPCHitsVsTime_XY.pdf",tag.c_str()).Data());
+  TCanvas *cMPPCHitsVsTime_XZ = new TCanvas("cMPPCHitsVsTime_XZ","cMPPCHitsVsTime_XZ");
+  hMPPCHitsVsTime_XZ->GetXaxis()->SetTitle("X position (mm)");
+  hMPPCHitsVsTime_XZ->GetYaxis()->SetTitle("Z position (mm)");
+  hMPPCHitsVsTime_XZ->SetStats(0);
+  hMPPCHitsVsTime_XZ->DrawClone("colz");
+  if(doPrint) cMPPCHitsVsTime_XZ->Print(TString::Format("%s_MPPCHitsVsTime_XZ.pdf",tag.c_str()).Data());
+    TCanvas *cMPPCHitsVsTime_YZ = new TCanvas("cMPPCHitsVsTime_YZ","cMPPCHitsVsTime_YZ");
+  hMPPCHitsVsTime_YZ->GetXaxis()->SetTitle("Y position (mm)");
+  hMPPCHitsVsTime_YZ->GetYaxis()->SetTitle("Z position (mm)");
+  hMPPCHitsVsTime_YZ->SetStats(0);
+  hMPPCHitsVsTime_YZ->DrawClone("colz");
+  if(doPrint) cMPPCHitsVsTime_YZ->Print(TString::Format("%s_MPPCHitsVsTime_YZ.pdf",tag.c_str()).Data());
 
+  TCanvas *cMPPCHitsDelay100ns_XY = new TCanvas("cMPPCHitsDelay100ns_XY","cMPPCHitsDelay100ns_XY");
+  hMPPCHitsDelay100ns_XY->GetXaxis()->SetTitle("X position after 100ns (mm)");
+  hMPPCHitsDelay100ns_XY->GetYaxis()->SetTitle("Y position after 100ns (mm)");
+  hMPPCHitsDelay100ns_XY->SetStats(0);
+  hMPPCHitsDelay100ns_XY->DrawClone("colz");
+  if(doPrint) cMPPCHitsDelay100ns_XY->Print(TString::Format("%s_MPPCHitsDelay100ns_XY.pdf",tag.c_str()).Data());
+  TCanvas *cMPPCHitsDelay100ns_XZ = new TCanvas("cMPPCHitsDelay100ns_XZ","cMPPCHitsDelay100ns_XZ");
+  hMPPCHitsDelay100ns_XZ->GetXaxis()->SetTitle("X position after 100ns (mm)");
+  hMPPCHitsDelay100ns_XZ->GetYaxis()->SetTitle("Z position after 100ns (mm)");
+  hMPPCHitsDelay100ns_XZ->SetStats(0);
+  hMPPCHitsDelay100ns_XZ->DrawClone("colz");
+  if(doPrint) cMPPCHitsDelay100ns_XZ->Print(TString::Format("%s_MPPCHitsDelay100ns_XZ.pdf",tag.c_str()).Data());
+  TCanvas *cMPPCHitsDelay100ns_YZ = new TCanvas("cMPPCHitsDelay100ns_YZ","cMPPCHitsDelay100ns_YZ");
+  hMPPCHitsDelay100ns_YZ->GetXaxis()->SetTitle("Y position after 100ns (mm)");
+  hMPPCHitsDelay100ns_YZ->GetYaxis()->SetTitle("Z position after 100ns (mm)");
+  hMPPCHitsDelay100ns_YZ->SetStats(0);
+  hMPPCHitsDelay100ns_YZ->DrawClone("colz");
+  if(doPrint) cMPPCHitsDelay100ns_YZ->Print(TString::Format("%s_MPPCHitsDelay100ns_YZ.pdf",tag.c_str()).Data());
+
+  TCanvas *cPEVsTime_x = new TCanvas("cPEVsTime_x","cPEVsTime_x");
+  hPEVsTime_x->GetXaxis()->SetTitle("Time at X fiber end (ns)");
+  hPEVsTime_x->SetStats(0);
+  hPEVsTime_x->DrawClone();
+  if(doPrint) hPEVsTime_x->Print(TString::Format("%s_cPEVsTime_x.pdf",tag.c_str()).Data());
+  TCanvas *cPEVsTime_y = new TCanvas("cPEVsTime_y","cPEVsTime_y");
+  hPEVsTime_y->GetXaxis()->SetTitle("Time at Y fiber end (ns)");
+  hPEVsTime_y->SetStats(0);
+  hPEVsTime_y->DrawClone();
+  if(doPrint) hPEVsTime_y->Print(TString::Format("%s_cPEVsTime_y.pdf",tag.c_str()).Data());
+  TCanvas *cPEVsTime_z = new TCanvas("cPEVsTime_z","cPEVsTime_z");
+  hPEVsTime_z->GetXaxis()->SetTitle("Time at Z fiber end (ns)");
+  hPEVsTime_z->SetStats(0);
+  hPEVsTime_z->DrawClone();
+  if(doPrint) hPEVsTime_z->Print(TString::Format("%s_cPEVsTime_z.pdf",tag.c_str()).Data());
   
   // Print output
 
@@ -76,7 +147,7 @@ void DrawTarget
     cout << endl;
   }
   cout << endl;
-
+  
   cout << "# of p.e. in each MPPC (event 0) YZ: " << endl;
   Ny = hMPPCHits_YZ->GetXaxis()->GetNbins();
   Nz = hMPPCHits_YZ->GetYaxis()->GetNbins();
@@ -109,6 +180,7 @@ void DrawTarget
     if(bincont>0.) cout << bincont << " ";
   }
   cout << endl;
+  
   cout << " - from XZ: ";
   double Nx = hMPPCHits_XZ->GetXaxis()->GetNbins();
   double Nz = hMPPCHits_XZ->GetYaxis()->GetNbins();
@@ -121,6 +193,7 @@ void DrawTarget
     }
     if(bincont>0.) cout << bincont << " ";
   }
+  
   cout << endl;
 
   cout << endl;
@@ -167,6 +240,7 @@ void DrawTarget
     if(bincont>0.) cout << bincont << " ";
   }
   cout << endl;
+  
   cout << " - from XZ: ";
   double Nx = hMPPCHits_XZ->GetXaxis()->GetNbins();
   double Nz = hMPPCHits_XZ->GetYaxis()->GetNbins();
@@ -179,6 +253,7 @@ void DrawTarget
     }
     if(bincont>0.) cout << bincont << " ";
   }
+  
   cout << endl;
   return;
 }
