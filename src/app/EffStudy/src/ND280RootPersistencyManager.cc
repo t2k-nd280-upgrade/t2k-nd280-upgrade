@@ -56,7 +56,7 @@ ND280RootPersistencyManager::ND280RootPersistencyManager()
       fEventsNotSaved(0),
       fNavigTarg1(NULL),fIsHistoMovedTarg1(false),fNavigDetExist(false),
       fMPPCProj2D_XY(NULL),fMPPCProj2D_XZ(NULL),fMPPCProj2D_YZ(NULL),
-      fIsMPPCProjXY(true),fIsMPPCProjXZ(true),fIsMPPCProjYZ(true),
+      fIsMPPCProjXY(false),fIsMPPCProjXZ(false),fIsMPPCProjYZ(false),
       fDetNameAlongX(""),fDetNameAlongY(""),fDetNameAlongZ("")
 {}
 
