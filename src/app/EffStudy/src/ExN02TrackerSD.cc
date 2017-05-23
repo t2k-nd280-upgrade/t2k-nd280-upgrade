@@ -95,7 +95,24 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   if(edep==0.) return false;
 
   G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
-    
+  G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
+
+  // Calculate step length in each direction
+  double postposX = postStepPoint->GetPosition().x();
+  double postposY = postStepPoint->GetPosition().y();
+  double postposZ = postStepPoint->GetPosition().z();
+
+  double preposX = preStepPoint->GetPosition().x();
+  double preposY = preStepPoint->GetPosition().y();
+  double preposZ = preStepPoint->GetPosition().z();
+  
+  double deltaX = (postposX - preposX)/2.;
+  double deltaY = (postposY - preposY)/2.;
+  double deltaZ = (postposZ - preposZ)/2.;
+
+  G4cout << "pre: " << preposX << ", "<< preposY << ", " << preposZ<< G4endl;
+  G4cout << "post: " << postposX << ", " << postposY << ", " << postposZ << G4endl;
+  G4cout << "delta: " << deltaX << ", " << deltaY << ", " << deltaZ << G4endl;
 
   // Volume information must be extracted from Touchable of "PreStepPoint"
 
@@ -162,9 +179,9 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     // Get the light position in the local frame and 
     // calculate the position of the correspding MPPC (at it's bin center) 
     
-    double lightX = PMlocalPosition.x();
-    double lightY = PMlocalPosition.y();
-    double lightZ = PMlocalPosition.z();
+    double lightX = PMlocalPosition.x() + deltaX;
+    double lightY = PMlocalPosition.y() + deltaY;
+    double lightZ = PMlocalPosition.z() + deltaZ;
     // G4cout << "lightX = " << lightX << ", lightY = " << lightY << ", lightZ = " << lightZ << G4endl;
     
     double mppcX = -9999999999;
@@ -180,8 +197,29 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
     }
     else{ // SciFi_XZ or FGDlike_XZ
+      G4cout << touch_namedet << G4endl;
+      G4cout << "lightY = " << lightY << G4endl;
       persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
+      //G4cout << "mppc pos: Y = " << mppcY << G4endl; 
       persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
+
+      //G4cout << "mppc pos: Y = " << mppcY << G4endl;
+
+      double world_x = PMworldPosition.x();
+      double world_y = PMworldPosition.y();
+      double world_z = PMworldPosition.z();
+
+      double loc_x = PMlocalPosition.x();
+      double loc_y = PMlocalPosition.y();
+      double loc_z = PMlocalPosition.z();
+
+      G4cout <<"World pos: " << world_x << ", " << world_y << ", " << world_z << G4endl;
+      G4cout <<"Loc pos: "<<loc_x << ", " << loc_y << ", " << loc_z << G4endl;
+      G4cout <<"MPPC pos: " <<mppcX << ", " << mppcY << ", " << mppcZ<< G4endl;
+      G4cout << G4endl;
+      //if(mppcY==5 && touch_namedet.contains("BarScintHoriz")){
+      //G4cout << "Look here!" << G4endl;
+      //}
     }
  
     

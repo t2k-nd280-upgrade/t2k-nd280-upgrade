@@ -120,15 +120,12 @@ G4LogicalVolume *ND280SciFiConstructor::GetPiece(void) {
     = ND280RootPersistencyManager::GetInstance();
   fND280XMLInput = InputPersistencyManager->GetXMLInput();
 
-
-
-
   // Set total size of the Super-FGD
 
   double TotWidth  = fFiberVertNum * fEdge; 
   SetFiberHorizLength(TotWidth);
   SetWidth(TotWidth);
-
+  
   double TotHeight = fFiberHorizNum * fEdge;   
   SetFiberVertLength(TotHeight);
   SetHeight(TotHeight);

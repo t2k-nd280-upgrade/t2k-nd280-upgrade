@@ -130,9 +130,9 @@ G4LogicalVolume *ND280FGDlikeConstructor::GetPiece(void) {
   SetBarVertLength(TotHeight);
   SetHeight(TotHeight);
 
-  G4cout << "width = " << GetWidth() << G4endl;
-  G4cout << "height = " << GetHeight() << G4endl;
-  G4cout << "edge = " << fEdge << G4endl;
+  //G4cout << "width = " << GetWidth() << G4endl;
+  //G4cout << "height = " << GetHeight() << G4endl;
+  //G4cout << "edge = " << fEdge << G4endl;
 
   // Build the plastic scintillator bar Vertical
 
@@ -145,7 +145,7 @@ G4LogicalVolume *ND280FGDlikeConstructor::GetPiece(void) {
   barVert.SetAxisLength(TotHeight); // lengthVert based on # of bars along X 
   barVert.SetHoleRadius(0.7*mm);
   barVert.SetFiberRadius(0.5*mm);
-  barVert.SetCoatingThickness(0.0*mm);
+  barVert.SetCoatingThickness(0.25*mm);
   barVert.SetGap(0.0*mm);
   G4LogicalVolume* barVert_logical = barVert.GetPiece();
 

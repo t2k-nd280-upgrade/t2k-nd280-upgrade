@@ -159,11 +159,13 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
   double coreOffset = 0.0;
   
   G4VisAttributes *visAtt_Scint = new G4VisAttributes();
-  visAtt_Scint->SetColor(0.5,0.5,0.5,0.); // gray
+  //visAtt_Scint->SetColor(0.5,0.5,0.5,0.); // gray
+  visAtt_Scint->SetColor(1.0,1.0,1.0); // white  
   visAtt_Scint->SetForceSolid(true);
   G4VisAttributes *visAtt_Coat = new G4VisAttributes();
-  visAtt_Coat->SetColor(1.0,1.0,1.0); // white
+  //visAtt_Coat->SetColor(1.0,1.0,1.0); // white
   //visAtt_Coat->SetColor(0.5,0.5,0.5,0.); // gray
+  visAtt_Coat->SetColor(0.,1.,0.,0.); // green
   visAtt_Coat->SetForceSolid(true);
   G4VisAttributes *visAtt_Hole = new G4VisAttributes();
   visAtt_Hole->SetColor(0.0,0.0,1.0); // blue
@@ -222,6 +224,14 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
     rotation->rotateZ(0*degree);      
   }
 
+  G4cout << "GetCoatingThickness() = " << GetCoatingThickness() << G4endl;
+  G4cout << "width = " << width << G4endl;
+  G4cout << "height = " << height << G4endl;
+  G4cout << "length = " << length << G4endl;
+  G4cout << "scintWidth = " << scintWidth << G4endl;
+  G4cout << "scintHeight = " << scintHeight << G4endl;
+  G4cout << "scintLength = " << scintLength << G4endl; 
+
   // Set the dimension in the XYZ frame
   SetWidth(width);
   SetHeight(height);
@@ -242,11 +252,8 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
  
   scintillator = new G4Box(GetName()+"/Extrusion/Core",
 			   scintWidth/2,
-			   scintHeight/2,
+  			   scintHeight/2,
 			   scintLength/2
-   			   //GetWidth()/2-GetCoatingThickness(),
-  			   //GetHeight()/2-GetCoatingThickness(),
-  			   //GetLength()/2-GetCoatingThickness()
 			   );
   
   
@@ -298,12 +305,13 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
 
   // Define the volume of plastic scintillator as sensitive detector
   scintVolume->SetSensitiveDetector( aTrackerSD ); 
-
+  
   G4LogicalVolume *fiberHoleVolume
     = new G4LogicalVolume(fiberHole,
 			  FindMaterial("Air"),
 			  GetName()+"/Extrusion/Core/Hole");
   
+
   // Place the scintillator inside the extrusion volume
   new G4PVPlacement(0,                   // no rotation
 		    G4ThreeVector(0,coreOffset,0),     // position
@@ -333,6 +341,10 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
     scintVolume    ->SetVisAttributes(visAtt_Scint);
     fiberHoleVolume->SetVisAttributes(visAtt_Hole);
   }
+
+  extrusionVolume->SetVisAttributes(G4VisAttributes::Invisible);
+  fiberHoleVolume->SetVisAttributes(G4VisAttributes::Invisible);
+  //extrusionVolume->SetVisAttributes(visAtt_Coat);
 
   //
   // Build the WLS fiber
@@ -387,68 +399,6 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
 
   return extrusionVolume;
 
-
-
-
-
-
-
-
-
-
-
-
-
-  /*
-  cladding = new G4Box(GetName()+"/Cladding",
-		       width/2,
-		       height/2,
-		       length/2
-		       );
-    
-  scintillator = new G4Box(GetName()+"/Cladding/Core",
-   			   scintWidth/2,
-			   scintHeight/2,
-			   scintLength/2
-			   );
-
-  // logical volumes
-
-  coreOffset = 0.0;
-  
-  G4LogicalVolume* claddingVolume
-    = new G4LogicalVolume(cladding,
-			  FindMaterial(GetBarCladMaterial()),
-			  GetName()+"/Cladding");
-
-  G4LogicalVolume *scintVolume;
-  scintVolume = new G4LogicalVolume(scintillator,
-				    FindMaterial(GetBarCoreMaterial()),
-				    GetName()+"/Cladding/Core");
-
-  // Define the volume of plastic scintillator as sensitive detector
-  scintVolume->SetSensitiveDetector( aTrackerSD ); 
-
-  if( GetND280XML()->GetXMLInvisFGDlike() ){
-    claddingVolume->SetVisAttributes(G4VisAttributes::Invisible);
-    scintVolume    ->SetVisAttributes(G4VisAttributes::Invisible);
-  }
-  else{
-    claddingVolume->SetVisAttributes(visAtt_Coat); 
-    scintVolume    ->SetVisAttributes(visAtt_Scint);
-  }
-  
-  // Place the scintillator inside the cladding volume
-  new G4PVPlacement(0,                   // no rotation
-		    G4ThreeVector(0,coreOffset,0),     // position
-		    scintVolume,         // its logical volume
-		    GetName()+"/Cladding/Core",   // its name
-		    claddingVolume,     // its mother  volume
-		    false,               // no boolean operations
-		    0);                  // copy number
- 
-  return claddingVolume;
-  */
 }
 
 

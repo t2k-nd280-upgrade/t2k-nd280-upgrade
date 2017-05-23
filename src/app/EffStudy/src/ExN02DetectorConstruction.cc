@@ -2142,8 +2142,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     rotation_fgdlike->rotateY(rotY);
     rotation_fgdlike->rotateZ(rotZ);
 
-    //logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
-    //logicFGDlike1->SetVisAttributes(G4VisAttributes::Invisible);
+    logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
+    logicFGDlike1->SetVisAttributes(G4VisAttributes::Invisible);
 
     physiFGDlike1 = new G4PVPlacement(
 				    rotation_fgdlike, // no rotation
@@ -2719,12 +2719,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   if( ND280XMLInput->GetXMLUseTPCUp2() )    logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
   if( ND280XMLInput->GetXMLUseTPCDown1() )  logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
   if( ND280XMLInput->GetXMLUseTPCDown2() )  logicSideTPCDown2->SetVisAttributes(TPCVisAtt);
-  if( ND280XMLInput->GetXMLUseTarget1() )   logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
-  if( ND280XMLInput->GetXMLUseTarget2() )   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
+  //if( ND280XMLInput->GetXMLUseTarget1() )   logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
+  //if( ND280XMLInput->GetXMLUseTarget2() )   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
   if( ND280XMLInput->GetXMLUseFGD1() )      logicFGD1->SetVisAttributes(FGDScintVisAtt);
   if( ND280XMLInput->GetXMLUseFGD2() )      logicFGD2->SetVisAttributes(FGDWaterVisAtt);
-  if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
-  if(ND280XMLInput->GetXMLUseSuperFGD2())   logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
+  //if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
+  //if(ND280XMLInput->GetXMLUseSuperFGD2())   logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
 
   //if(ND280XMLInput->GetXMLUseSciFi1())
   //if(1) logicSciFi1->SetVisAttributes(SciFiScintVisAtt);
