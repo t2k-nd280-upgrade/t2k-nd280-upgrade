@@ -48,6 +48,8 @@
 
 #include <TH2F.h>
 
+//#define DEBUG
+
 using namespace conv;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -110,10 +112,13 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   double deltaY = (postposY - preposY)/2.;
   double deltaZ = (postposZ - preposZ)/2.;
 
+
+#ifdef DEBUG 
   G4cout << "pre: " << preposX << ", "<< preposY << ", " << preposZ<< G4endl;
   G4cout << "post: " << postposX << ", " << postposY << ", " << postposZ << G4endl;
   G4cout << "delta: " << deltaX << ", " << deltaY << ", " << deltaZ << G4endl;
-
+#endif
+  
   // Volume information must be extracted from Touchable of "PreStepPoint"
 
   G4TouchableHandle theTouchable = preStepPoint->GetTouchableHandle();
@@ -197,8 +202,6 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
     }
     else{ // SciFi_XZ or FGDlike_XZ
-      G4cout << touch_namedet << G4endl;
-      G4cout << "lightY = " << lightY << G4endl;
       persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
       //G4cout << "mppc pos: Y = " << mppcY << G4endl; 
       persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
@@ -213,13 +216,14 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       double loc_y = PMlocalPosition.y();
       double loc_z = PMlocalPosition.z();
 
+#ifdef DEBUG
+      G4cout << touch_namedet << G4endl;
+      G4cout << "lightY = " << lightY << G4endl;
       G4cout <<"World pos: " << world_x << ", " << world_y << ", " << world_z << G4endl;
       G4cout <<"Loc pos: "<<loc_x << ", " << loc_y << ", " << loc_z << G4endl;
       G4cout <<"MPPC pos: " <<mppcX << ", " << mppcY << ", " << mppcZ<< G4endl;
       G4cout << G4endl;
-      //if(mppcY==5 && touch_namedet.contains("BarScintHoriz")){
-      //G4cout << "Look here!" << G4endl;
-      //}
+#endif
     }
  
     

@@ -397,13 +397,13 @@
      10
    </FGDlikeBarEdge>
    <FGDlikeNum_AlongX>
-     2
+     130
    </FGDlikeNum_AlongX>
    <FGDlikeNum_AlongZ>
-     2
+     180
    </FGDlikeNum_AlongZ>
    <FGDlikeNum_Layer>
-     2
+     30
    </FGDlikeNum_Layer>
    <FGDlikePos_X>
      0
@@ -1083,7 +1083,7 @@
      true
    </InvisSciFi>
    <InvisFGDlike>
-     false
+     true
    </InvisFGDlike>
   
    <InvisToF_TopDown>

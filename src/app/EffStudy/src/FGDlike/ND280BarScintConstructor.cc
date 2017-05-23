@@ -342,9 +342,9 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
     fiberHoleVolume->SetVisAttributes(visAtt_Hole);
   }
 
-  extrusionVolume->SetVisAttributes(G4VisAttributes::Invisible);
-  fiberHoleVolume->SetVisAttributes(G4VisAttributes::Invisible);
-  //extrusionVolume->SetVisAttributes(visAtt_Coat);
+  //extrusionVolume->SetVisAttributes(G4VisAttributes::Invisible);
+  //fiberHoleVolume->SetVisAttributes(G4VisAttributes::Invisible);
+
 
   //
   // Build the WLS fiber

@@ -2142,8 +2142,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     rotation_fgdlike->rotateY(rotY);
     rotation_fgdlike->rotateZ(rotZ);
 
-    logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
-    logicFGDlike1->SetVisAttributes(G4VisAttributes::Invisible);
+    //logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
+    //logicFGDlike1->SetVisAttributes(G4VisAttributes::Invisible);
 
     physiFGDlike1 = new G4PVPlacement(
 				    rotation_fgdlike, // no rotation

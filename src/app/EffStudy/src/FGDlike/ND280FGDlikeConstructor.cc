@@ -161,7 +161,7 @@ G4LogicalVolume *ND280FGDlikeConstructor::GetPiece(void) {
   barHoriz.SetAxisLength(TotWidth); // lengthVert based on # of bars along Y 
   barHoriz.SetHoleRadius(0.7*mm);
   barHoriz.SetFiberRadius(0.5*mm);
-  barHoriz.SetCoatingThickness(0.0*mm);
+  barHoriz.SetCoatingThickness(0.25*mm);
   barHoriz.SetGap(0.0*mm);
   G4LogicalVolume* barHoriz_logical = barHoriz.GetPiece();
 
