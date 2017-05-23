@@ -290,7 +290,7 @@
      0
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     0
+     -1487
    </SuperFGDPos1_Z>
    <!-- -1487 -->
 
@@ -372,10 +372,10 @@
      2
    </SciFiFiberEdge>
    <SciFiNum_AlongX>
-     900
+     650
    </SciFiNum_AlongX>
    <SciFiNum_AlongZ>
-     650
+     900
    </SciFiNum_AlongZ>
    <SciFiNum_Layer>
      150
@@ -387,7 +387,7 @@
      0
    </SciFiPos_Y>
    <SciFiPos_Z>
-     0
+     -1487
    </SciFiPos_Z>
    <!-- -1487 -->
 
@@ -397,13 +397,13 @@
      10
    </FGDlikeBarEdge>
    <FGDlikeNum_AlongX>
-     130
+     2
    </FGDlikeNum_AlongX>
    <FGDlikeNum_AlongZ>
-     180
+     2
    </FGDlikeNum_AlongZ>
    <FGDlikeNum_Layer>
-     30
+     2
    </FGDlikeNum_Layer>
    <FGDlikePos_X>
      0
@@ -951,7 +951,7 @@
    </UseFGD2>
 
    <UseSuperFGD1>
-     true
+     false
    </UseSuperFGD1>
    <UseSuperFGD2>
      false
@@ -966,7 +966,7 @@
      false
    </UseSciFi>
    <UseFGDlike>
-     false
+     true
    </UseFGDlike>
 
    <UseToF_TopDown>
@@ -1083,7 +1083,7 @@
      true
    </InvisSciFi>
    <InvisFGDlike>
-     true
+     false
    </InvisFGDlike>
   
    <InvisToF_TopDown>
