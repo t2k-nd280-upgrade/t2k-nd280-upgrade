@@ -9,7 +9,7 @@
 <Dependency>
   
   <StoreGeometry>
-    0
+    1
   </StoreGeometry>
   
   <IsRandomSeed>
@@ -290,8 +290,9 @@
      0
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     -1487 
+     -1487
    </SuperFGDPos1_Z>
+   <!-- -1487 -->
 
    <!-- SuperFGD 2 -->
    <SuperFGDCubeEdge2>
@@ -345,13 +346,13 @@
    <!-- WAGASCI Water -->
 
    <WAGASCIWaterlength>
-     130
+     13
    </WAGASCIWaterlength>
    <WAGASCIWaterwidth>  
-     186
+     18
    </WAGASCIWaterwidth>
    <WAGASCIWaterheight> 
-     60
+     6
    </WAGASCIWaterheight>
 
    <WAGASCIWaterPos_X>
@@ -364,6 +365,56 @@
      0
    </WAGASCIWaterPos_Z>
 
+
+
+   <!-- SciFi XZ -->
+   <SciFiFiberEdge>
+     2
+   </SciFiFiberEdge>
+   <SciFiNum_AlongX>
+     650
+   </SciFiNum_AlongX>
+   <SciFiNum_AlongZ>
+     900
+   </SciFiNum_AlongZ>
+   <SciFiNum_Layer>
+     150
+   </SciFiNum_Layer>
+   <SciFiPos_X>
+     0
+   </SciFiPos_X>
+   <SciFiPos_Y>
+     0
+   </SciFiPos_Y>
+   <SciFiPos_Z>
+     -1487
+   </SciFiPos_Z>
+   <!-- -1487 -->
+
+
+   <!-- FGDlike XZ -->
+   <FGDlikeBarEdge>
+     10
+   </FGDlikeBarEdge>
+   <FGDlikeNum_AlongX>
+     130
+   </FGDlikeNum_AlongX>
+   <FGDlikeNum_AlongZ>
+     180
+   </FGDlikeNum_AlongZ>
+   <FGDlikeNum_Layer>
+     30
+   </FGDlikeNum_Layer>
+   <FGDlikePos_X>
+     0
+   </FGDlikePos_X>
+   <FGDlikePos_Y>
+     0
+   </FGDlikePos_Y>
+   <FGDlikePos_Z>
+     0
+   </FGDlikePos_Z>
+   <!-- -1487 -->
 
 
    <!-- ToF Top Downstream -->    
@@ -900,17 +951,23 @@
    </UseFGD2>
 
    <UseSuperFGD1>
-    true
+     false
    </UseSuperFGD1>
    <UseSuperFGD2>
-    false
+     false
    </UseSuperFGD2>
    <UseWAGASCIEmpty>
-    false
+     false
    </UseWAGASCIEmpty>
    <UseWAGASCIWater>
-    false
+     false
    </UseWAGASCIWater>
+   <UseSciFi>
+     false
+   </UseSciFi>
+   <UseFGDlike>
+     true
+   </UseFGDlike>
 
    <UseToF_TopDown>
      false
@@ -1017,11 +1074,17 @@
    </InvisFGD2>
    
    <InvisSuperFGD>
-     false
+     true
    </InvisSuperFGD>
    <InvisWAGASCI>
-     false
+     true
    </InvisWAGASCI>
+   <InvisSciFi>
+     true
+   </InvisSciFi>
+   <InvisFGDlike>
+     true
+   </InvisFGDlike>
   
    <InvisToF_TopDown>
      false

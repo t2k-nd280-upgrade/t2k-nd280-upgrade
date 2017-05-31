@@ -151,6 +151,24 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("WAGASCIWaterPos_Y"    ,fWAGASCIWaterPos_Y);
     XML2Double("WAGASCIWaterPos_Z"    ,fWAGASCIWaterPos_Z);
 
+    // SciFi XZ
+    XML2Double("SciFiFiberEdge",fSciFiFiberEdge);
+    XML2Int("SciFiNum_AlongX"  ,fSciFiNum_AlongX);
+    XML2Int("SciFiNum_AlongZ"  ,fSciFiNum_AlongZ);
+    XML2Int("SciFiNum_Layer"   ,fSciFiNum_Layer);
+    XML2Double("SciFiPos_X"    ,fSciFiPos_X);
+    XML2Double("SciFiPos_Y"    ,fSciFiPos_Y);
+    XML2Double("SciFiPos_Z"    ,fSciFiPos_Z);
+
+    // FGDlike XZ
+    XML2Double("FGDlikeBarEdge",fFGDlikeBarEdge);
+    XML2Int("FGDlikeNum_AlongX"  ,fFGDlikeNum_AlongX);
+    XML2Int("FGDlikeNum_AlongZ"  ,fFGDlikeNum_AlongZ);
+    XML2Int("FGDlikeNum_Layer"   ,fFGDlikeNum_Layer);
+    XML2Double("FGDlikePos_X"    ,fFGDlikePos_X);
+    XML2Double("FGDlikePos_Y"    ,fFGDlikePos_Y);
+    XML2Double("FGDlikePos_Z"    ,fFGDlikePos_Z);
+
     // ToF Top Downstream 
     XML2Bool("ToFdefault_TopDown"      ,fToFdefault_TopDown);
     XML2Int("ToFPlaneXYNum_TopDown"    ,fToFPlaneXYNum_TopDown);
@@ -359,6 +377,10 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseWAGASCIEmpty",fUseWAGASCIEmpty);
     // Use WAGASCI Water
     XML2Bool("UseWAGASCIWater",fUseWAGASCIWater);
+    // Use SciFi XZ
+    XML2Bool("UseSciFi",fUseSciFi);
+    // Use FGDlike XZ
+    XML2Bool("UseFGDlike",fUseFGDlike);
     // Use Downstream ToFs
     XML2Bool("UseToF_TopDown" ,fUseToF_TopDown);
     XML2Bool("UseToF_BotDown" ,fUseToF_BotDown);
@@ -401,6 +423,8 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("InvisFGD2"     ,fInvisFGD2);
     XML2Bool("InvisSuperFGD",fInvisSuperFGD);
     XML2Bool("InvisWAGASCI",fInvisWAGASCI);
+    XML2Bool("InvisSciFi",fInvisSciFi);
+    XML2Bool("InvisFGDlike",fInvisFGDlike);
     //
     XML2Bool("InvisToF_TopDown"     ,fInvisToF_TopDown);
     XML2Bool("InvisToF_BotDown"     ,fInvisToF_BotDown);

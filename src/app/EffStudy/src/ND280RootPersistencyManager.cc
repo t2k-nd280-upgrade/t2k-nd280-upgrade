@@ -56,7 +56,8 @@ ND280RootPersistencyManager::ND280RootPersistencyManager()
       fEventsNotSaved(0),
       fNavigTarg1(NULL),fIsHistoMovedTarg1(false),fNavigDetExist(false),
       fMPPCProj2D_XY(NULL),fMPPCProj2D_XZ(NULL),fMPPCProj2D_YZ(NULL),
-      fIsMPPCProjXY(true),fIsMPPCProjXZ(true),fIsMPPCProjYZ(true)
+      fIsMPPCProjXY(false),fIsMPPCProjXZ(false),fIsMPPCProjYZ(false),
+      fDetNameAlongX(""),fDetNameAlongY(""),fDetNameAlongZ("")
 {}
 
 ND280RootPersistencyManager* ND280RootPersistencyManager::GetInstance() {
@@ -193,6 +194,15 @@ void ND280RootPersistencyManager::SetNavigDetName_Targ1(G4String name){
 };
 
 
+
+
+/////////////////////////////////////
+//                                 //
+// MPPC stuffs for target responce //
+//                                 //
+/////////////////////////////////////
+
+
 void ND280RootPersistencyManager::InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY=true, bool IsProjXZ=true, bool IsProjYZ=true){
   
   SetIsMPPCProjXY(IsProjXY);
@@ -206,39 +216,161 @@ void ND280RootPersistencyManager::InitMPPCProj2D(double width, double height, do
   double minZ = -length/2.;
   double maxZ = +length/2.;
  
-  fMPPCProj2D_XY 
-    = new TH2F("fMPPCProj2D_XY","fMPPCProj2D_XY",numX,minX,maxX,numY,minY,maxY);
-  fMPPCProj2D_XZ 
-    = new TH2F("fMPPCProj2D_XZ","fMPPCProj2D_XZ",numX,minX,maxX,numZ,minZ,maxZ);
-  fMPPCProj2D_YZ 
-    = new TH2F("fMPPCProj2D_YZ","fMPPCProj2D_YZ",numY,minY,maxY,numZ,minZ,maxZ);
+  if(GetIsMPPCProjXY()){
+    fMPPCProj2D_XY 
+      = new TH2F("fMPPCProj2D_XY","fMPPCProj2D_XY",numX,minX,maxX,numY,minY,maxY);
+  }
+  if(GetIsMPPCProjXZ()){
+    fMPPCProj2D_XZ 
+      = new TH2F("fMPPCProj2D_XZ","fMPPCProj2D_XZ",numX,minX,maxX,numZ,minZ,maxZ);
+  }
+  if(GetIsMPPCProjYZ()){
+    fMPPCProj2D_YZ 
+      = new TH2F("fMPPCProj2D_YZ","fMPPCProj2D_YZ",numY,minY,maxY,numZ,minZ,maxZ);
+  }
 };
 
-void ND280RootPersistencyManager::GetMPPCPosXY(double lightX,double lightY, double &mppcX,double &mppcY){  
-  int binX = fMPPCProj2D_XY->GetXaxis()->FindBin(lightX);
-  mppcX = fMPPCProj2D_XY->GetXaxis()->GetBinCenter(binX);
-  int binY = fMPPCProj2D_XY->GetYaxis()->FindBin(lightY);
-  mppcY = fMPPCProj2D_XY->GetYaxis()->GetBinCenter(binY);  
+void ND280RootPersistencyManager::GetHitPosXY(double lightX,double lightY, double &mppcX,double &mppcY){ 
+  if(GetIsMPPCProjXY()){
+    int binX = fMPPCProj2D_XY->GetXaxis()->FindBin(lightX);
+    mppcX = fMPPCProj2D_XY->GetXaxis()->GetBinCenter(binX);
+    int binY = fMPPCProj2D_XY->GetYaxis()->FindBin(lightY);
+    mppcY = fMPPCProj2D_XY->GetYaxis()->GetBinCenter(binY);  
+  }
+  else{
+    G4ExceptionDescription msg;
+    msg << "The MPPC Projection XY doesn't exist in this detector!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetHitPosXY",
+		"MyCode0002",FatalException, msg);
+  }
 };
 								  
-void ND280RootPersistencyManager::GetMPPCPosXZ(double lightX,double lightZ, double &mppcX,double &mppcZ){
-  int binX = fMPPCProj2D_XZ->GetXaxis()->FindBin(lightX);
-  mppcX = fMPPCProj2D_XZ->GetXaxis()->GetBinCenter(binX);  
-  int binZ = fMPPCProj2D_XZ->GetYaxis()->FindBin(lightZ);
-  mppcZ = fMPPCProj2D_XZ->GetYaxis()->GetBinCenter(binZ);  
+void ND280RootPersistencyManager::GetHitPosXZ(double lightX,double lightZ, double &mppcX,double &mppcZ){
+  if(GetIsMPPCProjXZ()){
+    int binX = fMPPCProj2D_XZ->GetXaxis()->FindBin(lightX);
+    mppcX = fMPPCProj2D_XZ->GetXaxis()->GetBinCenter(binX);  
+    int binZ = fMPPCProj2D_XZ->GetYaxis()->FindBin(lightZ);
+    mppcZ = fMPPCProj2D_XZ->GetYaxis()->GetBinCenter(binZ);  
+  }
+  else{
+    G4ExceptionDescription msg;
+    msg << "The MPPC Projection XZ doesn't exist in this detector!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetHitPosXZ",
+		"MyCode0002",FatalException, msg);
+  }
 };
 
-void ND280RootPersistencyManager::GetMPPCPosYZ(double lightY,double lightZ, double &mppcY,double &mppcZ){
-  int binY = fMPPCProj2D_YZ->GetXaxis()->FindBin(lightY);
-  mppcY = fMPPCProj2D_YZ->GetXaxis()->GetBinCenter(binY);  
-  int binZ = fMPPCProj2D_YZ->GetYaxis()->FindBin(lightZ);
-  mppcZ = fMPPCProj2D_YZ->GetYaxis()->GetBinCenter(binZ);  
+void ND280RootPersistencyManager::GetHitPosYZ(double lightY,double lightZ, double &mppcY,double &mppcZ){
+  if(GetIsMPPCProjYZ()){
+    int binY = fMPPCProj2D_YZ->GetXaxis()->FindBin(lightY);
+    mppcY = fMPPCProj2D_YZ->GetXaxis()->GetBinCenter(binY);  
+    int binZ = fMPPCProj2D_YZ->GetYaxis()->FindBin(lightZ);
+    mppcZ = fMPPCProj2D_YZ->GetYaxis()->GetBinCenter(binZ);  
+  }
+  else{
+    G4ExceptionDescription msg;
+    msg << "The MPPC Projection YZ doesn't exist in this detector!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetHitPosYZ",
+		"MyCode0002",FatalException, msg);
+  }
+};
+
+TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XY(){ 
+  if( !GetIsMPPCProjXY() ){
+    G4ExceptionDescription msg;
+    msg << "The MPPC Projection XY doesn't exist in this detector!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetMPPCProj2D_XY",
+		"MyCode0002",FatalException, msg);
+  }
+  return fMPPCProj2D_XY;
+};
+
+TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XZ(){ 
+  if( !GetIsMPPCProjXZ() ){
+    G4ExceptionDescription msg;
+    msg << "The MPPC Projection XZ doesn't exist in this detector!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetMPPCProj2D_XZ",
+		"MyCode0002",FatalException, msg);
+  }
+  return fMPPCProj2D_XZ;
+};
+
+TH2F *ND280RootPersistencyManager::GetMPPCProj2D_YZ(){ 
+  if( !GetIsMPPCProjYZ() ){
+    G4ExceptionDescription msg;
+    msg << "The MPPC Projection YZ doesn't exist in this detector!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetMPPCProj2D_YZ",
+		"MyCode0002",FatalException, msg);
+  }
+
+  return fMPPCProj2D_YZ;
+};
+
+// Assume the MPPC read-out plane is at x,y,z<0
+// Assume at least 2 projections exist
+G4double ND280RootPersistencyManager::GetMPPCPosX(){
+  if( GetIsMPPCProjXY() ){
+    return fMPPCProj2D_XY->GetXaxis()->GetBinLowEdge(1);
+  }
+  else if( GetIsMPPCProjXZ() ){
+    return fMPPCProj2D_XZ->GetXaxis()->GetBinLowEdge(1);
+  }
+  else{
+    G4ExceptionDescription msg;
+    msg << "The projection for the MPPC X position is not available!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetMPPCPosX",
+		"MyCode0002",FatalException, msg);
+  }
+  return 0;
+};
+
+G4double ND280RootPersistencyManager::GetMPPCPosY(){
+  if( GetIsMPPCProjXY() ){
+    return fMPPCProj2D_XY->GetYaxis()->GetBinLowEdge(1);
+  }
+  else if( GetIsMPPCProjYZ() ){
+    return fMPPCProj2D_YZ->GetXaxis()->GetBinLowEdge(1);
+  }
+  else{
+    G4ExceptionDescription msg;
+    msg << "The projection for the MPPC Y position is not available!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetMPPCPosY",
+		"MyCode0002",FatalException, msg);
+  }
+  return 0;
+};
+
+G4double ND280RootPersistencyManager::GetMPPCPosZ(){
+
+  if( GetIsMPPCProjXZ() ){
+    return fMPPCProj2D_XZ->GetYaxis()->GetBinLowEdge(1);
+  }
+  else if( GetIsMPPCProjYZ() ){
+    return fMPPCProj2D_YZ->GetYaxis()->GetBinLowEdge(1);
+  }
+  else{
+    G4ExceptionDescription msg;
+    msg << "The projection for the MPPC Z position is not available!" << G4endl;
+    G4Exception("ND280RootPersistencyManager::GetMPPCPosZ",
+		"MyCode0002",FatalException, msg);
+  }
+  return 0;
 };
 
 
 
 
 
+
+
+
+
+
+/////////////////////////////////////
+//                                 //
+//             Output              //
+//                                 //
+/////////////////////////////////////
 
 
 
@@ -993,15 +1125,19 @@ bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
   TH2F *OutMPPCProj2D_XZ;
   TH2F *OutMPPCProj2D_YZ;
   
-  if(fMPPCProj2D_XY){
+  if( GetIsMPPCProjXY() ){
     OutMPPCProj2D_XY = new TH2F(*fMPPCProj2D_XY);
     OutMPPCProj2D_XY->Write();
     OutMPPCProj2D_XY->SetName("OutMPPCProj2D_XY");
     OutMPPCProj2D_XY->SetTitle("OutMPPCProj2D_XY");
+  }
+  if( GetIsMPPCProjXZ() ){
     OutMPPCProj2D_XZ = new TH2F(*fMPPCProj2D_XZ);
     OutMPPCProj2D_XZ->Write();
     OutMPPCProj2D_XZ->SetName("OutMPPCProj2D_XZ");
     OutMPPCProj2D_XZ->SetTitle("OutMPPCProj2D_XZ");  
+  }
+  if( GetIsMPPCProjYZ() ){  
     OutMPPCProj2D_YZ = new TH2F(*fMPPCProj2D_YZ);
     OutMPPCProj2D_YZ->SetName("OutMPPCProj2D_YZ");
     OutMPPCProj2D_YZ->SetTitle("OutMPPCProj2D_YZ");

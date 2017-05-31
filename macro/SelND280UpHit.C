@@ -167,9 +167,18 @@ void SelND280UpHit
  )
 {
   // Define histograms
+
+  if(nevents>100){
+    cout << "You cannot use more than 100 events!!!" << endl;
+    exit(1);
+  }
   
-  const int NEvtDisplTot = 50; 
+  const int NEvtDisplTot = 100; 
   TH2F *hMPPCHits_XY[NEvtDisplTot]; TH2F *hMPPCHits_XZ[NEvtDisplTot]; TH2F *hMPPCHits_YZ[NEvtDisplTot];
+  TH2F *hMPPCHitsDelay100ns_XY[NEvtDisplTot]; TH2F *hMPPCHitsDelay100ns_XZ[NEvtDisplTot]; TH2F *hMPPCHitsDelay100ns_YZ[NEvtDisplTot];
+  TH2F *hMPPCHitsVsTime_XY[NEvtDisplTot]; TH2F *hMPPCHitsVsTime_XZ[NEvtDisplTot]; TH2F *hMPPCHitsVsTime_YZ[NEvtDisplTot];
+  TH1F *hPEVsTime_x[NEvtDisplTot]; TH1F* hPEVsTime_y[NEvtDisplTot]; TH1F* hPEVsTime_z[NEvtDisplTot]; 
+  TH1F *hPE_x[NEvtDisplTot]; TH1F* hPE_y[NEvtDisplTot]; TH1F* hPE_z[NEvtDisplTot];
   
   //
 
@@ -181,7 +190,8 @@ void SelND280UpHit
   h2d_xy = (TH2F*)finput->Get("OutMPPCProj2D_XY");
   h2d_xz = (TH2F*)finput->Get("OutMPPCProj2D_XZ");
   h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
-  
+
+  /*
   for(int ievtdispl=0;ievtdispl<NEvtDisplTot;ievtdispl++){
     TString name;
     name = TString::Format("hMPPCHits_XY_%d",ievtdispl);
@@ -190,7 +200,30 @@ void SelND280UpHit
     hMPPCHits_XZ[ievtdispl] = (TH2F*)h2d_xz->Clone(name);
     name = TString::Format("hMPPCHits_YZ_%d",ievtdispl);
     hMPPCHits_YZ[ievtdispl] = (TH2F*)h2d_yz->Clone(name);
+
+    name = TString::Format("hMPPCHitsDelay100ns_XY_%d",ievtdispl);
+    hMPPCHitsDelay100ns_XY[ievtdispl] = (TH2F*)h2d_xy->Clone(name);
+    name = TString::Format("hMPPCHitsDelay100ns_XZ_%d",ievtdispl);
+    hMPPCHitsDelay100ns_XZ[ievtdispl] = (TH2F*)h2d_xz->Clone(name);
+    name = TString::Format("hMPPCHitsDelay100ns_YZ_%d",ievtdispl);
+    hMPPCHitsDelay100ns_YZ[ievtdispl] = (TH2F*)h2d_yz->Clone(name);
+
+    name = TString::Format("hMPPCHitsVsTime_XY_%d",ievtdispl);
+    hMPPCHitsVsTime_XY[ievtdispl] = (TH2F*)h2d_xy->Clone(name);
+    name = TString::Format("hMPPCHitsVsTime_XZ_%d",ievtdispl);
+    hMPPCHitsVsTime_XZ[ievtdispl] = (TH2F*)h2d_xz->Clone(name);
+    name = TString::Format("hMPPCHitsVsTime_YZ_%d",ievtdispl);
+    hMPPCHitsVsTime_YZ[ievtdispl] = (TH2F*)h2d_yz->Clone(name);
+
+    name = TString::Format("hPEVsTime_x_%d",ievtdispl);
+    hPEVsTime_x[ievtdispl] = new TH1F(name,name,2000,0,20000);
+    name = TString::Format("hPEVsTime_y_%d",ievtdispl);
+    hPEVsTime_y[ievtdispl] = new TH1F(name,name,2000,0,20000);
+    name = TString::Format("hPEVsTime_z_%d",ievtdispl);
+    hPEVsTime_z[ievtdispl] = new TH1F(name,name,2000,0,20000);    
   }
+  */
+
   //
   
   TTree *tinput = (TTree*) finput->Get("ND280upEvents");
@@ -244,44 +277,166 @@ void SelND280UpHit
   cout << endl;
 
 
-  int NEvtWithHit = 0;
+  //int NEvtWithHit = 0;
 
   for(int ievt=evtfirst;ievt<=EntryLast;ievt++){ // get last entry
     
-    if(NEvtWithHit>=NEvtDisplTot) break;
+    //if(NEvtWithHit>=NEvtDisplTot) break;
+    
+    cout << endl;
+    cout << "Event " << ievt << endl;
     
     tinput->GetEntry(ievt);
+
+    // Initialize the histograms
+
+    TString name;
+    name = TString::Format("hMPPCHits_XY_%d",ievt);
+    hMPPCHits_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
+    name = TString::Format("hMPPCHits_XZ_%d",ievt);
+    hMPPCHits_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
+    name = TString::Format("hMPPCHits_YZ_%d",ievt);
+    hMPPCHits_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
+
+    name = TString::Format("hMPPCHitsDelay100ns_XY_%d",ievt);
+    hMPPCHitsDelay100ns_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
+    name = TString::Format("hMPPCHitsDelay100ns_XZ_%d",ievt);
+    hMPPCHitsDelay100ns_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
+    name = TString::Format("hMPPCHitsDelay100ns_YZ_%d",ievt);
+    hMPPCHitsDelay100ns_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
+
+    //name = TString::Format("hMPPCHitsVsTime_XY_%d",ievt);
+    //hMPPCHitsVsTime_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
+    //name = TString::Format("hMPPCHitsVsTime_XZ_%d",ievt);
+    //hMPPCHitsVsTime_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
+    //name = TString::Format("hMPPCHitsVsTime_YZ_%d",ievt);
+    //hMPPCHitsVsTime_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
+
+    name = TString::Format("hPEVsTime_x_%d",ievt);
+    hPEVsTime_x[ievt] = new TH1F(name,name,100,0,10000);
+    name = TString::Format("hPEVsTime_y_%d",ievt);
+    hPEVsTime_y[ievt] = new TH1F(name,name,100,0,10000);
+    name = TString::Format("hPEVsTime_z_%d",ievt);
+    hPEVsTime_z[ievt] = new TH1F(name,name,100,0,10000);    
+
+    name = TString::Format("hPE_x_%d",ievt);
+    hPE_x[ievt] = new TH1F(name,name,50,0,300);
+    name = TString::Format("hPE_y_%d",ievt);
+    hPE_y[ievt] = new TH1F(name,name,50,0,300);
+    name = TString::Format("hPE_z_%d",ievt);
+    hPE_z[ievt] = new TH1F(name,name,50,0,300);
+
+  
+
+    // Loop over the tracks
     
-    cout << "Event " << ievt << ", EventWithHit " << NEvtWithHit << endl;
+    int NTracks = nd280UpEvent->GetNTracks();
+    
+    cout << "# of tracks = " << NTracks << endl;
+    
+    for(int itrk=0;itrk<NTracks;itrk++){
+      TND280UpTrack *nd280UpTrack = nd280UpEvent->GetTrack(itrk);
+      //nd280UpTrack->PrintTrack();
+      int trkID = nd280UpTrack->GetTrackID();
+      int parentID = nd280UpTrack->GetParentID();
+      int pdg = nd280UpTrack->GetPDG();
+      double charge = nd280UpTrack->GetCharge();
+      double ekin = nd280UpTrack->GetInitKinEnergy();
+      double mom = nd280UpTrack->GetInitMom().Mag(); 
+
+      TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(0); 
+      string volname = nd280UpTrackPoint->GetLogVolName();
+      cout << "trkID: " << trkID << ", pdg: " << pdg << ", det: " << volname << endl;
+    }
+
+    
+    // Loop over the hits in the target
     
     int NHits = nd280UpEvent->GetNHits();
 
+    //cout << "Event " << ievt << ", EventWithHit " << NEvtWithHit << endl;  
     cout << "# of hits = " << nd280UpEvent->GetNHits() << endl;
 
-    if(NHits>0) NEvtWithHit++;
+    //if(NHits>0) NEvtWithHit++;
     
+    int current_pdg = 0;
+
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
-      
+
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
       //nd280UpHit->PrintHit();
       
+      //double mppcx = nd280UpHit->GetLocPosX();
+      //double mppcy = nd280UpHit->GetLocPosY();
+      //double mppcz = nd280UpHit->GetLocPosZ();
+
       double mppcx = nd280UpHit->GetLocPosX();
       double mppcy = nd280UpHit->GetLocPosY();
       double mppcz = nd280UpHit->GetLocPosZ();
 
+      int pdg = nd280UpHit->GetPDG();
+      
       double pex = nd280UpHit->GetPEX(); // along X
       double pey = nd280UpHit->GetPEY(); // along Y
       double pez = nd280UpHit->GetPEZ(); // along Z
 
+      double time_x = nd280UpHit->GetTimePEX(); // # of pe Vs time
+      double time_y = nd280UpHit->GetTimePEY(); // # of pe Vs time
+      double time_z = nd280UpHit->GetTimePEZ(); // # of pe Vs time
+
+      //cout << time_x << ", " << time_y << ", " << time_z << endl;
       //cout << pex << " " << pey << " " << pez << endl;
       //cout << mppcx << " " << mppcy << " " << mppcz << endl;
+      
+      if(pdg!=current_pdg){
+	current_pdg = pdg;      
+	cout << pdg << endl;
+      }
+      
+      //int ievtWithHit = NEvtWithHit-1;
+      hMPPCHits_XY[ievt]->Fill(mppcx,mppcy,pez); // pe along Z
+      hMPPCHits_XZ[ievt]->Fill(mppcx,mppcz,pey); // pe along Y
+      hMPPCHits_YZ[ievt]->Fill(mppcy,mppcz,pex); // pe along X
+      
+      double binY = hMPPCHits_YZ[ievt]->GetXaxis()->FindBin(mppcy);
+      cout << "binY = " << mppcy << " / " << hMPPCHits_YZ[ievt]->GetXaxis()->GetBinCenter(binY) << endl;
 
-      int ievtWithHit = NEvtWithHit-1;
-      hMPPCHits_XY[ievtWithHit]->Fill(mppcx,mppcy,pez); // pe along X
-      hMPPCHits_XZ[ievtWithHit]->Fill(mppcx,mppcz,pey); // pe along Y
-      hMPPCHits_YZ[ievtWithHit]->Fill(mppcy,mppcz,pex); // pe along Z 
+      //hMPPCHitsVsTime_XY[ievt]->Fill(mppcx,mppcy,time_z); // pe along X
+      //hMPPCHitsVsTime_XZ[ievt]->Fill(mppcx,mppcz,time_y); // pe along Y
+      //hMPPCHitsVsTime_YZ[ievt]->Fill(mppcy,mppcz,time_x); // pe along Z 
+
+      if(time_x > 100) hMPPCHitsDelay100ns_XY[ievt]->Fill(mppcx,mppcy,pez); // pe along X
+      if(time_y > 100) hMPPCHitsDelay100ns_XZ[ievt]->Fill(mppcx,mppcz,pey); // pe along Y
+      if(time_z > 100) hMPPCHitsDelay100ns_YZ[ievt]->Fill(mppcy,mppcz,pex); // pe along Z 
+
+      hPEVsTime_x[ievt]->Fill(time_x,pex);
+      hPEVsTime_y[ievt]->Fill(time_y,pey);
+      hPEVsTime_z[ievt]->Fill(time_z,pez);
+    
     }
 
+
+    for(int i=0;i<hMPPCHits_XY[ievt]->GetXaxis()->GetNbins();i++){
+      for(int j=0;j<hMPPCHits_XY[ievt]->GetYaxis()->GetNbins();j++){
+	double pe = hMPPCHits_XY[ievt]->GetBinContent(i+1,j+1);
+	hPE_z[ievt]->Fill(pe);
+      }
+    }
+    for(int i=0;i<hMPPCHits_XZ[ievt]->GetXaxis()->GetNbins();i++){
+      for(int j=0;j<hMPPCHits_XZ[ievt]->GetYaxis()->GetNbins();j++){
+        double pe = hMPPCHits_XZ[ievt]->GetBinContent(i+1,j+1);
+        hPE_y[ievt]->Fill(pe);
+      }
+    }   
+    for(int i=0;i<hMPPCHits_YZ[ievt]->GetXaxis()->GetNbins();i++){
+      for(int j=0;j<hMPPCHits_YZ[ievt]->GetYaxis()->GetNbins();j++){
+        double pe = hMPPCHits_YZ[ievt]->GetBinContent(i+1,j+1);
+        hPE_x[ievt]->Fill(pe);
+      }
+    }
+
+
+    
     //nd280UpEvent->PrintEvent();
     
     // Fill event histograms
@@ -294,14 +449,31 @@ void SelND280UpHit
   TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
   TFile *out = new TFile(outfilename.Data(),"RECREATE");
   //
-  for(int ievtdispl=0;ievtdispl<NEvtWithHit;ievtdispl++){    
+  //for(int ievtdispl=0;ievtdispl<NEvtWithHit;ievtdispl++){    
+  //for(int ievtdispl=0;ievtdispl<NEvtDisplTot;ievtdispl++){    
+  for(int ievtdispl=evtfirst;ievtdispl<=EntryLast;ievtdispl++){ // get last entry
     hMPPCHits_XY[ievtdispl]->Write();  
     hMPPCHits_XZ[ievtdispl]->Write();  
     hMPPCHits_YZ[ievtdispl]->Write();
+
+    //hMPPCHitsVsTime_XY[ievtdispl]->Write();  
+    //hMPPCHitsVsTime_XZ[ievtdispl]->Write();  
+    //hMPPCHitsVsTime_YZ[ievtdispl]->Write();
+
+    hMPPCHitsDelay100ns_XY[ievtdispl]->Write();  
+    hMPPCHitsDelay100ns_XZ[ievtdispl]->Write();  
+    hMPPCHitsDelay100ns_YZ[ievtdispl]->Write();
+
+    hPEVsTime_x[ievtdispl]->Write(); 
+    hPEVsTime_y[ievtdispl]->Write(); 
+    hPEVsTime_z[ievtdispl]->Write(); 
+    
+    hPE_x[ievtdispl]->Write();
+    hPE_y[ievtdispl]->Write();
+    hPE_z[ievtdispl]->Write();
   }
   //
   out->Close();
- 
 }
 
 

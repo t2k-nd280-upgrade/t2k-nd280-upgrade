@@ -109,7 +109,7 @@ $tag            = "SelND280Up_6E20_Classic_TestToF_14_3_17" unless defined $tag;
 #$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_current_ECalAll_1_2_17_All.root" unless defined $inputfile;
 #$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_alter_targ_ftpc_ECalAll_28_2_17_All.root" unless defined $inputfile;
 
-$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/ToF/test_tof_All.root" unless defined $inputfile;
+$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/ToF_TEST/test_tof_All.root" unless defined $inputfile;
 #$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/g4ND280Up_6E20_nd280current_numubar_0p2T-All.root" unless defined $inputfile;
 
 

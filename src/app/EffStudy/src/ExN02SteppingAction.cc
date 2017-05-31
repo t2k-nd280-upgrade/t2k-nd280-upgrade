@@ -78,7 +78,7 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
 
   
   G4StepPoint* prestep  = step->GetPreStepPoint();
-  //G4StepPoint* poststep = step->GetPostStepPoint();
+  G4StepPoint* poststep = step->GetPostStepPoint();
   G4Track *track = step->GetTrack(); // it's PostStepPoint!!!
   
   // get volume of the current step
@@ -124,7 +124,16 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   //  	    << std::endl;  
 
 
-
+  G4ThreeVector Pos = prestep->GetPosition();
+  G4ThreeVector PosPost = poststep->GetPosition();
+  //G4String namedet = theTouchable->GetVolume()->GetLogicalVolume()->GetName(); 
+  if(namedet.contains("FGDlike1")){
+    G4cout << namedet << ": " << G4endl 
+	   << "PreStep: " << Pos.x() << ", " << Pos.y() << ", " << Pos.z() << G4endl
+	   << "PostStep: " << PosPost.x() << ", " << PosPost.y() << ", " << PosPost.z() << G4endl;
+    G4cout << endl;
+    G4cout << "..................." << G4endl; 
+  }
 
 
   /*

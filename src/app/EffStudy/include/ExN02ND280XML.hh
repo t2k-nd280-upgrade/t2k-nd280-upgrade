@@ -140,6 +140,22 @@ public :
   G4double GetXMLWAGASCIWaterPos_Y()    {return fWAGASCIWaterPos_Y;};
   G4double GetXMLWAGASCIWaterPos_Z()    {return fWAGASCIWaterPos_Z;};
 
+  G4double GetXMLSciFiFiberEdge(){return fSciFiFiberEdge;};
+  G4int    GetXMLSciFiNum_AlongX(){return fSciFiNum_AlongX;};
+  G4int    GetXMLSciFiNum_AlongZ(){return fSciFiNum_AlongZ;};
+  G4int    GetXMLSciFiNum_Layer(){return fSciFiNum_Layer;};
+  G4double GetXMLSciFiPos_X()    {return fSciFiPos_X;};
+  G4double GetXMLSciFiPos_Y()    {return fSciFiPos_Y;};
+  G4double GetXMLSciFiPos_Z()    {return fSciFiPos_Z;};
+ 
+  G4double GetXMLFGDlikeBarEdge(){return fFGDlikeBarEdge;};
+  G4int    GetXMLFGDlikeNum_AlongX(){return fFGDlikeNum_AlongX;};
+  G4int    GetXMLFGDlikeNum_AlongZ(){return fFGDlikeNum_AlongZ;};
+  G4int    GetXMLFGDlikeNum_Layer(){return fFGDlikeNum_Layer;};
+  G4double GetXMLFGDlikePos_X()    {return fFGDlikePos_X;};
+  G4double GetXMLFGDlikePos_Y()    {return fFGDlikePos_Y;};
+  G4double GetXMLFGDlikePos_Z()    {return fFGDlikePos_Z;};
+ 
   // ToF Downstream
   
   G4bool   GetXMLToFdefault_TopDown()       {return fToFdefault_TopDown;};
@@ -331,6 +347,8 @@ public :
   G4bool   GetXMLUseSuperFGD2()  {return fUseSuperFGD2;};
   G4bool   GetXMLUseWAGASCIEmpty()  {return fUseWAGASCIEmpty;};
   G4bool   GetXMLUseWAGASCIWater()  {return fUseWAGASCIWater;};
+  G4bool   GetXMLUseSciFi()  {return fUseSciFi;};
+  G4bool   GetXMLUseFGDlike()  {return fUseFGDlike;};
   G4bool   GetXMLUseToF_TopDown()       {return fUseToF_TopDown;};
   G4bool   GetXMLUseToF_BotDown()       {return fUseToF_BotDown;};
   G4bool   GetXMLUseToF_RightDown()       {return fUseToF_RightDown;};
@@ -366,6 +384,8 @@ public :
   G4bool   GetXMLInvisFGD2()     {return fInvisFGD2;};
   G4bool   GetXMLInvisSuperFGD(){return fInvisSuperFGD;};
   G4bool   GetXMLInvisWAGASCI(){return fInvisWAGASCI;};
+  G4bool   GetXMLInvisSciFi(){return fInvisSciFi;};
+  G4bool   GetXMLInvisFGDlike(){return fInvisFGDlike;};
   G4bool   GetXMLInvisToF_TopDown()     {return fInvisToF_TopDown;};  
   G4bool   GetXMLInvisToF_BotDown()     {return fInvisToF_BotDown;};
   G4bool   GetXMLInvisToF_RightDown()     {return fInvisToF_RightDown;};  
@@ -500,7 +520,21 @@ private :
   G4double fWAGASCIWaterPos_Y;
   G4double fWAGASCIWaterPos_Z;
 
+  G4double fSciFiFiberEdge;
+  G4int    fSciFiNum_AlongX;
+  G4int    fSciFiNum_AlongZ;
+  G4int    fSciFiNum_Layer;
+  G4double fSciFiPos_X;
+  G4double fSciFiPos_Y;
+  G4double fSciFiPos_Z;
 
+  G4double fFGDlikeBarEdge;
+  G4int    fFGDlikeNum_AlongX;
+  G4int    fFGDlikeNum_AlongZ;
+  G4int    fFGDlikeNum_Layer;
+  G4double fFGDlikePos_X;
+  G4double fFGDlikePos_Y;
+  G4double fFGDlikePos_Z;
 
 
   // ToF Downstream
@@ -719,10 +753,10 @@ private :
   G4bool fUseFGD2;
   G4bool fUseSuperFGD1;
   G4bool fUseSuperFGD2;
-  
   G4bool fUseWAGASCIEmpty;
   G4bool fUseWAGASCIWater;
-
+  G4bool fUseSciFi;
+  G4bool fUseFGDlike;
   G4bool fUseMagnet;
   G4bool fUseToF_TopDown;
   G4bool fUseToF_BotDown;
@@ -757,6 +791,8 @@ private :
   G4bool fInvisFGD2;
   G4bool fInvisSuperFGD;
   G4bool fInvisWAGASCI;
+  G4bool fInvisSciFi;
+  G4bool fInvisFGDlike;
   G4bool fInvisToF_TopDown;
   G4bool fInvisToF_BotDown;
   G4bool fInvisToF_RightDown;

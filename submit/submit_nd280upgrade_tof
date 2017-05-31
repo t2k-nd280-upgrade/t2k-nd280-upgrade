@@ -96,22 +96,22 @@ foreach (@ARGV) {
 
 $resource        = "interactive"                 unless defined $resource;
 
-$tag            = "ToFND280Up_Ref_numu_1E21" unless defined $tag;
-#$tag            = "ToFND280Up_Ref_nue_1E21" unless defined $tag;
+#$tag            = "ToFND280Up_Ref_numu_1E21" unless defined $tag;
+$tag            = "ToFND280Up_Ref_nue_1E21" unless defined $tag;
 
-$inputfile  = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/14_3_17/g4ND280Up_1E21_Reference_ECal_ToF_numu-All.root" unless defined $inputfile; #numu
-#$inputfile  = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/14_3_17/g4ND280Up_1E21_Reference_ECal_ToF_nue-All.root" unless defined $inputfile; # nue
+#$inputfile  = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/14_3_17/g4ND280Up_1E21_Reference_ECal_ToF_numu-All.root" unless defined $inputfile; #numu
+$inputfile  = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/14_3_17/g4ND280Up_1E21_Reference_ECal_ToF_nue-All.root" unless defined $inputfile; # nue
  
 
 $first_expt      = 0                             unless defined $first_expt;
 
 # Numu Beam
-$nruns           = 40                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
-$nexpts          = 10000                          unless defined $nexpts;
+#$nruns           = 40                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
+#$nexpts          = 10000                          unless defined $nexpts;
 
 # Nue Beam
-# $nruns           = 1                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
-# $nexpts          = 10000                          unless defined $nexpts;
+$nruns           = 1                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
+$nexpts          = 10000                          unless defined $nexpts;
 
 #
 # Selection cuts
@@ -216,7 +216,7 @@ $docut_fgd2    = 0                             unless defined $docut_fgd2;
 
 # select track pdg: +211 (pi+), +2212 (proton), +13 (muon), +11 (electron)
 $docut_pdg       = 1                             unless defined $docut_pdg;
-$cut_pdg         = +2212                          unless defined $cut_pdg; 
+$cut_pdg         = +11                          unless defined $cut_pdg; 
 
 # select track parent ID. If 0 --> primary particle,
 $docut_parid     = 1                             unless defined $docut_parid;
@@ -239,7 +239,7 @@ $cut_dlyz_tpc      = 200                         unless defined $cut_dlyz_tpc;
 $doToFsmear    = 1                           unless defined $doToFsmear;
 $tof_mom_err = 0.1                        unless defined $tof_mom_err; # fractional error
 $tof_length_err = 10.                        unless defined $tof_length_err; # mm
-$tof_time_err = 0.05                        unless defined $tof_time_err; # ns
+$tof_time_err = 0.2                        unless defined $tof_time_err; # ns
 
 ##################################
 
