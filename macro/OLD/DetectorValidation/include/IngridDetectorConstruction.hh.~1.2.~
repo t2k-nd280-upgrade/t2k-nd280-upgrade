@@ -1,0 +1,60 @@
+#ifndef IngridDetectorConstruction_H
+#define IngridDetectorConstruction_H 1
+
+#include "IngridHLayerSD.hh"
+#include "IngridVetoSD.hh"
+#include "IngridVLayerSD.hh"
+
+class G4LogicalVolume;
+class G4VPhysicalVolume;
+class G4Material;
+
+#include "G4VUserDetectorConstruction.hh"
+
+#define HALL_Z 1.0
+#define HALL_XY 1.5
+#define nSciVertex 8
+
+class IngridDetectorConstruction : public G4VUserDetectorConstruction
+{
+public:
+  void DefineMaterial();
+  void DefineSpace();
+  void DefineStructures();
+
+  G4Material *Air, *Fe, *Scinti, *Water, *Concrete;
+  G4double WorldX, WorldY, WorldZ;
+  G4double HallDirtRadiusMin, HallDirtRadiusMax, HallDirtHeight,
+           HallDirtSPhi, HallDirtDPhi; //## Dirt Dimension
+  G4double HallDirtX, HallDirtY, HallDirtZ; //## Dirt position
+  G4double HallX, HallZ; //## center position of Hall
+
+  G4double HorizonX,HorizonY, HorizonZ;
+  G4double ModuleX, ModuleY, ModuleZ;
+  G4double ModuleSpace, ModuleStart;
+  G4double iron_z,iron_xy, Gap, iron_start;
+  G4double scibar_x, scibar_y,scibar_z, scibar_start, scibar_xy_start;
+  G4double Lveto_x, Lveto_y, Lveto_z, veto_start;
+  G4double Sveto_x, Sveto_y, Sveto_z;
+  G4double Niron_start, Niron_z, Nscibar_start, NGap, NModuleSpace;
+  G4double SciVertex_x[nSciVertex], SciVertex_y[nSciVertex];
+
+ 
+  IngridVetoSD* avetoSD;
+  IngridHLayerSD* ahlayerSD;  
+  IngridVLayerSD* avlayerSD; 
+ 
+  int flag;
+  int mode;
+
+  IngridDetectorConstruction(int);
+  //IngridDetectorConstruction();
+  ~IngridDetectorConstruction();
+  
+  
+  G4VPhysicalVolume* Construct();
+ 
+};
+
+#endif
+

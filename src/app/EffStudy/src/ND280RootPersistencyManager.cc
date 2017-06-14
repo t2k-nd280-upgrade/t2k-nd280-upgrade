@@ -358,6 +358,13 @@ G4double ND280RootPersistencyManager::GetMPPCPosZ(){
 };
 
 
+// B.Q
+void ND280RootPersistencyManager::AddPhysicalVolumeInformation(G4int dID0, G4String dName0, G4ThreeVector mppcPosition)
+ {
+   PVInfo = new ND280PhysicalVolumeInformation(dID0, dName0, mppcPosition);
+   vPVInfo.push_back(*PVInfo);
+   delete PVInfo;
+}
 
 
 
@@ -522,6 +529,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       G4double pey = g4Hit->GetPEY();
       G4double pez = g4Hit->GetPEZ();
       G4ThreeVector pos = g4Hit->GetPosition();
+
+      //G4ThreeVector locpos = g4Hit->GetPosInMod();//B.Q
+      //G4ThreeVector mppclocpos = g4Hit->GetMPPCPosInMod();//B.Q
+      //G4ThreeVector mppcpos = g4Hit->GetMPPCPosition();//B.Q
       
       G4double time = g4Hit->GetTime();
       G4double timepe = g4Hit->GetDelayTime();
@@ -551,9 +562,22 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       nd280Hit->SetPEX(pex);
       nd280Hit->SetPEY(pey);
       nd280Hit->SetPEZ(pez);
+
+      //nd280Hit->SetPosX(pos.x()); // B.Q
+      //nd280Hit->SetPosY(pos.y()); // B.Q
+      //nd280Hit->SetPosZ(pos.z()); // B.Q
+
       nd280Hit->SetLocPosX(pos.x());
       nd280Hit->SetLocPosY(pos.y());
       nd280Hit->SetLocPosZ(pos.z());
+
+      //nd280Hit->SetMPPCPosX(mppcpos.x()); // B.Q
+      //nd280Hit->SetMPPCPosY(mppcpos.y()); // B.Q
+      //nd280Hit->SetMPPCPosZ(mppcpos.z()); // B.Q
+      //nd280Hit->SetMPPCLocPosX(mppclocpos.x()); // B.Q
+      //nd280Hit->SetMPPCLocPosY(mppclocpos.y()); // B.Q
+      //nd280Hit->SetMPPCLocPosZ(mppclocpos.z()); // B.Q
+
       nd280Hit->SetTime(time);
       nd280Hit->SetTimePE(timepe);
       nd280Hit->SetTimePEX(timepex);

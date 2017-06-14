@@ -72,12 +72,10 @@
 #include "ND280SciFiConstructor.hh"
 // FGD-like (horizontal target)
 #include "ND280FGDlikeConstructor.hh"
-
-// WAGASCI
-#include "ND280WAGASCIConstructor.hh" // My version
-//#include "ND280WAGASCIActiveConstructor.hh"
-//#include "ND280WaffleActiveConstructor.hh"
-//#define DEBUG
+// WAGASCI 
+#include "ND280WAGASCIActiveConstructor.hh"
+// FGD3D
+#include "ND280WaffleActiveConstructor.hh"
 
 //#ifdef USE_PAI
 #include <G4Region.hh> // used also to keep a list of SD logical volumes
@@ -2248,127 +2246,141 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
-  /*
-    
-  // Implement WAGASCI Empty (MY VERSION)
+
+
+
+
+
+  ////// B.Q
+
+  //
+  //------------------------------ 
+  // WAGASCI 1
+  //------------------------------ 
+  //
+
+  G4String cNameLogicWAGASCI1 = cNameSolidTarget1+"/WAGASCI1";
+
+  ND280WAGASCIActiveConstructor * WAGASCI1 = new ND280WAGASCIActiveConstructor(cNameLogicWAGASCI1,this); // D.S
   
-  G4String cNameLogicWAGASCIEmpty =  cParentNameTarget+"/WAGASCIEmpty";
-  ND280WAGASCIConstructor *fWAGASCIEmptyConstructor = new ND280WAGASCIConstructor(cNameLogicWAGASCIEmpty,this);
-  
-  if( ND280XMLInput->GetXMLUseWAGASCIEmpty() ){
-      
-    int cubenumX = 3;
-    int cubenumY = 3;
-    int cubenumZ = 3;
-    double edge = 25*mm;
-    double spaceLayerY = 1*mm; 
+  if( ND280XMLInput->GetXMLUseWAGASCI1() ){
 
-    G4double x = ND280XMLInput->GetXMLWAGASCIEmptyPos_X();
-    G4double y = ND280XMLInput->GetXMLWAGASCIEmptyPos_Y();
-    G4double z = ND280XMLInput->GetXMLWAGASCIEmptyPos_Z();
+    //    
+    // D.S
+    //
+    // Try to make it similar to other target detectors
+    // but use still use the WAGASCI-structure methods
+    //
 
-    fWAGASCIEmptyConstructor->SetEdge(edge);
-    fWAGASCIEmptyConstructor->SetCubeNumX(cubenumX);
-    fWAGASCIEmptyConstructor->SetCubeNumY(cubenumY);
-    fWAGASCIEmptyConstructor->SetCubeNumZ(cubenumZ);
-    fWAGASCIEmptyConstructor->SetPosX(x);
-    fWAGASCIEmptyConstructor->SetPosY(y);
-    fWAGASCIEmptyConstructor->SetPosZ(z);
+    double width  = ND280XMLInput->GetXMLWAGASCIwidth1();
+    double height = ND280XMLInput->GetXMLWAGASCIheight1();
+    double length = ND280XMLInput->GetXMLWAGASCIlength1();
+    G4ThreeVector ModuleSize1 (width,height,length);
+
+    G4double x = ND280XMLInput->GetXMLWAGASCIPos1_X();
+    G4double y = ND280XMLInput->GetXMLWAGASCIPos1_Y();
+    G4double z = ND280XMLInput->GetXMLWAGASCIPos1_Z();
+
+    G4String material = ND280XMLInput->GetXMLWAGASCIInactMaterial1();
+
+    solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
+    logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial(material),cNameLogicTarget1,0,0,0);
+    physiTarget1 = new G4PVPlacement(0,                 // no rotation
+				     G4ThreeVector(x,y,z),
+				     logicTarget1,       // its logical volume 
+				     cNamePhysiTarget1,  // its name
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+
+    WAGASCI1->ND280WAGASCIActiveConstructor::Construct(logicTarget1,GetTargetPos1(),ModuleSize1,cNamePhysiTarget1); 
     
-    logicWAGASCIEmpty = fWAGASCIEmptyConstructor->GetPiece();
-    
-    //G4String nameWAGASCIEmpty = fWAGASCIEmptyConstructor->GetName();
-    G4String nameWAGASCIEmpty = logicWAGASCIEmpty->GetName();
-    
-    physiWAGASCIEmpty 
-      = new G4PVPlacement(
-			  0, // no rotation
-			  G4ThreeVector(0,0,0), // position (0,0,0)
-			  logicWAGASCIEmpty,       // its logical volume    
-			  nameWAGASCIEmpty,  // its name
-			  logicBasket,
-			  false,             // no boolean operations
-			  0);                 // copy number     
-    
-    G4cout << "WAGASCI Empty: " << G4endl
-	   << " - Cube size: "
-	   << fWAGASCIEmptyConstructor->GetEdge() << G4endl;
-    G4cout << " - # of cubes: " << G4endl
-	   << "   " << fWAGASCIEmptyConstructor->GetCubeNumX() << " (width) "
-	   << "   " << fWAGASCIEmptyConstructor->GetCubeNumY() << " (height) "
-	   << "   " << fWAGASCIEmptyConstructor->GetCubeNumZ() << " (length) "
-	   << G4endl;
-    G4cout << " mass="<<logicWAGASCIEmpty->GetMass()/kg   <<" kg" << G4endl; 
-    G4cout << " name: " << logicWAGASCIEmpty->GetName() << G4endl;
-    G4cout << " - position inside the Basket: ( " 
-	   << fWAGASCIEmptyConstructor->GetPosX()/mm << ", "
-	   << fWAGASCIEmptyConstructor->GetPosY()/mm << ", "
-	   << fWAGASCIEmptyConstructor->GetPosZ()/mm << ") "
-	   << G4endl << G4endl;
-	   }
-  */
-
-
-
-  
-  /*
-  // Benjamin's version
-  G4cout << "WAGASCI tracker: " << endl;
-  //Create the logical volume:
-  G4String cNameLogicWAGASCIEmpty =  cParentNameTarget+"/WAGASCIEmpty";
-  G4double length = ND280XMLInput->GetXMLWAGASCIEmptylength();
-  G4double width  = ND280XMLInput->GetXMLWAGASCIEmptywidth();
-  G4double height = ND280XMLInput->GetXMLWAGASCIEmptyheight();
-  G4double posX = ND280XMLInput->GetXMLWAGASCIEmptyPos_X();
-  G4double posY = ND280XMLInput->GetXMLWAGASCIEmptyPos_Y();
-  G4double posZ = ND280XMLInput->GetXMLWAGASCIEmptyPos_Z();
-  G4ThreeVector ModuleSize (width,height,length);    
-  solidWAGASCIEmpty 
-  = new G4Box(cNameLogicWAGASCIEmpty,
-  width/2,
-  height/2,
-		  length/2);    
-    logicWAGASCIEmpty 
-      = new G4LogicalVolume(solidWAGASCIEmpty,
-			    //TargetMater2,
-			    FindMaterial("Air"),
-			    cNameLogicWAGASCIEmpty,
-			    0,
-			    0,
-			    0);
-    logicWAGASCIEmpty->SetVisAttributes(G4VisAttributes::Invisible);
-    physiWAGASCIEmpty 
-      = new G4PVPlacement(0,
-			  G4ThreeVector(posX,posY,posZ),
-			  logicWAGASCIEmpty,
-			  cNameLogicWAGASCIEmpty,
-			  logicBasket,
-			  false,
-			  0);
-    ND280WAGASCIActiveConstructor * WAGASCI = new ND280WAGASCIActiveConstructor();
-    WAGASCI->ND280WAGASCIActiveConstructor::Construct(logicWAGASCIEmpty,G4ThreeVector(posX,posY,posZ),ModuleSize,cNameLogicWAGASCIEmpty);    
     //ND280WaffleActiveConstructor * Waffle = new ND280WaffleActiveConstructor();
-    //Waffle->ND280WaffleActiveConstructor::Construct(logicWAGASCIEmpty,GetTargetPos2(),ModuleSize,cNameLogicWAGASCIEmpty);    
-    G4cout << "WAGASCI Empty: " << G4endl
+    //Waffle->ND280WaffleActiveConstructor::Construct(logicTarget1,GetTargetPos1(),ModuleSize1,cNamePhysiTarget1);
+    
+    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
+    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
+    
+    G4cout << "Target 1: " << G4endl
 	   << " - dimensions: "
 	   << width/mm  << " (width) x " 
 	   << height/mm << " (height) x " 
-	   << length/mm << " (length) mm^3" << G4endl;
-    G4cout << " mass="<<logicWAGASCIEmpty->GetMass()/kg   <<" kg" << G4endl; 
-    G4cout << " name: " << logicWAGASCIEmpty->GetName() << G4endl;
-    G4cout << " - position inside the Basket: ( " 
-	   << GetTargetPos2().x()/mm << ", "
-	   << GetTargetPos2().y()/mm << ", "
-	   << GetTargetPos2().z()/mm << " ) mm"  
+	   << length/mm << " (length) mm^3" 
+	   << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
+    G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicTarget1->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << x/mm << ", "
+	   << y/mm << ", "
+	   << z/mm << " ) mm"  
 	   << G4endl << G4endl;
-	  
-    */
+  }
+
+  ///////////
+
+
+
+
+  //
+  //------------------------------ 
+  // FGD3D 1
+  //------------------------------ 
+  //
+
+  G4String cNameLogicFGD3D1 = cNameSolidTarget1+"/FGD3D1";
+
+  ND280WaffleActiveConstructor * FGD3D1 = new ND280WaffleActiveConstructor(cNameLogicFGD3D1,this); // D.S
+  
+  if( ND280XMLInput->GetXMLUseFGD3D1() ){
+
+    //    
+    // D.S
+    //
+    // Try to make it similar to other target detectors
+    // but use still use the FGD3D-structure methods
+    //
+
+    double width  = ND280XMLInput->GetXMLFGD3Dwidth1();
+    double height = ND280XMLInput->GetXMLFGD3Dheight1();
+    double length = ND280XMLInput->GetXMLFGD3Dlength1();
+    G4ThreeVector ModuleSize1 (width,height,length);
+
+    G4double x = ND280XMLInput->GetXMLFGD3DPos1_X();
+    G4double y = ND280XMLInput->GetXMLFGD3DPos1_Y();
+    G4double z = ND280XMLInput->GetXMLFGD3DPos1_Z();
+
+    solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
+    logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
+    physiTarget1 = new G4PVPlacement(0,                 // no rotation
+				     G4ThreeVector(x,y,z),
+				     logicTarget1,       // its logical volume 
+				     cNamePhysiTarget1,  // its name
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+
+    FGD3D1->ND280WaffleActiveConstructor::Construct(logicTarget1,GetTargetPos1(),ModuleSize1,cNamePhysiTarget1); 
     
-
-
-
-
-
+    //ND280WaffleActiveConstructor * Waffle = new ND280WaffleActiveConstructor();
+    //Waffle->ND280WaffleActiveConstructor::Construct(logicTarget1,GetTargetPos1(),ModuleSize1,cNamePhysiTarget1);
+    
+    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
+    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
+    
+    G4cout << "Target 1: " << G4endl
+	   << " - dimensions: "
+	   << width/mm  << " (width) x " 
+	   << height/mm << " (height) x " 
+	   << length/mm << " (length) mm^3" 
+	   << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
+    G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicTarget1->GetName() << G4endl;
+    G4cout << " - position: ( " 
+	   << x/mm << ", "
+	   << y/mm << ", "
+	   << z/mm << " ) mm"  
+	   << G4endl << G4endl;
+  }
 
 
 
@@ -3539,12 +3551,12 @@ void ExN02DetectorConstruction::DefineMaterials() {
   
   // WAGASCI
   
-  //Scintillator
+  //Scintillator // B.Q
   density = 1.032*g/cm3;
   G4Material *WAGASCIScint 
     = new G4Material(name="WAGASCIScintillator", density, nel=2);
-  WAGASCIScint->AddElement(elC, 9);
-  WAGASCIScint->AddElement(elH, 10);
+  WAGASCIScint->AddElement(elC, 8);
+  WAGASCIScint->AddElement(elH, 8);
   gMan->SetDrawAtt(WAGASCIScint,kAzure+8);//ND280 class
 
   //Scintillator empty --> average density ~40% of normal one

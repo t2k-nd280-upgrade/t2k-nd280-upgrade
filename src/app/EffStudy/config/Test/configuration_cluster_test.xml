@@ -321,50 +321,103 @@
 
 
 
-   <!-- WAGASCI Empty -->
+   <!-- WAGASCI 1 -->
+   
+   <WAGASCIInactMaterial1>
+     Air
+   </WAGASCIInactMaterial1>
+   
+   <WAGASCIlength1>
+     70
+   </WAGASCIlength1>
+   <WAGASCIwidth1>  
+     600
+   </WAGASCIwidth1>
+   <WAGASCIheight1> 
+     600
+   </WAGASCIheight1>
 
-   <WAGASCIEmptylength>
-     60
-   </WAGASCIEmptylength>
-   <WAGASCIEmptywidth>  
-     60
-   </WAGASCIEmptywidth>
-   <WAGASCIEmptyheight> 
-     60
-   </WAGASCIEmptyheight>
-
-   <WAGASCIEmptyPos_X>
+   <WAGASCIPos1_X>
      0
-   </WAGASCIEmptyPos_X>
-   <WAGASCIEmptyPos_Y>
+   </WAGASCIPos1_X>
+   <WAGASCIPos1_Y>
      0
-   </WAGASCIEmptyPos_Y>
-   <WAGASCIEmptyPos_Z>
+   </WAGASCIPos1_Y>
+   <WAGASCIPos1_Z>
      0
-   </WAGASCIEmptyPos_Z>
+   </WAGASCIPos1_Z>
 
-   <!-- WAGASCI Water -->
+   <!-- WAGASCI 2 -->
 
-   <WAGASCIWaterlength>
+   <WAGASCIInactMaterial2>
+     Water
+   </WAGASCIInactMaterial2>
+
+   <WAGASCIlength2>
      13
-   </WAGASCIWaterlength>
-   <WAGASCIWaterwidth>  
+   </WAGASCIlength2>
+   <WAGASCIwidth2>  
      18
-   </WAGASCIWaterwidth>
-   <WAGASCIWaterheight> 
+   </WAGASCIwidth2>
+   <WAGASCIheight2> 
      6
-   </WAGASCIWaterheight>
+   </WAGASCIheight2>
 
-   <WAGASCIWaterPos_X>
+   <WAGASCIPos2_X>
      0
-   </WAGASCIWaterPos_X>
-   <WAGASCIWaterPos_Y>
+   </WAGASCIPos2_X>
+   <WAGASCIPos2_Y>
      0
-   </WAGASCIWaterPos_Y>
-   <WAGASCIWaterPos_Z>
+   </WAGASCIPos2_Y>
+   <WAGASCIPos2_Z>
      0
-   </WAGASCIWaterPos_Z>
+   </WAGASCIPos2_Z>
 
+
+
+   <!-- FGD3D 1 -->
+   
+   <FGD3Dlength1>
+     100
+   </FGD3Dlength1>
+   <FGD3Dwidth1>  
+     600
+   </FGD3Dwidth1>
+   <FGD3Dheight1> 
+     600
+   </FGD3Dheight1>
+
+   <FGD3DPos1_X>
+     0
+   </FGD3DPos1_X>
+   <FGD3DPos1_Y>
+     0
+   </FGD3DPos1_Y>
+   <FGD3DPos1_Z>
+     0
+   </FGD3DPos1_Z>
+
+   <!-- FGD3D 2 -->
+
+   <FGD3Dlength2>
+     13
+   </FGD3Dlength2>
+   <FGD3Dwidth2>  
+     18
+   </FGD3Dwidth2>
+   <FGD3Dheight2> 
+     6
+   </FGD3Dheight2>
+
+   <FGD3DPos2_X>
+     0
+   </FGD3DPos2_X>
+   <FGD3DPos2_Y>
+     0
+   </FGD3DPos2_Y>
+   <FGD3DPos2_Z>
+     0
+   </FGD3DPos2_Z>
 
 
    <!-- SciFi XZ -->
@@ -956,17 +1009,23 @@
    <UseSuperFGD2>
      false
    </UseSuperFGD2>
-   <UseWAGASCIEmpty>
+   <UseWAGASCI1>
+     true
+   </UseWAGASCI1>
+   <UseWAGASCI2>
      false
-   </UseWAGASCIEmpty>
-   <UseWAGASCIWater>
+   </UseWAGASCI2>
+   <UseFGD3D1>
      false
-   </UseWAGASCIWater>
+   </UseFGD3D1>
+   <UseFGD3D2>
+     false
+   </UseFGD3D2>
    <UseSciFi>
      false
    </UseSciFi>
    <UseFGDlike>
-     true
+     false
    </UseFGDlike>
 
    <UseToF_TopDown>
@@ -1077,9 +1136,12 @@
      true
    </InvisSuperFGD>
    <InvisWAGASCI>
-     true
+     false
    </InvisWAGASCI>
-   <InvisSciFi>
+   <InvisFGD3D>
+     true
+   </InvisFGD3D> 
+  <InvisSciFi>
      true
    </InvisSciFi>
    <InvisFGDlike>

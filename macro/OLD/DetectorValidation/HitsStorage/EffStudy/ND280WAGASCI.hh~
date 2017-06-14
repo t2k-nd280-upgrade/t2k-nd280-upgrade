@@ -1,0 +1,109 @@
+#ifndef ND280WAGASCI_hh_seen
+#define ND280WAGASCI_hh_seen
+
+#include <globals.hh>
+#include <G4ThreeVector.hh>
+#include <G4RotationMatrix.hh>
+
+#include "G4SystemOfUnits.hh"
+
+/// Constants of the WAGASCI target and its scintillators.
+/// All hard-coded values should be contained within this namespace and
+/// not in any of the constructors.
+namespace ND280WAGASCI
+{
+	/// Detector identities
+  //enum Detector{kNoDetector, kUpstream, kDownstream};
+  //enum Module{kNoModule, kUpstream, kDownstream};
+	
+  /// Design offsets from the magnet of each module
+  namespace Offsets
+  {
+    // Offset of the WAGASCI targets. Remember that GEANT4 places the center of the modules
+		
+    // All of these values are dependent on the size of the volumes.
+    // If the volume sizes change at any time, say to include extra
+    // dead material, then these values need to change as well.
+
+    // -- General for the Upstream and Downstream targets:
+
+    // The X = 0 and Y = 0 positions are defined by the target position. By definition, both have therefore X=0*mm and Y=0*mm.
+
+    // -- WAGASCI upstream target = WATER
+
+    // What is Z =0?
+    //Redefine in Ex02DetectorConstruction
+      
+    G4ThreeVector WAGASCIPosition    ( 0.0*mm, 0.0*mm, 0.0*mm );
+
+    //const G4Rotation WAGASCIRotation    (0,0,0);
+    G4RotationMatrix WAGASCIRotation (G4ThreeVector(0.,0.,0.),0.);
+  
+  }
+  
+  
+  //------------------------------------------------------------------
+	
+	
+  //
+
+  //------------------ Target ---------------------
+
+  // Target size
+  double TargetWidth = 2300.0 * mm;
+  double TargetHeight = 600.0 * mm;
+  double TargetThickness = 1300.0 * mm;
+    
+  //------------------ Scintillators ---------------------
+
+  //Individual plan scintillator size. 
+  const double ScintiPlanLength = 2300.0 * mm;//TargetWidth?
+  const double ScintiPlanWidth = 25.0 * mm;
+  const double ScintiPlanThickness = 3.0 * mm;
+
+  //Individual grid scintillator size.
+  const double ScintiGridLength = 2300.0 * mm;//TargetWidth?
+  const double ScintiGridWidth = 25.0 * mm;
+  const double ScintiGridThickness = 3.0 * mm;
+
+
+  //------------------ Layers of scintillators ---------------------
+  // We have added a possibility of offset of the first (and therefore, last) scintillator in the layer. Note that there is also Gap between the scintillators.
+ 
+  //Offset of the first scintillator of the plan layer in one layer / in the target
+  const double LayerPlanFirstScintiOffset = 0.0 * mm;
+
+  //Offset of the first scintillator of the grid layer in one layer / in the target
+  const double LayerGridFirstScintiOffset = 0.0 * mm;
+
+  //Spacing between plan scintillators (consecutive scintillators in the same layer)
+  const double ScintiPlanGap = 0.0 * mm;
+  
+  //Spacing between grid scintillators (consecutive scintillators in the same layer)
+  const double ScintiGridGap = 25.0 * mm - 2*ScintiGridThickness;
+
+  //------------------ Module = Assembly of layers of scintillators ---------------------
+  // We will assume that the geometry is planH + grid + planV + grid
+  // No submodule is assumed. The plans are created one after another until it is not possible anymore due to target space limitation.
+  // As for within one layer, we have added a gap between the layers and also, an offset between the target and the first (and therefore, last) scintillator layer.
+
+  //Offset of the first scintillator of the grid layer in one layer / in the target
+  const double LayerOffset = 0.0 * mm;
+
+  //Spacing between a layer of plan and a layer of Grid scintillator.
+  const double LayerGap = 1.0 * mm;
+
+  //
+  const double LayerPlanThickness = ScintiPlanThickness;
+  const double LayerGridThickness = ScintiGridWidth;
+  const int NumberOfModules=1;//Number of modules/target (water, air etc...)
+
+}
+/*
+if( ((LayerPlanNumberOfScintiHorizontal+1)*(ScintiPlanWidth + ScintiPlanGap)-LayerPlanHeight) <= ScintiPlanGap) LayerPlanNumberOfScintiHorizontal += 1;
+if((LayerPlanNumberOfScintiVertical+1)*(ScintiPlanWidth + ScintiPlanGap) -  LayerPlanWidth <= ScintiPlanGap) LayerPlanNumberOfScintiVertical += 1;
+if((LayerGridNumberOfScintiHorizontal+1)*(ScintiGridThickness + ScintiGridGap) -  LayerGridHeight <= ScintiGridGap) LayerGridNumberOfScintiHorizontal += 1;
+if((LayerGridNumberOfScintiVertical+1)*(ScintiGridThickness + ScintiGridGap) -  LayerGridWidth <= ScintiGridGap) LayerGridNumberOfScintiVertical += 1;
+*/
+
+#endif

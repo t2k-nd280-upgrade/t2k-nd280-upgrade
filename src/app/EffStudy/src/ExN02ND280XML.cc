@@ -136,20 +136,37 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("SuperFGDPos2_Y"    ,fSuperFGDPos2_Y);
     XML2Double("SuperFGDPos2_Z"    ,fSuperFGDPos2_Z);
 
-    // WAGASCI Empty
-    XML2Double("WAGASCIEmptylength"   ,fWAGASCIEmptylength);
-    XML2Double("WAGASCIEmptywidth"    ,fWAGASCIEmptywidth);
-    XML2Double("WAGASCIEmptyheight"   ,fWAGASCIEmptyheight);
-    XML2Double("WAGASCIEmptyPos_X"    ,fWAGASCIEmptyPos_X);
-    XML2Double("WAGASCIEmptyPos_Y"    ,fWAGASCIEmptyPos_Y);
-    XML2Double("WAGASCIEmptyPos_Z"    ,fWAGASCIEmptyPos_Z);
-    // WAGASCI Water
-    XML2Double("WAGASCIWaterlength"   ,fWAGASCIWaterlength);
-    XML2Double("WAGASCIWaterwidth"    ,fWAGASCIWaterwidth);
-    XML2Double("WAGASCIWaterheight"   ,fWAGASCIWaterheight);
-    XML2Double("WAGASCIWaterPos_X"    ,fWAGASCIWaterPos_X);
-    XML2Double("WAGASCIWaterPos_Y"    ,fWAGASCIWaterPos_Y);
-    XML2Double("WAGASCIWaterPos_Z"    ,fWAGASCIWaterPos_Z);
+    // WAGASCI 1
+    XML2String("WAGASCIInactMaterial1",fWAGASCIInactMaterial1);
+    XML2Double("WAGASCIlength1"   ,fWAGASCIlength1);
+    XML2Double("WAGASCIwidth1"    ,fWAGASCIwidth1);
+    XML2Double("WAGASCIheight1"   ,fWAGASCIheight1);
+    XML2Double("WAGASCIPos1_X"    ,fWAGASCIPos1_X);
+    XML2Double("WAGASCIPos1_Y"    ,fWAGASCIPos1_Y);
+    XML2Double("WAGASCIPos1_Z"    ,fWAGASCIPos1_Z);
+    // WAGASCI 2
+    XML2String("WAGASCIInactMaterial2",fWAGASCIInactMaterial2);
+    XML2Double("WAGASCIlength2"   ,fWAGASCIlength2);
+    XML2Double("WAGASCIwidth2"    ,fWAGASCIwidth2);
+    XML2Double("WAGASCIheight2"   ,fWAGASCIheight2);
+    XML2Double("WAGASCIPos2_X"    ,fWAGASCIPos2_X);
+    XML2Double("WAGASCIPos2_Y"    ,fWAGASCIPos2_Y);
+    XML2Double("WAGASCIPos2_Z"    ,fWAGASCIPos2_Z);
+
+    // FGD3D 1
+    XML2Double("FGD3Dlength1"   ,fFGD3Dlength1);
+    XML2Double("FGD3Dwidth1"    ,fFGD3Dwidth1);
+    XML2Double("FGD3Dheight1"   ,fFGD3Dheight1);
+    XML2Double("FGD3DPos1_X"    ,fFGD3DPos1_X);
+    XML2Double("FGD3DPos1_Y"    ,fFGD3DPos1_Y);
+    XML2Double("FGD3DPos1_Z"    ,fFGD3DPos1_Z);
+    // FGD3D 2
+    XML2Double("FGD3Dlength2"   ,fFGD3Dlength2);
+    XML2Double("FGD3Dwidth2"    ,fFGD3Dwidth2);
+    XML2Double("FGD3Dheight2"   ,fFGD3Dheight2);
+    XML2Double("FGD3DPos2_X"    ,fFGD3DPos2_X);
+    XML2Double("FGD3DPos2_Y"    ,fFGD3DPos2_Y);
+    XML2Double("FGD3DPos2_Z"    ,fFGD3DPos2_Z);
 
     // SciFi XZ
     XML2Double("SciFiFiberEdge",fSciFiFiberEdge);
@@ -373,10 +390,14 @@ void ExN02ND280XML::SetInputs(){
     // Use SuperFGDs
     XML2Bool("UseSuperFGD1",fUseSuperFGD1);
     XML2Bool("UseSuperFGD2",fUseSuperFGD2);
-    // Use WAGASCI Empty
-    XML2Bool("UseWAGASCIEmpty",fUseWAGASCIEmpty);
-    // Use WAGASCI Water
-    XML2Bool("UseWAGASCIWater",fUseWAGASCIWater);
+    // Use WAGASCI 1
+    XML2Bool("UseWAGASCI1",fUseWAGASCI1);
+    // Use WAGASCI 2
+    XML2Bool("UseWAGASCI2",fUseWAGASCI2);
+    // Use FGD3D 1
+    XML2Bool("UseFGD3D1",fUseFGD3D1);
+    // Use FGD3D 2
+    XML2Bool("UseFGD3D2",fUseFGD3D2);
     // Use SciFi XZ
     XML2Bool("UseSciFi",fUseSciFi);
     // Use FGDlike XZ
@@ -423,6 +444,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("InvisFGD2"     ,fInvisFGD2);
     XML2Bool("InvisSuperFGD",fInvisSuperFGD);
     XML2Bool("InvisWAGASCI",fInvisWAGASCI);
+    XML2Bool("InvisFGD3D",fInvisFGD3D);
     XML2Bool("InvisSciFi",fInvisSciFi);
     XML2Bool("InvisFGDlike",fInvisFGDlike);
     //

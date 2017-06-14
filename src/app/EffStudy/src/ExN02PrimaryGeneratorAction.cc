@@ -89,6 +89,8 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   // This function is called at the begining of event
 
+  G4cout << "fTypeDirection = " << fTypeDirection << G4endl;
+  
   bool doGun = false;
   if(fGeneratorType=="ParticleGun") doGun = true;
 
@@ -135,6 +137,22 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     } 
     */
   
+    
+    if(fTypeDirection=="Uniform"){      
+      G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
+      G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi/2]
+      G4double phi = G4UniformRand()*360*deg; //flat in [0,2pi]
+      G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
+      G4ThreeVector dir(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);
+      //G4cout << "direction of the gun before update = " << aDir[0] << ", " << aDir[1] << ", " << aDir[2] <<endl;
+      //G4cout << "After update (favour foward going particles)= " << dir[0] << ", " << dir[1] << ", " << dir[2] <<endl;
+      G4cout << "Direction of the gun: " 
+	     << dir[0] << ", " << dir[1] << ", " << dir[2] 
+	     << G4endl;
+      fParticleGun->SetParticleMomentumDirection(dir);
+      //B.Q end
+    }
+    
     fParticleGun->GeneratePrimaryVertex(anEvent);
   }
   

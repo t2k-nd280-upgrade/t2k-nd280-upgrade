@@ -129,6 +129,8 @@ private:
   G4int fParticle;
   G4ThreeVector fPosition;
   G4ThreeVector fPosInMod;
+  G4ThreeVector fMPPCPosInMod;//B.Q
+  G4ThreeVector fMPPCPosition;//B.Q
   G4int fEventID;
   G4double fTime;
   G4double fDelayTime;
@@ -196,6 +198,13 @@ public:
   inline void SetPosInMod     (G4ThreeVector pos)      {fPosInMod = pos; };
   inline G4ThreeVector GetPosInMod() { return fPosInMod; }
 
+  //B.Q (used for WAGASCI only)
+  inline void SetMPPCPosInMod(G4ThreeVector mppcpos){fMPPCPosInMod = mppcpos;};
+  inline G4ThreeVector GetMPPCPosInMod(){ return fMPPCPosInMod;}
+  inline void SetMPPCPosition(G4ThreeVector mppcpos){fMPPCPosition = mppcpos;};
+  inline G4ThreeVector GetMPPCPosition(){ return fMPPCPosition;}
+  //
+ 
   inline void SetTime(G4double t) { fTime = t; }
   inline G4double GetTime() { return fTime; }
 

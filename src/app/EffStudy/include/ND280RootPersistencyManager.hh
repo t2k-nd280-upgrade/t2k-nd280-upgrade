@@ -30,6 +30,8 @@ class G4VHitsCollection;
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
 
+#include <ND280PhysicalVolumeInformation.hh>
+
 #include <TH2F.h> 
 
 /// Provide a root output for the geant 4 events.
@@ -143,6 +145,13 @@ public:
   G4String GetDetNameAlongX(){return fDetNameAlongX;};
   G4String GetDetNameAlongY(){return fDetNameAlongY;};
   G4String GetDetNameAlongZ(){return fDetNameAlongZ;};
+
+  //B.Q
+  ND280PhysicalVolumeInformation * PVInfo;
+  vector <ND280PhysicalVolumeInformation> vPVInfo;
+  void AddPhysicalVolumeInformation(G4int, G4String, G4ThreeVector);
+  vector <ND280PhysicalVolumeInformation> GetPhysicalVolumeInformation(){return vPVInfo;};
+  ///
 
   /////
   

@@ -59,11 +59,19 @@ ExN02TrackerSD::ExN02TrackerSD(G4String name)
 {
   G4String HCname;
   collectionName.insert(HCname="trackerCollection");
+
+  trackerResponse = new ExN02TrackerResponse(); // B.Q used for WAGASCI only 
+  
+#ifdef DEBUG
+  G4cout << "Create the TrackerSD object for the detector named : " << name << G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ExN02TrackerSD::~ExN02TrackerSD(){ }
+ExN02TrackerSD::~ExN02TrackerSD(){ 
+  if(trackerResponse!=NULL) delete trackerResponse; // B.Q
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -89,10 +97,10 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   ND280XMLInput = InputPersistencyManager->GetXMLInput();
   //
 
-
-  //if(NSteps_==0){
-
   G4double edep = aStep->GetTotalEnergyDeposit();
+#ifdef DEBUG
+  G4cout << "New hit letting energy of " << edep << G4endl ;
+#endif
   
   if(edep==0.) return false;
 
@@ -131,12 +139,12 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   ND280RootPersistencyManager* persistencyManager
     = ND280RootPersistencyManager::GetInstance();
 
-  
-  //if(persistencyManager->doNavigDetExist()) G4cout << "it's true!!!" << G4endl;
-  //else G4cout << "it's false!!!" << G4endl;
-
   if( persistencyManager->doNavigDetExist() ){
 
+#ifdef DEBUG
+    G4cout << "Persistency manager exists " << G4endl ;
+#endif
+    
     if( !persistencyManager->GetNavigTarg1() ){  // initialize only once   
       persistencyManager->InitNavigator(worldVolumePointer,preStepPoint->GetPosition()); 
     }
@@ -201,21 +209,21 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
       //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
     }
-    else{ // SciFi_XZ or FGDlike_XZ
+    else if( ND280XMLInput->GetXMLUseSciFi() ||
+	     ND280XMLInput->GetXMLUseFGDlike() ) { // SciFi_XZ or FGDlike_XZ
       persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
       //G4cout << "mppc pos: Y = " << mppcY << G4endl; 
       persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
-
       //G4cout << "mppc pos: Y = " << mppcY << G4endl;
-
+      
       double world_x = PMworldPosition.x();
       double world_y = PMworldPosition.y();
       double world_z = PMworldPosition.z();
-
+      
       double loc_x = PMlocalPosition.x();
       double loc_y = PMlocalPosition.y();
       double loc_z = PMlocalPosition.z();
-
+      
 #ifdef DEBUG
       G4cout << touch_namedet << G4endl;
       G4cout << "lightY = " << lightY << G4endl;
@@ -225,7 +233,6 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       G4cout << G4endl;
 #endif
     }
- 
     
     G4ThreeVector MPPCLocalPosition = G4ThreeVector(mppcX,mppcY,mppcZ);  
     G4Track* track       = aStep->GetTrack();  
@@ -248,8 +255,9 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       distY = lightY - persistencyManager->GetMPPCPosY(); 
       distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
     }
-    else{ // SciFi_XZ or FGDlike_XZ
-     
+    else if( ND280XMLInput->GetXMLUseSciFi() ||
+	     ND280XMLInput->GetXMLUseFGDlike() ) { // SciFi_XZ or FGDlike_XZ
+      
       distX = lightX - persistencyManager->GetMPPCPosX(); 
       distY = lightY - persistencyManager->GetMPPCPosY(); 
       distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
@@ -335,7 +343,9 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       //G4cout << "peX=" << peX << ", peY=" << peY << ", peZ=" << peZ << G4endl;
       //G4cout << "timepeX=" << timepeX << ", timepeY=" << timepeY << ", timepeZ=" << timepeZ << G4endl;
     }
-    else{ // SciFi_XZ or FGDlike_XZ (i.e. built in XY and rotated by 90deg on X axis)
+    else if( ND280XMLInput->GetXMLUseSciFi() ||
+	     ND280XMLInput->GetXMLUseFGDlike() ) { 
+      // SciFi_XZ or FGDlike_XZ (i.e. built in XY and rotated by 90deg on X axis)
 
       // Take the detector name along X and Z
       G4String DetNameAlongX = InputPersistencyManager->GetDetNameAlongX(); 
@@ -380,17 +390,99 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     //<< MPPCLocalPosition.z() << G4endl;
     //G4cout << G4endl;
     
+    // // volume information must be extracted from Touchable of "PreStepPoint" 
+    // const G4VTouchable* Touchable = aStep->GetPreStepPoint()->GetTouchable();
+    // G4int detID = Touchable->GetVolume(0)->GetCopyNo();
 
 
-    /////// 
-    // used in WAGASCI code
+
+
     //
+    // B.S
+    //
+
+    // The WAGASCI response code is totally independent from the other target detectors!!!
+ 
     // volume information must be extracted from Touchable of "PreStepPoint" 
-    const G4VTouchable* Touchable = aStep->GetPreStepPoint()->GetTouchable();
-    G4int detID = Touchable->GetVolume(0)->GetCopyNo();
+    G4int detID = theTouchable->GetVolume(0)->GetCopyNo();
+
+    G4ThreeVector MPPClocalPosition = G4ThreeVector(0,0,0);  
+    G4ThreeVector MPPCworldPosition;
+
+    if( ND280XMLInput->GetXMLUseWAGASCI1() ){ // WAGASCI1
+          
+      PMworldPosition = preStepPoint->GetPosition();
+      vector <ND280PhysicalVolumeInformation> PVInfo;
+      PVInfo.clear();
+      PVInfo = persistencyManager->GetPhysicalVolumeInformation();
+      const G4AffineTransform transformation = 
+	preStepPoint->GetTouchable()->GetHistory()->GetTopTransform();
+      PMlocalPosition = transformation.TransformPoint(PMworldPosition);
+      
+      for(int i=0;i<PVInfo.size();i++){
+	if(PVInfo[i].GetDetID() == detID){
+	  MPPClocalPosition = PVInfo[i].GetMPPCPosition();
+
+	  // G4cout << "MPPClocalPosition = " << MPPClocalPosition << G4endl;
+
+	  break;
+	}
+      }
+      
+      MPPCworldPosition = (transformation.Inverse()).TransformPoint(MPPClocalPosition);  
+      
+#ifdef DEBUG
+      G4cout << "Number of physical volumes =" << PVInfo.size() 
+	     << ", MPPC position =("<<MPPClocalPosition[0] << ","
+	     <<MPPClocalPosition[1] << ","
+	     <<MPPClocalPosition[2] << ")"
+	     << G4endl;
+      G4cout << "Volume name touched is =" << touch_namedet 
+	     <<", ID number is =" << preStepPoint->GetTouchable()->GetVolume(0)->GetCopyNo()
+	     << ", energy deposited by thi step =" << edep 
+	     << ", local pos = (" << PMlocalPosition[0] << "," << PMlocalPosition[1] << "," << PMlocalPosition[2] << ")" 
+	     << G4endl ;
+      G4cout << "Global MPPC pos = (" << MPPCworldPosition[0] << "," << MPPCworldPosition[1] << "," << MPPCworldPosition[2] << ")" 
+	     << G4endl ;
+#endif
+      
+      //apply quenching effect
+      edep_q = edep;
+      trackerResponse->ApplyScintiResponse(&edep_q,track);
+      
+      peX=edep;
+      peY=edep;
+      peZ=edep;
+      
+#ifdef DEBUG
+      G4cout << "Check before hit filling: Volume =" << detID 
+	     <<", particle =" << particle 
+	     << ", trackid =" << trackid 
+	     << ", parentid =" << parentid 
+	     << ", edep =" << edep 
+	     << ", edepq =" << edep_q 
+	     <<", MPPC position =" << MPPClocalPosition[0] << ", "<< MPPClocalPosition[1] << ", " << MPPClocalPosition[2] 
+	     << ", step time = " << prestepTime 
+	     << G4endl ;
+#endif 
+    } // end if use WAGASCI
+
+
+
+    
+    // Fill the Hit
     
     ExN02TrackerHit* aHit  
       = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);    
+
+#ifdef DEBUG
+    G4cout << "hit created, then fill it" 
+	   << ", name det = " << touch_namedet 
+	   << ", pe =" << peX << ", " << peY << ", " << peZ 
+	   << ", delay =" << timepeX << ", " << timepeY << ", " << timepeZ 
+	   << G4endl ;
+#endif
+
     aHit->SetNameDet(touch_namedet);
     aHit->SetPE(conv::kUndefined);
     aHit->SetPEX(peX);
@@ -400,9 +492,27 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     aHit->SetDelayTimeX(timepeX);
     aHit->SetDelayTimeY(timepeY);
     aHit->SetDelayTimeZ(timepeZ);
-    trackerCollection->insert( aHit );   
+    // B.Q
+    aHit->SetPosInMod(PMlocalPosition);
+    aHit->SetMPPCPosInMod(MPPClocalPosition);
+    aHit->SetPosition(PMworldPosition);
+    aHit->SetMPPCPosition(MPPCworldPosition);        
+    if(edep > 1e-3) trackerCollection->insert( aHit );
+    ///
+    //trackerCollection->insert( aHit );   
+    
+#ifdef DEBUG
+    G4cout << "almost done" << G4endl ;
+#endif
+    //TEMP
+#ifdef DEBUG
+    G4cout << "hit created and filled!" << G4endl ;
+#endif
 
   } // if( persistencyManager->GetNavigDetName_Targ1()!="" )
+
+
+
 
 
 

@@ -58,6 +58,7 @@ private:
 
   G4UIdirectory*             fPrimgenDir;
   G4UIcmdWithAString*        fGeneratorCmd;
+  G4UIcmdWithAString*        fTypeDirCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -45,23 +45,26 @@
 #/N02/det/setTargetMate2 Water #ActiveWater
 
 # Test geometry (overlaps...)	
-#/geometry/test/verbosity 1
-#/geometry/test/tolerance 100000 mm
-/geometry/test/run
+# #/geometry/test/verbosity 1
+# #/geometry/test/tolerance 100000 mm
+# /geometry/test/run
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
 #/generator/type Generator
 /generator/type ParticleGun
-		
+/generator/typedir Uniform
+
 # Set the particle gun 
 #/gun/particle pi+
 #/gun/particle pi-
-/gun/particle gamma
-#/gun/particle mu-
+#/gun/particle gamma
+/gun/particle mu-
 /gun/energy 400 MeV  # kinetic energy
+#/gun/direction 1 1 1 # momentum direction
 /gun/direction 0 0 1 # momentum direction
-/gun/position 0 0 0 mm  # starting position		
-#/gun/position 0 0 -2000 mm  # starting position		
+/gun/position 0 0 -500 mm  # starting position		
+#/gun/position 0 -600 -500 mm  # starting position
+#/gun/position 0 0 0 mm  # starting position		
 #/gun/position 0 0 2500 mm  # starting position
 #/gun/position -500 -500 2500 mm  # starting position
 /gun/number   1      # number of particles

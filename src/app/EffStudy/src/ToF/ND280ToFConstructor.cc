@@ -95,28 +95,23 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
 
   int  n_bars_horiz = GetLayerHorizNBar();
   int  n_bars_vert = GetLayerVertNBar();
-  double barhoriz_length = GetBarHorizLength();
-  double barvert_length = GetBarVertLength();
+
   double bar_width  = GetBarWidth();
-  double bar_height = GetBarHeight();
-
-  double TotWidth = TMath::Max(bar_width * n_bars_vert, barhoriz_length) + 0.01*mm; // + 300; // IF NOT LARGER OVERLAPS!!!
-  //if(barhoriz_length < TotWidth) barhoriz_length = TotWidth;
-  //SetBarHorizLength(TotWidth);
+  double bar_height = GetBarWidth(); //GetBarHeight();
   
-  double TotHeight = TMath::Max(bar_height * n_bars_horiz, barvert_length) + 0.01*mm; // IF NOT OVERLAP!!! (SMALL)
-  //if(barvert_length < TotHeight) barvert_length = TotHeight;
-  //SetBarVertLength(TotHeight);
+  double barvert_length = n_bars_horiz * bar_height;
+  SetBarVertLength(barvert_length);
 
-  double TotLength = (bar_width + bar_height) * GetPlaneXYNum() + 0.01*mm; // IF NOT OVERLAP!!! (SMALL)
+  double barhoriz_length = n_bars_vert * bar_width;
+  SetBarHorizLength(barhoriz_length);
+  
+  double TotWidth = TMath::Max(bar_width * n_bars_vert, barhoriz_length); 
+  double TotHeight = TMath::Max(bar_height * n_bars_horiz, barvert_length);
+  double TotLength = (bar_width + bar_height) * GetPlaneXYNum();
 
   SetWidth(TotWidth);
   SetLength(TotLength);
   SetHeight(TotHeight);
-
-  //SetWidth(500.);
-  //SetLength(400.);
-  //SetHeight(500.);
 
   G4LogicalVolume *logVolume
 	= new G4LogicalVolume(new G4Box(GetName(),
@@ -131,7 +126,8 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
     = Get<ND280ToFScintYConstructor>("ScintHoriz");
   layer_horiz.SetUp(n_bars_horiz,
   		    barhoriz_length,
-  		    bar_width); // nBars, barLength, barWidth                                                                                                                                   
+  		    bar_width); // nBars, barLength, barWidth       
+
   G4LogicalVolume* layer_horiz_logical = layer_horiz.GetPiece();
 
   
@@ -154,6 +150,7 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
   G4cout << "layer_horiz.GetLength() = " << layer_horiz.GetLength() << G4endl;
   G4cout << "bar_width = " << bar_width << G4endl;
   G4cout << "barhoriz_length = " << barhoriz_length << G4endl;
+  G4cout << "barvert_length = " << barvert_length << G4endl;
   G4cout << "n_bars_horiz = " << n_bars_horiz << G4endl;
   G4cout << "n_bars_vert = " << n_bars_vert << G4endl;
   */
@@ -173,50 +170,20 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
     G4cout << "z_pos = " << z_pos << G4endl;
     
     if( (i % 2) == 0.0 ) {
-  
       
       new G4PVPlacement(
 			0, // rotation
 			G4ThreeVector(0.0,0.0,z_pos), // position
-			layer_vert_logical, // logical volume                                                                                                                                          
+			layer_vert_logical, // logical volume      
 			layer_vert.GetName(), // name
-			logVolume, // mother volume                                                                                                                        		      
+			logVolume, // mother volume         
 			false,   // no boolean operations
 			n_y    // copy number
 			);
       ++n_y;
-      z_pos += bar_height;
-
-
-      /*
-	new G4PVPlacement(  
-			0, // rotation         
-			G4ThreeVector(0.0,0.0,z_pos), // position           
-			layer_horiz_logical, // logical volume
-			layer_horiz.GetName(), // name  
-			logVolume, // mother volume             
-			false,   // no boolean operations 
-			n_x    // copy number                
-			  ); 
-      ++n_x;
-      */
-    
+      z_pos += bar_height;   
     }        
     else {
-  
-      /*
-      new G4PVPlacement( 
-			0, // rotation  
-			G4ThreeVector(0.0,0.0,z_pos), // position
-			layer_vert_logical, // logical volume    
-			layer_vert.GetName(), // name 
-			logVolume, // mother volume 
-			false,   // no boolean operations
-			n_y    // copy number  
-			 );  
-      ++n_y;
-      */
-      
       
       new G4PVPlacement(
 			0, // rotation
@@ -227,8 +194,7 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
 			false,   // no boolean operations
 			n_x    // copy number
 			);
-      ++n_x;
-      
+      ++n_x;      
       z_pos += bar_width;
     }
   }

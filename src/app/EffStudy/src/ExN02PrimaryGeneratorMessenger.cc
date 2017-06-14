@@ -46,7 +46,8 @@ ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGener
   : G4UImessenger(),
     myPrimaryGenerator(myPrimGen),
     fPrimgenDir(0),
-    fGeneratorCmd(0)
+    fGeneratorCmd(0),
+    fTypeDirCmd(0)
 {   
   fPrimgenDir = new G4UIdirectory("/generator/");
   fPrimgenDir->SetGuidance("Primary Generator");
@@ -55,6 +56,12 @@ ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGener
   fGeneratorCmd->SetGuidance("Choose the generator: Generator (don't need to specify NEUT or GENIE) and ParticleGun");
   fGeneratorCmd->SetParameterName("generator type",false);
   fGeneratorCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
+
+  fTypeDirCmd = new G4UIcmdWithAString("/generator/typedir",this);
+  fTypeDirCmd->SetGuidance("Choose how to generated the momentum direction: fixed or uniformly randomized");
+  fTypeDirCmd->SetParameterName("Type Direction",false);
+  fTypeDirCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -62,6 +69,7 @@ ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGener
 ExN02PrimaryGeneratorMessenger::~ExN02PrimaryGeneratorMessenger()
 {
   delete fGeneratorCmd;
+  delete fTypeDirCmd;
   delete fPrimgenDir;
 }
 
@@ -71,7 +79,11 @@ void ExN02PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String n
 { 
   if( command == fGeneratorCmd ){
     myPrimaryGenerator->SetGeneratorType(newValue);
+  } 
+  else if( command == fTypeDirCmd ){
+    myPrimaryGenerator->SetTypeDirection(newValue);
   }  
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
