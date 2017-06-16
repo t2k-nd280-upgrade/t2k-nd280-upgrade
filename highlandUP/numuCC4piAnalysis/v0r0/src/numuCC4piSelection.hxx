@@ -55,7 +55,9 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     TPCTracks.clear();       ECalTracks.clear();
-    TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
+    TrueProtons.clear(); TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
+    ProtonTPCtracks.clear();
+    IsoTargetProtontracks.clear();
     NegativePionTPCtracks.clear();
     PositivePionTPCtracks.clear();
     IsoTargetPiontracks.clear();
@@ -66,6 +68,7 @@ public:
     All_ToF_true_mass.clear();
     All_mom.clear();
     All_cos.clear();
+    All_L.clear();
     All_true_mom.clear();
     All_PDG.clear();
     All_TPC_dedx.clear();
@@ -98,7 +101,9 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     TPCTracks.clear();       ECalTracks.clear();
-    TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
+    TrueProtons.clear(); TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
+    ProtonTPCtracks.clear();
+    IsoTargetProtontracks.clear();
     NegativePionTPCtracks.clear();
     PositivePionTPCtracks.clear();
     IsoTargetPiontracks.clear();
@@ -109,6 +114,7 @@ public:
     All_ToF_true_mass.clear();
     All_mom.clear();
     All_cos.clear();
+    All_L.clear();
     All_true_mom.clear();
     All_PDG.clear();
     All_TPC_dedx.clear();
@@ -144,7 +150,12 @@ public:
   SubDetId::SubDetEnum TPC_det;
   float ToF_mass, ToF_true_mass;
 
-  std::vector<AnaTrueParticleB*> TruePiPlus, TruePiMinus, TruePiZero;
+  std::vector<AnaTrueParticleB*> TrueProtons, TruePiPlus, TruePiMinus, TruePiZero;
+
+  int nProtonTPCtracks;
+  std::vector<AnaTrackB*> ProtonTPCtracks;
+  int nIsoTargetProtontracks;
+  std::vector<AnaTrackB*> IsoTargetProtontracks;
 
   int nNegativePionTPCtracks;
   std::vector<AnaTrackB*> NegativePionTPCtracks;
@@ -158,6 +169,7 @@ public:
   std::vector<AnaTrackB*> ElPi0TPCtracks;
   int nMichelElectrons;
   std::vector<AnaTrackB*> MichelElectrons;
+
   int nPosPions;
   int nNegPions;
   int nOtherPions;
@@ -165,7 +177,7 @@ public:
   std::vector<float> All_ToF_mass;
   std::vector<float> All_ToF_true_mass;
   std::vector<int>   All_ToF_det_used1, All_ToF_det_used2, All_PDG;
-  std::vector<float> All_mom, All_cos, All_true_mom, All_TPC_dedx;
+  std::vector<float> All_mom, All_cos, All_true_mom, All_TPC_dedx, All_L;
   std::vector<float> All_ToF_time_reco;
 
   std::vector<float> All_ToF_pull_muon, All_ToF_pull_pion, All_ToF_pull_electron, All_ToF_pull_proton;

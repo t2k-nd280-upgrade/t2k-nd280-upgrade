@@ -29,19 +29,19 @@ ParticleId::PdgEnum ParticleId::GetParticlePDG(int kPart, bool warn) {
             else if (kPart==kPhoton)      return kPhotonPDG;
             else if (kPart==kEta)         return kEtaPDG;
             else if (kPart==kRhoZero)     return kRhoZeroPDG;
-			else if (kPart==kK0S)         return kK0SPDG;
-			else if (kPart==kK0L)         return kK0LPDG;
-			else if (kPart==kLambda)      return kLambdaPDG;
-			else if (kPart==kSigmaPlus)   return kSigmaPlusPDG;
-			else if (kPart==kSigmaZero)   return kSigmaZeroPDG;
-			else if (kPart==kSigmaMinus)  return kSigmaMinusPDG;
-			else if (kPart==kLambdaCPlus)      return kLambdaCPlusPDG;
-			else if (kPart==kSigmaCPlusPlus)   return kSigmaCPlusPlusPDG;
-			else if (kPart==kSigmaCPlus)       return kSigmaCPlusPDG;
-			else if (kPart==kSigmaCZero)       return kSigmaCZeroPDG;
+	    else if (kPart==kK0S)         return kK0SPDG;
+	    else if (kPart==kK0L)         return kK0LPDG;
+	    else if (kPart==kLambda)      return kLambdaPDG;
+	    else if (kPart==kSigmaPlus)   return kSigmaPlusPDG;
+	    else if (kPart==kSigmaZero)   return kSigmaZeroPDG;
+	    else if (kPart==kSigmaMinus)  return kSigmaMinusPDG;
+	    else if (kPart==kLambdaCPlus)      return kLambdaCPlusPDG;
+	    else if (kPart==kSigmaCPlusPlus)   return kSigmaCPlusPlusPDG;
+	    else if (kPart==kSigmaCPlus)       return kSigmaCPlusPDG;
+	    else if (kPart==kSigmaCZero)       return kSigmaCZeroPDG;
 			
-            if (warn) std::cout << "PDG code not set for this particle index (you could update ParticleId.hxx!)" << std::endl;
-            return ParticleId::kInvalidPDG;
+		 if (warn) std::cout << "PDG code not set for this particle index (you could update ParticleId.hxx!)" << std::endl;
+		 return ParticleId::kInvalidPDG;
 };
 
 
@@ -71,16 +71,16 @@ ParticleId::ParticleEnum ParticleId::GetParticle(int kPart, bool warn) {
             else if (kPart==kPhotonPDG)      return kPhoton;
             else if (kPart==kEtaPDG)         return kEta;
             else if (kPart==kRhoZeroPDG)     return kRhoZero;
-			else if (kPart==kK0SPDG)         return kK0S;
-			else if (kPart==kK0LPDG)         return kK0L;
-			else if (kPart==kLambdaPDG)      return kLambda;
-			else if (kPart==kSigmaPlusPDG)   return kSigmaPlus;
-			else if (kPart==kSigmaZeroPDG)   return kSigmaZero;
-			else if (kPart==kSigmaMinusPDG)  return kSigmaMinus;
-			else if (kPart==kLambdaCPlusPDG)      return kLambdaCPlus;
-			else if (kPart==kSigmaCPlusPlusPDG)   return kSigmaCPlusPlus;
-			else if (kPart==kSigmaCPlusPDG)       return kSigmaCPlus;
-			else if (kPart==kSigmaCZeroPDG)       return kSigmaCZero;
+	    else if (kPart==kK0SPDG)         return kK0S;
+	    else if (kPart==kK0LPDG)         return kK0L;
+	    else if (kPart==kLambdaPDG)      return kLambda;
+	    else if (kPart==kSigmaPlusPDG)   return kSigmaPlus;
+	    else if (kPart==kSigmaZeroPDG)   return kSigmaZero;
+	    else if (kPart==kSigmaMinusPDG)  return kSigmaMinus;
+	    else if (kPart==kLambdaCPlusPDG)      return kLambdaCPlus;
+	    else if (kPart==kSigmaCPlusPlusPDG)   return kSigmaCPlusPlus;
+	    else if (kPart==kSigmaCPlusPDG)       return kSigmaCPlus;
+	    else if (kPart==kSigmaCZeroPDG)       return kSigmaCZero;
             else if (kPart==+12 || kPart==+14 || kPart==+16) return kNeutrinos;
             else if (kPart==-12 || kPart==-14 || kPart==-16) return kAntiNeutrinos;
             else if (kPart>1000000000 && kPart<2000000000) return kNuclei;

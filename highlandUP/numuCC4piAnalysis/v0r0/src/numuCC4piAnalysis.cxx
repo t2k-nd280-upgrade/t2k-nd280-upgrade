@@ -218,6 +218,7 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVarVF(output(), selAll_ToF_true_mass,  "", selAll_nTracks);
   AddVarVF(output(), selAll_mom,            "", selAll_nTracks);
   AddVarVF(output(), selAll_cos,            "", selAll_nTracks);
+  AddVarVF(output(), selAll_L,              "", selAll_nTracks);
   AddVarVF(output(), selAll_true_mom,       "", selAll_nTracks);
   AddVarVI(output(), selAll_PDG,            "", selAll_nTracks);
   AddVarVI(output(), selAll_ToF_det_used1,  "", selAll_nTracks);
@@ -244,6 +245,18 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
 
   //--- Pion multiplicity
   
+  AddVarVI(output(),  sel_TrueProton_reco,  "", sel_nTrueProtons);
+  AddVarVF(output(),  sel_TrueProton_mom,   "", sel_nTrueProtons);
+  AddVarVF(output(),  sel_TrueProton_cos,   "", sel_nTrueProtons);
+  AddVarVF(output(),  sel_TrueProton_posX,  "", sel_nTrueProtons);
+  AddVarVF(output(),  sel_TrueProton_posY,  "", sel_nTrueProtons);
+  AddVarVF(output(),  sel_TrueProton_posZ,  "", sel_nTrueProtons);
+  AddVarVF(output(),  sel_TrueProton_length,  "", sel_nTrueProtons);
+
+  AddVarI(output(),  sel_nTrueProtonsAll,    "");
+  AddVarI(output(),  sel_nTrueProtonsAll500, "");
+  AddVarI(output(),  sel_nTrueProtons500,    "");
+
   AddVarVI(output(),  sel_TruePiPlus_reco,  "", sel_nTruePiPlus);
   AddVarVI(output(),  sel_TruePiMinus_reco, "", sel_nTruePiMinus);
   AddVarVI(output(),  sel_TruePiZero_reco,  "", sel_nTruePiZero);
@@ -381,6 +394,44 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     //--
 
     int nu_mode = ND::params().GetParameterI("numuCC4piAnalysis.NeutrinoMode");
+
+    int nTrueProtonsAll=0, nTrueProtonsAll500=0, nTrueProtons500=0;
+    for (unsigned int j=0; j<cc4pibox().TrueProtons.size(); j++) {
+      AnaTrueParticleB *part = cc4pibox().TrueProtons[j];
+      nTrueProtonsAll++;
+      if (part->Momentum > 500)
+	nTrueProtonsAll500++;
+
+      if (part->ParentID != 0) continue;
+      int found=0;
+
+      if (part->Momentum > 500)
+	nTrueProtons500++;
+
+      for (unsigned int i=0; i<cc4pibox().ProtonTPCtracks.size(); i++) {
+	AnaTrackB *track = cc4pibox().ProtonTPCtracks[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ID == part->ID)
+	  found=1;
+      }
+      for (unsigned int i=0; i<cc4pibox().IsoTargetProtontracks.size(); i++) {
+	AnaTrackB *track = cc4pibox().IsoTargetProtontracks[i];
+	if (!track->TrueObject) continue;
+	if (track->GetTrueParticle()->ID == part->ID)
+	  found=2;
+      }
+      output().FillVectorVar(sel_TrueProton_reco, found);
+      output().FillVectorVar(sel_TrueProton_mom, part->Momentum);
+      output().FillVectorVar(sel_TrueProton_cos, part->Direction[2]);
+      output().FillVectorVar(sel_TrueProton_posX, part->Position[0]);
+      output().FillVectorVar(sel_TrueProton_posY, part->Position[1]);
+      output().FillVectorVar(sel_TrueProton_posZ, part->Position[2]);
+      output().FillVectorVar(sel_TrueProton_length, part->Length);
+      output().IncrementCounter(sel_nTrueProtons);
+    }
+    output().FillVar(sel_nTrueProtonsAll,    nTrueProtonsAll);
+    output().FillVar(sel_nTrueProtonsAll500, nTrueProtonsAll500);
+    output().FillVar(sel_nTrueProtons500,    nTrueProtons500);
 
 
     for (unsigned j=0; j<cc4pibox().TruePiPlus.size(); j++) {
@@ -557,6 +608,7 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVar(selAll_PDG,               cc4pibox().All_PDG[i]);
       output().FillVectorVar(selAll_mom,               cc4pibox().All_mom[i]);
       output().FillVectorVar(selAll_cos,               cc4pibox().All_cos[i]);
+      output().FillVectorVar(selAll_L,                 cc4pibox().All_L[i]);
       output().FillVectorVar(selAll_true_mom,          cc4pibox().All_true_mom[i]);
       output().FillVectorVar(selAll_ToF_det_used1,     cc4pibox().All_ToF_det_used1[i]);
       output().FillVectorVar(selAll_ToF_det_used2,     cc4pibox().All_ToF_det_used2[i]);

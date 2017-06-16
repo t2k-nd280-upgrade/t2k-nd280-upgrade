@@ -31,6 +31,7 @@
 
 #include <TRandom.h>
 #include "TRandom3.h"
+#include "TSpline.h"
 
 class AnaTreeConverterEvent: public InputConverter{
 
@@ -86,9 +87,11 @@ class AnaTreeConverterEvent: public InputConverter{
   virtual void FindSegments(TND280UpTrack * upTrack, AnaTrueParticleB * truePart);
   AnaTrueObjectC* FindTrueParticle(Int_t g4id, std::vector<AnaTrueParticleB*>& trueParticles);
 
-  virtual bool IsReconstructedFGD(float* pos_start, float* pos_end, double length);
+  virtual bool IsReconstructedFGD(float* pos_start, float* pos_end, double length, double theta);
   virtual bool IsReconstructedTarget(double length, double theta);
   virtual bool IsReconstructedECal(TVector3 P, TString det);
+
+  virtual bool ChargeConfused(AnaTrueParticleB* trueParticle);
   
 protected:
   
@@ -118,7 +121,13 @@ protected:
   TList *fListOfTracks;
   
   TFile* fefficiency_target;
-  TH2D *hefficiency_target;
+  TH2D*  hefficiency_target;
+
+  TFile *_file_charge_confusion;
+  TSpline3 *elecspline;
+  TSpline3 *muonspline;
+  TSpline3 *pionspline;
+  TSpline3 *protspline;
 
   TRandom3* _randomGen;
   BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;

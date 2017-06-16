@@ -50,7 +50,8 @@ public:
         kToFBackUp,
         kToFFrontDown,
         kToFFrontUp,
-        kInvalidSubdetector, //27
+	kToFECalP0D,
+        kInvalidSubdetector, //28
         kTPC,
 	kTarget,
         kFGD,

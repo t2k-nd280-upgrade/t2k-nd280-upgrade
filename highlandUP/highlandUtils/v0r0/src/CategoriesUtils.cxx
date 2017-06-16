@@ -46,6 +46,13 @@ int topology_codes[]         = {0        , 1            , 2         , 3      , C
 int topology_colors[]        = {2        , 4            , 7         , COLBKG , COLOTHER,  COLOUTFV};
 const int NTOPOLOGY = sizeof(topology_types)/sizeof(topology_types[0]);
 
+std::string topology_all_types[] = {"#nu_{#mu} CC-0#pi", "#nu_{#mu} CC-1#pi^{+}", "#nu_{#mu} CC-other", 
+	"#bar{#nu}_{#mu} CC-0#pi", "#bar{#nu}_{#mu} CC-1#pi^{+}", "#bar{#nu}_{#mu} CC-other", 
+	NAMEBKG, NAMEOTHER, NAMEOUTFV};
+int topology_all_codes[]         = {0, 1, 2, 3, 4, 5, 6, CATOTHER, CATOUTFV};
+int topology_all_colors[]        = {2, 4, 7, 6, 3, 8, COLBKG , COLOTHER,  COLOUTFV};
+const int NTOPOLOGYALL = sizeof(topology_all_types)/sizeof(topology_all_types[0]);
+
 std::string mectopology_types[] = {"CC-0#pi-0p", "CC-0#pi-1p", "CC-0#pi-Np", "CC-1#pi^{+}", "CC-other", NAMEBKG, NAMEOUTFV};
 int mectopology_codes[]         = {0           , 1           , 2           , 3            , 4         , 5      , CATOUTFV};
 int mectopology_colors[]        = {2           , 3           , 4           , 7            , 31        , COLBKG , COLOUTFV};
@@ -88,6 +95,7 @@ void anaUtils::AddStandardCategories(const std::string& prefix){
   _categ->AddCategory(prefix+"reactionCC",         NREACCC,            reacCC_types,             reacCC_codes,             reacCC_colors);
   _categ->AddCategory(prefix+"reactionnofv",       NREACNOFV,          reacnofv_types,           reacnofv_codes,           reacnofv_colors);
   _categ->AddCategory(prefix+"topology",           NTOPOLOGY,          topology_types,           topology_codes,           topology_colors);
+  _categ->AddCategory(prefix+"topologyall",        NTOPOLOGYALL,       topology_all_types,       topology_all_codes,       topology_all_colors);
   _categ->AddCategory(prefix+"mectopology",        NMECTOPOLOGY,       mectopology_types,        mectopology_codes,        mectopology_colors);
 }
 
@@ -132,6 +140,16 @@ Int_t anaUtils::GetTopology(const AnaTrueVertex& trueVertex, const SubDetId::Sub
   Int_t Npipos =    trueVertex.NPrimaryParticles[ParticleId::kPiPos];
   Int_t Npineg =    trueVertex.NPrimaryParticles[ParticleId::kPiNeg];
 
+
+  /*if (trueVertex.ReacCode > 30) {
+    std::cout << trueVertex.ReacCode << " " << Nmuon << " " << Nantimuon << std::endl;
+	if (Nmuon>0)
+		for (int i=0; i<trueVertex.TrueParticlesVect.size(); i++) {
+			if (trueVertex.TrueParticlesVect[i]->PDG == 13)
+			std::cout << trueVertex.TrueParticlesVect[i]->Momentum << std::endl;
+		}
+  }*/
+
   // non numu CC, i.e. BKG
   if ( ! IsAntinu && Nmuon <= 0) return BKG; // BKG
   if (IsAntinu && Nantimuon <= 0) return BKG; // BKG
@@ -145,8 +163,55 @@ Int_t anaUtils::GetTopology(const AnaTrueVertex& trueVertex, const SubDetId::Sub
     else if (IsAntinu && Npineg == 1) return CC_1pi_0meson;
   }
 
+  if (trueVertex.ReacCode > 30)
+    std::cout << "passed through???" << std::endl;
+
   // CC other
   return CC_other;
+}
+
+//**************************************************
+Int_t anaUtils::GetTopologyAll(const AnaTrueVertex& trueVertex, const SubDetId::SubDetEnum det, bool IsAntinu){
+//**************************************************
+
+  /* Classify reaction types
+    -1 = no true vertex
+     0 = numu CC 0pi
+     1 = numu CC 1pi+
+     2 = numu CC other
+     3 = antinumu CC 0pi
+     4 = antinumu CC 1pi+
+     5 = antinumu CC other
+     6 = BKG: not (anti-)numu, NC
+     7 = out of FV
+   */
+
+  // out of FGD1 FV
+  if ( ! anaUtils::InFiducialVolume(det,trueVertex.Position)) return CATOUTFV;
+
+  /// primary particles from the true vertex
+  Int_t Nmuon =     trueVertex.NPrimaryParticles[ParticleId::kMuon];
+  Int_t Nantimuon = trueVertex.NPrimaryParticles[ParticleId::kAntiMuon];
+  Int_t Nmeson =    trueVertex.NPrimaryParticles[ParticleId::kMesons];
+  Int_t Npipos =    trueVertex.NPrimaryParticles[ParticleId::kPiPos];
+  Int_t Npineg =    trueVertex.NPrimaryParticles[ParticleId::kPiNeg];
+
+  // non numu CC, i.e. BKG
+  if (Nmuon <= 0 && Nantimuon <= 0) return 6; // BKG
+
+  if (Nmuon > 0) {
+	  if (Nmeson == 0) return 0;
+	  if (Nmeson == 1)
+		if (Npipos == 1) return 1;
+	  return 2;
+  }
+  
+  else {
+	  if (Nmeson == 0) return 3;
+	  if (Nmeson == 1)
+		if (Npineg == 1) return 4;
+	  return 5;
+  }
 }
 
 
@@ -208,6 +273,7 @@ void anaUtils::SetCategoriesDefaultCode(const std::string& prefix, const int cod
   _categ->SetCode(prefix + "reactionCC"        , code);
   _categ->SetCode(prefix + "reactionnofv"      , code);
   _categ->SetCode(prefix + "topology"          , code);
+  _categ->SetCode(prefix + "topologyall"          , code);
   _categ->SetCode(prefix + "mectopology"       , code);
 }
 
@@ -295,6 +361,7 @@ void anaUtils::FillCategories(const AnaTrueVertexB* trueVertexB, const std::stri
   _categ->SetCode(prefix + "reactionCC",        GetReactionCC(*trueVertex,det,IsAntinu)     ,CATOTHER);
   _categ->SetCode(prefix + "reactionnofv",      GetReactionNoTargetFv(*trueVertex,IsAntinu) ,CATOTHER);
   _categ->SetCode(prefix + "topology",          GetTopology(*trueVertex,det,IsAntinu)       ,CATOTHER);
+  _categ->SetCode(prefix + "topologyall",       GetTopologyAll(*trueVertex,det,IsAntinu)    ,CATOTHER);
   _categ->SetCode(prefix + "mectopology",       GetMECTopology(*trueVertex,det,IsAntinu)    ,CATOTHER);
 }
 

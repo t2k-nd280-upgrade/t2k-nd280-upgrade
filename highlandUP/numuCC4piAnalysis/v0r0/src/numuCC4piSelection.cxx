@@ -336,6 +336,7 @@ namespace numuCC4piUtils{
       if (part->PDG==211)  cc4pibox->TruePiPlus.push_back(part);
       if (part->PDG==-211) cc4pibox->TruePiMinus.push_back(part);
       if (part->PDG==111)  cc4pibox->TruePiZero.push_back(part);
+      if (part->PDG==2212) cc4pibox->TrueProtons.push_back(part);
     }
 
 
@@ -473,7 +474,7 @@ namespace numuCC4piUtils{
     }
     else if (nu_mode==-1) {
       box->nPosPions   = nPospionsTPC + nME;
-      box->nNegPions   = nNegpionsTPC + pionTarget;
+      box->nNegPions   = nNegpionsTPC + pionTarget_nubar;
       box->nOtherPions = nPospionsTPC + nME + npi0;
     }
 
@@ -591,6 +592,10 @@ namespace numuCC4piUtils{
 	
     (void)event;
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+
+    // do not consider this category in RHC
+    if (ND::params().GetParameterI("numuCC4piAnalysis.NeutrinoMode") == -1)
+      return false;
 	
     // if long enough TPC track, it should be selected by other branches
     if (cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack))
@@ -897,6 +902,7 @@ namespace numuCC4piUtils{
 
       box->All_mom.push_back(track_i->SmearedMomentum);
       box->All_cos.push_back(track_i->DirectionStart[2]);
+      box->All_L.push_back(length);
       box->All_true_mom.push_back(track_i->GetTrueParticle()->Momentum);
 
       box->All_PDG.push_back(track_i->GetTrueParticle()->PDG);
