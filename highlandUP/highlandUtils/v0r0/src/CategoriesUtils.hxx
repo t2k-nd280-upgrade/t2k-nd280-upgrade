@@ -18,6 +18,7 @@ namespace anaUtils{
   
   /// Classify reaction topologies
   Int_t GetTopology(const AnaTrueVertex& trueVertex, const SubDetId::SubDetEnum det=SubDetId::kTPCUp1, bool IsAntinu = false);
+  Int_t GetTopologyAll(const AnaTrueVertex& trueVertex, const SubDetId::SubDetEnum det=SubDetId::kTPCUp1, bool IsAntinu = false);
 
     /// Classify reaction topologies in special attention to MEC process
   Int_t GetMECTopology(const AnaTrueVertex& trueVertex, const SubDetId::SubDetEnum det=SubDetId::kTPCUp1,bool IsAntinu = false);

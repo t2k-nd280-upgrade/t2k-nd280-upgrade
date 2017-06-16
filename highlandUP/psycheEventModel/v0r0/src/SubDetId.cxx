@@ -30,6 +30,7 @@ const unsigned long SubDetId::DetMask[] = {
     1<<SubDetId::kToFBackUp,
     1<<SubDetId::kToFFrontDown,
     1<<SubDetId::kToFFrontUp,
+    1<<SubDetId::kToFECalP0D,
     1<<SubDetId::kInvalidSubdetector,
     1<<SubDetId::kTPC     | SubDetId::MakeMask(SubDetId::kTPCUp1,     SubDetId::kTPCDown2),
     1<<SubDetId::kTarget  | SubDetId::MakeMask(SubDetId::kTarget1,    SubDetId::kTarget2),
@@ -121,6 +122,7 @@ int SubDetId::GetTOF(unsigned long BitField){
     else if (BitField & DetMask[SubDetId::kToFBackUp]) return 9;
     else if (BitField & DetMask[SubDetId::kToFFrontDown]) return 10;
     else if (BitField & DetMask[SubDetId::kToFFrontUp]) return 11;
+    else if (BitField & DetMask[SubDetId::kToFECalP0D]) return 12;
 
     else return -1;
 }
@@ -145,7 +147,8 @@ void SubDetId::SetDetectorSystemFields(unsigned long &BitField){
 	      i == SubDetId::kToFLeftUp  || i == SubDetId::kToFLeftDown ||
               i == SubDetId::kToFRightUp || i == SubDetId::kToFRightDown ||
 	      i == SubDetId::kToFBackUp  || i == SubDetId::kToFBackDown || 
-	      i == SubDetId::kToFFrontUp || i == SubDetId::kToFFrontDown ){
+	      i == SubDetId::kToFFrontUp || i == SubDetId::kToFFrontDown ||
+	      i == SubDetId::kToFECalP0D){
       SetDetectorUsed(BitField, SubDetId::kToF);
 
     }
@@ -185,7 +188,7 @@ bool SubDetId::IsECal(SubDetId::SubDetEnum det){
 }
     
 bool SubDetId::IsTOF(SubDetId::SubDetEnum det){
-  return ((det <= SubDetId::kToFFrontUp && det >= SubDetId::kToFTopDown) || det == SubDetId::kToF);
+  return ((det <= SubDetId::kToFECalP0D && det >= SubDetId::kToFTopDown) || det == SubDetId::kToF);
 }
 
 bool SubDetId::IsP0D(SubDetId::SubDetEnum det){
@@ -194,7 +197,7 @@ bool SubDetId::IsP0D(SubDetId::SubDetEnum det){
 
 SubDetId::SubDetEnum SubDetId::GetSubdetectorEnum(unsigned long BitField){
  
-    BitField = BitField & MakeMask(SubDetId::kToFFrontUp, SubDetId::kTPCUp1);
+    BitField = BitField & MakeMask(SubDetId::kToFECalP0D, SubDetId::kTPCUp1);
     int nBits = NumberOfSetBits(BitField);
     if(nBits!=1){
         std::cout << " Error: Track contains multiple subdetectors, cannot find a single subdetector enum to return." << std::endl;
