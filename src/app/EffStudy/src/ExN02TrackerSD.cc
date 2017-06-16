@@ -48,6 +48,8 @@
 
 #include <TH2F.h>
 
+#include "ExN02ApplyResponse.hh"
+
 //#define DEBUG
 
 using namespace conv;
@@ -187,19 +189,41 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     // 	 << PMlocalPosition.z() << G4endl;
     // G4cout << G4endl;
     
-    
-    
+          
     // Get the light position in the local frame and 
-    // calculate the position of the correspding MPPC (at it's bin center) 
-    
+    // calculate the position of the correspding MPPC (at it's bin center)     
     double lightX = PMlocalPosition.x() + deltaX;
     double lightY = PMlocalPosition.y() + deltaY;
     double lightZ = PMlocalPosition.z() + deltaZ;
-    // G4cout << "lightX = " << lightX << ", lightY = " << lightY << ", lightZ = " << lightZ << G4endl;
-    
+    G4ThreeVector LightPos = G4ThreeVector(lightX,lightY,lightZ);
+
     double mppcX = -9999999999;
     double mppcY = -9999999999;
     double mppcZ = -9999999999;
+
+    int detID = kBadNum;
+    G4ThreeVector LightBarPos(kBadNum,kBadNum,kBadNum); // middle step pos in bar system (used for WAGASCI)
+
+    G4Track* track       = aStep->GetTrack();  
+    G4int trackid        = track->GetTrackID();
+    G4int parentid       = track->GetParentID();
+    G4double particle    = track->GetDefinition()->GetPDGEncoding();
+    G4double prestepTime = preStepPoint->GetGlobalTime() * ns;
+    G4double steplength = aStep->GetStepLength();
+    G4double charge = track->GetDefinition()->GetPDGCharge();
+    
+
+
+
+
+
+
+
+
+
+    /*
+
+    //////// THIS PIECE OF CODE HAS BEEN MOVED TO ExN02ApplyResponse
 
     if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
       persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
@@ -235,13 +259,7 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     }
     
     G4ThreeVector MPPCLocalPosition = G4ThreeVector(mppcX,mppcY,mppcZ);  
-    G4Track* track       = aStep->GetTrack();  
-    G4int trackid        = track->GetTrackID();
-    G4int parentid       = track->GetParentID();
-    G4double particle    = track->GetDefinition()->GetPDGEncoding();
-    G4double prestepTime = preStepPoint->GetGlobalTime() * ns;
-    G4double steplength = aStep->GetStepLength();
-    
+
     G4double edep_q = edep;
 
     // Calculate the # of p.e. that reach the MPPC (X,Y,Z)    
@@ -263,21 +281,20 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
 
       //G4cout << touch_namedet << G4endl;
-
-      /*
-      // fiber along X --> Z coordinate + Y layer 
-      if(touch_namedet.contains("FiberScintHoriz")){
-	distX = conv::kUndefined; 
-	distY = lightY - persistencyManager->GetMPPCPosY();
-	distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
-      }
-      // fiber along Z --> X coordinate + Y layer 
-      else if(touch_namedet.contains("FiberScintVert")){ // along Z
-	distX = lightX - persistencyManager->GetMPPCPosX(); 
-	distY = lightY - persistencyManager->GetMPPCPosY();
-	distZ = conv::kUndefined; 
-      }
-      */
+      
+      // // fiber along X --> Z coordinate + Y layer 
+      // if(touch_namedet.contains("FiberScintHoriz")){
+      // 	distX = conv::kUndefined; 
+      // 	distY = lightY - persistencyManager->GetMPPCPosY();
+      // 	distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
+      // }
+      // // fiber along Z --> X coordinate + Y layer 
+      // else if(touch_namedet.contains("FiberScintVert")){ // along Z
+      // 	distX = lightX - persistencyManager->GetMPPCPosX(); 
+      // 	distY = lightY - persistencyManager->GetMPPCPosY();
+      // 	distZ = conv::kUndefined; 
+      // }
+      
     }
 
     //////////////////////////////////////////////
@@ -395,8 +412,6 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     // G4int detID = Touchable->GetVolume(0)->GetCopyNo();
 
 
-
-
     //
     // B.S
     //
@@ -466,49 +481,103 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 	     << G4endl ;
 #endif 
     } // end if use WAGASCI
+    
+    ////////////////////////////////
+
+    */
+
+
+
+
+
+    /*
+      
+    /////////// TEST OF ExN02ApplyResponse CLASS ON EACH STEP 
+
+    int trackid_prev = trackid;
+    double edep_prev = edep;
+    double peX_prev = peX;
+    double peY_prev = peY;
+    double peZ_prev = peZ;
+    double timepeX_prev = timepeX;
+    double timepeY_prev = timepeY;
+    double timepeZ_prev = timepeZ;
+    G4ThreeVector LightPos_prev = LightPos;
+    G4ThreeVector MPPCLocalPosition_prev = MPPCLocalPosition;
+    
+    G4cout << " trkid =" << trackid_prev
+    	   << " edep =" << edep_prev
+    	   << " pe =" << peX_prev << ", " << peY_prev << ", " << peZ_prev 
+    	   << " delay =" << timepeX_prev << ", " << timepeY_prev << ", " << timepeZ_prev 
+    	   << " lightpos = " << LightPos_prev
+    	   << " MPPCpos =" << MPPCLocalPosition_prev
+    	   << G4endl ;
+ 
+         
+    ExN02ApplyResponse ApplyResponse;    
+    G4ThreeVector lightPos(lightX,lightY,lightZ);    
+    ApplyResponse.CalcResponse(lightPos,trackid,parentid,charge,prestepTime,steplength,edep,touch_namedet);    
+    
+    peX = ApplyResponse.GetHitPE().x();
+    peY = ApplyResponse.GetHitPE().y();
+    peZ = ApplyResponse.GetHitPE().z();
+    
+    timepeX = ApplyResponse.GetHitTime().x();
+    timepeY = ApplyResponse.GetHitTime().y();
+    timepeZ = ApplyResponse.GetHitTime().z();
+    
+    double posX = ApplyResponse.GetHitPos().x();
+    double posY = ApplyResponse.GetHitPos().y();
+    double posZ = ApplyResponse.GetHitPos().z();
+    
+    trackid = ApplyResponse.GetHitTrkID();
+    
+    G4cout << " trkid =" << trackid
+    	   << " edep =" << edep
+    	   << " pe =" << peX << ", " << peY << ", " << peZ 
+    	   << " delay =" << timepeX << ", " << timepeY << ", " << timepeZ 
+    	   << " lightpos = " << lightPos
+    	   << " MPPCpos =" << ApplyResponse.GetHitPos()
+    	   << G4endl ;
+    
+    if(trackid_prev!=trackid ||
+       edep_prev!=edep ||
+       peX_prev!=peX ||
+       peY_prev!=peY ||
+       peZ_prev!=peZ ||
+       timepeX_prev!=timepeX ||
+       timepeY_prev!=timepeY ||
+       timepeZ_prev!=timepeZ ||
+       LightPos_prev!=LightPos ||
+       MPPCLocalPosition_prev!=MPPCLocalPosition
+       )
+      {
+    	exit(1);
+      }
+    //////
+
+    */
+
+
 
 
 
     
-    // Fill the Hit
+
+
+
+    //
+    // Fill the Hit (store all true informations)
+    // The response is computed in ND280RootPersistencyManager
+    //
     
     ExN02TrackerHit* aHit  
-      = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,edep_q,MPPCLocalPosition,prestepTime);    
-
-#ifdef DEBUG
-    G4cout << "hit created, then fill it" 
-	   << ", name det = " << touch_namedet 
-	   << ", pe =" << peX << ", " << peY << ", " << peZ 
-	   << ", delay =" << timepeX << ", " << timepeY << ", " << timepeZ 
-	   << G4endl ;
-#endif
-
+      = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,charge,LightPos,prestepTime);          
+    aHit->SetStepLength(steplength);
     aHit->SetNameDet(touch_namedet);
-    aHit->SetPE(conv::kUndefined);
-    aHit->SetPEX(peX);
-    aHit->SetPEY(peY);
-    aHit->SetPEZ(peZ);
-    aHit->SetDelayTime(conv::kUndefined);
-    aHit->SetDelayTimeX(timepeX);
-    aHit->SetDelayTimeY(timepeY);
-    aHit->SetDelayTimeZ(timepeZ);
-    // B.Q
-    aHit->SetPosInMod(PMlocalPosition);
-    aHit->SetMPPCPosInMod(MPPClocalPosition);
-    aHit->SetPosition(PMworldPosition);
-    aHit->SetMPPCPosition(MPPCworldPosition);        
-    if(edep > 1e-3) trackerCollection->insert( aHit );
-    ///
-    //trackerCollection->insert( aHit );   
     
-#ifdef DEBUG
-    G4cout << "almost done" << G4endl ;
-#endif
-    //TEMP
-#ifdef DEBUG
-    G4cout << "hit created and filled!" << G4endl ;
-#endif
-
+    trackerCollection->insert( aHit );   
+    
   } // if( persistencyManager->GetNavigDetName_Targ1()!="" )
 
 

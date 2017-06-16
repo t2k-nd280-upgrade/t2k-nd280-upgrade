@@ -46,13 +46,13 @@ G4Allocator<ExN02TrackerHit> ExN02TrackerHitAllocator;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ExN02TrackerHit::ExN02TrackerHit(G4int dID0, G4int P0, G4int trkid, G4int parentid, G4double e, G4double eq, G4ThreeVector pos, G4double t) 
+ExN02TrackerHit::ExN02TrackerHit(G4int dID0, G4int P0, G4int trkid, G4int parentid, G4double e, G4double charge, G4ThreeVector pos, G4double t) 
 {
   fDetID = dID0;
   fTrackID = trkid;
   fParentID = parentid;
   fEdep = e;
-  fEdep_q = eq;
+  fCharge = charge;
   fParticle = P0;
   fPosition = pos;
   fTime = t;  
@@ -90,34 +90,11 @@ ExN02TrackerHit::ExN02TrackerHit(const ExN02TrackerHit& right)
 {
   fDetID = right.fDetID;
   fEdep     = right.fEdep;
-  fEdep_q     = right.fEdep_q;
+  fCharge     = right.fCharge;
   fParticle = right.fParticle; 
   for(int i=0;i<3;i++) fPosition[i] = right.fPosition[i];
-  fEventID = right.fEventID;
-  // My new
   fTrackID = right.fTrackID;
   fParentID = right.fParentID;
-  //
-
-  /*
-  // ND280 UPGRADE
-  trackID      = right.trackID;
-  parentID     = right.parentID;
-  edep         = right.edep;
-  prestepPos   = right.prestepPos;
-  poststepPos  = right.poststepPos;
-  namedet      = right.namedet;
-  charge       = right.charge;
-  mom          = right.mom; 
-  trackpdg     = right.trackpdg;
-  trackname    = right.trackname;
-  tracklength  = right.tracklength;
-  steplength   = right.steplength;
-  stepdeltalyz = right.stepdeltalyz;
-  nsteps       = right.nsteps;  
-  trackcostheta= right.trackcostheta;
-  ////
-  */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -126,36 +103,11 @@ const ExN02TrackerHit& ExN02TrackerHit::operator=(const ExN02TrackerHit& right)
 {
   fDetID = right.fDetID;
   fEdep       = right.fEdep;
-  fEdep_q      = right.fEdep_q;
+  fCharge      = right.fCharge;
   fParticle = right.fParticle; 
   for(int i=0;i<3;i++) fPosition[i] = right.fPosition[i];
-  fEventID = right.fEventID;
-  // My new
   fTrackID = right.fTrackID;
   fParentID = right.fParentID;
-  //
-
-  /*
-  // ND280 UPGRADE
-  trackID      = right.trackID;
-  parentID     = right.parentID;
-  chamberNb    = right.chamberNb;
-  edep         = right.edep;
-  prestepPos   = right.prestepPos;
-  poststepPos  = right.poststepPos;
-  namedet      = right.namedet;
-  charge       = right.charge;
-  mom          = right.mom; 
-  trackpdg     = right.trackpdg;
-  trackname    = right.trackname;
-  tracklength  = right.tracklength;
-  steplength   = right.steplength;
-  stepdeltalyz = right.stepdeltalyz;
-  nsteps       = right.nsteps;  
-  trackcostheta= right.trackcostheta;
-  ////
-  */
-
   return *this;
 }
 
@@ -218,64 +170,23 @@ void ExN02TrackerHit::Draw()
     }
   #endif
 
-  // ND280 UPGRADE
-  /*
-  G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
-  if(pVVisManager)
-  {
-    G4Circle circle(prestepPos);
-    circle.SetScreenSize(2.);
-    circle.SetFillStyle(G4Circle::filled);
-    G4Colour colour(1.,0.,0.);
-    G4VisAttributes attribs(colour);
-    circle.SetVisAttributes(attribs);
-    pVVisManager->Draw(circle);
-  }
-  */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02TrackerHit::Print()
 {
-
   G4cout.precision(4);
-  
-  //G4cout << " Mod:" << mod 
   G4cout << " detID:" << fDetID
 	 << " detName: " << fNameDet
-    //<< " Pln:" << pln 
-    //<< " Ch:" << ch 
-    //<< " Time:" << time
-    //<< "  Edep:" << G4BestUnit(edep,"Energy")
 	 << " Edep:" << fEdep
-    //<< " EdepQ:" << fEdep_q
-    //<< " p.e.:" << pe
-         << " PID:" << fParticle
-    //		 << G4endl;
+	 << " Charge:" << fCharge
+         << " Particle:" << fParticle
 	 << " Trk:" << fTrackID
 	 << " Parent:" << fParentID
-         << " pos:{" << fPosition[0]/*/cm*/ << ", "
-         << fPosition[1]/*/cm*/ << ", " << fPosition[2]/*/cm*/
+         << " pos:{" << fPosition[0] << ", "
+         << fPosition[1] << ", " << fPosition[2]
          << "}" << G4endl;
-
-  
-  /*
-  G4cout.precision(5);  
-  //if(namedet=="Target" || namedet=="TPC Up"){
-  G4cout << "  trackID: " << trackID 
-	 << "  track length: " << G4BestUnit(tracklength,"Length") 
-	 << "  energy deposit: " << G4BestUnit(edep,"Energy")
-    //<< "  position: " << G4BestUnit(pos,"Length") 
-    //<< "  momentum: " << G4BestUnit(mom,"Energy")
-    //<< "  charge: " << G4BestUnit(charge,"Electric charge")
-    //<< "  pdg: " << trackpdg 
-	 << "  name: " << trackname
-    //<< "  # of steps: " << nsteps
-	 << "  detector: " << namedet 
-	 << G4endl;
-  //}
-  */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

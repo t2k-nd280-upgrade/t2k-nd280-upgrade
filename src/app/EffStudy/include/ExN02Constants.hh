@@ -42,4 +42,10 @@ const G4int    cStepperType = 4;           // ClassicalRK4 is default stepper
 const G4double cStepLimit = 1.0 * mm; // used in the TPC drift region for charge particles
 
 
+//namespace conv {
+//kBadNum = -999999;
+//} // conv                                                                                                                                                                                                   
+
+
+
 #endif

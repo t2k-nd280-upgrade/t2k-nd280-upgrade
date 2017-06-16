@@ -89,8 +89,6 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   // This function is called at the begining of event
 
-  G4cout << "fTypeDirection = " << fTypeDirection << G4endl;
-  
   bool doGun = false;
   if(fGeneratorType=="ParticleGun") doGun = true;
 
