@@ -38,6 +38,7 @@
 #include <G4FieldManager.hh>
 
 #include <TROOT.h>
+#include <TPolyMarker3D.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TGeoManager.h>
@@ -185,16 +186,18 @@ void ND280RootPersistencyManager::InitNavigator(G4VPhysicalVolume *logvolume,G4T
 G4String ND280RootPersistencyManager::GetNavigHistoVolName(){ 
   int depth = fNavigHistoTarg1->GetDepth();
   return fNavigHistoTarg1->GetVolume(depth)->GetLogicalVolume()->GetName();
-};
+}
 
 void ND280RootPersistencyManager::SetNavigDetName_Targ1(G4String name){
   fNavigDetName_Targ1=name;
   if(name=="") fNavigDetExist=false;
   else         fNavigDetExist=true;
   return;
-};
+}
 
-
+G4ThreeVector ND280RootPersistencyManager::GetLocalPosition(G4ThreeVector WorldPos){
+  return GetNavigHistoTarg1()->GetTopTransform().TransformPoint(WorldPos);
+}
 
 
 /////////////////////////////////////
@@ -229,7 +232,7 @@ void ND280RootPersistencyManager::InitMPPCProj2D(double width, double height, do
     fMPPCProj2D_YZ 
       = new TH2F("fMPPCProj2D_YZ","fMPPCProj2D_YZ",numY,minY,maxY,numZ,minZ,maxZ);
   }
-};
+}
 
 void ND280RootPersistencyManager::GetHitPosXY(double lightX,double lightY, double &mppcX,double &mppcY){ 
   if(GetIsMPPCProjXY()){
@@ -244,7 +247,7 @@ void ND280RootPersistencyManager::GetHitPosXY(double lightX,double lightY, doubl
     G4Exception("ND280RootPersistencyManager::GetHitPosXY",
 		"MyCode0002",FatalException, msg);
   }
-};
+}
 								  
 void ND280RootPersistencyManager::GetHitPosXZ(double lightX,double lightZ, double &mppcX,double &mppcZ){
   if(GetIsMPPCProjXZ()){
@@ -259,7 +262,7 @@ void ND280RootPersistencyManager::GetHitPosXZ(double lightX,double lightZ, doubl
     G4Exception("ND280RootPersistencyManager::GetHitPosXZ",
 		"MyCode0002",FatalException, msg);
   }
-};
+}
 
 void ND280RootPersistencyManager::GetHitPosYZ(double lightY,double lightZ, double &mppcY,double &mppcZ){
   if(GetIsMPPCProjYZ()){
@@ -274,7 +277,7 @@ void ND280RootPersistencyManager::GetHitPosYZ(double lightY,double lightZ, doubl
     G4Exception("ND280RootPersistencyManager::GetHitPosYZ",
 		"MyCode0002",FatalException, msg);
   }
-};
+}
 
 TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XY(){ 
   if( !GetIsMPPCProjXY() ){
@@ -284,7 +287,7 @@ TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XY(){
 		"MyCode0002",FatalException, msg);
   }
   return fMPPCProj2D_XY;
-};
+}
 
 TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XZ(){ 
   if( !GetIsMPPCProjXZ() ){
@@ -294,7 +297,7 @@ TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XZ(){
 		"MyCode0002",FatalException, msg);
   }
   return fMPPCProj2D_XZ;
-};
+}
 
 TH2F *ND280RootPersistencyManager::GetMPPCProj2D_YZ(){ 
   if( !GetIsMPPCProjYZ() ){
@@ -305,7 +308,7 @@ TH2F *ND280RootPersistencyManager::GetMPPCProj2D_YZ(){
   }
 
   return fMPPCProj2D_YZ;
-};
+}
 
 // Assume the MPPC read-out plane is at x,y,z<0
 // Assume at least 2 projections exist
@@ -323,7 +326,7 @@ G4double ND280RootPersistencyManager::GetMPPCPosX(){
 		"MyCode0002",FatalException, msg);
   }
   return 0;
-};
+}
 
 G4double ND280RootPersistencyManager::GetMPPCPosY(){
   if( GetIsMPPCProjXY() ){
@@ -339,7 +342,7 @@ G4double ND280RootPersistencyManager::GetMPPCPosY(){
 		"MyCode0002",FatalException, msg);
   }
   return 0;
-};
+}
 
 G4double ND280RootPersistencyManager::GetMPPCPosZ(){
 
@@ -356,7 +359,7 @@ G4double ND280RootPersistencyManager::GetMPPCPosZ(){
 		"MyCode0002",FatalException, msg);
   }
   return 0;
-};
+}
 
 
 // B.Q
@@ -497,7 +500,8 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   // hMPPCHits_XY[ievt]->Fill(mppcx,mppcy,pez); // pe along Z
   // hMPPCHits_XZ[ievt]->Fill(mppcx,mppcz,pey); // pe along Y
   // hMPPCHits_YZ[ievt]->Fill(mppcy,mppcz,pex); // pe along X
-      
+
+
   //
   // Store the hits
   // 
@@ -1167,6 +1171,28 @@ bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
     OutMPPCProj2D_YZ->SetTitle("OutMPPCProj2D_YZ");
     OutMPPCProj2D_YZ->Write();
   }
+
+  // Store translation local-world reference system
+  const G4NavigationHistory *pmHistory = this->GetNavigHistoTarg1();
+  G4ThreeVector PMworldPosition(0,0,0);
+  G4ThreeVector PMlocalPosition = pmHistory->
+    GetTopTransform().TransformPoint(PMworldPosition);
+  
+  TPolyMarker3D *pm3d = new TPolyMarker3D(1);
+  pm3d->SetName("WorldOrigInLocal");
+  double x = PMlocalPosition.x();
+  double y = PMlocalPosition.y();
+  double z = PMlocalPosition.z();
+  pm3d->SetPoint(0,x,y,z);
+  pm3d->Write();
+
+  //double xnew = -999;
+  //double ynew = -999;
+  //double znew = -999;  
+  //pm3d->GetPoint(0,xnew,ynew,znew);
+  //G4cout << xnew << ", " << ynew << ", " << znew << G4endl;
+  //exit(1);
+  
   
   return true;
 }

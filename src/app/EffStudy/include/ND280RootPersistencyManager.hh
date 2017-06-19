@@ -98,6 +98,8 @@ public:
   G4bool fNavigDetExist;
   G4bool doNavigDetExist(){return fNavigDetExist;};
 
+  G4ThreeVector GetLocalPosition(G4ThreeVector WorldPos);
+
   // Define the position of the Target MPPCs  
   // Same reference system as the navigator 
   // i.e. set in DetectorConstruction

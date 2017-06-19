@@ -175,8 +175,11 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     //<< G4endl;
     
     G4ThreeVector PMworldPosition = preStepPoint->GetPosition();
-    G4ThreeVector PMlocalPosition = pmHistory->
-      GetTopTransform().TransformPoint(PMworldPosition);
+    //G4ThreeVector PMlocalPosition = pmHistory->
+    //GetTopTransform().TransformPoint(PMworldPosition);
+    //G4cout << "PMlocalPosition: " << PMlocalPosition << G4endl;
+    G4ThreeVector PMlocalPosition = persistencyManager->GetLocalPosition(PMworldPosition);
+    //G4cout << "PMlocalPosition: " << PMlocalPosition << G4endl;
     
     //  G4cout << "PMWorldPosition = " 
     //	 << PMworldPosition.x() << ", "
