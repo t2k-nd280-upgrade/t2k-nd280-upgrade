@@ -294,9 +294,18 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     //delete nd280UpTrack;
   }
 
+  float hmom=0;
   if (highestMomTrack)
-    if (highestMomTrack->DetCrossingsVect.size()>0)
-      trueVertex->Detector = highestMomTrack->DetCrossingsVect[0]->Detector;
+    for (unsigned int i = 0; i < highestMomTrack->DetCrossingsVect.size(); i++) {
+	float mom = sqrt( pow(highestMomTrack->DetCrossingsVect[i]->EntranceMomentum[0], 2)+
+			  pow(highestMomTrack->DetCrossingsVect[i]->EntranceMomentum[1], 2)+
+			  pow(highestMomTrack->DetCrossingsVect[i]->EntranceMomentum[2], 2) );
+	if (mom > hmom) {
+	  hmom = mom;
+	  trueVertex->Detector = highestMomTrack->DetCrossingsVect[i]->Detector;
+	}
+      }
+
 
   trueVertex->NPrimaryParticles[ParticleId::kPions] = trueVertex->NPrimaryParticles[ParticleId::kPi0]   +
     trueVertex->NPrimaryParticles[ParticleId::kPiPos] +
@@ -1097,8 +1106,8 @@ if(firstToFECalP0D){
 
    
   truePart->nDetCrossings=0;
+  //anaUtils::CreateArray(truePart->DetCrossings, nCrossers);
 
-  //  anaUtils::CreateArray(truePart->DetCrossings, nCrossers);
   if(firstTPCUp1){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
     // firstTPCUp1->PrintTrackPoint();
@@ -1123,7 +1132,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstTPCUp1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCUp1);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstTPCUp2){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1148,6 +1157,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstTPCUp2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCUp2);
     truePart->DetCrossingsVect.push_back(detCross);
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if (firstTPCDown1) {
@@ -1173,7 +1183,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstTPCDown1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCDown1);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if(firstTPCDown2){
@@ -1199,7 +1209,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstTPCDown2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTPCDown2);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstForwTPC1){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1224,7 +1234,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstForwTPC1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC1);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstForwTPC2){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1249,7 +1259,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstForwTPC2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC2);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstForwTPC3){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1274,7 +1284,7 @@ if(firstToFECalP0D){
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kForwTPC3);
     detCross->SegLength=upTrack->GetLengthForwTPC3();
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstTarget1){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1298,9 +1308,8 @@ if(firstToFECalP0D){
     detCross->EDeposit=upTrack->GetEdepTarget1();
     detCross->Detector_name=TString(firstTarget1->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTarget1);
-
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstTarget2){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1325,7 +1334,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstTarget2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kTarget2);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstFGD1){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1351,7 +1360,7 @@ if(firstToFECalP0D){
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kFGD1);
 
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstFGD2){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1376,7 +1385,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstFGD2->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kFGD2);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstDsECal){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1401,7 +1410,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstDsECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kDsECal);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstP0DECal){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1426,7 +1435,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstP0DECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kP0DECal);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if(firstBrlECal){
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1451,7 +1460,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstBrlECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kBrlECal);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if(firstUSECal){
@@ -1479,7 +1488,7 @@ if(firstToFECalP0D){
     detCross->Detector_name=TString(firstUSECal->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kP0D);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if (firstToFTopUp) {
@@ -1501,7 +1510,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFTopUp->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if (firstToFBotUp) {
@@ -1523,7 +1532,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFBotUp->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if (firstToFTopDown) {
@@ -1545,7 +1554,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFTopDown->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if (firstToFBotDown) {
@@ -1567,7 +1576,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFBotDown->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if (firstToFLeftUp) {
@@ -1589,7 +1598,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFLeftUp->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if (firstToFLeftDown) {
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1610,7 +1619,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFLeftDown->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if (firstToFRightUp) {
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1631,7 +1640,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFRightUp->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if (firstToFRightDown) {
     AnaDetCrossingB* detCross = MakeAnaDetCrossing();
@@ -1652,7 +1661,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFRightDown->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
 
@@ -1675,7 +1684,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFBackDown->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if (firstToFBackUp) {
@@ -1698,7 +1707,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFBackUp->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
 
   if (firstToFFrontDown) {
@@ -1721,7 +1730,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFFrontDown->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   if (firstToFFrontUp) {
 
@@ -1743,7 +1752,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFFrontUp->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   
   if (firstToFECalP0D) {
@@ -1766,7 +1775,7 @@ if(firstToFECalP0D){
     detCross->Detector_name = TString(firstToFECalP0D->GetPhysVolName());
     SubDetId::SetDetectorUsed(detCross->Detector, SubDetId::kToF);
     truePart->DetCrossingsVect.push_back(detCross);
-
+    //truePart->DetCrossings[truePart->nDetCrossings++] = detCross;
   }
   
 
