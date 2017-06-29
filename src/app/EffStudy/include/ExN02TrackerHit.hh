@@ -67,106 +67,20 @@ public:
   void Print();
   void Print_Hit();
 
-  /*
-public:
-  
-  // ND280 UPGRADE
-  void SetTrackID     (G4int track)      { trackID = track; };
-  void SetParentID    (G4int parent)     { parentID = parent; };
-  void SetChamberNb   (G4int chamb)      { chamberNb = chamb; };  
-  void SetEdep        (G4double de)      { edep = de; };
-  void SetPreStepPos  (G4ThreeVector xyz){ prestepPos = xyz; };  
-  void SetPostStepPos (G4ThreeVector xyz){ poststepPos = xyz; };  
-  void SetMom         (G4ThreeVector xyz){ mom = xyz; }; 
-  void SetNameDet     (G4String name)    { namedet = name; };
-  void SetCharge      (G4int mycharge)   { charge = mycharge; };
-  void SetTrackPDG    (G4int pdg)        { trackpdg = pdg; };
-  void SetTrackName   (G4String name)    { trackname = name; };
-  void SetTrackLength (G4double length ) { tracklength = length; };
-  void SetStepLength  (G4double length ) { steplength = length; };
-  void SetStepDeltaLyz(G4double deltalyz ) { stepdeltalyz = deltalyz; };
-  void SetNSteps      (G4int num)        { nsteps = num; };
-  void SetTrackCosTheta(G4double costh)  { trackcostheta = costh; };
- 
-  //G4int GetTrackID()       { return trackID; };
-  G4int GetParentID()      { return parentID; };
-  G4int GetChamberNb()     { return chamberNb; };
-  //G4double GetEdep()       { return edep; };      
-  G4ThreeVector GetPreStepPos()   { return prestepPos; };
-  G4ThreeVector GetPostStepPos() { return poststepPos; };
-  G4ThreeVector GetMom()   { return mom; }; 
-  G4String GetNameDet()    { return namedet; }; 
-  G4int GetCharge()        { return charge; }; 
-  G4int GetTrackPDG()      { return trackpdg; }; 
-  G4String GetTrackName()  { return trackname; }; 
-  G4double GetTrackLength(){ return tracklength; }; 
-  G4double GetStepLength() { return steplength; }; 
-  G4double GetStepDeltaLyz() { return stepdeltalyz; }; 
-  G4int GetNSteps()        { return nsteps; }; 
-  G4double GetTrackCosTheta(){ return trackcostheta; };
-  ///// 
-  */
-
 private:
-  // My new
   G4String fNameDet;
   G4double fStepLength;
   G4int    fParentID;
-  //
   G4int fDetID;
   G4int fTrackID;
-  G4int fMod;
-  G4int fView;
-  G4int fPln;
-  G4int fCh;
   G4double fEdep;
-  G4double fEdep_q;
-  G4double fPE;
-  G4double fPEX;
-  G4double fPEY;
-  G4double fPEZ;
-  G4double fLope;
+  G4double fCharge;
   G4int fParticle;
   G4ThreeVector fPosition;
-  G4ThreeVector fPosInMod;
-  G4ThreeVector fMPPCPosInMod;//B.Q
-  G4ThreeVector fMPPCPosition;//B.Q
-  G4int fEventID;
   G4double fTime;
-  G4double fDelayTime;
-  G4double fDelayTimeX;
-  G4double fDelayTimeY;
-  G4double fDelayTimeZ;
-  G4int fGridCell_id_x1;//added by koga 2016/1/7
-  G4int fGridCell_id_x2;//added by koga 2016/1/7
-  G4int fGridCell_id_y1;//added by koga 2016/1/7
-  G4int fGridCell_id_y2;//added by koga 2016/1/7
-
-  /*
-  // ND280 UPGRADE
-  //G4int         trackID;
-  G4int         parentID;
-  G4int         chamberNb;
-  //G4double      edep;
-  G4ThreeVector prestepPos;
-  G4ThreeVector poststepPos;
-  G4String      namedet;
-  G4int         charge;
-  G4ThreeVector mom; 
-  G4int         trackpdg;
-  G4String      trackname;  
-  G4double      tracklength;
-  G4double      steplength;
-  G4double      stepdeltalyz;
-  G4int         nsteps;
-  G4double      trackcostheta;
-  /////
-  */
-
 
 public:
 
-  // My new
   void SetNameDet     (G4String name)    { fNameDet = name; };
   G4String GetNameDet()    { return fNameDet; }; 
 
@@ -175,7 +89,6 @@ public:
 
   G4int GetParentID()      { return fParentID; };
   void SetParentID    (G4int parent)     { fParentID = parent; };
-  //
   
   inline void SetDetID     (G4int detid)      {fDetID = detid; };
   inline G4int GetDetID() { return fDetID; }// ID of scintillator
@@ -186,75 +99,18 @@ public:
   inline void SetParticle(G4int p) { fParticle = p; }
   inline G4int GetParticle() { return fParticle; }
 
-  inline void AddEdep(G4double e, G4double eq) { fEdep += e; fEdep_q += eq; }
+  inline void AddEdep(G4double e, G4double eq) { fEdep += e;}
   inline void SetEdep(G4double e) { fEdep = e; }
-  inline void SetEdepQ(G4double eq) { fEdep_q = eq; } 
   inline G4double GetEdep() { return fEdep; }
-  inline G4double GetEdepQ() { return fEdep_q; }
+
+  inline void SetCharge(G4double ch) { fCharge = ch; }
+  inline G4double GetCharge() { return fCharge; }
 
   inline void SetPosition     (G4ThreeVector pos)      {fPosition = pos; };
   inline G4ThreeVector GetPosition() { return fPosition; }
 
-  inline void SetPosInMod     (G4ThreeVector pos)      {fPosInMod = pos; };
-  inline G4ThreeVector GetPosInMod() { return fPosInMod; }
-
-  //B.Q (used for WAGASCI only)
-  inline void SetMPPCPosInMod(G4ThreeVector mppcpos){fMPPCPosInMod = mppcpos;};
-  inline G4ThreeVector GetMPPCPosInMod(){ return fMPPCPosInMod;}
-  inline void SetMPPCPosition(G4ThreeVector mppcpos){fMPPCPosition = mppcpos;};
-  inline G4ThreeVector GetMPPCPosition(){ return fMPPCPosition;}
-  //
- 
   inline void SetTime(G4double t) { fTime = t; }
   inline G4double GetTime() { return fTime; }
-
-  inline void SetDelayTime(G4double dt) { fDelayTime = dt; }
-  inline void SetDelayTimeX(G4double dt) { fDelayTimeX = dt; }
-  inline void SetDelayTimeY(G4double dt) { fDelayTimeY = dt; }
-  inline void SetDelayTimeZ(G4double dt) { fDelayTimeZ = dt; }
-  inline G4double GetDelayTime() { return fDelayTime; }
-  inline G4double GetDelayTimeX() { return fDelayTimeX; }
-  inline G4double GetDelayTimeY() { return fDelayTimeY; }
-  inline G4double GetDelayTimeZ() { return fDelayTimeZ; }
-
-  inline void SetEventID(G4int evtid) { fEventID = evtid;}
-  inline G4int GetEventID() { return fEventID; }
-
-  inline void SetMod     (G4int mod)      {fMod = mod; };
-  inline G4int GetMod() { return fMod; }
-
-  inline void SetView     (G4int view)      {fView = view; };
-  inline G4int GetView() { return fView; }
-
-  inline void SetPln     (G4int pln)      {fPln = pln; };
-  inline G4int GetPln() { return fPln; }
-
-  inline void SetCh     (G4int ch)      {fCh = ch; };
-  inline G4int GetCh() { return fCh; }
-
-  inline void SetPE(G4double p) { fPE = p; }
-  inline void SetPEX(G4double p) { fPEX = p; }
-  inline void SetPEY(G4double p) { fPEY = p; }
-  inline void SetPEZ(G4double p) { fPEZ = p; }
-  inline G4double GetPE() { return fPE; }
-  inline G4double GetPEX() { return fPEX; }
-  inline G4double GetPEY() { return fPEY; }
-  inline G4double GetPEZ() { return fPEZ; }
-
-  inline void SetLOPE(G4double p) { fLope = p; }
-  inline G4double GetLOPE() { return fLope; }
-
-  inline void SetCellidX1(G4int id) { fGridCell_id_x1 = id; }//added by koga 2016/1/7
-  inline G4int GetCellidX1() { return fGridCell_id_x1; }//added by koga 2016/1/7
-
-  inline void SetCellidX2(G4int id) { fGridCell_id_x2 = id; }//added by koga 2016/1/7
-  inline G4int GetCellidX2() { return fGridCell_id_x2; }//added by koga 2016/1/7
-
-  inline void SetCellidY1(G4int id) { fGridCell_id_y1 = id; }//added by koga 2016/1/7
-  inline G4int GetCellidY1() { return fGridCell_id_y1; }//added by koga 2016/1/7
-
-  inline void SetCellidY2(G4int id) { fGridCell_id_y2 = id; }//added by koga 2016/1/7
-  inline G4int GetCellidY2() { return fGridCell_id_y2; }//added by koga 2016/1/7
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

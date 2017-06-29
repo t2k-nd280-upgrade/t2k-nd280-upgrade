@@ -305,13 +305,6 @@ void SelND280UpHit
     name = TString::Format("hMPPCHitsDelay100ns_YZ_%d",ievt);
     hMPPCHitsDelay100ns_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
 
-    //name = TString::Format("hMPPCHitsVsTime_XY_%d",ievt);
-    //hMPPCHitsVsTime_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
-    //name = TString::Format("hMPPCHitsVsTime_XZ_%d",ievt);
-    //hMPPCHitsVsTime_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
-    //name = TString::Format("hMPPCHitsVsTime_YZ_%d",ievt);
-    //hMPPCHitsVsTime_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
-
     name = TString::Format("hPEVsTime_x_%d",ievt);
     hPEVsTime_x[ievt] = new TH1F(name,name,100,0,10000);
     name = TString::Format("hPEVsTime_y_%d",ievt);
@@ -362,17 +355,39 @@ void SelND280UpHit
     int current_pdg = 0;
 
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
-
+      
+      //
+      // From: TND280UpHit
+      //
+      // // true
+      // int GetHitID() {return fHitID;};
+      // int GetPDG(){return fPDG;};
+      // int GetTrackID(){return fTrackID;};
+      // int GetParentID() {return fParentID;};
+      // double GetEdep(){return fEdep;};
+      // double GetLocPosX(){return fLocPosX;};
+      // double GetLocPosY(){return fLocPosY;};
+      // double GetLocPosZ(){return fLocPosZ;};
+      // double GetTime(){return fTime;};
+      // string GetDetName(){return fDetName;};
+      // // reco
+      // double GetPEX(){return fPEX;};
+      // double GetPEY(){return fPEY;};
+      // double GetPEZ(){return fPEZ;};
+      // double GetMPPCPosX(){return fMPPCPosX;};
+      // double GetMPPCPosY(){return fMPPCPosY;};
+      // double GetMPPCPosZ(){return fMPPCPosZ;};
+      // double GetTimePEX(){return fTimePEX;};
+      // double GetTimePEY(){return fTimePEY;};
+      // double GetTimePEZ(){return fTimePEZ;};
+      //
+      
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
       //nd280UpHit->PrintHit();
       
-      //double mppcx = nd280UpHit->GetLocPosX();
-      //double mppcy = nd280UpHit->GetLocPosY();
-      //double mppcz = nd280UpHit->GetLocPosZ();
-
-      double mppcx = nd280UpHit->GetLocPosX();
-      double mppcy = nd280UpHit->GetLocPosY();
-      double mppcz = nd280UpHit->GetLocPosZ();
+      double mppcx = nd280UpHit->GetMPPCPosX();
+      double mppcy = nd280UpHit->GetMPPCPosY();
+      double mppcz = nd280UpHit->GetMPPCPosZ();
 
       int pdg = nd280UpHit->GetPDG();
       
@@ -384,26 +399,17 @@ void SelND280UpHit
       double time_y = nd280UpHit->GetTimePEY(); // # of pe Vs time
       double time_z = nd280UpHit->GetTimePEZ(); // # of pe Vs time
 
-      //cout << time_x << ", " << time_y << ", " << time_z << endl;
-      //cout << pex << " " << pey << " " << pez << endl;
-      //cout << mppcx << " " << mppcy << " " << mppcz << endl;
-      
       if(pdg!=current_pdg){
 	current_pdg = pdg;      
 	cout << pdg << endl;
       }
       
-      //int ievtWithHit = NEvtWithHit-1;
       hMPPCHits_XY[ievt]->Fill(mppcx,mppcy,pez); // pe along Z
       hMPPCHits_XZ[ievt]->Fill(mppcx,mppcz,pey); // pe along Y
       hMPPCHits_YZ[ievt]->Fill(mppcy,mppcz,pex); // pe along X
       
       double binY = hMPPCHits_YZ[ievt]->GetXaxis()->FindBin(mppcy);
       cout << "binY = " << mppcy << " / " << hMPPCHits_YZ[ievt]->GetXaxis()->GetBinCenter(binY) << endl;
-
-      //hMPPCHitsVsTime_XY[ievt]->Fill(mppcx,mppcy,time_z); // pe along X
-      //hMPPCHitsVsTime_XZ[ievt]->Fill(mppcx,mppcz,time_y); // pe along Y
-      //hMPPCHitsVsTime_YZ[ievt]->Fill(mppcy,mppcz,time_x); // pe along Z 
 
       if(time_x > 100) hMPPCHitsDelay100ns_XY[ievt]->Fill(mppcx,mppcy,pez); // pe along X
       if(time_y > 100) hMPPCHitsDelay100ns_XZ[ievt]->Fill(mppcx,mppcz,pey); // pe along Y
@@ -414,7 +420,6 @@ void SelND280UpHit
       hPEVsTime_z[ievt]->Fill(time_z,pez);
     
     }
-
 
     for(int i=0;i<hMPPCHits_XY[ievt]->GetXaxis()->GetNbins();i++){
       for(int j=0;j<hMPPCHits_XY[ievt]->GetYaxis()->GetNbins();j++){
@@ -449,16 +454,10 @@ void SelND280UpHit
   TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
   TFile *out = new TFile(outfilename.Data(),"RECREATE");
   //
-  //for(int ievtdispl=0;ievtdispl<NEvtWithHit;ievtdispl++){    
-  //for(int ievtdispl=0;ievtdispl<NEvtDisplTot;ievtdispl++){    
   for(int ievtdispl=evtfirst;ievtdispl<=EntryLast;ievtdispl++){ // get last entry
     hMPPCHits_XY[ievtdispl]->Write();  
     hMPPCHits_XZ[ievtdispl]->Write();  
     hMPPCHits_YZ[ievtdispl]->Write();
-
-    //hMPPCHitsVsTime_XY[ievtdispl]->Write();  
-    //hMPPCHitsVsTime_XZ[ievtdispl]->Write();  
-    //hMPPCHitsVsTime_YZ[ievtdispl]->Write();
 
     hMPPCHitsDelay100ns_XY[ievtdispl]->Write();  
     hMPPCHitsDelay100ns_XZ[ievtdispl]->Write();  

@@ -35,12 +35,14 @@ public:
   G4String AsStringTargType(TargetType_t targetid);
 
   G4double ApplyScintiResponse(G4double &edep,G4double steplength,G4Track *aTrack);  
+  G4double ApplyScintiResponse(G4double &edep,G4double steplength,G4double charge);  
   void ApplyFiberResponse(G4double &nphot, G4double &time, G4double x);
   void ApplyMPPCResponse(G4double &npe);
 
 private:
  
   void BirksSaturation(G4double &edeposit, G4double steplength, G4Track *aTrack);
+  void BirksSaturation(G4double &edeposit, G4double steplength, G4double charge);
   G4double EdepToPhot(G4double edep);
   
   void ApplyFiberAttenuation(G4double &nphot, G4double x);

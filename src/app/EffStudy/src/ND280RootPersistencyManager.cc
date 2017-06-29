@@ -7,6 +7,7 @@
 #include "ND280TrajectoryPoint.hh"
 #include "ExN02VertexInfo.hh"
 #include "ExN02Constants.hh"
+#include "ExN02ApplyResponse.hh"
 
 #include "ExN02TrackerHit.hh"
 
@@ -37,6 +38,7 @@
 #include <G4FieldManager.hh>
 
 #include <TROOT.h>
+#include <TPolyMarker3D.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TGeoManager.h>
@@ -184,16 +186,18 @@ void ND280RootPersistencyManager::InitNavigator(G4VPhysicalVolume *logvolume,G4T
 G4String ND280RootPersistencyManager::GetNavigHistoVolName(){ 
   int depth = fNavigHistoTarg1->GetDepth();
   return fNavigHistoTarg1->GetVolume(depth)->GetLogicalVolume()->GetName();
-};
+}
 
 void ND280RootPersistencyManager::SetNavigDetName_Targ1(G4String name){
   fNavigDetName_Targ1=name;
   if(name=="") fNavigDetExist=false;
   else         fNavigDetExist=true;
   return;
-};
+}
 
-
+G4ThreeVector ND280RootPersistencyManager::GetLocalPosition(G4ThreeVector WorldPos){
+  return GetNavigHistoTarg1()->GetTopTransform().TransformPoint(WorldPos);
+}
 
 
 /////////////////////////////////////
@@ -228,7 +232,7 @@ void ND280RootPersistencyManager::InitMPPCProj2D(double width, double height, do
     fMPPCProj2D_YZ 
       = new TH2F("fMPPCProj2D_YZ","fMPPCProj2D_YZ",numY,minY,maxY,numZ,minZ,maxZ);
   }
-};
+}
 
 void ND280RootPersistencyManager::GetHitPosXY(double lightX,double lightY, double &mppcX,double &mppcY){ 
   if(GetIsMPPCProjXY()){
@@ -243,7 +247,7 @@ void ND280RootPersistencyManager::GetHitPosXY(double lightX,double lightY, doubl
     G4Exception("ND280RootPersistencyManager::GetHitPosXY",
 		"MyCode0002",FatalException, msg);
   }
-};
+}
 								  
 void ND280RootPersistencyManager::GetHitPosXZ(double lightX,double lightZ, double &mppcX,double &mppcZ){
   if(GetIsMPPCProjXZ()){
@@ -258,7 +262,7 @@ void ND280RootPersistencyManager::GetHitPosXZ(double lightX,double lightZ, doubl
     G4Exception("ND280RootPersistencyManager::GetHitPosXZ",
 		"MyCode0002",FatalException, msg);
   }
-};
+}
 
 void ND280RootPersistencyManager::GetHitPosYZ(double lightY,double lightZ, double &mppcY,double &mppcZ){
   if(GetIsMPPCProjYZ()){
@@ -273,7 +277,7 @@ void ND280RootPersistencyManager::GetHitPosYZ(double lightY,double lightZ, doubl
     G4Exception("ND280RootPersistencyManager::GetHitPosYZ",
 		"MyCode0002",FatalException, msg);
   }
-};
+}
 
 TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XY(){ 
   if( !GetIsMPPCProjXY() ){
@@ -283,7 +287,7 @@ TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XY(){
 		"MyCode0002",FatalException, msg);
   }
   return fMPPCProj2D_XY;
-};
+}
 
 TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XZ(){ 
   if( !GetIsMPPCProjXZ() ){
@@ -293,7 +297,7 @@ TH2F *ND280RootPersistencyManager::GetMPPCProj2D_XZ(){
 		"MyCode0002",FatalException, msg);
   }
   return fMPPCProj2D_XZ;
-};
+}
 
 TH2F *ND280RootPersistencyManager::GetMPPCProj2D_YZ(){ 
   if( !GetIsMPPCProjYZ() ){
@@ -304,7 +308,7 @@ TH2F *ND280RootPersistencyManager::GetMPPCProj2D_YZ(){
   }
 
   return fMPPCProj2D_YZ;
-};
+}
 
 // Assume the MPPC read-out plane is at x,y,z<0
 // Assume at least 2 projections exist
@@ -322,7 +326,7 @@ G4double ND280RootPersistencyManager::GetMPPCPosX(){
 		"MyCode0002",FatalException, msg);
   }
   return 0;
-};
+}
 
 G4double ND280RootPersistencyManager::GetMPPCPosY(){
   if( GetIsMPPCProjXY() ){
@@ -338,7 +342,7 @@ G4double ND280RootPersistencyManager::GetMPPCPosY(){
 		"MyCode0002",FatalException, msg);
   }
   return 0;
-};
+}
 
 G4double ND280RootPersistencyManager::GetMPPCPosZ(){
 
@@ -355,7 +359,7 @@ G4double ND280RootPersistencyManager::GetMPPCPosZ(){
 		"MyCode0002",FatalException, msg);
   }
   return 0;
-};
+}
 
 
 // B.Q
@@ -455,22 +459,6 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   G4SDManager *sdM = G4SDManager::GetSDMpointer();
   G4HCtable *hcT = sdM->GetHCtable();
 
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-  
   if (!fOutput) {
     G4ExceptionDescription msg;
     msg << "No Output File" << G4endl; 
@@ -490,8 +478,28 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
 
 
+  //
+  // From DetectorValidation.C (WAGASCI)
+  // 
+  //B.Q
+  // int detID = nd280UpHit->GetDetID();
+  // bool used=false;
+  // for(int i=0;i<HitID.size();i++){
+  //   if(HitID[i] == detID){
+  //     used=true;
+  //     hitpex[i] += pex;
+  //     hitpey[i] += pey;
+  //     hitpez[i] += pez;
+  //     break;
+  //   }
+  // }
 
-
+  //
+  // From SelND280UpHit.C 
+  //
+  // hMPPCHits_XY[ievt]->Fill(mppcx,mppcy,pez); // pe along Z
+  // hMPPCHits_XZ[ievt]->Fill(mppcx,mppcz,pey); // pe along Y
+  // hMPPCHits_YZ[ievt]->Fill(mppcy,mppcz,pex); // pe along X
 
 
   //
@@ -515,80 +523,76 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     std::cout << "# of hits = " << n_hit << std::endl;
     
     for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {                 
-              
+
       ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));    
+      G4int parentid = g4Hit->GetParentID(); 
+      G4int detid = g4Hit->GetDetID(); 
+      G4int pdg = g4Hit->GetParticle(); 
+      G4int trkid = g4Hit->GetTrackID(); 
+      G4double edep = g4Hit->GetEdep(); 
+      G4double charge = g4Hit->GetCharge(); 
+      G4ThreeVector lightPos = g4Hit->GetPosition(); // middle step position (target syst) 
+      G4double time = g4Hit->GetTime(); // prestep time
+      string detname = g4Hit->GetNameDet(); 
+      G4double steplength = g4Hit->GetStepLength(); 
+      
+      ExN02ApplyResponse ApplyResponse;    
+      ApplyResponse.CalcResponse(lightPos,trkid,parentid,charge,time,steplength,edep,detname);
 
-      G4int parentid = g4Hit->GetParentID();
-      G4int detid = g4Hit->GetDetID();
-      G4int pdg = g4Hit->GetParticle();
-      G4int trkid = g4Hit->GetTrackID();
-      G4double edep = g4Hit->GetEdep();
-      G4double edep_q = g4Hit->GetEdepQ();
-      G4double pe = g4Hit->GetPE();
-      G4double pex = g4Hit->GetPEX();
-      G4double pey = g4Hit->GetPEY();
-      G4double pez = g4Hit->GetPEZ();
-      G4ThreeVector pos = g4Hit->GetPosition();
+      double pex = ApplyResponse.GetHitPE().x();
+      double pey = ApplyResponse.GetHitPE().y();
+      double pez = ApplyResponse.GetHitPE().z();
+      
+      double timepex = ApplyResponse.GetHitTime().x();
+      double timepey = ApplyResponse.GetHitTime().y();
+      double timepez = ApplyResponse.GetHitTime().z();
+      
+      double poshitX = ApplyResponse.GetHitPos().x();
+      double poshitY = ApplyResponse.GetHitPos().y();
+      double poshitZ = ApplyResponse.GetHitPos().z();
+      
+      trkid = ApplyResponse.GetHitTrkID();
+      
+      // G4cout << " trkid =" << trkid
+      // 	     << " edep =" << edep
+      // 	     << " pe =" << pex << ", " << pey << ", " << pez 
+      // 	     << " delay =" << timepex << ", " << timepey << ", " << timepez 
+      // 	     << " lightpos = " << lightPos
+      // 	     << " MPPCpos =" << ApplyResponse.GetHitPos()
+      // 	     << G4endl ;
 
-      //G4ThreeVector locpos = g4Hit->GetPosInMod();//B.Q
-      //G4ThreeVector mppclocpos = g4Hit->GetMPPCPosInMod();//B.Q
-      //G4ThreeVector mppcpos = g4Hit->GetMPPCPosition();//B.Q
-      
-      G4double time = g4Hit->GetTime();
-      G4double timepe = g4Hit->GetDelayTime();
-      G4double timepex = g4Hit->GetDelayTimeX();
-      G4double timepey = g4Hit->GetDelayTimeY();
-      G4double timepez = g4Hit->GetDelayTimeZ();
-      
-      //G4cout << "timepex = " << timepex << G4endl;
-      
-      string detname = g4Hit->GetNameDet();
-
-      //G4cout << "edep=" << edep << ", edep_q=" << edep_q << ", pe=" << pe << G4endl;
-    	
-      //
-      // TODO: store MPPC hits for each different track ID not steps 
-      //
-      
       TND280UpHit *nd280Hit = new TND280UpHit();
+      // true
       nd280Hit->SetHitID(h);
-      nd280Hit->SetDetID(detid);
       nd280Hit->SetPDG(pdg);
       nd280Hit->SetTrackID(trkid);
       nd280Hit->SetParentID(parentid);	
       nd280Hit->SetEdep(edep);
-      nd280Hit->SetEdep_Q(edep_q);
-      nd280Hit->SetPE(pe);
+      nd280Hit->SetLocPosX(lightPos.x()); // target system
+      nd280Hit->SetLocPosY(lightPos.y()); // target system
+      nd280Hit->SetLocPosZ(lightPos.z()); // target system
+      nd280Hit->SetTime(time);
+      nd280Hit->SetDetName(detname);      
+      // reco
       nd280Hit->SetPEX(pex);
       nd280Hit->SetPEY(pey);
       nd280Hit->SetPEZ(pez);
-
-      //nd280Hit->SetPosX(pos.x()); // B.Q
-      //nd280Hit->SetPosY(pos.y()); // B.Q
-      //nd280Hit->SetPosZ(pos.z()); // B.Q
-
-      nd280Hit->SetLocPosX(pos.x());
-      nd280Hit->SetLocPosY(pos.y());
-      nd280Hit->SetLocPosZ(pos.z());
-
-      //nd280Hit->SetMPPCPosX(mppcpos.x()); // B.Q
-      //nd280Hit->SetMPPCPosY(mppcpos.y()); // B.Q
-      //nd280Hit->SetMPPCPosZ(mppcpos.z()); // B.Q
-      //nd280Hit->SetMPPCLocPosX(mppclocpos.x()); // B.Q
-      //nd280Hit->SetMPPCLocPosY(mppclocpos.y()); // B.Q
-      //nd280Hit->SetMPPCLocPosZ(mppclocpos.z()); // B.Q
-
-      nd280Hit->SetTime(time);
-      nd280Hit->SetTimePE(timepe);
+      nd280Hit->SetMPPCPosX(poshitX);
+      nd280Hit->SetMPPCPosY(poshitY);
+      nd280Hit->SetMPPCPosZ(poshitZ);
       nd280Hit->SetTimePEX(timepex);
       nd280Hit->SetTimePEY(timepey);
       nd280Hit->SetTimePEZ(timepez);
-      nd280Hit->SetDetName(detname);
-      
+      //
       fND280UpEvent->AddHit(nd280Hit);
   
     } // end loop over hits    
   } // end loop over hit containers
+
+
+
+
+
 
   
 
@@ -1167,6 +1171,28 @@ bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
     OutMPPCProj2D_YZ->SetTitle("OutMPPCProj2D_YZ");
     OutMPPCProj2D_YZ->Write();
   }
+
+  // Store translation local-world reference system
+  const G4NavigationHistory *pmHistory = this->GetNavigHistoTarg1();
+  G4ThreeVector PMworldPosition(0,0,0);
+  G4ThreeVector PMlocalPosition = pmHistory->
+    GetTopTransform().TransformPoint(PMworldPosition);
+  
+  TPolyMarker3D *pm3d = new TPolyMarker3D(1);
+  pm3d->SetName("WorldOrigInLocal");
+  double x = PMlocalPosition.x();
+  double y = PMlocalPosition.y();
+  double z = PMlocalPosition.z();
+  pm3d->SetPoint(0,x,y,z);
+  pm3d->Write();
+
+  //double xnew = -999;
+  //double ynew = -999;
+  //double znew = -999;  
+  //pm3d->GetPoint(0,xnew,ynew,znew);
+  //G4cout << xnew << ", " << ynew << ", " << znew << G4endl;
+  //exit(1);
+  
   
   return true;
 }

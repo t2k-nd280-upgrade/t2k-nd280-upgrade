@@ -91,18 +91,32 @@ G4String ExN02TargReadOut::AsStringTargType(TargetType_t targetid){
 G4double ExN02TargReadOut::ApplyScintiResponse(G4double &edep, G4double steplength,G4Track *aTrack)
 {                                             
   BirksSaturation(edep,steplength,aTrack);
-  double nphot = EdepToPhot(edep);
-  
+  double nphot = EdepToPhot(edep);  
   return nphot;
 }
+
+G4double ExN02TargReadOut::ApplyScintiResponse(G4double &edep, G4double steplength,G4double charge)
+{                                             
+  BirksSaturation(edep,steplength,charge);
+  double nphot = EdepToPhot(edep);  
+  return nphot;
+}
+
 
 void ExN02TargReadOut::BirksSaturation(G4double &edep, G4double steplength, G4Track *aTrack)
 {
   G4ParticleDefinition* particle = aTrack->GetDefinition(); 
-  if(particle->GetPDGCharge()==0) return;
+  if(particle->GetPDGCharge()==0) return; // why?
   G4double dedx = edep/steplength;
   edep = edep/(1. + CBIRKS*dedx);
+  return;
+}
 
+void ExN02TargReadOut::BirksSaturation(G4double &edep, G4double steplength, G4double charge)
+{
+  if(charge==0) return; // why?  
+  G4double dedx = edep/steplength;
+  edep = edep/(1. + CBIRKS*dedx);
   return;
 }
 
