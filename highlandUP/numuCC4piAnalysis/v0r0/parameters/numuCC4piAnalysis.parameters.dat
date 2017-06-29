@@ -19,8 +19,8 @@
  < numuCC4piAnalysis.MuonPID.Cut.Lmu   = 0.05 >
  < numuCC4piAnalysis.MuonPID.Cut.p_mip = 500  >
 
- < numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_Target    = 0.7  >
- < numuCC4piAnalysis.IsoTargetPi.ContaminationPID_Target = 0.08 >
+ < numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_Target    = 0.9  >
+ < numuCC4piAnalysis.IsoTargetPi.ContaminationPID_Target = 0.03 >
  < numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_FGD    = 0.7  >
  < numuCC4piAnalysis.IsoTargetPi.ContaminationPID_FGD = 0.08 >
 
@@ -29,7 +29,7 @@
  < numuCC4piAnalysis.MEPions.ME.EfficiencyFGD2   = 0.42 >
  < numuCC4piAnalysis.MEPions.ME.MomentumCut = 2. >
 
- < highlandIO.Target.CutLength = 50. >
+ < highlandIO.Target.CutLength = 20. >
  < highlandIO.FGD.CutLength = 70. >
  < highlandIO.FGD.LayerWidth = 10.1 >
  < highlandIO.FGD.CutNumLayers = 4  >

@@ -449,15 +449,15 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       for (int i=0; i<cc4pibox().nIsoTargetPiontracks; i++) {
 	AnaTrackB *track = cc4pibox().IsoTargetPiontracks[i];
 	if (!track->TrueObject) continue;
-	if (track->GetTrueParticle()->ID       == part->ID ||
-	    track->GetTrueParticle()->ParentID == part->ID )
+	if (track->GetTrueParticle()->ID       == part->ID/* ||
+	track->GetTrueParticle()->ParentID == part->ID*/ )
 	  found=nu_mode*2;
       }
       for (int i=0; i<cc4pibox().nPositivePionTPCtracks; i++) {
 	AnaTrackB *track = cc4pibox().PositivePionTPCtracks[i];
 	if (!track->TrueObject) continue;
-	if (track->GetTrueParticle()->ID       == part->ID ||
-	    track->GetTrueParticle()->ParentID == part->ID )
+	if (track->GetTrueParticle()->ID       == part->ID/* ||
+	track->GetTrueParticle()->ParentID == part->ID*/ )
 	  found=1;
       }
 
@@ -484,15 +484,15 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
       for (int i=0; i<cc4pibox().nIsoTargetPiontracks; i++) {
 	AnaTrackB *track = cc4pibox().IsoTargetPiontracks[i];
 	if (!track->TrueObject) continue;
-	if (track->GetTrueParticle()->ID       == part->ID ||
-	    track->GetTrueParticle()->ParentID == part->ID )
+	if (track->GetTrueParticle()->ID       == part->ID /*||
+	track->GetTrueParticle()->ParentID == part->ID*/ )
 	  found=nu_mode*(-2);
       }
       for (int i=0; i<cc4pibox().nNegativePionTPCtracks; i++) {
 	AnaTrackB *track = cc4pibox().NegativePionTPCtracks[i];
 	if (!track->TrueObject) continue;
-	if (track->GetTrueParticle()->ID       == part->ID ||
-	    track->GetTrueParticle()->ParentID == part->ID )
+	if (track->GetTrueParticle()->ID       == part->ID /*||
+	track->GetTrueParticle()->ParentID == part->ID*/ )
 	  found=1;
       }
 

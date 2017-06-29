@@ -18,25 +18,12 @@ const unsigned long SubDetId::DetMask[] = {
     1<<SubDetId::kDsECal,
     1<<SubDetId::kP0DECal,
     1<<SubDetId::kBrlECal,
-    1<<SubDetId::kToFTopDown,
-    1<<SubDetId::kToFTopUp,
-    1<<SubDetId::kToFBotDown,
-    1<<SubDetId::kToFBotUp,
-    1<<SubDetId::kToFLeftDown,
-    1<<SubDetId::kToFLeftUp,
-    1<<SubDetId::kToFRightDown,
-    1<<SubDetId::kToFRightUp,
-    1<<SubDetId::kToFBackDown,
-    1<<SubDetId::kToFBackUp,
-    1<<SubDetId::kToFFrontDown,
-    1<<SubDetId::kToFFrontUp,
-    1<<SubDetId::kToFECalP0D,
+    1<<SubDetId::kToF,
     1<<SubDetId::kInvalidSubdetector,
     1<<SubDetId::kTPC     | SubDetId::MakeMask(SubDetId::kTPCUp1,     SubDetId::kTPCDown2),
     1<<SubDetId::kTarget  | SubDetId::MakeMask(SubDetId::kTarget1,    SubDetId::kTarget2),
     1<<SubDetId::kFGD     | SubDetId::MakeMask(SubDetId::kFGD1,       SubDetId::kFGD2),
     1<<SubDetId::kECAL    | SubDetId::MakeMask(SubDetId::kDsECal,     SubDetId::kBrlECal),
-    1<<SubDetId::kToF     | SubDetId::MakeMask(SubDetId::kToFTopDown, SubDetId::kToFFrontUp),
     1<<SubDetId::kInvalid
 };
 
@@ -109,24 +96,6 @@ int SubDetId::GetECal(unsigned long BitField){
     else return -1;
 }
 
-int SubDetId::GetTOF(unsigned long BitField){
-    if      (BitField & DetMask[SubDetId::kToFTopDown]) return 1;
-    else if (BitField & DetMask[SubDetId::kToFTopUp]) return 2;
-    else if (BitField & DetMask[SubDetId::kToFBotDown]) return 3;
-    else if (BitField & DetMask[SubDetId::kToFBotUp]) return 4;
-    else if (BitField & DetMask[SubDetId::kToFLeftDown]) return 5;
-    else if (BitField & DetMask[SubDetId::kToFLeftUp]) return 6;
-    else if (BitField & DetMask[SubDetId::kToFRightDown]) return 6;
-    else if (BitField & DetMask[SubDetId::kToFRightUp]) return 7;
-    else if (BitField & DetMask[SubDetId::kToFBackDown]) return 8;
-    else if (BitField & DetMask[SubDetId::kToFBackUp]) return 9;
-    else if (BitField & DetMask[SubDetId::kToFFrontDown]) return 10;
-    else if (BitField & DetMask[SubDetId::kToFFrontUp]) return 11;
-    else if (BitField & DetMask[SubDetId::kToFECalP0D]) return 12;
-
-    else return -1;
-}
-
 void SubDetId::SetDetectorSystemFields(unsigned long &BitField){
   for(int i = SubDetId::kTPCUp1; i < SubDetId::kInvalidSubdetector; ++i){ //loop through sub-detectors list
     if (GetDetectorUsed(BitField, static_cast<SubDetId::SubDetEnum>(i))){
@@ -142,14 +111,6 @@ void SubDetId::SetDetectorSystemFields(unsigned long &BitField){
       return;
     }else if (i == SubDetId::kDsECal || i == SubDetId::kBrlECal || i == SubDetId::kP0DECal ){
       SetDetectorUsed(BitField, SubDetId::kECAL);
-    }else if (i == SubDetId::kToFTopUp   || i == SubDetId::kToFTopDown || 
-	      i == SubDetId::kToFBotUp   ||  i == SubDetId::kToFBotDown || 
-	      i == SubDetId::kToFLeftUp  || i == SubDetId::kToFLeftDown ||
-              i == SubDetId::kToFRightUp || i == SubDetId::kToFRightDown ||
-	      i == SubDetId::kToFBackUp  || i == SubDetId::kToFBackDown || 
-	      i == SubDetId::kToFFrontUp || i == SubDetId::kToFFrontDown ||
-	      i == SubDetId::kToFECalP0D){
-      SetDetectorUsed(BitField, SubDetId::kToF);
 
     }
   }
@@ -167,7 +128,7 @@ int SubDetId::GetNSegmentsInDet(unsigned long BitField, SubDetId::SubDetEnum det
 }
 
 bool SubDetId::TrackUsesOnlyDet(unsigned long BitField, SubDetId::SubDetEnum det){
-    BitField = BitField & MakeMask(SubDetId::kToFFrontUp, SubDetId::kTPCUp1);
+    BitField = BitField & MakeMask(SubDetId::kToF, SubDetId::kTPCUp1);
     return !(BitField & ~DetMask[det]);
 }
 
@@ -186,10 +147,6 @@ bool SubDetId::IsFGD(SubDetId::SubDetEnum det){
 bool SubDetId::IsECal(SubDetId::SubDetEnum det){
   return ((det <= SubDetId::kBrlECal  && det >= SubDetId::kDsECal) || det == SubDetId::kECAL);
 }
-    
-bool SubDetId::IsTOF(SubDetId::SubDetEnum det){
-  return ((det <= SubDetId::kToFECalP0D && det >= SubDetId::kToFTopDown) || det == SubDetId::kToF);
-}
 
 bool SubDetId::IsP0D(SubDetId::SubDetEnum det){
   return (det == kP0D);
@@ -197,7 +154,7 @@ bool SubDetId::IsP0D(SubDetId::SubDetEnum det){
 
 SubDetId::SubDetEnum SubDetId::GetSubdetectorEnum(unsigned long BitField){
  
-    BitField = BitField & MakeMask(SubDetId::kToFECalP0D, SubDetId::kTPCUp1);
+    BitField = BitField & MakeMask(SubDetId::kToF, SubDetId::kTPCUp1);
     int nBits = NumberOfSetBits(BitField);
     if(nBits!=1){
         std::cout << " Error: Track contains multiple subdetectors, cannot find a single subdetector enum to return." << std::endl;
@@ -208,3 +165,38 @@ SubDetId::SubDetEnum SubDetId::GetSubdetectorEnum(unsigned long BitField){
     return static_cast<SubDetId::SubDetEnum>(nBits-1);
 }
 
+int SubDetId::GetToF(TString name){
+  
+  if (!(name.Contains("ToF")))
+    return -1;
+
+  if (name.Contains("ToF/TopUp"))
+    return 1;
+  if (name.Contains("ToF/TopDown"))
+    return 2;
+  if (name.Contains("ToF/BotUp"))
+    return 3;
+  if (name.Contains("ToF/BotDown"))
+    return 4;
+  if (name.Contains("ToF/LeftUp"))
+    return 5;
+  if (name.Contains("ToF/LeftDown"))
+    return 6;
+  if (name.Contains("ToF/RightUp"))
+    return 7;
+  if (name.Contains("ToF/RightDown"))
+    return 8;
+  if (name.Contains("ToF/BackUp"))
+    return 9;
+  if (name.Contains("ToF/BackDown"))
+    return 10;
+  if (name.Contains("ToF/FrontUp"))
+    return 11;
+  if (name.Contains("ToF/FrontDown"))
+    return 12;
+  if (name.Contains("ToF/ECalP0D"))
+    return 13;
+
+  return -1;
+
+}

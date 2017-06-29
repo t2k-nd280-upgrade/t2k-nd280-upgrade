@@ -412,6 +412,7 @@ class AnaToFParticleB:public AnaParticleB {
   Float_t DeltaLYZ;
   Float_t SegLength;
   Bool_t IsReconstructed;
+  TString Detector_name;
 
 };
 

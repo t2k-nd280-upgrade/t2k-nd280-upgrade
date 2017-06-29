@@ -80,7 +80,7 @@ AnaToFParticleB::AnaToFParticleB(){
 //********************************************************************
     DeltaLYZ=-9999;
     IsReconstructed=false;
-
+    Detector_name="";
 }
 
 //********************************************************************
@@ -88,7 +88,7 @@ AnaToFParticleB::AnaToFParticleB(const AnaToFParticleB& seg):AnaParticleB(seg){
 //********************************************************************
     DeltaLYZ=seg.DeltaLYZ;
     IsReconstructed=seg.IsReconstructed;
-
+    Detector_name=seg.Detector_name;
 }
 
 //********************************************************************

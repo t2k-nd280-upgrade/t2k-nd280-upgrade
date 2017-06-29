@@ -349,10 +349,6 @@ bool anaUtils::InDetVolume(SubDetId::SubDetEnum det, const Float_t* pos){
 bool anaUtils::InFiducialVolume(SubDetId::SubDetEnum det, const Float_t* pos){
 //**************************************************
 
-
-    
-
-
     Float_t null[7] = {0.,0.,0.,0.,0.,0.,0.};
     switch(det){
         case SubDetId::kTPC:
