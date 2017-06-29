@@ -1,0 +1,37 @@
+--- Cut levels --------
+ < numuCCOOFVAnalysis.Branch = 0 >
+ < numuCCOOFVAnalysis.ForceBreak = 1 > 
+
+ < numuCCOOFVAnalysis.Configuration = 1 >
+ < numuCCOOFVAnalysis.ToF           = 1 >
+ < numuCCOOFVAnalysis.AddToFOnTargets = 0 >
+
+ < numuCCOOFVAnalysis.NeutrinoMode = 1 >
+ 
+ < numuCCOOFVAnalysis.EnableTarget1 = 1 >
+ < numuCCOOFVAnalysis.EnableTarget2 = 0 >
+ < numuCCOOFVAnalysis.EnableFGD1 = 0 >
+ < numuCCOOFVAnalysis.EnableFGD2 = 0 >
+
+ < numuCCOOFVAnalysis.MinAccumLevelToSave = 0 >
+
+ < numuCCOOFVAnalysis.MuonPID.Cut.Lmip  = 0.80 >
+ < numuCCOOFVAnalysis.MuonPID.Cut.Lmu   = 0.05 >
+ < numuCCOOFVAnalysis.MuonPID.Cut.p_mip = 500  >
+
+ < numuCCOOFVAnalysis.IsoTargetPi.EfficiencyPID_Target    = 0.9  >
+ < numuCCOOFVAnalysis.IsoTargetPi.ContaminationPID_Target = 0.03 >
+ < numuCCOOFVAnalysis.IsoTargetPi.EfficiencyPID_FGD    = 0.7  >
+ < numuCCOOFVAnalysis.IsoTargetPi.ContaminationPID_FGD = 0.08 >
+
+ < numuCCOOFVAnalysis.MEPions.ME.EfficiencyTarget = 0.5 >
+ < numuCCOOFVAnalysis.MEPions.ME.EfficiencyFGD1   = 0.56 >
+ < numuCCOOFVAnalysis.MEPions.ME.EfficiencyFGD2   = 0.42 >
+ < numuCCOOFVAnalysis.MEPions.ME.MomentumCut = 2. >
+
+ < highlandIO.Target.CutLength = 20. >
+ < highlandIO.FGD.CutLength = 70. >
+ < highlandIO.FGD.LayerWidth = 10.1 >
+ < highlandIO.FGD.CutNumLayers = 4  >
+
+ < numuCCOOFVAnalysis.ToF.TimeResolution = 0.600 >

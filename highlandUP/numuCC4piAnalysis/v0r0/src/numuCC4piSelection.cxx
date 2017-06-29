@@ -886,8 +886,6 @@ namespace numuCC4piUtils{
 	sigma_length = 1;
       float length = _randomGen->Gaus(true_length, sigma_length); 
 		  
-      SubDetId::SubDetEnum det1 = SubDetId::GetSubdetectorEnum(p1->Detectors);
-      SubDetId::SubDetEnum det2 = SubDetId::GetSubdetectorEnum(p2->Detectors);
 
       // compute the reco mass using smeared length, smeared ToF and smeared momentum
       float m_reco = numuCC4pi_utils::ComputeToFMass(mom, ToF, length);
@@ -906,8 +904,16 @@ namespace numuCC4piUtils{
       box->All_true_mom.push_back(track_i->GetTrueParticle()->Momentum);
 
       box->All_PDG.push_back(track_i->GetTrueParticle()->PDG);
-      box->All_ToF_det_used1.push_back(det1);
-      box->All_ToF_det_used2.push_back(det2);
+	  
+	  if (SubDetId::GetSubdetectorEnum(p1->Detectors) == SubDetId::kToF)
+		box->All_ToF_det_used1.push_back(-SubDetId::GetToF(((AnaToFParticleB*)p1)->Detector_name));
+	  else 
+		  box->All_ToF_det_used1.push_back(SubDetId::GetSubdetectorEnum(p1->Detectors));
+	  if (SubDetId::GetSubdetectorEnum(p2->Detectors) == SubDetId::kToF)
+		box->All_ToF_det_used2.push_back(-SubDetId::GetToF(((AnaToFParticleB*)p2)->Detector_name));
+	  else 
+		  box->All_ToF_det_used2.push_back(SubDetId::GetSubdetectorEnum(p2->Detectors));
+	  
       box->All_ToF_time_reco.push_back(ToF);
 
       // inverse momentum
@@ -980,33 +986,6 @@ namespace numuCC4piUtils{
 
 }
   
-/*
-  bool CSFGD2_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
-  if (cc4pibox->CSFD2Tracks_PID.size()>0) return true;
-  return false;
-  }
-  bool CSFGD2_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
-  if (cc4pibox->CSFD2Tracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0 && cc4pibox->HABwdTracks_PID.size()==0) return true;
-  return false;
-  }
-
-  bool CSECAL_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
-  if (cc4pibox->CSECALTracks_PID.size()>0) return true;
-  return false;
-  }
-  bool CSECAL_4pi::Apply(AnaEventC& event, ToyBoxB& box) const{
-  (void)event;
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box); 
-  if (cc4pibox->CSECALTracks_PID.size()>0 && cc4pibox->FwdTracks_PID.size()==0 && cc4pibox->BwdTracks_PID.size()==0 && cc4pibox->HAFwdTracks_PID.size()==0 && cc4pibox->HABwdTracks_PID.size()==0 && cc4pibox->CSFD2Tracks_PID.size()==0) return true;
-  return false;
-  }
-*/
 
 //**************************************************
 bool numuCC4piSelection::IsRelevantSystematic(const AnaEventC& event, const ToyBoxB& box, SystId_h systId, Int_t branch) const{

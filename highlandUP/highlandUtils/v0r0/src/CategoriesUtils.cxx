@@ -69,7 +69,7 @@ int detector_codes[] = {2, 3, 4,    // FwdTPC
 			0, 1, 5, 6, // HTPC
                         9, 10,      // FGD
 			7, 8,       // Target
-                        11, 13, 12, // ECal 
+                        12, 14, 13, // ECal 
 			CATOTHER
                         };
 int detector_colors[] = {2, 3, 4, 34, 37, 24, 28,
@@ -140,7 +140,6 @@ Int_t anaUtils::GetTopology(const AnaTrueVertex& trueVertex, const SubDetId::Sub
   Int_t Npipos =    trueVertex.NPrimaryParticles[ParticleId::kPiPos];
   Int_t Npineg =    trueVertex.NPrimaryParticles[ParticleId::kPiNeg];
 
-
   /*if (trueVertex.ReacCode > 30) {
     std::cout << trueVertex.ReacCode << " " << Nmuon << " " << Nantimuon << std::endl;
 	if (Nmuon>0)
@@ -151,16 +150,16 @@ Int_t anaUtils::GetTopology(const AnaTrueVertex& trueVertex, const SubDetId::Sub
   }*/
 
   // non numu CC, i.e. BKG
-  if ( ! IsAntinu && Nmuon <= 0) return BKG; // BKG
-  if (IsAntinu && Nantimuon <= 0) return BKG; // BKG
+  if (!IsAntinu && Nmuon     <= 0) return BKG; // BKG
+  if ( IsAntinu && Nantimuon <= 0) return BKG; // BKG
 
   // CC 0pi, i.e. mu & 0 mesons
   if (Nmeson == 0) return CC_0pi_0meson;
 
   // CC 1pi+, i.e. mu & 1 pi & no other mesons
   if (Nmeson == 1) {
-    if ( ! IsAntinu && Npipos == 1) return CC_1pi_0meson;
-    else if (IsAntinu && Npineg == 1) return CC_1pi_0meson;
+    if      (!IsAntinu && Npipos == 1) return CC_1pi_0meson;
+    else if ( IsAntinu && Npineg == 1) return CC_1pi_0meson;
   }
 
   if (trueVertex.ReacCode > 30)

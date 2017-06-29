@@ -857,6 +857,7 @@ bool AnaRecPackManager::ExtrapolateToDetector(SubDetId::SubDetEnum det,
   else if (det==SubDetId::kRightPECAL)
     volname = "/t2k_1/OA_0/Magnet_0/RightClam_0/P0DECal_1/Side_0/Active_0";	
 */
+/*
   else if (det==SubDetId::kToFTopUp)
 
     //this one is used to build an extrapolated surface of an infinite side
@@ -916,7 +917,7 @@ bool AnaRecPackManager::ExtrapolateToDetector(SubDetId::SubDetEnum det,
 
     //this one is used to build an extrapolated surface of an infinite side
     volname = "/t2k_1/OA_0/Magnet_0/Basket_0/BackUp_0";
-
+*/
   //need some care in case of two volumes used and S2 surface 
 
   if(volname1.size()!=0 && surfname=="S2"){

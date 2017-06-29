@@ -80,7 +80,7 @@ AnaToFParticleB::AnaToFParticleB(){
 //********************************************************************
     DeltaLYZ=-9999;
     IsReconstructed=false;
-
+    Detector_name="";
 }
 
 //********************************************************************
@@ -88,7 +88,7 @@ AnaToFParticleB::AnaToFParticleB(const AnaToFParticleB& seg):AnaParticleB(seg){
 //********************************************************************
     DeltaLYZ=seg.DeltaLYZ;
     IsReconstructed=seg.IsReconstructed;
-
+    Detector_name=seg.Detector_name;
 }
 
 //********************************************************************
@@ -594,26 +594,20 @@ AnaTrueParticleB::~AnaTrueParticleB(){
 //********************************************************************
 
   for (Int_t i=0;i<nDetCrossings;i++)
-    if (DetCrossings[i]) {
-        delete DetCrossings[i];
-    }
-    if (DetCrossingsVect.size() > 0 && nDetCrossings == 0)   for (UInt_t i = 0; i < DetCrossingsVect.size(); i++)  delete DetCrossingsVect[i];
-  DetCrossingsVect.clear();
-
-  nDetCrossings = 0;
+    DetCrossings[i] = NULL;  
   
-  // Must delete array of pointers, since we re-create this every time we apply a selection
-    if (DetCrossings) {
-        if (DetCrossings != NULL) {
-            delete [] DetCrossings;
-        }
-    }
-    DetCrossings = NULL;
+  for (UInt_t i = 0; i < DetCrossingsVect.size(); i++)  
+    delete DetCrossingsVect[i];
+  DetCrossingsVect.clear();
+  
+  nDetCrossings = 0;
+  DetCrossings = NULL;
+  
 }
 
 //********************************************************************
 AnaTrueParticleB::AnaTrueParticleB(const AnaTrueParticleB& truePart):AnaTrueObjectC(truePart){
-//********************************************************************
+  //********************************************************************
 
     PDG        = truePart.PDG;
     ParentID   = truePart.ParentID;
@@ -640,11 +634,14 @@ AnaTrueParticleB::AnaTrueParticleB(const AnaTrueParticleB& truePart):AnaTrueObje
 
     anaUtils::CreateArray(DetCrossings, truePart.nDetCrossings);
     for (Int_t i=0;i<truePart.nDetCrossings;i++){
-        DetCrossings[i] = truePart.DetCrossings[i]->Clone();
+      DetCrossings[i] = truePart.DetCrossings[i]->Clone();
     }
     nDetCrossings = truePart.nDetCrossings;
     
     DetCrossingsVect.clear();
+    for (Int_t i=0; i<truePart.DetCrossingsVect.size(); i++)
+      DetCrossingsVect.push_back(truePart.DetCrossingsVect[i]->Clone());
+
 }
 
 //********************************************************************

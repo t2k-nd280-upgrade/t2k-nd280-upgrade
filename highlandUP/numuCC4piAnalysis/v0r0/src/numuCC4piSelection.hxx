@@ -174,16 +174,17 @@ public:
   int nNegPions;
   int nOtherPions;
 
-  std::vector<float> All_ToF_mass;
-  std::vector<float> All_ToF_true_mass;
-  std::vector<int>   All_ToF_det_used1, All_ToF_det_used2, All_PDG;
-  std::vector<float> All_mom, All_cos, All_true_mom, All_TPC_dedx, All_L;
-  std::vector<float> All_ToF_time_reco;
+  std::vector<float>   All_ToF_mass;
+  std::vector<float>   All_ToF_true_mass;
+  std::vector<int>     All_ToF_det_used1, All_ToF_det_used2;
+  std::vector<int>     All_PDG;
+  std::vector<float>   All_mom, All_cos, All_true_mom, All_TPC_dedx, All_L;
+  std::vector<float>   All_ToF_time_reco;
 
-  std::vector<float> All_ToF_pull_muon, All_ToF_pull_pion, All_ToF_pull_electron, All_ToF_pull_proton;
-  std::vector<float> All_ToF_lkl_muon, All_ToF_lkl_pion, All_ToF_lkl_electron, All_ToF_lkl_proton;
-  std::vector<float> All_TPC_pull_muon, All_TPC_pull_pion, All_TPC_pull_electron, All_TPC_pull_proton;
-  std::vector<float> All_TPC_lkl_muon, All_TPC_lkl_pion, All_TPC_lkl_electron, All_TPC_lkl_proton;
+  std::vector<float>   All_ToF_pull_muon, All_ToF_pull_pion, All_ToF_pull_electron, All_ToF_pull_proton;
+  std::vector<float>   All_ToF_lkl_muon, All_ToF_lkl_pion, All_ToF_lkl_electron, All_ToF_lkl_proton;
+  std::vector<float>   All_TPC_pull_muon, All_TPC_pull_pion, All_TPC_pull_electron, All_TPC_pull_proton;
+  std::vector<float>   All_TPC_lkl_muon, All_TPC_lkl_pion, All_TPC_lkl_electron, All_TPC_lkl_proton;
   
 };
 
