@@ -349,21 +349,21 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
     std::cout << "# of hits = " << n_hit << std::endl;
     
     for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {                 
-              
-       //ND280HitSegment* g4Hit
+      
+      //ND280HitSegment* g4Hit
       //= dynamic_cast<ND280HitSegment*>(g4Hits->GetHit(h)); // used in nd280mc      
       ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));
       
-      //double energy = g4Hit->GetEnergyDeposit(); // used in nd280mc
-      double energy = g4Hit->GetEdep();
+      double energy = g4Hit->GetEnergyDeposit(); // used in nd280mc
+      //double energy = g4Hit->GetEdep();
 
-      //int trackId = g4Hit->GetContributors().front(); // used in nd280mc
-      int trackId = g4Hit->GetTrackID();
+      int trackId = g4Hit->GetContributors().front(); // used in nd280mc
+      //int trackId = g4Hit->GetTrackID();
       
       G4VTrajectory* g4Traj = ND280TrajectoryMap::Get(trackId);
       if (!g4Traj) {
 	G4ExceptionDescription msg;
-	msg << "Missing trackId " << G4endl; 
+	msg << "Missing trackId: " << trackId << G4endl; 
 	G4Exception("ExN02EventAction::EndOfEventAction()",
 		    "ExN02Code001", FatalException, msg);
        	continue;

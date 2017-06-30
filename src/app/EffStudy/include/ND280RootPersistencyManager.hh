@@ -24,6 +24,7 @@ class G4VHitsCollection;
 #include <TND280UpVertex.hh>
 #include <TND280UpTrack.hh>
 #include <TND280UpTrackPoint.hh>
+#include <TND280UpHit.hh>
 
 #include "G4Navigator.hh"
 #include "G4NavigationHistory.hh"

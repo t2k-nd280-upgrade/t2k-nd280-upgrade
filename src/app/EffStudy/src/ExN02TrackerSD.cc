@@ -57,16 +57,15 @@ using namespace conv;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ExN02TrackerSD::ExN02TrackerSD(G4String name)
-:G4VSensitiveDetector(name)
-{
+ :G4VSensitiveDetector(name),
+  trackerCollection(NULL), HCID(-1),
+  fMaximumHitSagitta(1*mm), fMaximumHitLength(10*mm),
+  fLastHit(0) {
+  
   G4String HCname;
   collectionName.insert(HCname="trackerCollection");
 
   trackerResponse = new ExN02TrackerResponse(); // B.Q used for WAGASCI only 
-  
-#ifdef DEBUG
-  G4cout << "Create the TrackerSD object for the detector named : " << name << G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -81,12 +80,15 @@ void ExN02TrackerSD::Initialize(G4HCofThisEvent* HCE)
 {
   trackerCollection = new ExN02TrackerHitsCollection
                           (SensitiveDetectorName,collectionName[0]); 
-  static G4int HCID = -1;
+  //static G4int HCID = -1; // NEW HitSegment
   if(HCID<0)
   { HCID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]); }
   HCE->AddHitsCollection( HCID, trackerCollection ); 
   
   NSteps_ = 0;
+
+  SetMaximumHitSagitta(1*mm);
+  SetMaximumHitLength(10*mm);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -100,11 +102,23 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   //
 
   G4double edep = aStep->GetTotalEnergyDeposit();
-#ifdef DEBUG
-  G4cout << "New hit letting energy of " << edep << G4endl ;
-#endif
-  
   if(edep==0.) return false;
+
+  NSteps_++;
+  
+  ///// NEW ND280 HitSegment
+
+  ExN02TrackerHit* currentHit = NULL;
+
+  // Find the hit corresponding to the current step
+  if (0<=fLastHit && fLastHit < trackerCollection->entries()) {
+    ExN02TrackerHit *tmpHit = (*trackerCollection)[fLastHit];
+    if (tmpHit->SameHit(aStep)) {
+      currentHit = tmpHit;
+    }
+  }
+
+  /////
 
   G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
   G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
@@ -566,21 +580,78 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 
 
     
+    ///// NEW ND280 HitSegment    
 
+    // #define SEPARATE_STEPS
+#ifndef SEPARATE_STEPS
+    // Look through the list of available hits and see the new hit should be
+    // added to an existing one.
+    do {
+      // We have already found a hit to add this one too, so short-circuit
+      // the search.
+      if (currentHit) break;
+      //G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+      const G4VProcess* preProcess = preStepPoint->GetProcessDefinedStep();
+      G4ProcessType preProcessType = fNotDefined;
+      if (preProcess) preProcessType = preProcess->GetProcessType();
+      //G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
+      const G4VProcess* postProcess = postStepPoint->GetProcessDefinedStep();
+      G4ProcessType postProcessType = fNotDefined;
+      if (postProcess) postProcessType = postProcess->GetProcessType();
+      // If the prestep is of type fTransporation, then we need a new step
+      // since we are crossing a geometry boundary.
+      if (preProcessType == fTransportation) break;
+      // Try and find the hit in list of existing hits.
+      for (int hitNumber = trackerCollection->entries()-1; 
+	   0 <= hitNumber;
+	   --hitNumber) {
+	ExN02TrackerHit *tmpHit = (*trackerCollection)[hitNumber];
+	if (tmpHit->SameHit(aStep)) {
+	  currentHit = tmpHit;
+	  fLastHit = hitNumber;
+	  //ND280NamedVerbose("hit","Add step to " << hitNumber);
+	  break;
+	}
+      }
+    } while (false);
+#endif
 
+    // If a hit wasn't found, create one.
+    if (!currentHit) {
+      currentHit = new ExN02TrackerHit(fMaximumHitSagitta,fMaximumHitLength);
+      fLastHit = trackerCollection->entries();
+      trackerCollection->insert(currentHit);
+    }
+
+    currentHit->AddStep(aStep);
+    
+
+    // Use definition of nd280mc --> comment the old one
+
+    /*
 
     //
     // Fill the Hit (store all true informations)
     // The response is computed in ND280RootPersistencyManager
     //
+
+    double maxSagitta = 1.; // TO CHANGE
+    double maxLength = 1.; // TO CHANGE
     
     ExN02TrackerHit* aHit  
-      = new ExN02TrackerHit(detID,particle,trackid,parentid,edep,charge,LightPos,prestepTime);          
+      = new ExN02TrackerHit(maxSagitta,maxLength,detID,particle,trackid,parentid,edep,charge,LightPos,prestepTime);          
+    //= new ExN02TrackerHit(detID,particle,trackid,parentid,edep,charge,LightPos,prestepTime);          
     aHit->SetStepLength(steplength);
     aHit->SetNameDet(touch_namedet);
     
     trackerCollection->insert( aHit );   
-    
+    */
+
+    //////////// END ND280 HitSegment
+
+
+
+
   } // if( persistencyManager->GetNavigDetName_Targ1()!="" )
 
 

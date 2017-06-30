@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 // $Id: ND280RootPersistencyManager.cc,v 1.93 2012/03/23 14:09:24 mcgrew Exp $
 //
- 
+  
 #include "ND280RootPersistencyManager.hh"
 #include "ND280Trajectory.hh"
 #include "ND280TrajectoryPoint.hh"
@@ -196,7 +196,17 @@ void ND280RootPersistencyManager::SetNavigDetName_Targ1(G4String name){
 }
 
 G4ThreeVector ND280RootPersistencyManager::GetLocalPosition(G4ThreeVector WorldPos){
-  return GetNavigHistoTarg1()->GetTopTransform().TransformPoint(WorldPos);
+  //return GetNavigHistoTarg1()->GetTopTransform().TransformPoint(WorldPos);
+
+  G4ThreeVector NotDefinedPoint(kBadNum,kBadNum,kBadNum);
+  if(GetNavigHistoTarg1() &&
+     doNavigDetExist() &&
+     GetNavigTarg1()
+     ){
+    return GetNavigHistoTarg1()->GetTopTransform().TransformPoint(WorldPos);
+  }
+  else return NotDefinedPoint; 
+
 }
 
 
@@ -474,34 +484,6 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   fND280UpEvent->SetEventID(anEvent->GetEventID());  
   
 
-
-
-
-
-  //
-  // From DetectorValidation.C (WAGASCI)
-  // 
-  //B.Q
-  // int detID = nd280UpHit->GetDetID();
-  // bool used=false;
-  // for(int i=0;i<HitID.size();i++){
-  //   if(HitID[i] == detID){
-  //     used=true;
-  //     hitpex[i] += pex;
-  //     hitpey[i] += pey;
-  //     hitpez[i] += pez;
-  //     break;
-  //   }
-  // }
-
-  //
-  // From SelND280UpHit.C 
-  //
-  // hMPPCHits_XY[ievt]->Fill(mppcx,mppcy,pez); // pe along Z
-  // hMPPCHits_XZ[ievt]->Fill(mppcx,mppcz,pey); // pe along Y
-  // hMPPCHits_YZ[ievt]->Fill(mppcy,mppcz,pex); // pe along X
-
-
   //
   // Store the hits
   // 
@@ -524,17 +506,35 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
     for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {                 
 
-      ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));    
-      G4int parentid = g4Hit->GetParentID(); 
-      G4int detid = g4Hit->GetDetID(); 
-      G4int pdg = g4Hit->GetParticle(); 
-      G4int trkid = g4Hit->GetTrackID(); 
-      G4double edep = g4Hit->GetEdep(); 
-      G4double charge = g4Hit->GetCharge(); 
-      G4ThreeVector lightPos = g4Hit->GetPosition(); // middle step position (target syst) 
-      G4double time = g4Hit->GetTime(); // prestep time
-      string detname = g4Hit->GetNameDet(); 
-      G4double steplength = g4Hit->GetStepLength(); 
+      ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));
+      TND280UpHit *nd280Hit = dynamic_cast<TND280UpHit*>(g4Hit); // ExN02TrackerHit inherits from TND280UpHit
+      
+      // G4cout << "StartX=" << nd280Hit->GetStartX() << ", "
+      // 	     << "StartY=" << nd280Hit->GetStartY() << ", "
+      // 	     << "StartZ=" << nd280Hit->GetStartZ() << ", "
+      // 	     << "StopX=" << nd280Hit->GetStopX() << ", "
+      // 	     << "StopY=" << nd280Hit->GetStopY() << ", "
+      // 	     << "StopZ=" << nd280Hit->GetStopZ() << ", "
+      // 	     << "EnergyDeposit=" << nd280Hit->GetEnergyDeposit() << ", "
+      // 	     << "TrackLength=" << nd280Hit->GetTrackLength() << ", "
+      // 	     << "TrackID=" << nd280Hit->fContributors.front() << G4endl;
+     
+      G4int parentid = nd280Hit->GetPrimaryId(); 
+      G4int detid = kBadNum; 
+      G4int pdg = kBadNum; 
+      G4int trkid = nd280Hit->fContributors.front(); 
+      G4double edep = nd280Hit->GetEnergyDeposit(); 
+      G4double charge = 1.; // Apply alway Birks! 
+      G4double time = (nd280Hit->GetStartT() + nd280Hit->GetStopT())/2.; // middle step time
+      G4double posX = (nd280Hit->GetStartX() + nd280Hit->GetStopX())/2.; // middle step X
+      G4double posY = (nd280Hit->GetStartY() + nd280Hit->GetStopY())/2.; // middle step Y 
+      G4double posZ = (nd280Hit->GetStartZ() + nd280Hit->GetStopZ())/2.; // middle step Z
+      G4ThreeVector PMworldPosition(posX,posY,posZ);
+      string detname = nd280Hit->GetDetName();
+      G4double steplength = nd280Hit->GetTrackLength();
+
+      // Calculate the position in the target reference system --> needed for response
+      G4ThreeVector lightPos = GetLocalPosition(PMworldPosition); 
       
       ExN02ApplyResponse ApplyResponse;    
       ApplyResponse.CalcResponse(lightPos,trkid,parentid,charge,time,steplength,edep,detname);
@@ -552,27 +552,18 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       double poshitZ = ApplyResponse.GetHitPos().z();
       
       trkid = ApplyResponse.GetHitTrkID();
-      
-      // G4cout << " trkid =" << trkid
-      // 	     << " edep =" << edep
-      // 	     << " pe =" << pex << ", " << pey << ", " << pez 
-      // 	     << " delay =" << timepex << ", " << timepey << ", " << timepez 
-      // 	     << " lightpos = " << lightPos
-      // 	     << " MPPCpos =" << ApplyResponse.GetHitPos()
-      // 	     << G4endl ;
-
-      TND280UpHit *nd280Hit = new TND280UpHit();
+            
       // true
-      nd280Hit->SetHitID(h);
-      nd280Hit->SetPDG(pdg);
-      nd280Hit->SetTrackID(trkid);
-      nd280Hit->SetParentID(parentid);	
-      nd280Hit->SetEdep(edep);
-      nd280Hit->SetLocPosX(lightPos.x()); // target system
-      nd280Hit->SetLocPosY(lightPos.y()); // target system
-      nd280Hit->SetLocPosZ(lightPos.z()); // target system
-      nd280Hit->SetTime(time);
-      nd280Hit->SetDetName(detname);      
+      //nd280Hit->SetHitID(h);
+      //nd280Hit->SetPDG(pdg);
+      //nd280Hit->SetTrackID(trkid);
+      //nd280Hit->SetParentID(parentid);	
+      //nd280Hit->SetEdep(edep);
+      //nd280Hit->SetLocPosX(lightPos.x()); // target system
+      //nd280Hit->SetLocPosY(lightPos.y()); // target system
+      //nd280Hit->SetLocPosZ(lightPos.z()); // target system
+      //nd280Hit->SetTime(time);
+      //nd280Hit->SetDetName(detname);      
       // reco
       nd280Hit->SetPEX(pex);
       nd280Hit->SetPEY(pey);
@@ -585,7 +576,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       nd280Hit->SetTimePEZ(timepez);
       //
       fND280UpEvent->AddHit(nd280Hit);
-  
+      
     } // end loop over hits    
   } // end loop over hit containers
 
@@ -1155,15 +1146,15 @@ bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
   
   if( GetIsMPPCProjXY() ){
     OutMPPCProj2D_XY = new TH2F(*fMPPCProj2D_XY);
-    OutMPPCProj2D_XY->Write();
     OutMPPCProj2D_XY->SetName("OutMPPCProj2D_XY");
     OutMPPCProj2D_XY->SetTitle("OutMPPCProj2D_XY");
+    OutMPPCProj2D_XY->Write();
   }
   if( GetIsMPPCProjXZ() ){
     OutMPPCProj2D_XZ = new TH2F(*fMPPCProj2D_XZ);
-    OutMPPCProj2D_XZ->Write();
     OutMPPCProj2D_XZ->SetName("OutMPPCProj2D_XZ");
     OutMPPCProj2D_XZ->SetTitle("OutMPPCProj2D_XZ");  
+    OutMPPCProj2D_XZ->Write();
   }
   if( GetIsMPPCProjYZ() ){  
     OutMPPCProj2D_YZ = new TH2F(*fMPPCProj2D_YZ);
@@ -1171,13 +1162,13 @@ bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
     OutMPPCProj2D_YZ->SetTitle("OutMPPCProj2D_YZ");
     OutMPPCProj2D_YZ->Write();
   }
-
+  
   // Store translation local-world reference system
+
   const G4NavigationHistory *pmHistory = this->GetNavigHistoTarg1();
   G4ThreeVector PMworldPosition(0,0,0);
-  G4ThreeVector PMlocalPosition = pmHistory->
-    GetTopTransform().TransformPoint(PMworldPosition);
-  
+  G4ThreeVector PMlocalPosition = GetLocalPosition(PMworldPosition);
+
   TPolyMarker3D *pm3d = new TPolyMarker3D(1);
   pm3d->SetName("WorldOrigInLocal");
   double x = PMlocalPosition.x();
@@ -1186,14 +1177,6 @@ bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
   pm3d->SetPoint(0,x,y,z);
   pm3d->Write();
 
-  //double xnew = -999;
-  //double ynew = -999;
-  //double znew = -999;  
-  //pm3d->GetPoint(0,xnew,ynew,znew);
-  //G4cout << xnew << ", " << ynew << ", " << znew << G4endl;
-  //exit(1);
-  
-  
   return true;
 }
 

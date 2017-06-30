@@ -54,10 +54,41 @@ public:
   void Initialize(G4HCofThisEvent*);
   G4bool ProcessHits(G4Step*, G4TouchableHistory*);
   void EndOfEvent(G4HCofThisEvent*);
+
+
+  ///// NEW ND280 HitSegment
+
+  /// Set the maximum sagitta for the ND280HitSegment objects created by
+  /// this sensitive detector.
+  void SetMaximumHitSagitta(double sagitta) {fMaximumHitSagitta = sagitta;}
+  double GetMaximumHitSagitta(void) {return fMaximumHitSagitta;}
+
+  /// Set the maximum length for the ND280HitSegment objects created by this
+  /// sensitive detector.
+  void SetMaximumHitLength(double length) {fMaximumHitLength = length;}
+  double GetMaximumHitLength(void) {return fMaximumHitLength;}
   
+  ///////////
+
 private:
   ExN02TrackerHitsCollection* trackerCollection;
   
+  ////// NEW ND280 HitSegment
+
+  /// The hit collection id of fHits
+  int HCID;
+  
+  /// The maximum allowed sagitta;
+  double fMaximumHitSagitta;
+  
+  /// The maximum allowed length;
+  double fMaximumHitLength;
+  
+  /// The last hit that was found.
+  int fLastHit;
+
+  ////////
+
   ExN02TrackerResponse * trackerResponse;
   
   G4int NSteps_;

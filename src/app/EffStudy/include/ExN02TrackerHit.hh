@@ -38,11 +38,22 @@
 #include "G4Allocator.hh"
 #include "G4ThreeVector.hh"
 
+#include "ND280VolumeID.hh"
+
+#include "TND280UpHit.hh" 
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class ExN02TrackerHit : public G4VHit
+class G4Step;
+class G4Track;
+
+//class ExN02TrackerHit : public G4VHit
+class ExN02TrackerHit : public TND280UpHit, public G4VHit
 {
 public:
+
+  ExN02TrackerHit(double, double, G4int, G4int, G4int, G4int, G4double, G4double, G4ThreeVector, G4double); // NEW ND280 HitSegment
+  ExN02TrackerHit(double, double); // NEW ND280 HitSegment     
 
   ExN02TrackerHit(G4int, G4int, G4int, G4int, G4double, G4double, G4ThreeVector, G4double);
   ExN02TrackerHit(G4int, G4double, G4int, const G4ThreeVector&);
@@ -111,6 +122,106 @@ public:
 
   inline void SetTime(G4double t) { fTime = t; }
   inline G4double GetTime() { return fTime; }
+
+  //
+  // NEW ND280 HitSegment
+  //
+  
+  // The following code is added to use the ND280HitSegment class
+  // in this framework
+  
+public:
+
+  /*
+    
+  // Now this is declared in TND280UpEvent, but accessible
+  // in the same way (TND280UpEvent is inherited by TrackerHit
+  
+  inline void SetMaxSagitta(double sag){fMaxSagitta = sag;} 
+  inline double GetMaxSagitta(){return fMaxSagitta;}
+
+  inline void SetMaxLength(double length){fMaxLength = length;} 
+  inline double GetMaxLength(){return fMaxLength;}
+
+  std::vector<int> fContributors;
+
+  int fPrimaryId;
+  double fStartX;
+  double fStartY;
+  double fStartZ;
+  double fStartT;
+  double fStopX;
+  double fStopY;
+  double fStopZ;
+  double fStopT;
+  double fEnergyDeposit;
+  double fTrackLength;
+
+  inline int GetPrimaryId(){return fPrimaryId;}
+  inline double GetStartX(){return fStartX;}
+  inline double GetStartY(){return fStartY;}
+  inline double GetStartZ(){return fStartZ;}
+  inline double GetStopX(){return fStopX;}
+  inline double GetStopY(){return fStopY;}
+  inline double GetStopZ(){return fStopZ;}
+  inline double GetEnergyDeposit(){return fEnergyDeposit;}
+  inline double GetTrackLength(){return fTrackLength;}
+
+  */
+
+
+  // All the following code is either taken from nd280mc ND280HitSegment class
+  // or adapted in order to use the ND280HitSegment class
+  
+public:
+   
+  /// Add the effects of a part of a step to this hit.
+  // (same as ND280HitSegment)
+  virtual void AddStep(G4Step* theStep, double start=0.0, double end=1.0);
+  
+  /// Hits for the same primary particle, in the same physical volume belong
+  /// in the same hit.
+  // (same as ND280HitSegment)
+  virtual bool SameHit(G4Step* theStep); 
+  
+  /// Provide public access to the contributors for internal G4 classes.
+  std::vector<int>& GetContributors() {return fContributors;}
+    
+  /// Find the distance from the starting point to stoping point of the
+  /// track.
+  virtual double GetLength() const;
+
+protected:
+  /// Find the primary track ID for the current track.  This is the primary
+  /// that is the ultimate parent of the current track.
+  int FindPrimaryId(G4Track* theTrack);
+  
+  /// Find the maximum separation (the sagitta) between the current hit
+  /// segment path points, and the straight line connecting the start and
+  /// proposed new stop point.
+  double FindSagitta(G4Step* theStep);
+  
+  /// Find the maximum distance from the hit segment to the new step that is
+  /// proposed to be added to the hit segment. This is used to
+  /// combine secondaries with a parent track.
+  double FindSeparation(G4Step* theStep);
+  
+  /// The sagitta tolerance for the segment.
+  double fMaxSagitta;
+  
+  /// The maximum length between the start and stop points of the segment.
+  double fMaxLength;
+
+private:
+  /// The G4 physical volume that contains the hit.
+  ND280VolumeID fHitVolume;
+  
+  /// The end points of the steps that make up this hit.  This is used to
+  /// make sure that the current hit stays inside of it's allowed
+  /// tolerances.
+  std::vector<G4ThreeVector> fPath;
+
+  /////
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

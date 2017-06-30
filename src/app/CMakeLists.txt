@@ -10,12 +10,14 @@ AUX_SOURCE_DIRECTORY(EffStudy/src/ToF sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/SuperFGD sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/FGDlike sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/WAGASCI sourcefile) ###
+AUX_SOURCE_DIRECTORY(EffStudy/src/FGD3D sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/SciFi sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/ReadOutSim sourcefile) ###
 
 message(STATUS "sourcefile ${sourcefile}") ###
 
 ADD_EXECUTABLE(EffStudy.exe          EffStudy/Main.cc ${sourcefile}) ###
+#ADD_EXECUTABLE(Reconstruction.exe    Reconstruction/Main.cc ${sourcefile}) ###
 
 message(STATUS "root libraries ${ROOT_LIBRARIES}") 
 message(STATUS "geant4 libraries ${GEANT4_LIBRARIES}") 
@@ -40,3 +42,19 @@ TARGET_LINK_LIBRARIES(EffStudy.exe   ${ROOT_LIBRARIES}
                                          #${OAEVENT_LIBRARIES}
                                          #${ND280MC_LIBRARIES}
                                          )
+
+#TARGET_LINK_LIBRARIES(Reconstruction.exe   ${ROOT_LIBRARIES}
+#                                         ${GEANT4_LIBRARIES}
+#                                         #${XERCESC_LIBRARIES}
+#                                         #${VGM_LIBRARIES}
+#                                         ${CLHEP_LIBRARIES}
+#                                         #BaseVGM
+#                                         #ClhepVGM
+#                                         #Geant4GM
+#                                         #RootGM
+#                                         #VGM
+#                                         #XmlVGM
+#                                         #${INGRIDUTILS_LIBRARIES}
+#                                         #${OAEVENT_LIBRARIES}
+#                                         #${ND280MC_LIBRARIES}
+#                                         )

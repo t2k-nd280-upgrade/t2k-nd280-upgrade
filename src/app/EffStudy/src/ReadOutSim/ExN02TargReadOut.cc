@@ -61,6 +61,7 @@ const G4double MPPCEff_SciFi = 0.38;
 
 // Approximate collection factors from PDG2016 (Detectors and accelerators section)
 const G4double CollFactor_SingleClad = 0.06;
+//const G4double CollFactor_DoubleClad = 0.054; // from Licciardi's thesis  
 const G4double CollFactor_DoubleClad = 0.10;
 
 ExN02TargReadOut::ExN02TargReadOut()
