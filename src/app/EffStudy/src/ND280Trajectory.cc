@@ -9,11 +9,11 @@
 #include <G4AttValue.hh>
 #include <G4UnitsTable.hh>
 
-#include "G4SystemOfUnits.hh"
-
 #include "ND280Trajectory.hh"
 #include "ND280TrajectoryPoint.hh"
 #include "ND280TrajectoryMap.hh"
+
+#include "G4SystemOfUnits.hh"
 
 G4Allocator<ND280Trajectory> aND280TrajAllocator;
 

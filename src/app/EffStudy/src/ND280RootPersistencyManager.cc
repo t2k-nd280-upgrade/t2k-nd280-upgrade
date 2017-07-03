@@ -554,16 +554,29 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       trkid = ApplyResponse.GetHitTrkID();
             
       // true
-      //nd280Hit->SetHitID(h);
-      //nd280Hit->SetPDG(pdg);
-      //nd280Hit->SetTrackID(trkid);
-      //nd280Hit->SetParentID(parentid);	
-      //nd280Hit->SetEdep(edep);
-      //nd280Hit->SetLocPosX(lightPos.x()); // target system
-      //nd280Hit->SetLocPosY(lightPos.y()); // target system
-      //nd280Hit->SetLocPosZ(lightPos.z()); // target system
+      nd280Hit->SetLocPosX(lightPos.x()); // now in target system
+      nd280Hit->SetLocPosY(lightPos.y()); // now in target system
+      nd280Hit->SetLocPosZ(lightPos.z()); // now in target system
+      G4double startX = nd280Hit->GetStartX(); // world reference system
+      G4double startY = nd280Hit->GetStartY(); // world reference system
+      G4double startZ = nd280Hit->GetStartZ(); // world reference system
+      G4ThreeVector start(startX,startY,startZ);
+      G4ThreeVector startLoc = GetLocalPosition(start); 
+      nd280Hit->SetStartX(startLoc.x()); // now in target system
+      nd280Hit->SetStartY(startLoc.y()); // now in target system
+      nd280Hit->SetStartZ(startLoc.z()); // now in target system
+      G4double stopX = nd280Hit->GetStopX(); // world reference system
+      G4double stopY = nd280Hit->GetStopY(); // world reference system
+      G4double stopZ = nd280Hit->GetStopZ(); // world reference system
+      G4ThreeVector stop(stopX,stopY,stopZ);
+      G4ThreeVector stopLoc = GetLocalPosition(stop); 
+      nd280Hit->SetStopX(stopLoc.x()); // now in target system
+      nd280Hit->SetStopY(stopLoc.y()); // now in target system
+      nd280Hit->SetStopZ(stopLoc.z()); // now in target system
+
       //nd280Hit->SetTime(time);
       //nd280Hit->SetDetName(detname);      
+
       // reco
       nd280Hit->SetPEX(pex);
       nd280Hit->SetPEY(pey);

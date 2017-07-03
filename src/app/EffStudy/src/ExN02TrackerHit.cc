@@ -38,12 +38,12 @@
 #include "G4VisAttributes.hh"
 #include <G4Step.hh>
 
-#include "G4SystemOfUnits.hh"
-
 #include "ND280TrajectoryMap.hh"
 
 #include <fstream>
 #include "Const.hh"
+
+#include "G4SystemOfUnits.hh"
 
 #define SideView 0 // resolution of vertical-direction
 
@@ -345,6 +345,7 @@ void ExN02TrackerHit::AddStep(G4Step* theStep, double start, double end) {
 	// NEW ND280 HitSegment (not in nd280mc)
 	string detname = touchable->GetVolume()->GetLogicalVolume()->GetName();
 	SetDetName(detname);
+	SetPDG(theStep->GetTrack()->GetDefinition()->GetPDGEncoding());
 	//
 	
         fPrimaryId = FindPrimaryId(theStep->GetTrack());

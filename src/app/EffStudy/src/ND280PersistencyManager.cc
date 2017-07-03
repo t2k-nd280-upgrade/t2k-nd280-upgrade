@@ -11,8 +11,6 @@
 #include <G4RegionStore.hh>
 #include <G4LogicalVolume.hh>
 
-#include <G4SystemOfUnits.hh>
-
 #include <TPRegexp.h>
 
 //#include <TND280Log.hxx>
@@ -28,6 +26,8 @@
 #include "G4SDManager.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4VHitsCollection.hh"
+
+#include <G4SystemOfUnits.hh>
 
 // Creator for the persistency manager.  This is NOT a public routine
 // since it is only used by this class to create a singleton object.

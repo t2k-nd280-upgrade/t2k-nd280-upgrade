@@ -2,11 +2,10 @@
 #include <CLHEP/Random/Randomize.h>
 #include <algorithm>
 #include <TRandom.h>
+#include "G4SystemOfUnits.hh"
 #include <globals.hh>
 #include "ExN02TargReadOut.hh"
 #include "ExN02Constants.hh"
-
-#include "G4SystemOfUnits.hh"
 
 using namespace std;
 using namespace conv;
@@ -47,7 +46,7 @@ void ExN02ApplyResponse::Delete(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void ExN02ApplyResponse::CalcResponse(G4ThreeVector lightPos,int trkid,int parid,double charge,double prestepTime,double steplength, double edep,G4String touch_namedet){
+void ExN02ApplyResponse::CalcResponse(G4ThreeVector lightPos,int trkid,int parid,int pdg,double prestepTime,double steplength, double edep,G4String touch_namedet){
     
   // Get the light position in the local frame and 
   // calculate the position of the correspding MPPC (at it's bin center) 
@@ -76,6 +75,7 @@ void ExN02ApplyResponse::CalcResponse(G4ThreeVector lightPos,int trkid,int parid
     persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
     //G4cout << "mppc pos: Y = " << mppcY << G4endl;
   }
+  
   G4ThreeVector MPPCLocalPosition = G4ThreeVector(mppcX,mppcY,mppcZ);  
   
   G4double edep_q = edep;
@@ -131,7 +131,7 @@ void ExN02ApplyResponse::CalcResponse(G4ThreeVector lightPos,int trkid,int parid
   }
   
   // light attenuation (Birks' formula)
-  double pe = TargetReadOut.ApplyScintiResponse(edep_q,steplength,charge); 
+  double pe = TargetReadOut.ApplyScintiResponse(edep_q,steplength,pdg); 
   
   if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
     peX = pe;

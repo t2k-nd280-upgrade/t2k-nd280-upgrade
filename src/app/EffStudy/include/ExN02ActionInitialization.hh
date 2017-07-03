@@ -32,10 +32,11 @@
 #define ExN02ActionInitialization_h 1
 
 #include "G4RunManager.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4Run.hh"
 
 #include "G4VUserActionInitialization.hh"
+
+#include "G4SystemOfUnits.hh"
 
 class ExN02DetectorConstruction;
 

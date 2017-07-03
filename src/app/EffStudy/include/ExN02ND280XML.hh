@@ -7,7 +7,6 @@
 #ifndef ExN02ND280XML_h
 #define ExN02ND280XML_h 1
 
-#include "G4SystemOfUnits.hh"
 #include "G4RunManager.hh"
 #include "G4Event.hh"
 
@@ -17,6 +16,8 @@
 #include <TObjString.h>
 #include <vector>
 #include <TXMLEngine.h>
+
+#include "G4SystemOfUnits.hh"
 
 using namespace std;
 

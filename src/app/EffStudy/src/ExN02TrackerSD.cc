@@ -104,6 +104,8 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   G4double edep = aStep->GetTotalEnergyDeposit();
   if(edep==0.) return false;
 
+  if(aStep->GetTrack()->GetParentID()>0) return false; // Look only at Primary Tracks!!!
+
   NSteps_++;
   
   ///// NEW ND280 HitSegment

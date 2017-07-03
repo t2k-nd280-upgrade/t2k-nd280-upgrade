@@ -5,9 +5,10 @@
 #include <G4VPhysicalVolume.hh>
 #include <G4PVPlacement.hh>
 #include <G4VisAttributes.hh>
-#include "G4SystemOfUnits.hh"
 
 #include "MyND280BeamConstructor.hh"
+
+#include "G4SystemOfUnits.hh"
 
 MyND280BeamConstructor::~MyND280BeamConstructor(){
   // delete

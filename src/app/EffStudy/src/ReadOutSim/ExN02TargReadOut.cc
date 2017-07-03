@@ -2,8 +2,9 @@
 #include <CLHEP/Random/Randomize.h>
 #include <algorithm>
 #include <TRandom.h>
-#include "G4SystemOfUnits.hh"
 #include <globals.hh>
+
+#include "G4SystemOfUnits.hh"
 
 using namespace std;
 using namespace conv;

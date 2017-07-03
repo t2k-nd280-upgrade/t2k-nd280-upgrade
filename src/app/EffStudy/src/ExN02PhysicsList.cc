@@ -84,8 +84,6 @@
 #include "G4Positron.hh"
 #include "G4Proton.hh"
 
-#include "G4SystemOfUnits.hh"
-
 #include "G4Region.hh"
 #include "G4RegionStore.hh"
 #include "G4ProductionCuts.hh"
@@ -95,6 +93,8 @@
   #include "G4PAIPhotonModel.hh"
   #include "G4EmConfigurator.hh"
 #endif
+
+#include "G4SystemOfUnits.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

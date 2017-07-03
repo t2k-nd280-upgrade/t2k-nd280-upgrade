@@ -8,7 +8,6 @@
 #ifndef ExN02RooTrackerKinematicsGenerator_h
 #define ExN02RooTrackerKinematicsGenerator_h 1
 
-#include "G4SystemOfUnits.hh"
 #include "G4RunManager.hh"
 #include "G4Event.hh"
 
@@ -19,6 +18,8 @@
 #include <TBits.h>
 #include <TObjString.h>
 #include <vector>
+
+#include "G4SystemOfUnits.hh"
 
 class ExN02RooTrackerKinematicsGenerator
 {

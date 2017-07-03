@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/14_3_17/GENIE_geometry_ref_1E21POT.root
+    GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root
   </filename>
 
   <treename>  
@@ -275,13 +275,13 @@
      10
    </SuperFGDCubeEdge1>
    <SuperFGDCubeNum1_X>
-     180
+     190
    </SuperFGDCubeNum1_X>
    <SuperFGDCubeNum1_Y>
      60
    </SuperFGDCubeNum1_Y>
    <SuperFGDCubeNum1_Z>
-     130
+     190
    </SuperFGDCubeNum1_Z>
    <SuperFGDPos1_X>
      0
@@ -290,10 +290,10 @@
      0
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     -1487
+     -1695
    </SuperFGDPos1_Z>
-   <!-- -1487 -->
-
+   <!-- -1695 -->
+   
    <!-- SuperFGD 2 -->
    <SuperFGDCubeEdge2>
      10
@@ -1004,13 +1004,13 @@
    </UseFGD2>
 
    <UseSuperFGD1>
-     false
+     true
    </UseSuperFGD1>
    <UseSuperFGD2>
      false
    </UseSuperFGD2>
    <UseWAGASCI1>
-     true
+     false
    </UseWAGASCI1>
    <UseWAGASCI2>
      false
@@ -1136,7 +1136,7 @@
      true
    </InvisSuperFGD>
    <InvisWAGASCI>
-     false
+     true
    </InvisWAGASCI>
    <InvisFGD3D>
      true

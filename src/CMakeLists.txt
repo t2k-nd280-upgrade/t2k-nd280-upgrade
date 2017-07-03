@@ -67,6 +67,14 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/SciFi) ### inclu
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/ReadOutSim) ### include ReadOutSim class
 
 
+########### FOR RECONSTRUCTION ##########
+
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/Reconstruction/src/) ### include general classes
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/Reconstruction/src/ReadOutSim) ### include ReadOutSim class
+
+#########################################
+
+
 message(STATUS "C flags      : " ${CMAKE_C_FLAGS})
 message(STATUS "CXX flags    : " ${CMAKE_CXX_FLAGS})
 message(STATUS "Linker flags : " ${CMAKE_EXE_LINKER_FLAGS}\n)

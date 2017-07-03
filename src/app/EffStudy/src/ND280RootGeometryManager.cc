@@ -27,8 +27,6 @@
 #include <G4UnionSolid.hh>
 #include <G4ExtrudedSolid.hh>
 
-#include "G4SystemOfUnits.hh"
-
 #include <TROOT.h>
 #include <TMath.h>
 #include <TGeoManager.h>
@@ -52,6 +50,8 @@
 //#include <TGeomIdManager.hxx>
 
 #include "ND280RootGeometryManager.hh"
+
+#include "G4SystemOfUnits.hh"
 
 ND280RootGeometryManager* ND280RootGeometryManager::fThis = NULL;
 
