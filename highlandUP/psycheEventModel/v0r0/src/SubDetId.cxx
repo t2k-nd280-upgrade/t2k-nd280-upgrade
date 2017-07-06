@@ -20,10 +20,10 @@ const unsigned long SubDetId::DetMask[] = {
     1<<SubDetId::kBrlECal,
     1<<SubDetId::kToF,
     1<<SubDetId::kInvalidSubdetector,
-    1<<SubDetId::kTPC     | SubDetId::MakeMask(SubDetId::kTPCUp1,     SubDetId::kTPCDown2),
-    1<<SubDetId::kTarget  | SubDetId::MakeMask(SubDetId::kTarget1,    SubDetId::kTarget2),
-    1<<SubDetId::kFGD     | SubDetId::MakeMask(SubDetId::kFGD1,       SubDetId::kFGD2),
-    1<<SubDetId::kECAL    | SubDetId::MakeMask(SubDetId::kDsECal,     SubDetId::kBrlECal),
+    1<<SubDetId::kTPC     | SubDetId::MakeMask(SubDetId::kTPCDown2,     SubDetId::kTPCUp1),
+    1<<SubDetId::kTarget  | SubDetId::MakeMask(SubDetId::kTarget2,    SubDetId::kTarget1),
+    1<<SubDetId::kFGD     | SubDetId::MakeMask(SubDetId::kFGD2,       SubDetId::kFGD1),
+    1<<SubDetId::kECAL    | SubDetId::MakeMask(SubDetId::kBrlECal,     SubDetId::kDsECal),
     1<<SubDetId::kInvalid
 };
 
