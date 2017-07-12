@@ -19,17 +19,32 @@ ClassImp(TND280UpHit)
 
 TND280UpHit::TND280UpHit()
 {  
+  ///// NEW ND280 HitSegment
+  fContributors.clear();
+  fPrimaryId = kUndefHit;
+  fStartX = kUndefHit;
+  fStartY = kUndefHit;
+  fStartZ = kUndefHit;
+  fStartT = kUndefHit;
+  fStopX = kUndefHit;
+  fStopY = kUndefHit;
+  fStopZ = kUndefHit;
+  fStopT = kUndefHit;
+  fEnergyDeposit = 0.;
+  fTrackLength = 0.;
+  ////////
+
   // true
   fHitID       = kUndefHit;
   fPDG         = kUndefHit;
-  fTrackID     = kUndefHit;
-  fParentID    = kUndefHit;
-  fEdep        = kUndefHit;
-  fLocPosX     = kUndefHit;
-  fLocPosY     = kUndefHit;
-  fLocPosZ     = kUndefHit;
-  fTime        = kUndefHit;
-  fDetName     = "";
+  fTrackID     = kUndefHit; // NOT used
+  fParentID    = kUndefHit; // NOT used
+  fEdep        = kUndefHit; // NOT used
+  fLocPosX     = kUndefHit; // used
+  fLocPosY     = kUndefHit; // used
+  fLocPosZ     = kUndefHit; // used
+  fTime        = kUndefHit; // NOT used
+  fDetName     = ""; // used
   // reco
   fPEX         = kUndefHit;
   fPEY         = kUndefHit;
@@ -47,6 +62,21 @@ TND280UpHit::TND280UpHit()
 TND280UpHit::~TND280UpHit()
 {
   //delete ...;
+
+  ///// NEW ND280 HitSegment
+  fContributors.clear();
+  fPrimaryId = kUndefHit;
+  fStartX = kUndefHit;
+  fStartY = kUndefHit;
+  fStartZ = kUndefHit;
+  fStartT = kUndefHit;
+  fStopX = kUndefHit;
+  fStopY = kUndefHit;
+  fStopZ = kUndefHit;
+  fStopT = kUndefHit;
+  fEnergyDeposit = 0.;
+  fTrackLength = 0.;
+  ////////
 
   // true
   fHitID       = kUndefHit;
