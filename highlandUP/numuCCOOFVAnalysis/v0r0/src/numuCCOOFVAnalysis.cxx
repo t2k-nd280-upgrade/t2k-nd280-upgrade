@@ -157,6 +157,7 @@ void numuCCOOFVAnalysis::DefineMicroTrees(bool addBase){
   AddToyVarI(output(),  NTracks,         "");
   AddToyVarI(output(),  Toy_CCOOFV,      "");
   AddToyVarF(output(),  selmu_costheta,  "");
+
   AddVarF(output(),  selmu_likemu,       ""); 
   AddVarF(output(),  selmu_likemip,      ""); 
   
@@ -179,12 +180,16 @@ void numuCCOOFVAnalysis::DefineMicroTrees(bool addBase){
   //--- info by global
   AddVarI(output(),   selmu_detectors, "");
   AddVarF(output(),   selmu_charge,    "");
+  AddVarF(output(),   selmu_phi,       "");
   AddVar3VF(output(), selmu_dir,       "");
   AddVar3VF(output(), selmu_enddir,    "");
   AddVar4VF(output(), selmu_pos,       "");
   AddVar4VF(output(), selmu_endpos,    "");
   AddVarI(output(),   selmu_longestTPC,"");
   AddVarI(output(),   selmu_OOFV,      "");
+  
+  AddVarF(output(),   selmu_true_ToF,  "");
+  AddVarF(output(),   selmu_reco_ToF,  "");
 
   //--- ECal
   AddVarF(output(),   selmu_ecal_mipem,     "");
@@ -238,8 +243,8 @@ void numuCCOOFVAnalysis::FillMicroTrees(bool addBase){
 	output().FillVar(truelepton_PDG,                    vtx->LeptonPDG);
 	output().FillVar(truelepton_mom,                vtx->LeptonMom);
 	output().FillVectorVarFromArray(truelepton_dir, vtx->LeptonDir,3);
-	double costheta_mu_nu = cos(anaUtils::ArrayToTVector3(vtx->LeptonDir).Angle(anaUtils::ArrayToTVector3(vtx->NuDir)));
-	output().FillVar(truelepton_costheta, (Float_t)costheta_mu_nu);
+	double costh = cos(anaUtils::ArrayToTVector3(vtx->LeptonDir).Angle(anaUtils::ArrayToTVector3(vtx->NuDir)));
+	output().FillVar(truelepton_costheta, (Float_t)costh);
 	output().FillVectorVarFromArray(truelepton_pos, vtx->Position,4);
       }
       output().FillVar(selmu_ID,                        ccoofvbox().MainTrack->GetTrueParticle()->ID);
@@ -248,7 +253,6 @@ void numuCCOOFVAnalysis::FillMicroTrees(bool addBase){
       output().FillVectorVarFromArray(selmu_truedir,    ccoofvbox().MainTrack->GetTrueParticle()->Direction, 3);
       output().FillVectorVarFromArray(selmu_truepos,    ccoofvbox().MainTrack->GetTrueParticle()->Position, 4);
       output().FillVectorVarFromArray(selmu_trueendpos, ccoofvbox().MainTrack->GetTrueParticle()->PositionEnd, 4);
-      output().FillVar(selmu_OOFV,                      ccoofvbox().OOFV);
 
     }
 
@@ -264,11 +268,18 @@ void numuCCOOFVAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selmu_likemu,        anaUtils::GetPIDLikelihood( *track, 0));
     output().FillVar(selmu_likemip,       anaUtils::GetPIDLikelihoodMIP( *track));
 
+    output().FillVar(selmu_OOFV,                      (int)ccoofvbox().OOFV);
+    TVector3 dir = anaUtils::ArrayToTVector3( track->DirectionStart );
+    output().FillVar(selmu_phi,                       (float)(dir.Phi()));
+
     output().FillVar(selmu_ecal_stopping,             cutUtils::StoppingECALCut( *track ));
     output().FillVar(selmu_ecal_mipem,                ccoofvbox().track_ECal_MipEM);
     output().FillVar(selmu_ecal_EneOnL,               ccoofvbox().track_ECal_EneOnL);
     output().FillVar(selmu_longestTPC,                ccoofvbox().TPC_det);
-
+	
+    output().FillVar(selmu_true_ToF,                ccoofvbox().true_ToF);
+    output().FillVar(selmu_reco_ToF,                ccoofvbox().reco_ToF);
+	
   }
 
 }

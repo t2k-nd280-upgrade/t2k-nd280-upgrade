@@ -39,7 +39,7 @@ void numuCCOOFVSelection::DefineSteps(){
 
 
   //last true means that if that cut is not fulfill the sequence is stop
-  AddStep(StepBase::kAction, "find true vertex",      new numuCCOOFVUtils::FindTrueVertexAction());
+  AddStep(StepBase::kAction, "find true vertex",    new numuCCOOFVUtils::FindTrueVertexAction());
   AddStep(StepBase::kCut,    "> 0 tracks ",         new numuCCOOFVUtils::TotalMultiplicityCut(), true);
   AddStep(StepBase::kAction, "Sort TPC tracks",     new numuCCOOFVUtils::SortTracksAction());
   AddStep(StepBase::kCut,    "quality+fiducial",    new numuCCOOFVUtils::TrackGQandFVCut(),      true);
@@ -47,10 +47,15 @@ void numuCCOOFVSelection::DefineSteps(){
   AddStep(StepBase::kAction, "find vertex",         new numuCCOOFVUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCCOOFVUtils::FillSummaryAction_numuCCOOFV());
 
-  AddStep(StepBase::kCut, "PID Cut",      new numuCCOOFVUtils::PIDCut(_file_ECAL_PDF));
-  AddStep(StepBase::kCut, "ToF",          new numuCCOOFVUtils::ToFCut());
+  AddSplit(2);
+  AddStep(0, StepBase::kCut, "TPC PID Cut",      new numuCCOOFVUtils::TPCPIDCut());
+  AddStep(1, StepBase::kCut, "ECal PID Cut",     new numuCCOOFVUtils::ECalPIDCut(_file_ECAL_PDF));
+
+  AddStep(0, StepBase::kCut, "ToF",          new numuCCOOFVUtils::ToFCut());
+  AddStep(1, StepBase::kCut, "ToF",          new numuCCOOFVUtils::ToFCut());
   
-  SetBranchAlias(0,  "CC0pi Fwd TPC");
+  SetBranchAlias(0,  "CCinc TPC",  0);
+  SetBranchAlias(1,  "CCinc ECal", 1);
   SetPreSelectionAccumLevel(0);
 
 }
@@ -208,7 +213,6 @@ namespace numuCCOOFVUtils{
   
     //Sort TPCGoodQuality using Momentum
     std::sort(ccoofvbox->Tracks.begin(), ccoofvbox->Tracks.end(), numuCCOOFV_utils::HGlobalMomFirst);
-
     if (ccoofvbox->Tracks.size()>0)
       ccoofvbox->MainTrack = ccoofvbox->Tracks[0];
     else 
@@ -233,12 +237,15 @@ namespace numuCCOOFVUtils{
     if (useTarget1) det = SubDetId::kTarget1;
     if (useTarget2) det = SubDetId::kTarget2;
     if (useFGD1)    det = SubDetId::kFGD1;
-    if (useFGD2)    det = SubDetId::kFGD1;
+    if (useFGD2)    det = SubDetId::kFGD2;
 
     if (anaUtils::InFiducialVolume(det, ccoofvbox->MainTrack->PositionStart, LAFVmin, LAFVmax))
-      { ccoofvbox->OOFV = false; return true; }
+      { ccoofvbox->OOFV = 0; return true; }
     if (anaUtils::InFiducialVolume(det, ccoofvbox->MainTrack->PositionEnd, LAFVmin, LAFVmax))
-      { ccoofvbox->OOFV = true; return true; }
+      { ccoofvbox->OOFV = 1; return true; }
+    else
+      { ccoofvbox->OOFV = 2; return true; }
+
 
     return false;
   
@@ -320,7 +327,7 @@ namespace numuCCOOFVUtils{
   }
 
   //**************************************************
-  bool PIDCut::Apply(AnaEventC& event, ToyBoxB& box) const{
+  bool TPCPIDCut::Apply(AnaEventC& event, ToyBoxB& box) const{
     //**************************************************
     (void)event;
     ToyBoxCCOOFV* ccoofvbox = static_cast<ToyBoxCCOOFV*>(&box);
@@ -331,8 +338,18 @@ namespace numuCCOOFVUtils{
 	return true;
     }
 
+    return false;
+
+  }
+
+  //**************************************************
+  bool ECalPIDCut::Apply(AnaEventC& event, ToyBoxB& box) const{
+    //**************************************************
+    (void)event;
+    ToyBoxCCOOFV* ccoofvbox = static_cast<ToyBoxCCOOFV*>(&box);
+
     // no TPC segment case
-    else {
+    if ( !cutUtils::DeltaLYZTPCCut(*ccoofvbox->MainTrack) ) {
 
       TH2F *h_binning = (TH2F*)_file_ECAL_PDF->Get("hBinning");
       AnaTrueParticleB* trueParticle = ccoofvbox->MainTrack->GetTrueParticle();
@@ -413,71 +430,27 @@ namespace numuCCOOFVUtils{
     (void)event;
     ToyBoxCCOOFV *box = static_cast<ToyBoxCCOOFV*>(&boxB);
     if (!box->MainTrack) return false;
-    bool ok = false;
-
-    // do not consider for truly forward-going track
-    if (box->MainTrack->TrueObject && box->MainTrack->GetTrueParticle()->Direction[2] > 0)
-      ok = true;
 
     AnaParticleB *p1=0, *p2=0;
     float sigma=0;
-    float ToF = numuCCOOFV_utils::GetToF(box->MainTrack, p1, p2, sigma, _randomGen);
+    float reco_ToF = numuCCOOFV_utils::GetToF(box->MainTrack, p1, p2, sigma, _randomGen);
     if (!p1 or !p2)
-      return ok;
+      return false;
 
     float true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
-
-    // ==========
-    // ToF mass
-    // ==========
-
-    // smear the momentum
-    float true_mom = box->MainTrack->GetTrueParticle()->Momentum;
-    float mom = box->MainTrack->SmearedMomentum;
-    if (fabs(true_mom-mom)<1e-3)
-      mom = _randomGen->Gaus(true_mom, 0.10*true_mom);
-
-    // compute the length using RecPack + smear it
-    double length1 = -999., length2 = -999.;
-    RP::State state1, state2;
-    TVector3 pos  = anaUtils::ArrayToTVector3(box->MainTrack->PositionStart);
-    TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
-    TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
-    TVector3 dir1 = anaUtils::ArrayToTVector3(p1->DirectionStart);
-    TVector3 dir2 = anaUtils::ArrayToTVector3(p2->DirectionStart);	 
-	
-    bool correct=false;
-
-    if (!ND::tman().AnaTrueParticleB_to_RPState(*(box->MainTrack->GetTrueParticle()), state1) ||
-	!ND::tman().PropagateToSurface(pos1, dir1, state1, length1, false) ){
-      if ((pos-pos1).Mag()<2) length1=0;
-    }
-    if (!ND::tman().AnaTrueParticleB_to_RPState(*(box->MainTrack->GetTrueParticle()), state2) ||
-	!ND::tman().PropagateToSurface(pos2, dir2, state2, length2, false) ){
-      if ((pos-pos2).Mag()<2) length2=0;
-    }
-		  
-    if (length1>-1 && length2>-1) {
-	
-      float sigma_length = 10;
-      if (cutUtils::DeltaLYZTPCCut(*(box->MainTrack)))
-	sigma_length = 1;
-      float true_length = fabs(length2-length1);
-      float length = _randomGen->Gaus(true_length, sigma_length); 
-   
-      correct=true;
-
-    }
+    box->reco_ToF = reco_ToF;
+    box->true_ToF = true_ToF;
 
     // ==========
     // ==========
 
     // if the track comes from FGD/Target and is reconstructed with correct sense
-    if (!box->OOFV && true_ToF*ToF > 0) return true; 
+    if (box->OOFV==0 && true_ToF*reco_ToF > 0) return true; 
     // if the track comes from OOFV and stops in FGD/Target but is reconstructed with wrong sense
-    if ( box->OOFV && true_ToF*ToF < 0) return true; 
+    if (box->OOFV>0 && true_ToF*reco_ToF < 0) return true; 
 
-
+	return false;
+	
   }
 
 }

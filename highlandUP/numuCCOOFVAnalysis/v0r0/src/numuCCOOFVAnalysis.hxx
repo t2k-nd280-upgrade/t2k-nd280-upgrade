@@ -52,6 +52,7 @@ public:
     Toy_CCOOFV,
     selmu_mom,
     selmu_costheta,
+    selmu_phi,
     selmu_likemu,
     selmu_likemip,
 
@@ -75,6 +76,9 @@ public:
     selmu_ecal_stopping,
     selmu_longestTPC,
     selmu_OOFV,
+	
+	selmu_true_ToF,
+	selmu_reco_ToF,
 
     /*
       selmu_1hit_pos,

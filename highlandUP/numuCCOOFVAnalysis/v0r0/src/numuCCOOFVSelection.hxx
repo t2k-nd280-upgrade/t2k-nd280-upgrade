@@ -55,7 +55,7 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     Tracks.clear();
-    OOFV = false;
+    OOFV = -1;
     TPC_det = SubDetId::kInvalid;
   }
 
@@ -65,7 +65,7 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     Tracks.clear();
-    OOFV = false;
+    OOFV = -1;
     TPC_det = SubDetId::kInvalid;
   }
 
@@ -75,8 +75,10 @@ public:
   float track_ECal_MipEM, track_ECal_EneOnL;
   AnaTrackB* MainTrack;
   std::vector<AnaTrackB*> Tracks;
-  bool OOFV;
+  int OOFV;
   SubDetId::SubDetEnum TPC_det;
+  
+  float reco_ToF, true_ToF;
 
 };
 
@@ -162,14 +164,21 @@ namespace numuCCOOFVUtils{
     StepBase* MakeClone(){return new FillSummaryAction_numuCCOOFV();}
   };
 
-  class PIDCut: public StepBase{
+  class TPCPIDCut: public StepBase{
   public:
-    PIDCut(TFile* file_ECAL_PDF){
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new TPCPIDCut();}
+  };
+
+  class ECalPIDCut: public StepBase{
+  public:
+    ECalPIDCut(TFile* file_ECAL_PDF){
       _file_ECAL_PDF = file_ECAL_PDF;
     }
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new PIDCut(_file_ECAL_PDF);}
+    StepBase* MakeClone(){return new ECalPIDCut(_file_ECAL_PDF);}
   private:
    TFile* _file_ECAL_PDF;
   };
