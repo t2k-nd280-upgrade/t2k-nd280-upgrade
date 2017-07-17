@@ -81,6 +81,59 @@ public :
  
   void PrintHit();
 
+
+
+  /////// NEW ND280 HitSegment
+  
+  //
+  // The following variables are same as used in nd280mc in TG4HitSegment
+  // They are inherited by ExN02TrackerHit
+  //
+
+public:
+
+  std::vector<int> fContributors;
+  int fPrimaryId;
+  double fStartX;
+  double fStartY;
+  double fStartZ;
+  double fStartT;
+  double fStopX;
+  double fStopY;
+  double fStopZ;
+  double fStopT;
+  double fEnergyDeposit;
+  double fTrackLength;
+
+  inline int GetPrimaryId(){return fPrimaryId;}
+  inline double GetStartX(){return fStartX;}
+  inline double GetStartY(){return fStartY;}
+  inline double GetStartZ(){return fStartZ;}
+  inline double GetStartT(){return fStartT;}
+  inline double GetStopX(){return fStopX;}
+  inline double GetStopY(){return fStopY;}
+  inline double GetStopZ(){return fStopZ;}
+  inline double GetStopT(){return fStopT;}
+  inline double GetEnergyDeposit(){return fEnergyDeposit;}
+  inline double GetTrackLength(){return fTrackLength;}
+
+  inline void SetPrimaryId(int id){fPrimaryId = id;}
+  inline void SetStartX(double pos){fStartX=pos;}
+  inline void SetStartY(double pos){fStartY=pos;}
+  inline void SetStartZ(double pos){fStartZ=pos;}
+  inline void SetStartT(double time){fStartT=time;}
+  inline void SetStopX(double pos){fStopX=pos;}
+  inline void SetStopY(double pos){fStopY=pos;}
+  inline void SetStopZ(double pos){fStopZ=pos;}
+  inline void SetStopT(double time){fStopT=time;}
+  inline void SetEnergyDeposit(double edep){fEnergyDeposit=edep;}
+  inline void SetTrackLength(double length){fTrackLength=length;}
+
+  ////////////////////
+
+
+
+
 private :
   
   // true
