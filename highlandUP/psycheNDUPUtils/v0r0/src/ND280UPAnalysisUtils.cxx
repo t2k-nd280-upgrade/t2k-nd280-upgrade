@@ -7,6 +7,8 @@
 #include "DataClasses.hxx"
 #include "DetectorDefinition.hxx"
 #include "Parameters.hxx"
+#include "AnaRecPackManager.hxx"
+#include "CutUtils.hxx"
 
 //ND280BeamBunching bunching;
 
@@ -216,4 +218,367 @@ Float_t anaUtils::ComputeInversePT(AnaTPCParticleB& track){
     return 1/pt;
   else
     return -999;
+}
+
+//***************************************************************
+Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, Float_t& sigma, TRandom3* gen, bool UseSmearing){
+//***************************************************************
+  if (!track) return -999.;
+
+  //Float_t cut_length_target   = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.Cut.Length");
+  Float_t ToF_time_resolution = ND::params().GetParameterD("psycheNDUPUtils.ToF.TimeResolution");
+  Int_t add_ToF_on_targets    = ND::params().GetParameterI("psycheNDUPUtils.Geometry.AddToFOnTargets");
+  std::vector< std::pair<AnaParticleB*, std::vector<Float_t> > > detTiming;
+  
+  // find timing information in Targets
+  for (int i=0; i<track->nTargetSegments; i++){
+    if (track->TargetSegments[i]->IsReconstructed) {
+      //if (track->TargetSegments[i]->DeltaLYZ > cut_length_target) {
+      Float_t true_time = track->TargetSegments[i]->PositionStart[3];
+      Float_t     sigma = sqrt(pow(3/sqrt(track->TargetSegments[i]->DeltaLYZ/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
+      Float_t      time = gen->Gaus(true_time, sigma);
+
+      std::vector<Float_t> vec;
+      vec.push_back(time); vec.push_back(sigma);
+      detTiming.push_back(std::make_pair(track->TargetSegments[i], vec));
+    }
+  }
+
+  if (add_ToF_on_targets) {
+    // find timing information in additionnal ToF
+    if (track->nTPCSegments && track->TPCSegments[0]) {
+      if (SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp1   ||
+          SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp2   ||
+          SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown1 ||
+          SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown2 ) {
+
+        Float_t true_time = track->TPCSegments[0]->PositionStart[3];
+        Float_t     sigma = ToF_time_resolution;
+        Float_t      time = gen->Gaus(true_time, sigma);
+      
+        std::vector<Float_t> vec;
+        vec.push_back(time); vec.push_back(sigma);
+        detTiming.push_back(std::make_pair(track->TPCSegments[0], vec));
+      }
+    }
+  }
+
+  // find timing information in FGDs
+  for (int i=0; i<track->nFGDSegments; i++){
+    if (track->FGDSegments[i]->IsReconstructed) {
+      Float_t true_time = track->FGDSegments[i]->PositionStart[3];
+      Float_t     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->DeltaLYZ/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
+      Float_t      time = gen->Gaus(true_time, sigma);
+
+      std::vector<Float_t> vec;
+      vec.push_back(time); vec.push_back(sigma);
+      detTiming.push_back(std::make_pair(track->FGDSegments[i], vec));
+    }
+  }
+
+  // find timing information in ECal
+  for (int i=0; i<track->nECalSegments; i++) {
+    if (track->ECalSegments[i]->IsReconstructed) {
+      Float_t true_time = track->ECalSegments[i]->PositionStart[3];
+      Float_t     sigma = 5; // 5ns
+      Float_t      time = gen->Gaus(true_time, sigma);
+
+      std::vector<Float_t> vec;
+      vec.push_back(time); vec.push_back(sigma);
+      detTiming.push_back(std::make_pair(track->ECalSegments[i], vec));
+    }
+  }
+
+  // find timing information in ToF counters
+  for (int i=0; i<track->nToFSegments; i++) {
+    Float_t true_time = track->ToFSegments[i]->PositionStart[3];
+    Float_t     sigma = ToF_time_resolution; // 0.6ns
+    Float_t      time = gen->Gaus(true_time, sigma);
+
+    std::vector<Float_t> vec;
+    vec.push_back(time); vec.push_back(sigma);
+    detTiming.push_back(std::make_pair(track->ToFSegments[i], vec));
+  }
+  
+  // if we don't have 2, give up
+  if (detTiming.size() < 2)
+    return -999.;
+
+  Float_t ToF = -999., max_t_over_s = 0.;
+  for (unsigned int i=0; i<detTiming.size(); i++){
+    for (unsigned int j=i+1; j<detTiming.size(); j++){
+
+      Float_t  t1 = detTiming[i].second[0],  t2 = detTiming[j].second[0];
+      Float_t  s1 = detTiming[i].second[1],  s2 = detTiming[j].second[1];
+      Float_t t_over_s = fabs( (t2-t1)/sqrt(s1*s1+s2*s2) );
+
+      if ( t_over_s > max_t_over_s ){
+        max_t_over_s = t_over_s;
+        ToF = t2-t1;
+        seg1 = detTiming[i].first;
+        seg2 = detTiming[j].first;
+        sigma = sqrt(s1*s1+s2*s2);
+      }
+      
+    } // end second loop on timing info
+  } // end first loop on timing info
+
+  
+  if (seg2->PositionStart[3]-seg1->PositionStart[3] < 0) {
+    AnaParticleB* temp;
+    temp = seg1;
+    seg1 = seg2;
+    seg2 = temp;
+    ToF  = -ToF;
+  }
+
+  if (UseSmearing)
+    return ToF;
+
+  return (abs(seg2->PositionStart[3]-seg1->PositionStart[3]));
+}
+
+//*********************************************************************
+Float_t anaUtils::GetLength(AnaTrackB* track, AnaParticleB*& p1, AnaParticleB*& p2, Float_t& sigma_length, TRandom3* gen, bool UseSmearing) {
+//*********************************************************************
+  Double_t length1 = -999.0, length2 = -999.0;
+  Float_t length = -999.;
+  RP::State state1, state2;
+  TVector3 pos  = anaUtils::ArrayToTVector3(track->PositionStart);
+  TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
+  TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
+  TVector3 dir1 = anaUtils::ArrayToTVector3(p1->DirectionStart);
+  TVector3 dir2 = anaUtils::ArrayToTVector3(p2->DirectionStart);   
+ 
+  if (!ND::tman().AnaTrueParticleB_to_RPState(*(track->GetTrueParticle()), state1) || !ND::tman().PropagateToSurface(pos1, dir1, state1, length1, false) ){
+    if ((pos-pos1).Mag()<2) length1=0;
+  }
+  if (!ND::tman().AnaTrueParticleB_to_RPState(*(track->GetTrueParticle()), state2) || !ND::tman().PropagateToSurface(pos2, dir2, state2, length2, false) ){
+    if ((pos-pos2).Mag()<2) length2=0;
+  }
+
+  if (length1>-1 && length2>-1) {
+    Float_t sigma_length = 10;
+    if (cutUtils::DeltaLYZTPCCut(*(track))) sigma_length = 1;
+
+    Float_t true_length  = abs(length2-length1);
+
+    if (UseSmearing)
+      length  = gen->Gaus(true_length, sigma_length); 
+    else 
+      length  = true_length;
+  }    
+
+  return length;
+}
+
+//*********************************************************************
+Float_t anaUtils::ComputeToFMass(float mom, float ToF, float length){
+//*********************************************************************
+
+  Float_t c = 299.792458; // mm/ns
+
+  // return 0 in case \beta > 1
+  if (pow(c*ToF/length, 2) -1 < 0)
+    return 0.;
+
+  return mom*sqrt(pow(c*ToF/length, 2) -1);
+}
+
+//*********************************************************************
+Float_t anaUtils::ComputeToFTime(Float_t mom, Float_t mass, Float_t length){
+//*********************************************************************
+
+  Float_t c = 299.792458; // mm/ns
+  return length/c*sqrt(pow(mass/mom, 2) +1);
+}
+
+//*********************************************************************
+bool anaUtils::GetToFdetectors(AnaParticleB*& seg1, AnaParticleB*& seg2, SubDetId::SubDetEnum& det1, SubDetId::SubDetEnum& det2) {
+//*********************************************************************
+  det1 = det2 = SubDetId::kInvalid;
+
+  if (!seg1 || !seg2)
+    return false;
+
+  std::vector<std::pair<AnaParticleB*, SubDetId::SubDetEnum> > DetSegments;
+  DetSegments.push_back(std::make_pair(seg1, det1));
+  DetSegments.push_back(std::make_pair(seg2, det2));  
+
+  for (UInt_t i = 0; i < DetSegments.size(); ++i) {
+    if (SubDetId::GetDetectorUsed(DetSegments[i].first->Detectors, SubDetId::kTarget1))
+      DetSegments[i].second = SubDetId::kTarget1;
+
+    if (SubDetId::GetDetectorUsed(DetSegments[i].first->Detectors, SubDetId::kTarget2))
+      DetSegments[i].second = SubDetId::kTarget2;
+
+    if (SubDetId::GetDetectorUsed(DetSegments[i].first->Detectors, SubDetId::kFGD1))
+      DetSegments[i].second = SubDetId::kFGD1;
+
+    if (SubDetId::GetDetectorUsed(DetSegments[i].first->Detectors, SubDetId::kFGD2))
+      DetSegments[i].second = SubDetId::kFGD2;
+
+    if (SubDetId::GetDetectorUsed(DetSegments[i].first->Detectors, SubDetId::kBrlECal))
+      DetSegments[i].second = SubDetId::kBrlECal;
+
+    if (SubDetId::GetDetectorUsed(DetSegments[i].first->Detectors, SubDetId::kDsECal))
+      DetSegments[i].second = SubDetId::kDsECal;
+
+    if (SubDetId::GetDetectorUsed(DetSegments[i].first->Detectors, SubDetId::kToF))
+      DetSegments[i].second = SubDetId::kToF;
+
+    // if we use fake ToF over targets we will have segments from TPC
+    if (SubDetId::GetDetectorUsed(DetSegments[i].first->Detectors, SubDetId::kTPC))
+      DetSegments[i].second = SubDetId::kTPC;
+  }
+
+  det1 = DetSegments[0].second;
+  det2 = DetSegments[1].second;
+
+  return true;
+}
+
+//*********************************************************************
+bool anaUtils::GetToFdetectors(AnaTrackB* track, SubDetId::SubDetEnum& det1, SubDetId::SubDetEnum& det2, TRandom3* gen, bool UseSmearing) {
+//*********************************************************************
+  if (!track)
+    return false;
+
+  AnaParticleB *seg1=0, *seg2=0;
+  Float_t sigma=0;
+  Float_t ToF = GetToF(track, seg1, seg2, sigma, gen, UseSmearing);
+  if (ToF == -999.)
+    return false;
+
+  return (GetToFdetectors(seg1, seg2, det1, det2));
+}
+
+//*********************************************************************
+bool anaUtils::GetToFLikelihood(AnaTrackB* track, Float_t* ToF_lkl, TRandom3* gen, bool UseSmearing) {
+//*********************************************************************
+  if (!track)
+    return false;
+
+  // Get ToF pulls
+  Float_t ToF_pull[4];
+  ComputeToFpulls(track, ToF_pull, gen, UseSmearing);
+
+  return CalculateToFLikelihood(ToF_pull, ToF_lkl);
+}
+
+//*********************************************************************
+bool anaUtils::GetToFLikelihood(Float_t mom, Float_t mom_err,  Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_lkl, TRandom3* gen, bool UseSmearing) {
+//*********************************************************************
+  Float_t ToF_pull[4];
+  // Get ToF pulls
+  ComputeToFpulls(mom, mom_err, ToF, sigma, length, sigma_length, ToF_pull, gen, UseSmearing);
+
+  return CalculateToFLikelihood(ToF_pull, ToF_lkl);
+
+}
+
+//*********************************************************************
+bool anaUtils::CalculateToFLikelihood(Float_t* ToF_pull, Float_t* ToF_lkl) {
+//*********************************************************************
+  ToF_lkl[0] = ToF_lkl[1] = ToF_lkl[2] = ToF_lkl[3] = -999.;
+
+  if (ToF_pull[0] == -999. || ToF_pull[1] == -999. || ToF_pull[2] == -999. || ToF_pull[3] == -999.)
+    return false;
+  // compute the likelihood for each particle hypothesis
+  // 0 - muon, 1 - electron, 2 - proton, 3 - pion
+  Float_t P_mu = exp(-pow(ToF_pull[0],2)/2);
+  Float_t P_pi = exp(-pow(ToF_pull[3],2)/2);
+  Float_t P_e  = exp(-pow(ToF_pull[1],2)/2);
+  Float_t P_p  = exp(-pow(ToF_pull[2],2)/2);
+
+  Float_t sum_prob = P_mu+P_pi+P_e+P_p;
+
+  ToF_lkl[0] = P_mu/sum_prob;
+  ToF_lkl[3] = P_pi/sum_prob;
+  ToF_lkl[1] = P_e/sum_prob;
+  ToF_lkl[2] = P_p/sum_prob;
+
+  return true;
+}
+
+//*********************************************************************
+Float_t anaUtils::GetToFLikelihood(AnaTrackB* track, Int_t hypo, TRandom3* gen, bool UseSmearing) {
+//*********************************************************************
+  if (!track)
+    return -999.;
+
+  Float_t ToF_lkl[4];
+  GetToFLikelihood(track, ToF_lkl, gen, UseSmearing);
+
+  return ToF_lkl[hypo];
+}
+
+//*********************************************************************
+Float_t anaUtils::GetToFLikelihood(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Int_t hypo, TRandom3* gen, bool UseSmearing) {
+//*********************************************************************
+
+  Float_t ToF_lkl[4];
+  GetToFLikelihood(mom, mom_err, ToF, sigma, length, sigma_length, ToF_lkl, gen, UseSmearing);
+
+  return ToF_lkl[hypo];
+}
+
+//*********************************************************************
+bool anaUtils::ComputeToFpulls(AnaTrackB* track, Float_t* ToF_pull, TRandom3* gen, bool UseSmearing) {
+//*********************************************************************
+  if (!track)
+    return false;
+
+  AnaParticleB *p1=0, *p2=0;
+  Float_t sigma=0;
+
+  Float_t ToF     = GetToF(track, p1, p2, sigma, gen, UseSmearing);
+  if (!p1 || !p2)    return false;
+  if (ToF == -999.0) return false;
+  Float_t sigma_length;
+  Float_t length  = GetLength(track, p1, p2, sigma_length, gen, UseSmearing);
+  if (length == -999.) return false;
+
+  Float_t true_mom = track->GetTrueParticle()->Momentum;
+  Float_t mom = track->SmearedMomentum;
+  if (fabs(true_mom-mom)<1e-3)
+    mom = gen->Gaus(true_mom, 0.10*true_mom);
+
+  Float_t mom_err = track->MomentumError;
+
+  return ComputeToFpulls(mom, mom_err, ToF, sigma, length, sigma_length, ToF_pull, gen, UseSmearing);
+}
+
+//*********************************************************************
+bool anaUtils::ComputeToFpulls(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_pull, TRandom3* gen, bool UseSmearing) {
+//*********************************************************************
+
+  ToF_pull[0] = ToF_pull[1] = ToF_pull[2] = ToF_pull[3] = -999.;
+  
+  Float_t ToFmass = ComputeToFMass(mom, ToF, length);
+
+  if (ToFmass == 0)
+    return false;
+
+  Float_t invp = 1/mom;
+  if (mom_err==0) mom_err=0.10*invp;
+
+  // expected mass
+  Float_t m = 0;
+  // factor which is defined here to clarify the code
+  Float_t a = 1.;
+  a = 1+pow(mom/ToFmass, 2);
+  // resolution on reconstructed mass
+  Float_t sigma_m = ToFmass*sqrt(pow(mom_err/invp,2)+pow(a*sigma/ToF,2)+pow(a*sigma_length/length,2));
+
+  // compute the pull for each particle hypothesis
+  m = units::pdgBase->GetParticle(13)->Mass()*1000; // muon
+  ToF_pull[0] = (ToFmass-m)/sigma_m;
+  m = units::pdgBase->GetParticle(211)->Mass()*1000; // pion
+  ToF_pull[3] = (ToFmass-m)/sigma_m;
+  m = units::pdgBase->GetParticle(11)->Mass()*1000; // electron
+  ToF_pull[1] = (ToFmass-m)/sigma_m;
+  m = units::pdgBase->GetParticle(2212)->Mass()*1000; // proton
+  ToF_pull[2] = (ToFmass-m)/sigma_m;
+
 }

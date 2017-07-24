@@ -9,6 +9,7 @@ branches cmt src doc
 use psycheUtils * highlandUP
 use highlandEventModel * highlandUP
 use psycheSelections * highlandUP
+use highlandRecPack * highlandUP
 # Build methods to include.
 document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
 
