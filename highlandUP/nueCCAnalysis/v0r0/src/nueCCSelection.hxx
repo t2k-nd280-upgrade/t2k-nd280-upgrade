@@ -70,6 +70,10 @@ public:
     NFarTracks = NNearTracks = 0;
     ToF_lkl_muon = ToF_lkl_pion = ToF_lkl_electron = ToF_lkl_proton = -999.0;
     ToF_pull_muon = ToF_pull_pion = ToF_pull_electron = ToF_pull_proton = -999.0;
+
+    daughterPDG = -999;
+    beta_ToF = beta_true_ToF = -999.;
+    FirstToF = SecondToF = SubDetId::kInvalid;
   }
 
   virtual void Reset(){
@@ -85,9 +89,14 @@ public:
     
     TPC_det = SubDetId::kInvalid;
     ToF_mass = ToF_true_mass = InvariantMass = -999.;
+    main_ToF = main_ToF_true = -999.;
     NFarTracks = NNearTracks = 0;
     ToF_lkl_muon = ToF_lkl_pion = ToF_lkl_electron = ToF_lkl_proton = -999.0;
     ToF_pull_muon = ToF_pull_pion = ToF_pull_electron = ToF_pull_proton = -999.0;
+
+    daughterPDG = -999;
+    beta_ToF = beta_true_ToF = -999.;
+    FirstToF = SecondToF = SubDetId::kInvalid;
   }
 
   virtual ~ToyBoxCC4pi(){}
@@ -98,9 +107,18 @@ public:
   std::vector<AnaTrackB*> TPCTracks, ECalTracks;
   SubDetId::SubDetEnum TPC_det;
 
+  /// ToF vars
+  float main_ToF, main_ToF_true;
   float ToF_mass, ToF_true_mass;
   float ToF_lkl_muon, ToF_lkl_pion, ToF_lkl_electron, ToF_lkl_proton;
   float ToF_pull_muon, ToF_pull_pion, ToF_pull_electron, ToF_pull_proton;
+  float beta_ToF, beta_true_ToF;
+
+  /// detectors that were used for the ToF calculations
+  SubDetId::SubDetEnum FirstToF, SecondToF;
+
+  Int_t daughterPDG;
+  
 
   float InvariantMass;
   int NFarTracks, NNearTracks;
@@ -141,7 +159,7 @@ public:
     useTarget2 = ND::params().GetParameterI("nueCCAnalysis.EnableTarget2");
     useFGD1 = ND::params().GetParameterI("nueCCAnalysis.EnableFGD1");
     useFGD2 = ND::params().GetParameterI("nueCCAnalysis.EnableFGD2");
-    selectpositrons = ND::params().GetParameterI("nueCCAnalysis.SelectPositrons");
+    selection_charge = (Int_t)ND::params().GetParameterI("nueCCAnalysis.SelectCharge");
   };
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
@@ -149,7 +167,7 @@ public:
 private:
   bool useTarget1, useTarget2;
   bool useFGD1, useFGD2;
-  bool selectpositrons;
+  Int_t selection_charge;
 };
 
 class TrackGQandFVCut: public StepBase{
@@ -163,24 +181,6 @@ public:
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new TrackGQandFVCut();}
-  
-private:
-  bool useTarget1, useTarget2;
-  bool useFGD1, useFGD2;
-};
-
-/// Find the Vertex. For the moment it's just the Star position of the longest track
-class TrueVertexInTargetCut: public StepBase{
-public:
-  TrueVertexInTargetCut() {
-    useTarget1 = (bool)ND::params().GetParameterI("nueCCAnalysis.EnableTarget1");
-    useTarget2 = (bool)ND::params().GetParameterI("nueCCAnalysis.EnableTarget2");
-    useFGD1    = (bool)ND::params().GetParameterI("nueCCAnalysis.EnableFGD1");
-    useFGD2    = (bool)ND::params().GetParameterI("nueCCAnalysis.EnableFGD2");
-  };
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new TrueVertexInTargetCut();}
   
 private:
   bool useTarget1, useTarget2;
@@ -214,6 +214,18 @@ public:
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new TPC_Quality();}
+};
+
+class ToF_BWD_cut: public StepBase{
+public:
+  ToF_BWD_cut() {
+    conf = (Int_t)ND::params().GetParameterI("nueCCAnalysis.Configuration");
+  }
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& box) const;
+  StepBase* MakeClone(){return new ToF_BWD_cut();}
+private:
+  Int_t conf;
 };
 
 class TPCElectronPID: public StepBase{
@@ -296,30 +308,6 @@ public:
   StepBase* MakeClone(){return new PairCut();}
 protected:
   Float_t _inv_mass_min;
-};
-
-class ApplyChargeConfusion: public StepBase{
-public:
-  ApplyChargeConfusion(TFile *f1, TFile *f2){
-    _applychargeconfusion = (bool)ND::params().GetParameterI("nueCCAnalysis.ApplyChargeConfusion");
-    useTarget1 = ND::params().GetParameterI("nueCCAnalysis.EnableTarget1");
-    useTarget2 = ND::params().GetParameterI("nueCCAnalysis.EnableTarget2");
-    useFGD1 = ND::params().GetParameterI("nueCCAnalysis.EnableFGD1");
-    useFGD2 = ND::params().GetParameterI("nueCCAnalysis.EnableFGD2");
-
-    _file_charge_confusion_1 = f1;
-    _file_charge_confusion_2 = f2;
-  };
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& boxB) const;
-  StepBase* MakeClone(){return new ApplyChargeConfusion(_file_charge_confusion_1, _file_charge_confusion_2);}
-protected:
-  bool _applychargeconfusion;
-  bool useTarget1, useTarget2;
-  bool useFGD1, useFGD2;
-private:
-  TFile *_file_charge_confusion_1;
-  TFile *_file_charge_confusion_2;
 };
 
 #endif

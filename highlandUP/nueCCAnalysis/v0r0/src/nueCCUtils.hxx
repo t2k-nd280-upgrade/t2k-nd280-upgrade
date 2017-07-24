@@ -23,6 +23,7 @@ const Float_t _FVdefmaxFGD2[3]   = {76.88, 38.44, 10.125}; //9.61*8, 9.61*4
 
 namespace nueCCUtils{
 
+  void AddCategories(bool AntiNu = false);
   int nueCCCategory(AnaEventB* event, AnaTrack* track, const SubDetId::SubDetEnum det, bool AntiNu);
   bool IsNuESignal(AnaTrueVertex* vtx, const SubDetId::SubDetEnum det, bool AntiNu);
   bool IsNuECC0pi(AnaTrueVertex* vtx, const SubDetId::SubDetEnum det, bool AntiNu);
@@ -44,12 +45,6 @@ namespace nueCCUtils{
   bool TPCMuonPIDCut(const AnaTrackB& candidate, Float_t Lmu);
   /// Check whether a track is forward going
   bool IsForward(const AnaTrackB& track);
-
-  // ToF
-  float GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, float& sigma, TRandom3* gen);
-  float ComputeToFMass(float mom, float ToF, float length);
-  float ComputeToFTime(float mom, float mass, float length);
-
 }
 
 
