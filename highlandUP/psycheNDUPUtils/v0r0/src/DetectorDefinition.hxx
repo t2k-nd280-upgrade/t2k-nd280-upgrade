@@ -171,7 +171,9 @@ namespace DetDef {
   
 
   /// Dump volume definitions
-  void DumpVolumes();  
+  void DumpVolumes();
+
+  bool Initialize(Int_t Configuration = -1, Int_t ToF = -1);
 }
 
 #endif

@@ -1,5 +1,6 @@
 #include "DetectorDefinition.hxx"
 #include "Units.hxx"
+#include "Parameters.hxx"
 #include <iomanip>
 
 //dumping of array
@@ -89,6 +90,7 @@ namespace DetDef {
   Float_t trackerAllmin[3] = {-1160.00, -1256.0,  -885.0};
   Float_t trackerAllmax[3] = { 1160.00,  1230.0,  2807.0};
 
+
   //**********************************
   void DumpVolumes(){
   //**********************************
@@ -167,5 +169,64 @@ namespace DetDef {
     std::cout.precision(ss);
   }
 
+  //**********************************
+  bool Initialize(Int_t Configuration, Int_t ToF) {
+  //**********************************
+    if (Configuration == -1) {
+      Configuration = (Int_t)ND::params().GetParameterI("psycheNDUPUtils.Geometry.nd280upConfiguration");
+      ToF           = (Int_t)ND::params().GetParameterI("psycheNDUPUtils.Geometry.AddToF");
+    }
+
+    if (Configuration == 1) {
+      if (ToF) {
+        DetDef::Target1min[2] =  -1737.00;
+        DetDef::Target1max[2] =   -537.00;
+        DetDef::Target2min[2] =    537.00;
+        DetDef::Target2max[2] =   1737.00;
+      }
+    }
+  
+    if (Configuration >= 2) {
+      
+      DetDef::FGD1min[0] = -932.15;
+      DetDef::FGD1max[0] =  932.15; 
+      DetDef::FGD1min[1] = -948.15;
+      DetDef::FGD1max[1] =  916.15; 
+      DetDef::FGD1min[2] =  276.00;
+      DetDef::FGD1max[2] =  579.00;
+  
+      DetDef::FGD2min[0] = -932.15;
+      DetDef::FGD2max[0] =  932.15; 
+      DetDef::FGD2min[1] = -948.15;
+      DetDef::FGD2max[1] =  916.15; 
+      DetDef::FGD2min[2] = 1553.00;
+      DetDef::FGD2max[2] = 1856.00;
+    
+    }
+  
+    if (Configuration == 2) {
+      if (ToF) {
+        DetDef::Target1min[2] =  -2642.00;
+        DetDef::Target1max[2] =   -748.00;
+      }
+      else {
+        DetDef::Target1min[2] =  -2692.00;
+        DetDef::Target1max[2] =   -698.00;
+      }
+    }
+    if (Configuration == 3) {
+      if (ToF) {
+        DetDef::Target1min[2] =  -1668.00;
+        DetDef::Target1max[2] =    226.00;
+      }
+      else {
+        DetDef::Target1min[2] =  -1718.00;
+        DetDef::Target1max[2] =    276.00;
+      }
+    }
+    return true;
+  }
+  
 } //namespace
+
 
