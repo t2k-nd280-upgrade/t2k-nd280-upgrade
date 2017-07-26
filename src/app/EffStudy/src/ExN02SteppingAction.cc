@@ -127,13 +127,13 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   G4ThreeVector Pos = prestep->GetPosition();
   G4ThreeVector PosPost = poststep->GetPosition();
   //G4String namedet = theTouchable->GetVolume()->GetLogicalVolume()->GetName(); 
-  if(namedet.contains("FGDlike1")){
-    G4cout << namedet << ": " << G4endl 
-	   << "PreStep: " << Pos.x() << ", " << Pos.y() << ", " << Pos.z() << G4endl
-	   << "PostStep: " << PosPost.x() << ", " << PosPost.y() << ", " << PosPost.z() << G4endl;
-    G4cout << endl;
-    G4cout << "..................." << G4endl; 
-  }
+  //if(namedet.contains("FGDlike1")){
+  //G4cout << namedet << ": " << G4endl 
+  //	   << "PreStep: " << Pos.x() << ", " << Pos.y() << ", " << Pos.z() << G4endl
+  //	   << "PostStep: " << PosPost.x() << ", " << PosPost.y() << ", " << PosPost.z() << G4endl;
+  //G4cout << endl;
+  //G4cout << "..................." << G4endl; 
+  //}
 
 
   /*

@@ -159,7 +159,7 @@ void ND280RootPersistencyManager::InitNavigator(G4VPhysicalVolume *logvolume,G4T
 
   //fNavigHistoTarg1 = Touchable->GetHistory(); // if I do this at the next hit it starts again from the most daughter volume
   fNavigHistoTarg1 = new G4NavigationHistory(*(Touchable->GetHistory()));
-  
+   
   SetHistoMovedTarg1(true); // define whether you can use the history or not
 
 
@@ -532,6 +532,13 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       G4ThreeVector PMworldPosition(posX,posY,posZ);
       string detname = nd280Hit->GetDetName();
       G4double steplength = nd280Hit->GetTrackLength();
+
+      //cout << "The tracks contributing to the hit (trkid=" << trkid << ", pdg=" << nd280Hit->GetPDG() << ") are " << endl;
+      //for(int icont=0;icont<nd280Hit->fContributors.size();icont++){
+      //cout << nd280Hit->fContributors[icont] << ", ";
+      //}
+      //cout << endl;
+
 
       // Calculate the position in the target reference system --> needed for response
       G4ThreeVector lightPos = GetLocalPosition(PMworldPosition); 
