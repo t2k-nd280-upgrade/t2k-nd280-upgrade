@@ -15,6 +15,27 @@
 #include "Parameters.hxx"
 
 //********************************************************************
+void nueCCUtils::AddCategories(bool AntiNu){
+  //********************************************************************
+
+  anaUtils::AddStandardCategories();
+
+  ///  nuesimple  ///  GetNuESimpleCat  ///
+  const int NNUE1 = 7;
+  std::string reac_nue1[NNUE1]  = {"#nu_{e} CC0pi", "#nu_{e} CCOther", "OOFV #gamma background", "FV #gamma background", "#mu background", "Other background", "Proton background"};
+  int reac_nue1code[NNUE1]      = {1,                2,                 6,                        3,                      4,                5,                  8};
+  int reac_nue1col[NNUE1]       = {6,                7,                 4,                        5,                      3,                1,                  48};
+  
+  // for AntiNu selection rename the categories
+  if (AntiNu) {
+    reac_nue1[0] = "#bar{#nu}_{e} CC0pi";
+    reac_nue1[1] = "#bar{#nu}_{e} CCOther";
+  }
+  anaUtils::_categ->AddCategory("nueCC",       NNUE1, reac_nue1, reac_nue1code, reac_nue1col);
+
+}
+
+//********************************************************************
 int nueCCUtils::nueCCCategory(AnaEventB* event, AnaTrack* track, const SubDetId::SubDetEnum det, bool AntiNu){
   //********************************************************************
 
@@ -264,141 +285,5 @@ bool nueCCUtils::TPCMuonPIDCut(const AnaTrackB& candidate, Float_t Lmu) {
   if(GetMuonL > Lmu) return false;
 
   return true;
-
-}
-
-//*********************************************************************
-float nueCCUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, float& sigma, TRandom3* gen){
-//*********************************************************************
-
-  if (!track) return -1.;
-
-  //Float_t cut_length_target   = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.Cut.Length");
-  Float_t ToF_time_resolution = ND::params().GetParameterD("nueCCAnalysis.ToF.TimeResolution");
-  Int_t add_ToF_on_targets    = ND::params().GetParameterI("nueCCAnalysis.AddToFOnTargets");
-  std::vector< std::pair<AnaParticleB*, std::vector<float> > > detTiming;
-  
-  // find timing information in Targets
-  for (int i=0; i<track->nTargetSegments; i++){
-    if (track->TargetSegments[i]->IsReconstructed) {
-      //if (track->TargetSegments[i]->DeltaLYZ > cut_length_target) {
-      float true_time = track->TargetSegments[i]->PositionStart[3];
-      float     sigma = sqrt(pow(3/sqrt(track->TargetSegments[i]->DeltaLYZ/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
-      float      time = gen->Gaus(true_time, sigma);
-
-      std::vector<float> vec;
-      vec.push_back(time); vec.push_back(sigma);
-      detTiming.push_back(std::make_pair(track->TargetSegments[i], vec));
-    }
-  }
-
-  if (add_ToF_on_targets) {
-    // find timing information in additionnal ToF
-    if (track->nTPCSegments && track->TPCSegments[0]) {
-      if (SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp1   ||
-	  SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp2   ||
-	  SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown1 ||
-	  SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown2 ){
-
-	float true_time = track->TPCSegments[0]->PositionStart[3];
-	float     sigma = ToF_time_resolution;
-	float      time = gen->Gaus(true_time, sigma);
-
-	std::vector<float> vec;
-	vec.push_back(time); vec.push_back(sigma);
-	detTiming.push_back(std::make_pair(track->TPCSegments[0], vec));
-      }
-    }
-  }
-
-  // find timing information in FGDs
-  for (int i=0; i<track->nFGDSegments; i++){
-    if (track->FGDSegments[i]->IsReconstructed) {
-    //if (track->FGDSegments[i]->DeltaLYZ > cut_length_target) {
-      float true_time = track->FGDSegments[i]->PositionStart[3];
-      float     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->DeltaLYZ/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
-      float      time = gen->Gaus(true_time, sigma);
-
-      std::vector<float> vec;
-      vec.push_back(time); vec.push_back(sigma);
-      detTiming.push_back(std::make_pair(track->FGDSegments[i], vec));
-    }
-  }
-
-  // find timing information in ECal
-  for (int i=0; i<track->nECalSegments; i++) {
-    if (track->ECalSegments[i]->IsReconstructed) {
-      float true_time = track->ECalSegments[i]->PositionStart[3];
-      float     sigma = 5; // 5ns
-      float      time = gen->Gaus(true_time, sigma);
-
-      std::vector<float> vec;
-      vec.push_back(time); vec.push_back(sigma);
-      detTiming.push_back(std::make_pair(track->ECalSegments[i], vec));
-    }
-  }
-
-  // find timing information in ToF counters
-  for (int i=0; i<track->nToFSegments; i++) {
-    float true_time = track->ToFSegments[i]->PositionStart[3];
-    float     sigma = ToF_time_resolution; // 0.6ns
-    float      time = gen->Gaus(true_time, sigma);
-
-    std::vector<float> vec;
-    vec.push_back(time); vec.push_back(sigma);
-    detTiming.push_back(std::make_pair(track->ToFSegments[i], vec));
-  }
-  
-  // if we don't have 2, give up
-  if (detTiming.size() < 2)
-    return -999;
-
-  float ToF = -999, max_t_over_s = 0;
-  for (unsigned int i=0; i<detTiming.size(); i++){
-    for (unsigned int j=i+1; j<detTiming.size(); j++){
-
-      float  t1 = detTiming[i].second[0],  t2 = detTiming[j].second[0];
-      float  s1 = detTiming[i].second[1],  s2 = detTiming[j].second[1];
-      float t_over_s = fabs( (t2-t1)/sqrt(s1*s1+s2*s2) );
-
-      if ( t_over_s > max_t_over_s ){
-	max_t_over_s = t_over_s;
-	ToF = t2-t1;
-	seg1 = detTiming[i].first;
-	seg2 = detTiming[j].first;
-	sigma = sqrt(s1*s1+s2*s2);
-      }
-      
-    } // end second loop on timing info
-  } // end first loop on timing info
-
-  
-  if (seg2->PositionStart[3]-seg1->PositionStart[3] < 0) {
-    AnaParticleB* temp;
-    temp = seg1;
-    seg1 = seg2;
-    seg2 = temp;
-    ToF  = -ToF;
-  }
-
-  return ToF;
-
-}
-
-//*********************************************************************
-float nueCCUtils::ComputeToFMass(float mom, float ToF, float length){
-  //*********************************************************************
-
-  double c = 299.792458; // mm/ns
-  return mom*sqrt(pow(c*ToF/length, 2) -1);
-
-}
-
-//*********************************************************************
-float nueCCUtils::ComputeToFTime(float mom, float mass, float length){
-  //*********************************************************************
-
-  double c = 299.792458; // mm/ns
-  return length/c*sqrt(pow(mass/mom, 2) +1);
 
 }

@@ -10,6 +10,7 @@
 #include "PIDCorrection.hxx"
 #include "CutUtils.hxx"
 #include "NuDirUtils.hxx"
+#include "ConstituentsUtils.hxx"
 #include "TreeConverterUtils.hxx"
 
 const UInt_t NMAXMU = 500;
@@ -33,8 +34,12 @@ bool nueCCAnalysis::Initialize(){
   //Minimum accum level to save event into the output tree
   SetMinAccumCutLevelToSave(ND::params().GetParameterI("nueCCAnalysis.MinAccumLevelToSave"));
 
-  //Add muon candidate categories
-  nueCCAnalysis::AddCategories();
+  // Run nuE / nuE bar selection
+  _AntiNu = false;
+  if (ND::params().GetParameterI("nueCCAnalysis.SelectCharge") > 0)
+    _AntiNu = true;
+  //Add electron candidate categories
+  nueCCUtils::AddCategories(_AntiNu);
 
   // Target for the selection
   _useTarget1 = ND::params().GetParameterI("nueCCAnalysis.EnableTarget1");
@@ -42,54 +47,7 @@ bool nueCCAnalysis::Initialize(){
   _useFGD1    = ND::params().GetParameterI("nueCCAnalysis.EnableFGD1");
   _useFGD2    = ND::params().GetParameterI("nueCCAnalysis.EnableFGD2");
 
-
-  if (ND::params().GetParameterI("nueCCAnalysis.Configuration") == 1) {
-    if (ND::params().GetParameterI("nueCCAnalysis.ToF") == 1) {
-      DetDef::Target1min[2] =  -1737.00;
-      DetDef::Target1max[2] =   -537.00;
-      DetDef::Target2min[2] =    537.00;
-      DetDef::Target2max[2] =   1737.00;
-    }
-  }
-  
-  if (ND::params().GetParameterI("nueCCAnalysis.Configuration") >= 2) {
-    
-    DetDef::FGD1min[0] = -932.15;
-    DetDef::FGD1max[0] =  932.15;	
-    DetDef::FGD1min[1] = -948.15;
-    DetDef::FGD1max[1] =  916.15;	
-    DetDef::FGD1min[2] =  276.00;
-    DetDef::FGD1max[2] =  579.00;
-
-    DetDef::FGD2min[0] = -932.15;
-    DetDef::FGD2max[0] =  932.15;	
-    DetDef::FGD2min[1] = -948.15;
-    DetDef::FGD2max[1] =  916.15;	
-    DetDef::FGD2min[2] = 1553.00;
-    DetDef::FGD2max[2] = 1856.00;
-	
-  }
-  
-  if (ND::params().GetParameterI("nueCCAnalysis.Configuration") == 2) {
-    if (ND::params().GetParameterI("nueCCAnalysis.ToF") == 1) {
-      DetDef::Target1min[2] =  -2642.00;
-      DetDef::Target1max[2] =   -748.00;
-    }
-    else {
-      DetDef::Target1min[2] =  -2692.00;
-      DetDef::Target1max[2] =   -698.00;
-    }
-  }
-  if (ND::params().GetParameterI("nueCCAnalysis.Configuration") == 3) {
-    if (ND::params().GetParameterI("nueCCAnalysis.ToF") == 1) {
-      DetDef::Target1min[2] =  -1668.00;
-      DetDef::Target1max[2] =    226.00;
-    }
-    else {
-      DetDef::Target1min[2] =  -1718.00;
-      DetDef::Target1max[2] =    276.00;
-    }
-  }
+  DetDef::Initialize();
 
   return true;
 
@@ -146,23 +104,28 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddToyVarI(output(),  NECal,               "");
   AddToyVarI(output(),  Toy_CC4pi,           "");
 
-  AddToyVarF(output(),  selmu_costheta,      "");
-  AddVarF(output(),     selmu_likemu,        ""); 
-  AddVarF(output(),     selmu_likeel,        ""); 
-  AddVarF(output(),     selmu_likepi,        ""); 
-  AddVarF(output(),     selmu_likepr,        ""); 
-  AddVarF(output(),     selmu_likemip,       "");
+  AddToyVarF(output(),  selelec_costheta,      "");
+  AddVarF(output(),     selelec_pull_mu,       ""); 
+  AddVarF(output(),     selelec_pull_ele,      ""); 
+  AddVarF(output(),     selelec_pull_pi,       ""); 
+  AddVarF(output(),     selelec_pull_pr,       ""); 
+  AddVarF(output(),     selelec_likemu,        ""); 
+  AddVarF(output(),     selelec_likeel,        ""); 
+  AddVarF(output(),     selelec_likepi,        ""); 
+  AddVarF(output(),     selelec_likepr,        ""); 
+  AddVarF(output(),     selelec_likemip,       "");
 
-  AddVarF(output(),     selmu_ToF_mass,      "");
-  AddVarF(output(),     selmu_ToF_true_mass, "");
-  AddVarF(output(),     selmu_ToF_lkl_muon,       "");
-  AddVarF(output(),     selmu_ToF_lkl_pion,       "");
-  AddVarF(output(),     selmu_ToF_lkl_electron,   "");
-  AddVarF(output(),     selmu_ToF_lkl_proton,     "");
-  AddVarF(output(),     selmu_ToF_pull_muon,      "");
-  AddVarF(output(),     selmu_ToF_pull_pion,      "");
-  AddVarF(output(),     selmu_ToF_pull_electron,  "");
-  AddVarF(output(),     selmu_ToF_pull_proton,    "");
+  // fill the ToF info
+  AddVarI(output(),     selelec_first_ToF,          "");
+  AddVarI(output(),     selelec_second_ToF,         "");
+  AddVarF(output(),     Beta_ToF,                   "");
+  AddVarF(output(),     Beta_true_ToF,              "");
+  AddVarF(output(),     selelec_ToF_mass,           "");
+  AddVarF(output(),     selelec_ToF_true_mass,      "");
+  AddVarF(output(),     selelec_ToF_lkl_muon,       "");
+  AddVarF(output(),     selelec_ToF_lkl_pion,       "");
+  AddVarF(output(),     selelec_ToF_lkl_electron,   "");
+  AddVarF(output(),     selelec_ToF_lkl_proton,     "");
   
   //--- info from true vertex
   AddVarI(output(),     truelepton_PDG,       "");
@@ -174,31 +137,32 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddVarI(output(),     truelepton_det,       "");
 
   //--- info from true track
-  AddVarI(output(),     selmu_ID,             "");
-  AddVarI(output(),     selmu_PDG,            "");
-  AddVarI(output(),     selmu_ParentPDG,      "");
-  AddVarI(output(),     selmu_GParentPDG,     "");
-  AddVarF(output(),     selmu_mom,            "");
-  AddVarF(output(),     selmu_truemom,        "");
-  AddVarF(output(),     selmu_truecostheta,   "");
-  AddVar4VF(output(),   selmu_truepos,        "");
-  AddVar4VF(output(),   selmu_trueendpos,     "");
-  AddVar3VF(output(),   selmu_truedir,        "");
+  AddVarI(output(),     selelec_ID,             "");
+  AddVarI(output(),     selelec_PDG,            "");
+  AddVarI(output(),     selelec_ParentPDG,      "");
+  AddVarI(output(),     selelec_GParentPDG,     "");
+  AddVarF(output(),     selelec_mom,            "");
+  AddVarF(output(),     selelec_truemom,        "");
+  AddVarF(output(),     selelec_truecostheta,   "");
+  AddVar4VF(output(),   selelec_truepos,        "");
+  AddVar4VF(output(),   selelec_trueendpos,     "");
+  AddVar3VF(output(),   selelec_truedir,        "");
+  AddVarI(output(),     selelec_daughterPDG,    "");
 
   //--- info by global
-  AddVarI(output(),     selmu_detectors,      "");
-  AddVarF(output(),     selmu_charge,         "");
-  AddVar3VF(output(),   selmu_dir,            "");
-  AddVar3VF(output(),   selmu_enddir,         "");
-  AddVar4VF(output(),   selmu_pos,            "");
-  AddVar4VF(output(),   selmu_endpos,         "");
-  AddVarI(output(),     selmu_longestTPC,     "");
-  AddVarF(output(),     selmu_dedx_tpc,       "");
+  AddVarI(output(),     selelec_detectors,      "");
+  AddVarF(output(),     selelec_charge,         "");
+  AddVar3VF(output(),   selelec_dir,            "");
+  AddVar3VF(output(),   selelec_enddir,         "");
+  AddVar4VF(output(),   selelec_pos,            "");
+  AddVar4VF(output(),   selelec_endpos,         "");
+  AddVarI(output(),     selelec_longestTPC,     "");
+  AddVarF(output(),     selelec_dedx_tpc,       "");
 
   //--- ECal
-  AddVarF(output(),     selmu_ecal_mipem,     "");
-  AddVarF(output(),     selmu_ecal_EneOnL,    "");
-  AddVarI(output(),     selmu_ecal_stopping,  "");
+  AddVarF(output(),     selelec_ecal_mipem,     "");
+  AddVarF(output(),     selelec_ecal_EneOnL,    "");
+  AddVarI(output(),     selelec_ecal_stopping,  "");
 
   AddVarI(output(),     true_Nu_pdg,          "");
   AddVarF(output(),     true_Nu_mom,          "");
@@ -253,8 +217,17 @@ void nueCCAnalysis::DefineTruthTree(){
   AddVarF(output(),   true_charge,           "charge");
   AddVarF(output(),   true_ekin,             "kinetic energy");
   AddVar4VF(output(), true_position,         "start position");
+  AddVar4VF(output(), true_end,              "end position");
   AddVarF(output(),   true_Q2,               "Q2");
   AddVarI(output(),   true_TPC,              "TPC detector");
+
+  AddVarI(output(),     truelepton_PDG,       "");
+  AddVarF(output(),     truelepton_mom,       "");
+  AddVar3VF(output(),   truelepton_dir,       "");
+  AddVarF(output(),     truelepton_costheta,  "");
+  AddVar4VF(output(),   truelepton_pos,       "");
+  AddVarI(output(),     true_vertex_intarget, "");
+  AddVarI(output(),     truelepton_det,       "");
 
 }
 
@@ -262,11 +235,14 @@ void nueCCAnalysis::DefineTruthTree(){
 void nueCCAnalysis::FillMicroTrees(bool addBase){
   //********************************************************************
 
+
   if (addBase) baseAnalysis::FillMicroTreesBase(addBase);
   if ( !cc4pibox().MainTrack ) return;
 
   EventBoxB* EventBox = (*_event).EventBoxes[EventBoxId::kEventBoxNDUP];
   (void)EventBox;
+
+  output().FillVar(selelec_daughterPDG,             cc4pibox().daughterPDG);
   
   if (cc4pibox().MainTrack->TrueObject) {
     AnaTrueVertex *vtx = static_cast<AnaTrueVertex*>(cc4pibox().MainTrack->GetTrueParticle()->TrueVertex);
@@ -276,10 +252,12 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
       output().FillVar(truelepton_PDG,                vtx->LeptonPDG);
       output().FillVar(truelepton_mom,                vtx->LeptonMom);
       output().FillVectorVarFromArray(truelepton_dir, vtx->LeptonDir,3);
+
       double costheta_mu_nu = cos(anaUtils::ArrayToTVector3(vtx->LeptonDir).Angle(anaUtils::ArrayToTVector3(vtx->NuDir)));
-      output().FillVar(truelepton_costheta, (Float_t)costheta_mu_nu);
+
+      output().FillVar(truelepton_costheta,           (Float_t)costheta_mu_nu);
       output().FillVectorVarFromArray(truelepton_pos, vtx->Position,4);
-      output().FillVar(truelepton_det, anaUtils::GetDetector(vtx->Position));
+      output().FillVar(truelepton_det,                anaUtils::GetDetector(vtx->Position));
       
       int intarget = 0;
       if( (_useTarget1 && cutUtils::FiducialCut(vtx->Position, SubDetId::kTarget1)) ||
@@ -291,17 +269,17 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
       output().FillVar(true_vertex_intarget,                intarget);
     }
     
-    output().FillVar(selmu_ID,                        cc4pibox().MainTrack->GetTrueParticle()->ID);
-    output().FillVar(selmu_PDG,                       cc4pibox().MainTrack->GetTrueParticle()->PDG);
-    output().FillVar(selmu_truemom,                   cc4pibox().MainTrack->GetTrueParticle()->Momentum);
-    output().FillVar(selmu_truecostheta,              cc4pibox().MainTrack->GetTrueParticle()->CosTheta);
-    output().FillVectorVarFromArray(selmu_truedir,    cc4pibox().MainTrack->GetTrueParticle()->Direction, 3);
-    output().FillVectorVarFromArray(selmu_truepos,    cc4pibox().MainTrack->GetTrueParticle()->Position, 4);
-    output().FillVectorVarFromArray(selmu_trueendpos, cc4pibox().MainTrack->GetTrueParticle()->PositionEnd, 4);
+    output().FillVar(selelec_ID,                        cc4pibox().MainTrack->GetTrueParticle()->ID);
+    output().FillVar(selelec_PDG,                       cc4pibox().MainTrack->GetTrueParticle()->PDG);
+    output().FillVar(selelec_truemom,                   cc4pibox().MainTrack->GetTrueParticle()->Momentum);
+    output().FillVar(selelec_truecostheta,              cc4pibox().MainTrack->GetTrueParticle()->CosTheta);
+    output().FillVectorVarFromArray(selelec_truedir,    cc4pibox().MainTrack->GetTrueParticle()->Direction, 3);
+    output().FillVectorVarFromArray(selelec_truepos,    cc4pibox().MainTrack->GetTrueParticle()->Position, 4);
+    output().FillVectorVarFromArray(selelec_trueendpos, cc4pibox().MainTrack->GetTrueParticle()->PositionEnd, 4);
  
     AnaTrueParticle* parent = static_cast<AnaTrueParticle*> ( anaUtils::GetTrueParticleByID(static_cast<const AnaEventB&> (GetEvent()), cc4pibox().MainTrack->GetTrueParticle()->ParentID) );
     if(parent){
-      output().FillVar(selmu_ParentPDG,               parent->PDG);
+      output().FillVar(selelec_ParentPDG,               parent->PDG);
       AnaTrueVertex *vtx = static_cast<AnaTrueVertex*>(cc4pibox().MainTrack->GetTrueParticle()->TrueVertex);
       if(vtx) {
 	std::vector<AnaTrueParticleB*> TrueParticles = vtx->TrueParticlesVect;
@@ -320,45 +298,59 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
       // Grandparent
       AnaTrueParticle* gparent = static_cast<AnaTrueParticle*> ( anaUtils::GetTrueParticleByID(static_cast<const AnaEventB&> (GetEvent()), parent->ParentID) );
       if(gparent)
-	output().FillVar(selmu_GParentPDG,            gparent->PDG);
+	output().FillVar(selelec_GParentPDG,            gparent->PDG);
     }
     
     AnaTrackB* track = cc4pibox().MainTrack;
 
-    //output().FillVar(selmu_detectors,                 track->Detectors);
-    output().FillVar(selmu_charge,                    track->Charge);
-    output().FillVar(selmu_mom,                       track->SmearedMomentum);
-    output().FillVectorVarFromArray(selmu_dir,        track->DirectionStart, 3);
-    output().FillVectorVarFromArray(selmu_enddir,     track->DirectionEnd, 3);
-    output().FillVectorVarFromArray(selmu_pos,        track->PositionStart, 4);
-    output().FillVectorVarFromArray(selmu_endpos,     track->PositionEnd, 4);
-    output().FillVar(selmu_likemu,                    anaUtils::GetPIDLikelihood( *track, 0));
-    output().FillVar(selmu_likeel,                    anaUtils::GetPIDLikelihood( *track, 1));
-    output().FillVar(selmu_likepi,                    anaUtils::GetPIDLikelihood( *track, 2));
-    output().FillVar(selmu_likepr,                    anaUtils::GetPIDLikelihood( *track, 3));
-    output().FillVar(selmu_likemip,                   anaUtils::GetPIDLikelihoodMIP( *track));
+    //output().FillVar(selelec_detectors,                 track->Detectors);
+    output().FillVar(selelec_charge,                    track->Charge);
+    output().FillVar(selelec_mom,                       track->SmearedMomentum);
+    output().FillVectorVarFromArray(selelec_dir,        track->DirectionStart, 3);
+    output().FillVectorVarFromArray(selelec_enddir,     track->DirectionEnd, 3);
+    output().FillVectorVarFromArray(selelec_pos,        track->PositionStart, 4);
+    output().FillVectorVarFromArray(selelec_endpos,     track->PositionEnd, 4);
 
-    output().FillVar(selmu_ecal_stopping,             cutUtils::StoppingECALCut( *track ));
-    output().FillVar(selmu_ecal_mipem,                cc4pibox().track_ECal_MipEM);
-    output().FillVar(selmu_ecal_EneOnL,               cc4pibox().track_ECal_EneOnL);
-    output().FillVar(selmu_longestTPC,                cc4pibox().TPC_det);
+    AnaTPCParticleB* longCloseTPC = static_cast<AnaTPCParticleB*>(anaUtils::GetSegmentWithMostNodesInDet(*track, anaUtils::GetClosestTPC(*track)));
+
+    if(longCloseTPC) {    
+      output().FillVar(selelec_pull_mu,   (longCloseTPC->dEdxMeas-longCloseTPC->dEdxexpMuon)/longCloseTPC->dEdxSigmaMuon);
+      output().FillVar(selelec_pull_ele,  (longCloseTPC->dEdxMeas-longCloseTPC->dEdxexpEle)/longCloseTPC->dEdxSigmaEle);
+      output().FillVar(selelec_pull_pi,   (longCloseTPC->dEdxMeas-longCloseTPC->dEdxexpPion)/longCloseTPC->dEdxSigmaPion);
+      output().FillVar(selelec_pull_pr,   (longCloseTPC->dEdxMeas-longCloseTPC->dEdxexpProton)/longCloseTPC->dEdxSigmaProton);
+    }
+    
+    output().FillVar(selelec_likemu,                    anaUtils::GetPIDLikelihood( *track, 0));
+    output().FillVar(selelec_likeel,                    anaUtils::GetPIDLikelihood( *track, 1));
+    output().FillVar(selelec_likepi,                    anaUtils::GetPIDLikelihood( *track, 3));
+    output().FillVar(selelec_likepr,                    anaUtils::GetPIDLikelihood( *track, 2));
+    output().FillVar(selelec_likemip,                   anaUtils::GetPIDLikelihoodMIP( *track));
+
+    output().FillVar(selelec_ecal_stopping,             cutUtils::StoppingECALCut( *track ));
+    output().FillVar(selelec_ecal_mipem,                cc4pibox().track_ECal_MipEM);
+    output().FillVar(selelec_ecal_EneOnL,               cc4pibox().track_ECal_EneOnL);
+    output().FillVar(selelec_longestTPC,                cc4pibox().TPC_det);
 
     if (track->nTPCSegments > 0) {
       AnaTPCParticleB *TPCSegment = static_cast<AnaTPCParticleB*>(track->TPCSegments[0]);
-      output().FillVar(selmu_dedx_tpc, TPCSegment->dEdxMeas);                 
+      output().FillVar(selelec_dedx_tpc, TPCSegment->dEdxMeas);                 
     }
 
     // ToF
-    output().FillVar(selmu_ToF_mass,                 cc4pibox().ToF_mass);
-    output().FillVar(selmu_ToF_true_mass,            cc4pibox().ToF_true_mass);
-    output().FillVar(selmu_ToF_lkl_muon,             cc4pibox().ToF_lkl_muon);
-    output().FillVar(selmu_ToF_lkl_pion,             cc4pibox().ToF_lkl_pion);
-    output().FillVar(selmu_ToF_lkl_electron,         cc4pibox().ToF_lkl_electron);
-    output().FillVar(selmu_ToF_lkl_proton,           cc4pibox().ToF_lkl_proton);
-    output().FillVar(selmu_ToF_pull_muon,            cc4pibox().ToF_pull_muon);
-    output().FillVar(selmu_ToF_pull_pion,            cc4pibox().ToF_pull_pion);
-    output().FillVar(selmu_ToF_pull_electron,        cc4pibox().ToF_pull_electron);
-    output().FillVar(selmu_ToF_pull_proton,          cc4pibox().ToF_pull_proton);
+    output().FillVar(selelec_first_ToF,                cc4pibox().FirstToF);
+    output().FillVar(selelec_second_ToF,               cc4pibox().SecondToF);
+    output().FillVar(Beta_ToF,                         cc4pibox().beta_ToF);
+    output().FillVar(Beta_true_ToF,                    cc4pibox().beta_true_ToF);
+    output().FillVar(selelec_ToF_mass,                 cc4pibox().ToF_mass);
+    output().FillVar(selelec_ToF_true_mass,            cc4pibox().ToF_true_mass);
+    output().FillVar(selelec_ToF_lkl_muon,             cc4pibox().ToF_lkl_muon);
+    output().FillVar(selelec_ToF_lkl_pion,             cc4pibox().ToF_lkl_pion);
+    output().FillVar(selelec_ToF_lkl_electron,         cc4pibox().ToF_lkl_electron);
+    output().FillVar(selelec_ToF_lkl_proton,           cc4pibox().ToF_lkl_proton);
+    output().FillVar(selelec_ToF_pull_muon,            cc4pibox().ToF_pull_muon);
+    output().FillVar(selelec_ToF_pull_pion,            cc4pibox().ToF_pull_pion);
+    output().FillVar(selelec_ToF_pull_electron,        cc4pibox().ToF_pull_electron);
+    output().FillVar(selelec_ToF_pull_proton,          cc4pibox().ToF_pull_proton);
 
     // Fill pair track info
     if ( cc4pibox().TPCVetoTrack ){
@@ -438,7 +430,7 @@ void nueCCAnalysis::FillToyVarsInMicroTrees(bool addBase){
     TVector3 nuDirVec = anaUtils::GetNuDirRec(track->PositionStart);
     TVector3 muDirVec = anaUtils::ArrayToTVector3(track->DirectionStart);
     double costheta_mu_nu = nuDirVec.Dot(muDirVec);
-    output().FillToyVar(selmu_costheta,      (Float_t)costheta_mu_nu);
+    output().FillToyVar(selelec_costheta,      (Float_t)costheta_mu_nu);
   }
   
 }
@@ -447,18 +439,11 @@ void nueCCAnalysis::FillToyVarsInMicroTrees(bool addBase){
 bool nueCCAnalysis::CheckFillTruthTree(const AnaTrueVertex& vtx) {
   //********************************************************************
 
-  bool TrueNuECC = vtx.ReacCode > 0 && vtx.ReacCode < 30 && vtx.NuPDG == 12;
-  //bool TrueVtxFV = ( (_useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position )) ||
-  //		     (_useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, vtx.Position )) ||
-  //		     (_useFGD1    && anaUtils::InFiducialVolume( SubDetId::kFGD1,    vtx.Position )) ||
-  //		     (_useFGD2    && anaUtils::InFiducialVolume( SubDetId::kFGD2,    vtx.Position )) );
-  bool TrueVtxFV = false;
-  int Detector_tmp;
-  convUtils::ConvertBitFieldToTrueParticleDetEnum(vtx.Detector, Detector_tmp);
-  if(_useTarget1 && Detector_tmp == SubDetId::kTarget1) TrueVtxFV = true;
-  if(_useTarget2 && Detector_tmp == SubDetId::kTarget2) TrueVtxFV = true;
-  if(_useFGD1    && Detector_tmp == SubDetId::kFGD1)    TrueVtxFV = true;
-  if(_useFGD2    && Detector_tmp == SubDetId::kFGD2)    TrueVtxFV = true;
+  bool TrueNuECC = abs(vtx.ReacCode) > 0 && abs(vtx.ReacCode) < 30 && abs(vtx.NuPDG) == 12;
+  bool TrueVtxFV = ( (_useTarget1 && anaUtils::InFiducialVolume( SubDetId::kTarget1, vtx.Position)) ||
+  		     (_useTarget2 && anaUtils::InFiducialVolume( SubDetId::kTarget2, vtx.Position)) ||
+  		     (_useFGD1    && anaUtils::InFiducialVolume( SubDetId::kFGD1,    vtx.Position)) ||
+  		     (_useFGD2    && anaUtils::InFiducialVolume( SubDetId::kFGD2,    vtx.Position)) );
   
   return (TrueNuECC && TrueVtxFV) ;
 
@@ -484,15 +469,26 @@ void nueCCAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
   output().FillVectorVarFromArray(true_vertex_position, vtx.Position, 4);
   AnaTrueParticleB* trueTrack=NULL;
   for (unsigned int i = 0; i < TrueParticles.size(); i++) {
-    if (TrueParticles[i]->PDG == 11 && TrueParticles[i]->ParentID == 0) {
+    if (abs(TrueParticles[i]->PDG) == 11 && TrueParticles[i]->ParentID == 0) {
       trueTrack = dynamic_cast<AnaTrueParticleB*>(TrueParticles[i]);
       break;
     }
   }
 
+
+  output().FillVar(true_Nu_pdg,                   vtx.NuPDG);
+  output().FillVar(true_Nu_mom,                   vtx.NuMom);
+  output().FillVar(truelepton_PDG,                vtx.LeptonPDG);
+  output().FillVar(truelepton_mom,                vtx.LeptonMom);
+  output().FillVectorVarFromArray(truelepton_dir, vtx.LeptonDir,3);
+  double costheta_mu_nu = cos(anaUtils::ArrayToTVector3(vtx.LeptonDir).Angle(anaUtils::ArrayToTVector3(vtx.NuDir)));
+  output().FillVar(truelepton_costheta, (Float_t)costheta_mu_nu);
+  output().FillVectorVarFromArray(truelepton_pos, vtx.Position,4);
+  output().FillVar(truelepton_det, anaUtils::GetDetector(vtx.Position));
+
   if (trueTrack) {
     output().FillVar(true_parentID, trueTrack->ParentID);
-    output().FillVar(true_pdg, trueTrack->PDG);
+    output().FillVar(truelepton_PDG, trueTrack->PDG);
     output().FillVar(true_mom, trueTrack->Momentum);
     output().FillVar(true_Edep, trueTrack->EDeposit);
     output().FillVar(true_SDlength, trueTrack->Length);
@@ -500,6 +496,7 @@ void nueCCAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
     output().FillVar(true_ekin, trueTrack->EKin);
     output().FillVar(true_charge, trueTrack->Charge);
     output().FillVectorVarFromArray(true_position, trueTrack->Position, 4);
+    output().FillVectorVarFromArray(true_end, trueTrack->PositionEnd, 4);
 
     for (unsigned int i=0; i<trueTrack->DetCrossingsVect.size(); i++) {
       int tpc = SubDetId::GetTPC(trueTrack->DetCrossingsVect[i]->Detector);
@@ -534,23 +531,6 @@ void nueCCAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
 
 }
 
-
-//********************************************************************
-void nueCCAnalysis::AddCategories(){
-  //********************************************************************
-
-  anaUtils::AddStandardCategories();
-
-  ///  nuesimple  ///  GetNuESimpleCat  ///
-  const int NNUE1 = 7;
-  std::string reac_nue1[NNUE1] = {"#bar{#nu}_{e} CC0pi", "#bar{#nu}_{e} CCOther", "OOFGD #gamma background", "inFGD #gamma background", "#mu background", "Other background", "Proton background"};
-  int reac_nue1code[NNUE1] = {1, 2, 6, 3, 4, 5, 8};
-  int reac_nue1col[NNUE1]  = {6, 7, 4, 5, 3, 1, 48};
-  //int reac_nue1col[NNUE1]  = {kRed, kBlue, kYellow, kGreen, kBlack, kCyan, 48, COLNOTRUTH};
-  anaUtils::_categ->AddCategory("nueCC", NNUE1, reac_nue1, reac_nue1code, reac_nue1col);
-
-}
-
 //********************************************************************
 void nueCCAnalysis::FillCategories(){
   //********************************************************************
@@ -558,31 +538,26 @@ void nueCCAnalysis::FillCategories(){
   AnaTrack* track = static_cast<AnaTrack*>( cc4pibox().MainTrack );
   if(!track){return;}
 
-  bool AntiNu = false;
-  if ( _useTarget1 && !_useTarget2){
+  // fill the categories properly for the target & FGD joint analysis
+  // so is the selected track came from FGD2, but it was originated by the gamma from FGD1 is will be tagged as "gamma OOFV"  
+  
+  if ( _useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget1, track->PositionStart)) {
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget1);
-    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kTarget1, AntiNu));
+    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kTarget1, _AntiNu));
   }
-  if (!_useTarget1 &&  _useTarget2){
+
+  if ( _useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget2, track->PositionStart)) {
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget2);
-    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kTarget2, AntiNu));
-  }
-  if ( _useTarget1 &&  _useTarget2){
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget);
-    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kTarget, AntiNu));
+    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kTarget2, _AntiNu));
   }
 
-  if ( _useFGD1 && !_useFGD2){
+  if ( _useTarget1 && anaUtils::InFiducialVolume(SubDetId::kFGD1, track->PositionStart)) {
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD1);
-    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kFGD1, AntiNu));
-  }
-  if (!_useFGD1 &&  _useFGD2){
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD2);
-    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kFGD2, AntiNu));
-  }
-  if ( _useFGD1 &&  _useFGD2){
-    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD);
-    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kFGD, AntiNu));
+    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kFGD1, _AntiNu));
   }
 
+  if ( _useTarget1 && anaUtils::InFiducialVolume(SubDetId::kFGD2, track->PositionStart)) {
+    anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD2);
+    anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kFGD2, _AntiNu));
+  }
 }

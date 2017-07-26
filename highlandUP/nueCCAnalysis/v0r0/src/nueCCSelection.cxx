@@ -53,28 +53,24 @@ void nueCCSelection::DefineSteps(){
 
   AddStep(StepBase::kCut,    "> 0 tracks ",           new TotalMultiplicityCut(), true);
   
-  // Apply Charge confusion correction
-  AddStep(StepBase::kAction, "Charge Confusion",      new ApplyChargeConfusion(_file_charge_confusion_1, _file_charge_confusion_2));
-
   // Find the main track
   AddStep(StepBase::kAction, "Sort TPC tracks",       new SortTracksAction());
 
   // FV and quality
-  AddStep(StepBase::kCut,    "quality+fiducial",      new TrackGQandFVCut(),      true);
+  AddStep(StepBase::kCut,    "quality+fiducial",      new TrackGQandFVCut());
 
   AddStep(StepBase::kAction, "find vertex",           new FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",          new FillSummaryAction_nueCC());
   //AddStep(StepBase::kAction, "find pions",            new FindPionsAction());
-
-  // This is added temporary to make sure that the vertex is indeed generated in the target
-  // It seems that there is some confusion (bug?) where the true vertex position is
-  AddStep(StepBase::kCut,    "Vertex quality",        new TrueVertexInTargetCut(), true);
 
   // Track length cut
   AddStep(StepBase::kCut,    "TPC Quality Cut",       new TPC_Quality());
 
   // ToF info
   AddStep(StepBase::kAction, "ToF",                   new ToF_senseDetermination());
+
+  // for tracks with cos theta < 0 check the ToF
+  AddStep(StepBase::kCut,    "ToF BWD tracks",        new ToF_BWD_cut());
 
   // TPC+ECal PID
   AddStep(StepBase::kCut,    "TPC Electron PID Cut",  new TPCElectronPID());
@@ -83,13 +79,13 @@ void nueCCSelection::DefineSteps(){
 
   // Pair cut
   AddStep(StepBase::kAction, "find best e+e- pair",   new FindPairsAction());
-  AddStep(StepBase::kCut,    "Pair Veto",	      new PairCut());
+  AddStep(StepBase::kCut,    "Pair Veto",	            new PairCut());
 
   // TPC Veto
   AddStep(StepBase::kCut,    "TPC Veto Cut",          new TPCVeto());
 
   SetBranchAlias(0,  "CCNuE Inclusive");
-  SetPreSelectionAccumLevel(2);
+  //SetPreSelectionAccumLevel(0);
 
 }
 
@@ -104,6 +100,7 @@ void nueCCSelection::DefineDetectorFV(){
   bool useFGD1 = ND::params().GetParameterI("nueCCAnalysis.EnableFGD1");
   bool useFGD2 = ND::params().GetParameterI("nueCCAnalysis.EnableFGD2");
 
+  // WARNING in case of the combine analysis for target and FGDs the FV will be set to FGD
   if ( useTarget1 && !useTarget2) SetDetectorFV(SubDetId::kTarget1);
   if (!useTarget1 &&  useTarget2) SetDetectorFV(SubDetId::kTarget2);
   if ( useTarget1 &&  useTarget2) SetDetectorFV(SubDetId::kTarget);
@@ -111,7 +108,6 @@ void nueCCSelection::DefineDetectorFV(){
   if ( useFGD1 && !useFGD2) SetDetectorFV(SubDetId::kFGD1);
   if (!useFGD1 &&  useFGD2) SetDetectorFV(SubDetId::kFGD2);
   if ( useFGD1 &&  useFGD2) SetDetectorFV(SubDetId::kFGD);
-
 }
 
 //**************************************************
@@ -123,11 +119,27 @@ void nueCCSelection::InitializeEvent(AnaEventC& eventBB){
   // Create the appropriate EventBox if it does not exist yet
   if (!event.EventBoxes[EventBoxId::kEventBoxNDUP]) event.EventBoxes[EventBoxId::kEventBoxNDUP] = new EventBox();
 
-  boxUtils::FillTracksWithTPC(event,    static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
-  boxUtils::FillTracksWithTarget(event, static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
-  boxUtils::FillTracksWithFGD(event,    static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
-  boxUtils::FillTracksWithECal(event);
-  
+  // fill the tracks in a proper way
+  bool useTarget1 = ND::params().GetParameterI("nueCCAnalysis.EnableTarget1");
+  bool useTarget2 = ND::params().GetParameterI("nueCCAnalysis.EnableTarget2");
+  bool useFGD1 = ND::params().GetParameterI("nueCCAnalysis.EnableFGD1");
+  bool useFGD2 = ND::params().GetParameterI("nueCCAnalysis.EnableFGD2");
+
+  // for the referenc configuration it is excessive if you specify the certain target
+  if (useTarget1 || useTarget2) {
+    boxUtils::FillTracksWithTPC(event,    static_cast<SubDetId::SubDetEnum>(SubDetId::kTarget));
+    boxUtils::FillTracksWithTarget(event, static_cast<SubDetId::SubDetEnum>(SubDetId::kTarget));
+  }
+
+  if (useFGD1 || useFGD2) {
+    if (GetDetectorFV() == SubDetId::kFGD) {
+      boxUtils::FillTracksWithTPC(event,    static_cast<SubDetId::SubDetEnum>(SubDetId::kFGD));
+      boxUtils::FillTracksWithFGD(event,    static_cast<SubDetId::SubDetEnum>(SubDetId::kFGD));
+    } else 
+      boxUtils::FillTracksWithFGD(event,    static_cast<SubDetId::SubDetEnum>(GetDetectorFV()));
+  }
+ 
+  boxUtils::FillTracksWithECal(event);  
 }
 
 //********************************************************************
@@ -146,8 +158,8 @@ bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
   
   (void)event;
 
-  ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
-  AnaEventB& eventB = *static_cast<AnaEventB*>(&event);
+  ToyBoxCC4pi& box  = static_cast<ToyBoxCC4pi&>(boxB);
+  AnaEventB& eventB = static_cast<AnaEventB&>(event);
   
   // Cast the ToyBox to the appropriate type
   for (Int_t i = 0; i < eventB.nVertices; i++) {
@@ -157,47 +169,50 @@ bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
   
   if (!box.Vertex) return false;
   box.TrueVertex = box.Vertex->TrueVertex;
-  
-  return true;
-}
+  //std::cout << "vertex" << std::endl;
 
-//**************************************************
-bool TrueVertexInTargetCut::Apply(AnaEventC & event, ToyBoxB & boxB) const{
-  //**************************************************
-  
-  (void)event;
-  
-  // Cast the ToyBox to the appropriate type
-  //ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
-  ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
-  AnaTrueVertex *vtx = static_cast<AnaTrueVertex*>(box->MainTrack->GetTrueParticle()->TrueVertex);
-
-  if(!vtx) return false;
-
-  bool TrueVtxFV = false;
-  int Detector_tmp;
-  convUtils::ConvertBitFieldToTrueParticleDetEnum(vtx->Detector, Detector_tmp);
-  if(useTarget1 && Detector_tmp == SubDetId::kTarget1) TrueVtxFV = true;
-  if(useTarget2 && Detector_tmp == SubDetId::kTarget2) TrueVtxFV = true;
-  if(useFGD1    && Detector_tmp == SubDetId::kFGD1)    TrueVtxFV = true;
-  if(useFGD2    && Detector_tmp == SubDetId::kFGD2)    TrueVtxFV = true;
-
-  // If the selected track is not a primary then accept the event. This is to make sure that events coming from OOFV photons are properly included
-  if(!TrueVtxFV){
-    AnaTrueParticleB* trueParticle = box->MainTrack->GetTrueParticle();
-    if(trueParticle){
-      if(trueParticle->ParentPDG != 0)
-	TrueVtxFV = true;
+  AnaTrueParticleB* trueTrack = NULL;
+  // TODO understand why there are no tracks with ParentID == EleID
+  //std::cout << box.TrueVertex->TrueParticlesVect.size() << std::endl;
+  /*for (int i = 0; i < box.TrueVertex->TrueParticlesVect.size(); i++) {
+    if (abs(box.TrueVertex->TrueParticlesVect[i]->PDG) == 11 && box.TrueVertex->TrueParticlesVect[i]->ParentID == 0) {
+      trueTrack = static_cast<AnaTrueParticleB*>(box.TrueVertex->TrueParticlesVect[i]);
+      if (trueTrack) 
+        break;
     }
   }
 
-  return TrueVtxFV;
-  
-  //return ( (useTarget1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1)) ||
-  //	   (useTarget2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget2)) ||
-  //	   (useFGD1    && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD1   )) ||
-  //	   (useFGD2    && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD2   )));
-  
+  if (!trueTrack)
+    return true;
+  //std::cout << "true track" << std::endl;
+
+  // save the ID of the electron track
+  Int_t EleID = trueTrack->ID;
+
+  // loop over all true track in the event, searching for the electron daughter
+  //std::cout << eventB.nTrueParticles << std::endl;
+  for (Int_t i = 0; i < eventB.nTrueParticles; ++i) {
+    if (!eventB.TrueParticles[i])
+      continue;
+    //std::cout << eventB.TrueParticles[i]->ParentID << "   " << EleID << std::endl;
+    if (eventB.TrueParticles[i]->PDG == 22) {
+      std::cout << "ID   "<< eventB.TrueParticles[i]->ParentID << "   " << eventB.TrueParticles[i]->GParentID << "    " << trueTrack->ID << std::endl;
+      std::cout << "PDG  "<< eventB.TrueParticles[i]->ParentPDG <<"   " << eventB.TrueParticles[i]->GParentPDG <<"    " << eventB.TrueParticles[i]->PDG << std::endl;
+      std::cout << "Position " << eventB.TrueParticles[i]->Position[2] << "     Vertex " << box.TrueVertex->Position[2] << std::endl;
+    }
+    for (Int_t j = 0; j < eventB.nTrueParticles; ++j) {
+      if (!eventB.TrueParticles[j])
+        continue;
+      if (eventB.TrueParticles[i]->ParentID ==  eventB.TrueParticles[j]->ID && eventB.TrueParticles[i]->PDG == 22)
+        std::cout << "FOUND" << eventB.TrueParticles[j]->PDG << std::endl;
+    }
+    if (eventB.TrueParticles[i]->ParentID == EleID || eventB.TrueParticles[i]->GParentID == EleID) {
+      box.daughterPDG = eventB.TrueParticles[i]->PDG;
+      std::cout << "OK" << std::endl;
+      break;
+    }
+  }*/
+  return true;
 }
 
 //**************************************************
@@ -208,6 +223,21 @@ bool TotalMultiplicityCut::Apply(AnaEventC& event, ToyBoxB& box) const{
   
   // Check we have at least one reconstructed track in the FGD
   EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+
+  /*std::cout << "call TotalMultiplicityCut" << std::endl;
+  std::cout << "Detector = " << useTarget1 << useTarget2 << useFGD1 << useFGD2 << std::endl;
+  
+  std::cout << EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1] << "  " << 
+  EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2] << "  " << 
+  EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD1] << "  " << 
+  EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD2] << "  " << std::endl;
+
+  //std::cout << "FV " << sel().GetDetectorFV() << std::endl;
+
+  std::cout << "return  " << ((useTarget1 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]>0) ||
+    (useTarget2 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2]>0) ||
+    (useFGD1    && EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD1]>0   ) ||
+    (useFGD2    && EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD2]>0   )) << std::endl;*/
   
   return ((useTarget1 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]>0) ||
 	  (useTarget2 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2]>0) ||
@@ -234,10 +264,11 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
     for (Int_t i=0;i<nTPC; ++i){
       AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV][i]);
 
-      if(selectpositrons){
+      // is selection charge is 1 then select positrons, if -1 then electrons. If 0 then don't care about the charge, select the highest momentum
+      if(selection_charge > -0.5){
 	if(track->Charge <= 0.5) continue;
       }
-      else{
+      else if (selection_charge < 0.5) {
 	if ( track->Charge>=-0.5 ) continue;
       }
       
@@ -251,10 +282,10 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
     for (Int_t i=0;i<nTPC; ++i){
       AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget2FV][i]);
 
-      if(selectpositrons){
+      if(selection_charge > -0.5){
 	if(track->Charge <= 0.5) continue;
       }
-      else{
+      else if (selection_charge < 0.5) {
 	if ( track->Charge>=-0.5 ) continue;
       }
       
@@ -268,10 +299,10 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
     for (Int_t i=0;i<nTPC; ++i){
       AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD1FV][i]);
 
-      if(selectpositrons){
+      if(selection_charge > -0.5){
 	if(track->Charge <= 0.5) continue;
       }
-      else{
+      else if (selection_charge < 0.5) {
 	if ( track->Charge>=-0.5 ) continue;
       }
       
@@ -285,10 +316,10 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
     for (Int_t i=0;i<nTPC; ++i){
       AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD2FV][i]);
 
-      if(selectpositrons){
+      if(selection_charge > -0.5){
 	if(track->Charge <= 0.5) continue;
       }
-      else{
+      else if (selection_charge < 0.5) {
 	if ( track->Charge>=-0.5 ) continue;
       }
       
@@ -500,6 +531,19 @@ bool TPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
 }
 
 //**************************************************
+bool ToF_BWD_cut::Apply(AnaEventC& event, ToyBoxB& box) const{
+  //**************************************************
+  (void)event;
+  
+  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+
+  if (!cc4pibox->MainTrack)
+    return false;
+
+  return (!conf || cc4pibox->MainTrack->DirectionStart[2] > 0 || cc4pibox->main_ToF > 0);
+}
+
+//**************************************************
 bool TPCElectronPID::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
   (void)event;
@@ -540,9 +584,12 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   if (!trueParticle) return false;
   
   bool IsEcalReco = false;
+  //std::cout << "test" << std::endl;
   for(int i=0; i<cc4pibox->MainTrack->nECalSegments; i++){
+    //std::cout << "test" << std::endl;
     if(cc4pibox->MainTrack->ECalSegments[i]->IsReconstructed){
       IsEcalReco = true;
+      //std::cout << "WOW" << std::endl;
       break;
     }
   }
@@ -593,7 +640,7 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   else
     findecal = 0;
 
-   // No P0DEcal
+  // No P0DEcal
   if(findecal < 0){
     cc4pibox->track_ECal_MipEM  = -999.0;
     cc4pibox->track_ECal_EneOnL = -999.0;
@@ -676,91 +723,57 @@ bool ToF_senseDetermination::Apply(AnaEventC& event, ToyBoxB& boxB) const{
 
   ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
   if (!box->MainTrack) return false;
-  
-  // do not consider for truly forward-going track
-  //if (box->MainTrack->TrueObject && box->MainTrack->GetTrueParticle()->Direction[2] > 0)
-  //return true;
-  
+
   AnaParticleB *p1=0, *p2=0;
   float sigma=0;
-  float ToF = nueCCUtils::GetToF(box->MainTrack, p1, p2, sigma, _randomGen);
+  // Get the ToF and sgment with maximum t/dt
+  Float_t ToF = anaUtils::GetToF(box->MainTrack, p1, p2, sigma, _randomGen, true);
 
-  if (!p1 || !p2)    return true;
-  if (ToF == -999.0) return true;
-  
-  float true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
-  
-  // ==========
-  // ToF mass only calculated for the main track
-  // ==========
-  
-  // smear the momentum
-  float true_mom = box->MainTrack->GetTrueParticle()->Momentum;
-  float mom = box->MainTrack->SmearedMomentum;
+  if (ToF == -999 || !p1 || !p2)
+    return false;
+
+  // save ToF
+  box->main_ToF      = ToF;
+
+  // save true ToF
+  Float_t true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
+  box->main_ToF_true = true_ToF;
+
+  // calculate the track length between segment with t/dt
+  Float_t sigma_length;
+  Float_t length      = anaUtils::GetLength(box->MainTrack, p1, p2, sigma_length, _randomGen, true);
+  Float_t true_length = anaUtils::GetLength(box->MainTrack, p1, p2, sigma_length, _randomGen, false);
+
+  Float_t true_mom = box->MainTrack->GetTrueParticle()->Momentum;
+  Float_t mom = box->MainTrack->SmearedMomentum;
   if (fabs(true_mom-mom)<1e-3)
     mom = _randomGen->Gaus(true_mom, 0.10*true_mom);
-  
-  // compute the length using RecPack + smear it
-  double length1 = -999.0, length2 = -999.0;
-  RP::State state1, state2;
-  TVector3 pos  = anaUtils::ArrayToTVector3(box->MainTrack->PositionStart);
-  TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
-  TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
-  TVector3 dir1 = anaUtils::ArrayToTVector3(p1->DirectionStart);
-  TVector3 dir2 = anaUtils::ArrayToTVector3(p2->DirectionStart);	 
- 
-  if (!ND::tman().AnaTrueParticleB_to_RPState(*(box->MainTrack->GetTrueParticle()), state1) || !ND::tman().PropagateToSurface(pos1, dir1, state1, length1, false) ){
-    if ((pos-pos1).Mag()<2) length1=0;
-  }
-  if (!ND::tman().AnaTrueParticleB_to_RPState(*(box->MainTrack->GetTrueParticle()), state2) || !ND::tman().PropagateToSurface(pos2, dir2, state2, length2, false) ){
-    if ((pos-pos2).Mag()<2) length2=0;
-  }
 
-  if (length1>-1 && length2>-1) {
-    float sigma_length = 10;
-    if (cutUtils::DeltaLYZTPCCut(*(box->MainTrack))) sigma_length = 1;
+  // store detectors used
+  SubDetId::SubDetEnum det1, det2;
+  anaUtils::GetToFdetectors(p1, p2, det1, det2);
+  box->FirstToF  = det1;
+  box->SecondToF = det2;
 
-    float true_length = fabs(length2-length1);
-    float length      = _randomGen->Gaus(true_length, sigma_length); 
-    float m_reco      = nueCCUtils::ComputeToFMass(mom, ToF, length);
-    float m_true      = nueCCUtils::ComputeToFMass(true_mom, true_ToF, true_length);
+  // store beta value
+  double c = 299.792458; // mm/ns
+  box->beta_ToF       = length / (c*ToF);
+  box->beta_true_ToF  = true_length / (c*true_ToF);
 
-    box->ToF_mass = m_reco;
-    box->ToF_true_mass = m_true;
-    
-    float invp = 1/mom;
-    float dinvp = box->MainTrack->MomentumError;
-    if (dinvp==0) dinvp=0.10*invp;
+  // store ToF mass
+  box->ToF_mass      = anaUtils::ComputeToFMass(mom,      ToF,      length);
+  box->ToF_true_mass = anaUtils::ComputeToFMass(true_mom, true_ToF, true_length);
 
-    // expected mass
-    float m = 0;
-    // factor which is defined here to clarify the code
-    float a = 1+pow(mom/m_reco, 2);
-    // resolution on reconstructed mass
-    float sigma_m = m_reco*sqrt(pow(dinvp/invp,2)+pow(a*sigma/ToF,2)+pow(a*sigma_length/length,2));
+  // get Llh
+  Float_t ToF_llh[4];
+  anaUtils::GetToFLikelihood(mom, box->MainTrack->MomentumError, ToF, sigma, length, sigma_length, ToF_llh, _randomGen, true);
 
-    // compute the pull for each particle hypothesis
-    m = units::pdgBase->GetParticle(13)->Mass()*1000; // muon
-    box->ToF_pull_muon = (m_reco-m)/sigma_m;
-    m = units::pdgBase->GetParticle(211)->Mass()*1000; // pion
-    box->ToF_pull_pion = (m_reco-m)/sigma_m;
-    m = units::pdgBase->GetParticle(11)->Mass()*1000; // electron
-    box->ToF_pull_electron = (m_reco-m)/sigma_m;
-    m = units::pdgBase->GetParticle(2212)->Mass()*1000; // proton
-    box->ToF_pull_proton = (m_reco-m)/sigma_m;
+  // store Llh
+  box->ToF_lkl_muon     = ToF_llh[0];
+  box->ToF_lkl_pion     = ToF_llh[3];
+  box->ToF_lkl_electron = ToF_llh[1];
+  box->ToF_lkl_proton   = ToF_llh[2];
 
-    // compute the likelihood for each particle hypothesis
-    float P_mu = exp(-pow(box->ToF_pull_muon,2)/2);
-    float P_pi = exp(-pow(box->ToF_pull_pion,2)/2);
-    float P_e  = exp(-pow(box->ToF_pull_electron,2)/2);
-    float P_p  = exp(-pow(box->ToF_pull_proton,2)/2);
-    float sum_prob = P_mu+P_pi+P_e+P_p;
-    box->ToF_lkl_muon = P_mu/sum_prob;
-    box->ToF_lkl_pion = P_pi/sum_prob;
-    box->ToF_lkl_electron = P_e/sum_prob;
-    box->ToF_lkl_proton = P_p/sum_prob;
-  }
-    
   return true;
 }
 
@@ -815,154 +828,6 @@ bool PairCut::Apply(AnaEventC& event, ToyBoxB& boxB) const {
 
   return true;
 
-}
-
-//**************************************************
-bool ApplyChargeConfusion::Apply(AnaEventC& event, ToyBoxB& boxB) const {
-  //**************************************************
-
-  if(!_applychargeconfusion) return true;
-
-  (void)boxB;
-  
-  // Retrieve the EventBoxNDUP
-  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
-
-  TSpline3 *elecspline_1 = (TSpline3*)_file_charge_confusion_1->Get("ElecSpline");
-  TSpline3 *muonspline_1 = (TSpline3*)_file_charge_confusion_1->Get("MuonSpline");
-  TSpline3 *pionspline_1 = (TSpline3*)_file_charge_confusion_1->Get("PionSpline");
-  TSpline3 *protspline_1 = (TSpline3*)_file_charge_confusion_1->Get("ProtSpline");
-
-  TSpline3 *elecspline_2 = (TSpline3*)_file_charge_confusion_2->Get("ElecSpline");
-  TSpline3 *muonspline_2 = (TSpline3*)_file_charge_confusion_2->Get("MuonSpline");
-  TSpline3 *pionspline_2 = (TSpline3*)_file_charge_confusion_2->Get("PionSpline");
-  TSpline3 *protspline_2 = (TSpline3*)_file_charge_confusion_2->Get("ProtSpline");
-
-  TRandom3 random_gen;
-
-  if (useTarget1) {  
-    int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV];
-    for (Int_t i=0;i<nTPC; ++i){
-      AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget1FV][i]);
-      if(!track->GetTrueParticle()) continue;
-      Double_t mom = (Double_t)track->Momentum;
-      // Charge confusion only estimated up to 5 GeV
-      if(mom > 5000.0)
-	mom = 5000.0;
-
-      Double_t prob = 0.0;
-
-      if(abs(track->GetTrueParticle()->PDG) == 11)
-	prob = elecspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 13)
-	prob = muonspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 211)
-	prob = pionspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 2212)
-	prob = protspline_1->Eval(mom);
-    
-      if(prob <= 0.0) continue;
-
-      random_gen.SetSeed(mom*mom + track->Momentum*track->Momentum);      
-      Double_t rand = random_gen.Uniform(10000)/10000.0;
-
-      if(rand < prob)
-	track->Charge = -track->Charge;
-    }
-  }
-
-  if (useTarget2) {
-    int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget2FV];
-    for (Int_t i=0;i<nTPC; ++i){
-      AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInTarget2FV][i]);
-      if(!track->GetTrueParticle()) continue;
-      Double_t mom = (Double_t)track->SmearedMomentum;
-      Double_t prob = 0.0;
-
-      if(abs(track->GetTrueParticle()->PDG) == 11)
-	prob = elecspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 13)
-	prob = muonspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 211)
-	prob = pionspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 2212)
-	prob = protspline_1->Eval(mom);
-    
-      if(prob <= 0.0) continue;
-
-      random_gen.SetSeed(mom*mom + track->Momentum*track->Momentum);      
-      Double_t rand = random_gen.Uniform(10000)/10000.0;
-
-      if(rand < prob)
-	track->Charge = -track->Charge;
-    }
-  }
-
-  if (useFGD1) {
-    int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD1FV];
-    for (Int_t i=0;i<nTPC; ++i){
-      AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD1FV][i]);
-      if(!track->GetTrueParticle()) continue;
-      Double_t mom = (Double_t)track->SmearedMomentum;
-      Double_t prob = 0.0;
-
-      if(abs(track->GetTrueParticle()->PDG) == 11)
-	prob = elecspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 13)
-	prob = muonspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 211)
-	prob = pionspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 2212)
-	prob = protspline_1->Eval(mom);
-    
-      if(prob <= 0.0) continue;
-
-      random_gen.SetSeed(mom*mom + track->Momentum*track->Momentum);      
-      Double_t rand = random_gen.Uniform(10000)/10000.0;
-
-      if(rand < prob)
-	track->Charge = -track->Charge;
-    }
-  }
-
-  if (useFGD2) {   
-    int nTPC=EventBox->nRecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD2FV];
-    for (Int_t i=0;i<nTPC; ++i){
-      AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithGoodQualityTPCInFGD2FV][i]);
-      if(!track->GetTrueParticle()) continue;
-      Double_t mom = (Double_t)track->SmearedMomentum;
-      Double_t prob = 0.0;
-
-      if(abs(track->GetTrueParticle()->PDG) == 11)
-	prob = elecspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 13)
-	prob = muonspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 211)
-	prob = pionspline_1->Eval(mom);
-      else if(abs(track->GetTrueParticle()->PDG) == 2212)
-	prob = protspline_1->Eval(mom);
-    
-      if(prob <= 0.0) continue;
-
-      random_gen.SetSeed(mom*mom + track->Momentum*track->Momentum);      
-      Double_t rand = random_gen.Uniform(10000)/10000.0;
-
-      if(rand < prob)
-	track->Charge = -track->Charge;
-    }
-  }
-  
-  delete elecspline_1;
-  delete muonspline_1;
-  delete pionspline_1;
-  delete protspline_1;
-  
-  delete elecspline_2;
-  delete muonspline_2;
-  delete pionspline_2;
-  delete protspline_2;
-  
-  return true;
 }
 
 //**************************************************

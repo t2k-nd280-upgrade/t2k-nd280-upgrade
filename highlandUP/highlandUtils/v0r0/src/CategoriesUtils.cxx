@@ -64,7 +64,7 @@ int target_colors[]        = {2       , 4       , 3         , 7          , 6    
 const int NTARGET = sizeof(target_types)/sizeof(target_types[0]);
 
 //TMP: keep the enumeration from the AnaTrueVertex::Detector (the original oaAnalysis one)
-std::string detector_types[] = {"fTPC1", "fTPC2", "fTPC3", "TPCUp1", "TPCUp2", "TPCDown1", "TPCDown2", "FGD1", "FGD2", "Target1", "Target2", "DsECAL", "BrECAL", "P0DECAL", NAMEOTHER};
+std::string detector_types[] = {"TPC1", "TPC2", "TPC3", "TPCUp1", "TPCUp2", "TPCDown1", "TPCDown2", "FGD1", "FGD2", "Target1", "Target2", "DsECAL", "BrECAL", "P0DECAL", NAMEOTHER};
 int detector_codes[] = {2, 3, 4,    // FwdTPC
 			0, 1, 5, 6, // HTPC
                         9, 10,      // FGD
@@ -353,6 +353,7 @@ void anaUtils::FillCategories(const AnaTrueVertexB* trueVertexB, const std::stri
   int Detector_tmp;
   convUtils::ConvertBitFieldToTrueParticleDetEnum(trueVertex->Detector, Detector_tmp);
   if (Detector_tmp==-1) Detector_tmp  = CATOTHER;
+  
   _categ->SetCode(prefix + "detector", Detector_tmp              ,CATOTHER);
   _categ->SetCode(prefix + "target",   GetTargetCode(trueVertex) ,CATOTHER);
 

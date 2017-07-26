@@ -14,6 +14,14 @@
 --- Use the default geometry file even if the input file contains geometry
  < psycheNDUPUtils.Geometry.UseDefaultGeometry = 1 >
 
+--- Which ndUp configuration to use
+--- 0 - nd280 Current; 1 - ndUp Reference; 2 - ndUp Target-->TPC; 3 - ndUp TPC-->Target
+ < psycheNDUPUtils.Geometry.nd280upConfiguration = 2 >
+ < psycheNDUPUtils.Geometry.AddToFOnTargets      = 0 >
+ < psycheNDUPUtils.Geometry.AddToF               = 1 >
+ < psycheNDUPUtils.ToF.TimeResolution            = 0.600 >
+
+
 --- Use the ROOT geometry to overrride the harcoded values in detectorDefinition (DetDef namespace)
  < psycheNDUPUtils.Geometry.DetectorDefinitionFromROOTGeometry = 0 >
  < psycheNDUPUtils.Geometry.DetectorDefinitionFromROOTGeometry.FillFGDInfo = 0 > //fill FGD info: bar centers etc 

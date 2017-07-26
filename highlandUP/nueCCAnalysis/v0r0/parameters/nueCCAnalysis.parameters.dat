@@ -1,17 +1,13 @@
 --- Cut levels --------
  < nueCCAnalysis.Branch = 0 >
- < nueCCAnalysis.ForceBreak = 1 > 
-
- < nueCCAnalysis.Configuration = 1 >
- < nueCCAnalysis.ToF           = 1 >
- < nueCCAnalysis.AddToFOnTargets = 0 >
+ < nueCCAnalysis.ForceBreak = 0 > 
  
  < nueCCAnalysis.EnableTarget1 = 1 >
  < nueCCAnalysis.EnableTarget2 = 0 >
  < nueCCAnalysis.EnableFGD1 = 0 >
  < nueCCAnalysis.EnableFGD2 = 0 >
 
- < nueCCAnalysis.MinAccumLevelToSave = 3 >
+ < nueCCAnalysis.MinAccumLevelToSave = 7 >
 
  < nueCCAnalysis.TPCPID.Cut.Lmip  = 0.80 >
  < nueCCAnalysis.TPCPID.Cut.Lmu   = 0.03 >
@@ -24,12 +20,10 @@
  < nueCCAnalysis.MEPions.ME.Efficiency = 0.5 >
  < nueCCAnalysis.MEPions.ME.MomentumCut = 2. >
 
- < nueCCAnalysis.ToF.TimeResolution = 0.150 >
-
  < nueCCAnalysis.InvMassMin = 110.0 >
 
  < nueCCAnalysis.TPCVetoDeltaZ = -30.0 >
 
  < nueCCAnalysis.ApplyChargeConfusion = 1 >
 
- < nueCCAnalysis.SelectPositrons = 0 >
+ < nueCCAnalysis.SelectCharge = -1 >
