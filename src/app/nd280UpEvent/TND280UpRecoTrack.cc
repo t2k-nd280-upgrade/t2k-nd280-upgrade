@@ -24,12 +24,11 @@ TND280UpRecoTrack::TND280UpRecoTrack()
   fTrackID       = 0;
   fParentID      = 0;
   fPDG           = 0;
-  fInitMom.SetXYZ(nd280upconv::kBadNum,
-		  nd280upconv::kBadNum,
-		  nd280upconv::kBadNum);
-  fInitCosTheta  = nd280upconv::kBadNum;
+  fTruthMom      = nd280upconv::kBadNum;
+  fTruthCosTheta = nd280upconv::kBadNum;
   fCharge        = nd280upconv::kBadNum;
   fRange         = nd280upconv::kBadNum;
+  fIsOutFV       = false;
 
   fMPPCHit_XY=0; 
   fMPPCHit_XZ=0; 
@@ -45,13 +44,14 @@ TND280UpRecoTrack::~TND280UpRecoTrack()
   fTrackID       = 0;
   fParentID      = 0;
   fPDG           = 0;
-  fInitMom.SetXYZ(nd280upconv::kBadNum,
-		  nd280upconv::kBadNum,
-		  nd280upconv::kBadNum);
-  fInitCosTheta  = nd280upconv::kBadNum;
+  fTruthMom      = nd280upconv::kBadNum;
+  fTruthCosTheta = nd280upconv::kBadNum;
   fCharge        = nd280upconv::kBadNum;
   fRange         = nd280upconv::kBadNum;
-
+  fEdep          = nd280upconv::kBadNum;
+  fIsOutFV       = false;
+  fIsReco        = false;
+  
   if(fMPPCHit_XY) fMPPCHit_XY->Delete(); fMPPCHit_XY=0; 
   if(fMPPCHit_XZ) fMPPCHit_XZ->Delete(); fMPPCHit_XZ=0; 
   if(fMPPCHit_YZ) fMPPCHit_YZ->Delete(); fMPPCHit_YZ=0; 
@@ -67,8 +67,8 @@ void TND280UpRecoTrack::PrintTrack()
   cout << "Track ID: " << fTrackID << endl;
   cout << "Parent ID: " << fParentID << endl;
   cout << "PDG: " << fPDG << endl;
-  cout << "Initial Momentum: " << fInitMom.Mag() << endl;
-  cout << "Initial CosTheta: " << fInitCosTheta << endl;
+  cout << "Truth Momentum: " << fTruthMom << endl;
+  cout << "Truth CosTheta: " << fTruthCosTheta << endl;
   cout << "Charge: " << fCharge << endl;
   cout << "Range: " << fRange << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;
