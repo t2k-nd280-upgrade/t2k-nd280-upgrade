@@ -7,9 +7,10 @@
 #include <G4VPhysicalVolume.hh>
 #include <G4PVPlacement.hh>
 #include <G4VisAttributes.hh>
-#include "G4SystemOfUnits.hh"
 
 #include "ND280IBeamConstructor.hh"
+
+#include "G4SystemOfUnits.hh"
 
 class ND280IBeamMessenger : public ND280ConstructorMessenger {
 

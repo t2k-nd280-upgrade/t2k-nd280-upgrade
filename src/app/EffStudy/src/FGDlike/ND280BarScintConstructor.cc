@@ -224,13 +224,13 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
     rotation->rotateZ(0*degree);      
   }
 
-  G4cout << "GetCoatingThickness() = " << GetCoatingThickness() << G4endl;
-  G4cout << "width = " << width << G4endl;
-  G4cout << "height = " << height << G4endl;
-  G4cout << "length = " << length << G4endl;
-  G4cout << "scintWidth = " << scintWidth << G4endl;
-  G4cout << "scintHeight = " << scintHeight << G4endl;
-  G4cout << "scintLength = " << scintLength << G4endl; 
+  //G4cout << "GetCoatingThickness() = " << GetCoatingThickness() << G4endl;
+  //G4cout << "width = " << width << G4endl;
+  //G4cout << "height = " << height << G4endl;
+  //G4cout << "length = " << length << G4endl;
+  //G4cout << "scintWidth = " << scintWidth << G4endl;
+  //G4cout << "scintHeight = " << scintHeight << G4endl;
+  //G4cout << "scintLength = " << scintLength << G4endl; 
 
   // Set the dimension in the XYZ frame
   SetWidth(width);

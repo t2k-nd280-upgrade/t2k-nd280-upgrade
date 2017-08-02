@@ -5,9 +5,10 @@
 #include <G4VPhysicalVolume.hh>
 #include <G4PVPlacement.hh>
 #include <G4VisAttributes.hh>
-#include "G4SystemOfUnits.hh"
 
 #include "ND280StructuralBeamConstructor.hh"
+
+#include "G4SystemOfUnits.hh"
 
 class ND280StructuralBeamMessenger : public ND280ConstructorMessenger {
 

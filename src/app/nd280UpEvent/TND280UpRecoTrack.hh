@@ -31,29 +31,36 @@ public :
   TND280UpRecoTrack();
   ~TND280UpRecoTrack();
   
-  void SetTrackID(int id){fTrackID=id;};
-  void SetParentID(int id){fParentID=id;};
-  void SetPDG(int pdg){fPDG=pdg;};
-  void SetInitMom(double x,double y, double z){fInitMom.SetXYZ(x,y,z);};
-  void SetInitCosTheta(double costheta){fInitCosTheta=costheta;};
-  void SetCharge(double charge){fCharge=charge;};
-  void SetRange(double range){fRange=range;};
+  void SetTrackID(int id){fTrackID=id;}
+  void SetParentID(int id){fParentID=id;}
+  void SetPDG(int pdg){fPDG=pdg;}
+  //void SetTruthMom(double x,double y, double z){fTruthMom.SetXYZ(x,y,z);}
+  void SetTruthMom(double mom){fTruthMom=mom;}
+  void SetTruthCosTheta(double costheta){fTruthCosTheta=costheta;}
+  void SetCharge(double charge){fCharge=charge;}
+  void SetRange(double range){fRange=range;}
+  void SetEdep(double ene){fEdep=ene;}
+  void SetOutFV(bool isoutfv){fIsOutFV=isoutfv;}
+  void SetIsReco(bool isreco){fIsReco=isreco;}
 
-  int GetTrackID() {return fTrackID;};
-  int GetParentID() {return fParentID;};
-  int GetPDG(){return fPDG;};
-  TVector3 GetInitMom() {return fInitMom;};
-  double GetInitCosTheta(){return fInitCosTheta;};
-  double GetCharge(){return fCharge;};
-  double GetRange(){return fRange;};
+  int GetTrackID() {return fTrackID;}
+  int GetParentID() {return fParentID;}
+  int GetPDG(){return fPDG;}
+  //TVector3 GetTruthMom() {return fTruthMom;}
+  double GetTruthMom(){return fTruthMom;}
+  double GetTruthCosTheta(){return fTruthCosTheta;}
+  double GetCharge(){return fCharge;}
+  double GetRange(){return fRange;}
+  double GetEdep(){return fEdep;}
+  bool IsOutFV(){return fIsOutFV;}
+  bool IsReco(){return fIsReco;}
 
-  void SetMPPCHit_XY(TH2F* h2d){fMPPCHit_XY=new TH2F(*h2d);}
-  void SetMPPCHit_XZ(TH2F* h2d){fMPPCHit_XZ=new TH2F(*h2d);}
-  void SetMPPCHit_YZ(TH2F* h2d){fMPPCHit_YZ=new TH2F(*h2d);}
-
-  TH2F *GetMPPCHit_XY(){return fMPPCHit_XY;}
-  TH2F *GetMPPCHit_XZ(){return fMPPCHit_XZ;}
-  TH2F *GetMPPCHit_YZ(){return fMPPCHit_YZ;}
+  //void SetMPPCHit_XY(TH2F* h2d){use copy...}
+  //void SetMPPCHit_XZ(TH2F* h2d){use copy...}
+  //void SetMPPCHit_YZ(TH2F* h2d){use copy...}
+  //TH2F *GetMPPCHit_XY(){return fMPPCHit_XY;}
+  //TH2F *GetMPPCHit_XZ(){return fMPPCHit_XZ;}
+  //TH2F *GetMPPCHit_YZ(){return fMPPCHit_YZ;}
 
   void PrintTrack();
 
@@ -62,14 +69,18 @@ private :
   int fTrackID;
   int fParentID;
   int fPDG;
-  TVector3 fInitMom;
-  double fInitCosTheta;
+  //TVector3 fTruthMom;
+  double fTruthMom;
+  double fTruthCosTheta;
   double fCharge;
   double fRange; 
+  double fEdep;
+  bool fIsOutFV;
+  bool fIsReco;
 
   TH2F *fMPPCHit_XY; 
   TH2F *fMPPCHit_XZ; 
-  TH2F *fMPPCHit_YZ; 
+  TH2F *fMPPCHit_YZ;
 
   ClassDef(TND280UpRecoTrack,2)
 };
