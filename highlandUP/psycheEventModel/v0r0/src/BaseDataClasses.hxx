@@ -586,6 +586,14 @@ class AnaTrackB: public AnaParticleMomB{
   std::vector<AnaTPCParticleB*>    TPCSegmentsVect; 
   std::vector<AnaECalParticleB*>   ECalSegmentsVect; 
 
+  bool HasFlipped;
+
+  /// ToF related information
+  Float_t ToF_reco_time, ToF_true_time, ToF_sigma_time;
+  SubDetId::SubDetEnum ToF_firstDet, ToF_secondDet;
+  Float_t ToF_reco_length, ToF_true_length, ToF_sigma_length;
+  Float_t ToF_reco_mass, ToF_sigma_mass;
+
 };
 
 /// Representation of a global vertex.

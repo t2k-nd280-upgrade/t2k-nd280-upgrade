@@ -37,6 +37,13 @@ public:
   void AddCategories();
   void FillCategories();
 
+private:
+  bool _useTarget1;
+  bool _useTarget2;
+  bool _useFGD1;
+  bool _useFGD2;
+  int _nuMode;
+
 public:
 
   enum enumStandardMicroTrees_numuCC4piAnalysis {
@@ -81,18 +88,6 @@ public:
     selmu_ecal_stopping,
     selmu_longestTPC,
 
-    sel_nTrueProtons,
-    sel_nTrueProtonsAll,
-    sel_nTrueProtonsAll500,
-    sel_nTrueProtons500,
-    sel_TrueProton_reco,
-    sel_TrueProton_mom,
-    sel_TrueProton_cos,
-    sel_TrueProton_posX,
-    sel_TrueProton_posY,
-    sel_TrueProton_posZ,
-    sel_TrueProton_length,
-
     sel_nTruePiPlus,
     sel_TruePiPlus_reco,
     sel_TruePiPlus_mom,
@@ -106,124 +101,15 @@ public:
     sel_TruePiZero_mom,
     sel_TruePiZero_cos,
 
-    sel_nNegativePionTPCtracks,
-    sel_nPositivePionTPCtracks,
-    sel_nIsoTargetPiontracks,
-    sel_nPosPi0TPCtracks,
-    sel_nElPi0TPCtracks,
-    sel_nMichelElectrons,
-    sel_nOtherPions,
-    sel_nPosPions,
-    
-    sel_NegativePionTPCtracks_PDG,
-    sel_PositivePionTPCtracks_PDG,
-    sel_IsoTargetPiontracks_PDG,
-    sel_PosPi0TPCtracks_PDG,
-    sel_ElPi0TPCtracks_PDG,
-    sel_MichelElectrons_PDG,
-    sel_PosPions_PDG,
-    sel_OtherPions_PDG,
-
-    sel_NegativePionTPCtracks_ParPDG,
-    sel_PositivePionTPCtracks_ParPDG,
-    sel_IsoTargetPiontracks_ParPDG,
-    sel_PosPi0TPCtracks_ParPDG,
-    sel_ElPi0TPCtracks_ParPDG,
-    sel_MichelElectrons_ParPDG,
-    sel_PosPions_ParPDG,
-    sel_OtherPions_ParPDG,
-
-    sel_NegativePionTPCtracks_mom,
-    sel_PositivePionTPCtracks_mom,
-    sel_IsoTargetPiontracks_mom,
-    sel_PosPi0TPCtracks_mom,
-    sel_ElPi0TPCtracks_mom,
-    sel_MichelElectrons_mom,
-    sel_PosPions_mom,
-    sel_OtherPions_mom,
-
-    sel_NegativePionTPCtracks_pos,
-    sel_PositivePionTPCtracks_pos,
-    sel_IsoTargetPiontracks_pos,
-    sel_PosPi0TPCtracks_pos,
-    sel_ElPi0TPCtracks_pos,
-    sel_MichelElectrons_pos,
-    sel_PosPions_pos,
-    sel_OtherPions_pos,
-
+    selmu_ToF_time,
+    selmu_ToF_true_time,
+    selmu_ToF_length,
+    selmu_ToF_true_length,
     selmu_ToF_mass,
     selmu_ToF_true_mass,
+    selmu_ToF_firstDet,
+    selmu_ToF_secondDet,
     selmu_dedx_tpc,
-
-    selAll_ToF_mass,
-    selAll_ToF_true_mass,
-    selAll_mom,
-    selAll_cos,
-    selAll_L,
-    selAll_true_mom,
-    selAll_PDG,
-    selAll_ToF_det_used1,
-    selAll_ToF_det_used2,
-    selAll_ToF_time_reco,
-    selAll_ToF_pull_muon,
-    selAll_ToF_pull_pion,
-    selAll_ToF_pull_electron,
-    selAll_ToF_pull_proton,
-    selAll_ToF_lkl_muon,
-    selAll_ToF_lkl_pion,
-    selAll_ToF_lkl_electron,
-    selAll_ToF_lkl_proton,
-    selAll_TPC_dedx,
-    selAll_TPC_pull_muon,
-    selAll_TPC_pull_pion,
-    selAll_TPC_pull_electron,
-    selAll_TPC_pull_proton,
-    selAll_TPC_lkl_muon,
-    selAll_TPC_lkl_pion,
-    selAll_TPC_lkl_electron,
-    selAll_TPC_lkl_proton,
-    selAll_nTracks,
-
-    /*
-      selmu_1hit_pos,
-      selmu_2hit_pos,
-      selmu_1hit_charge,
-      selmu_2hit_charge,
-      selmu_1hit_fitpos,
-      selmu_2hit_fitpos,
-      selmu_1hit_deltapos,
-      selmu_2hit_deltapos,
-      selmu_1hit_deltapos2,
-      selmu_2hit_deltapos2,
-      selmu_pod_nnodes,
-
-      selmu_ntpcs,
-      selmu_tpc_det,
-      selmu_tpc_nnodes,
-      selmu_tpc_charge,
-      selmu_ntargets,
-      selmu_target_det,
-      selmu_target_nnodes,
-      selmu_target_x,
-      selmu_necals,
-      selmu_ecal_det,
-      selmu_ecal_nnodes,
-      selmu_ecal_length,
-      selmu_ecal_EMenergy,
-   	
-      NtargetSec,
-      FGDSec_ToF_PoD,
-      FGDSec_ToF_ECAL,
-      FGDSec_ToF_FGD2,
-
-      NTPCSec,
-      TPCSec_MomGlobal,
-      TPCSec_pos,
-      TPCSec_endpos,
-      TPCSec_ToF_PoD,
-      TPCSec_ToF_ECAL,
-      TPCSec_ToF_FGD2,
-    */
 
     true_pdg,
     true_SDlength,

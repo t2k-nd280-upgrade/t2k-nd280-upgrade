@@ -74,10 +74,10 @@ namespace anaUtils{
  // void Fill_Tracks_Recon_From_True(AnaTrueParticleB* trueParticles, AnaTrack* reconParticle);
 
   /// Get ToF based on the maximum t/dt
-  Float_t GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, Float_t& sigma, TRandom3* gen, bool UseSmearing = true);
+  Float_t GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, Float_t& sigma, bool UseSmearing = true);
 
   /// Get the length between two segments for ToF calculations
-  Float_t GetLength(AnaTrackB* track, AnaParticleB*& p1, AnaParticleB*& p2, Float_t& sigma_length, TRandom3* gen, bool UseSmearing = true);
+  Float_t GetLength(AnaTrackB* track, AnaParticleB*& p1, AnaParticleB*& p2, Float_t& sigma_length, bool UseSmearing = true);
 
   /// Calculate ToF mass based on ToF and length
   Float_t ComputeToFMass(Float_t mom, Float_t ToF, Float_t length);
@@ -89,26 +89,29 @@ namespace anaUtils{
   bool GetToFdetectors(AnaParticleB*& seg1, AnaParticleB*& seg2, SubDetId::SubDetEnum& det1, SubDetId::SubDetEnum& det2);
 
   /// Calculate the detectors used for ToF
-  bool GetToFdetectors(AnaTrackB* track, SubDetId::SubDetEnum& det1, SubDetId::SubDetEnum& det2, TRandom3* gen, bool UseSmearing = true);
+  bool GetToFdetectors(AnaTrackB* track, SubDetId::SubDetEnum& det1, SubDetId::SubDetEnum& det2, bool UseSmearing = true);
 
   /// Calculate ToF Llh for the track
-  bool GetToFLikelihood(AnaTrackB* track, Float_t* ToF_lkl, TRandom3* gen, bool UseSmearing = true);
+  bool GetToFLikelihood(AnaTrackB* track, Float_t* ToF_lkl, bool UseSmearing = true);
 
   /// Get Llh for given ToF and length
-  bool GetToFLikelihood(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_lkl, TRandom3* gen, bool UseSmearing = true);
+  bool GetToFLikelihood(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_lkl, bool UseSmearing = true);
 
   /// Calculate Llh from pulls
   bool CalculateToFLikelihood(Float_t* ToF_pull, Float_t* ToF_lkl);
 
   /// Get Llh for track for certain hypo
-  Float_t GetToFLikelihood(AnaTrackB* track, Int_t hypo, TRandom3* gen, bool UseSmearing = true);
+  Float_t GetToFLikelihood(AnaTrackB* track, Int_t hypo, bool UseSmearing = true);
 
   /// Get Llh  for track for certain hypo from ToF and length
-  Float_t GetToFLikelihood(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Int_t hypo, TRandom3* gen, bool UseSmearing = true);
+  Float_t GetToFLikelihood(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Int_t hypo, bool UseSmearing = true);
 
   /// Compute pulls based on the track or ToF&length
-  bool ComputeToFpulls(AnaTrackB* track, Float_t* ToF_pull, TRandom3* gen, bool UseSmearing = true);
-  bool ComputeToFpulls(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_pull, TRandom3* gen, bool UseSmearing = true);
+  bool ComputeToFpulls(AnaTrackB* track, Float_t* ToF_pull, bool UseSmearing = true);
+  bool ComputeToFpulls(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_pull, bool UseSmearing = true);
+
+  void FlipTrack(AnaTrack* track);
+  void FlipTrack(AnaParticleB* track);
 
 }
 #endif

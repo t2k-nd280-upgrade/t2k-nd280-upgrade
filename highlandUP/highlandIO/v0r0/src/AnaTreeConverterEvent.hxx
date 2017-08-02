@@ -78,7 +78,6 @@ class AnaTreeConverterEvent: public InputConverter{
   virtual void FillBeamInfo(AnaBeam * beam);
   virtual void FillTrueInfo(AnaSpill * spill);
   virtual void FillBunchInfo(std::vector<AnaTrueVertexB*>& TrueVertices, AnaBunch * bunch);
-  //  virtual void FillParticleInfo(std::vector<AnaTrueParticleB*>& trueParticles,           Int_t itrk, AnaParticle* part);
   virtual void FillTrueParticleInfo(TND280UpVertex * trueVertex, TND280UpTrack * upTrack, AnaTrueParticleB * truePart);
   virtual void Fill_Tracks_Recon_From_True(AnaTrueParticleB* trueParticles, AnaTrack* reconParticle);
 

@@ -22,7 +22,6 @@ public:
   virtual ~numuCC4piSelection(){
     _file_ECAL_PDF->Close();
     delete _file_ECAL_PDF;
-    delete _randomGen;
   }
 
   //---- These are mandatory functions
@@ -42,8 +41,7 @@ public:
 private:
   BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
   TFile *_file_ECAL_PDF;
-  TRandom3 *_randomGen;
-  
+
 };
 
 class ToyBoxCC4pi: public ToyBoxNDUP{
@@ -55,44 +53,14 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     TPCTracks.clear();       ECalTracks.clear();
-    TrueProtons.clear(); TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
-    ProtonTPCtracks.clear();
-    IsoTargetProtontracks.clear();
+    TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
     NegativePionTPCtracks.clear();
     PositivePionTPCtracks.clear();
     IsoTargetPiontracks.clear();
     PosPi0TPCtracks.clear();
     ElPi0TPCtracks.clear();
     MichelElectrons.clear();
-    All_ToF_mass.clear();
-    All_ToF_true_mass.clear();
-    All_mom.clear();
-    All_cos.clear();
-    All_L.clear();
-    All_true_mom.clear();
-    All_PDG.clear();
-    All_TPC_dedx.clear();
-    All_ToF_det_used1.clear();
-    All_ToF_det_used2.clear();
-    All_ToF_time_reco.clear();
-    All_ToF_pull_muon.clear();
-    All_ToF_pull_pion.clear();
-    All_ToF_pull_electron.clear();
-    All_ToF_pull_proton.clear();
-    All_ToF_lkl_muon.clear();
-    All_ToF_lkl_pion.clear();
-    All_ToF_lkl_electron.clear();
-    All_ToF_lkl_proton.clear();
-    All_TPC_pull_muon.clear();
-    All_TPC_pull_pion.clear();
-    All_TPC_pull_electron.clear();
-    All_TPC_pull_proton.clear();
-    All_TPC_lkl_muon.clear();
-    All_TPC_lkl_pion.clear();
-    All_TPC_lkl_electron.clear();
-    All_TPC_lkl_proton.clear();
     TPC_det = SubDetId::kInvalid;
-    ToF_mass = ToF_true_mass = -999.;
   }
 
   virtual void Reset(){
@@ -101,44 +69,14 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     TPCTracks.clear();       ECalTracks.clear();
-    TrueProtons.clear(); TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
-    ProtonTPCtracks.clear();
-    IsoTargetProtontracks.clear();
+    TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
     NegativePionTPCtracks.clear();
     PositivePionTPCtracks.clear();
     IsoTargetPiontracks.clear();
     PosPi0TPCtracks.clear();
     ElPi0TPCtracks.clear();
     MichelElectrons.clear();
-    All_ToF_mass.clear();
-    All_ToF_true_mass.clear();
-    All_mom.clear();
-    All_cos.clear();
-    All_L.clear();
-    All_true_mom.clear();
-    All_PDG.clear();
-    All_TPC_dedx.clear();
-    All_ToF_det_used1.clear();
-    All_ToF_det_used2.clear();
-    All_ToF_time_reco.clear();
-    All_ToF_pull_muon.clear();
-    All_ToF_pull_pion.clear();
-    All_ToF_pull_electron.clear();
-    All_ToF_pull_proton.clear();
-    All_ToF_lkl_muon.clear();
-    All_ToF_lkl_pion.clear();
-    All_ToF_lkl_electron.clear();
-    All_ToF_lkl_proton.clear();
-    All_TPC_pull_muon.clear();
-    All_TPC_pull_pion.clear();
-    All_TPC_pull_electron.clear();
-    All_TPC_pull_proton.clear();
-    All_TPC_lkl_muon.clear();
-    All_TPC_lkl_pion.clear();
-    All_TPC_lkl_electron.clear();
-    All_TPC_lkl_proton.clear();
     TPC_det = SubDetId::kInvalid;
-    ToF_mass = ToF_true_mass = -999.;
   }
 
   virtual ~ToyBoxCC4pi(){}
@@ -148,14 +86,8 @@ public:
   AnaTrackB* MainTrack;
   std::vector<AnaTrackB*> TPCTracks, ECalTracks;
   SubDetId::SubDetEnum TPC_det;
-  float ToF_mass, ToF_true_mass;
 
-  std::vector<AnaTrueParticleB*> TrueProtons, TruePiPlus, TruePiMinus, TruePiZero;
-
-  int nProtonTPCtracks;
-  std::vector<AnaTrackB*> ProtonTPCtracks;
-  int nIsoTargetProtontracks;
-  std::vector<AnaTrackB*> IsoTargetProtontracks;
+  std::vector<AnaTrueParticleB*> TruePiPlus, TruePiMinus, TruePiZero;
 
   int nNegativePionTPCtracks;
   std::vector<AnaTrackB*> NegativePionTPCtracks;
@@ -173,18 +105,6 @@ public:
   int nPosPions;
   int nNegPions;
   int nOtherPions;
-
-  std::vector<float>   All_ToF_mass;
-  std::vector<float>   All_ToF_true_mass;
-  std::vector<int>     All_ToF_det_used1, All_ToF_det_used2;
-  std::vector<int>     All_PDG;
-  std::vector<float>   All_mom, All_cos, All_true_mom, All_TPC_dedx, All_L;
-  std::vector<float>   All_ToF_time_reco;
-
-  std::vector<float>   All_ToF_pull_muon, All_ToF_pull_pion, All_ToF_pull_electron, All_ToF_pull_proton;
-  std::vector<float>   All_ToF_lkl_muon, All_ToF_lkl_pion, All_ToF_lkl_electron, All_ToF_lkl_proton;
-  std::vector<float>   All_TPC_pull_muon, All_TPC_pull_pion, All_TPC_pull_electron, All_TPC_pull_proton;
-  std::vector<float>   All_TPC_lkl_muon, All_TPC_lkl_pion, All_TPC_lkl_electron, All_TPC_lkl_proton;
   
 };
 
@@ -341,14 +261,13 @@ namespace numuCC4piUtils{
 
   class ECal_Quality: public StepBase{
   public:
-    ECal_Quality(TRandom3 *r, BinnedParams* b1, BinnedParams* b2){
-      _randomGen = r;
+    ECal_Quality(BinnedParams* b1, BinnedParams* b2){
       _ECal_reco_eff = b1;
       _ECal_FGDmatch_eff = b2;
     }
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff);}
+    StepBase* MakeClone(){return new ECal_Quality(_ECal_reco_eff, _ECal_FGDmatch_eff);}
   private:
     TRandom3* _randomGen;
     BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
@@ -383,18 +302,6 @@ namespace numuCC4piUtils{
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const;
     StepBase* MakeClone(){return new CCoth();}
-  };
-
-  class ToF_senseDetermination: public StepBase{
-  public:
-    ToF_senseDetermination(){
-      _randomGen = new TRandom3(0);
-    }
-    using StepBase::Apply;
-    bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new ToF_senseDetermination();}
-  private:
-    TRandom3* _randomGen;
   };
 
 }

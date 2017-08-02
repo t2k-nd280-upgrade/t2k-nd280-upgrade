@@ -384,7 +384,23 @@ AnaTrackB::AnaTrackB(): AnaParticleMomB(){
     FGDSegmentsVect.clear();
     TPCSegmentsVect.clear();
     ECalSegmentsVect.clear();
-    ToFSegmentsVect.clear();   
+    ToFSegmentsVect.clear();  
+
+    ToF_reco_time = -999; 
+    ToF_true_time = -999; 
+    ToF_sigma_time = -999;
+
+    ToF_firstDet = SubDetId::kInvalid;
+    ToF_secondDet = SubDetId::kInvalid;
+
+    ToF_reco_length = -999;
+    ToF_true_length = -999;
+    ToF_sigma_length = -999;
+
+    ToF_reco_mass = -999;
+    ToF_sigma_mass = -999;
+
+    HasFlipped=false;
 
 }
 
@@ -471,6 +487,22 @@ AnaTrackB::AnaTrackB(const AnaTrackB& track):AnaParticleMomB(track){
   TPCSegmentsVect.clear();
   ECalSegmentsVect.clear();
   ToFSegmentsVect.clear();
+
+  ToF_reco_time = track.ToF_reco_time; 
+  ToF_true_time = track.ToF_true_time; 
+  ToF_sigma_time = track.ToF_sigma_time;
+
+  ToF_firstDet = track.ToF_firstDet;
+  ToF_secondDet = track.ToF_secondDet;
+
+  ToF_reco_length = track.ToF_reco_length;
+  ToF_true_length = track.ToF_true_length;
+  ToF_sigma_length = track.ToF_sigma_length;
+
+  ToF_reco_mass = track.ToF_reco_mass;
+  ToF_sigma_mass = track.ToF_sigma_mass;
+
+  HasFlipped = track.HasFlipped;
 
 }
 

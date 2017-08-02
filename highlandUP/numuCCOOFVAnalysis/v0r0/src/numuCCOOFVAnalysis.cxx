@@ -190,6 +190,9 @@ void numuCCOOFVAnalysis::DefineMicroTrees(bool addBase){
   
   AddVarF(output(),   selmu_true_ToF,  "");
   AddVarF(output(),   selmu_reco_ToF,  "");
+  
+  AddVarI(output(),   selmu_ToF_det1,  "");
+  AddVarI(output(),   selmu_ToF_det2,  "");
 
   //--- ECal
   AddVarF(output(),   selmu_ecal_mipem,     "");
@@ -280,6 +283,8 @@ void numuCCOOFVAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selmu_true_ToF,                ccoofvbox().true_ToF);
     output().FillVar(selmu_reco_ToF,                ccoofvbox().reco_ToF);
 	
+    output().FillVar(selmu_ToF_det1,                ccoofvbox().ToF_det1);
+    output().FillVar(selmu_ToF_det2,                ccoofvbox().ToF_det2);
   }
 
 }

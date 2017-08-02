@@ -79,6 +79,8 @@ public:
 	
 	selmu_true_ToF,
 	selmu_reco_ToF,
+	selmu_ToF_det1,
+	selmu_ToF_det2,
 
     /*
       selmu_1hit_pos,

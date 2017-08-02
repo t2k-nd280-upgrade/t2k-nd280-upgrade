@@ -56,6 +56,8 @@ public:
     MainTrack = NULL;
     Tracks.clear();
     OOFV = -1;
+    reco_ToF = true_ToF = -999;
+    ToF_det1 = ToF_det2 = -999;
     TPC_det = SubDetId::kInvalid;
   }
 
@@ -66,6 +68,8 @@ public:
     MainTrack = NULL;
     Tracks.clear();
     OOFV = -1;
+    reco_ToF = true_ToF = -999;
+    ToF_det1 = ToF_det2 = -999;
     TPC_det = SubDetId::kInvalid;
   }
 
@@ -79,6 +83,7 @@ public:
   SubDetId::SubDetEnum TPC_det;
   
   float reco_ToF, true_ToF;
+  int ToF_det1, ToF_det2;
 
 };
 

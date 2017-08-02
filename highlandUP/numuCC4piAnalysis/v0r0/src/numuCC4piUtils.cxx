@@ -11,6 +11,7 @@
 #include "ND280UPAnalysisUtils.hxx"
 #include "CategoriesUtils.hxx"
 #include "CutUtils.hxx"
+#include "AnaRecPackManager.hxx"
 
 #include "numuCC4piSelection.hxx"
 #include "numuCC4piUtils.hxx"
@@ -350,11 +351,8 @@ void numuCC4pi_utils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Su
       ElLklh /= norm; 
       PionLklh /= norm; 
 			
-      if( ProtonLklh > ElLklh && ProtonLklh > PionLklh ) {
-	box->nProtonTPCtracks++;
-	box->ProtonTPCtracks.push_back(ptrack);
+      if( ProtonLklh > ElLklh && ProtonLklh > PionLklh )
 	continue;
-      }
 			
       // Id associated to the largest of the two probabilities.
       if (PionLklh > ElLklh) {
@@ -362,11 +360,8 @@ void numuCC4pi_utils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Su
 	box->PositivePionTPCtracks.push_back(ptrack);
       }
       else {
-	if (ptrack->Momentum > 900.) { // This is mainly protons.
-	  box->nProtonTPCtracks++;
-	  box->ProtonTPCtracks.push_back(ptrack);
+	if (ptrack->Momentum > 900.) // This is mainly protons.
 	  continue;
-	}
 	box->nPosPi0TPCtracks++;
 	box->PosPi0TPCtracks.push_back(ptrack);
       }
@@ -447,15 +442,6 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
 	box->IsoTargetPiontracks.push_back(track);
       }
 
-      if (true_part->PDG == 2212)
-	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_Target");
-      else
-	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.ContaminationPID_Target");
-      if (r<cut) {
-	box->nIsoTargetProtontracks++;
-	box->IsoTargetProtontracks.push_back(track);
-      }
-
     }
     if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
       if (track->nFGDSegments != 1) continue;
@@ -477,15 +463,11 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
       if (r<cut) {
 	box->nIsoTargetPiontracks++;
 	box->IsoTargetPiontracks.push_back(track);
-      }
-
-      if (true_part->PDG == 2212)
-	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_FGD");
-      else
-	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.ContaminationPID_FGD");
-      if (r<cut) {
-	box->nIsoTargetProtontracks++;
-	box->IsoTargetProtontracks.push_back(track);
+	/*
+	double prange;
+	ND::tman().GetMomentumFromRangeLinear(*track, prange, ParticleId::kPiPos);
+	std::cout << track->Momentum << " " << prange << std::endl;
+	*/
       }
 
     }
@@ -556,8 +538,8 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
       if (abs(true_part->PDG) == 11)
 	if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > ME_mom) {
 	  double r = gRandom->Rndm();
-	  if (det==SubDetId::kFGD1 && r < ME_eff_FGD1 ||
-	      det==SubDetId::kFGD2 && r < ME_eff_FGD2) {
+	  if ((det==SubDetId::kFGD1 && r < ME_eff_FGD1) ||
+	      (det==SubDetId::kFGD2 && r < ME_eff_FGD2)) {
 	    box->nMichelElectrons++;
 	    box->MichelElectrons.push_back(track);
 	  }

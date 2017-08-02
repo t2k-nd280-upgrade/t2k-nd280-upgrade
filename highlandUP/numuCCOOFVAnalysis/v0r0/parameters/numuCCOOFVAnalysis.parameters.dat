@@ -19,8 +19,8 @@
  < numuCCOOFVAnalysis.MuonPID.Cut.Lmu   = 0.05 >
  < numuCCOOFVAnalysis.MuonPID.Cut.p_mip = 500  >
 
- < numuCCOOFVAnalysis.IsoTargetPi.EfficiencyPID_Target    = 0.9  >
- < numuCCOOFVAnalysis.IsoTargetPi.ContaminationPID_Target = 0.03 >
+ < numuCCOOFVAnalysis.IsoTargetPi.EfficiencyPID_Target    = 0.7  >
+ < numuCCOOFVAnalysis.IsoTargetPi.ContaminationPID_Target = 0.08 >
  < numuCCOOFVAnalysis.IsoTargetPi.EfficiencyPID_FGD    = 0.7  >
  < numuCCOOFVAnalysis.IsoTargetPi.ContaminationPID_FGD = 0.08 >
 
@@ -29,9 +29,9 @@
  < numuCCOOFVAnalysis.MEPions.ME.EfficiencyFGD2   = 0.42 >
  < numuCCOOFVAnalysis.MEPions.ME.MomentumCut = 2. >
 
- < highlandIO.Target.CutLength = 20. >
+ < highlandIO.Target.CutLength = 50. >
  < highlandIO.FGD.CutLength = 70. >
  < highlandIO.FGD.LayerWidth = 10.1 >
  < highlandIO.FGD.CutNumLayers = 4  >
 
- < numuCCOOFVAnalysis.ToF.TimeResolution = 0.600 >
+ < numuCCOOFVAnalysis.ToF.TimeResolution = 0.150 >

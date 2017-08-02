@@ -170,8 +170,8 @@ namespace numuCCOOFVUtils{
       int n=EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1];
       for (Int_t i=0;i<n; ++i){
 	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithTarget1][i]);
-	if ( nu_mode==1  && track->Charge>=-0.5 ) continue;
-	if ( nu_mode==-1 && track->Charge<=0.5  ) continue;
+	/*if ( nu_mode==1  && track->Charge>=-0.5 ) continue;
+	  if ( nu_mode==-1 && track->Charge<=0.5  ) continue;*/
 	ccoofvbox->Tracks.push_back(track);
       }
 
@@ -181,8 +181,8 @@ namespace numuCCOOFVUtils{
       int n=EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2];
       for (Int_t i=0;i<n; ++i){
 	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithTarget2][i]);
-	if ( nu_mode==1  && track->Charge>=-0.5 ) continue;
-	if ( nu_mode==-1 && track->Charge<=0.5  ) continue;
+	/*if ( nu_mode==1  && track->Charge>=-0.5 ) continue;
+	  if ( nu_mode==-1 && track->Charge<=0.5  ) continue;*/
 	ccoofvbox->Tracks.push_back(track);
       }
 
@@ -192,8 +192,8 @@ namespace numuCCOOFVUtils{
       int n=EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD1];
       for (Int_t i=0;i<n; ++i){
 	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithFGD1][i]);
-	if ( nu_mode==1  && track->Charge>=-0.5 ) continue;
-	if ( nu_mode==-1 && track->Charge<=0.5  ) continue;
+	/*if ( nu_mode==1  && track->Charge>=-0.5 ) continue;
+	  if ( nu_mode==-1 && track->Charge<=0.5  ) continue;*/
 	ccoofvbox->Tracks.push_back(track);
       }
 
@@ -203,8 +203,8 @@ namespace numuCCOOFVUtils{
       int n=EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD2];
       for (Int_t i=0;i<n; ++i){
 	AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[EventBox::kTracksWithFGD2][i]);
-	if ( nu_mode==1  && track->Charge>=-0.5 ) continue;
-	if ( nu_mode==-1 && track->Charge<=0.5  ) continue;
+	/*if ( nu_mode==1  && track->Charge>=-0.5 ) continue;
+	if ( nu_mode==-1 && track->Charge<=0.5  ) continue;*/
 	ccoofvbox->Tracks.push_back(track);
       }
 
@@ -440,6 +440,16 @@ namespace numuCCOOFVUtils{
     float true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
     box->reco_ToF = reco_ToF;
     box->true_ToF = true_ToF;
+	
+    if (SubDetId::GetSubdetectorEnum(p1->Detectors) == SubDetId::kToF)
+		box->ToF_det1 = -SubDetId::GetToF(((AnaToFParticleB*)p1)->Detector_name);
+	else 
+		box->ToF_det1 = SubDetId::GetSubdetectorEnum(p1->Detectors);
+	
+	if (SubDetId::GetSubdetectorEnum(p2->Detectors) == SubDetId::kToF)
+		box->ToF_det2 = -SubDetId::GetToF(((AnaToFParticleB*)p2)->Detector_name);
+	else 
+		box->ToF_det2 = SubDetId::GetSubdetectorEnum(p2->Detectors);
 
     // ==========
     // ==========

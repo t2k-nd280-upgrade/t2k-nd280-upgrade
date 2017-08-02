@@ -220,12 +220,12 @@ Float_t anaUtils::ComputeInversePT(AnaTPCParticleB& track){
     return -999;
 }
 
+
 //***************************************************************
-Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, Float_t& sigma, TRandom3* gen, bool UseSmearing){
+Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, Float_t& sigma, bool UseSmearing){
 //***************************************************************
   if (!track) return -999.;
 
-  //Float_t cut_length_target   = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.Cut.Length");
   Float_t ToF_time_resolution = ND::params().GetParameterD("psycheNDUPUtils.ToF.TimeResolution");
   Int_t add_ToF_on_targets    = ND::params().GetParameterI("psycheNDUPUtils.Geometry.AddToFOnTargets");
   std::vector< std::pair<AnaParticleB*, std::vector<Float_t> > > detTiming;
@@ -233,10 +233,9 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   // find timing information in Targets
   for (int i=0; i<track->nTargetSegments; i++){
     if (track->TargetSegments[i]->IsReconstructed) {
-      //if (track->TargetSegments[i]->DeltaLYZ > cut_length_target) {
       Float_t true_time = track->TargetSegments[i]->PositionStart[3];
       Float_t     sigma = sqrt(pow(3/sqrt(track->TargetSegments[i]->DeltaLYZ/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
-      Float_t      time = gen->Gaus(true_time, sigma);
+      Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
       vec.push_back(time); vec.push_back(sigma);
@@ -254,7 +253,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
 
         Float_t true_time = track->TPCSegments[0]->PositionStart[3];
         Float_t     sigma = ToF_time_resolution;
-        Float_t      time = gen->Gaus(true_time, sigma);
+        Float_t      time = gRandom->Gaus(true_time, sigma);
       
         std::vector<Float_t> vec;
         vec.push_back(time); vec.push_back(sigma);
@@ -268,7 +267,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
     if (track->FGDSegments[i]->IsReconstructed) {
       Float_t true_time = track->FGDSegments[i]->PositionStart[3];
       Float_t     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->DeltaLYZ/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
-      Float_t      time = gen->Gaus(true_time, sigma);
+      Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
       vec.push_back(time); vec.push_back(sigma);
@@ -281,7 +280,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
     if (track->ECalSegments[i]->IsReconstructed) {
       Float_t true_time = track->ECalSegments[i]->PositionStart[3];
       Float_t     sigma = 5; // 5ns
-      Float_t      time = gen->Gaus(true_time, sigma);
+      Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
       vec.push_back(time); vec.push_back(sigma);
@@ -293,7 +292,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   for (int i=0; i<track->nToFSegments; i++) {
     Float_t true_time = track->ToFSegments[i]->PositionStart[3];
     Float_t     sigma = ToF_time_resolution; // 0.6ns
-    Float_t      time = gen->Gaus(true_time, sigma);
+    Float_t      time = gRandom->Gaus(true_time, sigma);
 
     std::vector<Float_t> vec;
     vec.push_back(time); vec.push_back(sigma);
@@ -303,6 +302,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   // if we don't have 2, give up
   if (detTiming.size() < 2)
     return -999.;
+
 
   Float_t ToF = -999., max_t_over_s = 0.;
   for (unsigned int i=0; i<detTiming.size(); i++){
@@ -339,7 +339,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
 }
 
 //*********************************************************************
-Float_t anaUtils::GetLength(AnaTrackB* track, AnaParticleB*& p1, AnaParticleB*& p2, Float_t& sigma_length, TRandom3* gen, bool UseSmearing) {
+Float_t anaUtils::GetLength(AnaTrackB* track, AnaParticleB*& p1, AnaParticleB*& p2, Float_t& sigma_length, bool UseSmearing) {
 //*********************************************************************
   Double_t length1 = -999.0, length2 = -999.0;
   Float_t length = -999.;
@@ -361,12 +361,10 @@ Float_t anaUtils::GetLength(AnaTrackB* track, AnaParticleB*& p1, AnaParticleB*& 
     Float_t sigma_length = 10;
     if (cutUtils::DeltaLYZTPCCut(*(track))) sigma_length = 1;
 
-    Float_t true_length  = abs(length2-length1);
+    Float_t true_length = abs(length2-length1);
 
-    if (UseSmearing)
-      length  = gen->Gaus(true_length, sigma_length); 
-    else 
-      length  = true_length;
+    if (UseSmearing) length  = gRandom->Gaus(true_length, sigma_length); 
+    else             length  = true_length;
   }    
 
   return length;
@@ -439,14 +437,14 @@ bool anaUtils::GetToFdetectors(AnaParticleB*& seg1, AnaParticleB*& seg2, SubDetI
 }
 
 //*********************************************************************
-bool anaUtils::GetToFdetectors(AnaTrackB* track, SubDetId::SubDetEnum& det1, SubDetId::SubDetEnum& det2, TRandom3* gen, bool UseSmearing) {
+bool anaUtils::GetToFdetectors(AnaTrackB* track, SubDetId::SubDetEnum& det1, SubDetId::SubDetEnum& det2, bool UseSmearing) {
 //*********************************************************************
   if (!track)
     return false;
 
   AnaParticleB *seg1=0, *seg2=0;
   Float_t sigma=0;
-  Float_t ToF = GetToF(track, seg1, seg2, sigma, gen, UseSmearing);
+  Float_t ToF = GetToF(track, seg1, seg2, sigma, UseSmearing);
   if (ToF == -999.)
     return false;
 
@@ -454,24 +452,24 @@ bool anaUtils::GetToFdetectors(AnaTrackB* track, SubDetId::SubDetEnum& det1, Sub
 }
 
 //*********************************************************************
-bool anaUtils::GetToFLikelihood(AnaTrackB* track, Float_t* ToF_lkl, TRandom3* gen, bool UseSmearing) {
+bool anaUtils::GetToFLikelihood(AnaTrackB* track, Float_t* ToF_lkl, bool UseSmearing) {
 //*********************************************************************
   if (!track)
     return false;
 
   // Get ToF pulls
   Float_t ToF_pull[4];
-  ComputeToFpulls(track, ToF_pull, gen, UseSmearing);
+  ComputeToFpulls(track, ToF_pull, UseSmearing);
 
   return CalculateToFLikelihood(ToF_pull, ToF_lkl);
 }
 
 //*********************************************************************
-bool anaUtils::GetToFLikelihood(Float_t mom, Float_t mom_err,  Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_lkl, TRandom3* gen, bool UseSmearing) {
+bool anaUtils::GetToFLikelihood(Float_t mom, Float_t mom_err,  Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_lkl, bool UseSmearing) {
 //*********************************************************************
   Float_t ToF_pull[4];
   // Get ToF pulls
-  ComputeToFpulls(mom, mom_err, ToF, sigma, length, sigma_length, ToF_pull, gen, UseSmearing);
+  ComputeToFpulls(mom, mom_err, ToF, sigma, length, sigma_length, ToF_pull, UseSmearing);
 
   return CalculateToFLikelihood(ToF_pull, ToF_lkl);
 
@@ -502,29 +500,29 @@ bool anaUtils::CalculateToFLikelihood(Float_t* ToF_pull, Float_t* ToF_lkl) {
 }
 
 //*********************************************************************
-Float_t anaUtils::GetToFLikelihood(AnaTrackB* track, Int_t hypo, TRandom3* gen, bool UseSmearing) {
+Float_t anaUtils::GetToFLikelihood(AnaTrackB* track, Int_t hypo, bool UseSmearing) {
 //*********************************************************************
   if (!track)
     return -999.;
 
   Float_t ToF_lkl[4];
-  GetToFLikelihood(track, ToF_lkl, gen, UseSmearing);
+  GetToFLikelihood(track, ToF_lkl, UseSmearing);
 
   return ToF_lkl[hypo];
 }
 
 //*********************************************************************
-Float_t anaUtils::GetToFLikelihood(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Int_t hypo, TRandom3* gen, bool UseSmearing) {
+Float_t anaUtils::GetToFLikelihood(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Int_t hypo, bool UseSmearing) {
 //*********************************************************************
 
   Float_t ToF_lkl[4];
-  GetToFLikelihood(mom, mom_err, ToF, sigma, length, sigma_length, ToF_lkl, gen, UseSmearing);
+  GetToFLikelihood(mom, mom_err, ToF, sigma, length, sigma_length, ToF_lkl, UseSmearing);
 
   return ToF_lkl[hypo];
 }
 
 //*********************************************************************
-bool anaUtils::ComputeToFpulls(AnaTrackB* track, Float_t* ToF_pull, TRandom3* gen, bool UseSmearing) {
+bool anaUtils::ComputeToFpulls(AnaTrackB* track, Float_t* ToF_pull, bool UseSmearing) {
 //*********************************************************************
   if (!track)
     return false;
@@ -532,25 +530,25 @@ bool anaUtils::ComputeToFpulls(AnaTrackB* track, Float_t* ToF_pull, TRandom3* ge
   AnaParticleB *p1=0, *p2=0;
   Float_t sigma=0;
 
-  Float_t ToF     = GetToF(track, p1, p2, sigma, gen, UseSmearing);
+  Float_t ToF     = GetToF(track, p1, p2, sigma, UseSmearing);
   if (!p1 || !p2)    return false;
   if (ToF == -999.0) return false;
   Float_t sigma_length;
-  Float_t length  = GetLength(track, p1, p2, sigma_length, gen, UseSmearing);
+  Float_t length  = GetLength(track, p1, p2, sigma_length, UseSmearing);
   if (length == -999.) return false;
 
   Float_t true_mom = track->GetTrueParticle()->Momentum;
   Float_t mom = track->SmearedMomentum;
   if (fabs(true_mom-mom)<1e-3)
-    mom = gen->Gaus(true_mom, 0.10*true_mom);
+    mom = gRandom->Gaus(true_mom, 0.10*true_mom);
 
   Float_t mom_err = track->MomentumError;
 
-  return ComputeToFpulls(mom, mom_err, ToF, sigma, length, sigma_length, ToF_pull, gen, UseSmearing);
+  return ComputeToFpulls(mom, mom_err, ToF, sigma, length, sigma_length, ToF_pull, UseSmearing);
 }
 
 //*********************************************************************
-bool anaUtils::ComputeToFpulls(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_pull, TRandom3* gen, bool UseSmearing) {
+bool anaUtils::ComputeToFpulls(Float_t mom, Float_t mom_err, Float_t ToF, Float_t sigma, Float_t length, Float_t sigma_length, Float_t* ToF_pull, bool UseSmearing) {
 //*********************************************************************
 
   ToF_pull[0] = ToF_pull[1] = ToF_pull[2] = ToF_pull[3] = -999.;
@@ -580,5 +578,50 @@ bool anaUtils::ComputeToFpulls(Float_t mom, Float_t mom_err, Float_t ToF, Float_
   ToF_pull[1] = (ToFmass-m)/sigma_m;
   m = units::pdgBase->GetParticle(2212)->Mass()*1000; // proton
   ToF_pull[2] = (ToFmass-m)/sigma_m;
+
+}
+
+
+void anaUtils::FlipTrack(AnaTrack* track){
+
+  Float_t temp_pos[4];
+  anaUtils::CopyArray(track->PositionStart, temp_pos,             4); //temp_pos = pos_start
+  anaUtils::CopyArray(track->PositionEnd,   track->PositionStart, 4); //pos_start = pos_end
+  anaUtils::CopyArray(temp_pos,             track->PositionEnd,   4); //pos_end = temp_pos
+
+  Float_t temp_dir[3];
+  anaUtils::CopyArray(track->DirectionStart, temp_dir,              3); //temp_dir = dir_start
+  anaUtils::CopyArray(track->DirectionEnd,   track->DirectionStart, 3); //dir_start = dir_end
+  anaUtils::CopyArray(temp_dir,              track->DirectionEnd,   3); //dir_end = temp_dir
+
+  track->Charge = -track->Charge;
+
+  for (int i=0; i<track->nTargetSegments; i++)
+    FlipTrack(track->TargetSegments[i]);
+  for (int i=0; i<track->nFGDSegments; i++)
+    FlipTrack(track->FGDSegments[i]);
+  for (int i=0; i<track->nToFSegments; i++)
+    FlipTrack(track->ToFSegments[i]);
+  for (int i=0; i<track->nTPCSegments; i++)
+    FlipTrack(track->TPCSegments[i]);
+  for (int i=0; i<track->nECalSegments; i++)
+    FlipTrack(track->ECalSegments[i]);
+
+  track->HasFlipped = true;
+
+}
+
+
+void anaUtils::FlipTrack(AnaParticleB* track){
+
+  Float_t temp_pos[4];
+  anaUtils::CopyArray(track->PositionStart, temp_pos,             4); //temp_pos = pos_start
+  anaUtils::CopyArray(track->PositionEnd,   track->PositionStart, 4); //pos_start = pos_end
+  anaUtils::CopyArray(temp_pos,             track->PositionEnd,   4); //pos_end = temp_pos
+
+  Float_t temp_dir[3];
+  anaUtils::CopyArray(track->DirectionStart, temp_dir,              3); //temp_dir = dir_start
+  anaUtils::CopyArray(track->DirectionEnd,   track->DirectionStart, 3); //dir_start = dir_end
+  anaUtils::CopyArray(temp_dir,              track->DirectionEnd,   3); //dir_end = temp_dir
 
 }

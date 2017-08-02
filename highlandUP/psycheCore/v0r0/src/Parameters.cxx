@@ -258,6 +258,7 @@ void Parameters::ClearMapOfParameters() {
 
 void  Parameters::CheckReadParamOverrideFilePointPassed(string parameterName){
 
+  /*
   if (!fReadParamOverrideFilePointPassed){
     std::cerr << "ERROR: Parameter '" << parameterName << "'" << std::endl
               << "should no be accessed in analysis algorithm constructors or globally" << std::endl
@@ -265,5 +266,6 @@ void  Parameters::CheckReadParamOverrideFilePointPassed(string parameterName){
               << "Please move the GetParameter calls to the Initialize method of the analysis algorithm." << std::endl;
     exit(1);
   }
+  */
 
 }

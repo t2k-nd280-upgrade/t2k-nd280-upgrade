@@ -172,6 +172,7 @@ namespace DetDef {
   //**********************************
   bool Initialize(Int_t Configuration, Int_t ToF) {
   //**********************************
+
     if (Configuration == -1) {
       Configuration = (Int_t)ND::params().GetParameterI("psycheNDUPUtils.Geometry.nd280upConfiguration");
       ToF           = (Int_t)ND::params().GetParameterI("psycheNDUPUtils.Geometry.AddToF");
@@ -214,6 +215,7 @@ namespace DetDef {
         DetDef::Target1max[2] =   -698.00;
       }
     }
+
     if (Configuration == 3) {
       if (ToF) {
         DetDef::Target1min[2] =  -1668.00;
@@ -224,6 +226,7 @@ namespace DetDef {
         DetDef::Target1max[2] =    276.00;
       }
     }
+
     return true;
   }
   

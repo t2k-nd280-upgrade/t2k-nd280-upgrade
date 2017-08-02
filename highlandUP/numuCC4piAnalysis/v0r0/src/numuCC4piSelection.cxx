@@ -29,7 +29,6 @@ numuCC4piSelection::numuCC4piSelection(bool forceBreak): SelectionBase(forceBrea
   _ECal_FGDmatch_eff = new BinnedParams(std::string(getenv("NUMUCC4PIANALYSISROOT")) + "/data",
 					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC); 
 
-  _randomGen = new TRandom3();
   
 }
 
@@ -45,7 +44,6 @@ void numuCC4piSelection::DefineSteps(){
   AddStep(StepBase::kCut,    "> 0 tracks ",         new numuCC4piUtils::TotalMultiplicityCut(), true);
   AddStep(StepBase::kAction, "Sort TPC tracks",     new numuCC4piUtils::SortTracksAction());
   AddStep(StepBase::kCut,    "quality+fiducial",    new numuCC4piUtils::TrackGQandFVCut(),      true);
-  //AddStep(StepBase::kAction, "veto Action",         new VetoAction());
 
   AddStep(StepBase::kAction, "find vertex",         new numuCC4piUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCC4piUtils::FillSummaryAction_numuCC4pi());
@@ -60,22 +58,12 @@ void numuCC4piSelection::DefineSteps(){
   AddStep(0, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
   AddStep(0, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
   
-  AddStep(0, 0, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(0, 1, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(0, 2, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(0, 3, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-
   AddStep(1, StepBase::kCut, "Bwd TPC Quality Cut",    new numuCC4piUtils::BwdTPC_Quality());
   AddStep(1, StepBase::kCut, "Bwd TPC PID Cut",        new numuCC4piUtils::BwdTPC_PID());
   AddSplit(4, 1);
   AddStep(1, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
   AddStep(1, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
   AddStep(1, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
-
-  AddStep(1, 0, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(1, 1, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(1, 2, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(1, 3, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
 
   AddStep(2, StepBase::kCut, "HA TPC Quality Cut",    new numuCC4piUtils::HATPC_Quality());
   AddStep(2, StepBase::kCut, "HA TPC PID Cut",        new numuCC4piUtils::HATPC_PID());
@@ -84,23 +72,13 @@ void numuCC4piSelection::DefineSteps(){
   AddStep(2, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
   AddStep(2, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
-  AddStep(2, 0, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(2, 1, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(2, 2, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(2, 3, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-
-  AddStep(3, StepBase::kCut, "ECal Quality Cut",  new numuCC4piUtils::ECal_Quality(_randomGen, _ECal_reco_eff, _ECal_FGDmatch_eff));
+  AddStep(3, StepBase::kCut, "ECal Quality Cut",  new numuCC4piUtils::ECal_Quality(_ECal_reco_eff, _ECal_FGDmatch_eff));
   AddStep(3, StepBase::kCut, "ECal PID Cut",      new numuCC4piUtils::ECal_PID(_file_ECAL_PDF));
   AddSplit(4, 3);
   AddStep(3, 0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
   AddStep(3, 1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
   AddStep(3, 2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
 
-  AddStep(3, 0, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(3, 1, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(3, 2, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  AddStep(3, 3, StepBase::kCut, "ToF",               new numuCC4piUtils::ToF_senseDetermination());
-  
   SetBranchAlias(0,  "CC0pi Fwd TPC",  0,0);
   SetBranchAlias(1,  "CC0pi Bwd TPC",  1,0);
   SetBranchAlias(2,  "CC0pi HA TPC",   2,0);
@@ -336,7 +314,6 @@ namespace numuCC4piUtils{
       if (part->PDG==211)  cc4pibox->TruePiPlus.push_back(part);
       if (part->PDG==-211) cc4pibox->TruePiMinus.push_back(part);
       if (part->PDG==111)  cc4pibox->TruePiZero.push_back(part);
-      if (part->PDG==2212) cc4pibox->TrueProtons.push_back(part);
     }
 
 
@@ -534,7 +511,9 @@ namespace numuCC4piUtils{
   bool FwdTPC_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
     //**************************************************
     (void)event;
+	
     ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+	
     if ( numuCC4pi_utils::MuonPIDCut(*cc4pibox->MainTrack, true) ) return true;
     return false;
   }
@@ -741,6 +720,7 @@ namespace numuCC4piUtils{
 
   }
 
+  /*
   //**************************************************
   bool ToF_senseDetermination::Apply(AnaEventC& event, ToyBoxB& boxB) const{
     //**************************************************
@@ -756,63 +736,32 @@ namespace numuCC4piUtils{
 
     AnaParticleB *p1=0, *p2=0;
     float sigma=0;
-    float ToF = numuCC4pi_utils::GetToF(box->MainTrack, p1, p2, sigma, _randomGen);
+    float ToF = anaUtils::GetToF(box->MainTrack, p1, p2, sigma);
     if (!p1 or !p2)
       return ok;
 
     float true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
+    ok = ok || (true_ToF*ToF > 0);
 
     // ==========
     // ToF mass
     // ==========
 
     // smear the momentum
-    float true_mom = box->MainTrack->GetTrueParticle()->Momentum;
-    float mom = box->MainTrack->SmearedMomentum;
+    Float_t true_mom = box->MainTrack->GetTrueParticle()->Momentum;
+    Float_t mom = box->MainTrack->SmearedMomentum; // TPC-smeared momentum
+    // if the track is not smeared in TPC, apply a default 10% smearing
     if (fabs(true_mom-mom)<1e-3)
-      mom = _randomGen->Gaus(true_mom, 0.10*true_mom);
+      mom = gRandom->Gaus(true_mom, 0.10*true_mom);
 
-    // compute the length using RecPack + smear it
-    double length1 = -999., length2 = -999.;
-    RP::State state1, state2;
-	TVector3 pos  = anaUtils::ArrayToTVector3(box->MainTrack->PositionStart);
-    TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
-    TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
-    TVector3 dir1 = anaUtils::ArrayToTVector3(p1->DirectionStart);
-    TVector3 dir2 = anaUtils::ArrayToTVector3(p2->DirectionStart);	 
-	
-    //float true_length = (pos2-pos1).Mag();
-    //float length = _randomGen->Gaus(true_length, 10); 
-	
-    bool correct=false;
-
-		if (!ND::tman().AnaTrueParticleB_to_RPState(*(box->MainTrack->GetTrueParticle()), state1) ||
-			!ND::tman().PropagateToSurface(pos1, dir1, state1, length1, false) ){
-			  if ((pos-pos1).Mag()<2) length1=0;
-		  }
-		if (!ND::tman().AnaTrueParticleB_to_RPState(*(box->MainTrack->GetTrueParticle()), state2) ||
-			!ND::tman().PropagateToSurface(pos2, dir2, state2, length2, false) ){
-			  if ((pos-pos2).Mag()<2) length2=0;
-		  }
-		  
-		if (length1>-1 && length2>-1) {
-	
-	    float sigma_length = 10;
-	    if (cutUtils::DeltaLYZTPCCut(*(box->MainTrack)))
-	      sigma_length = 1;
-	    float true_length = fabs(length2-length1);
-	    float length = _randomGen->Gaus(true_length, sigma_length); 
+    Float_t sigma_length;
+    Float_t true_length = anaUtils::GetLength(box->MainTrack, p1, p2, sigma_length, false);
+    Float_t      length = anaUtils::GetLength(box->MainTrack, p1, p2, sigma_length, true); 
    
-	    correct=true;
-	    box->ToF_mass      = numuCC4pi_utils::ComputeToFMass(mom, ToF, length);
-	    box->ToF_true_mass = numuCC4pi_utils::ComputeToFMass(true_mom, true_ToF, true_length);
-	  
-		}
+    box->ToF_mass      = anaUtils::ComputeToFMass(     mom,      ToF,      length);
+    box->ToF_true_mass = anaUtils::ComputeToFMass(true_mom, true_ToF, true_length);
 
-    // ==========
-    // ==========
 
-    ok = ok || (true_ToF*ToF > 0);
 
     // ==========
     // ToF mass for all particles
@@ -829,124 +778,66 @@ namespace numuCC4piUtils{
 
       // find the two segments giving the ToF and compute it
       p1=0; p2=0;
-      float ToF = numuCC4pi_utils::GetToF(track_i, p1, p2, sigma, _randomGen);
+      float ToF = anaUtils::GetToF(track_i, p1, p2, sigma);
       if (!p1 or !p2)
-		continue;
+	continue;
       float true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
+
 
       // smear the momentum
       float true_mom = track_i->GetTrueParticle()->Momentum;
-      float mom = track_i->SmearedMomentum;
+      float      mom = track_i->SmearedMomentum;
 
       // if TPC segment available, take the momentum from TPC
       if (track_i->nTPCSegments>0){
 	mom      = track_i->TPCSegments[0]->SmearedMomentum;
 	true_mom = track_i->TPCSegments[0]->Momentum;
-      }     
-
+      }
       // otherwise, we smear the momentum by 10%, saying it has been measured by range
       if (fabs(true_mom-mom)<1e-3)
-	mom = _randomGen->Gaus(true_mom, 0.10*true_mom);
+	mom = gRandom->Gaus(true_mom, 0.10*true_mom);
 
-      
-      // compute the length using RecPack, which is
-      // lenght = lenght2-lenght1
-      // where length1 is the length between track beginning and segment 1
-      //   and length2 is the length between track beginning and segment 2
+      float true_length = anaUtils::GetLength(track_i, p1, p2, sigma_length, false);
+      float      length = anaUtils::GetLength(track_i, p1, p2, sigma_length, true); 
 
-      double length1 = 0, length2 = 0;
-      RP::State state1, state2;
-	  
-      TVector3 pos  = anaUtils::ArrayToTVector3(track_i->PositionStart);
-      TVector3 pose = anaUtils::ArrayToTVector3(track_i->PositionEnd);
-      TVector3 pos1 = anaUtils::ArrayToTVector3(p1->PositionStart);
-      TVector3 pos2 = anaUtils::ArrayToTVector3(p2->PositionStart);
-      TVector3 dir1 = anaUtils::ArrayToTVector3(p1->DirectionStart);
-      TVector3 dir2 = anaUtils::ArrayToTVector3(p2->DirectionStart);	
-      
-      // if we manage to extrapolate length with RECPACK, we use it
-      // it can fail if we are trying to extrapolate from one point to the same point
-      // in this case, I put a protection, by taking length=0
-      if (!ND::tman().AnaTrueParticleB_to_RPState(*(track_i->GetTrueParticle()), state1) ||
-          !ND::tman().PropagateToSurface(pos1, dir1, state1, length1, false)             ){
-	if ((pos-pos1).Mag()<2) length1=0;
-	else 	                  {continue;}
-      }
-      if (!ND::tman().AnaTrueParticleB_to_RPState(*(track_i->GetTrueParticle()), state2) ||
-	  !ND::tman().PropagateToSurface(pos2, dir2, state2, length2, false)             ){
-	if ((pos-pos2).Mag()<2) length2=0;
-	else 	                  {continue;}
-      }
-		  
-      float true_length = fabs(length2-length1);
-
-      // smear the length
-      float sigma_length = 10;
-      if (cutUtils::DeltaLYZTPCCut(*track_i))
-	sigma_length = 1;
-      float length = _randomGen->Gaus(true_length, sigma_length); 
-		  
-
-      // compute the reco mass using smeared length, smeared ToF and smeared momentum
-      float m_reco = numuCC4pi_utils::ComputeToFMass(mom, ToF, length);
-      // compute the true mass using true length, true ToF and true momentum
-      // !!! may be different from the true mass of the particle because of multiple scattering, energy loss...
+      float m_reco = numuCC4pi_utils::ComputeToFMass(     mom,      ToF,      length);
       float m_true = numuCC4pi_utils::ComputeToFMass(true_mom, true_ToF, true_length);
+
+      float ToF_pull[4], ToF_lkl[4];
+      anaUtils::ComputeToFpulls(track_i, ToF_pull, true);
+      anaUtils::CalculateToFLikelihood(ToF_pull, ToF_lkl);
 
 
       // store all information related to the track
       box->All_ToF_mass.push_back(m_reco);
       box->All_ToF_true_mass.push_back(m_true);
+      box->All_ToF_time_reco.push_back(ToF);
 
       box->All_mom.push_back(track_i->SmearedMomentum);
       box->All_cos.push_back(track_i->DirectionStart[2]);
       box->All_L.push_back(length);
       box->All_true_mom.push_back(track_i->GetTrueParticle()->Momentum);
-
       box->All_PDG.push_back(track_i->GetTrueParticle()->PDG);
 	  
-	  if (SubDetId::GetSubdetectorEnum(p1->Detectors) == SubDetId::kToF)
-		box->All_ToF_det_used1.push_back(-SubDetId::GetToF(((AnaToFParticleB*)p1)->Detector_name));
-	  else 
-		  box->All_ToF_det_used1.push_back(SubDetId::GetSubdetectorEnum(p1->Detectors));
-	  if (SubDetId::GetSubdetectorEnum(p2->Detectors) == SubDetId::kToF)
-		box->All_ToF_det_used2.push_back(-SubDetId::GetToF(((AnaToFParticleB*)p2)->Detector_name));
-	  else 
-		  box->All_ToF_det_used2.push_back(SubDetId::GetSubdetectorEnum(p2->Detectors));
+      if (SubDetId::GetSubdetectorEnum(p1->Detectors) == SubDetId::kToF)
+	box->All_ToF_det_used1.push_back(-SubDetId::GetToF(((AnaToFParticleB*)p1)->Detector_name));
+      else 
+	box->All_ToF_det_used1.push_back(SubDetId::GetSubdetectorEnum(p1->Detectors));
+      if (SubDetId::GetSubdetectorEnum(p2->Detectors) == SubDetId::kToF)
+	box->All_ToF_det_used2.push_back(-SubDetId::GetToF(((AnaToFParticleB*)p2)->Detector_name));
+      else 
+	box->All_ToF_det_used2.push_back(SubDetId::GetSubdetectorEnum(p2->Detectors));
 	  
-      box->All_ToF_time_reco.push_back(ToF);
+ 
+      box->All_ToF_pull_muon.push_back(ToF_pull[0]);
+      box->All_ToF_pull_pion.push_back(ToF_pull[3]);
+      box->All_ToF_pull_electron.push_back(ToF_pull[1]);
+      box->All_ToF_pull_proton.push_back(ToF_pull[2]);
 
-      // inverse momentum
-      float invp = 1/mom;
-      float dinvp = track_i->MomentumError;
-      if (dinvp==0) dinvp=0.10*invp;
-      // expected mass
-      float m = 0;
-      // factor which is defined here to clarify the code
-      float a = 1+pow(mom/m_reco, 2);
-      // resolution on reconstructed mass
-      float sigma_m = m_reco*sqrt(pow(dinvp/invp,2)+pow(a*sigma/ToF,2)+pow(a*sigma_length/length,2));
-
-      // compute the pull for each particle hypothesis
-      m = units::pdgBase->GetParticle(13)->Mass()*1000; // muon
-      box->All_ToF_pull_muon.push_back((m_reco-m)/sigma_m);
-      m = units::pdgBase->GetParticle(211)->Mass()*1000; // pion
-      box->All_ToF_pull_pion.push_back((m_reco-m)/sigma_m);
-      m = units::pdgBase->GetParticle(11)->Mass()*1000; // electron
-      box->All_ToF_pull_electron.push_back((m_reco-m)/sigma_m);
-      m = units::pdgBase->GetParticle(2212)->Mass()*1000; // proton
-      box->All_ToF_pull_proton.push_back((m_reco-m)/sigma_m);
-
-      // compute the likelihood for each particle hypothesis
-      float P_mu = exp(-pow(box->All_ToF_pull_muon.back(),2)/2);
-      float P_pi = exp(-pow(box->All_ToF_pull_pion.back(),2)/2);
-      float P_e  = exp(-pow(box->All_ToF_pull_electron.back(),2)/2);
-      float P_p  = exp(-pow(box->All_ToF_pull_proton.back(),2)/2);
-      float sum_prob = P_mu+P_pi+P_e+P_p;
-      box->All_ToF_lkl_muon.push_back(P_mu/sum_prob);
-      box->All_ToF_lkl_pion.push_back(P_pi/sum_prob);
-      box->All_ToF_lkl_electron.push_back(P_e/sum_prob);
-      box->All_ToF_lkl_proton.push_back(P_p/sum_prob);
+      box->All_ToF_lkl_muon.push_back(ToF_lkl[0]);
+      box->All_ToF_lkl_pion.push_back(ToF_lkl[3]);
+      box->All_ToF_lkl_electron.push_back(ToF_lkl[1]);
+      box->All_ToF_lkl_proton.push_back(ToF_lkl[2]);
 
       // store the TPC pulls and likelihood if we have a TPC segment
       if (track_i->nTPCSegments>0){
@@ -983,6 +874,7 @@ namespace numuCC4piUtils{
     return ok;
 
   }
+  */
 
 }
   
@@ -1039,43 +931,7 @@ bool numuCC4piSelection::IsRelevantRecObjectForSystematicInToy(const AnaEventC& 
 
   (void)event;
   (void)branch;
-  /*
-    const ToyBoxCC4pi& cc4pibox = *static_cast<const ToyBoxCC4pi*>(&boxB); 
 
-    AnaTrackB* track = static_cast<AnaTrackB*>(recObj);
-
-    if(systId == SystId::kOOFV){
-    if (branch==1 || branch==3) return false;
-    }
-    if(systId == SystId::kTpcClusterEff){
-    if (track->nTPCSegments > 0) {
-    AnaTPCParticleB* tpcTrack = static_cast<AnaTPCParticleB*>(anaUtils::GetSegmentWithMostNodesInClosestTpc(*track));
-    if (tpcTrack) {
-    if (tpcTrack->NNodes > 16 && tpcTrack->NNodes < 19) return true;
-    }
-    }
-    return false;
-    }
-    if(systId == SystId::kChargeIDEff){
-    if (track == cc4pibox.MainTrack) return true;
-    return false;
-    }
-    if(systId == SystId::kTpcFgdMatchEff){
-    if (track == cc4pibox.MainTrack) return true;
-    return false;
-    }
-    if(systId == SystId::kECalPID){
-    if (track == cc4pibox.MainTrack) {
-    if (branch==2 || branch==3) return true;
-    else if (branch==0 || branch==4 || branch==5) {
-    if ( anaUtils::TrackUsesDet(*track,SubDetId::kTECAL) ) return true;
-    if ( anaUtils::InFiducialVolume(SubDetId::kDSECAL, track->PositionEnd, _FVdefminDsECal, _FVdefmaxDsECal) ) return true;
-    }
-    }
-    return false;
-    }
-  */
-  
   return true;
 
 }
@@ -1086,67 +942,7 @@ bool numuCC4piSelection::IsRelevantTrueObjectForSystematicInToy(const AnaEventC&
 
   (void)event;
   (void)branch;
-  /*
-    const ToyBoxCC4pi& cc4pibox = *static_cast<const ToyBoxCC4pi*>(&boxB);
-
-    AnaTrueParticleB* trueTrack = static_cast<AnaTrueParticleB*>(trueObj);
-
-    if ( !cc4pibox.MainTrack->GetTrueParticle() ) return false;
-
-    if(systId == SystId::kTpcTrackEff){
-    if (trueTrack->PDG == 13 && cc4pibox.MainTrack->GetTrueParticle()->PDG!=13) return true;
-    if (branch!=2 && branch!=3) { if (trueTrack->ID  == cc4pibox.MainTrack->GetTrueParticle()->ID) return true; }
-    return false;
-    }
-    if(systId == SystId::kECalTrackEff){
-    if (trueTrack->PDG == 13 && cc4pibox.MainTrack->GetTrueParticle()->PDG!=13) return true;
-    if (branch==2 || branch==3) { 
-    if (cc4pibox.MainTrack->nTPCSegments == 0) {
-    if (trueTrack->ID  == cc4pibox.MainTrack->GetTrueParticle()->ID) return true; 
-    }
-    }
-    return false;
-    }
-    if(systId == SystId::kTpcECalMatchEff){
-    if (branch>-1 && branch<6) { if (trueTrack->ID  == cc4pibox.MainTrack->GetTrueParticle()->ID) return true; }
-    return false;
-    }
-    if(systId == SystId::kTpcP0dMatchEff){
-    if (branch==1) { if (trueTrack->ID  == cc4pibox.MainTrack->GetTrueParticle()->ID) return true; }
-    return false;
-    }
-    if(systId == SystId::kFgdECalMatchEff){
-    if (branch==2 || branch==3) { if (trueTrack->ID  == cc4pibox.MainTrack->GetTrueParticle()->ID) return true; }
-    return false;
-    }
-    if(systId == SystId::kFgdECalSmrdMatchEff){
-    if (branch==2 || branch==3) { if (trueTrack->ID  == cc4pibox.MainTrack->GetTrueParticle()->ID) return true; }
-    return false;
-    }
-    if(systId == SystId::kSIPion){
-    // If this trueTrack is associated to the MainTrack
-    if (trueTrack->ID == cc4pibox.MainTrack->GetTrueParticle()->ID){
-    if (abs(cc4pibox.MainTrack->GetTrueParticle()->PDG)        == 211) return true;
-    if (abs(cc4pibox.MainTrack->GetTrueParticle()->ParentPDG)  == 211) return true;
-    if (abs(cc4pibox.MainTrack->GetTrueParticle()->GParentPDG) == 211) return true;
-    }
-    // If this trueTrack is NOT associated to the MainTrack, consider the posibility of this trueTrack to become the MainTrack and be identified as muon
-    // For the moment assume a negative pion may become the MainTrack if its momentum its above 90% of the current MainTrack momentum. 
-    // Ideally we should check that this true pion is not associated to any reconstructed track, but this is not possible now without looping.
-    // Multiply by the charge of the MainTrack such that it can be use for antiNumu selection
-    if (trueTrack->PDG == 211*((Int_t)cc4pibox.MainTrack->Charge) && trueTrack->Momentum > 0.9*cc4pibox.MainTrack->Momentum) return true;
-    return false;
-    }
-    if(systId == SystId::kSIProton){
-    // If this trueTrack is associated to the MainTrack
-    if (trueTrack->ID == cc4pibox.MainTrack->GetTrueParticle()->ID){
-    if (cc4pibox.MainTrack->GetTrueParticle()->PDG        == 2212) return true;
-    if (cc4pibox.MainTrack->GetTrueParticle()->ParentPDG  == 2212) return true;
-    if (cc4pibox.MainTrack->GetTrueParticle()->GParentPDG == 2212) return true;
-    }
-    return false;
-    }
-  */
+ 
   return true;
 
 }
