@@ -5,10 +5,6 @@
 # Inputs
 #  --resource               : Computer resource,<UNIGE-Atlas, interactive>. Default: interactive.
 #  --tag                    : Tag for output files.
-#  --fit-param-list         : Fit parameter list. See FitParamList.h for allowed options.
-#  --physparam-freepar      : Free parameter
-#  --npt-freepar            : Number of points of the free parameter to scan
-#  --step-freepar           : Step of the free parameter scan
 #
 # D.Sgalaberna
 #-------------------------------------------------------------------------------------------------------------------------------
@@ -30,6 +26,10 @@ foreach (@ARGV) {
     elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
     elsif($_ eq '--detector'         ) { $detector        = $ARGV[$iarg+1]; } 
     elsif($_ eq '--debug'            ) { $debug           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--use-view-xy'      ) { $useviewXY       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--use-view-xz'      ) { $useviewXZ       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--use-view-yz'      ) { $useviewYZ       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--min-track-dist'   ) { $min_trk_dist    = $ARGV[$iarg+1]; }
    
     # where to put the output files
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
@@ -42,7 +42,15 @@ foreach (@ARGV) {
 }
 
 $resource        = "interactive"                 unless defined $resource;
-$tag            = "FGDlike" unless defined $tag;
+
+#$tag            = "FGDlike" unless defined $tag;
+$tag            = "SuperFGD" unless defined $tag;
+
+$useviewXY      = 1 unless defined $useviewXY; # (0 or 1)
+$useviewXZ      = 1 unless defined $useviewXZ; # (0 or 1)
+$useviewYZ      = 1 unless defined $useviewYZ; # (0 or 1)
+
+$min_trk_dist    = 10 unless defined $min_trk_dist; # if <0 --> use default (mm)
 
 #$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
 $inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
@@ -63,7 +71,7 @@ while($irun < $nruns) { # loop over the jobs
     $evt_first = $first_expt + $irun * $nexpts;
     
     $newtag = "$tag";
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $tag $detector $debug";
+    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$tag $detector $debug $useviewXY $useviewXZ $useviewYZ $min_trk_dist";
     $command = "$arguments";
     
     print "\n";
@@ -84,7 +92,7 @@ while($irun < $nruns) { # loop over the jobs
 	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
 	print PBS "$command \n";
 	close(PBS);	
-	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
+	`qsub -q short -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
     }
     if($resource eq "interactive") {
 	system($command);

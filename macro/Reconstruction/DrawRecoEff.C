@@ -7,7 +7,7 @@ void DrawRecoEff
   )
 {
 
-  const int NFiles = 4;
+  const int NFiles = 5;
   string infilename[NFiles] = {
     "prova_Evt0_NEvt30000_SuperFGD.root",
     //"prova_Evt0_NEvt30000_SuperFGD_PEX0.root",
@@ -15,15 +15,17 @@ void DrawRecoEff
     "prova_Evt0_NEvt30000_SuperFGD_PEZ0.root",
     //"prova_Evt0_NEvt30000_SuperFGD_PEY0_FGDlike.root",
     //"prova_Evt0_NEvt30000_SuperFGD_PEZ0_FGDlike.root",
-    "prova_Evt0_NEvt30000_SuperFGD_PEZ0_FGDlike_CutLengthZ.root"
+    //"prova_Evt0_NEvt30000_SuperFGD_PEZ0_FGDlike_CutLengthZ.root",
+    "FGDlike_Evt0_NEvt30000.root",
+    "FGDlike_Evt0_NEvt30000_RecoThetaCut.root"
   };
   
   int color[NFiles] = {
     kBlue,
     kRed,
     kGreen,
-    kOrange
-    //kCyan
+    kOrange,
+    kCyan
   };
 
   TString label[NFiles] = {
@@ -31,8 +33,10 @@ void DrawRecoEff
     //"SuperFGD - # pe X = 0",
     "SuperFGD - # pe Y = 0",
     "SuperFGD - # pe Z = 0",
-    //"FGDlike  - # pe Y = 0",
-    "FGDlike  - # pe Z = 0"
+    //"FGDlike - # pe Y = 0",
+    //"FGD fake - # pe Z = 0",
+    "FGD real - # pe Y = 0",
+    "FGD real - # pe Y = 0 - #theta cut"
   };
 
   

@@ -5,11 +5,11 @@
 //                                                              //
 // TODO GENERAL:                                                //
 // - use floats instead of doubles                              //
-// - other TODOs along the code                                 // 
-// - apply cut on track length                                  // 
-// - apply cut on FV                                            //
+// - other TODOs along the code --> DONE                        // 
+// - apply cut on track length --> DONE                         // 
+// - apply cut on FV --> DONE                                   //
 // - use TSpline3 instead of TF1 --> DONE                       //
-// - don't use Birk for neutrons?                               // 
+// - don't use Birk for neutrons? --> DONE                      // 
 // - Add Poisson fluct to response                              //
 // - Ereco and momentum                                         //
 // - Fill the TND280UpRecoTrack class w/ MPPC hits (not needed) //
@@ -28,6 +28,7 @@
 #include <TCanvas.h>
 #include <TF1.h>
 #include <TMath.h>
+#include <TStopwatch.h>
 
 #include <iostream>
 #include <fstream>
@@ -38,6 +39,7 @@
 #include "ND280UpPID.hh"
 
 #include "TND280UpEvent.hh"
+#include "TND280UpVertex.hh"
 #include "TND280UpRecoEvent.hh"
 #include "TND280UpRecoTrack.hh"
 
@@ -58,7 +60,7 @@ inline int FindIndex(vector<int> vec,int val){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &mycosth){
+inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &mycosth,double &mylength){
   int NTracks = event->GetNTracks();
 
   bool foundtrack = false;
@@ -76,8 +78,8 @@ inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &myc
     double dirY = nd280UpTrack->GetInitMom().Y() / mom;
     double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
     double costheta = dirZ;
-
-    TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(0);
+    
+    int NPoints = nd280UpTrack->GetNPoints();
     
     //cout << "trkid: " << trkID
     //<< ",pdg: " << pdg 
@@ -88,8 +90,18 @@ inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &myc
     //<< endl;
 
     if(mytrkid==trkID){
+
+      double length = 0.;
+      //for(int ipt=0;ipt<NPoints;ipt++){
+      //TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);
+      //string detname = nd280UpTrackPoint->GetLogVolName();
+      //cout << detname << " --> " << nd280UpTrackPoint->GetStepLength() << endl;
+      //length += nd280UpTrackPoint->GetStepLength();
+      //}
+      
       mymom = mom;
       mycosth = costheta;
+      mylength = length;
       foundtrack = true;
     }
   }
@@ -175,7 +187,7 @@ double Likelihood_Elec(double *pe,double *par){
 int main(int argc,char** argv)
 {   
 
-  if (argc!=7){   // batch mode                                        
+  if (argc!=11){   // batch mode                                        
     cout << "You need to provide the following arguments:" << endl;
     cout << " 1) input ROOT file name (from GEANT4 simulation) " << endl;
     cout << " 2) first event number to run" << endl;
@@ -183,6 +195,10 @@ int main(int argc,char** argv)
     cout << " 4) the tag for the output file name" << endl;
     cout << " 5) detector ID: 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI" << endl;
     cout << " 6) set debug option" << endl;
+    cout << " 7) use view XY (0 or 1)" << endl;
+    cout << " 8) use view XZ (0 or 1)" << endl;
+    cout << " 9) use view YZ (0 or 1)" << endl;
+    cout << " 10) Minimum track distance (if <=0 use default)" << endl;
     exit(1);
   }
   
@@ -192,6 +208,12 @@ int main(int argc,char** argv)
   string tag = argv[4];
   const int detectorID = atoi(argv[5]);
   const int DEBUG = atoi(argv[6]);
+  const int UseViewXY = atoi(argv[7]);
+  const int UseViewXZ = atoi(argv[8]);
+  const int UseViewYZ = atoi(argv[9]);
+  const double MinSeparation = atof(argv[10]); // if <0 --> use the default one
+  
+  //
   
   const int NEvtDisplTot = 10; //atoi(argv[5]); // max # of evt. displays 
 
@@ -207,13 +229,13 @@ int main(int argc,char** argv)
   vector<int>   fRecoTrack_ID;
   vector<int>   fRecoTrack_PDG;
   vector<int>   fRecoTrack_ParentID;
-  vector<double> fRecoTrack_len;
-  vector<double> fRecoTrack_edep;
   vector<bool> fRecoTrack_outfv;
   vector<bool> fRecoTrack_isreco;
   vector<double> fRecoTrack_reco_costh;
   vector<double> fRecoTrack_reco_mom;
-  
+  vector<double> fRecoTrack_reco_length;
+  vector<double> fRecoTrack_true_length;
+
   vector< vector< vector<double> > > fRecoTrack_hitXY; // track< hit< (pos,edep) > >  
   //vector< vector<double*> > fRecoTrack_hitXZ;
   //vector< vector<double*> > fRecoTrack_hitYZ;
@@ -223,7 +245,11 @@ int main(int argc,char** argv)
   TCanvas *cMPPCHits_XZ[NEvtDisplTot]; 
   TCanvas *cMPPCHits_YZ[NEvtDisplTot];
 
+  //
   // Declare histograms
+  //
+
+  // Event displays
 
   TH2F *hMPPCHits_XY[NEvtDisplTot]; 
   TH2F *hMPPCHits_XZ[NEvtDisplTot]; 
@@ -231,8 +257,35 @@ int main(int argc,char** argv)
   TH1F *hPEVsTime_x[NEvtDisplTot]; 
   TH1F *hPEVsTime_y[NEvtDisplTot]; 
   TH1F *hPEVsTime_z[NEvtDisplTot]; 
+
+  // Track measurement resolutions
+
+  TH2F * hMuon_CosTh_TrueVsReco = new TH2F("hMuon_CosTh_TrueVsReco","Muon CosTheta True Vs Reco",50,-1,+1,50,-1,+1);
+  TH2F * hPion_CosTh_TrueVsReco = new TH2F("hPion_CosTh_TrueVsReco","Pion CosTheta True Vs Reco",50,-1,+1,50,-1,+1);
+  TH2F * hProt_CosTh_TrueVsReco = new TH2F("hProt_CosTh_TrueVsReco","Prot CosTheta True Vs Reco",50,-1,+1,50,-1,+1);
+  TH2F * hElec_CosTh_TrueVsReco = new TH2F("hElec_CosTh_TrueVsReco","Elec CosTheta True Vs Reco",50,-1,+1,50,-1,+1);
   
-  // Declare PDF histograms
+  TH1F * hMuon_CosTh_RecMinTr = new TH1F("hMuon_CosTh_RecMinTr","Muon CosTheta Reco-True",100,-1,+1);
+  TH1F * hPion_CosTh_RecMinTr = new TH1F("hPion_CosTh_RecMinTr","Pion CosTheta Reco-True",100,-1,+1);
+  TH1F * hProt_CosTh_RecMinTr = new TH1F("hProt_CosTh_RecMinTr","Prot CosTheta Reco-True",100,-1,+1);
+  TH1F * hElec_CosTh_RecMinTr = new TH1F("hElec_CosTh_RecMinTr","Elec CosTheta Reco-True",100,-1,+1);
+
+  TH2F * hMuon_Len_TrueVsReco = new TH2F("hMuon_Len_TrueVsReco","Muon Length True Vs Reco",50,0,+3000,50,0,+3000);
+  TH2F * hPion_Len_TrueVsReco = new TH2F("hPion_Len_TrueVsReco","Pion Length True Vs Reco",50,0,+3000,50,0,+3000);
+  TH2F * hProt_Len_TrueVsReco = new TH2F("hProt_Len_TrueVsReco","Prot Length True Vs Reco",50,0,+3000,50,0,+3000);
+  TH2F * hElec_Len_TrueVsReco = new TH2F("hElec_Len_TrueVsReco","Elec Length True Vs Reco",50,0,+3000,50,0,+3000);
+
+  TH1F * hMuon_Len_RecMinTr = new TH1F("hMuon_Len_RecMinTr","Muon Length Reco-True",100,-500,+500);
+  TH1F * hPion_Len_RecMinTr = new TH1F("hPion_Len_RecMinTr","Pion Length Reco-True",100,-500,+500);
+  TH1F * hProt_Len_RecMinTr = new TH1F("hProt_Len_RecMinTr","Prot Length Reco-True",100,-500,+500);
+  TH1F * hElec_Len_RecMinTr = new TH1F("hElec_Len_RecMinTr","Elec Length Reco-True",100,-500,+500);
+
+  TH2F * hMuon_Len_RecMinTr_Vs_TrLen = new TH2F("hMuon_Len_RecMinTr_Vs_TrLen","Muon Length (Reco-True) Vs True",100,-500,+500,50,0,+3000);
+  TH2F * hPion_Len_RecMinTr_Vs_TrLen = new TH2F("hPion_Len_RecMinTr_Vs_TrLen","Pion Length (Reco-True) Vs True",100,-500,+500,50,0,+3000);
+  TH2F * hProt_Len_RecMinTr_Vs_TrLen = new TH2F("hProt_Len_RecMinTr_Vs_TrLen","Prot Length (Reco-True) Vs True",100,-500,+500,50,0,+3000);
+  TH2F * hElec_Len_RecMinTr_Vs_TrLen = new TH2F("hElec_Len_RecMinTr_Vs_TrLen","Elec Length (Reco-True) Vs True",100,-500,+500,50,0,+3000);
+
+  // True phase space and efficiencies
 
   TH2F * hMuon_AllIso_TrMomVsTrCosTh = new TH2F("hMuon_AllIso_TrMomVsTrCosTh","All IsoTarget Muons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hPion_AllIso_TrMomVsTrCosTh = new TH2F("hPion_AllIso_TrMomVsTrCosTh","All IsoTarget Pions True Mom Vs CosTheta",100,0,10000,10,-1,+1);
@@ -261,10 +314,7 @@ int main(int argc,char** argv)
   TH1F * hProt_EffIso_TrCosTh = new TH1F("hProt_EffIso_TrCosTh","Efficiency IsoTarget Protons True CosTheta",10,-1,+1);
   TH1F * hElec_EffIso_TrCosTh = new TH1F("hElec_EffIso_TrCosTh","Efficiency IsoTarget Electrons True CosTheta",10,-1,+1);
 
-  //TH2F * hMuon_CosTh_TrueVsReco = new TH2F("hMuon_CosTh_TrueVsReco","Muon CosTheta True Vs Reco",50,-1,+1);
-  //TH2F * hPion_CosTh_TrueVsReco = new TH2F("hPion_CosTh_TrueVsReco","Pion CosTheta True Vs Reco",50,-1,+1);
-  //TH2F * hProt_CosTh_TrueVsReco = new TH2F("hProt_CosTh_TrueVsReco","Prot CosTheta True Vs Reco",50,-1,+1);
-  //TH2F * hElec_CosTh_TrueVsReco = new TH2F("hElec_CosTh_TrueVsReco","Elec CosTheta True Vs Reco",50,-1,+1);
+  // True PDFs and Like ratio for PID
 
   TH1F * hMuon_Len = new TH1F("hMuon_Len","Muon track length",100,0,2000); // mm 
   TH1F * hPion_Len = new TH1F("hPion_Len","Pion track length",100,0,2000); 
@@ -326,6 +376,8 @@ int main(int argc,char** argv)
   fOutEventTree->Branch("RecoEvent","TND280UpRecoEvent",&fND280UpRecoEvent,128000,0);
   //fOutEventTree->Branch("RecoEvent","TND280UpRecoEvent",&fND280UpRecoEvent,256000,0);
 
+  
+
   /////////////////////////////
   //                         //
   // Apply detector response //
@@ -354,9 +406,11 @@ int main(int argc,char** argv)
   ApplyResponse.SetMPPCProj2D_XZ(h2d_xz);
   ApplyResponse.SetMPPCProj2D_YZ(h2d_yz);
   // FGDlike
-  ApplyResponse.SetDetNameAlongX("/BarScintHoriz");
-  ApplyResponse.SetDetNameAlongY("");
-  ApplyResponse.SetDetNameAlongZ("/BarScintVert");
+  if(DetType == nd280upconv::kFGDlike){
+    ApplyResponse.SetDetNameAlongX("/BarScintHoriz");
+    ApplyResponse.SetDetNameAlongY("");
+    ApplyResponse.SetDetNameAlongZ("/BarScintVert");
+  }
   // SciFi
   //ApplyResponse.SetDetNameAlongX("/FiberScintHoriz");
   //ApplyResponse.SetDetNameAlongY("");
@@ -418,11 +472,24 @@ int main(int argc,char** argv)
   // - apply reconstruction event by event
   //
 
+  TStopwatch sw_event;
+
+  //ND280UpRecoTrack nd280UpRecoTrack; 
+      
   for(int ievt=evtfirst;ievt<=EntryLast;ievt++){ // get last entry
     tinput->GetEntry(ievt);
 
-    if(!(ievt%500)) cout << "Event " << ievt << endl;
 
+    if(!(ievt%500)){
+      cout << "Event " << ievt;
+      sw_event.Stop();
+      //sw_event.Print();
+      double CPUtime = sw_event.CpuTime();
+      sw_event.Reset();
+      sw_event.Start(0);
+      cout << " --> CPU time = " << CPUtime << endl;
+    }
+    
     int EvtID = nd280UpEvent->GetEventID();
     
     // Initialize/Reset variables of reconstructed tracks
@@ -432,12 +499,12 @@ int main(int argc,char** argv)
     fRecoTrack_ID.clear();
     fRecoTrack_ParentID.clear();
     fRecoTrack_PDG.clear();
-    fRecoTrack_len.clear();
-    fRecoTrack_edep.clear();  
     fRecoTrack_outfv.clear();  
     fRecoTrack_isreco.clear();  
     fRecoTrack_reco_costh.clear();  
     fRecoTrack_reco_mom.clear();  
+    fRecoTrack_reco_length.clear();
+    fRecoTrack_true_length.clear();
     fRecoTrack_hitXY.clear();
     for(int i=0;i<fRecoTrack_hitXY.size();i++){
       fRecoTrack_hitXY[i].clear();
@@ -484,6 +551,11 @@ int main(int argc,char** argv)
       cout << "Event: " << ievt << endl;
       cout << "# of hits = " << nd280UpEvent->GetNHits() << endl;
     }
+    
+    //TVector3 truth_first_mchit;
+    // // Get the true vertex position in the WORLD reference system
+    // //TND280UpVertex *nd280UpVertex = nd280UpEvent->GetVertex(0); // only 1 vertex / event
+    // //truth_vtx_pos = nd280UpVertex->GetPosition();
 
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
@@ -505,12 +577,13 @@ int main(int argc,char** argv)
       double lenX = nd280UpHit->GetStopX() - nd280UpHit->GetStartX(); 
       double lenY = nd280UpHit->GetStopY() - nd280UpHit->GetStartY(); 
       double lenZ = nd280UpHit->GetStopZ() - nd280UpHit->GetStartZ(); 
-      double costheta_true = lenZ / sqrt(lenX*lenX + lenY*lenY + lenZ*lenZ);
-      
-      string detname = nd280UpHit->GetDetName();
-      double steplength = nd280UpHit->GetTrackLength();
+     
+      double length_true_mchit = sqrt(lenX*lenX + lenY*lenY + lenZ*lenZ);      
+      double steplength = nd280UpHit->GetTrackLength(); // check how it's calculated in geant4
 
-      if(pdg==22 || pdg==2112) continue; // don't analyze gammas and neutrons
+      string detname = nd280UpHit->GetDetName();
+      
+      //if(pdg==22 || pdg==2112) continue; // don't analyze gammas and neutrons
 
       //cout << "trkid: " << trkid 
       //<< ", pdg = " << pdg 
@@ -530,9 +603,9 @@ int main(int argc,char** argv)
       double pey = ApplyResponse.GetHitPE().y();
       double pez = ApplyResponse.GetHitPE().z();
       
-      //pez = 0;
-      //pex = 0;
-      //pey = 0;
+      if(!UseViewXY) pez = 0;
+      if(!UseViewYZ) pex = 0;
+      if(!UseViewXZ) pey = 0;
 
       double timepex = ApplyResponse.GetHitTime().x();
       double timepey = ApplyResponse.GetHitTime().y();
@@ -543,6 +616,13 @@ int main(int argc,char** argv)
       double poshitZ = ApplyResponse.GetHitPos().z();
       
       trkid = ApplyResponse.GetHitTrkID();            
+      
+      // // Take the true vertex in local system as the position of the first MC hit
+      //if(ihit==0){
+      // //truth_first_mchit = lightPos; 
+      //truth_first_mchit = TVector3(poshitX,poshitY,poshitZ); 
+      //cout << "# pe: " << pex << ", " << pey << ", " << pez << endl;
+      //}
 
       if(ievt<NEvtDisplTot){
 	//hMPPCHits_XY[ievt]->Fill(poshitX,poshitY,pez); // pe along Z
@@ -580,10 +660,12 @@ int main(int argc,char** argv)
 	fRecoTrack_PDG.push_back(pdg);	
 	fRecoTrack_ParentID.push_back(parentid);	
 
+	fRecoTrack_true_length.push_back(0.); // initialized. Sum of hit lenght later
+
 	fRecoTrack_MPPCHit_XY.push_back((TH2F*)h2d_xy->Clone("h2d_xy"));
 	fRecoTrack_MPPCHit_XZ.push_back((TH2F*)h2d_xz->Clone("h2d_xz"));
 	fRecoTrack_MPPCHit_YZ.push_back((TH2F*)h2d_yz->Clone("h2d_yz"));
-  
+
 	vector<double> singleHitXY; // get hit (x,y,pe)
 	singleHitXY.push_back(poshitX);
 	singleHitXY.push_back(poshitY);
@@ -593,7 +675,7 @@ int main(int argc,char** argv)
 	fRecoTrack_hitXY.push_back(hitsXY); // add hit list to trk (1 for each trk)
 	
       }
-    
+      
       // Find vector index of the track
       int idx = FindIndex(fRecoTrack_ID,trkid);
       
@@ -606,12 +688,22 @@ int main(int argc,char** argv)
 	fRecoTrack_hitXY[idx].push_back(infoXY);
 	//cout << fRecoTrack_hitXY[idx][0][2] << endl;
       }
+
+      fRecoTrack_true_length[idx] += length_true_mchit; // initialized to 0 at first mc hit ( if(!used) )
       
+      //if(pdg==13){
+      //cout << "idx: " << idx << " --> " 
+      //<< "poshitX = " << poshitX 
+      //<< ", poshitY = " << poshitY 
+      //<< ", poshitZ = " << poshitZ
+      //<< " --> pex = " << pex << ", pey = " << pey << ", pez = " << pez
+      //<< endl;
+      //}
+
       // Fill the event display
       fRecoTrack_MPPCHit_XY[idx]->Fill(poshitX,poshitY,pez); // pe along Z
       fRecoTrack_MPPCHit_XZ[idx]->Fill(poshitX,poshitZ,pey); // pe along Y
       fRecoTrack_MPPCHit_YZ[idx]->Fill(poshitY,poshitZ,pex); // pe along X            
-
       
     } // end loop over the hits
 
@@ -629,10 +721,9 @@ int main(int argc,char** argv)
     // - fRecoTrack_MPPCHit_YZ: # pe Vs MPPC hit position (YZ)
     // - fRecoTrack_ID: track ID
     // - fRecoTrack_PDG: PDG
-    // - fRecoTrack_len: track length 
-    // - fRecoTrack_edep: track deposited energy 
     // - fRecoTrack_outfv: flag to define track outfv (exiting or entering) 
     // - fRecoTrack_isreco: flag to define reconstructed track 
+    // - fRecoTrack_true_length : true track length (sum of mc hit track lengths)
     //
     
     fND280UpRecoEvent = new TND280UpRecoEvent();
@@ -655,15 +746,78 @@ int main(int argc,char** argv)
 	cout << "Track id: " << trkid << ", ";
 	cout << "PDG: " << pdg << ", ";
 	cout << "ParID: " << parid << ", ";
+	//cout << "First MC hit: " << truth_first_mchit[0] << ", " << truth_first_mchit[1] << ", " << truth_first_mchit[2] << endl;
       }
       
       // Initialize the object for track reconstruction
-      ND280UpRecoTrack nd280UpRecoTrack; // class with reconstruction methods
+      ND280UpRecoTrack nd280UpRecoTrack; 
       nd280UpRecoTrack.SetMPPCXY(fRecoTrack_MPPCHit_XY[itrk]);
       nd280UpRecoTrack.SetMPPCXZ(fRecoTrack_MPPCHit_XZ[itrk]);
-      nd280UpRecoTrack.SetMPPCYZ(fRecoTrack_MPPCHit_YZ[itrk]);      
+      nd280UpRecoTrack.SetMPPCYZ(fRecoTrack_MPPCHit_YZ[itrk]);
+      
+      nd280UpRecoTrack.SetMinPE(2.);
+      
+      if(DetType == nd280upconv::kFGDlike){
+	nd280UpRecoTrack.SetTrackSeparationMin(10); // (mm) min track distance is 1 bar
+      }
+      else if(DetType == nd280upconv::kSuperFGD){
+	nd280UpRecoTrack.SetTrackSeparationMin(10); // (mm) min track distance is 1 cube
+      }      
+      //else if(DetType == nd280upconv::kWAGASCI){
+      //nd280UpRecoTrack.SetTrackSeparationMin(25); // (mm) min track distance is 1 cube
+      //}
+      
+      // use the default separation if the input parameter is  < 0
+      if(MinSeparation>=0.){ 
+	nd280UpRecoTrack.SetTrackSeparationMin(MinSeparation); 
+      }
+
       nd280UpRecoTrack.DoTracking(DetType); // run the tracking process
       
+      
+
+    
+      // Check the track separation
+      // if the reco track is separated from all the other tracks
+      
+      bool isseparated = true;      
+      
+      for(unsigned int itrkoth=0;itrkoth<fRecoTrack_ID.size();itrkoth++){
+	
+	if(itrkoth == itrk) continue; // don't test the separation on the same track
+	
+	// Check separation between current "itrk" and other tracks "itrkoth"
+	
+	TH2F *hEventOth_XY = (TH2F*)fRecoTrack_MPPCHit_XY[itrkoth]->Clone("hEvent_XY");
+	TH2F *hEventOth_XZ = (TH2F*)fRecoTrack_MPPCHit_XZ[itrkoth]->Clone("hEvent_XZ");
+	TH2F *hEventOth_YZ = (TH2F*)fRecoTrack_MPPCHit_YZ[itrkoth]->Clone("hEvent_YZ");
+	
+	nd280UpRecoTrack.SetMPPCXY_Other(hEventOth_XY);
+	nd280UpRecoTrack.SetMPPCXZ_Other(hEventOth_XZ);
+	nd280UpRecoTrack.SetMPPCYZ_Other(hEventOth_YZ);
+
+	nd280UpRecoTrack.DoTrackSeparation();
+		
+	//TCanvas *c = new TCanvas();
+	//hEventOth_XY->Draw("colz");
+	//c->Print("hEventOth_XY.pdf");
+	
+	//hEventOth_XY->Add(fRecoTrack_MPPCHit_XY[itrk]);
+	
+	//TCanvas *c2 = new TCanvas();
+	//hEventOth_XY->Draw("colz");
+	//c2->Print("hEventBoth_XY.pdf");
+	  
+	delete hEventOth_XY; hEventOth_XY = 0;
+	delete hEventOth_XZ; hEventOth_XZ = 0;
+	delete hEventOth_YZ; hEventOth_YZ = 0;
+
+	isseparated = nd280UpRecoTrack.IsSeparated(); 
+	
+	if(!isseparated) break; // if separated with 
+      }
+      
+
       //
       // Get the Reco
       //
@@ -685,7 +839,11 @@ int main(int argc,char** argv)
       
       double mom_true = nd280upconv::kBadNum;
       double costh_true = nd280upconv::kBadNum;
-      FindTruth(nd280UpEvent,trkid,mom_true,costh_true);
+      double lengthSD_true = nd280upconv::kBadNum;
+      
+      FindTruth(nd280UpEvent,trkid,mom_true,costh_true,lengthSD_true);
+      
+      double tracklength_true = fRecoTrack_true_length[itrk];
 
       if(DEBUG){
 	cout << endl;
@@ -695,23 +853,24 @@ int main(int argc,char** argv)
 	cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
 	cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
 	cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
-	cout << " - len: " << trkedep 
-	     << ", edep: " << trklen 
+	cout << " - len: " << trklen
+	     << ", edep: " << trkedep 
 	     << ", costh = " << costh_reco 
 	     << endl;
 	cout << "Truth: " << endl;
 	cout << " - pdg = " << pdg 
 	     << ", mom = " << mom_true
 	     << ", costh = " << costh_true
+	     << ", trk length = " << tracklength_true	 
+	     << ", trk length SD = " << lengthSD_true
 	     << endl;
+	
+	if(!isreco) cout << "Is not reconstructed!!!" << endl;
+	if(isoutfv) cout << "Is outfv!!!" << endl;
+	if(!isseparated) cout << "Is not separated!!!" << endl;
       }
 
 
-
-
-      
-
-    
       
       // TODO: Calculate the reconstructed energy / momentum      
       // TODO: Fill the TND280UpRecoTrack class w/ MPPC hits (see above)
@@ -719,7 +878,7 @@ int main(int argc,char** argv)
 
 
 
-
+    
       //////////////////////////////////////////////////
       //                                              //
       // Fill the Edep/Length PDFs to use for the PID //	
@@ -731,62 +890,93 @@ int main(int argc,char** argv)
       //
 
       if(isreco){
-	if(isoutfv){
+	if(isseparated){
+	  if(isoutfv){
+	    
+	    if(pdg==13){
+	      hMuon_EdepOverLen->Fill(trkedep/trklen);
+	      hMuon_EdepVsLen->Fill(trkedep,trklen);
+	      hMuon_Edep->Fill(trkedep);
+	      hMuon_Len->Fill(trklen);
+	    }
+	    else if(pdg==211){
+	      hPion_EdepOverLen->Fill(trkedep/trklen); 
+	      hPion_EdepVsLen->Fill(trkedep,trklen); 
+	      hPion_Edep->Fill(trkedep); 
+	      hPion_Len->Fill(trklen);
+	    }
+	    else if(pdg==2212){
+	      hProt_EdepOverLen->Fill(trkedep/trklen); 
+	      hProt_EdepVsLen->Fill(trkedep,trklen); 
+	      hProt_Edep->Fill(trkedep); 
+	      hProt_Len->Fill(trklen);
+	    }
+	    else if(pdg==11){
+	      hElec_EdepOverLen->Fill(trkedep/trklen); 
+	      hElec_EdepVsLen->Fill(trkedep,trklen); 
+	      hElec_Edep->Fill(trkedep); 
+	      hElec_Len->Fill(trklen);
+	    }
+	  }
 	  
-	  if(pdg==13){
-	    hMuon_EdepOverLen->Fill(trkedep/trklen);
-	    hMuon_EdepVsLen->Fill(trkedep,trklen);
-	    hMuon_Edep->Fill(trkedep);
-	    hMuon_Len->Fill(trklen);
-	  }
-	  else if(pdg==211){
-	    hPion_EdepOverLen->Fill(trkedep/trklen); 
-	    hPion_EdepVsLen->Fill(trkedep,trklen); 
-	    hPion_Edep->Fill(trkedep); 
-	    hPion_Len->Fill(trklen);
-	  }
-	  else if(pdg==2212){
-	    hProt_EdepOverLen->Fill(trkedep/trklen); 
-	    hProt_EdepVsLen->Fill(trkedep,trklen); 
-	    hProt_Edep->Fill(trkedep); 
-	    hProt_Len->Fill(trklen);
-	  }
-	  else if(pdg==11){
-	    hElec_EdepOverLen->Fill(trkedep/trklen); 
-	    hElec_EdepVsLen->Fill(trkedep,trklen); 
-	    hElec_Edep->Fill(trkedep); 
-	    hElec_Len->Fill(trklen);
-	  }
-	}
+	  else{ // in FV
 
-	else{
-	  if(pdg==13){
-	    hMuon_Stopped_EdepOverLen->Fill(trkedep/trklen);
-	    hMuon_Stopped_EdepVsLen->Fill(trkedep,trklen);
-	    hMuon_Stopped_Edep->Fill(trkedep);
-	    hMuon_Stopped_Len->Fill(trklen);
-	  }
-	  else if(pdg==211){
-	    hPion_Stopped_EdepOverLen->Fill(trkedep/trklen); 
-	    hPion_Stopped_EdepVsLen->Fill(trkedep,trklen); 
-	    hPion_Stopped_Edep->Fill(trkedep); 
-	    hPion_Stopped_Len->Fill(trklen);
-	  }
-	  else if(pdg==2212){
-	    hProt_Stopped_EdepOverLen->Fill(trkedep/trklen); 
-	    hProt_Stopped_EdepVsLen->Fill(trkedep,trklen); 
-	    hProt_Stopped_Edep->Fill(trkedep); 
-	    hProt_Stopped_Len->Fill(trklen);
-	  }
-	  else if(pdg==11){
-	    hElec_Stopped_EdepOverLen->Fill(trkedep/trklen); 
-	    hElec_Stopped_EdepVsLen->Fill(trkedep,trklen); 
-	    hElec_Stopped_Edep->Fill(trkedep); 
-	    hElec_Stopped_Len->Fill(trklen);
-	  }
-	} // if outfv
+	    if(DEBUG){
+	      if(trklen > tracklength_true) cout << "Length: Reco > True !!!" << endl; 
+	    }
+	    
+	    if(pdg==13){
+	      hMuon_Stopped_EdepOverLen->Fill(trkedep/trklen);
+	      hMuon_Stopped_EdepVsLen->Fill(trkedep,trklen);
+	      hMuon_Stopped_Edep->Fill(trkedep);
+	      hMuon_Stopped_Len->Fill(trklen);
+	      
+	      hMuon_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
+	      hMuon_CosTh_RecMinTr->Fill(costh_reco-costh_true);
+	      hMuon_Len_TrueVsReco->Fill(tracklength_true,trklen);
+	      hMuon_Len_RecMinTr->Fill(trklen-tracklength_true);
+	      hMuon_Len_RecMinTr_Vs_TrLen->Fill(trklen-tracklength_true,tracklength_true);
+	    }
+	    else if(pdg==211){
+	      hPion_Stopped_EdepOverLen->Fill(trkedep/trklen); 
+	      hPion_Stopped_EdepVsLen->Fill(trkedep,trklen); 
+	      hPion_Stopped_Edep->Fill(trkedep); 
+	      hPion_Stopped_Len->Fill(trklen);
+	      
+	      hPion_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
+	      hPion_CosTh_RecMinTr->Fill(costh_reco-costh_true);
+	      hPion_Len_TrueVsReco->Fill(tracklength_true,trklen);
+	      hPion_Len_RecMinTr->Fill(trklen-tracklength_true);
+	      hPion_Len_RecMinTr_Vs_TrLen->Fill(trklen-tracklength_true,tracklength_true);
+	    }
+	    else if(pdg==2212){
+	      hProt_Stopped_EdepOverLen->Fill(trkedep/trklen); 
+	      hProt_Stopped_EdepVsLen->Fill(trkedep,trklen); 
+	      hProt_Stopped_Edep->Fill(trkedep); 
+	      hProt_Stopped_Len->Fill(trklen);
+	      
+	      hProt_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
+	      hProt_CosTh_RecMinTr->Fill(costh_reco-costh_true);
+	      hProt_Len_TrueVsReco->Fill(tracklength_true,trklen);
+	      hProt_Len_RecMinTr->Fill(trklen-tracklength_true);
+	      hProt_Len_RecMinTr_Vs_TrLen->Fill(trklen-tracklength_true,tracklength_true);
+	    }
+	    else if(pdg==11){
+	      hElec_Stopped_EdepOverLen->Fill(trkedep/trklen); 
+	      hElec_Stopped_EdepVsLen->Fill(trkedep,trklen); 
+	      hElec_Stopped_Edep->Fill(trkedep); 
+	      hElec_Stopped_Len->Fill(trklen);
+	      
+	      hElec_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
+	      hElec_CosTh_RecMinTr->Fill(costh_reco-costh_true);
+	      hElec_Len_TrueVsReco->Fill(tracklength_true,trklen);
+	      hElec_Len_RecMinTr->Fill(trklen-tracklength_true);
+	      hElec_Len_RecMinTr_Vs_TrLen->Fill(trklen-tracklength_true,tracklength_true);
+	    }
+	  } // if outfv
+	} // if separated
       } // if reco
-      
+    
       
       // Fill the total event display
       if(ievt<NEvtDisplTot){
@@ -817,15 +1007,19 @@ int main(int argc,char** argv)
       fND280UpRecoTrack->SetEdep(trkedep);       
       fND280UpRecoTrack->SetOutFV(isoutfv);
       fND280UpRecoTrack->SetIsReco(isreco);
+      fND280UpRecoTrack->SetIsSeparated(isseparated);
       fND280UpRecoTrack->SetTruthMom(mom_true); 
       fND280UpRecoTrack->SetTruthCosTheta(costh_true);
+      fND280UpRecoTrack->SetTruthLength(tracklength_true);
+      
       //fND280UpRecoTrack->SetRecoCosTheta(costh_true); // TODO!!!
       
       //fND280UpRecoTrack->SetMPPCHit_XY(fRecoTrack_MPPCHit_XY[itrk]); // NOT NEEDED!!! TOO HEAVY!!!
       //fND280UpRecoTrack->SetMPPCHit_XZ(fRecoTrack_MPPCHit_XZ[itrk]); // NOT NEEDED!!! TOO HEAVY!!!
       //fND280UpRecoTrack->SetMPPCHit_YZ(fRecoTrack_MPPCHit_YZ[itrk]); // NOT NEEDED!!! TOO HEAVY!!!	
       
-      fND280UpRecoEvent->AddTrack(fND280UpRecoTrack);
+      fND280UpRecoEvent->AddTrack(fND280UpRecoTrack);	    
+
     }
     
     if(DEBUG){
@@ -836,6 +1030,23 @@ int main(int argc,char** argv)
 
     // Fill the output tree with reco events
     fOutEventTree->Fill(); // This slows down a lot!!!
+    
+
+    
+    // Free the space of all the track histograms
+
+    // for ( vector<TH2F*>::iterator i = fRecoTrack_MPPCHit_YZ.begin(); i != fRecoTrack_MPPCHit_YZ.end(); ++i )
+    //   delete *i;  
+    // for ( vector<TH2F*>::iterator i = fRecoTrack_MPPCHit_XY.begin(); i != fRecoTrack_MPPCHit_XY.end(); ++i )
+    //   delete *i;
+    // for ( vector<TH2F*>::iterator i = fRecoTrack_MPPCHit_XZ.begin(); i != fRecoTrack_MPPCHit_XZ.end(); ++i )
+    //   delete *i;
+
+    for(unsigned int itrk=0;itrk<fRecoTrack_MPPCHit_YZ.size();itrk++){      
+      delete (fRecoTrack_MPPCHit_YZ[itrk]); 
+      delete (fRecoTrack_MPPCHit_XY[itrk]); 
+      delete (fRecoTrack_MPPCHit_XZ[itrk]); 
+    }
     
   } // end loop over events
  
@@ -972,6 +1183,7 @@ int main(int argc,char** argv)
       
       bool isoutfv = fND280UpRecoTrack->IsOutFV();
       bool isreco = fND280UpRecoTrack->IsReco();
+      bool isseparated = fND280UpRecoTrack->IsSeparated();
       
       double edep = fND280UpRecoTrack->GetEdep();
       double range = fND280UpRecoTrack->GetRange();
@@ -981,7 +1193,7 @@ int main(int argc,char** argv)
       double mom_true = fND280UpRecoTrack->GetTruthMom();
       double costheta_true = fND280UpRecoTrack->GetTruthCosTheta();
       double edepoverrange = edep / range;
-
+      
       NTOTALTRACKSALL_2ndLOOP++;
       
       if(DEBUG){
@@ -991,7 +1203,8 @@ int main(int argc,char** argv)
 	     << " costh_true: " << costheta_true << ", mom_true: " << mom_true << ", "
 	     << " len: " << range << ", edep: " << edep << ", edep/len: " << edep/range << endl;	
 	if(isoutfv) cout << ", Track OutFV!!!" << endl;   
-	if(!isreco) cout << ", Track NOT Reconstructed!!!" << endl;   
+	if(!isreco) cout << ", Track NOT Reconstructed!!!" << endl;   	
+	if(!isseparated) cout << ", Track NOT Separated!!!" << endl;   	
       }
 
       
@@ -1020,6 +1233,7 @@ int main(int argc,char** argv)
       }
       
       if(!isreco)  continue;
+      if(!isseparated)  continue;
 
       NTOTALRECO_2ndLOOP++;
 
@@ -1057,7 +1271,7 @@ int main(int argc,char** argv)
       if(pdg==13){
 	//double logratio = nd280UpPID.CalcLogLikeRatio(prob_muon,prob_prot); // use TF1
 	//cout << "logratio(tf1) = " << logratio << ", ";
-	double logratio = nd280UpPID.CalcLogLikeRatio("Muon","Prot",edepoverrange); 	
+	double logratio = nd280UpPID.CalcLogLikeRatio("Muon","Prot",edepoverrange);
 	hLikeRatio_MuProt_TrueMu->Fill(logratio);
      	//cout << "logratio(my) = " << logratio << endl;
       }
@@ -1093,7 +1307,7 @@ int main(int argc,char** argv)
       //nd280UpPID.SetMPPCHit_XZ(hMPPCHits_XZ[ievt]);
       //nd280UpPID.SetMPPCHit_YZ(hMPPCHits_YZ[ievt]);
       //nd280UpPID.SetTrackID();
-    
+            
     } // end loop reco tracks
   } // end loop events
 
@@ -1137,26 +1351,68 @@ int main(int argc,char** argv)
   
   fileout->cd();
 
-  int last = evtfirst+NEvtDisplTot-1;
-  for(int ievtdispl=evtfirst;ievtdispl<=last ;ievtdispl++){ 
+  //int last = evtfirst+NEvtDisplTot-1;
+  int last = evtfirst+Nentries-1;
+  
+  //cout << "evtfirst = " << evtfirst << endl;
+  //cout << "evtlast = " << last << endl;
+  //cout << "NEvtDisplTot = " << NEvtDisplTot << endl;
+  //cout << "Nentries = " << Nentries << endl;
 
+  for(int ievtdispl=evtfirst;ievtdispl<=last ;ievtdispl++){ 
+    
     // Response
 
-    if(hMPPCHits_XY[ievtdispl]->Integral()>0 ||
-       hMPPCHits_XZ[ievtdispl]->Integral()>0 ||
-       hMPPCHits_YZ[ievtdispl]->Integral()>0 ){
-      hMPPCHits_XY[ievtdispl]->Write();  
-      hMPPCHits_XZ[ievtdispl]->Write();  
-      hMPPCHits_YZ[ievtdispl]->Write();
-      cMPPCHits_XY[ievtdispl]->Write();  
-      cMPPCHits_XZ[ievtdispl]->Write();  
-      cMPPCHits_YZ[ievtdispl]->Write();
-      // //hPEVsTime_x[ievtdispl]->Write(); 
-      // //hPEVsTime_y[ievtdispl]->Write(); 
-      // //hPEVsTime_z[ievtdispl]->Write(); 
+    if(ievtdispl<NEvtDisplTot){
+      
+      //cout << "ievtdispl = " << ievtdispl << endl;
+      
+      if(hMPPCHits_XY[ievtdispl]->Integral()>0 ||
+	 hMPPCHits_XZ[ievtdispl]->Integral()>0 ||
+	 hMPPCHits_YZ[ievtdispl]->Integral()>0 ){
+	
+	hMPPCHits_XY[ievtdispl]->Write();  
+	hMPPCHits_XZ[ievtdispl]->Write();  
+	hMPPCHits_YZ[ievtdispl]->Write();
+	//cMPPCHits_XY[ievtdispl]->Write();  
+	//cMPPCHits_XZ[ievtdispl]->Write();  
+	//cMPPCHits_YZ[ievtdispl]->Write();
+	// //hPEVsTime_x[ievtdispl]->Write(); 
+	// //hPEVsTime_y[ievtdispl]->Write(); 
+	// //hPEVsTime_z[ievtdispl]->Write(); 
+      }
+    
     }
   }
 
+
+
+  // Resolution
+
+  hMuon_CosTh_TrueVsReco->Write();
+  hMuon_CosTh_RecMinTr->Write();
+  hMuon_Len_TrueVsReco->Write();
+  hMuon_Len_RecMinTr->Write();
+  hMuon_Len_RecMinTr_Vs_TrLen->Write();
+
+  hPion_CosTh_TrueVsReco->Write();
+  hPion_CosTh_RecMinTr->Write();
+  hPion_Len_TrueVsReco->Write();
+  hPion_Len_RecMinTr->Write();
+  hPion_Len_RecMinTr_Vs_TrLen->Write();
+
+  hProt_CosTh_TrueVsReco->Write();
+  hProt_CosTh_RecMinTr->Write();
+  hProt_Len_TrueVsReco->Write();
+  hProt_Len_RecMinTr->Write();
+  hProt_Len_RecMinTr_Vs_TrLen->Write();
+
+  hElec_CosTh_TrueVsReco->Write();
+  hElec_CosTh_RecMinTr->Write();
+  hElec_Len_TrueVsReco->Write();
+  hElec_Len_RecMinTr->Write();
+  hElec_Len_RecMinTr_Vs_TrLen->Write();
+  
   // PID
 
   hMuon_Edep->Write(); hMuon_Stopped_Edep->Write(); 
@@ -1220,5 +1476,6 @@ int main(int argc,char** argv)
   
   return 0;
 }
+
 
 
