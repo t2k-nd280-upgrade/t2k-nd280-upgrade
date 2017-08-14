@@ -25,13 +25,6 @@ nueCCSelection::nueCCSelection(bool forceBreak): SelectionBase(forceBreak,EventB
   sprintf(filename, "%s/data/ECalPID.root", getenv("NUECCANALYSISROOT"));
   _file_ECAL_PDF = TFile::Open(filename);
 
-  // Get charge confusion splines
-  sprintf(filename, "%s/data/FGD_1_ChargeConfusion_TrueMom.root", getenv("NUECCANALYSISROOT"));
-  _file_charge_confusion_1 = TFile::Open(filename);
-  
-  sprintf(filename, "%s/data/FGD_2_ChargeConfusion_TrueMom.root", getenv("NUECCANALYSISROOT"));
-  _file_charge_confusion_2 = TFile::Open(filename);
-
   // Ecal
   _ECal_reco_eff = new BinnedParams(std::string(getenv("NUECCANALYSISROOT")) + "/data",
 				    "ECal_recoEff", BinnedParams::k1D_SYMMETRIC); 
@@ -69,9 +62,6 @@ void nueCCSelection::DefineSteps(){
   // ToF info
   AddStep(StepBase::kAction, "ToF",                   new ToF_senseDetermination());
 
-  // for tracks with cos theta < 0 check the ToF
-  AddStep(StepBase::kCut,    "ToF BWD tracks",        new ToF_BWD_cut());
-
   // TPC+ECal PID
   AddStep(StepBase::kCut,    "TPC Electron PID Cut",  new TPCElectronPID());
   AddStep(StepBase::kCut,    "ECal PID Cut",          new ECal_PID(_file_ECAL_PDF));
@@ -83,6 +73,9 @@ void nueCCSelection::DefineSteps(){
 
   // TPC Veto
   AddStep(StepBase::kCut,    "TPC Veto Cut",          new TPCVeto());
+
+  // ECal Veto
+  AddStep(StepBase::kCut,    "ECal Veto Cut",         new ECalVeto());
 
   SetBranchAlias(0,  "CCNuE Inclusive");
   //SetPreSelectionAccumLevel(0);
@@ -172,46 +165,7 @@ bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
   //std::cout << "vertex" << std::endl;
 
   AnaTrueParticleB* trueTrack = NULL;
-  // TODO understand why there are no tracks with ParentID == EleID
-  //std::cout << box.TrueVertex->TrueParticlesVect.size() << std::endl;
-  /*for (int i = 0; i < box.TrueVertex->TrueParticlesVect.size(); i++) {
-    if (abs(box.TrueVertex->TrueParticlesVect[i]->PDG) == 11 && box.TrueVertex->TrueParticlesVect[i]->ParentID == 0) {
-      trueTrack = static_cast<AnaTrueParticleB*>(box.TrueVertex->TrueParticlesVect[i]);
-      if (trueTrack) 
-        break;
-    }
-  }
 
-  if (!trueTrack)
-    return true;
-  //std::cout << "true track" << std::endl;
-
-  // save the ID of the electron track
-  Int_t EleID = trueTrack->ID;
-
-  // loop over all true track in the event, searching for the electron daughter
-  //std::cout << eventB.nTrueParticles << std::endl;
-  for (Int_t i = 0; i < eventB.nTrueParticles; ++i) {
-    if (!eventB.TrueParticles[i])
-      continue;
-    //std::cout << eventB.TrueParticles[i]->ParentID << "   " << EleID << std::endl;
-    if (eventB.TrueParticles[i]->PDG == 22) {
-      std::cout << "ID   "<< eventB.TrueParticles[i]->ParentID << "   " << eventB.TrueParticles[i]->GParentID << "    " << trueTrack->ID << std::endl;
-      std::cout << "PDG  "<< eventB.TrueParticles[i]->ParentPDG <<"   " << eventB.TrueParticles[i]->GParentPDG <<"    " << eventB.TrueParticles[i]->PDG << std::endl;
-      std::cout << "Position " << eventB.TrueParticles[i]->Position[2] << "     Vertex " << box.TrueVertex->Position[2] << std::endl;
-    }
-    for (Int_t j = 0; j < eventB.nTrueParticles; ++j) {
-      if (!eventB.TrueParticles[j])
-        continue;
-      if (eventB.TrueParticles[i]->ParentID ==  eventB.TrueParticles[j]->ID && eventB.TrueParticles[i]->PDG == 22)
-        std::cout << "FOUND" << eventB.TrueParticles[j]->PDG << std::endl;
-    }
-    if (eventB.TrueParticles[i]->ParentID == EleID || eventB.TrueParticles[i]->GParentID == EleID) {
-      box.daughterPDG = eventB.TrueParticles[i]->PDG;
-      std::cout << "OK" << std::endl;
-      break;
-    }
-  }*/
   return true;
 }
 
@@ -223,21 +177,6 @@ bool TotalMultiplicityCut::Apply(AnaEventC& event, ToyBoxB& box) const{
   
   // Check we have at least one reconstructed track in the FGD
   EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
-
-  /*std::cout << "call TotalMultiplicityCut" << std::endl;
-  std::cout << "Detector = " << useTarget1 << useTarget2 << useFGD1 << useFGD2 << std::endl;
-  
-  std::cout << EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1] << "  " << 
-  EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2] << "  " << 
-  EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD1] << "  " << 
-  EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD2] << "  " << std::endl;
-
-  //std::cout << "FV " << sel().GetDetectorFV() << std::endl;
-
-  std::cout << "return  " << ((useTarget1 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]>0) ||
-    (useTarget2 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2]>0) ||
-    (useFGD1    && EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD1]>0   ) ||
-    (useFGD2    && EventBox->nRecObjectsInGroup[EventBox::kTracksWithFGD2]>0   )) << std::endl;*/
   
   return ((useTarget1 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget1]>0) ||
 	  (useTarget2 && EventBox->nRecObjectsInGroup[EventBox::kTracksWithTarget2]>0) ||
@@ -357,6 +296,31 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   //cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
   else return false;  
 
+  //========================
+  // Look at the energy loss in target
+  //========================
+  AnaTrueParticleB* trueTrack = static_cast<AnaTrueParticleB*>(cc4pibox->MainTrack->GetTrueParticle());
+  if (trueTrack) {
+
+    for (Int_t j = 0; j < trueTrack->DetCrossingsVect.size(); ++j) {
+      if (anaUtils::InFiducialVolume(SubDetId::kTarget1,trueTrack->DetCrossingsVect[j]->EntrancePosition)) {
+        Float_t endMom= sqrt(pow(trueTrack->DetCrossingsVect[j]->ExitMomentum[0], 2)
+                         + pow(trueTrack->DetCrossingsVect[j]->ExitMomentum[1], 2)
+                         + pow(trueTrack->DetCrossingsVect[j]->ExitMomentum[2], 2));
+
+        Float_t StartMom = sqrt(pow(trueTrack->DetCrossingsVect[j]->EntranceMomentum[0], 2)
+                         + pow(trueTrack->DetCrossingsVect[j]->EntranceMomentum[1], 2)
+                         + pow(trueTrack->DetCrossingsVect[j]->EntranceMomentum[2], 2));
+      
+        cc4pibox->Mom_Target_start  = StartMom;
+        cc4pibox->Mom_Target_end    = endMom;
+        cc4pibox->Target_length     = trueTrack->DetCrossingsVect[j]->SegLength;
+        cc4pibox->Target_dE         = sqrt(StartMom*StartMom + 0.511*0.511) - sqrt(endMom*endMom + 0.511*0.511);
+        break;
+      }
+    }
+  }
+
   // Protection
   if(cc4pibox->MainTrack->SmearedMomentum <= 0.0) return false;
   
@@ -373,23 +337,31 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
       cc4pibox->TPCVetoTrack = track;
     else{
       if(track->SmearedMomentum > cc4pibox->TPCVetoTrack->SmearedMomentum)
-	cc4pibox->TPCVetoTrack = track;
+        cc4pibox->TPCVetoTrack = track;
     }
   }
 
   //========================
   // Find ECal veto track
   //========================
-  AnaTrackB* ecalonlytracks[500];
-  Int_t nEcalOnly = anaUtils::GetAllTracksUsingOnlyDet(static_cast<const AnaEventB&> (event), SubDetId::kBrlECal, ecalonlytracks);
-  for(Int_t i=0; i<nEcalOnly; i++){
-    AnaTrackB* ecaltrack = ecalonlytracks[i];
+  AnaTrackB* ecaltracks[500];
+  // TODO understand if we need ECal only or ECal using tracks. Need OOFV samples for this
+  Int_t nEcal = anaUtils::GetAllTracksUsingOnlyDet(static_cast<const AnaEventB&> (event), SubDetId::kBrlECal, ecaltracks);
+  //Int_t nEcal = anaUtils::GetAllTracksUsingDet(static_cast<const AnaEventB&> (event), SubDetId::kECal, ecaltracks);
+  for(Int_t i=0; i<nEcal; i++){
+    AnaTrackB* ecaltrack = ecaltracks[i];
     if(ecaltrack->PositionStart[2] == -999) continue;
-    if(!cc4pibox->ECalVetoTrack)
-      cc4pibox->ECalVetoTrack = ecaltrack;
-    else{
-      if(ecaltrack->PositionStart[2] < cc4pibox->ECalVetoTrack->PositionStart[2])
-	cc4pibox->ECalVetoTrack = ecaltrack;
+
+    for (Int_t j = 0; j < ecaltrack->nECalSegments; ++j) {
+      if (!ecaltrack->ECalSegments[j]->IsReconstructed)
+        continue;
+
+      if(!cc4pibox->ECalVetoTrack)
+        cc4pibox->ECalVetoTrack = ecaltrack->ECalSegments[j];
+      else{
+        if(ecaltrack->ECalSegments[j]->PositionStart[2] < cc4pibox->ECalVetoTrack->PositionStart[2])
+          cc4pibox->ECalVetoTrack = ecaltrack->ECalSegments[j];
+      }
     }
   }
 
@@ -531,22 +503,10 @@ bool TPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
 }
 
 //**************************************************
-bool ToF_BWD_cut::Apply(AnaEventC& event, ToyBoxB& box) const{
-  //**************************************************
-  (void)event;
-  
-  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-
-  if (!cc4pibox->MainTrack)
-    return false;
-
-  return (!conf || cc4pibox->MainTrack->DirectionStart[2] > 0 || cc4pibox->main_ToF > 0);
-}
-
-//**************************************************
 bool TPCElectronPID::Apply(AnaEventC& event, ToyBoxB& box) const{
   //**************************************************
   (void)event;
+  // TODO implement pull cuts
   
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
 
@@ -716,6 +676,21 @@ bool TPCVeto::Apply(AnaEventC& event, ToyBoxB& box) const{
 }
 
 //**************************************************
+bool ECalVeto::Apply(AnaEventC& event, ToyBoxB& box) const{
+  //**************************************************
+  (void)event;
+  
+  ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+
+  if(!cc4pibox->ECalVetoTrack) return true;
+
+  Float_t DZ = cc4pibox->ECalVetoTrack->PositionStart[2] - cc4pibox->MainTrack->PositionStart[2];
+
+  return (DZ > DeltaZ);
+
+}
+
+//**************************************************
 bool ToF_senseDetermination::Apply(AnaEventC& event, ToyBoxB& boxB) const{
   //**************************************************
   
@@ -724,49 +699,22 @@ bool ToF_senseDetermination::Apply(AnaEventC& event, ToyBoxB& boxB) const{
   ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
   if (!box->MainTrack) return false;
 
-  AnaParticleB *p1=0, *p2=0;
-  float sigma=0;
-  // Get the ToF and sgment with maximum t/dt
-  Float_t ToF = anaUtils::GetToF(box->MainTrack, p1, p2, sigma, _randomGen, true);
-
-  if (ToF == -999 || !p1 || !p2)
-    return false;
-
-  // save ToF
-  box->main_ToF      = ToF;
-
-  // save true ToF
-  Float_t true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
-  box->main_ToF_true = true_ToF;
-
-  // calculate the track length between segment with t/dt
-  Float_t sigma_length;
-  Float_t length      = anaUtils::GetLength(box->MainTrack, p1, p2, sigma_length, _randomGen, true);
-  Float_t true_length = anaUtils::GetLength(box->MainTrack, p1, p2, sigma_length, _randomGen, false);
-
+  AnaTrackB* track = static_cast<AnaTrackB*>(box->MainTrack);
   Float_t true_mom = box->MainTrack->GetTrueParticle()->Momentum;
-  Float_t mom = box->MainTrack->SmearedMomentum;
-  if (fabs(true_mom-mom)<1e-3)
-    mom = _randomGen->Gaus(true_mom, 0.10*true_mom);
-
-  // store detectors used
-  SubDetId::SubDetEnum det1, det2;
-  anaUtils::GetToFdetectors(p1, p2, det1, det2);
-  box->FirstToF  = det1;
-  box->SecondToF = det2;
 
   // store beta value
   double c = 299.792458; // mm/ns
-  box->beta_ToF       = length / (c*ToF);
-  box->beta_true_ToF  = true_length / (c*true_ToF);
+  box->beta_ToF       = track->ToF_reco_length / (c * track->ToF_reco_time);
+  box->beta_true_ToF  = track->ToF_true_length / (c * track->ToF_true_time);
 
   // store ToF mass
-  box->ToF_mass      = anaUtils::ComputeToFMass(mom,      ToF,      length);
-  box->ToF_true_mass = anaUtils::ComputeToFMass(true_mom, true_ToF, true_length);
+  box->ToF_mass      = anaUtils::ComputeToFMass(track->SmearedMomentum,      track->ToF_reco_time,      track->ToF_reco_length);
+  box->ToF_true_mass = anaUtils::ComputeToFMass(true_mom,                    track->ToF_true_time,      track->ToF_true_length);
 
   // get Llh
   Float_t ToF_llh[4];
-  anaUtils::GetToFLikelihood(mom, box->MainTrack->MomentumError, ToF, sigma, length, sigma_length, ToF_llh, _randomGen, true);
+  anaUtils::GetToFLikelihood(track->SmearedMomentum, track->MomentumError, track->ToF_reco_time, 
+                             track->ToF_sigma_time, track->ToF_reco_length, track->ToF_sigma_length, ToF_llh, true);
 
   // store Llh
   box->ToF_lkl_muon     = ToF_llh[0];
