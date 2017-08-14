@@ -21,18 +21,10 @@
 nueCCSelection::nueCCSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
   //********************************************************************
 
+  // TODO move to hifhkandIO
   char filename[256];
   sprintf(filename, "%s/data/ECalPID.root", getenv("NUECCANALYSISROOT"));
   _file_ECAL_PDF = TFile::Open(filename);
-
-  // Ecal
-  _ECal_reco_eff = new BinnedParams(std::string(getenv("NUECCANALYSISROOT")) + "/data",
-				    "ECal_recoEff", BinnedParams::k1D_SYMMETRIC); 
-  
-  _ECal_FGDmatch_eff = new BinnedParams(std::string(getenv("NUECCANALYSISROOT")) + "/data",
-					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC); 
-
-  _randomGen = new TRandom3();
   
 }
 

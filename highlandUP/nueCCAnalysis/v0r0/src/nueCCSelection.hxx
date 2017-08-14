@@ -42,13 +42,7 @@ public:
   bool CheckRedoSelection(const AnaEventC& event, const ToyBoxB& PreviousToyBox, Int_t& redoFromStep);
 
 private:
-  BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
-  TFile *_file_ECAL_PDF;
-  TRandom3 *_randomGen;
-  
-  TFile *_file_charge_confusion_1;
-  TFile *_file_charge_confusion_2;
-  
+  TFile *_file_ECAL_PDF;  
 };
 
 class ToyBoxCC4pi: public ToyBoxNDUP{
