@@ -4,8 +4,8 @@
  
  < nueCCAnalysis.EnableTarget1 = 1 >
  < nueCCAnalysis.EnableTarget2 = 0 >
- < nueCCAnalysis.EnableFGD1 = 0 >
- < nueCCAnalysis.EnableFGD2 = 0 >
+ < nueCCAnalysis.EnableFGD1 = 1 >
+ < nueCCAnalysis.EnableFGD2 = 1 >
 
  < nueCCAnalysis.MinAccumLevelToSave = 7 >
 
@@ -24,6 +24,6 @@
 
  < nueCCAnalysis.TPCVetoDeltaZ = -30.0 >
 
- < nueCCAnalysis.ApplyChargeConfusion = 1 >
+ < nueCCAnalysis.ECalVetoDeltaZ = -100.0 >
 
- < nueCCAnalysis.SelectCharge = -1 >
+ < nueCCAnalysis.SelectCharge = +1 >
