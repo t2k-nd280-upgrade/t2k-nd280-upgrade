@@ -120,6 +120,8 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddVarI(output(),     selelec_second_ToF,         "");
   AddVarF(output(),     Beta_ToF,                   "");
   AddVarF(output(),     Beta_true_ToF,              "");
+  AddVarF(output(),     selelec_ToF,                "");
+  AddVarF(output(),     selelec_ToF_true,           "");
   AddVarF(output(),     selelec_ToF_mass,           "");
   AddVarF(output(),     selelec_ToF_true_mass,      "");
   AddVarF(output(),     selelec_ToF_lkl_muon,       "");
@@ -144,6 +146,7 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddVarF(output(),     selelec_mom,            "");
   AddVarF(output(),     selelec_truemom,        "");
   AddVarF(output(),     selelec_truecostheta,   "");
+  AddVarI(output(),     selelec_stopped,        "");
   AddVar4VF(output(),   selelec_truepos,        "");
   AddVar4VF(output(),   selelec_trueendpos,     "");
   AddVar3VF(output(),   selelec_truedir,        "");
@@ -158,6 +161,11 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddVar4VF(output(),   selelec_endpos,         "");
   AddVarI(output(),     selelec_longestTPC,     "");
   AddVarF(output(),     selelec_dedx_tpc,       "");
+
+  AddVarF(output(),     true_target_end_mom,       "");
+  AddVarF(output(),     true_target_length,        "");
+  AddVarF(output(),     true_target_dE,            "");
+  AddVarF(output(),     true_target_start_mom,     "");
 
   //--- ECal
   AddVarF(output(),     selelec_ecal_mipem,     "");
@@ -210,7 +218,6 @@ void nueCCAnalysis::DefineTruthTree(){
   AddVarI(output(),   true_det,              "true detector"); 
   AddVarI(output(),   true_pdg,              "pdg");
   AddVarF(output(),   true_SDlength,         "SD length");
-  AddVarF(output(),   true_Edep,             "Edeposit");
   AddVarF(output(),   true_mom,              "mom");
   AddVarF(output(),   true_costheta,         "costheta");
   AddVarF(output(),   true_phi,              "phi");
@@ -273,6 +280,11 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selelec_PDG,                       cc4pibox().MainTrack->GetTrueParticle()->PDG);
     output().FillVar(selelec_truemom,                   cc4pibox().MainTrack->GetTrueParticle()->Momentum);
     output().FillVar(selelec_truecostheta,              cc4pibox().MainTrack->GetTrueParticle()->CosTheta);
+    output().FillVar(selelec_stopped,                   cc4pibox().MainTrack->GetTrueParticle()->stopped);
+    output().FillVar(true_target_length,                cc4pibox().Target_length);
+    output().FillVar(true_target_end_mom,               cc4pibox().Mom_Target_end);
+    output().FillVar(true_target_start_mom,             cc4pibox().Mom_Target_start);
+    output().FillVar(true_target_dE,                    cc4pibox().Target_dE);
     output().FillVectorVarFromArray(selelec_truedir,    cc4pibox().MainTrack->GetTrueParticle()->Direction, 3);
     output().FillVectorVarFromArray(selelec_truepos,    cc4pibox().MainTrack->GetTrueParticle()->Position, 4);
     output().FillVectorVarFromArray(selelec_trueendpos, cc4pibox().MainTrack->GetTrueParticle()->PositionEnd, 4);
@@ -337,10 +349,12 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
     }
 
     // ToF
-    output().FillVar(selelec_first_ToF,                cc4pibox().FirstToF);
-    output().FillVar(selelec_second_ToF,               cc4pibox().SecondToF);
+    output().FillVar(selelec_first_ToF,                track->ToF_firstDet);
+    output().FillVar(selelec_second_ToF,               track->ToF_secondDet);
     output().FillVar(Beta_ToF,                         cc4pibox().beta_ToF);
     output().FillVar(Beta_true_ToF,                    cc4pibox().beta_true_ToF);
+    output().FillVar(selelec_ToF,                      track->ToF_reco_time);
+    output().FillVar(selelec_ToF_true,                 track->ToF_true_time);
     output().FillVar(selelec_ToF_mass,                 cc4pibox().ToF_mass);
     output().FillVar(selelec_ToF_true_mass,            cc4pibox().ToF_true_mass);
     output().FillVar(selelec_ToF_lkl_muon,             cc4pibox().ToF_lkl_muon);
@@ -490,7 +504,6 @@ void nueCCAnalysis::FillTruthTree(const AnaTrueVertex& vtx) {
     output().FillVar(true_parentID, trueTrack->ParentID);
     output().FillVar(truelepton_PDG, trueTrack->PDG);
     output().FillVar(true_mom, trueTrack->Momentum);
-    output().FillVar(true_Edep, trueTrack->EDeposit);
     output().FillVar(true_SDlength, trueTrack->Length);
     output().FillVar(true_costheta, trueTrack->CosTheta);
     output().FillVar(true_ekin, trueTrack->EKin);
