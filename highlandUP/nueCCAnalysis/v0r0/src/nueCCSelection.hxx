@@ -97,6 +97,8 @@ public:
     daughterPDG = -999;
     beta_ToF = beta_true_ToF = -999.;
     FirstToF = SecondToF = SubDetId::kInvalid;
+
+    Mom_Target_end = Target_length = Mom_Target_start = Target_dE = -999.;
   }
 
   virtual ~ToyBoxCC4pi(){}
@@ -106,6 +108,12 @@ public:
   AnaTrackB* MainTrack;
   std::vector<AnaTrackB*> TPCTracks, ECalTracks;
   SubDetId::SubDetEnum TPC_det;
+
+  /// Energy loss in target
+  Float_t Mom_Target_start;
+  Float_t Mom_Target_end;
+  Float_t Target_length;
+  Float_t Target_dE;
 
   /// ToF vars
   float main_ToF, main_ToF_true;
@@ -117,8 +125,7 @@ public:
   /// detectors that were used for the ToF calculations
   SubDetId::SubDetEnum FirstToF, SecondToF;
 
-  Int_t daughterPDG;
-  
+  Int_t daughterPDG;  
 
   float InvariantMass;
   int NFarTracks, NNearTracks;
@@ -130,7 +137,7 @@ public:
   AnaTrackB* TPCVetoTrack;
 
   /// Ecal veto track
-  AnaTrackB* ECalVetoTrack;
+  AnaECalParticleB* ECalVetoTrack;
   
 };
 
@@ -216,18 +223,6 @@ public:
   StepBase* MakeClone(){return new TPC_Quality();}
 };
 
-class ToF_BWD_cut: public StepBase{
-public:
-  ToF_BWD_cut() {
-    conf = (Int_t)ND::params().GetParameterI("nueCCAnalysis.Configuration");
-  }
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& box) const;
-  StepBase* MakeClone(){return new ToF_BWD_cut();}
-private:
-  Int_t conf;
-};
-
 class TPCElectronPID: public StepBase{
 public:
   TPCElectronPID() {
@@ -264,6 +259,19 @@ public:
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new TPCVeto();}
+  
+private:
+  Float_t DeltaZ;
+};
+
+class ECalVeto: public StepBase{
+public:
+  ECalVeto() {
+    DeltaZ = (Float_t)ND::params().GetParameterD("nueCCAnalysis.ECalVetoDeltaZ");
+  };
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& box) const;
+  StepBase* MakeClone(){return new ECalVeto();}
   
 private:
   Float_t DeltaZ;
