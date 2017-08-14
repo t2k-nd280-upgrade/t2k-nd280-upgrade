@@ -18,10 +18,23 @@ public:
   
   ND280UpRecoTrack();
   ~ND280UpRecoTrack();
+
+  //void SetMPPCXY(TH2F *h){f2d_xy = new TH2F(*h);}
+  //void SetMPPCXZ(TH2F *h){f2d_xz = new TH2F(*h);} 
+  //void SetMPPCYZ(TH2F *h){f2d_yz = new TH2F(*h);}
+  //void SetMPPCXY(TH2F *h){h->Copy(*f2d_xy);}
+  //void SetMPPCXZ(TH2F *h){h->Copy(*f2d_xz);} 
+  //void SetMPPCYZ(TH2F *h){h->Copy(*f2d_yz);}  
+  //void SetMPPCXY(TH2F *h){f2d_xy=(TH2F*)h->Clone("f2d_xy");} // TODO: Use Clone
+  //void SetMPPCXZ(TH2F *h){f2d_xz=(TH2F*)h->Clone("f2d_xz");} // TODO: Use Clone
+  //void SetMPPCYZ(TH2F *h){f2d_yz=(TH2F*)h->Clone("f2d_yz");} // TODO: Use Clone
+  void SetMPPCXY(TH2F *h){f2d_xy=h;} // TODO: Use Clone
+  void SetMPPCXZ(TH2F *h){f2d_xz=h;} // TODO: Use Clone
+  void SetMPPCYZ(TH2F *h){f2d_yz=h;} // TODO: Use Clone
   
-  void SetMPPCXY(TH2F *h){f2d_xy=h;}
-  void SetMPPCXZ(TH2F *h){f2d_xz=h;}
-  void SetMPPCYZ(TH2F *h){f2d_yz=h;}
+  void SetMPPCXY_Other(TH2F *h){f2d_xy_other=h;} // TODO: Use Clone
+  void SetMPPCXZ_Other(TH2F *h){f2d_xz_other=h;} // TODO: Use Clone
+  void SetMPPCYZ_Other(TH2F *h){f2d_yz_other=h;} // TODO: Use Clone
 
   void DoTracking(nd280upconv::TargetType_t dettype);
 
@@ -29,7 +42,7 @@ public:
 
   double GetRecoCosTheta(){return fRecoCosTheta;}
   double GetRecoMom(){return fRecoMom;}
-
+  
   double GetLength(){return fTrkLength;}
   double GetLengthX(){return fTrkLengthX;}
   double GetLengthY(){return fTrkLengthY;}
@@ -46,7 +59,10 @@ public:
   double GetLengthFitZ(){return fTrkLengthFitZ;}
   
   double GetEdep(){return fTrkEdep;}
-  
+
+  void SetMinPE(double pe){fMinPE = pe;}
+  double GetMinPE(){return fMinPE;}
+
   bool IsViewXY(){ return fUseView_xy;}
   bool IsViewXZ(){ return fUseView_xz;}
   bool IsViewYZ(){ return fUseView_yz;}
@@ -59,6 +75,16 @@ public:
 
   bool IsOutFV(){return fIsOutFV;}
   bool IsReco(){return fIsReco;}
+
+
+  // Track separation
+
+  void DoTrackSeparation(); // check if the loaded track is separated another track 
+  
+  void SetTrackSeparationMin(double len){fTrackSeparationMin = len;}
+  double GetTrackSeparationMin(){return fTrackSeparationMin;}
+
+  bool IsSeparated(){return fIsSeparated;}
   
 private:
 
@@ -67,9 +93,10 @@ private:
 
   // Methods for tracking
   void CleanMPPCHits();
+  void CleanMPPCHits(TH2F *h2d);
   void CalcLength();
   void CalcLengthFit();
-  void CalcLengthStraight();
+  void CalcLengthStraight(); // also gets the first and last MPPC hit
   void CalcNHits();
   void CalcEdep();
   void CalcOutFV();
@@ -83,6 +110,16 @@ private:
   void SetLengthX(double len){fTrkLengthX=len;}
   void SetLengthY(double len){fTrkLengthY=len;}
   void SetLengthZ(double len){fTrkLengthZ=len;}
+
+  double CalcPtDistance2D(double *pt1,double *pt2);
+  double CalcPtDistance3D(double *pt1,double *pt2);
+  
+  // Track separation
+  void FindTrackExtremes(TH2F *h2d,double *extreme,bool SelProjX);
+  void FindTrackExtremes(TH2F *h2d,double *Pt1,double *Pt2,bool IsViewUsed);
+  bool GetTrackSeparationInView(double *posdif_cur,double *posdif_oth);
+
+  void GetPositionDiffView(double *Pt1_cur,double *Pt2_cur,double *Pt1_oth,double *Pt2_oth,double *posdif_cur,double *posdif_oth);
 
   // Event display of MPPC hits with single track
   TH2F *f2d_xy; 
@@ -118,10 +155,30 @@ private:
   int fNHitsXZ;
   int fNHits;
 
+  double fMinPE;
+
   double fRecoCosTheta;
   double fRecoMom;
 
   nd280upconv::TargetType_t fDetType;  
+
+  // Track separation
+
+  double fTrackSeparationMin;
+  
+  TH2F *f2d_xy_other; 
+  TH2F *f2d_xz_other;
+  TH2F *f2d_yz_other;
+ 
+  bool fIsSeparated;
+
+  double fPt1_XY[2]; // first  track extreme point in XY
+  double fPt2_XY[2]; // second track extreme point in XY
+  double fPt1_XZ[2]; // first  track extreme point in XZ
+  double fPt2_XZ[2]; // second track extreme point in XZ
+  double fPt1_YZ[2]; // first  track extreme point in YZ
+  double fPt2_YZ[2]; // second track extreme point in YZ
+
 };
 
 #endif

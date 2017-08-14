@@ -36,31 +36,28 @@ public :
   void SetPDG(int pdg){fPDG=pdg;}
   //void SetTruthMom(double x,double y, double z){fTruthMom.SetXYZ(x,y,z);}
   void SetTruthMom(double mom){fTruthMom=mom;}
+  void SetTruthLength(double len){fTruthLength=len;}
   void SetTruthCosTheta(double costheta){fTruthCosTheta=costheta;}
   void SetCharge(double charge){fCharge=charge;}
   void SetRange(double range){fRange=range;}
   void SetEdep(double ene){fEdep=ene;}
   void SetOutFV(bool isoutfv){fIsOutFV=isoutfv;}
   void SetIsReco(bool isreco){fIsReco=isreco;}
+  void SetIsSeparated(bool issepa){fIsSeparated=issepa;}
 
   int GetTrackID() {return fTrackID;}
   int GetParentID() {return fParentID;}
   int GetPDG(){return fPDG;}
   //TVector3 GetTruthMom() {return fTruthMom;}
   double GetTruthMom(){return fTruthMom;}
+  double GetTruthLength(){return fTruthLength;}
   double GetTruthCosTheta(){return fTruthCosTheta;}
   double GetCharge(){return fCharge;}
   double GetRange(){return fRange;}
   double GetEdep(){return fEdep;}
   bool IsOutFV(){return fIsOutFV;}
   bool IsReco(){return fIsReco;}
-
-  //void SetMPPCHit_XY(TH2F* h2d){use copy...}
-  //void SetMPPCHit_XZ(TH2F* h2d){use copy...}
-  //void SetMPPCHit_YZ(TH2F* h2d){use copy...}
-  //TH2F *GetMPPCHit_XY(){return fMPPCHit_XY;}
-  //TH2F *GetMPPCHit_XZ(){return fMPPCHit_XZ;}
-  //TH2F *GetMPPCHit_YZ(){return fMPPCHit_YZ;}
+  bool IsSeparated(){return fIsSeparated;}
 
   void PrintTrack();
 
@@ -71,12 +68,14 @@ private :
   int fPDG;
   //TVector3 fTruthMom;
   double fTruthMom;
+  double fTruthLength;
   double fTruthCosTheta;
   double fCharge;
   double fRange; 
   double fEdep;
   bool fIsOutFV;
   bool fIsReco;
+  bool fIsSeparated;
 
   TH2F *fMPPCHit_XY; 
   TH2F *fMPPCHit_XZ; 

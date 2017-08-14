@@ -29,6 +29,8 @@ TND280UpRecoTrack::TND280UpRecoTrack()
   fCharge        = nd280upconv::kBadNum;
   fRange         = nd280upconv::kBadNum;
   fIsOutFV       = false;
+  fIsReco        = false;
+  fIsSeparated   = false;
 
   fMPPCHit_XY=0; 
   fMPPCHit_XZ=0; 
@@ -51,10 +53,11 @@ TND280UpRecoTrack::~TND280UpRecoTrack()
   fEdep          = nd280upconv::kBadNum;
   fIsOutFV       = false;
   fIsReco        = false;
+  fIsSeparated   = false;
   
-  if(fMPPCHit_XY) fMPPCHit_XY->Delete(); fMPPCHit_XY=0; 
-  if(fMPPCHit_XZ) fMPPCHit_XZ->Delete(); fMPPCHit_XZ=0; 
-  if(fMPPCHit_YZ) fMPPCHit_YZ->Delete(); fMPPCHit_YZ=0; 
+  if(fMPPCHit_XY) delete fMPPCHit_XY; fMPPCHit_XY=0; 
+  if(fMPPCHit_XZ) delete fMPPCHit_XZ; fMPPCHit_XZ=0; 
+  if(fMPPCHit_YZ) delete fMPPCHit_YZ; fMPPCHit_YZ=0; 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   
