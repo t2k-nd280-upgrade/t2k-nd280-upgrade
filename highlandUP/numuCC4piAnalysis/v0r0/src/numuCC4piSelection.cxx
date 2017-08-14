@@ -843,7 +843,7 @@ namespace numuCC4piUtils{
       if (track_i->nTPCSegments>0){
 	Float_t pulls[4], lkl[4];
 	anaUtils::ComputeTPCPull(*track_i->TPCSegments[0], pulls);
-	anaUtils::GetPIDLikelihood(*track_i, lkl);
+	
 	box->All_TPC_pull_muon.push_back(pulls[0]);
 	box->All_TPC_pull_pion.push_back(pulls[3]);
 	box->All_TPC_pull_electron.push_back(pulls[1]);

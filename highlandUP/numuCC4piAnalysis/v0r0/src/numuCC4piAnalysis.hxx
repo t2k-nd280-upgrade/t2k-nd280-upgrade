@@ -65,6 +65,7 @@ public:
     //selmu_ToF_ECAL,
     //selmu_ToF_FGD2,
     selmu_likemu,
+    selmu_likee,
     selmu_likemip,
     //selmu_end_ecal,
 
@@ -107,6 +108,8 @@ public:
     selmu_ToF_true_length,
     selmu_ToF_mass,
     selmu_ToF_true_mass,
+    selmu_ToF_mulkl,
+    selmu_ToF_elkl,
     selmu_ToF_firstDet,
     selmu_ToF_secondDet,
     selmu_dedx_tpc,

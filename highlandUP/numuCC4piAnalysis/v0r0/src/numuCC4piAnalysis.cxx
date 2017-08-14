@@ -117,12 +117,15 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   //AddToyVarF(output(),  selmu_MomRangeMuon, "");
   AddToyVarF(output(),  selmu_costheta,     "");
   AddVarF(output(),  selmu_likemu,       ""); 
+  AddVarF(output(),  selmu_likee,       ""); 
   AddVarF(output(),  selmu_likemip,      ""); 
 
   AddVarF(output(), selmu_ToF_time,        "");
   AddVarF(output(), selmu_ToF_true_time,   "");
   AddVarF(output(), selmu_ToF_mass,        "");
   AddVarF(output(), selmu_ToF_true_mass,   "");
+  AddVarF(output(), selmu_ToF_mulkl,       "");
+  AddVarF(output(), selmu_ToF_elkl,        "");
   AddVarF(output(), selmu_ToF_length,      "");
   AddVarF(output(), selmu_ToF_true_length, "");
   AddVarI(output(), selmu_ToF_firstDet,    "");
@@ -241,6 +244,7 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVectorVarFromArray(selmu_pos,        track->PositionStart, 4);
     output().FillVectorVarFromArray(selmu_endpos,     track->PositionEnd, 4);
     output().FillVar(selmu_likemu,        anaUtils::GetPIDLikelihood( *track, 0));
+    output().FillVar(selmu_likee,         anaUtils::GetPIDLikelihood( *track, 1));
     output().FillVar(selmu_likemip,       anaUtils::GetPIDLikelihoodMIP( *track));
 
     output().FillVar(selmu_ecal_stopping,             cutUtils::StoppingECALCut( *track ));
@@ -250,7 +254,7 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
 
     if (track->nTPCSegments > 0) {
       AnaTPCParticleB *TPCSegment = static_cast<AnaTPCParticleB*>(track->TPCSegments[0]);
-      output().FillVar(selmu_dedx_tpc, TPCSegment->dEdxMeas);                 
+      output().FillVar(selmu_dedx_tpc, TPCSegment->dEdxMeas);
     }
 
     output().FillVar(selmu_ToF_time,         track->ToF_reco_time);
@@ -263,6 +267,8 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selmu_ToF_true_mass,    anaUtils::ComputeToFMass(track->GetTrueParticle()->Momentum, 
 								      track->ToF_true_time,
 								      track->ToF_true_length));
+    output().FillVar(selmu_ToF_mulkl,        anaUtils::GetToFLikelihood(track, 0, true));
+    output().FillVar(selmu_ToF_elkl,         anaUtils::GetToFLikelihood(track, 1, true));
 
     output().FillVar(selmu_ToF_firstDet,     (int)track->ToF_firstDet);
     output().FillVar(selmu_ToF_secondDet,    (int)track->ToF_secondDet);

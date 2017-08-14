@@ -53,8 +53,6 @@ bool AnaTreeConverterEvent::Initialize(){
   
   _ECal_FGDmatch_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
 					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC);
-  
-  _randomGen = new TRandom3();
 
   _file_charge_confusion = TFile::Open(TString::Format("%s/data/ChargeConfusion_TrueMom.root", 
 						       getenv("HIGHLANDIOROOT")));
@@ -228,6 +226,7 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
   int nVertices = std::min((int)NMAXTRUEVERTICES, 1);
   TND280UpVertex *nd280UpVertex = dynamic_cast<TND280UpVertex*>(nd280UpEvent->GetVertex(0));
 
+  
   AnaTrueVertex* trueVertex = MakeTrueVertex();
   FillTrueVertexInfo(nd280UpVertex, trueVertex);
     
@@ -1867,7 +1866,7 @@ bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, TString det){
 
   // throw two random numbers between 0 and 1
   double r_eff[2];
-  _randomGen->RndmArray(2, r_eff);
+  gRandom->RndmArray(2, r_eff);
 
   // select artificially only a fraction of the events, 
   // by applying the reconstruction/FGD-ECal match efficiencies
@@ -1904,7 +1903,7 @@ bool AnaTreeConverterEvent::ChargeConfused(AnaTrueParticleB* trueParticle) {
     prob = protspline->Eval(mom);
     
   if(prob <= 0.0) return false;    
-  Double_t r = _randomGen->Rndm();
+  Double_t r = gRandom->Rndm();
 
   return (r<prob);
 
@@ -2107,7 +2106,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   AnaParticleB *p1=0, *p2=0;
 
   Float_t true_ToF = -999, sigma_ToF = -999;
-  Float_t reco_ToF = anaUtils::GetToF(reconParticle, p1, p2, sigma_ToF, _randomGen);
+  Float_t reco_ToF = anaUtils::GetToF(reconParticle, p1, p2, sigma_ToF, true);
 
   Float_t ToF_length = -999, ToF_true_length = -999, sigma_ToF_length = -999;
   SubDetId::SubDetEnum first_ToF_det = SubDetId::kInvalid, second_ToF_det = SubDetId::kInvalid;

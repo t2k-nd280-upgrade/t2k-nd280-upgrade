@@ -128,7 +128,6 @@ protected:
   TSpline3 *pionspline;
   TSpline3 *protspline;
 
-  TRandom3* _randomGen;
   BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
   
   // Header's
