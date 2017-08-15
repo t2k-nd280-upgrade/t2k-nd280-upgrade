@@ -19,12 +19,8 @@ public:
   nueCCSelection(bool forceBreak=true);
   virtual ~nueCCSelection(){
     _file_ECAL_PDF->Close();
-    _file_charge_confusion_1->Close();
-    _file_charge_confusion_2->Close();
+
     delete _file_ECAL_PDF;
-    delete _file_charge_confusion_1;
-    delete _file_charge_confusion_2;
-    delete _randomGen;
   }
 
   //---- These are mandatory functions
