@@ -564,12 +564,12 @@ void nueCCAnalysis::FillCategories(){
     anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kTarget2, _AntiNu));
   }
 
-  if ( _useTarget1 && anaUtils::InFiducialVolume(SubDetId::kFGD1, track->PositionStart)) {
+  if ( _useFGD1 && anaUtils::InFiducialVolume(SubDetId::kFGD1, track->PositionStart)) {
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD1);
     anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kFGD1, _AntiNu));
   }
 
-  if ( _useTarget1 && anaUtils::InFiducialVolume(SubDetId::kFGD2, track->PositionStart)) {
+  if ( _useFGD2 && anaUtils::InFiducialVolume(SubDetId::kFGD2, track->PositionStart)) {
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kFGD2);
     anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kFGD2, _AntiNu));
   }
