@@ -82,6 +82,7 @@ public:
     selelec_truemom,
     selelec_truecostheta,
     selelec_stopped,
+    selelec_flipped,
     selelec_truedir,
     selelec_truepos,
     selelec_trueendpos,

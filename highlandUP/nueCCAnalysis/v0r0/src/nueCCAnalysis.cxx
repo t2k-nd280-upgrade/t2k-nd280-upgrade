@@ -151,6 +151,7 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddVar4VF(output(),   selelec_trueendpos,     "");
   AddVar3VF(output(),   selelec_truedir,        "");
   AddVarI(output(),     selelec_daughterPDG,    "");
+  AddVarI(output(),     selelec_flipped,        "");
 
   //--- info by global
   AddVarI(output(),     selelec_detectors,      "");
@@ -281,6 +282,7 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selelec_truemom,                   cc4pibox().MainTrack->GetTrueParticle()->Momentum);
     output().FillVar(selelec_truecostheta,              cc4pibox().MainTrack->GetTrueParticle()->CosTheta);
     output().FillVar(selelec_stopped,                   cc4pibox().MainTrack->GetTrueParticle()->stopped);
+    output().FillVar(selelec_flipped,                   cc4pibox().MainTrack->HasFlipped);
     output().FillVar(true_target_length,                cc4pibox().Target_length);
     output().FillVar(true_target_end_mom,               cc4pibox().Mom_Target_end);
     output().FillVar(true_target_start_mom,             cc4pibox().Mom_Target_start);
@@ -559,7 +561,7 @@ void nueCCAnalysis::FillCategories(){
     anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kTarget1, _AntiNu));
   }
 
-  if ( _useTarget1 && anaUtils::InFiducialVolume(SubDetId::kTarget2, track->PositionStart)) {
+  if ( _useTarget2 && anaUtils::InFiducialVolume(SubDetId::kTarget2, track->PositionStart)) {
     anaUtils::FillCategories(&GetEvent(), track, "", SubDetId::kTarget2);
     anaUtils::_categ->SetCode("nueCC",      nueCCUtils::nueCCCategory(&GetEvent(), track, SubDetId::kTarget2, _AntiNu));
   }
