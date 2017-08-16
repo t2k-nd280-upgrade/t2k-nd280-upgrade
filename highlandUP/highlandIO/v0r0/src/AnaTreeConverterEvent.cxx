@@ -248,7 +248,8 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
 	 (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
 	 (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
-	 (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) ) {
+	 (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) 
+   && nd280UpTrack->GetParentID() == 0) {
       if(nd280UpTrack->GetInitMom().Mag() > 0){
 	//std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
 	leptonTrack = truePart;
@@ -256,6 +257,7 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
 	trueVertex->LeptonPDG = nd280UpTrack->GetPDG();
 	trueVertex->Q2 = - (nd280UpTrack->GetInitMom() - nd280UpVertex->GetInTrack(0)->GetInitMom()).Mag2();
 	trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
+  anaUtils::VectorToArray(nd280UpTrack->GetInitMom().Unit(), trueVertex->LeptonDir);
       }
 
     } else if (  nd280UpTrack->GetPDG() == 2212 && nd280UpTrack->GetParentID() == 0) {
