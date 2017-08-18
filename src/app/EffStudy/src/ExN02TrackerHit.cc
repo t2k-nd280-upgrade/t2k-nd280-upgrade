@@ -226,6 +226,9 @@ void ExN02TrackerHit::Print()
 // the ND280HitSegment class in this framework
 
 bool ExN02TrackerHit::SameHit(G4Step* theStep) {
+
+  //G4cout << "ExN02TrackerHit::SameHit" << G4endl;
+
     // Check that the hit and new step are in the same volume
     G4TouchableHandle touchable 
         = theStep->GetPreStepPoint()->GetTouchableHandle();
@@ -259,11 +262,17 @@ bool ExN02TrackerHit::SameHit(G4Step* theStep) {
 }
 
 int ExN02TrackerHit::FindPrimaryId(G4Track *theTrack) {
+
+  //G4cout << "ExN02TrackerHit::FindPrimaryId" << G4endl;
+  
     return ND280TrajectoryMap::FindPrimaryId(theTrack->GetTrackID());
 }
 
 void ExN02TrackerHit::AddStep(G4Step* theStep, double start, double end) {
-    G4TouchableHandle touchable 
+  
+  //G4cout << "ExN02TrackerHit::AddStep" << G4endl;
+
+  G4TouchableHandle touchable 
         = theStep->GetPreStepPoint()->GetTouchableHandle();
     G4ThreeVector prePos = theStep->GetPreStepPoint()->GetPosition();
     G4ThreeVector postPos = theStep->GetPostStepPoint()->GetPosition();

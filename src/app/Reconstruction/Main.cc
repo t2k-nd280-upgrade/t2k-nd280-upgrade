@@ -12,7 +12,7 @@
 // - don't use Birk for neutrons? --> DONE                      // 
 // - Add Poisson fluct to response                              //
 // - Ereco and momentum                                         //
-// - Fill the TND280UpRecoTrack class w/ MPPC hits (not needed) //
+// - Fill the TND280UpRecoTrack class w/ MPPC hits (NOT NEEDED) //
 // - Store ND280UpRecoEvent object Tree in output file          //
 // - Take the ND280UpRecoEvent objects Tree from input file     //
 //                                                              //
@@ -21,6 +21,8 @@
 #include <TFile.h>
 #include <TH2F.h>
 #include <TH1F.h>
+#include <TGraph.h>
+#include <TMultiGraph.h>
 #include <TTree.h>
 #include <TVector3.h>
 #include <TFitResult.h>
@@ -56,6 +58,172 @@ inline int FindIndex(vector<int> vec,int val){
     cout<<"NOT FOUND"<<endl;
   }  
   return pos;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+inline void AddGraph(TGraph *gAll,TGraph *gSubSet){
+  
+  //cout << "gSubSet->GetN() = " << gSubSet->GetN() << endl;
+  
+  for(int ipt=0;ipt<gSubSet->GetN();ipt++){
+    double px,py;
+    gSubSet->GetPoint(ipt,px,py);
+    gAll->SetPoint(gAll->GetN(),px,py);
+  }
+
+  //cout << "gAll->GetN() = " << gAll->GetN() << endl;
+  
+  return;
+}
+
+
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+inline void PrintDaughters(TND280UpEvent *event,int mytrkid){
+  int NTracks = event->GetNTracks();
+
+  bool foundtrack = false;
+  
+  cout << endl;
+  cout << "Print the Truth Daughters:" << endl;
+
+  int EvtID = event->GetEventID();
+
+  cout << "Event ID: " << EvtID << endl;
+
+  for(int itrk=0;itrk<NTracks;itrk++){
+    //cout << "itrk " << itrk << endl;
+    TND280UpTrack *nd280UpTrack = event->GetTrack(itrk);
+    int trkID = nd280UpTrack->GetTrackID();
+    int parentID = nd280UpTrack->GetParentID();
+    int pdg = nd280UpTrack->GetPDG();
+    double charge = nd280UpTrack->GetCharge();
+    double ekin = nd280UpTrack->GetInitKinEnergy();
+    double mom = nd280UpTrack->GetInitMom().Mag();
+    double dirX = nd280UpTrack->GetInitMom().X() / mom;
+    double dirY = nd280UpTrack->GetInitMom().Y() / mom;
+    double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
+    double costheta = dirZ;
+    
+    int NPoints = nd280UpTrack->GetNPoints();
+    string process = nd280UpTrack->GetProcessName();
+    
+    if(mytrkid==parentID){
+
+      double length = 0.;
+      for(int ipt=0;ipt<NPoints;ipt++){
+	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);
+	string detname = nd280UpTrackPoint->GetLogVolName();
+	//cout << detname << " --> " << nd280UpTrackPoint->GetStepLength() << endl;
+	length += nd280UpTrackPoint->GetStepLength();
+      }
+      
+      foundtrack = true;
+    
+      cout << "trkid: " << trkID
+	   << ", pdg: " << pdg 
+	   << ", parent: " << parentID
+	   << ", ekin: " << ekin
+	   << ", costheta = " << costheta 
+	   << ", mom = " << mom
+	   << ", SD length = " << length
+	//<< ", detname = " <<  nd280UpTrackPoint->GetLogVolName()
+	   << ", process = " << process
+	   << endl;
+      
+    }
+  }
+
+  if(!foundtrack){
+    cerr << "Error in PrintDaughters()" << endl;
+    cerr << "Look for Track ID: " << mytrkid << endl;
+    cerr << "The Truth Track is not found!!!" << endl;
+    exit(1);
+  }
+  
+  return;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+inline void PrintTruth(TND280UpEvent *event,int mytrkid){
+  int NTracks = event->GetNTracks();
+
+  bool foundtrack = false;
+  
+  cout << endl;
+  cout << "%%%%%%%%%%%%%%%%%%%%" << endl;
+  cout << "Print the truth:" << endl;
+
+  int EvtID = event->GetEventID();
+
+  cout << "Event ID: " << EvtID << endl;
+  
+  cout << " # of primary tracks: " << NTracks << endl;
+
+  for(int itrk=0;itrk<NTracks;itrk++){
+    //cout << "itrk " << itrk << endl;
+    TND280UpTrack *nd280UpTrack = event->GetTrack(itrk);
+    int trkID = nd280UpTrack->GetTrackID();
+    int parentID = nd280UpTrack->GetParentID();
+    int pdg = nd280UpTrack->GetPDG();
+    double charge = nd280UpTrack->GetCharge();
+    double ekin = nd280UpTrack->GetInitKinEnergy();
+    double mom = nd280UpTrack->GetInitMom().Mag();
+    double dirX = nd280UpTrack->GetInitMom().X() / mom;
+    double dirY = nd280UpTrack->GetInitMom().Y() / mom;
+    double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
+    double costheta = dirZ;
+    
+    double sdtotenergy = nd280UpTrack->GetSDTotalEnergyDeposit();
+
+    int NPoints = nd280UpTrack->GetNPoints();
+    string process = nd280UpTrack->GetProcessName();
+
+    if(parentID>0) continue;
+    
+    if(mytrkid==trkID ||
+       mytrkid==-999){
+
+      cout << endl;
+      cout << "trkid: " << trkID
+	   << ", pdg: " << pdg 
+	   << ", parent: " << parentID
+	   << ", ekin: " << ekin
+	   << ", costheta = " << costheta 
+	   << ", mom = " << mom
+	   << ", sdtotenergy = " << sdtotenergy
+	   << ", process = " << process
+	   << endl;
+
+      double length = 0.;
+      for(int ipt=0;ipt<NPoints;ipt++){
+	TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);
+	string detname = nd280UpTrackPoint->GetLogVolName();
+	//cout << detname << " --> " << nd280UpTrackPoint->GetStepLength() << endl;
+	length += nd280UpTrackPoint->GetStepLength();
+	cout << detname << endl;
+      }
+
+      cout << ", SD length = " << length << endl;
+	   //<< ", detname = " <<  nd280UpTrackPoint->GetLogVolName()
+      
+      foundtrack = true;
+      
+    }
+  }
+
+  if(!foundtrack){
+    cerr << "Error in PrintTruth()" << endl;
+    cerr << "Look for Track ID: " << mytrkid << endl;
+    cerr << "The Truth Track is not found!!!" << endl;
+    exit(1);
+  }
+  
+  return;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -118,72 +286,6 @@ inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &myc
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-
-
-
-/*
-
-// Use TF1
-
-TSpline3 *MySpline_Muon;
-double Likelihood_Muon(double *pe,double *par){  
-  if(!MySpline_Muon){
-    cerr << "MuSpline_Muon not initialized!" << endl;
-    exit(1);
-  }  
-  double min = MySpline_Muon->GetXmin();
-  double max = MySpline_Muon->GetXmax();
-  if(pe[0] < min) pe[0] = min;
-  if(pe[1] > max) pe[0] = max;
-  return MySpline_Muon->Eval(pe[0]);  
-}
-
-TSpline3 *MySpline_Pion;
-double Likelihood_Pion(double *pe,double *par){  
-  if(!MySpline_Pion){
-    cerr << "MuSpline_Pion not initialized!" << endl;
-    exit(1);
-  }  
-  double min = MySpline_Pion->GetXmin();
-  double max = MySpline_Pion->GetXmax();
-  if(pe[0] < min) pe[0] = min;
-  if(pe[1] > max) pe[0] = max;
-  return MySpline_Pion->Eval(pe[0]);  
-}
-
-TSpline3 *MySpline_Prot;
-double Likelihood_Prot(double *pe,double *par){  
-  if(!MySpline_Prot){
-    cerr << "MuSpline_Prot not initialized!" << endl;
-    exit(1);
-  }  
-  double min = MySpline_Prot->GetXmin();
-  double max = MySpline_Prot->GetXmax();
-  if(pe[0] < min) pe[0] = min;
-  if(pe[1] > max) pe[0] = max;
-  return MySpline_Prot->Eval(pe[0]);  
-}
-
-TSpline3 *MySpline_Elec;
-double Likelihood_Elec(double *pe,double *par){  
-  if(!MySpline_Elec){
-    cerr << "MuSpline_Elec not initialized!" << endl;
-    exit(1);
-  }  
-  double min = MySpline_Elec->GetXmin();
-  double max = MySpline_Elec->GetXmax();
-  if(pe[0] < min) pe[0] = min;
-  if(pe[1] > max) pe[0] = max;
-  return MySpline_Elec->Eval(pe[0]);  
-}
-
-*/
-
-
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 int main(int argc,char** argv)
 {   
 
@@ -219,13 +321,22 @@ int main(int argc,char** argv)
 
   int NTOTALTRACKSALL_1stLOOP = 0;
   int NTOTALTRACKSALL_2ndLOOP = 0;
-  int NTOTALOOFV_2ndLOOP = 0;
-  int NTOTALRECO_2ndLOOP = 0;
+  int NTOTALINFV_2ndLOOP_mu = 0;
+  int NTOTALINFV_2ndLOOP_pi = 0;
+  int NTOTALINFV_2ndLOOP_prot = 0;
+  int NTOTALINFV_2ndLOOP_elec = 0;
+  int NTOTALRECO_2ndLOOP_mu = 0;
+  int NTOTALRECO_2ndLOOP_pi = 0;
+  int NTOTALRECO_2ndLOOP_prot = 0;
+  int NTOTALRECO_2ndLOOP_elec = 0;
 
   // Declare variable of reconstructed tracks
   vector<TH2F*> fRecoTrack_MPPCHit_XY;
   vector<TH2F*> fRecoTrack_MPPCHit_XZ;
   vector<TH2F*> fRecoTrack_MPPCHit_YZ;
+  vector<TGraph*> fTrueTrack_MCHit_XY;
+  vector<TGraph*> fTrueTrack_MCHit_XZ;
+  vector<TGraph*> fTrueTrack_MCHit_YZ; 
   vector<int>   fRecoTrack_ID;
   vector<int>   fRecoTrack_PDG;
   vector<int>   fRecoTrack_ParentID;
@@ -254,6 +365,11 @@ int main(int argc,char** argv)
   TH2F *hMPPCHits_XY[NEvtDisplTot]; 
   TH2F *hMPPCHits_XZ[NEvtDisplTot]; 
   TH2F *hMPPCHits_YZ[NEvtDisplTot];
+  
+  TGraph *gMCHits_XY[NEvtDisplTot]; 
+  TGraph *gMCHits_XZ[NEvtDisplTot]; 
+  TGraph *gMCHits_YZ[NEvtDisplTot];
+
   TH1F *hPEVsTime_x[NEvtDisplTot]; 
   TH1F *hPEVsTime_y[NEvtDisplTot]; 
   TH1F *hPEVsTime_z[NEvtDisplTot]; 
@@ -275,17 +391,22 @@ int main(int argc,char** argv)
   TH2F * hProt_Len_TrueVsReco = new TH2F("hProt_Len_TrueVsReco","Prot Length True Vs Reco",50,0,+3000,50,0,+3000);
   TH2F * hElec_Len_TrueVsReco = new TH2F("hElec_Len_TrueVsReco","Elec Length True Vs Reco",50,0,+3000,50,0,+3000);
 
-  TH1F * hMuon_Len_RecMinTr = new TH1F("hMuon_Len_RecMinTr","Muon Length Reco-True",100,-500,+500);
-  TH1F * hPion_Len_RecMinTr = new TH1F("hPion_Len_RecMinTr","Pion Length Reco-True",100,-500,+500);
-  TH1F * hProt_Len_RecMinTr = new TH1F("hProt_Len_RecMinTr","Prot Length Reco-True",100,-500,+500);
-  TH1F * hElec_Len_RecMinTr = new TH1F("hElec_Len_RecMinTr","Elec Length Reco-True",100,-500,+500);
+  TH1F * hMuon_Len_RecMinTr = new TH1F("hMuon_Len_RecMinTr","Muon Length Reco-True",100,-50,+50);
+  TH1F * hPion_Len_RecMinTr = new TH1F("hPion_Len_RecMinTr","Pion Length Reco-True",100,-50,+50);
+  TH1F * hProt_Len_RecMinTr = new TH1F("hProt_Len_RecMinTr","Prot Length Reco-True",100,-50,+50);
+  TH1F * hElec_Len_RecMinTr = new TH1F("hElec_Len_RecMinTr","Elec Length Reco-True",100,-50,+50);
 
-  TH2F * hMuon_Len_RecMinTr_Vs_TrLen = new TH2F("hMuon_Len_RecMinTr_Vs_TrLen","Muon Length (Reco-True) Vs True",100,-500,+500,50,0,+3000);
-  TH2F * hPion_Len_RecMinTr_Vs_TrLen = new TH2F("hPion_Len_RecMinTr_Vs_TrLen","Pion Length (Reco-True) Vs True",100,-500,+500,50,0,+3000);
-  TH2F * hProt_Len_RecMinTr_Vs_TrLen = new TH2F("hProt_Len_RecMinTr_Vs_TrLen","Prot Length (Reco-True) Vs True",100,-500,+500,50,0,+3000);
-  TH2F * hElec_Len_RecMinTr_Vs_TrLen = new TH2F("hElec_Len_RecMinTr_Vs_TrLen","Elec Length (Reco-True) Vs True",100,-500,+500,50,0,+3000);
+  TH2F * hMuon_Len_RecMinTr_Vs_TrLen = new TH2F("hMuon_Len_RecMinTr_Vs_TrLen","Muon Length (Reco-True) Vs True",100,-50,+50,50,0,+3000);
+  TH2F * hPion_Len_RecMinTr_Vs_TrLen = new TH2F("hPion_Len_RecMinTr_Vs_TrLen","Pion Length (Reco-True) Vs True",100,-50,+50,50,0,+3000);
+  TH2F * hProt_Len_RecMinTr_Vs_TrLen = new TH2F("hProt_Len_RecMinTr_Vs_TrLen","Prot Length (Reco-True) Vs True",100,-50,+50,50,0,+3000);
+  TH2F * hElec_Len_RecMinTr_Vs_TrLen = new TH2F("hElec_Len_RecMinTr_Vs_TrLen","Elec Length (Reco-True) Vs True",100,-50,+50,50,0,+3000);
 
   // True phase space and efficiencies
+
+  TH2F * hMuon_TrMomVsTrCosTh = new TH2F("hMuon_TrMomVsTrCosTh","All Muons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hPion_TrMomVsTrCosTh = new TH2F("hPion_TrMomVsTrCosTh","All Pions True Mom Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hProt_TrMomVsTrCosTh = new TH2F("hProt_TrMomVsTrCosTh","All Protons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hElec_TrMomVsTrCosTh = new TH2F("hElec_TrMomVsTrCosTh","All Electrons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
 
   TH2F * hMuon_AllIso_TrMomVsTrCosTh = new TH2F("hMuon_AllIso_TrMomVsTrCosTh","All IsoTarget Muons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hPion_AllIso_TrMomVsTrCosTh = new TH2F("hPion_AllIso_TrMomVsTrCosTh","All IsoTarget Pions True Mom Vs CosTheta",100,0,10000,10,-1,+1);
@@ -395,6 +516,10 @@ int main(int argc,char** argv)
   h2d_xz = (TH2F*)finput->Get("OutMPPCProj2D_XZ");
   h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
   
+  TGraph *mygraph = new TGraph();
+  mygraph->SetName("mygraph");
+  mygraph->SetTitle("mygraph");
+  
   TTree *tinput = (TTree*) finput->Get("ND280upEvents");
 
   //
@@ -491,11 +616,23 @@ int main(int argc,char** argv)
     }
     
     int EvtID = nd280UpEvent->GetEventID();
+
+    //cout << "# of tracks: " << nd280UpEvent->GetNTracks() << endl;
+    
+    //PrintTruth(nd280UpEvent,-999);
+    //PrintDaughters(nd280UpEvent,2);
+    //continue;
+    
+
+
     
     // Initialize/Reset variables of reconstructed tracks
     fRecoTrack_MPPCHit_XY.clear();
     fRecoTrack_MPPCHit_XZ.clear();
     fRecoTrack_MPPCHit_YZ.clear();
+    fTrueTrack_MCHit_XY.clear();
+    fTrueTrack_MCHit_XZ.clear();
+    fTrueTrack_MCHit_YZ.clear();
     fRecoTrack_ID.clear();
     fRecoTrack_ParentID.clear();
     fRecoTrack_PDG.clear();
@@ -518,6 +655,26 @@ int main(int argc,char** argv)
     TString name;
 
     if(ievt<NEvtDisplTot){
+
+      name = TString::Format("gMCHits_XY_%d",ievt);
+      gMCHits_XY[ievt] = new TGraph(); 
+      gMCHits_XY[ievt]->SetName(name);
+      gMCHits_XY[ievt]->SetTitle(name);
+      gMCHits_XY[ievt]->SetMarkerSize(1);
+      gMCHits_XY[ievt]->SetMarkerStyle(20);
+      name = TString::Format("gMCHits_XZ_%d",ievt);
+      gMCHits_XZ[ievt] = new TGraph(); 
+      gMCHits_XZ[ievt]->SetName(name);
+      gMCHits_XZ[ievt]->SetTitle(name);
+      gMCHits_XZ[ievt]->SetMarkerSize(1);
+      gMCHits_XZ[ievt]->SetMarkerStyle(20);
+      name = TString::Format("gMCHits_YZ_%d",ievt);
+      gMCHits_YZ[ievt] = new TGraph();
+      gMCHits_YZ[ievt]->SetName(name);
+      gMCHits_YZ[ievt]->SetTitle(name);
+      gMCHits_YZ[ievt]->SetMarkerSize(1);
+      gMCHits_YZ[ievt]->SetMarkerStyle(20);
+
       name = TString::Format("hMPPCHits_XY_%d",ievt);
       hMPPCHits_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
       name = TString::Format("hMPPCHits_XZ_%d",ievt);
@@ -550,6 +707,8 @@ int main(int argc,char** argv)
       cout << "//////////////////////" << endl;
       cout << "Event: " << ievt << endl;
       cout << "# of hits = " << nd280UpEvent->GetNHits() << endl;
+      
+      //PrintTruth(nd280UpEvent,-999);
     }
     
     //TVector3 truth_first_mchit;
@@ -557,9 +716,14 @@ int main(int argc,char** argv)
     // //TND280UpVertex *nd280UpVertex = nd280UpEvent->GetVertex(0); // only 1 vertex / event
     // //truth_vtx_pos = nd280UpVertex->GetPosition();
 
+    double posX_prev = 0.;
+    double posY_prev = 0.;
+    double posZ_prev = 0.;
+    int trkid_prev = 0.;
+
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
-      
+
       int parentid = nd280UpHit->GetPrimaryId(); 
       //cout << parentid << endl;
       //int detid = (int)nd280upconv::kBadNum; 
@@ -572,24 +736,45 @@ int main(int argc,char** argv)
       double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y 
       double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
       TVector3 lightPos(posX,posY,posZ); // already in local position
-
+      
       // True costheta defined by the direction wrt first and last MC hit position
       double lenX = nd280UpHit->GetStopX() - nd280UpHit->GetStartX(); 
       double lenY = nd280UpHit->GetStopY() - nd280UpHit->GetStartY(); 
       double lenZ = nd280UpHit->GetStopZ() - nd280UpHit->GetStartZ(); 
      
-      double length_true_mchit = sqrt(lenX*lenX + lenY*lenY + lenZ*lenZ);      
+      //double length_true_mchit = sqrt(lenX*lenX + lenY*lenY + lenZ*lenZ);      
+      double length_true_mchit = 0.;
+
+      //
+      // compute the mc hit length
+      //
+      
+      // If the track is different the first segment has length null
+      if(trkid_prev != trkid){
+	posX_prev = posX;
+	posY_prev = posY;
+	posZ_prev = posZ;	
+      }
+
+      double deltaX = posX - posX_prev;
+      double deltaY = posY - posY_prev; 
+      double deltaZ = posZ - posZ_prev;
+      
+      length_true_mchit = sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ);
+      
+      // if(trkid==4){
+      // 	cout << "Position: " << endl;
+      // 	cout << " - Pre: " << posX_prev << ", " << posY_prev << ", " << posZ_prev << endl;
+      // 	cout << " - Curr: " << posX << ", " << posY << ", " << posZ << endl;
+      // 	cout << " - len: " << length_true_mchit << endl;
+      // }
+      
+      
       double steplength = nd280UpHit->GetTrackLength(); // check how it's calculated in geant4
 
       string detname = nd280UpHit->GetDetName();
       
       //if(pdg==22 || pdg==2112) continue; // don't analyze gammas and neutrons
-
-      //cout << "trkid: " << trkid 
-      //<< ", pdg = " << pdg 
-      //<< ", costheta_true = " << costheta_true 
-      //<< endl;
-
 
 
       //
@@ -617,13 +802,6 @@ int main(int argc,char** argv)
       
       trkid = ApplyResponse.GetHitTrkID();            
       
-      // // Take the true vertex in local system as the position of the first MC hit
-      //if(ihit==0){
-      // //truth_first_mchit = lightPos; 
-      //truth_first_mchit = TVector3(poshitX,poshitY,poshitZ); 
-      //cout << "# pe: " << pex << ", " << pey << ", " << pez << endl;
-      //}
-
       if(ievt<NEvtDisplTot){
 	//hMPPCHits_XY[ievt]->Fill(poshitX,poshitY,pez); // pe along Z
 	//hMPPCHits_XZ[ievt]->Fill(poshitX,poshitZ,pey); // pe along Y
@@ -666,14 +844,17 @@ int main(int argc,char** argv)
 	fRecoTrack_MPPCHit_XZ.push_back((TH2F*)h2d_xz->Clone("h2d_xz"));
 	fRecoTrack_MPPCHit_YZ.push_back((TH2F*)h2d_yz->Clone("h2d_yz"));
 
+	fTrueTrack_MCHit_XY.push_back((TGraph*)mygraph->Clone("MCHit"));
+	fTrueTrack_MCHit_XZ.push_back((TGraph*)mygraph->Clone("MCHit"));
+	fTrueTrack_MCHit_YZ.push_back((TGraph*)mygraph->Clone("MCHit"));
+
 	vector<double> singleHitXY; // get hit (x,y,pe)
 	singleHitXY.push_back(poshitX);
 	singleHitXY.push_back(poshitY);
 	singleHitXY.push_back(pez);
 	vector< vector<double> > hitsXY; // add hit to hit list    
 	hitsXY.push_back(singleHitXY);
-	fRecoTrack_hitXY.push_back(hitsXY); // add hit list to trk (1 for each trk)
-	
+	fRecoTrack_hitXY.push_back(hitsXY); // add hit list to trk (1 for each trk)	
       }
       
       // Find vector index of the track
@@ -686,32 +867,39 @@ int main(int argc,char** argv)
 	infoXY.push_back(poshitY);
 	infoXY.push_back(pez);
 	fRecoTrack_hitXY[idx].push_back(infoXY);
-	//cout << fRecoTrack_hitXY[idx][0][2] << endl;
       }
-
+            
       fRecoTrack_true_length[idx] += length_true_mchit; // initialized to 0 at first mc hit ( if(!used) )
       
-      //if(pdg==13){
-      //cout << "idx: " << idx << " --> " 
-      //<< "poshitX = " << poshitX 
-      //<< ", poshitY = " << poshitY 
-      //<< ", poshitZ = " << poshitZ
-      //<< " --> pex = " << pex << ", pey = " << pey << ", pez = " << pez
-      //<< endl;
-      //}
+      // if(pdg==13){
+      // 	cout << "idx: " << idx << " --> " 
+      // 	     << "poshitX = " << poshitX 
+      // 	     << ", poshitY = " << poshitY 
+      // 	     << ", poshitZ = " << poshitZ
+      // 	     << " --> pex = " << pex << ", pey = " << pey << ", pez = " << pez
+      // 	     << endl;
+      // }
 
       // Fill the event display
       fRecoTrack_MPPCHit_XY[idx]->Fill(poshitX,poshitY,pez); // pe along Z
       fRecoTrack_MPPCHit_XZ[idx]->Fill(poshitX,poshitZ,pey); // pe along Y
       fRecoTrack_MPPCHit_YZ[idx]->Fill(poshitY,poshitZ,pex); // pe along X            
       
+      fTrueTrack_MCHit_XY[idx]->SetPoint(fTrueTrack_MCHit_XY[idx]->GetN(),posX,posY);
+      fTrueTrack_MCHit_XZ[idx]->SetPoint(fTrueTrack_MCHit_XZ[idx]->GetN(),posX,posZ);
+      fTrueTrack_MCHit_YZ[idx]->SetPoint(fTrueTrack_MCHit_YZ[idx]->GetN(),posY,posZ);
+
+
+      // Update the previous position
+      
+      posX_prev  = posX;
+      posY_prev  = posY;
+      posZ_prev  = posZ;
+      trkid_prev = trkid;
+
     } // end loop over the hits
 
 
-    
-
-    
-    
     //
     // Loop over the Reco Tracks and reconstruct them
     //
@@ -771,7 +959,7 @@ int main(int argc,char** argv)
       if(MinSeparation>=0.){ 
 	nd280UpRecoTrack.SetTrackSeparationMin(MinSeparation); 
       }
-
+      
       nd280UpRecoTrack.DoTracking(DetType); // run the tracking process
       
       
@@ -811,7 +999,7 @@ int main(int argc,char** argv)
 	delete hEventOth_XY; hEventOth_XY = 0;
 	delete hEventOth_XZ; hEventOth_XZ = 0;
 	delete hEventOth_YZ; hEventOth_YZ = 0;
-
+	
 	isseparated = nd280UpRecoTrack.IsSeparated(); 
 	
 	if(!isseparated) break; // if separated with 
@@ -829,7 +1017,10 @@ int main(int argc,char** argv)
       // reco track deposited energy
       double trkedep = nd280UpRecoTrack.GetEdep();
       // reco track length
-      double trklen = nd280UpRecoTrack.GetLength();
+      double trklen_reco = nd280UpRecoTrack.GetLength();
+      double trklen_recoX = nd280UpRecoTrack.GetLengthX();
+      double trklen_recoY = nd280UpRecoTrack.GetLengthY();
+      double trklen_recoZ = nd280UpRecoTrack.GetLengthZ();
       // reco track costheta
       double costh_reco = nd280UpRecoTrack.GetRecoCosTheta();
       
@@ -843,7 +1034,7 @@ int main(int argc,char** argv)
       
       FindTruth(nd280UpEvent,trkid,mom_true,costh_true,lengthSD_true);
       
-      double tracklength_true = fRecoTrack_true_length[itrk];
+      double trklen_true = fRecoTrack_true_length[itrk];
 
       if(DEBUG){
 	cout << endl;
@@ -853,7 +1044,8 @@ int main(int argc,char** argv)
 	cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
 	cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
 	cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
-	cout << " - len: " << trklen
+	cout << " - len: " << trklen_reco 
+	     << " (" << trklen_recoX << "," << trklen_recoY << "," << trklen_recoZ << ")"
 	     << ", edep: " << trkedep 
 	     << ", costh = " << costh_reco 
 	     << endl;
@@ -861,16 +1053,59 @@ int main(int argc,char** argv)
 	cout << " - pdg = " << pdg 
 	     << ", mom = " << mom_true
 	     << ", costh = " << costh_true
-	     << ", trk length = " << tracklength_true	 
+	     << ", trk length = " << trklen_true	 
 	     << ", trk length SD = " << lengthSD_true
 	     << endl;
 	
 	if(!isreco) cout << "Is not reconstructed!!!" << endl;
 	if(isoutfv) cout << "Is outfv!!!" << endl;
 	if(!isseparated) cout << "Is not separated!!!" << endl;
+	
       }
 
 
+
+
+
+
+
+      if(mom_true>3000 
+	 && (pdg==211)
+	 && !isoutfv 
+	 && (!isreco || !isseparated)){
+	
+	// InFV but not Reco
+
+	cout << "Evt ID: " << EvtID << endl;
+	cout << "pdg = " << pdg << endl;
+	cout << "trkid = " << trkid << endl;
+	cout << "This track is rejected though:"<< endl;
+	cout << " mom_true = " << mom_true << endl;
+	cout << " costh_true = " << costh_true << endl;
+	cout << " costh_reco = " << costh_reco << endl;
+	cout << " trk length = " << trklen_true << endl;	 
+	cout << " trklen_reco = " << trklen_reco << endl;
+	cout << " - # of hits:" << endl;
+	cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
+	cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
+	cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
+	if(!isreco) cout << "Is not reconstructed!!!" << endl;
+	if(isoutfv) cout << "Is outfv!!!" << endl;
+	if(!isseparated) cout << "Is not separated!!!" << endl;	
+
+	// PrintTruth(nd280UpEvent,trkid);
+	// TCanvas *cXY = new TCanvas();
+	// fRecoTrack_MPPCHit_XY[itrk]->Draw("colz");
+	// cXY->Print(TString::Format("fRecoTrack_MPPCHit_XY_Evt%d_Trk%d.pdf",ievt,itrk));
+	// TCanvas *cXZ = new TCanvas();
+	// fRecoTrack_MPPCHit_XZ[itrk]->Draw("colz");
+	// cXZ->Print(TString::Format("fRecoTrack_MPPCHit_XZ_Evt%d_Trk%d.pdf",ievt,itrk));
+	// TCanvas *cYZ = new TCanvas();
+	// fRecoTrack_MPPCHit_YZ[itrk]->Draw("colz");
+	// cYZ->Print(TString::Format("fRecoTrack_MPPCHit_YZ_Evt%d_Trk%d.pdf",ievt,itrk));
+	// exit(1);
+      }
+    
       
       // TODO: Calculate the reconstructed energy / momentum      
       // TODO: Fill the TND280UpRecoTrack class w/ MPPC hits (see above)
@@ -888,90 +1123,95 @@ int main(int argc,char** argv)
       //
       // Fill the Edep PDFs to use for the PID 	
       //
-
+    
       if(isreco){
 	if(isseparated){
+
 	  if(isoutfv){
 	    
 	    if(pdg==13){
-	      hMuon_EdepOverLen->Fill(trkedep/trklen);
-	      hMuon_EdepVsLen->Fill(trkedep,trklen);
+	      hMuon_EdepOverLen->Fill(trkedep/trklen_reco);
+	      hMuon_EdepVsLen->Fill(trkedep,trklen_reco);
 	      hMuon_Edep->Fill(trkedep);
-	      hMuon_Len->Fill(trklen);
+	      hMuon_Len->Fill(trklen_reco);
 	    }
 	    else if(pdg==211){
-	      hPion_EdepOverLen->Fill(trkedep/trklen); 
-	      hPion_EdepVsLen->Fill(trkedep,trklen); 
+	      hPion_EdepOverLen->Fill(trkedep/trklen_reco); 
+	      hPion_EdepVsLen->Fill(trkedep,trklen_reco); 
 	      hPion_Edep->Fill(trkedep); 
-	      hPion_Len->Fill(trklen);
+	      hPion_Len->Fill(trklen_reco);
 	    }
 	    else if(pdg==2212){
-	      hProt_EdepOverLen->Fill(trkedep/trklen); 
-	      hProt_EdepVsLen->Fill(trkedep,trklen); 
+	      hProt_EdepOverLen->Fill(trkedep/trklen_reco); 
+	      hProt_EdepVsLen->Fill(trkedep,trklen_reco); 
 	      hProt_Edep->Fill(trkedep); 
-	      hProt_Len->Fill(trklen);
+	      hProt_Len->Fill(trklen_reco);
 	    }
 	    else if(pdg==11){
-	      hElec_EdepOverLen->Fill(trkedep/trklen); 
-	      hElec_EdepVsLen->Fill(trkedep,trklen); 
+	      hElec_EdepOverLen->Fill(trkedep/trklen_reco); 
+	      hElec_EdepVsLen->Fill(trkedep,trklen_reco); 
 	      hElec_Edep->Fill(trkedep); 
-	      hElec_Len->Fill(trklen);
+	      hElec_Len->Fill(trklen_reco);
 	    }
 	  }
 	  
 	  else{ // in FV
 
 	    if(DEBUG){
-	      if(trklen > tracklength_true) cout << "Length: Reco > True !!!" << endl; 
+	      if(trklen_reco > trklen_true) cout << "Length: Reco > True !!!" << endl; 
+	      if(trklen_reco < 0.5*trklen_true){ 
+		cout << "Length: Reco << True !!!" << endl; 
+		//exit(1);
+	      } 
 	    }
 	    
-	    if(pdg==13){
-	      hMuon_Stopped_EdepOverLen->Fill(trkedep/trklen);
-	      hMuon_Stopped_EdepVsLen->Fill(trkedep,trklen);
+	    if(pdg==13){	      
+	      hMuon_Stopped_EdepOverLen->Fill(trkedep/trklen_reco);
+	      hMuon_Stopped_EdepVsLen->Fill(trkedep,trklen_reco);
 	      hMuon_Stopped_Edep->Fill(trkedep);
-	      hMuon_Stopped_Len->Fill(trklen);
+	      hMuon_Stopped_Len->Fill(trklen_reco);
 	      
 	      hMuon_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
 	      hMuon_CosTh_RecMinTr->Fill(costh_reco-costh_true);
-	      hMuon_Len_TrueVsReco->Fill(tracklength_true,trklen);
-	      hMuon_Len_RecMinTr->Fill(trklen-tracklength_true);
-	      hMuon_Len_RecMinTr_Vs_TrLen->Fill(trklen-tracklength_true,tracklength_true);
+	      hMuon_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
+	      hMuon_Len_RecMinTr->Fill(trklen_reco-trklen_true);
+	      hMuon_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
 	    }
 	    else if(pdg==211){
-	      hPion_Stopped_EdepOverLen->Fill(trkedep/trklen); 
-	      hPion_Stopped_EdepVsLen->Fill(trkedep,trklen); 
+	      hPion_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
+	      hPion_Stopped_EdepVsLen->Fill(trkedep,trklen_reco); 
 	      hPion_Stopped_Edep->Fill(trkedep); 
-	      hPion_Stopped_Len->Fill(trklen);
+	      hPion_Stopped_Len->Fill(trklen_reco);
 	      
 	      hPion_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
 	      hPion_CosTh_RecMinTr->Fill(costh_reco-costh_true);
-	      hPion_Len_TrueVsReco->Fill(tracklength_true,trklen);
-	      hPion_Len_RecMinTr->Fill(trklen-tracklength_true);
-	      hPion_Len_RecMinTr_Vs_TrLen->Fill(trklen-tracklength_true,tracklength_true);
+	      hPion_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
+	      hPion_Len_RecMinTr->Fill(trklen_reco-trklen_true);
+	      hPion_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
 	    }
 	    else if(pdg==2212){
-	      hProt_Stopped_EdepOverLen->Fill(trkedep/trklen); 
-	      hProt_Stopped_EdepVsLen->Fill(trkedep,trklen); 
+	      hProt_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
+	      hProt_Stopped_EdepVsLen->Fill(trkedep,trklen_reco); 
 	      hProt_Stopped_Edep->Fill(trkedep); 
-	      hProt_Stopped_Len->Fill(trklen);
+	      hProt_Stopped_Len->Fill(trklen_reco);
 	      
 	      hProt_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
 	      hProt_CosTh_RecMinTr->Fill(costh_reco-costh_true);
-	      hProt_Len_TrueVsReco->Fill(tracklength_true,trklen);
-	      hProt_Len_RecMinTr->Fill(trklen-tracklength_true);
-	      hProt_Len_RecMinTr_Vs_TrLen->Fill(trklen-tracklength_true,tracklength_true);
+	      hProt_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
+	      hProt_Len_RecMinTr->Fill(trklen_reco-trklen_true);
+	      hProt_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
 	    }
 	    else if(pdg==11){
-	      hElec_Stopped_EdepOverLen->Fill(trkedep/trklen); 
-	      hElec_Stopped_EdepVsLen->Fill(trkedep,trklen); 
+	      hElec_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
+	      hElec_Stopped_EdepVsLen->Fill(trkedep,trklen_reco); 
 	      hElec_Stopped_Edep->Fill(trkedep); 
-	      hElec_Stopped_Len->Fill(trklen);
+	      hElec_Stopped_Len->Fill(trklen_reco);
 	      
 	      hElec_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
 	      hElec_CosTh_RecMinTr->Fill(costh_reco-costh_true);
-	      hElec_Len_TrueVsReco->Fill(tracklength_true,trklen);
-	      hElec_Len_RecMinTr->Fill(trklen-tracklength_true);
-	      hElec_Len_RecMinTr_Vs_TrLen->Fill(trklen-tracklength_true,tracklength_true);
+	      hElec_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
+	      hElec_Len_RecMinTr->Fill(trklen_reco-trklen_true);
+	      hElec_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
 	    }
 	  } // if outfv
 	} // if separated
@@ -981,21 +1221,30 @@ int main(int argc,char** argv)
       // Fill the total event display
       if(ievt<NEvtDisplTot){
 	//if(fRecoTrack_PDG[itrk] == 13){
-	hMPPCHits_XY[ievt]->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z 
-	hMPPCHits_XZ[ievt]->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
-	hMPPCHits_YZ[ievt]->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
-	//}
+	if(fRecoTrack_ID[itrk] == 4){
+	  hMPPCHits_XY[ievt]->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z 
+	  hMPPCHits_XZ[ievt]->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
+	  hMPPCHits_YZ[ievt]->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
+
+	  AddGraph(gMCHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z 
+	  AddGraph(gMCHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y 
+	  AddGraph(gMCHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X 
+	}
       }
-      
+    
+      //cout << "gMCHits_XY[ievt]->GetN() = " << gMCHits_XY[ievt]->GetN() << endl;
 
       // Draw the Canvas
       if(ievt<NEvtDisplTot){
 	cMPPCHits_XY[ievt]->cd();
 	hMPPCHits_XY[ievt]->Draw("colz");
+	gMCHits_XY[ievt]->Draw("p same");
 	cMPPCHits_YZ[ievt]->cd();
 	hMPPCHits_YZ[ievt]->Draw("colz");
+	gMCHits_YZ[ievt]->Draw("p same");
 	cMPPCHits_XZ[ievt]->cd();
 	hMPPCHits_XZ[ievt]->Draw("colz");
+	gMCHits_XZ[ievt]->Draw("p same");
       }
       
       // Store the track info
@@ -1003,14 +1252,14 @@ int main(int argc,char** argv)
       fND280UpRecoTrack->SetTrackID(trkid);
       fND280UpRecoTrack->SetPDG(pdg);
       fND280UpRecoTrack->SetParentID(parid); 
-      fND280UpRecoTrack->SetRange(trklen);       
+      fND280UpRecoTrack->SetRange(trklen_reco);       
       fND280UpRecoTrack->SetEdep(trkedep);       
       fND280UpRecoTrack->SetOutFV(isoutfv);
       fND280UpRecoTrack->SetIsReco(isreco);
       fND280UpRecoTrack->SetIsSeparated(isseparated);
       fND280UpRecoTrack->SetTruthMom(mom_true); 
       fND280UpRecoTrack->SetTruthCosTheta(costh_true);
-      fND280UpRecoTrack->SetTruthLength(tracklength_true);
+      fND280UpRecoTrack->SetTruthLength(trklen_true);
       
       //fND280UpRecoTrack->SetRecoCosTheta(costh_true); // TODO!!!
       
@@ -1031,21 +1280,14 @@ int main(int argc,char** argv)
     // Fill the output tree with reco events
     fOutEventTree->Fill(); // This slows down a lot!!!
     
-
-    
     // Free the space of all the track histograms
-
-    // for ( vector<TH2F*>::iterator i = fRecoTrack_MPPCHit_YZ.begin(); i != fRecoTrack_MPPCHit_YZ.end(); ++i )
-    //   delete *i;  
-    // for ( vector<TH2F*>::iterator i = fRecoTrack_MPPCHit_XY.begin(); i != fRecoTrack_MPPCHit_XY.end(); ++i )
-    //   delete *i;
-    // for ( vector<TH2F*>::iterator i = fRecoTrack_MPPCHit_XZ.begin(); i != fRecoTrack_MPPCHit_XZ.end(); ++i )
-    //   delete *i;
-
     for(unsigned int itrk=0;itrk<fRecoTrack_MPPCHit_YZ.size();itrk++){      
       delete (fRecoTrack_MPPCHit_YZ[itrk]); 
       delete (fRecoTrack_MPPCHit_XY[itrk]); 
       delete (fRecoTrack_MPPCHit_XZ[itrk]); 
+      delete (fTrueTrack_MCHit_YZ[itrk]); 
+      delete (fTrueTrack_MCHit_XY[itrk]); 
+      delete (fTrueTrack_MCHit_XZ[itrk]); 
     }
     
   } // end loop over events
@@ -1206,51 +1448,66 @@ int main(int argc,char** argv)
 	if(!isreco) cout << ", Track NOT Reconstructed!!!" << endl;   	
 	if(!isseparated) cout << ", Track NOT Separated!!!" << endl;   	
       }
-
+      
       
       //
       // Reject not reconstructed or outFV tracks
       //
 
-      if(!isoutfv) continue;
+      if     (pdg==13)   hMuon_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+      else if(pdg==211)  hPion_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+      else if(pdg==2212) hProt_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
 
-      NTOTALOOFV_2ndLOOP++;
+      if(isoutfv) continue;     
       
-	if     (pdg==13){
+      if     (pdg==13){
 	hMuon_AllIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
 	hMuon_AllIso_TrMom->Fill(mom_true);
 	hMuon_AllIso_TrCosTh->Fill(costheta_true);
+
+	NTOTALINFV_2ndLOOP_mu++;
       }
       else if(pdg==211){
 	hPion_AllIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
 	hPion_AllIso_TrMom->Fill(mom_true);
 	hPion_AllIso_TrCosTh->Fill(costheta_true);
+	
+	NTOTALINFV_2ndLOOP_pi++;
       }
       else if(pdg==2212){
 	hProt_AllIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
 	hProt_AllIso_TrMom->Fill(mom_true);
 	hProt_AllIso_TrCosTh->Fill(costheta_true);
+	
+	NTOTALINFV_2ndLOOP_prot++;
       }
       
       if(!isreco)  continue;
       if(!isseparated)  continue;
 
-      NTOTALRECO_2ndLOOP++;
 
+
+      
       if     (pdg==13){
 	hMuon_EffIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
 	hMuon_EffIso_TrMom->Fill(mom_true);
 	hMuon_EffIso_TrCosTh->Fill(costheta_true);
+
+	NTOTALRECO_2ndLOOP_mu++;
       }
       else if(pdg==211){
 	hPion_EffIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
 	hPion_EffIso_TrMom->Fill(mom_true);
 	hPion_EffIso_TrCosTh->Fill(costheta_true);
+	
+	NTOTALRECO_2ndLOOP_pi++;
       }
       else if(pdg==2212){
 	hProt_EffIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
 	hProt_EffIso_TrMom->Fill(mom_true);
 	hProt_EffIso_TrCosTh->Fill(costheta_true);
+
+	NTOTALRECO_2ndLOOP_prot++;
       }
 
       
@@ -1316,17 +1573,19 @@ int main(int argc,char** argv)
   // Compute track reconstruction efficiencies
   //
   
-  hMuon_EffIso_TrMomVsTrCosTh->Divide(hMuon_AllIso_TrMomVsTrCosTh);
-  hPion_EffIso_TrMomVsTrCosTh->Divide(hPion_AllIso_TrMomVsTrCosTh);
-  hProt_EffIso_TrMomVsTrCosTh->Divide(hProt_AllIso_TrMomVsTrCosTh);
- 
-  hMuon_EffIso_TrMom->Divide(hMuon_AllIso_TrMom);
-  hPion_EffIso_TrMom->Divide(hPion_AllIso_TrMom);
-  hProt_EffIso_TrMom->Divide(hProt_AllIso_TrMom);
 
-  hMuon_EffIso_TrCosTh->Divide(hMuon_AllIso_TrCosTh);
-  hPion_EffIso_TrCosTh->Divide(hPion_AllIso_TrCosTh);
-  hProt_EffIso_TrCosTh->Divide(hProt_AllIso_TrCosTh);
+  
+  //hMuon_EffIso_TrMomVsTrCosTh->Divide(hMuon_AllIso_TrMomVsTrCosTh);
+  //hPion_EffIso_TrMomVsTrCosTh->Divide(hPion_AllIso_TrMomVsTrCosTh);
+  //hProt_EffIso_TrMomVsTrCosTh->Divide(hProt_AllIso_TrMomVsTrCosTh);
+ 
+  //hMuon_EffIso_TrMom->Divide(hMuon_AllIso_TrMom);
+  //hPion_EffIso_TrMom->Divide(hPion_AllIso_TrMom);
+  //hProt_EffIso_TrMom->Divide(hProt_AllIso_TrMom);
+
+  //hMuon_EffIso_TrCosTh->Divide(hMuon_AllIso_TrCosTh);
+  //hPion_EffIso_TrCosTh->Divide(hPion_AllIso_TrCosTh);
+  //hProt_EffIso_TrCosTh->Divide(hProt_AllIso_TrCosTh);
  
 
 
@@ -1336,8 +1595,14 @@ int main(int argc,char** argv)
   cout << endl;
   cout << "NTOTALTRACKSALL_1stLOOP = " << NTOTALTRACKSALL_1stLOOP << endl;
   cout << "NTOTALTRACKSALL_2ndLOOP = " << NTOTALTRACKSALL_2ndLOOP << endl;
-  cout << "NTOTALOOFV_2ndLOOP = " << NTOTALOOFV_2ndLOOP << endl;
-  cout << "NTOTALRECO_2ndLOOP = " << NTOTALRECO_2ndLOOP << endl;
+  cout << "NTOTALINFV_2ndLOOP_mu = "   << NTOTALINFV_2ndLOOP_mu << endl;
+  cout << "NTOTALINFV_2ndLOOP_pi = "   << NTOTALINFV_2ndLOOP_pi << endl;
+  cout << "NTOTALINFV_2ndLOOP_prot = " << NTOTALINFV_2ndLOOP_prot << endl;
+  cout << "NTOTALINFV_2ndLOOP_elec = " << NTOTALINFV_2ndLOOP_elec << endl;
+  cout << "NTOTALRECO_2ndLOOP_mu = "   << NTOTALRECO_2ndLOOP_mu << endl;
+  cout << "NTOTALRECO_2ndLOOP_pi = "   << NTOTALRECO_2ndLOOP_pi << endl;
+  cout << "NTOTALRECO_2ndLOOP_prot = " << NTOTALRECO_2ndLOOP_prot << endl;
+  cout << "NTOTALRECO_2ndLOOP_elec = " << NTOTALRECO_2ndLOOP_elec << endl;
   cout << endl;
 
   
@@ -1374,9 +1639,14 @@ int main(int argc,char** argv)
 	hMPPCHits_XY[ievtdispl]->Write();  
 	hMPPCHits_XZ[ievtdispl]->Write();  
 	hMPPCHits_YZ[ievtdispl]->Write();
-	//cMPPCHits_XY[ievtdispl]->Write();  
-	//cMPPCHits_XZ[ievtdispl]->Write();  
-	//cMPPCHits_YZ[ievtdispl]->Write();
+
+	gMCHits_XY[ievtdispl]->Write();
+	gMCHits_XZ[ievtdispl]->Write();
+	gMCHits_YZ[ievtdispl]->Write();
+
+	cMPPCHits_XY[ievtdispl]->Write();  
+	cMPPCHits_XZ[ievtdispl]->Write();  
+	cMPPCHits_YZ[ievtdispl]->Write();
 	// //hPEVsTime_x[ievtdispl]->Write(); 
 	// //hPEVsTime_y[ievtdispl]->Write(); 
 	// //hPEVsTime_z[ievtdispl]->Write(); 
@@ -1446,6 +1716,10 @@ int main(int argc,char** argv)
   hLikeRatio_PionProt_TrueProt->Write();
 
   // Reconstruction
+
+  hMuon_TrMomVsTrCosTh->Write();
+  hPion_TrMomVsTrCosTh->Write();
+  hProt_TrMomVsTrCosTh->Write();
 
   hMuon_AllIso_TrMomVsTrCosTh->Write();
   hPion_AllIso_TrMomVsTrCosTh->Write();

@@ -2700,16 +2700,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // Sensitive detectors
   //------------------------------------------------ 
   
-  if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );  
-  //if( ND280XMLInput->GetXMLUseSuperFGD1() )logicSuperFGD1->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseSuperFGD2() )logicSuperFGD2->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );  
+  // //if( ND280XMLInput->GetXMLUseSuperFGD1() )logicSuperFGD1->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseSuperFGD2() )logicSuperFGD2->SetSensitiveDetector( GetSensitiveDetector() );
 
   // Construct the field creator - this will register the field it creates
   if (!fEmFieldSetup.Get()) {
@@ -3661,24 +3661,24 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //logDrift->SetVisAttributes(G4VisAttributes::Invisible);
   //}
 
-  //
-  // Don't set the logDrift as sensitive region because it contains also the 
-  // other pieces like the cathode...
-  //
-  // if (GetSensitiveDetector()) {
-  //   logDrift->SetSensitiveDetector(GetSensitiveDetector());
-  // }  
-  // //logDrift->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
+  // //
+  // // Don't set the logDrift as sensitive region because it contains also the 
+  // // other pieces like the cathode...
+  // //
+  // // if (GetSensitiveDetector()) {
+  // //   logDrift->SetSensitiveDetector(GetSensitiveDetector());
+  // // }  
+  // // //logDrift->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
   
-  // if (SDRegion) {
-  //   SDRegion->AddRootLogicalVolume(logDrift);
-  // } 
-  // else {
-  //   G4ExceptionDescription msg;
-  //   msg << "The SD region does not exist" << G4endl;
-  //   G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-  // 		"MyCode0002",FatalException, msg);
-  // }
+  // // if (SDRegion) {
+  // //   SDRegion->AddRootLogicalVolume(logDrift);
+  // // } 
+  // // else {
+  // //   G4ExceptionDescription msg;
+  // //   msg << "The SD region does not exist" << G4endl;
+  // //   G4Exception("ExN02DetectorConstruction::GetPieceTPC",
+  // // 		"MyCode0002",FatalException, msg);
+  // // }
   
 
   // CO2 space
@@ -3821,8 +3821,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   // }
   
   if (GetSensitiveDetector()) {
-    logHalf0->SetSensitiveDetector(GetSensitiveDetector());
-    logHalf1->SetSensitiveDetector(GetSensitiveDetector());
+    //logHalf0->SetSensitiveDetector(GetSensitiveDetector());
+    //logHalf1->SetSensitiveDetector(GetSensitiveDetector());
     
     if (SDRegion) {
       SDRegion->AddRootLogicalVolume(logHalf0);
@@ -3910,7 +3910,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //logMM->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
   
   if (GetSensitiveDetector()) {
-    logMM->SetSensitiveDetector(GetSensitiveDetector());
+    //logMM->SetSensitiveDetector(GetSensitiveDetector());
   }
   
   if (SDRegion) {

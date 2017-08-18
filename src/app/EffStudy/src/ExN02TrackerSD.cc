@@ -95,6 +95,7 @@ void ExN02TrackerSD::Initialize(G4HCofThisEvent* HCE)
 
 G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 {
+
   // Take inputs
   ND280RootPersistencyManager* InputPersistencyManager
     = ND280RootPersistencyManager::GetInstance();
@@ -104,9 +105,19 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   G4double edep = aStep->GetTotalEnergyDeposit();
   if(edep==0.) return false;
 
-  if(aStep->GetTrack()->GetParentID()>0) return false; // Look only at Primary Tracks!!!
+  
+  //G4cout << "ExN02TrackerSD::ProcessHits" << G4endl;
 
-  NSteps_++;
+  //return false;
+
+  if(aStep->GetTrack()->GetParentID()>0) return false; // Look only at Primary Tracks!!!
+  
+  //if(aStep->GetTrack()->GetParentID()==0){
+  
+      
+  
+  
+  //NSteps_++;
   
   ///// NEW ND280 HitSegment
 
@@ -120,11 +131,13 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     }
   }
 
+
   /////
 
   G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
   G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
-
+  
+  
   // Calculate step length in each direction
   double postposX = postStepPoint->GetPosition().x();
   double postposY = postStepPoint->GetPosition().y();
@@ -174,7 +187,12 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     }
     
     //G4cout << "The local coordinate system is: "  << persistencyManager->GetNavigHistoVolName() << G4endl;
-    
+
+
+    /*
+
+    //This piece of code is not used
+
     const G4NavigationHistory *pmHistory = persistencyManager->GetNavigHistoTarg1();
     
     G4String pm_namedet_0 = pmHistory->GetVolume(0)->GetName();
@@ -230,360 +248,14 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     G4double prestepTime = preStepPoint->GetGlobalTime() * ns;
     G4double steplength = aStep->GetStepLength();
     G4double charge = track->GetDefinition()->GetPDGCharge();
-    
-
-
-
-
-
-
-
-
-
-    /*
-
-    //////// THIS PIECE OF CODE HAS BEEN MOVED TO ExN02ApplyResponse
-
-    if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
-      persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
-      //G4cout << "mppc pos: X = " << mppcX << ", Y = " << mppcY << G4endl;
-      //persistencyManager->GetHitPosXZ(lightX,lightZ,mppcX,mppcZ);
-      //G4cout << "mppc pos: X = " << mppcX << ", Z = " << mppcZ << G4endl;
-      persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
-      //G4cout << "mppc pos: Y = " << mppcY << ", Z = " << mppcZ << G4endl;
-    }
-    else if( ND280XMLInput->GetXMLUseSciFi() ||
-	     ND280XMLInput->GetXMLUseFGDlike() ) { // SciFi_XZ or FGDlike_XZ
-      persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
-      //G4cout << "mppc pos: Y = " << mppcY << G4endl; 
-      persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
-      //G4cout << "mppc pos: Y = " << mppcY << G4endl;
-      
-      double world_x = PMworldPosition.x();
-      double world_y = PMworldPosition.y();
-      double world_z = PMworldPosition.z();
-      
-      double loc_x = PMlocalPosition.x();
-      double loc_y = PMlocalPosition.y();
-      double loc_z = PMlocalPosition.z();
-      
-#ifdef DEBUG
-      G4cout << touch_namedet << G4endl;
-      G4cout << "lightY = " << lightY << G4endl;
-      G4cout <<"World pos: " << world_x << ", " << world_y << ", " << world_z << G4endl;
-      G4cout <<"Loc pos: "<<loc_x << ", " << loc_y << ", " << loc_z << G4endl;
-      G4cout <<"MPPC pos: " <<mppcX << ", " << mppcY << ", " << mppcZ<< G4endl;
-      G4cout << G4endl;
-#endif
-    }
-    
-    G4ThreeVector MPPCLocalPosition = G4ThreeVector(mppcX,mppcY,mppcZ);  
-
-    G4double edep_q = edep;
-
-    // Calculate the # of p.e. that reach the MPPC (X,Y,Z)    
-
-    double peX=0.; G4double distX=0.; double timepeX=0.;// pe along fiber X
-    double peY=0.; G4double distY=0.; double timepeY=0.;// pe along fiber Y
-    double peZ=0.; G4double distZ=0.; double timepeZ=0.;// pe along fiber Z
-
-    if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
-      distX = lightX - persistencyManager->GetMPPCPosX(); 
-      distY = lightY - persistencyManager->GetMPPCPosY(); 
-      distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
-    }
-    else if( ND280XMLInput->GetXMLUseSciFi() ||
-	     ND280XMLInput->GetXMLUseFGDlike() ) { // SciFi_XZ or FGDlike_XZ
-      
-      distX = lightX - persistencyManager->GetMPPCPosX(); 
-      distY = lightY - persistencyManager->GetMPPCPosY(); 
-      distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
-
-      //G4cout << touch_namedet << G4endl;
-      
-      // // fiber along X --> Z coordinate + Y layer 
-      // if(touch_namedet.contains("FiberScintHoriz")){
-      // 	distX = conv::kUndefined; 
-      // 	distY = lightY - persistencyManager->GetMPPCPosY();
-      // 	distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
-      // }
-      // // fiber along Z --> X coordinate + Y layer 
-      // else if(touch_namedet.contains("FiberScintVert")){ // along Z
-      // 	distX = lightX - persistencyManager->GetMPPCPosX(); 
-      // 	distY = lightY - persistencyManager->GetMPPCPosY();
-      // 	distZ = conv::kUndefined; 
-      // }
-      
-    }
-
-    //////////////////////////////////////////////
-    //
-    // TODO: Add more checks on the hit position
-    //
-    //////////////////////////////////////////////
-
-    if( (distX<0 && distX!=conv::kUndefined) || 
-	(distY<0 && distY!=conv::kUndefined) || 
-	(distZ<0 && distZ!=conv::kUndefined) ){
-      G4cout << "distX = " << distX 
-	     << ", distY = " << distY 
-	     << ", distZ = " << distZ 
-	     << G4endl;
-      G4Exception("ExN02TrackerSD::ProcessHits",
-		  "MyCode0002",FatalException,
-		  "The hit is outside the target!!!");    
-    }
-
-    // Set the target type
-    
-    ExN02TargReadOut TargetReadOut;
-    if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
-      TargetReadOut.SetTargType(conv::kSuperFGD); 
-    }
-    else if( ND280XMLInput->GetXMLUseFGDlike() ){ // FGDlike
-      TargetReadOut.SetTargType(conv::kFGDlike);
-    }
-    else{ // SciFi --> need to add the new response functions
-      TargetReadOut.SetTargType(conv::kSciFi);
-    }
-    
-    // light attenuation (Birks' formula)
-    double pe = TargetReadOut.ApplyScintiResponse(edep_q,steplength,track);
-    
-    //G4cout << "TrkID = " << trackid << G4endl;
-    //G4cout << " - dist: " << distX << ", " << distY << ", " << distZ << G4endl;
-    //G4cout << " - edep = " << edep << G4endl;
-    //G4cout << " - pe (no att) = " << pe << G4endl;
-    
-    if( ND280XMLInput->GetXMLUseSuperFGD1() ){ // SuperFGD
-      peX = pe;
-      peY = pe;
-      peZ = pe;
-
-      timepeX = prestepTime;
-      timepeY = prestepTime;
-      timepeZ = prestepTime;
-
-      //G4cout << "pdg: " << particle << ", det:" << touch_namedet << ", time: " << prestepTime << G4endl;
-      
-      // light collection + attenuation
-      TargetReadOut.ApplyFiberResponse(peX,timepeX,distX); // along X fiber
-      TargetReadOut.ApplyFiberResponse(peY,timepeY,distY); // along Y fiber
-      TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ); // along Z fiber
-      
-      // MPPC efficiency
-      TargetReadOut.ApplyMPPCResponse(peX);
-      TargetReadOut.ApplyMPPCResponse(peY);
-      TargetReadOut.ApplyMPPCResponse(peZ);
-      
-      //G4cout << "peX=" << peX << ", peY=" << peY << ", peZ=" << peZ << G4endl;
-      //G4cout << "timepeX=" << timepeX << ", timepeY=" << timepeY << ", timepeZ=" << timepeZ << G4endl;
-    }
-    else if( ND280XMLInput->GetXMLUseSciFi() ||
-	     ND280XMLInput->GetXMLUseFGDlike() ) { 
-      // SciFi_XZ or FGDlike_XZ (i.e. built in XY and rotated by 90deg on X axis)
-
-      // Take the detector name along X and Z
-      G4String DetNameAlongX = InputPersistencyManager->GetDetNameAlongX(); 
-      G4String DetNameAlongZ = InputPersistencyManager->GetDetNameAlongZ();
-      
-      // Propagation only along X
-      if(touch_namedet.contains(DetNameAlongX)){ // "FiberScintHoriz"
-     	peX = pe; timepeX = prestepTime;
-	peY = 0.; timepeY = 0.;
-	peZ = 0.; timepeZ = 0.;	
-	// light collection + attenuation
-	TargetReadOut.ApplyFiberResponse(peX,timepeX,distX);	
-	// MPPC efficiency
-	TargetReadOut.ApplyMPPCResponse(peX);
-      }
-      // Propagation only along Z
-      else if(touch_namedet.contains(DetNameAlongZ)){ //"FiberScintVert"
-     	peX = 0.; timepeX = 0.;
-	peY = 0.; timepeY = 0.;
-	peZ = pe; timepeZ = prestepTime;	
-	// light collection + attenuation
-	TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ);	
-	// MPPC efficiency
-	TargetReadOut.ApplyMPPCResponse(peZ);
-      }
-      else{
-	G4Exception("ExN02TrackerSD::ProcessHits",
-		    "MyCode0002",FatalException,
-		    "The hit is outside both direction fibers!!!");    
-      }            
-    } // if SuperFGD || SciFi ...
-
-
-    
-    //G4cout << touch_namedet << G4endl;
-    //G4cout << peX << " " << peY << " " << peZ << G4endl;
-    //G4cout << prestepTime << ": " 
-    //<< timepeX << " " << timepeY << " " << timepeZ << G4endl;
-    //G4cout << lightX << " " << lightY << " " << lightZ << G4endl;
-    //G4cout << MPPCLocalPosition.x() << " "
-    //<< MPPCLocalPosition.y() << " "
-    //<< MPPCLocalPosition.z() << G4endl;
-    //G4cout << G4endl;
-    
-    // // volume information must be extracted from Touchable of "PreStepPoint" 
-    // const G4VTouchable* Touchable = aStep->GetPreStepPoint()->GetTouchable();
-    // G4int detID = Touchable->GetVolume(0)->GetCopyNo();
-
-
-    //
-    // B.S
-    //
-
-    // The WAGASCI response code is totally independent from the other target detectors!!!
- 
-    // volume information must be extracted from Touchable of "PreStepPoint" 
-    G4int detID = theTouchable->GetVolume(0)->GetCopyNo();
-
-    G4ThreeVector MPPClocalPosition = G4ThreeVector(0,0,0);  
-    G4ThreeVector MPPCworldPosition;
-
-    if( ND280XMLInput->GetXMLUseWAGASCI1() ){ // WAGASCI1
-          
-      PMworldPosition = preStepPoint->GetPosition();
-      vector <ND280PhysicalVolumeInformation> PVInfo;
-      PVInfo.clear();
-      PVInfo = persistencyManager->GetPhysicalVolumeInformation();
-      const G4AffineTransform transformation = 
-	preStepPoint->GetTouchable()->GetHistory()->GetTopTransform();
-      PMlocalPosition = transformation.TransformPoint(PMworldPosition);
-      
-      for(int i=0;i<PVInfo.size();i++){
-	if(PVInfo[i].GetDetID() == detID){
-	  MPPClocalPosition = PVInfo[i].GetMPPCPosition();
-
-	  // G4cout << "MPPClocalPosition = " << MPPClocalPosition << G4endl;
-
-	  break;
-	}
-      }
-      
-      MPPCworldPosition = (transformation.Inverse()).TransformPoint(MPPClocalPosition);  
-      
-#ifdef DEBUG
-      G4cout << "Number of physical volumes =" << PVInfo.size() 
-	     << ", MPPC position =("<<MPPClocalPosition[0] << ","
-	     <<MPPClocalPosition[1] << ","
-	     <<MPPClocalPosition[2] << ")"
-	     << G4endl;
-      G4cout << "Volume name touched is =" << touch_namedet 
-	     <<", ID number is =" << preStepPoint->GetTouchable()->GetVolume(0)->GetCopyNo()
-	     << ", energy deposited by thi step =" << edep 
-	     << ", local pos = (" << PMlocalPosition[0] << "," << PMlocalPosition[1] << "," << PMlocalPosition[2] << ")" 
-	     << G4endl ;
-      G4cout << "Global MPPC pos = (" << MPPCworldPosition[0] << "," << MPPCworldPosition[1] << "," << MPPCworldPosition[2] << ")" 
-	     << G4endl ;
-#endif
-      
-      //apply quenching effect
-      edep_q = edep;
-      trackerResponse->ApplyScintiResponse(&edep_q,track);
-      
-      peX=edep;
-      peY=edep;
-      peZ=edep;
-      
-#ifdef DEBUG
-      G4cout << "Check before hit filling: Volume =" << detID 
-	     <<", particle =" << particle 
-	     << ", trackid =" << trackid 
-	     << ", parentid =" << parentid 
-	     << ", edep =" << edep 
-	     << ", edepq =" << edep_q 
-	     <<", MPPC position =" << MPPClocalPosition[0] << ", "<< MPPClocalPosition[1] << ", " << MPPClocalPosition[2] 
-	     << ", step time = " << prestepTime 
-	     << G4endl ;
-#endif 
-    } // end if use WAGASCI
-    
-    ////////////////////////////////
-
     */
-
-
-
-
-
-    /*
-      
-    /////////// TEST OF ExN02ApplyResponse CLASS ON EACH STEP 
-
-    int trackid_prev = trackid;
-    double edep_prev = edep;
-    double peX_prev = peX;
-    double peY_prev = peY;
-    double peZ_prev = peZ;
-    double timepeX_prev = timepeX;
-    double timepeY_prev = timepeY;
-    double timepeZ_prev = timepeZ;
-    G4ThreeVector LightPos_prev = LightPos;
-    G4ThreeVector MPPCLocalPosition_prev = MPPCLocalPosition;
     
-    G4cout << " trkid =" << trackid_prev
-    	   << " edep =" << edep_prev
-    	   << " pe =" << peX_prev << ", " << peY_prev << ", " << peZ_prev 
-    	   << " delay =" << timepeX_prev << ", " << timepeY_prev << ", " << timepeZ_prev 
-    	   << " lightpos = " << LightPos_prev
-    	   << " MPPCpos =" << MPPCLocalPosition_prev
-    	   << G4endl ;
- 
-         
-    ExN02ApplyResponse ApplyResponse;    
-    G4ThreeVector lightPos(lightX,lightY,lightZ);    
-    ApplyResponse.CalcResponse(lightPos,trackid,parentid,charge,prestepTime,steplength,edep,touch_namedet);    
     
-    peX = ApplyResponse.GetHitPE().x();
-    peY = ApplyResponse.GetHitPE().y();
-    peZ = ApplyResponse.GetHitPE().z();
-    
-    timepeX = ApplyResponse.GetHitTime().x();
-    timepeY = ApplyResponse.GetHitTime().y();
-    timepeZ = ApplyResponse.GetHitTime().z();
-    
-    double posX = ApplyResponse.GetHitPos().x();
-    double posY = ApplyResponse.GetHitPos().y();
-    double posZ = ApplyResponse.GetHitPos().z();
-    
-    trackid = ApplyResponse.GetHitTrkID();
-    
-    G4cout << " trkid =" << trackid
-    	   << " edep =" << edep
-    	   << " pe =" << peX << ", " << peY << ", " << peZ 
-    	   << " delay =" << timepeX << ", " << timepeY << ", " << timepeZ 
-    	   << " lightpos = " << lightPos
-    	   << " MPPCpos =" << ApplyResponse.GetHitPos()
-    	   << G4endl ;
-    
-    if(trackid_prev!=trackid ||
-       edep_prev!=edep ||
-       peX_prev!=peX ||
-       peY_prev!=peY ||
-       peZ_prev!=peZ ||
-       timepeX_prev!=timepeX ||
-       timepeY_prev!=timepeY ||
-       timepeZ_prev!=timepeZ ||
-       LightPos_prev!=LightPos ||
-       MPPCLocalPosition_prev!=MPPCLocalPosition
-       )
-      {
-    	exit(1);
-      }
-    //////
-
-    */
 
 
 
-
-
-    
     ///// NEW ND280 HitSegment    
-
+    
     // #define SEPARATE_STEPS
 #ifndef SEPARATE_STEPS
     // Look through the list of available hits and see the new hit should be
@@ -617,42 +289,15 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
       }
     } while (false);
 #endif
-
+    
     // If a hit wasn't found, create one.
     if (!currentHit) {
       currentHit = new ExN02TrackerHit(fMaximumHitSagitta,fMaximumHitLength);
       fLastHit = trackerCollection->entries();
       trackerCollection->insert(currentHit);
     }
-
+  
     currentHit->AddStep(aStep);
-    
-
-    // Use definition of nd280mc --> comment the old one
-
-    /*
-
-    //
-    // Fill the Hit (store all true informations)
-    // The response is computed in ND280RootPersistencyManager
-    //
-
-    double maxSagitta = 1.; // TO CHANGE
-    double maxLength = 1.; // TO CHANGE
-    
-    ExN02TrackerHit* aHit  
-      = new ExN02TrackerHit(maxSagitta,maxLength,detID,particle,trackid,parentid,edep,charge,LightPos,prestepTime);          
-    //= new ExN02TrackerHit(detID,particle,trackid,parentid,edep,charge,LightPos,prestepTime);          
-    aHit->SetStepLength(steplength);
-    aHit->SetNameDet(touch_namedet);
-    
-    trackerCollection->insert( aHit );   
-    */
-
-    //////////// END ND280 HitSegment
-
-
-
 
   } // if( persistencyManager->GetNavigDetName_Targ1()!="" )
 
@@ -791,14 +436,6 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 	 << G4endl;
   */
 
-
-
-
-
-  
-  
-
-
   /*
 
   // The geometry is stored in the PreStepPoint()
@@ -905,6 +542,10 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 
   NSteps_++;
 
+  //  }
+  
+  //G4cout << "End of ExN02TrackerSD::ProcessHits()" << G4endl;
+    
   return true;
 
 }

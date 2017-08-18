@@ -578,6 +578,17 @@ void ND280UpRecoTrack::CalcOutFV(){
   // OutFV --> the track has 1 hit in the outer bar/cube
 
   fIsOutFV = false;
+
+  fIsOutFV = CalcOutFVView(f2d_xy);
+  if(fIsOutFV) return;
+
+  fIsOutFV = CalcOutFVView(f2d_xz);
+  if(fIsOutFV) return;
+  
+  fIsOutFV = CalcOutFVView(f2d_yz);
+  if(fIsOutFV) return;
+ 
+  /*
   
   TH1F *hX; 
   TH1F *hY; 
@@ -609,8 +620,35 @@ void ND280UpRecoTrack::CalcOutFV(){
   if(bincontZ_first>0. || bincontZ_last>0.){
     fIsOutFV = true;
   }
-  
+
+  */
+
   return;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+bool ND280UpRecoTrack::CalcOutFVView(TH2F *h2D){
+
+  TH1F *hX; 
+  TH1F *hY; 
+
+  hX = (TH1F*) h2D->ProjectionX();
+  hY = (TH1F*) h2D->ProjectionY();
+  
+  double bincontX_first = hX->GetBinContent(1);
+  double bincontX_last  = hX->GetBinContent(hX->GetNbinsX());
+  if(bincontX_first>0. || bincontX_last>0.){
+    return true;
+  }
+
+  double bincontY_first = hY->GetBinContent(1);
+  double bincontY_last  = hY->GetBinContent(hY->GetNbinsX());
+  if(bincontY_first>0. || bincontY_last>0.){
+    return true;
+  }
+  
+  return false;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -10,15 +10,24 @@
 std::map<int, G4VTrajectory*> ND280TrajectoryMap::fMap;
 
 void ND280TrajectoryMap::Clear() {
+
+  //G4cout << "ND280TrajectoryMap::Clear()" << G4endl;
+
     fMap.clear();
 }
 
 void ND280TrajectoryMap::Add(G4VTrajectory* traj) {
+
+  //G4cout << "ND280TrajectoryMap::Add" << G4endl;
+
         int trackId = traj->GetTrackID();
         fMap[trackId] = traj;
 }
 
 int ND280TrajectoryMap::FindPrimaryId(int trackId) {
+
+  //G4cout << "ND280TrajectoryMap::FindPrimaryId" << G4endl;
+
     int currentId = trackId;
     int parentId = trackId;
     int loopCount=0;
@@ -55,6 +64,9 @@ int ND280TrajectoryMap::FindPrimaryId(int trackId) {
 }
 
 G4VTrajectory* ND280TrajectoryMap::Get(int trackId) {
+
+  //G4cout << "ND280TrajectoryMap::Get" << G4endl;
+
     std::map<int,G4VTrajectory*>::iterator t = fMap.find(trackId);
     if (t == fMap.end()) {
         return NULL;

@@ -97,7 +97,11 @@ G4double ND280Trajectory::GetRange() const {
 }
 
 void ND280Trajectory::MarkTrajectory(bool save) {
+
+  //G4cout << "ND280Trajectory::MarkTrajectory" << G4endl;
+
     fSaveTrajectory = true;
+    
     if (!save) return;
     // Mark all parents to be saved as well.
     G4VTrajectory* g4Traj = ND280TrajectoryMap::Get(fParentID);
@@ -225,6 +229,9 @@ std::vector<G4AttValue>* ND280Trajectory::CreateAttValues() const {
 }
 
 void ND280Trajectory::AppendStep(const G4Step* aStep) {
+
+  //G4cout << "ND280Trajectory::AppendStep" << G4endl;
+
     ND280TrajectoryPoint* point = new ND280TrajectoryPoint(aStep);
     fPositionRecord->push_back(point);
 }
@@ -234,6 +241,9 @@ G4ParticleDefinition* ND280Trajectory::GetParticleDefinition() const {
 }
 
 void ND280Trajectory::MergeTrajectory(G4VTrajectory* secondTrajectory) {
+
+  //G4cout << "ND280Trajectory::MergeTrajectory" << G4endl;
+
     if(!secondTrajectory) return;
     ND280Trajectory* seco = (ND280Trajectory*)secondTrajectory;
     G4int ent = seco->GetPointEntries();

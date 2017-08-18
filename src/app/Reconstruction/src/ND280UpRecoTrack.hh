@@ -100,6 +100,7 @@ private:
   void CalcNHits();
   void CalcEdep();
   void CalcOutFV();
+  bool CalcOutFVView(TH2F *h2D);
   void DefineRecoTrack(); // cuts 
   void CalcRecoVar(); 
   //

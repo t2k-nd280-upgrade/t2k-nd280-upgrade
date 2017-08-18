@@ -339,9 +339,17 @@ void ExN02RunAction::BeginOfRunAction(const G4Run* aRun)
   // set the Seed
   if(IsRandomSeed) SetSeed();
 
+
+
+
   //inform the runManager to save random number seed  
   //G4RunManager::GetRunManager()->SetRandomNumberStore(true);      
+  // // Store the seed
+  //G4RunManager::GetRunManager()->rndmSaveThisEvent();
 
+
+
+  
   // Get analysis manager
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   
