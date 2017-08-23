@@ -27,16 +27,17 @@
 #include "G4HCofThisEvent.hh"
 #include "G4VHitsCollection.hh"
 
-#include <G4SystemOfUnits.hh>
+//#include <G4SystemOfUnits.hh> // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 // Creator for the persistency manager.  This is NOT a public routine
 // since it is only used by this class to create a singleton object.
 ND280PersistencyManager::ND280PersistencyManager() 
   : G4VPersistencyManager(), fFilename("/dev/null"),
-    fLengthThreshold(1*cm), // default nd280mc is 2*cm (NOT APPLIED!!!)
-    fGammaThreshold(20*MeV), // default nd280mc is 50*MeV 
-    fNeutronThreshold(50*MeV),
-    fTrajectoryPointAccuracy(1*cm), 
+    fLengthThreshold(1*CLHEP::cm), // default nd280mc is 2*cm (NOT APPLIED!!!)
+    fGammaThreshold(20*CLHEP::MeV), // default nd280mc is 50*MeV 
+    fNeutronThreshold(50*CLHEP::MeV),
+    fTrajectoryPointAccuracy(1*CLHEP::cm), 
     fSaveAllPrimaryTrajectories(true) //default nd280mc is false
 {
   fPersistencyMessenger = new ND280PersistencyMessenger(this);
@@ -208,7 +209,7 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   // Don't save low momentum charged particles (My cuts)
   if (particleName == "gamma") return;
   if (particleName == "neutron") return;
-  if (particleName == "proton" && initialMomentum<200*MeV) return;
+  if (particleName == "proton" && initialMomentum<200*CLHEP::MeV) return;
   //
   
   // Save any decay product
@@ -283,7 +284,7 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   // gamma conversion
   if (particleName == "e+" || particleName == "e-"){
     if (processName == "conv"){
-      if(initialMomentum > 100*MeV){
+      if(initialMomentum > 100*CLHEP::MeV){
 	ndTraj->MarkTrajectory(false); 
      	return;
       }
@@ -420,7 +421,7 @@ double ND280PersistencyManager::FindTrajectoryAccuracy(
     G4ThreeVector p1 = g4Traj->GetPoint(point1)->GetPosition();
     G4ThreeVector p2 = g4Traj->GetPoint(point2)->GetPosition();
 
-    if ( (p2-p1).mag() < 0.1*mm) return 0;
+    if ( (p2-p1).mag() < 0.1*CLHEP::mm) return 0;
 
     G4ThreeVector dir = (p2-p1).unit();
 
@@ -501,7 +502,7 @@ void ND280PersistencyManager::SelectTrajectoryPoints(
     // 
     //////////////////////////////////////////////
     ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(g4Traj);    
-    if (ndTraj->GetSDEnergyDeposit() < 1*eV) return;
+    if (ndTraj->GetSDEnergyDeposit() < 1*CLHEP::eV) return;
 
     // Find the trajectory points where particles are entering and leaving the
     // detectors.

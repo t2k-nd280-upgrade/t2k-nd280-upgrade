@@ -10,9 +10,9 @@
 #include "ecal/ND280P0DECalLeftConstructor.hh"
 
 void ND280P0DECalLeftConstructor::Init() {
-    SetLengthX(2454*mm);
-    SetWidthY(2894*mm);
-    fModuleHeightZ = 147.0*mm;
+  SetLengthX(2454*CLHEP::mm);
+  SetWidthY(2894*CLHEP::mm);
+  fModuleHeightZ = 147.0*CLHEP::mm;
     SetHeightZ(ND280ECal::P0D::BulkheadReadoutHeight
                + ND280ECal::P0D::BaseThickness);
     AddConstructor(new ND280P0DECalActiveConstructor("Active",this));

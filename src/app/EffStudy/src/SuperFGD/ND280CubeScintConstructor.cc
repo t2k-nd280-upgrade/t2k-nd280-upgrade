@@ -160,22 +160,22 @@ public:
     }
   }
 };
-  
-  ND280CubeScintConstructor::~ND280CubeScintConstructor() {;};
+
+ND280CubeScintConstructor::~ND280CubeScintConstructor() {;}
 
 void ND280CubeScintConstructor::Init() {
   
   //SetShape(eTriangle);
-  SetLength(10*cm);
-  SetBase(10*cm);
-  SetHeight(10*cm);
+  SetLength(10*CLHEP::cm);
+  SetBase(10*CLHEP::cm);
+  SetHeight(10*CLHEP::cm);
     
-  SetFiberRadius(0.5*mm);
-  SetHoleRadius(0.9*mm);
+  SetFiberRadius(0.5*CLHEP::mm);
+  SetHoleRadius(0.9*CLHEP::mm);
   
-  SetCoatingThickness(0.25*mm);
+  SetCoatingThickness(0.25*CLHEP::mm);
   //SetCoatingRadius(0.0*mm);
-  SetGap(0.0*mm);
+  SetGap(0.0*CLHEP::mm);
   
   //SetSensitiveDetector(NULL);
   SetVisibility(false);
@@ -245,11 +245,11 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
 			   );
   
   fiberHole = new G4Tubs(GetName()+"/Extrusion/Core/Hole",
-			 0.0*cm,
+			 0.0*CLHEP::cm,
 			 GetHoleRadius(),
 			 GetLength()/2.*2.,
-			 0.*deg,
-			 360.*deg);
+			 0.*CLHEP::deg,
+			 360.*CLHEP::deg);
 
   // Define shifts of the 3 holes wrt each other (WLS fibers must not overlap)
   G4ThreeVector Pos_X = GetHolePosition_X(); // hole along X
@@ -277,9 +277,9 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   // subtract hole along X
 
   G4RotationMatrix* rotationAlongX = new G4RotationMatrix();
-  rotationAlongX->rotateX(0 *degree); 
-  rotationAlongX->rotateY(90*degree); 
-  rotationAlongX->rotateZ(0 *degree);      
+  rotationAlongX->rotateX(0 *CLHEP::degree); 
+  rotationAlongX->rotateY(90*CLHEP::degree); 
+  rotationAlongX->rotateZ(0 *CLHEP::degree);      
 
   extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
 					     extrusionWithHole,
@@ -297,9 +297,9 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   // subtract hole along Y
 
   G4RotationMatrix* rotationAlongY = new G4RotationMatrix();
-  rotationAlongY->rotateX(90 *degree); 
-  rotationAlongY->rotateY(0 *degree); 
-  rotationAlongY->rotateZ(0 *degree);      
+  rotationAlongY->rotateX(90 *CLHEP::degree); 
+  rotationAlongY->rotateY(0 *CLHEP::degree); 
+  rotationAlongY->rotateZ(0 *CLHEP::degree);      
   
   extrusionWithHole = new G4SubtractionSolid(GetName()+"/Extrusion",
 					     extrusionWithHole,
@@ -390,46 +390,46 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   else{
 
    G4VSolid* holeAlongX = new G4Tubs(GetName()+"/Hole",
-				      0.0*cm,
+				     0.0*CLHEP::cm,
 				      GetHoleRadius(),
 				      GetBase()/2,
-				      0.*deg,
-				      360.*deg);
+				     0.*CLHEP::deg,
+				     360.*CLHEP::deg);
     
     G4VSolid* holeAlongY = new G4Tubs(GetName()+"/Hole",
-				      0.0*cm,
+				      0.0*CLHEP::cm,
 				      GetHoleRadius(),
 				      GetHeight()/2,
-				      0.*deg,
-				      360.*deg);
+				      0.*CLHEP::deg,
+				      360.*CLHEP::deg);
 
     G4VSolid* holeAlongZ = new G4Tubs(GetName()+"/Hole",
-				      0.0*cm,
+				      0.0*CLHEP::cm,
 				      GetHoleRadius(),
 				      GetLength()/2,
-				      0.*deg,
-				      360.*deg);
+				      0.*CLHEP::deg,
+				      360.*CLHEP::deg);
     
     G4VSolid* fiberAlongX = new G4Tubs(GetName()+"/Hole/FiberX",
-				       0.0*cm,
+				       0.0*CLHEP::cm,
 				       GetFiberRadius(),
 				       GetBase()/2,
-				       0.*deg,
-				       360.*deg);
+				       0.*CLHEP::deg,
+				       360.*CLHEP::deg);
 
     G4VSolid* fiberAlongY = new G4Tubs(GetName()+"/Hole/FiberY",
-				       0.0*cm,
+				       0.0*CLHEP::cm,
 				       GetFiberRadius(),
 				       GetHeight()/2,
-				       0.*deg,
-				       360.*deg);
+				       0.*CLHEP::deg,
+				       360.*CLHEP::deg);
  
     G4VSolid* fiberAlongZ = new G4Tubs(GetName()+"/Hole/FiberZ",
-				       0.0*cm,
+				       0.0*CLHEP::cm,
 				       GetFiberRadius(),
 				       GetLength()/2,
-				       0.*deg,
-				       360.*deg);
+				       0.*CLHEP::deg,
+				       360.*CLHEP::deg);
     
     G4LogicalVolume *holeAlongXVolume
       = new G4LogicalVolume(holeAlongX,

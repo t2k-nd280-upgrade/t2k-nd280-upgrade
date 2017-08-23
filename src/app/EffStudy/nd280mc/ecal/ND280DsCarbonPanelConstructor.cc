@@ -14,8 +14,8 @@
 ND280DsCarbonPanelConstructor::~ND280DsCarbonPanelConstructor() {}
 
 void ND280DsCarbonPanelConstructor::Init() {
-    SetWidth(2300*mm);
-    SetHeight(2300*mm);
+  SetWidth(2300*CLHEP::mm);
+  SetHeight(2300*CLHEP::mm);
     SetLength(ND280ECal::CarbonSheetThickness);
 }
 

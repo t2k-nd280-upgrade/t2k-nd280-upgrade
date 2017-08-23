@@ -8,7 +8,7 @@
 
 #include "ND280StructuralBeamConstructor.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
 
 class ND280StructuralBeamMessenger : public ND280ConstructorMessenger {
 
@@ -46,13 +46,13 @@ public:
     };
 };
 
-ND280StructuralBeamConstructor::~ND280StructuralBeamConstructor() {;};
+ND280StructuralBeamConstructor::~ND280StructuralBeamConstructor() {;}
 
 void ND280StructuralBeamConstructor::Init(void) {
-    SetWidth(100*mm);
-    SetHeight(300*mm);
-    SetLength(6650*mm);
-    SetWallThickness(6*mm);
+  SetWidth(100*CLHEP::mm);
+    SetHeight(300*CLHEP::mm);
+    SetLength(6650*CLHEP::mm);
+    SetWallThickness(6*CLHEP::mm);
 
     SetMessenger(new ND280StructuralBeamMessenger(this));
 }

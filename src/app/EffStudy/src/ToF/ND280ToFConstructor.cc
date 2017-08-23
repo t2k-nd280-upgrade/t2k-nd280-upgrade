@@ -70,14 +70,14 @@ public:
 ND280ToFConstructor::~ND280ToFConstructor() {;}
 
 void ND280ToFConstructor::Init(void) {
-  fWidth = 1.0*meter;
-  fHeight = 1.0*cm;
-  fLength = 1.0*meter;
+  fWidth = 1.0*CLHEP::meter;
+  fHeight = 1.0*CLHEP::cm;
+  fLength = 1.0*CLHEP::meter;
 
   fPlaneXYNum = 1;
 
-  fBarWidth = 1.0*cm;
-  fBarHeight = 1.0*cm;
+  fBarWidth = 1.0*CLHEP::cm;
+  fBarHeight = 1.0*CLHEP::cm;
   fBarHorizLength = fWidth;
   fBarVertLength = fHeight;
 

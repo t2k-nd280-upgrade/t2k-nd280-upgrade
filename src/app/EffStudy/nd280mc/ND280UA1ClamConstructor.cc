@@ -135,15 +135,15 @@ void ND280UA1ClamConstructor::Init(void) {
   ////////
 
 
-  fWidth = 5710*mm/2;
-  fHeight = 6150*mm;
-  fLength = 7723*mm;
+  fWidth = 5710*CLHEP::mm/2;
+  fHeight = 6150*CLHEP::mm;
+  fLength = 7723*CLHEP::mm;
 
-    fInteriorGap = 80*mm;
-    fExteriorGap = 110*mm;
+    fInteriorGap = 80*CLHEP::mm;
+    fExteriorGap = 110*CLHEP::mm;
 
-    fCenterCoilGap = 200*mm;
-    fEdgeCoilGap = 94*mm;
+    fCenterCoilGap = 200*CLHEP::mm;
+    fEdgeCoilGap = 94*CLHEP::mm;
 
     fIsLeftClamshell = true;
 
@@ -212,12 +212,12 @@ G4LogicalVolume *ND280UA1ClamConstructor::GetPiece(void) {
     if (fIsLeftClamshell) {
         trackerVoidOffset.setX(-trackerVoidXOffset);
         p0dVoidOffset.setX(-p0dVoidXOffset);
-        p0dVoidOffset.setZ(p0dVoidZOffset+1*mm);
+        p0dVoidOffset.setZ(p0dVoidZOffset+1*CLHEP::mm);
     }
     else {
         trackerVoidOffset.setX(trackerVoidXOffset);
         p0dVoidOffset.setX(p0dVoidXOffset);
-        p0dVoidOffset.setZ(p0dVoidZOffset+1*mm);
+        p0dVoidOffset.setZ(p0dVoidZOffset+1*CLHEP::mm);
     }
 
     // Build the inner void for the basket allowing enough room for the
@@ -230,8 +230,8 @@ G4LogicalVolume *ND280UA1ClamConstructor::GetPiece(void) {
                                            GetHeight()/2.0,
                                            GetLength()/2.0),
                                  new G4Box("TrackerVoid",
-                                           GetTrackerVoidWidth()/2.0+1*mm,
-                                           GetTrackerVoidHeight()/2.0-15.*mm,
+                                           GetTrackerVoidWidth()/2.0+1*CLHEP::mm,
+                                           GetTrackerVoidHeight()/2.0-15.*CLHEP::mm,
                                            GetInnerLength()/2.0),
                                  NULL,
                                  trackerVoidOffset);
@@ -242,7 +242,7 @@ G4LogicalVolume *ND280UA1ClamConstructor::GetPiece(void) {
         = new G4SubtractionSolid(GetName(),
                                  trackerVoid, 
                                  new G4Box("P0DVoid",
-                                           GetP0DVoidWidth()/2.0+1*mm,
+                                           GetP0DVoidWidth()/2.0+1*CLHEP::mm,
                                            GetP0DVoidHeight()/2.0,
                                            GetP0DVoidLength()/2.0),
                                  NULL,
@@ -269,7 +269,7 @@ G4LogicalVolume *ND280UA1ClamConstructor::GetPiece(void) {
     G4RotationMatrix *rotCoil;
 
     rotCoil = new G4RotationMatrix();
-    rotCoil->rotateY(90*degree);
+    rotCoil->rotateY(90*CLHEP::degree);
 
     G4ThreeVector centerCoilPosition;
     G4ThreeVector edgeCoilPosition;
@@ -313,12 +313,12 @@ G4LogicalVolume *ND280UA1ClamConstructor::GetPiece(void) {
     if (fIsLeftClamshell) {
         fluxReturnPosition.setX(GetWidth()/2
                                 -interiorReturn.GetFluxReturnThickness());
-        fluxReturnRotation->rotateZ(90*degree);
+        fluxReturnRotation->rotateZ(90*CLHEP::degree);
     }
     else {
         fluxReturnPosition.setX(-GetWidth()/2
                                 +interiorReturn.GetFluxReturnThickness());
-        fluxReturnRotation->rotateZ(-90*degree);
+        fluxReturnRotation->rotateZ(-90*CLHEP::degree);
     }
 
     // Do the flux return modules from upstream to downstream

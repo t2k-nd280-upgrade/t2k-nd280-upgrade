@@ -31,6 +31,7 @@
 #include <TF1.h>
 #include <TMath.h>
 #include <TStopwatch.h>
+#include <TPolyMarker3D.h>
 
 #include <iostream>
 #include <fstream>
@@ -228,6 +229,16 @@ inline void PrintTruth(TND280UpEvent *event,int mytrkid){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+
+
+inline void FindVtxTruth(TND280UpEvent *event,double &myVtxX,double &myVtxY,double &myVtxZ){  
+  return;
+}
+
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &mycosth,double &mylength){
   int NTracks = event->GetNTracks();
 
@@ -288,8 +299,8 @@ inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &myc
 
 int main(int argc,char** argv)
 {   
-
-  if (argc!=11){   // batch mode                                        
+  
+  if (argc!=12){   // batch mode                                        
     cout << "You need to provide the following arguments:" << endl;
     cout << " 1) input ROOT file name (from GEANT4 simulation) " << endl;
     cout << " 2) first event number to run" << endl;
@@ -301,6 +312,7 @@ int main(int argc,char** argv)
     cout << " 8) use view XZ (0 or 1)" << endl;
     cout << " 9) use view YZ (0 or 1)" << endl;
     cout << " 10) Minimum track distance (if <=0 use default)" << endl;
+    cout << " 11) Look only at tracks inside the Truth FV (use MC hits)" << endl;
     exit(1);
   }
   
@@ -314,6 +326,7 @@ int main(int argc,char** argv)
   const int UseViewXZ = atoi(argv[8]);
   const int UseViewYZ = atoi(argv[9]);
   const double MinSeparation = atof(argv[10]); // if <0 --> use the default one
+  const int UseTruthFV = atoi(argv[11]);
   
   //
   
@@ -515,7 +528,32 @@ int main(int argc,char** argv)
   h2d_xy = (TH2F*)finput->Get("OutMPPCProj2D_XY");
   h2d_xz = (TH2F*)finput->Get("OutMPPCProj2D_XZ");
   h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
+
+
+
+
+
+  // // SONO ARRIVATO QUI
+
+  // TPolyMarker3D *WorldOrigInLocal = (TPolyMarker3D*)finput->Get("WorldOrigInLocal");
+  // double OrigInLocX=0.;
+  // double OrigInLocY=0.;
+  // double OrigInLocZ=0.;
+  // WorldOrigInLocal->GetPoint(0,OrigInLocX,OrigInLocY,OrigInLocZ);
   
+  // cout << "The World origin in local coordinates is:" << endl; 
+  // cout << OrigInLocX << ", " << OrigInLocY << ", " << OrigInLocZ << endl;
+  // cout << endl;
+
+  // cout << "SONO ARRIVATO QUI" << endl;
+  // exit(1);
+
+
+
+
+
+
+
   TGraph *mygraph = new TGraph();
   mygraph->SetName("mygraph");
   mygraph->SetTitle("mygraph");
@@ -643,9 +681,9 @@ int main(int argc,char** argv)
     fRecoTrack_reco_length.clear();
     fRecoTrack_true_length.clear();
     fRecoTrack_hitXY.clear();
-    for(int i=0;i<fRecoTrack_hitXY.size();i++){
+    for(unsigned int i=0;i<fRecoTrack_hitXY.size();i++){
       fRecoTrack_hitXY[i].clear();
-      for(int j=0;j<fRecoTrack_hitXY[i].size();j++){
+      for(unsigned int j=0;j<fRecoTrack_hitXY[i].size();j++){
 	fRecoTrack_hitXY[i][j].clear();
       }
     }
@@ -711,11 +749,6 @@ int main(int argc,char** argv)
       //PrintTruth(nd280UpEvent,-999);
     }
     
-    //TVector3 truth_first_mchit;
-    // // Get the true vertex position in the WORLD reference system
-    // //TND280UpVertex *nd280UpVertex = nd280UpEvent->GetVertex(0); // only 1 vertex / event
-    // //truth_vtx_pos = nd280UpVertex->GetPosition();
-
     double posX_prev = 0.;
     double posY_prev = 0.;
     double posZ_prev = 0.;
@@ -888,15 +921,14 @@ int main(int argc,char** argv)
       fTrueTrack_MCHit_XY[idx]->SetPoint(fTrueTrack_MCHit_XY[idx]->GetN(),posX,posY);
       fTrueTrack_MCHit_XZ[idx]->SetPoint(fTrueTrack_MCHit_XZ[idx]->GetN(),posX,posZ);
       fTrueTrack_MCHit_YZ[idx]->SetPoint(fTrueTrack_MCHit_YZ[idx]->GetN(),posY,posZ);
-
-
+      
       // Update the previous position
       
       posX_prev  = posX;
       posY_prev  = posY;
       posZ_prev  = posZ;
       trkid_prev = trkid;
-
+      
     } // end loop over the hits
 
 
@@ -936,13 +968,32 @@ int main(int argc,char** argv)
 	cout << "ParID: " << parid << ", ";
 	//cout << "First MC hit: " << truth_first_mchit[0] << ", " << truth_first_mchit[1] << ", " << truth_first_mchit[2] << endl;
       }
+
+
+
+
+
       
       // Initialize the object for track reconstruction
       ND280UpRecoTrack nd280UpRecoTrack; 
+
+      // Cut on the Truth OutFV
+      if(UseTruthFV){	
+	bool IsTruthOutFV = false;
+	// Inputs are: for each projections give the th2f with mppc hit and the tgraph with mc hit
+	// Analogous to define the OutFV in all the detectors same as for SuperFGD real OutFV cut
+	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XY[itrk],fTrueTrack_MCHit_XY[itrk]); 
+	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],fTrueTrack_MCHit_XZ[itrk]); 
+	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],fTrueTrack_MCHit_YZ[itrk]); 	
+	if(IsTruthOutFV){
+	  if(DEBUG) cout << "Out the Truth FV --> skip it!!!" << endl;	  
+	  continue;
+	}
+      }
+
       nd280UpRecoTrack.SetMPPCXY(fRecoTrack_MPPCHit_XY[itrk]);
       nd280UpRecoTrack.SetMPPCXZ(fRecoTrack_MPPCHit_XZ[itrk]);
       nd280UpRecoTrack.SetMPPCYZ(fRecoTrack_MPPCHit_YZ[itrk]);
-      
       nd280UpRecoTrack.SetMinPE(2.);
       
       if(DetType == nd280upconv::kFGDlike){
@@ -1004,8 +1055,12 @@ int main(int argc,char** argv)
 	
 	if(!isseparated) break; // if separated with 
       }
-      
 
+
+
+
+    
+      
       //
       // Get the Reco
       //
@@ -1034,6 +1089,23 @@ int main(int argc,char** argv)
       
       FindTruth(nd280UpEvent,trkid,mom_true,costh_true,lengthSD_true);
       
+
+
+
+
+
+      // // SONO ARRIVATO QUI
+      // // TODO:
+      // // - take truth vertex and shift to local position
+      // //TPolyMarker3D WorldOrigInLocal
+      // // FindVtxTruth();
+      
+      // cout << "SONO ARRIVATO QUI" << endl;
+      // exit(1);
+
+
+
+
       double trklen_true = fRecoTrack_true_length[itrk];
 
       if(DEBUG){
@@ -1221,15 +1293,15 @@ int main(int argc,char** argv)
       // Fill the total event display
       if(ievt<NEvtDisplTot){
 	//if(fRecoTrack_PDG[itrk] == 13){
-	if(fRecoTrack_ID[itrk] == 4){
-	  hMPPCHits_XY[ievt]->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z 
-	  hMPPCHits_XZ[ievt]->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
-	  hMPPCHits_YZ[ievt]->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
-
-	  AddGraph(gMCHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z 
-	  AddGraph(gMCHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y 
-	  AddGraph(gMCHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X 
-	}
+	//if(fRecoTrack_ID[itrk] == 4){
+	hMPPCHits_XY[ievt]->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z 
+	hMPPCHits_XZ[ievt]->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
+	hMPPCHits_YZ[ievt]->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
+	
+	AddGraph(gMCHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z 
+	AddGraph(gMCHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y 
+	AddGraph(gMCHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X 
+	//}
       }
     
       //cout << "gMCHits_XY[ievt]->GetN() = " << gMCHits_XY[ievt]->GetN() << endl;
@@ -1269,7 +1341,7 @@ int main(int argc,char** argv)
       
       fND280UpRecoEvent->AddTrack(fND280UpRecoTrack);	    
 
-    }
+    } // end loop over tracks (fRecoTrack_ID)
     
     if(DEBUG){
       cout << endl;
@@ -1376,21 +1448,21 @@ int main(int argc,char** argv)
   // cout << "MyFunc_Elec->Integral: " <<  MyFunc_Elec->Integral(Start,End) << endl;
   
   
-  TCanvas *cfunc_muon = new TCanvas();
-  nd280UpPID.GetGraph("Muon")->Draw("");
-  cfunc_muon->Print("cfunc_muon.pdf");
+  // TCanvas *cfunc_muon = new TCanvas();
+  // nd280UpPID.GetGraph("Muon")->Draw("");
+  // cfunc_muon->Print("cfunc_muon.pdf");
 
-  TCanvas *cfunc_pion = new TCanvas();
-  nd280UpPID.GetGraph("Pion")->Draw("");
-  cfunc_pion->Print("cfunc_pion.pdf");
+  // TCanvas *cfunc_pion = new TCanvas();
+  // nd280UpPID.GetGraph("Pion")->Draw("");
+  // cfunc_pion->Print("cfunc_pion.pdf");
 
-  TCanvas *cfunc_prot = new TCanvas();
-  nd280UpPID.GetGraph("Prot")->Draw("");
-  cfunc_prot->Print("cfunc_prot.pdf");
+  // TCanvas *cfunc_prot = new TCanvas();
+  // nd280UpPID.GetGraph("Prot")->Draw("");
+  // cfunc_prot->Print("cfunc_prot.pdf");
 
-  //TCanvas *cfunc_elec = new TCanvas();
-  //nd280UpPID.GetGraph("Elec")->Draw("");
-  //cfunc_elec->Print("cfunc_elec.pdf");
+  // //TCanvas *cfunc_elec = new TCanvas();
+  // //nd280UpPID.GetGraph("Elec")->Draw("");
+  // //cfunc_elec->Print("cfunc_elec.pdf");
 
   //
 

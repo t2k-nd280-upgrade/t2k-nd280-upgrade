@@ -69,17 +69,17 @@ public:
     };
 };
 
-ND280ECalSP0DuleSupportConstructor::~ND280ECalSP0DuleSupportConstructor() {;};
+ND280ECalSP0DuleSupportConstructor::~ND280ECalSP0DuleSupportConstructor() {;}
 
 void ND280ECalSP0DuleSupportConstructor::Init(void) {
 
-    fHeight  = 146.05*mm;
-    fWidth   = 304.8*mm;
-    fLength  = 2320*mm;
+  fHeight  = 146.05*CLHEP::mm;
+  fWidth   = 304.8*CLHEP::mm;
+  fLength  = 2320*CLHEP::mm;
     
-    fTopSupportHeight = 19.05*mm;  //.75 in
+  fTopSupportHeight = 19.05*CLHEP::mm;  //.75 in
 
-    fSideThickness = 15.748*mm;   // .62 in
+  fSideThickness = 15.748*CLHEP::mm;   // .62 in
     
     /*
     fTopSupportWidth  = 76.2*mm;   // 3  in
@@ -144,7 +144,7 @@ G4LogicalVolume *ND280ECalSP0DuleSupportConstructor::GetPiece(void) {
     beam.SetLength(beamLength);
 
     G4RotationMatrix* rotP90Y = new G4RotationMatrix();
-    rotP90Y->rotateY(90*degree);
+    rotP90Y->rotateY(90*CLHEP::degree);
     
     new G4PVPlacement(0,          //rotation
 		      G4ThreeVector( -(GetWidth()/2-beamWidth/2),
@@ -169,7 +169,7 @@ G4LogicalVolume *ND280ECalSP0DuleSupportConstructor::GetPiece(void) {
     // Construct the 8 support ribs inside the C-Channel
 
     beamWidth = GetTopSupportHeight();
-    beamHeight = 110.5*mm;
+    beamHeight = 110.5*CLHEP::mm;
     beamLength = GetWidth()-2*GetSideThickness();
 
     beam.SetWidth(beamWidth);
@@ -268,8 +268,8 @@ G4LogicalVolume *ND280ECalSP0DuleSupportConstructor::GetPiece(void) {
     
     //Construct the aluminum strips that connect the ribs
 
-    beamWidth  = 25.4*mm;
-    beamHeight = 6.35*mm;
+    beamWidth  = 25.4*CLHEP::mm;
+    beamHeight = 6.35*CLHEP::mm;
     beamLength = GetLength();
 
     beam.SetWidth(beamWidth);
@@ -280,7 +280,7 @@ G4LogicalVolume *ND280ECalSP0DuleSupportConstructor::GetPiece(void) {
 
     new G4PVPlacement(0,          //rotation
 		      G4ThreeVector( -(stripSpacing + beamWidth),
-				     (GetHeight()/2-beamHeight/2-GetTopSupportHeight()-110.5*mm),
+				     (GetHeight()/2-beamHeight/2-GetTopSupportHeight()-110.5*CLHEP::mm),
 				     0),
                       beam.GetPiece(),  // logical volume
                       beam.GetName(),   // name
@@ -291,7 +291,7 @@ G4LogicalVolume *ND280ECalSP0DuleSupportConstructor::GetPiece(void) {
 
     new G4PVPlacement(0,          //rotation
 		      G4ThreeVector( 0,
-				     (GetHeight()/2-beamHeight/2-GetTopSupportHeight()-110.5*mm),
+				     (GetHeight()/2-beamHeight/2-GetTopSupportHeight()-110.5*CLHEP::mm),
 				     0),
                       beam.GetPiece(),  // logical volume
                       beam.GetName(),   // name
@@ -302,7 +302,7 @@ G4LogicalVolume *ND280ECalSP0DuleSupportConstructor::GetPiece(void) {
 
     new G4PVPlacement(0,          //rotation
 		      G4ThreeVector( (stripSpacing + beamWidth),
-				     (GetHeight()/2-beamHeight/2-GetTopSupportHeight()-110.5*mm),
+				     (GetHeight()/2-beamHeight/2-GetTopSupportHeight()-110.5*CLHEP::mm),
 				     0),
                       beam.GetPiece(),  // logical volume
                       beam.GetName(),   // name
@@ -312,7 +312,7 @@ G4LogicalVolume *ND280ECalSP0DuleSupportConstructor::GetPiece(void) {
 		      
     //Construct the top supports that the SP0Dule rests on
 
-    beamWidth = 76.2*mm;
+    beamWidth = 76.2*CLHEP::mm;
     beamHeight = GetTopSupportHeight();
     beamLength = GetWidth();
 

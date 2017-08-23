@@ -353,6 +353,15 @@ void ND280UpRecoTrack::CalcNHits(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void ND280UpRecoTrack::CalcVtxReco(){
+  
+  //fVtxReco;
+  
+  return;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void ND280UpRecoTrack::CalcLength(){
   
   CalcLengthStraight();
@@ -387,67 +396,37 @@ void ND280UpRecoTrack::CalcLengthStraight(){
   double lengthY = 0.;
   double lengthZ = 0.;
   
+  double len1 = 0.;
+  double len2 = 0.;
+
   // length along X
-  if(f2d_xy){
-    hX = (TH1F*) f2d_xy->ProjectionX();
-    pos1 = nd280upconv::kBadNum; pos2 = nd280upconv::kBadNum;
-    istrkstart = false;
-    for(int ix=0;ix<hX->GetNbinsX();ix++){
-      double cont = hX->GetBinContent(ix+1);
-      if(cont>0.){
-	if(!istrkstart){ 
-	  pos1 = hX->GetBinCenter(ix+1);
-	  istrkstart = true;
-	}
-	pos2 = hX->GetBinCenter(ix+1);
-      }
-    }
-    lengthX = TMath::Abs(pos2-pos1);
-  }
-  
-  //cout << endl;
-  //cout << "lengthX = " << lengthX << endl;
+  len1 = 0.;
+  len2 = 0.;
+  if(f2d_xy) len1 = CalcLengthStraight1D(f2d_xy,true);
+  if(f2d_xz) len2 = CalcLengthStraight1D(f2d_xz,true);
+  lengthX = TMath::Max(len1,len2);
+
+  //cout << "X: len1 = " << len1 << ", len2 = " << len2 << ", max = " << lengthX << endl;
 
   // length along Y
-  if(f2d_xy){
-    hX = (TH1F*) f2d_xy->ProjectionY();
-    pos1 = nd280upconv::kBadNum; pos2 = nd280upconv::kBadNum;
-    istrkstart = false;
-    for(int ix=0;ix<hX->GetNbinsX();ix++){
-      double cont = hX->GetBinContent(ix+1);
-      if(cont>0.){
-	if(!istrkstart){ 
-	  pos1 = hX->GetBinCenter(ix+1);
-	  istrkstart = true;
-	}
-	pos2 = hX->GetBinCenter(ix+1);
-      }
-    }
-    lengthY = TMath::Abs(pos2-pos1);
-  }
+  len1 = 0.;
+  len2 = 0.;
+  if(f2d_xy) len1 = CalcLengthStraight1D(f2d_xy,false);
+  if(f2d_yz) len2 = CalcLengthStraight1D(f2d_yz,true);
+  lengthY = TMath::Max(len1,len2);
 
-  //cout << "lengthY = " << lengthY << endl;
-  
+  //cout << "Y: len1 = " << len1 << ", len2 = " << len2 << ", max = " << lengthY << endl;
+
   // length along Z
-  if(f2d_yz){
-    hX = (TH1F*) f2d_yz->ProjectionY();
-    pos1 = nd280upconv::kBadNum; pos2 = nd280upconv::kBadNum;
-    istrkstart = false;
-    for(int ix=0;ix<hX->GetNbinsX();ix++){
-      double cont = hX->GetBinContent(ix+1);
-      if(cont>0.){
-	if(!istrkstart){ 
-	  pos1 = hX->GetBinCenter(ix+1);
-	  istrkstart = true;
-	}
-	pos2 = hX->GetBinCenter(ix+1);
-      }
-    }
-    lengthZ = TMath::Abs(pos2-pos1);
-  }
-  
-  //cout << "lengthZ = " << lengthZ << endl;
-  
+  len1 = 0.;
+  len2 = 0.;
+  if(f2d_xz) len1 = CalcLengthStraight1D(f2d_xz,false);
+  if(f2d_yz) len2 = CalcLengthStraight1D(f2d_yz,false);
+  lengthZ = TMath::Max(len1,len2);
+
+  //cout << "Z: len1 = " << len1 << ", len2 = " << len2 << ", max = " << lengthZ << endl;
+  //cout << endl;
+
   fTrkLengthStraightX = lengthX;
   fTrkLengthStraightY = lengthY;
   fTrkLengthStraightZ = lengthZ;
@@ -456,37 +435,34 @@ void ND280UpRecoTrack::CalcLengthStraight(){
   fTrkLengthStraight = lengthtot;
   
   return;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+double ND280UpRecoTrack::CalcLengthStraight1D(TH2F *h2D,bool axisX){
+  double length = 0;  
+  double pos1 = nd280upconv::kBadNum; double pos2 = nd280upconv::kBadNum;
+  bool istrkstart = false;
+  TH1F *h1D;
   
-  // //fRecoTrack_len.push_back(0);
-  // //prevX = poshitX; currX = poshitX;
-  //	//prevY = poshitY; currY = poshitY;
-  //	//prevZ = poshitZ; currZ = poshitZ;	
-  //   	//cout << "pex: " << pex << ", pey: " << pey << ", pez: " << pez << endl;
-  //  	//fRecoTrack_ene.push_back(pex+pey+pez);
-  // ....
-  // //
-  // // Calculate the track length as the max distance between
-  // // two points of the tracks (hp: straight track)
-  // //
-  // //for(unsigned int ipt=0;ipt<fRecoTrack_hitXY.size();ipt++){	
-  // //}     
-  // // Take max distance from each 2D MPPC histo projection
-  // currX = poshitX;
-  // currY = poshitY;
-  // currZ = poshitZ;
-  // cout << "PrevLen: " << fRecoTrack_len[idx] << endl;
-  // double len = TMath::Power(currX-prevX,2) + TMath::Power(currY-prevY,2) + TMath::Power(currZ-prevZ,2); 
-  // len = TMath::Sqrt(len);
-  // fRecoTrack_len[idx] = TMath::Max(fRecoTrack_len[idx],len);
-  // cout << "dX:" << TMath::Abs(currX-prevX) 
-  // 	   << ", dY:" << TMath::Abs(currY-prevY) 
-  // 	   << ", dZ:" << TMath::Abs(currZ-prevZ)
-  // 	   << " --> " << len
-  // 	   << " --> NewLen: " << fRecoTrack_len[idx] << endl;
-  // prevX = poshitX;
-  // prevY = poshitY;
-  // prevZ = poshitZ;
+  if(axisX) h1D = (TH1F*) h2D->ProjectionX(); // take X projection
+  else      h1D = (TH1F*) h2D->ProjectionY(); // take Y projection
   
+  pos1 = nd280upconv::kBadNum; pos2 = nd280upconv::kBadNum;
+  istrkstart = false;
+  for(int ix=0;ix<h1D->GetNbinsX();ix++){
+    double cont = h1D->GetBinContent(ix+1);
+    if(cont>0.){
+      if(!istrkstart){ 
+	pos1 = h1D->GetBinCenter(ix+1);
+	istrkstart = true;
+      }
+      pos2 = h1D->GetBinCenter(ix+1);
+    }
+  }
+  length = TMath::Abs(pos2-pos1);
+  
+  return length;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -578,7 +554,7 @@ void ND280UpRecoTrack::CalcOutFV(){
   // OutFV --> the track has 1 hit in the outer bar/cube
 
   fIsOutFV = false;
-
+  
   fIsOutFV = CalcOutFVView(f2d_xy);
   if(fIsOutFV) return;
 
@@ -587,44 +563,35 @@ void ND280UpRecoTrack::CalcOutFV(){
   
   fIsOutFV = CalcOutFVView(f2d_yz);
   if(fIsOutFV) return;
- 
-  /*
-  
-  TH1F *hX; 
-  TH1F *hY; 
-  TH1F *hZ; 
-
-  if     (fUseView_xy) hX = (TH1F*) f2d_xy->ProjectionX();
-  else if(fUseView_xz) hX = (TH1F*) f2d_xz->ProjectionX();
-
-  if     (fUseView_xy) hY = (TH1F*) f2d_xy->ProjectionY();
-  else if(fUseView_yz) hY = (TH1F*) f2d_yz->ProjectionX();
-
-  if     (fUseView_xz) hZ = (TH1F*) f2d_xz->ProjectionY();
-  else if(fUseView_yz) hZ = (TH1F*) f2d_yz->ProjectionY();
-
-  double bincontX_first = hX->GetBinContent(1);
-  double bincontX_last  = hX->GetBinContent(hX->GetNbinsX());
-  if(bincontX_first>0. || bincontX_last>0.){
-    fIsOutFV = true;
-  }
-  
-  double bincontY_first = hY->GetBinContent(1);
-  double bincontY_last  = hY->GetBinContent(hY->GetNbinsX());
-  if(bincontY_first>0. || bincontY_last>0.){
-    fIsOutFV = true;
-  }
-
-  double bincontZ_first = hZ->GetBinContent(1);
-  double bincontZ_last  = hZ->GetBinContent(hZ->GetNbinsX());
-  if(bincontZ_first>0. || bincontZ_last>0.){
-    fIsOutFV = true;
-  }
-
-  */
 
   return;
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+bool ND280UpRecoTrack::CalcOutFVTrue(TH2F *h2dmppchit,TGraph *gmchit){
+  
+  //
+  // Take the graph of the MC hits in each view and fill
+  // the MPPC hit histogram --> treat same manner as SuperFGD also for FGDlike
+  //
+
+  TH2F *myh2d = (TH2F*)h2dmppchit->Clone("myh2d");
+ 
+  for(int ipt=0;ipt<gmchit->GetN();ipt++){
+    double x=0;
+    double y=0;
+    gmchit->GetPoint(ipt,x,y);
+    myh2d->Fill(x,y);
+  }
+
+  bool TruthOutFV = CalcOutFVView(myh2d);
+
+  delete myh2d;
+
+  return TruthOutFV;
+}
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

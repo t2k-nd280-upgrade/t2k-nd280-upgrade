@@ -17,7 +17,7 @@
 #include <vector>
 #include <TXMLEngine.h>
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
 
 using namespace std;
 

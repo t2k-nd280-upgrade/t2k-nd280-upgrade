@@ -128,10 +128,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       // << ", " << G4BestUnit(vtx->GetY0(),"Length") 
       // << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
       // << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
-  	   << " (" << vtx->GetX0() / mm
-  	   << ", " << vtx->GetY0() / mm
-  	   << ", " << vtx->GetZ0() / mm 
-  	   << ", " << vtx->GetT0() / second << ")"
+  	   << " (" << vtx->GetX0() / CLHEP::mm
+  	   << ", " << vtx->GetY0() / CLHEP::mm
+  	   << ", " << vtx->GetZ0() / CLHEP::mm 
+  	   << ", " << vtx->GetT0() / CLHEP::second << ")"
   	   << G4endl;
 
     ExN02VertexInfo* vInfo 
@@ -171,10 +171,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	// << ", " << G4BestUnit(vtx->GetY0(),"Length") 
 	// << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
 	// << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
-	     << " (" << incvtx->GetX0() / mm
-	     << ", " << incvtx->GetY0() / mm
-	     << ", " << incvtx->GetZ0() / mm 
-	     << ", " << incvtx->GetT0() / second << ")"
+	     << " (" << incvtx->GetX0() / CLHEP::mm
+	     << ", " << incvtx->GetY0() / CLHEP::mm
+	     << ", " << incvtx->GetZ0() / CLHEP::mm 
+	     << ", " << incvtx->GetT0() / CLHEP::second << ")"
 	     << G4endl;
       
       for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {

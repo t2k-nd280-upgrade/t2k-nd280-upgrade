@@ -64,7 +64,7 @@ G4LogicalVolume *ND280P0DSideLadderConstructor::GetPiece(void) {
     // holder.  Enough said...
     /////////////////////////////////////////////
     
-    double diameter = 20*mm;
+    double diameter = 20*CLHEP::mm;
     G4LogicalVolume *logCooling
 	= new G4LogicalVolume(new G4Box(GetName()+"/Cooling",
                                         diameter/2, 
@@ -76,7 +76,7 @@ G4LogicalVolume *ND280P0DSideLadderConstructor::GetPiece(void) {
     new G4PVPlacement(0, // no rotation
                       G4ThreeVector(- GetLadderThickness()/2+diameter/2,
                                     0,
-                                    -75*mm),// position 
+                                    -75*CLHEP::mm),// position 
                       logCooling, // logical volume
                       GetName()+"/Cooling", // name
                       logVolume, // mother  volume
@@ -84,39 +84,39 @@ G4LogicalVolume *ND280P0DSideLadderConstructor::GetPiece(void) {
                       0); // no specific field
 
     new G4PVPlacement(0, // no rotation
-                      G4ThreeVector(- GetLadderThickness()/2+diameter/2 + 2*mm,
+                      G4ThreeVector(- GetLadderThickness()/2+diameter/2 + 2*CLHEP::mm,
                                     0,
-                                    +75*mm),// position 
+                                    +75*CLHEP::mm),// position 
                       logCooling, // logical volume
                       GetName()+"/Cooling", // name
                       logVolume, // mother  volume
                       false, // no boolean operations
                       0); // no specific field
 
-    double thickness = 6.35*mm;
+    double thickness = 6.35*CLHEP::mm;
     G4LogicalVolume *logPlate
 	= new G4LogicalVolume(new G4Box(GetName()+"/Plate",
                                         thickness/2,
-                                        20*cm/2, 
-                                        25*cm/2),
+                                        20*CLHEP::cm/2, 
+                                        25*CLHEP::cm/2),
                               FindMaterial("Aluminum"),
                               GetName()+"/Plate");
 
     G4LogicalVolume *logSmall
 	= new G4LogicalVolume(new G4Box(GetName()+"/Small",
                                         thickness/2,
-                                        10*cm/2, 
-                                        25*cm/2),
+                                        10*CLHEP::cm/2, 
+                                        25*CLHEP::cm/2),
                               FindMaterial("Aluminum"),
                               GetName()+"/Small");
 
-    double step = (GetLadderLength() - 2*10*cm  - 20*cm - 15*cm)/6;
+    double step = (GetLadderLength() - 2*10*CLHEP::cm  - 20*CLHEP::cm - 15*CLHEP::cm)/6;
     for (int i=0; i<7; ++i) {
-        double offset = - GetLadderLength()/2 + 25*cm + 20*cm/2 + i*step;
+      double offset = - GetLadderLength()/2 + 25*CLHEP::cm + 20*CLHEP::cm/2 + i*step;
         new G4PVPlacement(0, // no rotation
                           G4ThreeVector(- GetLadderThickness()/2
                                         +diameter
-                                        +thickness/2 + 2*mm,
+                                        +thickness/2 + 2*CLHEP::mm,
                                         offset,
                                         0),// position 
                           logPlate, // logical volume
@@ -126,11 +126,11 @@ G4LogicalVolume *ND280P0DSideLadderConstructor::GetPiece(void) {
                           0); // no specific field
     }
 
-    double offset = - GetLadderLength()/2 + 7*cm + 10*cm/2;
+    double offset = - GetLadderLength()/2 + 7*CLHEP::cm + 10*CLHEP::cm/2;
     new G4PVPlacement(0, // no rotation
                       G4ThreeVector(- GetLadderThickness()/2
                                     +diameter
-                                    +thickness/2 + 2*mm,
+                                    +thickness/2 + 2*CLHEP::mm,
                                     offset,
                                     0),// position 
                       logSmall, // logical volume

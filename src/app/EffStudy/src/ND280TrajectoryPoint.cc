@@ -37,16 +37,16 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
   
   fMomentum = aStep->GetPostStepPoint()->GetMomentum();
   fEdep = aStep->GetTotalEnergyDeposit();
-  fStepLength = aStep->GetStepLength() / mm;
+  fStepLength = aStep->GetStepLength() / CLHEP::mm;
   
   G4ThreeVector prestepPos = aStep->GetPreStepPoint()->GetPosition();
   G4ThreeVector poststepPos = aStep->GetPostStepPoint()->GetPosition();
-  G4double prestep_x = prestepPos.x() / mm;
-  G4double prestep_y = prestepPos.y() / mm;
-  G4double prestep_z = prestepPos.z() / mm;
-  G4double poststep_x = poststepPos.x() / mm;
-  G4double poststep_y = poststepPos.y() / mm;
-  G4double poststep_z = poststepPos.z() / mm;  
+  G4double prestep_x = prestepPos.x() / CLHEP::mm;
+  G4double prestep_y = prestepPos.y() / CLHEP::mm;
+  G4double prestep_z = prestepPos.z() / CLHEP::mm;
+  G4double poststep_x = poststepPos.x() / CLHEP::mm;
+  G4double poststep_y = poststepPos.y() / CLHEP::mm;
+  G4double poststep_z = poststepPos.z() / CLHEP::mm;  
   G4double stepdeltalyz = sqrt( (prestep_y - poststep_y)*(prestep_y - poststep_y) +
 				(prestep_z - poststep_z)*(prestep_z - poststep_z) );
   fStepDeltaLyz = stepdeltalyz;

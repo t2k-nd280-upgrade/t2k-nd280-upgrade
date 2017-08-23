@@ -45,16 +45,16 @@ public:
     };
 };
 
-ND280P0DSupportConstructor::~ND280P0DSupportConstructor() {;};
+ND280P0DSupportConstructor::~ND280P0DSupportConstructor() {;}
 
 void ND280P0DSupportConstructor::Init(void) {
 
-    fUSECalSupportLength = 305*mm;
-    fUSTargetSupportLength = 886*mm;
-    fCTargetSupportLength = 886*mm;
-    fCECalSupportLength = 305*mm;
-    fSupportSpace = 4*mm;
-    fWidth   = 2320*mm;
+  fUSECalSupportLength = 305*CLHEP::mm;
+  fUSTargetSupportLength = 886*CLHEP::mm;
+  fCTargetSupportLength = 886*CLHEP::mm;
+  fCECalSupportLength = 305*CLHEP::mm;
+  fSupportSpace = 4*CLHEP::mm;
+  fWidth   = 2320*CLHEP::mm;
     
     fvisual = new G4VisAttributes();
     fvisual->SetColor(0.5,0.5,0.5,1); // Grey
@@ -111,7 +111,7 @@ G4LogicalVolume *ND280P0DSupportConstructor::GetPiece(void) {
     currentCenter = currentCenter + G4ThreeVector(0, 0, eCalSupport.GetWidth()/2);
 
     G4RotationMatrix* rotP90Y = new G4RotationMatrix();
-    rotP90Y->rotateY(90*degree);
+    rotP90Y->rotateY(90*CLHEP::degree);
 
     new G4PVPlacement(rotP90Y,          //rotation
 		      currentCenter,

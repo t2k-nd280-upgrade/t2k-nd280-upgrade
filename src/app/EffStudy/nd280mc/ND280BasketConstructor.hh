@@ -60,7 +60,7 @@ public:
     /// Get the outer height of the basket.  This is the outer height of the
     /// SS frame, and not the outer height of the MC volume.
     double GetOuterHeight(void) {
-        return 2480*mm;
+      return 2480*CLHEP::mm;
     }
 
     /// Get the outer length of the basket.  This is the outer length of the
@@ -72,68 +72,68 @@ public:
     }
 
     /// Get the internal width of the basket.
-    G4double GetInnerWidth(void) {return 2320*mm;}
+  G4double GetInnerWidth(void) {return 2320*CLHEP::mm;}
 
     /// Get the internal height of the basket.
     G4double GetInnerHeight(void) {return GetOuterHeight();}
 
     /// Get the internal length of the basket.
-    G4double GetInnerLength(void) {return 6650*mm;}
+    G4double GetInnerLength(void) {return 6650*CLHEP::mm;}
 
     /// Get the thickness of the side structure.  This is the horizontal
     /// dimension of the side beams (top and bottom).
-    G4double GetSideThickness(void) {return 100*mm;}
+    G4double GetSideThickness(void) {return 100*CLHEP::mm;}
 
     /// Get the thickness of the bottom structure.  This is the vertical
     /// dimension of the bottom beam.
-    G4double GetBottomThickness(void) {return 300*mm;}
+    G4double GetBottomThickness(void) {return 300*CLHEP::mm;}
 
     /// Get the thickness of the top structure.  This is the vertical
     /// dimension of the top beam.
-    G4double GetTopThickness(void) {return 200*mm;}
+    G4double GetTopThickness(void) {return 200*CLHEP::mm;}
 
     /// @{Get the dimensions of the beam used to contruct the staves.  These
     /// are three square tube located along the sides of the basket which
     /// maintain the separation between the top and bottom beams.  This is
     /// taken from the design drawings.
-    double GetStaveWidth(void) {return 80*mm;}
-    double GetStaveHeight(void) {return 120*mm;}
+    double GetStaveWidth(void) {return 80*CLHEP::mm;}
+    double GetStaveHeight(void) {return 120*CLHEP::mm;}
     /// @}
 
     /// @{ Get the location of the staves as measured from the upstream,
     /// outside end of the basket.  This is taken from the design drawings.
-    double GetUpstreamStave() {return 2557*mm;}
-    double GetCenterStave() {return 3916*mm;}
-    double GetDownstreamStave() {return 5275*mm;}
+    double GetUpstreamStave() {return 2557*CLHEP::mm;}
+    double GetCenterStave() {return 3916*CLHEP::mm;}
+    double GetDownstreamStave() {return 5275*CLHEP::mm;}
     /// @}
 
     /// Get the thickness of the downstream structure.  This is the dimension
     /// along the beam axis.
-    G4double GetDownstreamThickness(void) {return 140*mm;}
+    G4double GetDownstreamThickness(void) {return 140*CLHEP::mm;}
 
     /// Get the thickness of the upstream structure.  This is the dimension
     /// along the beam axis.
-    G4double GetUpstreamThickness(void) {return 140*mm;}
+    G4double GetUpstreamThickness(void) {return 140*CLHEP::mm;}
 
     /// Get the width of the top and bottom on the ends of the basket.  This
     /// is the vertical dimension of the end beams.
-    double GetEndWidth(void) {return 180*mm;}
+    double GetEndWidth(void) {return 180*CLHEP::mm;}
 
     /// Get the "diameter" of the central hub.  This is the distance between
     /// the flats of the hub, and not the distance between the corners.
-    double GetHubDiameter() {return 500*mm;}
+    double GetHubDiameter() {return 500*CLHEP::mm;}
 
     /// Get the "axle" diameter.  This is the OD of the pipe that supports the
     /// basket.
-    double GetAxleDiameter() {return 250*mm;}
+    double GetAxleDiameter() {return 250*CLHEP::mm;}
 
     /// Get the wall thickness for the "axle" tube.
-    double GetAxleWallThickness() {return 10*mm;}
+    double GetAxleWallThickness() {return 10*CLHEP::mm;}
 
     /// The position of the center of the basket in the global coordinate
     /// system.  This is the center of the loaded basket.
     G4ThreeVector GetDeflectedCenter() const {
-        return G4ThreeVector(0,-16*mm,0);
+        return G4ThreeVector(0,-16*CLHEP::mm,0);
     }
 
     /// Get the space available for services that are located outside of the
@@ -142,7 +142,7 @@ public:
     /// different amount of space for the services.  The value of the P0D
     /// Service space is taken P0D design envelop (i.e. 203 mm outside of the
     /// basket).  The ECal envelop begins at 248 mm outside of the basket.
-    double GetP0DServiceSpace(void) {return 203*mm;}
+    double GetP0DServiceSpace(void) {return 203*CLHEP::mm;}
 
     /// Get the length around the P0D that can be used for services.  This is
     /// the space covered by the P0DECal.
@@ -161,8 +161,8 @@ public:
     /// with respect to the magnet.
     /// In production 6 the service height was reduced from 25mm to 13mm
     /// to allow barrel ECal alignment.
-    double GetTrackerServiceHeight(void) const {return 13*mm;}
-    double GetTrackerServiceWidth(void) const {return 5*mm;}
+    double GetTrackerServiceHeight(void) const {return 13*CLHEP::mm;}
+    double GetTrackerServiceWidth(void) const {return 5*CLHEP::mm;}
 
     /// Get the position of the P0D along the Z axis.
     G4double GetP0DPosition(void) const {return fP0DPosition;}
@@ -173,7 +173,7 @@ public:
     /// are applied (although values below about 79mm from the bottom are
     /// unphysical).  The value is taken from the solidworks drawings (7/6/11)
     /// and actually represents the top of the ECal C-Channels.
-    double GetP0DSupportStructureHeight(void) const {return 59*mm;}
+    double GetP0DSupportStructureHeight(void) const {return 59*CLHEP::mm;}
 
     /// Get the distance from the bottom edge of the basket to the lowest
     /// physical position of the P0Dules in the basket.  This represents the
@@ -183,7 +183,7 @@ public:
     /// height (i.e. be below this height).  Taken from the solidworks drawing
     /// (7/6/11) and represents the bottom surface of the P0Dule LI covers in
     /// the drawing.
-    double GetP0DSupportHeight(void) const {return 78.9*mm;} 
+    double GetP0DSupportHeight(void) const {return 78.9*CLHEP::mm;} 
 
     /// Get the position of the Tracker along the Z axis.
     G4double GetTrackerPosition(void) {return fTrackerPosition;}

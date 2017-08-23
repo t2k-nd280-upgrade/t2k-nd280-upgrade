@@ -65,7 +65,7 @@ public:
     void SetWidth(double w) {fWidth = w;}
 
     /// Get the height of the support structure.
-    G4double GetHeight(void) {return 146*mm;}
+  G4double GetHeight(void) {return 146*CLHEP::mm;}
 
     /// Get the length of the support structure.
     G4double GetLength(void);

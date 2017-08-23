@@ -30,7 +30,7 @@ public:
     };
 };
 
-ND280UA1CoilConstructor::~ND280UA1CoilConstructor() {;};
+ND280UA1CoilConstructor::~ND280UA1CoilConstructor() {;}
 
 void ND280UA1CoilConstructor::Init(void) {
     
@@ -51,12 +51,12 @@ void ND280UA1CoilConstructor::Init(void) {
   ////////
  
 
-    fCoilInnerLength = 7009*mm;
-    fCoilInnerHeight = 3540*mm;
-    fCoilThickness = 4*5.5*cm;
-    fCoilWidth = 785*mm;
-    fCaseThickness = 1*cm;
-    fBendInnerRadius = 1*cm;
+  fCoilInnerLength = 7009*CLHEP::mm;
+    fCoilInnerHeight = 3540*CLHEP::mm;
+    fCoilThickness = 4*5.5*CLHEP::cm;
+    fCoilWidth = 785*CLHEP::mm;
+    fCaseThickness = 1*CLHEP::cm;
+    fBendInnerRadius = 1*CLHEP::cm;
 
     SetMessenger(new ND280UA1CoilMessenger(this));
 }
@@ -88,7 +88,7 @@ G4AssemblyVolume *ND280UA1CoilConstructor::GetAssembly(void) {
                                          GetBendInnerRadius(),
                                          GetBendOuterRadius(),
                                          GetCoilWidth()/2,
-                                         0.0*deg, 90.0*deg),
+                                         0.0*CLHEP::deg, 90.0*CLHEP::deg),
                               FindMaterial("Aluminum"),
                               GetName()+"TopFrontBend");
     assembly->AddPlacedVolume(logVolume,volCenter,NULL);
@@ -105,7 +105,7 @@ G4AssemblyVolume *ND280UA1CoilConstructor::GetAssembly(void) {
                                        GetBendInnerRadius(),
                                        GetBendOuterRadius(), 
                                        GetCoilWidth()/2,
-                                       90.0*deg, 90.0*deg),
+                                       90.0*CLHEP::deg, 90.0*CLHEP::deg),
                             FindMaterial("Aluminum"),
                             GetName()+"TopFrontBend");
     assembly->AddPlacedVolume(logVolume,volCenter,NULL);
@@ -121,7 +121,7 @@ G4AssemblyVolume *ND280UA1CoilConstructor::GetAssembly(void) {
                                        GetBendInnerRadius(), 
                                        GetBendOuterRadius(),
                                        GetCoilWidth()/2,
-                                       180.0*deg, 90.0*deg),
+                                       180.0*CLHEP::deg, 90.0*CLHEP::deg),
                             FindMaterial("Aluminum"),
                             GetName()+"TopFrontBend");
     assembly->AddPlacedVolume(logVolume,volCenter,NULL);
@@ -137,7 +137,7 @@ G4AssemblyVolume *ND280UA1CoilConstructor::GetAssembly(void) {
                                        GetBendInnerRadius(),
                                        GetBendOuterRadius(),
                                        GetCoilWidth()/2,
-                                       270.0*deg, 90.0*deg),
+                                       270.0*CLHEP::deg, 90.0*CLHEP::deg),
                             FindMaterial("Aluminum"),
                             GetName()+"TopFrontBend");
     assembly->AddPlacedVolume(logVolume,volCenter,NULL);

@@ -166,53 +166,53 @@ public:
     }
 };
 
-ND280P0DConstructor::~ND280P0DConstructor() {;};
+ND280P0DConstructor::~ND280P0DConstructor() {;}
 
 void ND280P0DConstructor::Init(void) {
 
     // From measurements taken 10/26/09 by Taylor and Rutorburies
-    SetUSECalDsLIPosition(323*mm);
-    SetUSECalSkewAngle(2.71*mrad);
+  SetUSECalDsLIPosition(323*CLHEP::mm);
+  SetUSECalSkewAngle(2.71*CLHEP::mrad);
 
     // From measurements taken 10/26/09 by Taylor and Rutorburies.  The
     // measured value is 1225mm from the front of the P0D.  The dimensions
     // were measured before the water target was filled, and after swelling
     // the water targets swelled slightly.  The USWT position has been tuned
     // to match the relative change in position.
-    SetUSWTDsLIPosition(1226.15*mm);
-    SetUSWTSkewAngle(2.03*mrad);
+  SetUSWTDsLIPosition(1226.15*CLHEP::mm);
+  SetUSWTSkewAngle(2.03*CLHEP::mrad);
 
     // From measurements taken 10/26/09 by Taylor and Rutorburies
-    SetCWTDsLIPosition(2079*mm);
-    SetCWTSkewAngle(3.39*mrad);
+  SetCWTDsLIPosition(2079*CLHEP::mm);
+  SetCWTSkewAngle(3.39*CLHEP::mrad);
 
     // From measurements taken 10/26/09 by Taylor and Rutorburies
-    SetCECalDsLIPosition(2396*mm);
-    SetCECalSkewAngle(3.39*mrad);
+  SetCECalDsLIPosition(2396*CLHEP::mm);
+  SetCECalSkewAngle(3.39*CLHEP::mrad);
 
     // Space to allow for the relative alignment of the  super-P0Dules.
-    SetLengthAdjustmentSpace(3*mm);
-    SetWidthAdjustmentSpace(10*mm);
-    SetHeightAdjustmentSpace(20*mm);
+  SetLengthAdjustmentSpace(3*CLHEP::mm);
+  SetWidthAdjustmentSpace(10*CLHEP::mm);
+  SetHeightAdjustmentSpace(20*CLHEP::mm);
 
     // From measurements taken on 10/26/09 by Taylor and Rutorburies
-    SetUpstreamClearance(18*mm);
+  SetUpstreamClearance(18*CLHEP::mm);
 
 #ifdef USE_BASKET_MEASUREMENTS
     // From measurements taken on 8/23/10 by McGrew
-    SetBottomClearance(10*mm);
-    SetLIClearance(18*mm);
+  SetBottomClearance(10*CLHEP::mm);
+  SetLIClearance(18*CLHEP::mm);
 #else
     // From TPC/P0D alignment on 9/7/11 by Gilje.  The center in global
     // coordinates is at -36 mm (X) and -1 mm (Y)
-    SetBottomClearance(-3*mm);
-    SetLIClearance(14*mm);
+  SetBottomClearance(-3*CLHEP::mm);
+  SetLIClearance(14*CLHEP::mm);
 #endif
 
     // Set the rotation angles.
-    SetXRotation(0*degree);
-    SetYRotation(0*degree);
-    SetZRotation(0*degree);
+  SetXRotation(0*CLHEP::degree);
+  SetYRotation(0*CLHEP::degree);
+  SetZRotation(0*CLHEP::degree);
 
     // Set default translation values.
     SetUSECalTrans(G4ThreeVector(0,0,0));
@@ -509,7 +509,7 @@ double ND280P0DConstructor::GetCECalHeight(void) {
 }
 
 G4LogicalVolume *ND280P0DConstructor::GetPiece(void) {
-    if (GetLength()<0.1*mm) return NULL;
+  if (GetLength()<0.1*CLHEP::mm) return NULL;
 
     G4LogicalVolume *logVolume
 	= new G4LogicalVolume(new G4Box(GetName(),
@@ -592,12 +592,12 @@ G4LogicalVolume *ND280P0DConstructor::GetPiece(void) {
     // ND280Log("    CECal Length:  "  
     //          << cECal.GetLength()/mm << " mm"
     //          << "    Y Rotation: " << fCECalSkewAngle/mrad << " mrad");
-    G4cout << "P0D Envelope Length: " << GetLength()/mm << " mm" << G4endl;
-    G4cout << "P0D Envelope Width: " << GetWidth()/mm << " mm" << G4endl;
-    G4cout << "P0D Envelope Height: " << GetHeight()/mm << " mm" << G4endl;
+    G4cout << "P0D Envelope Length: " << GetLength()/CLHEP::mm << " mm" << G4endl;
+    G4cout << "P0D Envelope Width: " << GetWidth()/CLHEP::mm << " mm" << G4endl;
+    G4cout << "P0D Envelope Height: " << GetHeight()/CLHEP::mm << " mm" << G4endl;
     G4cout << "    USECal Length: "  
-	   << usECal.GetLength()/mm << " mm"
-	   << "    Y Rotation: " << fUSECalSkewAngle/mrad << " mrad" << G4endl;
+	   << usECal.GetLength()/CLHEP::mm << " mm"
+	   << "    Y Rotation: " << fUSECalSkewAngle/CLHEP::mrad << " mrad" << G4endl;
     // G4cout << "    USTarget Length: "
     // 	   << usTarget.GetLength()/mm<< " mm"
     // 	   << "    Y Rotation: " << fUSWTSkewAngle/mrad << " mrad" << G4endl;

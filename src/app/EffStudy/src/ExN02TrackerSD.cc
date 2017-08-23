@@ -59,7 +59,7 @@ using namespace conv;
 ExN02TrackerSD::ExN02TrackerSD(G4String name)
  :G4VSensitiveDetector(name),
   trackerCollection(NULL), HCID(-1),
-  fMaximumHitSagitta(1*mm), fMaximumHitLength(10*mm),
+  fMaximumHitSagitta(1*CLHEP::mm), fMaximumHitLength(10*CLHEP::mm),
   fLastHit(0) {
   
   G4String HCname;
@@ -87,8 +87,8 @@ void ExN02TrackerSD::Initialize(G4HCofThisEvent* HCE)
   
   NSteps_ = 0;
 
-  SetMaximumHitSagitta(1*mm);
-  SetMaximumHitLength(10*mm);
+  SetMaximumHitSagitta(1*CLHEP::mm);
+  SetMaximumHitLength(10*CLHEP::mm);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -454,13 +454,13 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   G4ThreeVector prestepPos = prestep->GetPosition();
   G4ThreeVector poststepPos = poststep->GetPosition();
 
-  G4double prestep_x = prestepPos.x() / mm;
-  G4double prestep_y = prestepPos.y() / mm;
-  G4double prestep_z = prestepPos.z() / mm;
+  G4double prestep_x = prestepPos.x() / CLHEP::mm;
+  G4double prestep_y = prestepPos.y() / CLHEP::mm;
+  G4double prestep_z = prestepPos.z() / CLHEP::mm;
 
-  G4double poststep_x = poststepPos.x() / mm;
-  G4double poststep_y = poststepPos.y() / mm;
-  G4double poststep_z = poststepPos.z() / mm;
+  G4double poststep_x = poststepPos.x() / CLHEP::mm;
+  G4double poststep_y = poststepPos.y() / CLHEP::mm;
+  G4double poststep_z = poststepPos.z() / CLHEP::mm;
   
   G4double stepdeltalyz = sqrt( (prestep_y - poststep_y)*(prestep_y - poststep_y) +
 				(prestep_z - poststep_z)*(prestep_z - poststep_z) );

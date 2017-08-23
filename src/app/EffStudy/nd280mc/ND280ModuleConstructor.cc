@@ -21,28 +21,28 @@ ND280ModuleConstructor::~ND280ModuleConstructor() {
         fTransList->clear();
         delete fTransList;
     }
-};
+}
 
 void ND280ModuleConstructor::Init() {
-    fWidth = 250*cm;
-    fHeight = 250*cm;
-    fLength = 0*cm;
-    fTargetLength = 0*cm;
+  fWidth = 250*CLHEP::cm;
+    fHeight = 250*CLHEP::cm;
+    fLength = 0*CLHEP::cm;
+    fTargetLength = 0*CLHEP::cm;
     fFixLength = false;
-    xPosition = 0*cm;
-    yPosition = 0*cm;
+    xPosition = 0*CLHEP::cm;
+    yPosition = 0*CLHEP::cm;
 
     // Set default translation parameters as 0.
-    fPair.first = 0.0*mm;
-    fPair.second = 0.0*mm;
+    fPair.first = 0.0*CLHEP::mm;
+    fPair.second = 0.0*CLHEP::mm;
 
     SetMessenger(new ND280ModuleConstructorMessenger(this));
 
     fPartsList = new PartsList();
     fTransList = new TransList();
 
-    xmax = xmin = ymax = ymin = 0.0*mm;
-};
+    xmax = xmin = ymax = ymin = 0.0*CLHEP::mm;
+}
 
 G4LogicalVolume *ND280ModuleConstructor::GetPiece(void) {
 
@@ -73,15 +73,15 @@ G4LogicalVolume *ND280ModuleConstructor::GetPiece(void) {
         fLength += componentLength;
     }
 
-    if (fLength<0.10*mm) return NULL;
+    if (fLength<0.10*CLHEP::mm) return NULL;
 
     if (GetLength()>GetTargetLength()) {
       //ND280Error(GetName());
       //ND280Error(" Is " << GetLength()/cm << " cm long with "
       //<< GetTargetLength()/cm << " cm available");
       G4cerr << GetName() << G4endl;
-      G4cerr << " Is " << GetLength()/cm << " cm long with "
-	     << GetTargetLength()/cm << " cm available" << G4endl;
+      G4cerr << " Is " << GetLength()/CLHEP::cm << " cm long with "
+	     << GetTargetLength()/CLHEP::cm << " cm available" << G4endl;
       
       //G4Exception("ND280ModuleConstructor::GetPiece(): Volume too long");
       G4Exception("ND280ModuleConstructor::GetPiece()",

@@ -27,7 +27,7 @@ void ND280ECalScintYConstructor::SetUp(int n_bars,
                            ND280ECal::Detector detector) {
     SetBarNumber( n_bars );
     SetWidth( bar_length ); // length of an x-bar
-    SetHeight(n_bars * ND280ECal::BarWidth + 0.001*mm);
+    SetHeight(n_bars * ND280ECal::BarWidth + 0.001*CLHEP::mm);
     //switch (detector) {
     //case ND280ECal::kP0D:
     //SetSensitiveDetector("pec","segment");

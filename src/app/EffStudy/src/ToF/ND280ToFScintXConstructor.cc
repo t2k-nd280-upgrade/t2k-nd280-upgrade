@@ -14,10 +14,10 @@ void ND280ToFScintXConstructor::Init() {
   //SetMaximumHitLength( ND280ECal::HitLength );
   //SetMaximumHitSagitta( ND280ECal::HitSagitta );
 
-  SetBarBase( 1.*cm );
+  SetBarBase( 1.*CLHEP::cm );
   //SetBarBase( ND280ECal::BarWidth );
-  SetBarHeight( 1.*cm );
-  SetLength( 1.*cm );
+  SetBarHeight( 1.*CLHEP::cm );
+  SetLength( 1.*CLHEP::cm );
   SetBarGap(0.0);
   SquareBar();
   MakeParallelBars();
@@ -28,8 +28,8 @@ void ND280ToFScintXConstructor::SetUp(int n_bars,
 				      double bar_length,
 				      double bar_base){
   // NEW ND280 UPGRADE
-  SetBarBase( bar_base*mm );
-  SetBarHeight( bar_base*mm );
+  SetBarBase( bar_base*CLHEP::mm );
+  SetBarHeight( bar_base*CLHEP::mm );
   //
 
   SetBarNumber( n_bars );

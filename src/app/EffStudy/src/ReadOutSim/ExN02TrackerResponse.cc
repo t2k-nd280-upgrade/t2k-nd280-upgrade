@@ -116,7 +116,7 @@ void ExN02TrackerResponse::BirksSaturation(G4double* edep, G4Track* aTrack)
 
   if(particle->GetPDGCharge()==0) return;
 
-  G4double dedx = emcal.GetDEDX(kineticE, particle, material)/(MeV/cm);
+  G4double dedx = emcal.GetDEDX(kineticE, particle, material)/(CLHEP::MeV/CLHEP::cm);
  
 /*
   G4cout << "dedx : " << dedx << G4endl;
@@ -167,8 +167,8 @@ void ExN02TrackerResponse::ApplyLightCollection(G4double* edep, G4int mod, G4int
   G4double x = 0.;
   G4int i = 0.;
 
-  if( view==topview ) x = fabs(scilen/2. + pos[0]/cm);
-  else if( view==sideview ) x = fabs(scilen/2. + pos[1]/cm);
+  if( view==topview ) x = fabs(scilen/2. + pos[0]/CLHEP::cm);
+  else if( view==sideview ) x = fabs(scilen/2. + pos[1]/CLHEP::cm);
 
   
   if(mod<15){
@@ -185,18 +185,18 @@ void ExN02TrackerResponse::ApplyLightCollection(G4double* edep, G4int mod, G4int
 
     if( view==topview ){
 	if(grid==0){
- 		x = fabs(pos[0]/cm - (scposx-0.39) ); //0.39 is glue shift
+	  x = fabs(pos[0]/CLHEP::cm - (scposx-0.39) ); //0.39 is glue shift
 	}
 	else if(grid==1 || grid==2){
- 		x = fabs(pos[2]/cm - (scposz+0.39) ); //0.39 is glue shift
+	  x = fabs(pos[2]/CLHEP::cm - (scposz+0.39) ); //0.39 is glue shift
 	}
     }
     else if( view==sideview ){
 	if(grid==0){
- 		x = fabs(pos[1]/cm - (scposy-0.39) ); //0.39 is glue shift
+	  x = fabs(pos[1]/CLHEP::cm - (scposy-0.39) ); //0.39 is glue shift
 	}
 	else if(grid==1 || grid==2){
- 		x = fabs(pos[2]/cm - (scposz-0.39) ); //0.39 is glue shift
+	  x = fabs(pos[2]/CLHEP::cm - (scposz-0.39) ); //0.39 is glue shift
 	}
     }
     //*edep *= exp(-1.*x/sciattleng_WAGASCI)*WAGASCIFactor;
@@ -227,12 +227,12 @@ void ExN02TrackerResponse::ApplyFiberResponse(G4double* edep, G4double* time, G4
 {
   G4double x = 0.;
   
-  if( view==topview ) x = fabs(scilen/2. - pos[1]/cm);
-  else if( view==sideview ) x = fabs(scilen/2. + pos[0]/cm);
+  if( view==topview ) x = fabs(scilen/2. - pos[1]/CLHEP::cm);
+  else if( view==sideview ) x = fabs(scilen/2. + pos[0]/CLHEP::cm);
   //added by koga for plototype
   if(mod==15){
-    if( view==topview ) x = fabs(scilen_WAGASCI/2. - pos[1]/cm) + 20;      //20 is fiber length between scinti and bundle
-    else if( view==sideview ) x = fabs(scilen_WAGASCI/2. + pos[0]/cm) + 20;//20 is fiber length between scinti and bundle
+    if( view==topview ) x = fabs(scilen_WAGASCI/2. - pos[1]/CLHEP::cm) + 20;      //20 is fiber length between scinti and bundle
+    else if( view==sideview ) x = fabs(scilen_WAGASCI/2. + pos[0]/CLHEP::cm) + 20;//20 is fiber length between scinti and bundle
   } 
   // attenuation
   *edep *= exp(-1.*x/attleng);

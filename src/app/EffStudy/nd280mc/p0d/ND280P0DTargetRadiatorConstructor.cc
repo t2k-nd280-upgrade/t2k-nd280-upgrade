@@ -46,24 +46,24 @@ public:
     };
 };
 
-ND280P0DTargetRadiatorConstructor::~ND280P0DTargetRadiatorConstructor() {;};
+ND280P0DTargetRadiatorConstructor::~ND280P0DTargetRadiatorConstructor() {;}
 
 const G4VisAttributes* ND280P0DTargetRadiatorConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(0.8,0.8,0.0,1); 
     return visual;
-};
+}
 
 void ND280P0DTargetRadiatorConstructor::Init() {
 #ifdef OLD_MEASUREMENT
-    SetThickness(1.56*mm); // Measured 3/30/09
+  SetThickness(1.56*CLHEP::mm); // Measured 3/30/09
 #else
     // Measured by Gilje 6/11 and report in T2K-TN-73 (Alignment and Mass of
     // the P0D Detector)
-    SetThickness(1.278*mm); 
+  SetThickness(1.278*CLHEP::mm); 
 #endif
     SetMessenger(new ND280P0DTargetRadiatorMessenger(this));
-};
+}
 
 G4LogicalVolume *ND280P0DTargetRadiatorConstructor::GetPiece(void) {
 

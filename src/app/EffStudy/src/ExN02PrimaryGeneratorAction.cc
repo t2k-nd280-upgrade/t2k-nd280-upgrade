@@ -44,7 +44,9 @@
 #include "G4ParticleDefinition.hh"
 #include "Randomize.hh"
 #include "G4Run.hh"
-#include "G4SystemOfUnits.hh"
+
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -66,7 +68,7 @@ ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
   fParticleGun = new G4ParticleGun(nofParticles);
   
   G4String particlename = "mu-"; //"pi-" //"pi+" 
-  G4double particleenergy = 600 * MeV; // GeV   
+  G4double particleenergy = 600 * CLHEP::MeV; // GeV   
   
   G4ParticleDefinition* particleDefinition 
     = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
@@ -139,7 +141,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     if(fTypeDirection=="Uniform"){      
       G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
       G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi/2]
-      G4double phi = G4UniformRand()*360*deg; //flat in [0,2pi]
+      G4double phi = G4UniformRand()*360*CLHEP::deg; //flat in [0,2pi]
       G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
       G4ThreeVector dir(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);
       //G4cout << "direction of the gun before update = " << aDir[0] << ", " << aDir[1] << ", " << aDir[2] <<endl;

@@ -59,10 +59,10 @@ public:
     };
 };
 
-ND280OffAxisConstructor::~ND280OffAxisConstructor() {;};
+ND280OffAxisConstructor::~ND280OffAxisConstructor() {;}
 
 void ND280OffAxisConstructor::Init(void) {
-    fWidth = fHeight = fLength = 8.0*meter;
+  fWidth = fHeight = fLength = 8.0*CLHEP::meter;
 
     AddConstructor(new ND280UA1MagnetConstructor("Magnet",this));
     

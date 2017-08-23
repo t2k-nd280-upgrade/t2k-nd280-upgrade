@@ -107,7 +107,7 @@ public:
     };
 };
 
-ND280UA1MRDArmConstructor::~ND280UA1MRDArmConstructor() {;};
+ND280UA1MRDArmConstructor::~ND280UA1MRDArmConstructor() {;}
 
 void ND280UA1MRDArmConstructor::Init(void) {
     
@@ -129,12 +129,12 @@ void ND280UA1MRDArmConstructor::Init(void) {
 
 
 
-  fWidth = (4.0 * (170.5 + 0.5))*mm; // plateCount * plateOffset
-    fHeight = 7*mm;
-    fLength = 875*mm;
+  fWidth = (4.0 * (170.5 + 0.5))*CLHEP::mm; // plateCount * plateOffset
+    fHeight = 7*CLHEP::mm;
+    fLength = 875*CLHEP::mm;
     //SetSensitiveDetector("mrd","segment");
-    //SetMaximumHitLength(5*cm);
-    //SetMaximumHitSagitta(1*cm);
+    //SetMaximumHitLength(5*CLHEP::cm);
+    //SetMaximumHitSagitta(1*CLHEP::cm);
     fYokeIndex = 0;
     fSlotLayer = 0;
     fSlotIndex = 0;
@@ -155,7 +155,7 @@ G4LogicalVolume *ND280UA1MRDArmConstructor::GetPiece(void) {
     logVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
     int plateCount = 4;
-    double plateWidth = 167.0*mm;
+    double plateWidth = 167.0*CLHEP::mm;
     double plateOffset = GetWidth() / plateCount;
 
     for (int i = 0; i<plateCount; ++i) {
