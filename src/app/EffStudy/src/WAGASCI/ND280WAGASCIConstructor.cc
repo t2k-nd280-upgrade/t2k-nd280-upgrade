@@ -73,7 +73,7 @@ ND280WAGASCIConstructor::~ND280WAGASCIConstructor() {;}
 void ND280WAGASCIConstructor::Init(void) {
   
   /// The edge of a cube of the WAGASCI detector 
-  fEdge = 25*mm;
+  fEdge = 25 * CLHEP::mm;
 
   // Number of cubes along each axis 
   fCubeNumX = 1;
@@ -84,7 +84,7 @@ void ND280WAGASCIConstructor::Init(void) {
   SetHeight(fCubeNumY * fEdge);
   SetLength(fCubeNumZ * fEdge);
 
-  //SetFiberRadius(0.5*mm);
+  //SetFiberRadius(0.5 * CLHEP::mm);
   //SetFiberMaterial("FiberCore");
 
   // Position of the center of the WAGASCI detector
@@ -118,12 +118,12 @@ G4LogicalVolume *ND280WAGASCIConstructor::GetPiece(void) {
   ND280CellConstructor& cell
     = Get<ND280CellConstructor>("/cellDirXYZ/cellDirXZ/cellDirZ/Cell");
   
-  cell.SetHoleRadius(0.7*mm);
-  cell.SetFiberRadius(0.5*mm);
-  cell.SetCoatingThickness(0.25*mm);
-  cell.SetScintThickness(3.0*mm);
-  cell.SetGap(0.0*mm);
-  cell.SetSpaceLayerY(1.*mm);
+  cell.SetHoleRadius(0.7 * CLHEP::mm);
+  cell.SetFiberRadius(0.5 * CLHEP::mm);
+  cell.SetCoatingThickness(0.25 * CLHEP::mm);
+  cell.SetScintThickness(3.0 * CLHEP::mm);
+  cell.SetGap(0.0 * CLHEP::mm);
+  cell.SetSpaceLayerY(1. * CLHEP::mm);
 
   cell.SetBase(fEdge);
   cell.SetLength(fEdge);

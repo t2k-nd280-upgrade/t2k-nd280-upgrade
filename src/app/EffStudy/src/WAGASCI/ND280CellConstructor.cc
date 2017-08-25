@@ -163,18 +163,18 @@ public:
 void ND280CellConstructor::Init() {
   
   //SetShape(eTriangle);
-  SetLength(10*cm);
-  SetBase(10*cm);
-  SetHeight(10*cm);
+  SetLength(10 * CLHEP::cm);
+  SetBase(10 * CLHEP::cm);
+  SetHeight(10 * CLHEP::cm);
     
-  SetFiberRadius(0.5*mm);
-  SetHoleRadius(0.9*mm);
+  SetFiberRadius(0.5 * CLHEP::mm);
+  SetHoleRadius(0.9 * CLHEP::mm);
   
-  SetCoatingThickness(0.25*mm);
+  SetCoatingThickness(0.25 * CLHEP::mm);
   //SetCoatingRadius(0.0*mm);
-  SetGap(0.0*mm);
+  SetGap(0.0 * CLHEP::mm);
   
-  SetScintThickness(3.0*mm);
+  SetScintThickness(3.0 * CLHEP::mm);
 
   //SetSensitiveDetector(NULL);
   SetVisibility(false);
