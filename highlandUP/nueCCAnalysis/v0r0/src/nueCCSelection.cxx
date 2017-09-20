@@ -21,7 +21,7 @@
 nueCCSelection::nueCCSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
   //********************************************************************
 
-  // TODO move to hifhkandIO
+  // TODO move to highlandIO
   char filename[256];
   sprintf(filename, "%s/data/ECalPID.root", getenv("NUECCANALYSISROOT"));
   _file_ECAL_PDF = TFile::Open(filename);
@@ -125,6 +125,17 @@ void nueCCSelection::InitializeEvent(AnaEventC& eventBB){
   }
  
   boxUtils::FillTracksWithECal(event);  
+
+  /*for (Int_t i = 0; i < event.nTrueParticles; ++i) {
+    if (!event.TrueParticles[i])
+      continue;
+
+    if (abs(event.TrueParticles[i]->PDG ) != 11)
+      continue;
+
+    if (event.TrueParticles[i]->ProcessName.compare("msc") == 0)
+      std::cout << "ALARM" << std::endl;
+  }*/
 }
 
 //********************************************************************
