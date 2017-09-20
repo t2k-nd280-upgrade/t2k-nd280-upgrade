@@ -56,6 +56,7 @@ const double Lbar_FGD = 1864.3 * CLHEP::mm;
 
 // SuperFGD constants
 const double MPPCEff_SuperFGD = 0.38;
+const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD * 1.3;
 
 // SciFi constants
 const double EdepToPhotConv_SciFi_SingleClad_2mm = 23.7 / CLHEP::MeV; 
@@ -118,7 +119,7 @@ double ND280UpTargReadOut::EdepToPhot(double edep)
     //cout << "NormShadowLight = " << NormShadowLight << endl;   
     return edep * EdepToPhotConv_FGD * NormShadowLight;
     */
-    return edep * EdepToPhotConv_FGD * 1.3;     
+    return edep * EdepToPhotConv_SuperFGD;     
   }
   else if(GetTargType() == nd280upconv::kFGDlike){
     return edep * EdepToPhotConv_FGD;
