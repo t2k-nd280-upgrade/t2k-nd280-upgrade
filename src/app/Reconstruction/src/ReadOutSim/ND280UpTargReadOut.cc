@@ -107,6 +107,7 @@ void ND280UpTargReadOut::BirksSaturation(double &edep, double steplength, double
 double ND280UpTargReadOut::EdepToPhot(double edep)
 {
   if(GetTargType() == nd280upconv::kSuperFGD){        
+    /*
     // Account for the 3 fibers in the same scintillator cube
     double collfact = CollFactor_DoubleClad;
     double fact_fib1 = collfact;
@@ -116,6 +117,8 @@ double ND280UpTargReadOut::EdepToPhot(double edep)
     double NormShadowLight = CollFactAve / collfact; // fraction 
     //cout << "NormShadowLight = " << NormShadowLight << endl;   
     return edep * EdepToPhotConv_FGD * NormShadowLight;
+    */
+    return edep * EdepToPhotConv_FGD * 1.3;     
   }
   else if(GetTargType() == nd280upconv::kFGDlike){
     return edep * EdepToPhotConv_FGD;
