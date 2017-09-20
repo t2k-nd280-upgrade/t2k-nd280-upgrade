@@ -245,18 +245,18 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     if (!highestMomTrack || highestMomTrack->Momentum < truePart->Momentum)
       highestMomTrack = truePart;
 
-    if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
+    if ( ((trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
 	 (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
 	 (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
-	 (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) 
-   && nd280UpTrack->GetParentID() == 0) {
+
+	 (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11)) &&
+    nd280UpTrack->GetParentID() == 0 )  {
       if(nd280UpTrack->GetInitMom().Mag() > 0){
 	//std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
 	leptonTrack = truePart;
 	trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
 	trueVertex->LeptonPDG = nd280UpTrack->GetPDG();
 	trueVertex->Q2 = - (nd280UpTrack->GetInitMom() - nd280UpVertex->GetInTrack(0)->GetInitMom()).Mag2();
-	trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
   anaUtils::VectorToArray(nd280UpTrack->GetInitMom().Unit(), trueVertex->LeptonDir);
       }
 
@@ -444,6 +444,7 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
   truePart->ParentID = upTrack->GetParentID();
   truePart->CosTheta=upTrack->GetInitCosTheta();
 
+  truePart->ProcessName = upTrack->GetProcessName();
 
   double tmpp=-9999;
   double tmpd=9999;
@@ -2122,7 +2123,8 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   else {
     true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
     // if we have a timing saying to flip the track, do it (even if we know it is wrong from true info)
-    if (reco_ToF*true_ToF<0)
+    //if (reco_ToF*true_ToF<0)
+    if (reco_ToF*true_ToF<0 && reco_ToF > 2*sigma_ToF)
       anaUtils::FlipTrack(reconParticle);
 
     ToF_length = anaUtils::GetLength(reconParticle, p1, p2, sigma_ToF_length, true);

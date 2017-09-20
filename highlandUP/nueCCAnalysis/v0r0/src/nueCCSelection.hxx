@@ -19,12 +19,8 @@ public:
   nueCCSelection(bool forceBreak=true);
   virtual ~nueCCSelection(){
     _file_ECAL_PDF->Close();
-    _file_charge_confusion_1->Close();
-    _file_charge_confusion_2->Close();
+
     delete _file_ECAL_PDF;
-    delete _file_charge_confusion_1;
-    delete _file_charge_confusion_2;
-    delete _randomGen;
   }
 
   //---- These are mandatory functions
@@ -42,13 +38,7 @@ public:
   bool CheckRedoSelection(const AnaEventC& event, const ToyBoxB& PreviousToyBox, Int_t& redoFromStep);
 
 private:
-  BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
-  TFile *_file_ECAL_PDF;
-  TRandom3 *_randomGen;
-  
-  TFile *_file_charge_confusion_1;
-  TFile *_file_charge_confusion_2;
-  
+  TFile *_file_ECAL_PDF;  
 };
 
 class ToyBoxCC4pi: public ToyBoxNDUP{

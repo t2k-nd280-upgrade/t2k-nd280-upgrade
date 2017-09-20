@@ -21,18 +21,10 @@
 nueCCSelection::nueCCSelection(bool forceBreak): SelectionBase(forceBreak,EventBoxId::kEventBoxNDUP) {
   //********************************************************************
 
+  // TODO move to highlandIO
   char filename[256];
   sprintf(filename, "%s/data/ECalPID.root", getenv("NUECCANALYSISROOT"));
   _file_ECAL_PDF = TFile::Open(filename);
-
-  // Ecal
-  _ECal_reco_eff = new BinnedParams(std::string(getenv("NUECCANALYSISROOT")) + "/data",
-				    "ECal_recoEff", BinnedParams::k1D_SYMMETRIC); 
-  
-  _ECal_FGDmatch_eff = new BinnedParams(std::string(getenv("NUECCANALYSISROOT")) + "/data",
-					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC); 
-
-  _randomGen = new TRandom3();
   
 }
 
@@ -133,6 +125,17 @@ void nueCCSelection::InitializeEvent(AnaEventC& eventBB){
   }
  
   boxUtils::FillTracksWithECal(event);  
+
+  /*for (Int_t i = 0; i < event.nTrueParticles; ++i) {
+    if (!event.TrueParticles[i])
+      continue;
+
+    if (abs(event.TrueParticles[i]->PDG ) != 11)
+      continue;
+
+    if (event.TrueParticles[i]->ProcessName.compare("msc") == 0)
+      std::cout << "ALARM" << std::endl;
+  }*/
 }
 
 //********************************************************************
