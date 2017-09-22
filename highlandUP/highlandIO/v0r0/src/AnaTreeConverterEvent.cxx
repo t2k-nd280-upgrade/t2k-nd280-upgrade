@@ -92,7 +92,7 @@ bool AnaTreeConverterEvent::AddFileToTChain(const std::string& inputString){
 
   // Chain only the directories we are interested in
 
-  if (ND280upEvents            )          ND280upEvents->AddFile(inputString.c_str());
+  if (ND280upEvents) ND280upEvents->AddFile(inputString.c_str());
 
   // Read one entry from the tree tree such that Run and Subrun are available
   ND280upEvents->GetEntry(ND280upEvents->GetEntries() - 1);
@@ -211,6 +211,54 @@ void AnaTreeConverterEvent::FillBeamInfo(AnaBeam* beam){
   beam->GoodSpill = true;
 }
 
+void Merge(TND280UpTrack* t1, TND280UpTrack* t2){
+  
+  for (int i=0; i<t2->GetNPoints(); i++)
+    t1->AddPoint(t2->GetPoint(i));
+  t1->SetRange(t1->GetRange()+t2->GetRange());
+  t1->SetSDTotalEnergyDeposit(t1->GetSDTotalEnergyDeposit()+t2->GetSDTotalEnergyDeposit());
+  t1->SetSDLength(t1->GetSDLength()+t2->GetSDLength());
+
+  t1->SetLengthTarget1(t1->GetLengthTarget1()+t2->GetLengthTarget1());
+  t1->SetLengthTarget2(t1->GetLengthTarget2()+t2->GetLengthTarget2());
+  t1->SetLengthFGD1(t1->GetLengthFGD1()+t2->GetLengthFGD1());
+  t1->SetLengthFGD2(t1->GetLengthFGD2()+t2->GetLengthFGD2());
+  t1->SetLengthTPCUp1(t1->GetLengthTPCUp1()+t2->GetLengthTPCUp1());
+  t1->SetLengthTPCUp2(t1->GetLengthTPCUp2()+t2->GetLengthTPCUp2());
+  t1->SetLengthTPCDown1(t1->GetLengthTPCDown1()+t2->GetLengthTPCDown1());
+  t1->SetLengthTPCDown2(t1->GetLengthTPCDown2()+t2->GetLengthTPCDown2());
+  t1->SetLengthForwTPC1(t1->GetLengthForwTPC1()+t2->GetLengthForwTPC1());
+  t1->SetLengthForwTPC2(t1->GetLengthForwTPC2()+t2->GetLengthForwTPC2());
+  t1->SetLengthForwTPC3(t1->GetLengthForwTPC3()+t2->GetLengthForwTPC3());
+  t1->SetLengthDsECal(t1->GetLengthDsECal()+t2->GetLengthDsECal());
+  t1->SetLengthP0DECal(t1->GetLengthP0DECal()+t2->GetLengthP0DECal());
+  t1->SetLengthBrlECal(t1->GetLengthBrlECal()+t2->GetLengthBrlECal());
+
+  t1->SetLyzTPCUp1(t1->GetLyzTPCUp1()+t2->GetLyzTPCUp1());
+  t1->SetLyzTPCUp2(t1->GetLyzTPCUp2()+t2->GetLyzTPCUp2());
+  t1->SetLyzTPCDown1(t1->GetLyzTPCDown1()+t2->GetLyzTPCDown1());
+  t1->SetLyzTPCDown2(t1->GetLyzTPCDown2()+t2->GetLyzTPCDown2());
+  t1->SetLyzForwTPC1(t1->GetLyzForwTPC1()+t2->GetLyzForwTPC1());
+  t1->SetLyzForwTPC2(t1->GetLyzForwTPC2()+t2->GetLyzForwTPC2());
+  t1->SetLyzForwTPC3(t1->GetLyzForwTPC3()+t2->GetLyzForwTPC3());
+
+  t1->SetEdepTarget1(t1->GetEdepTarget1()+t2->GetEdepTarget1());
+  t1->SetEdepTarget2(t1->GetEdepTarget2()+t2->GetEdepTarget2());
+  t1->SetEdepFGD1(t1->GetEdepFGD1()+t2->GetEdepFGD1());
+  t1->SetEdepFGD2(t1->GetEdepFGD2()+t2->GetEdepFGD2());
+  t1->SetEdepTPCUp1(t1->GetEdepTPCUp1()+t2->GetEdepTPCUp1());
+  t1->SetEdepTPCUp2(t1->GetEdepTPCUp2()+t2->GetEdepTPCUp2());
+  t1->SetEdepTPCDown1(t1->GetEdepTPCDown1()+t2->GetEdepTPCDown1());
+  t1->SetEdepTPCDown2(t1->GetEdepTPCDown2()+t2->GetEdepTPCDown2());
+  t1->SetEdepForwTPC1(t1->GetEdepForwTPC1()+t2->GetEdepForwTPC1());
+  t1->SetEdepForwTPC2(t1->GetEdepForwTPC2()+t2->GetEdepForwTPC2());
+  t1->SetEdepForwTPC3(t1->GetEdepForwTPC3()+t2->GetEdepForwTPC3());
+  t1->SetEdepDsECal(t1->GetEdepDsECal()+t2->GetEdepDsECal());
+  t1->SetEdepP0DECal(t1->GetEdepP0DECal()+t2->GetEdepP0DECal());
+  t1->SetEdepBrlECal(t1->GetEdepBrlECal()+t2->GetEdepBrlECal());
+
+}
+
 //*****************************************************************************
 void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
   //*****************************************************************************
@@ -225,8 +273,6 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
 
   int nVertices = std::min((int)NMAXTRUEVERTICES, 1);
   TND280UpVertex *nd280UpVertex = dynamic_cast<TND280UpVertex*>(nd280UpEvent->GetVertex(0));
-
-  
   AnaTrueVertex* trueVertex = MakeTrueVertex();
   FillTrueVertexInfo(nd280UpVertex, trueVertex);
     
@@ -237,19 +283,41 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
 
   AnaTrueParticleB *highestMomTrack=0, *leptonTrack=0;
   
+  map<int, TND280UpTrack*> trueMTracks;
+  map<int, int> mergMTracks;
   for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
-    TND280UpTrack *nd280UpTrack = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
 
+    TND280UpTrack *track = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
+    bool track_merged = false;
+    
+    if ( track->GetProcessName() != "primary" && trueMTracks[track->GetParentID()] ) {
+      TND280UpTrack *parent = trueMTracks[track->GetParentID()];
+      if ( track->GetPDG() == parent->GetPDG() &&
+	   cos(track->GetInitMom().Angle(parent->GetInitMom())) > 0.98 ) {
+	Merge(parent, track);
+	mergMTracks[track->GetParentID()]++;
+	track_merged = true;
+      }
+    }
+    
+    if (!track_merged) {
+      trueMTracks[track->GetTrackID()] = track;
+      mergMTracks[track->GetTrackID()] = 0;
+    }
+
+  }
+
+  for (std::map<int,TND280UpTrack*>::iterator it=trueMTracks.begin(); it!=trueMTracks.end(); ++it) {
+    TND280UpTrack *nd280UpTrack = it->second;
+    if (!nd280UpTrack) continue;
     AnaTrueParticleB* truePart = MakeTrueParticle();
-	
-    if (!highestMomTrack || highestMomTrack->Momentum < truePart->Momentum)
-      highestMomTrack = truePart;
 
-    if ( (trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
-	 (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
-	 (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
-	 (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11) 
-   && nd280UpTrack->GetParentID() == 0) {
+    truePart->Merged = mergMTracks[nd280UpTrack->GetTrackID()];
+    if ( ((trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
+	  (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
+	  (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
+	  (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11)) 
+	 && nd280UpTrack->GetParentID() == 0) {
       if(nd280UpTrack->GetInitMom().Mag() > 0){
 	//std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
 	leptonTrack = truePart;
@@ -283,6 +351,9 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     spill->TrueParticles.push_back(truePart);
     truePart->TrueVertex = trueVertex;
     trueVertex->TrueParticlesVect.push_back(truePart);
+
+    if (!highestMomTrack || highestMomTrack->Momentum < truePart->Momentum)
+      highestMomTrack = truePart;
 
     int index = ParticleId::GetParticle(nd280UpTrack->GetPDG(),false);
     
@@ -1935,7 +2006,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   reconParticle->nTargetSegments = 0;
   reconParticle->nFGDSegments = 0;
   reconParticle->nTPCSegments = 0;
-  reconParticle->TrueObject=dynamic_cast<AnaTrueObjectC*>(trueParticle);
+  reconParticle->TrueObject=trueParticle;
 
   // find the last segment of the track
   AnaDetCrossingB *pEnd = 0;
@@ -2116,6 +2187,10 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   if (!p1 || !p2) { // no ToF found
     // by default, we consider that all tracks are going forward
     // if the track is going backward, we flip it
+    if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2])
+      anaUtils::FlipTrack(reconParticle);
+  }
+  else if (fabs(reco_ToF/sigma_ToF) < 2) { // ToF not good enough (below 2sigma separation)
     if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2])
       anaUtils::FlipTrack(reconParticle);
   }

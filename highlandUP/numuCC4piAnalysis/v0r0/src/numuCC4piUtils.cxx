@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "TRandom3.h"
+#include "TH2F.h"
 
 #include "AnalysisUtils.hxx"
 #include "EventBoxId.hxx"
@@ -22,7 +23,7 @@
 int numuCC4pi_utils::CC4piCategory(AnaTrack* candidate){
   //********************************************************************
 	
-  if(!candidate) return -1;
+  if (!candidate) return -1;
   AnaTrueParticle* truetrack = static_cast<AnaTrueParticle*>( candidate->TrueObject );
   if (!truetrack) return -1;
   AnaTrueVertex* truevtx = static_cast<AnaTrueVertex*>( truetrack->TrueVertex );
@@ -309,6 +310,82 @@ bool numuCC4pi_utils::MuonPIDCut(const AnaTrackB& candidate, bool ApplyMIP) {
 	
 }
 
+//**************************************************
+bool numuCC4pi_utils::MuonECalPIDCut(const AnaTrackB& candidate, ToyBoxB& box, TFile* _file_ECAL_PDF) {
+  //**************************************************
+
+    // initializing
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+  
+    if (!_file_ECAL_PDF) {
+      std::cerr << "In Utils::MuonECALPIDCut : No file found to define the PDFs for ECal variables" << std::endl;
+      return false;
+    }
+
+    TH2F *h_binning = (TH2F*)_file_ECAL_PDF->Get("hBinning");
+    AnaTrueParticleB* trueParticle = candidate.GetTrueParticle();
+    if (!trueParticle) return false;
+  
+    // find the first segment in an ECal
+    AnaDetCrossingB* firstECal_cross=NULL;
+    for (unsigned int i=0; i<trueParticle->DetCrossingsVect.size(); i++) {
+      AnaDetCrossingB* cross = trueParticle->DetCrossingsVect[i];
+      if (!cross->Detector_name.Contains("ECal") || !cross->Detector_name.Contains("Bar")) continue;
+      firstECal_cross = cross;
+    }
+
+    // fill the information at ECal entry
+    if (!firstECal_cross)
+      return false;
+  
+    TVector3 P   = anaUtils::ArrayToTVector3(firstECal_cross->EntranceMomentum);
+    TVector3 pos = anaUtils::ArrayToTVector3(firstECal_cross->EntrancePosition);
+    TVector3 entryNormal_vect(0,0,0);
+    
+    if (firstECal_cross->Detector_name.Contains("RightClam") &&
+	firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
+      entryNormal_vect.SetY(1);  // (+Y)
+    else if (firstECal_cross->Detector_name.Contains("RightClam") &&
+	     firstECal_cross->Detector_name.Contains("TopLeftBotRight"))
+      entryNormal_vect.SetY(-1); // (-Y)
+    else if (firstECal_cross->Detector_name.Contains("LeftClam") &&
+	     firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
+      entryNormal_vect.SetY(-1); // (-Y)
+    else if (firstECal_cross->Detector_name.Contains("LeftClam") &&
+	     firstECal_cross->Detector_name.Contains("TopLeftBotRight"))
+      entryNormal_vect.SetY(1);  // (+Y)
+    else if (firstECal_cross->Detector_name.Contains("LeftSide"))
+      entryNormal_vect.SetX(1);  // (+X)
+    else if (firstECal_cross->Detector_name.Contains("RightSide"))
+      entryNormal_vect.SetX(-1); // (-X)
+    else if(firstECal_cross->Detector_name.Contains("POD/USECal"))
+      entryNormal_vect.SetZ(-1); // (-Z)
+    else
+      entryNormal_vect.SetZ(1);  // (+Z)
+
+    float mom = P.Mag();
+    float cos = P.Dot(entryNormal_vect)/mom;
+    int   bin = h_binning->GetBinContent(h_binning->FindBin(cos,mom));
+
+  
+    // throw random the ECal variables using the pdfs
+  
+    TH2F *h_bin  = (TH2F*)_file_ECAL_PDF->Get(TString::Format("mipem_Vs_EneOnL_%i", bin));
+    double MipEM, EneOnL;
+    h_bin->GetRandom2(MipEM, EneOnL);
+
+    // fill the ECal variables in the box
+    cc4pibox->track_ECal_MipEM  = MipEM;
+    cc4pibox->track_ECal_EneOnL = EneOnL;
+  
+    // apply cuts on ECal variables
+  
+    if (MipEM < 0 && EneOnL < 1.25)
+      return true;
+    return false;
+	
+}
+
 //*********************************************************************
 void numuCC4pi_utils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det){
   //*********************************************************************
@@ -421,7 +498,7 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
       continue;
 				
     if (det==SubDetId::kTarget1 || det==SubDetId::kTarget2) {
-      if (track->nTargetSegments != 1) continue;
+      if (track->nTargetSegments < 1) continue;
 			
       AnaTargetParticleB* TargetSegment = 
 	dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
@@ -444,7 +521,7 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
 
     }
     if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
-      if (track->nFGDSegments != 1) continue;
+      if (track->nFGDSegments < 1) continue;
 		
       AnaFGDParticleB* FGDSegment = 
 	dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
@@ -499,6 +576,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 	
   // true muon candidate
   if (!box->MainTrack) return;
+  if (!box->MainTrack->TrueObject) return;
   AnaTrueParticleB* true_mu = box->MainTrack->GetTrueParticle();
 	
   //loop over tracks
@@ -509,7 +587,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 	!anaUtils::InFiducialVolume(det, track->PositionEnd)) continue;
 		
     if (det==SubDetId::kTarget1 || det==SubDetId::kTarget2) {
-      if (track->nTargetSegments != 1) continue;
+      if (track->nTargetSegments < 1) continue;
 			
       AnaTargetParticleB* TargetSegment = 
 	dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
@@ -517,6 +595,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 			
       AnaTrueParticleB* true_part = track->GetTrueParticle();
       if (!true_part) continue;
+	  
       if (abs(true_part->PDG) == 11)
 	if (true_part->Position[3]-true_mu->Position[3] > 100 && true_part->Momentum > ME_mom) {
 	  double r = gRandom->Rndm();
@@ -527,7 +606,7 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 	}
     }
     if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
-      if (track->nFGDSegments != 1) continue;
+      if (track->nFGDSegments < 1) continue;
 			
       AnaFGDParticleB* FGDSegment = 
 	dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));

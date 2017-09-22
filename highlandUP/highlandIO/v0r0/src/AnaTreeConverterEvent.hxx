@@ -136,7 +136,7 @@ protected:
   Float_t POTPerSpill;
 };
 
-
+void Merge(TND280UpTrack* t1, TND280UpTrack* t2);
 
 #endif
 

@@ -619,6 +619,8 @@ AnaTrueParticleB::AnaTrueParticleB():AnaTrueObjectC(){
     nDetCrossings = 0;
     DetCrossings  = NULL;
     DetCrossingsVect.clear();
+
+    Merged=false;
 }
 
 //********************************************************************
@@ -673,6 +675,8 @@ AnaTrueParticleB::AnaTrueParticleB(const AnaTrueParticleB& truePart):AnaTrueObje
     DetCrossingsVect.clear();
     for (Int_t i=0; i<truePart.DetCrossingsVect.size(); i++)
       DetCrossingsVect.push_back(truePart.DetCrossingsVect[i]->Clone());
+
+    Merged=truePart.Merged;
 
 }
 

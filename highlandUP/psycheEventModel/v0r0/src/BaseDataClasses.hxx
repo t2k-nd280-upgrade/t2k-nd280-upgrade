@@ -226,6 +226,8 @@ class AnaTrueParticleB: public AnaTrueObjectC{
 
   /// A copy of DetCrossings but using an std::vector, which can be saved into a tree
   std::vector<AnaDetCrossingB*> DetCrossingsVect;
+
+  bool Merged;
 };
 
 /// Representation of a reconstructed particle (track or shower).
