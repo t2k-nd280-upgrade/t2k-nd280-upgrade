@@ -13,7 +13,8 @@
 #include "ND280TrajectoryPoint.hh"
 #include "ND280TrajectoryMap.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 G4Allocator<ND280Trajectory> aND280TrajAllocator;
 
@@ -82,7 +83,7 @@ G4double ND280Trajectory::GetInitialKineticEnergy() const {
     if (!p) return mom;
     double mass = p->GetPDGMass();
     double kin = std::sqrt(mom*mom + mass*mass) - mass;
-    if (kin<0.0*MeV) return 0.0;
+    if (kin<0.0*CLHEP::MeV) return 0.0;
     return kin;
 }
 

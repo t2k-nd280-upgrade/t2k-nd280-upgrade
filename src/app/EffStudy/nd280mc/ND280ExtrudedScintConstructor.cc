@@ -152,21 +152,21 @@ public:
     }
 };
 
-ND280ExtrudedScintConstructor::~ND280ExtrudedScintConstructor() {;};
+ND280ExtrudedScintConstructor::~ND280ExtrudedScintConstructor() {;}
 
 void ND280ExtrudedScintConstructor::Init() {
 
     SetShape(eTriangle);
-    SetLength(10*cm);
-    SetBase(3.0*cm);
-    SetHeight(1.5*cm);
+    SetLength(10*CLHEP::cm);
+    SetBase(3.0*CLHEP::cm);
+    SetHeight(1.5*CLHEP::cm);
     
-    SetFiberRadius(0.5*mm);
-    SetHoleRadius(0.9*mm);
+    SetFiberRadius(0.5*CLHEP::mm);
+    SetHoleRadius(0.9*CLHEP::mm);
 
-    SetCoatingThickness(0.25*mm);
-    SetCoatingRadius(0.0*mm);
-    SetGap(0.0*mm);
+    SetCoatingThickness(0.25*CLHEP::mm);
+    SetCoatingRadius(0.0*CLHEP::mm);
+    SetGap(0.0*CLHEP::mm);
 
     SetSensitiveDetector(NULL);
     SetVisibility(false);
@@ -206,7 +206,7 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
                               GetHeight()/2-GetCoatingThickness()
                                            -GetCoatingRadius(),
                               GetLength()/2);
-        if (GetCoatingRadius() > 0.*mm) {
+        if (GetCoatingRadius() > 0.*CLHEP::mm) {
            scintside = new G4Box(GetName()+"/SideOfBar",
                                  GetBase()/2-GetCoatingThickness()
                                             -GetCoatingRadius(),
@@ -214,11 +214,11 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
                                  GetLength()/2);
 
            scintcrnr = new G4Tubs(GetName()+"/CrnrOfBar",
-                                  0.0*cm,
+                                  0.0*CLHEP::cm,
                                   GetCoatingRadius(),
                                   GetLength()/2,
-                                  0.*deg,
-                                  90.*deg);
+                                  0.*CLHEP::deg,
+                                  90.*CLHEP::deg);
         }
 
         coreOffset = 0.0;
@@ -279,7 +279,7 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
                       false,               // no boolean operations
                       0);                  // copy number
 
-    if (fShape == eRectangle && GetCoatingRadius() > 0.*mm) {
+    if (fShape == eRectangle && GetCoatingRadius() > 0.*CLHEP::mm) {
         
         G4LogicalVolume *scintSide;
         scintSide = new G4LogicalVolume(scintside,
@@ -385,18 +385,18 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
     
     if (GetFiberRadius()<GetHoleRadius()) {
         G4VSolid* fiberHole = new G4Tubs(GetName()+"/Core/Hole",
-                                         0.0*cm,
+                                         0.0*CLHEP::cm,
                                          GetHoleRadius(),
                                          GetLength()/2,
-                                         0.*deg,
-                                         360.*deg);
+                                         0.*CLHEP::deg,
+                                         360.*CLHEP::deg);
         
         G4VSolid* fiber = new G4Tubs(GetName()+"/Core/Hole/Fiber",
-                                     0.0*cm,
+                                     0.0*CLHEP::cm,
                                      GetFiberRadius(),
                                      GetLength()/2,
-                                     0.*deg,
-                                     360.*deg);
+                                     0.*CLHEP::deg,
+                                     360.*CLHEP::deg);
         
         G4LogicalVolume *holeVolume
             = new G4LogicalVolume(fiberHole,
@@ -444,7 +444,7 @@ G4LogicalVolume* ND280ExtrudedScintConstructor::GetPiece(void) {
 }
 
 double ND280ExtrudedScintConstructor::GetTop(void) {
-    double top = 0.001*mm;
+    double top = 0.001*CLHEP::mm;
     if (fShape == eRectangle) top = fBase;
     return top;
 }

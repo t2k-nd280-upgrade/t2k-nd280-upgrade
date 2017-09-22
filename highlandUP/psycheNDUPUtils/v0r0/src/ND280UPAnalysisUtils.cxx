@@ -243,7 +243,9 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
     }
   }
 
-  if (add_ToF_on_targets) {
+  // Target ToF is over target. 
+  // As it's not simulated check the target usage to avoid horisontal TPC tracks w/o target ToF
+  if (add_ToF_on_targets && anaUtils::TrackUsesDet(*track, SubDetId::kTarget)) {
     // find timing information in additionnal ToF
     // find the point with minimum Y for TPC up and with maximum Y for TPC down
 

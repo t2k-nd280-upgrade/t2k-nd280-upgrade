@@ -114,16 +114,16 @@ public:
   }
 };
   
-  ND280BarScintConstructor::~ND280BarScintConstructor() {;};
+ND280BarScintConstructor::~ND280BarScintConstructor() {;}
 
 void ND280BarScintConstructor::Init() {
   
-  SetBase(10*mm);
-  SetWidth(10*mm);
-  SetHeight(10*mm);
-  SetLength(10*mm);
-  SetCoatingThickness(0.25*mm);
-  SetGap(0.0*mm);
+  SetBase(10*CLHEP::mm);
+  SetWidth(10*CLHEP::mm);
+  SetHeight(10*CLHEP::mm);
+  SetLength(10*CLHEP::mm);
+  SetCoatingThickness(0.25*CLHEP::mm);
+  SetGap(0.0*CLHEP::mm);
   
   //SetSensitiveDetector(NULL);
   SetVisibility(false);
@@ -193,9 +193,9 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
     scintHeight = GetBase()-2*GetCoatingThickness();
     scintLength = GetBase()-2*GetCoatingThickness();
 
-    rotation->rotateX(0 *degree); 
-    rotation->rotateY(90*degree); 
-    rotation->rotateZ(0 *degree); 
+    rotation->rotateX(0 *CLHEP::degree); 
+    rotation->rotateY(90*CLHEP::degree); 
+    rotation->rotateZ(0 *CLHEP::degree); 
   }
   else if(GetBarDir()==conv::kAlongY){
     width  = GetBase();
@@ -206,9 +206,9 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
     scintHeight = GetAxisLength();
     scintLength = GetBase()-2*GetCoatingThickness();
     
-    rotation->rotateX(90*degree); 
-    rotation->rotateY(0 *degree); 
-    rotation->rotateZ(0 *degree);      
+    rotation->rotateX(90*CLHEP::degree); 
+    rotation->rotateY(0 *CLHEP::degree); 
+    rotation->rotateZ(0 *CLHEP::degree);      
   }
   else if(GetBarDir()==conv::kAlongZ){
     width  = GetBase();
@@ -219,9 +219,9 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
     scintHeight = GetBase()-2*GetCoatingThickness();
     scintLength = GetAxisLength();
  
-    rotation->rotateX(0*degree); 
-    rotation->rotateY(0*degree); 
-    rotation->rotateZ(0*degree);      
+    rotation->rotateX(0*CLHEP::degree); 
+    rotation->rotateY(0*CLHEP::degree); 
+    rotation->rotateZ(0*CLHEP::degree);      
   }
 
   //G4cout << "GetCoatingThickness() = " << GetCoatingThickness() << G4endl;
@@ -258,11 +258,11 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
   
   
   fiberHole = new G4Tubs(GetName()+"/Extrusion/Core/Hole",
-			 0.0*cm,
+			 0.0*CLHEP::cm,
 			 GetHoleRadius(),
 			 GetAxisLength()/2.,
-			 0.*deg,
-			 360.*deg);
+			 0.*CLHEP::deg,
+			 360.*CLHEP::deg);
  
   
   // Define shifts of the 3 holes wrt each other (WLS fibers must not overlap)
@@ -367,11 +367,11 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
   else{
     
     G4VSolid* fiber = new G4Tubs(GetName()+"/Extrusion/Fiber",
-				 0.0*cm,
+				 0.0*CLHEP::cm,
 				 GetFiberRadius(),
 				 GetAxisLength()/2,
-				 0.*deg,
-				 360.*deg);
+				 0.*CLHEP::deg,
+				 360.*CLHEP::deg);
 
     G4LogicalVolume *fiberVolume
       = new G4LogicalVolume(fiber,

@@ -10,7 +10,7 @@
 
 #include "ND280IBeamConstructor.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
 
 class ND280IBeamMessenger : public ND280ConstructorMessenger {
 
@@ -72,18 +72,18 @@ public:
     };
 };
 
-ND280IBeamConstructor::~ND280IBeamConstructor() {;};
+ND280IBeamConstructor::~ND280IBeamConstructor() {;}
 
 void ND280IBeamConstructor::Init(void) {
 
-    SetWidth(   50*mm);
-    SetHeight( 104*mm);
-    SetLength(2300*mm);
+  SetWidth(   50*CLHEP::mm);
+    SetHeight( 104*CLHEP::mm);
+    SetLength(2300*CLHEP::mm);
 
-    SetStemThickness(4.75*mm);
-    SetBaseThickness(9.50*mm);
+    SetStemThickness(4.75*CLHEP::mm);
+    SetBaseThickness(9.50*CLHEP::mm);
 
-    SetIBeamLength(100*m);
+    SetIBeamLength(100*CLHEP::m);
 
     SetMessenger(new ND280IBeamMessenger(this));
 }

@@ -60,19 +60,19 @@ public:
     };
 };
 
-ND280P0DECalRadiatorConstructor::~ND280P0DECalRadiatorConstructor() {;};
+ND280P0DECalRadiatorConstructor::~ND280P0DECalRadiatorConstructor() {;}
 
 const G4VisAttributes* ND280P0DECalRadiatorConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(0.8,0.8,0.8,1); 
     return visual;
-};
+}
 
 void ND280P0DECalRadiatorConstructor::Init() {
-    SetLeadThickness(3.45*mm);
-    SetEpoxyThickness(0.25*mm);
+  SetLeadThickness(3.45*CLHEP::mm);
+  SetEpoxyThickness(0.25*CLHEP::mm);
     SetMessenger(new ND280P0DECalRadiatorMessenger(this));
-};
+}
 
 G4LogicalVolume *ND280P0DECalRadiatorConstructor::GetPiece(void) {
 

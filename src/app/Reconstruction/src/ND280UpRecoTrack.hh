@@ -4,6 +4,7 @@
 #include "ND280UpConst.hh"
 
 #include <TH2F.h>
+#include <TGraph.h>
 
 using namespace std;
 
@@ -76,7 +77,8 @@ public:
   bool IsOutFV(){return fIsOutFV;}
   bool IsReco(){return fIsReco;}
 
-
+  TVector3 GetVertexReco(){return fVtxReco;}
+   
   // Track separation
 
   void DoTrackSeparation(); // check if the loaded track is separated another track 
@@ -85,6 +87,8 @@ public:
   double GetTrackSeparationMin(){return fTrackSeparationMin;}
 
   bool IsSeparated(){return fIsSeparated;}
+
+  bool CalcOutFVTrue(TH2F *h2dmppchit,TGraph *gmchit); // based on the MC hits
   
 private:
 
@@ -97,12 +101,16 @@ private:
   void CalcLength();
   void CalcLengthFit();
   void CalcLengthStraight(); // also gets the first and last MPPC hit
+  double CalcLengthStraight1D(TH2F *h2D,bool axisX); // axisX=true --> X, axisX=false --> Y
   void CalcNHits();
   void CalcEdep();
-  void CalcOutFV();
+  void CalcOutFV(); // based on the MPPC hits
   bool CalcOutFVView(TH2F *h2D);
   void DefineRecoTrack(); // cuts 
   void CalcRecoVar(); 
+
+  void CalcVtxReco();
+
   //
 
   void SetIsReco(bool isreco){fIsReco = isreco;}
@@ -179,6 +187,9 @@ private:
   double fPt2_XZ[2]; // second track extreme point in XZ
   double fPt1_YZ[2]; // first  track extreme point in YZ
   double fPt2_YZ[2]; // second track extreme point in YZ
+
+  // Vertex
+  TVector3 fVtxReco;
 
 };
 

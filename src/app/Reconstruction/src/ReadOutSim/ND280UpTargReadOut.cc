@@ -56,6 +56,7 @@ const double Lbar_FGD = 1864.3 * CLHEP::mm;
 
 // SuperFGD constants
 const double MPPCEff_SuperFGD = 0.38;
+const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD * 1.3;
 
 // SciFi constants
 const double EdepToPhotConv_SciFi_SingleClad_2mm = 23.7 / CLHEP::MeV; 
@@ -107,6 +108,7 @@ void ND280UpTargReadOut::BirksSaturation(double &edep, double steplength, double
 double ND280UpTargReadOut::EdepToPhot(double edep)
 {
   if(GetTargType() == nd280upconv::kSuperFGD){        
+    /*
     // Account for the 3 fibers in the same scintillator cube
     double collfact = CollFactor_DoubleClad;
     double fact_fib1 = collfact;
@@ -116,6 +118,8 @@ double ND280UpTargReadOut::EdepToPhot(double edep)
     double NormShadowLight = CollFactAve / collfact; // fraction 
     //cout << "NormShadowLight = " << NormShadowLight << endl;   
     return edep * EdepToPhotConv_FGD * NormShadowLight;
+    */
+    return edep * EdepToPhotConv_SuperFGD;     
   }
   else if(GetTargType() == nd280upconv::kFGDlike){
     return edep * EdepToPhotConv_FGD;

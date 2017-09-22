@@ -112,8 +112,8 @@ void ND280CECalSP0DuleConstructor::Init(void) {
     for (int i=0; i<7; ++i) SetP0DuleTrans(i,G4ThreeVector(0,0,0));
 
     // Set the ladder offsets.
-    SetTopLadderOffset(10*mm);
-    SetSideLadderOffset(10*mm);
+    SetTopLadderOffset(10*CLHEP::mm);
+    SetSideLadderOffset(10*CLHEP::mm);
 
     AddConstructor(new ND280P0DuleConstructor("P0Dule",this));
     AddConstructor(new ND280P0DECalRadiatorConstructor("Radiator",this));
@@ -250,7 +250,7 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
                               GetName()+"/Brace");
 
     // Build the first brace.
-    yBrace += 6.43*25.4*mm;
+    yBrace += 6.43*25.4*CLHEP::mm;
     yBrace += GetECalBraceWidth();
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
@@ -263,7 +263,7 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
                       0);                   // no specific field
     
     // Build the second brace.
-    yBrace += 6.0*25.4*mm;
+    yBrace += 6.0*25.4*CLHEP::mm;
     yBrace += GetECalBraceWidth();
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
@@ -276,7 +276,7 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
                       0);                   // no specific field
     
     // Build the third brace.
-    yBrace += 7.5*25.4*mm;
+    yBrace += 7.5*25.4*CLHEP::mm;
     yBrace += GetECalBraceWidth();
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
@@ -289,7 +289,7 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
                       0);                   // no specific field
     
     // Build the fourth brace.
-    yBrace += 8.0*25.4*mm;
+    yBrace += 8.0*25.4*CLHEP::mm;
     yBrace += GetECalBraceWidth();
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
@@ -302,7 +302,7 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
                       0);                   // no specific field
     
     // Build the fifth brace.
-    yBrace += 9.0*25.4*mm;
+    yBrace += 9.0*25.4*CLHEP::mm;
     yBrace += GetECalBraceWidth();
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
@@ -315,7 +315,7 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
                       0);                   // no specific field
     
     // Build the sixth brace.
-    yBrace += 9.5*25.4*mm;
+    yBrace += 9.5*25.4*CLHEP::mm;
     yBrace += GetECalBraceWidth();
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
@@ -328,7 +328,7 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
                       0);                   // no specific field
     
     // Build the seventh brace.
-    yBrace += 10.0*25.4*mm;
+    yBrace += 10.0*25.4*CLHEP::mm;
     yBrace += GetECalBraceWidth();
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
@@ -341,7 +341,7 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
                       0);                   // no specific field
     
     // Build the eighth brace.
-    yBrace += 6.0*25.4*mm;
+    yBrace += 6.0*25.4*CLHEP::mm;
     yBrace += GetECalBraceWidth();
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
@@ -389,9 +389,9 @@ G4LogicalVolume *ND280CECalSP0DuleConstructor::GetPiece(void) {
     // ND280Log("P0D CECal Length: " << GetLength()/mm << " mm");
     // ND280Log("   CECal P0Dule Thickness:   " << p0dule.GetLength()/mm <<" mm");
     // ND280Log("   CECal Radiator Thickness: " <<radiator.GetLength()/mm<<" mm");
-    G4cout << "P0D CECal Length: " << GetLength()/mm << " mm" << G4endl;
-    G4cout << "   CECal P0Dule Thickness:   " << p0dule.GetLength()/mm <<" mm" << G4endl;
-    G4cout << "   CECal Radiator Thickness: " <<radiator.GetLength()/mm<<" mm" << G4endl;
+    G4cout << "P0D CECal Length: " << GetLength()/CLHEP::mm << " mm" << G4endl;
+    G4cout << "   CECal P0Dule Thickness:   " << p0dule.GetLength()/CLHEP::mm <<" mm" << G4endl;
+    G4cout << "   CECal Radiator Thickness: " <<radiator.GetLength()/CLHEP::mm<<" mm" << G4endl;
 
     return logVolume;
 }

@@ -40,7 +40,9 @@
 #include "G4Run.hh"
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
-#include "G4SystemOfUnits.hh"
+
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -73,7 +75,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
   //
 
   // // Creating histograms 
-  analysisManager->CreateH1("Edep_abs_tpcup","Edep in TPC Up", 100, 0., 800*MeV);
+  analysisManager->CreateH1("Edep_abs_tpcup","Edep in TPC Up", 100, 0., 800*CLHEP::MeV);
   
   // Creating ntuple
   //             

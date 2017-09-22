@@ -51,7 +51,8 @@
 
 #include "ND280RootGeometryManager.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 ND280RootGeometryManager* ND280RootGeometryManager::fThis = NULL;
 
@@ -201,7 +202,7 @@ void ND280RootGeometryManager::Update(const G4VPhysicalVolume* aWorld,
   if (!validateGeometry) return;
   
   // Check for overlaps at volume corners.  Look for overlaps at 0.1 mm size.
-  gGeoManager->CheckOverlaps(0.1*mm);
+  gGeoManager->CheckOverlaps(0.1*CLHEP::mm);
   {
     TIter next(gGeoManager->GetListOfOverlaps());
     int count = 0;
@@ -221,7 +222,7 @@ void ND280RootGeometryManager::Update(const G4VPhysicalVolume* aWorld,
   }
   
   // Check for overlaps with sampling.  Look for overlaps at 0.1 mm size.
-  gGeoManager->CheckOverlaps(0.1*mm,"s100000");
+  gGeoManager->CheckOverlaps(0.1*CLHEP::mm,"s100000");
   {
     TIter next(gGeoManager->GetListOfOverlaps());
     int count = 0;
@@ -249,19 +250,19 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
     if (geometryType == "G4Box") {
         // Create a box
         const G4Box* box = dynamic_cast<const G4Box*>(theSolid);
-        theShape = new TGeoBBox(box->GetXHalfLength()/mm,
-                                box->GetYHalfLength()/mm,
-                                box->GetZHalfLength()/mm);
+        theShape = new TGeoBBox(box->GetXHalfLength()/CLHEP::mm,
+                                box->GetYHalfLength()/CLHEP::mm,
+                                box->GetZHalfLength()/CLHEP::mm);
     }
     else if (geometryType == "G4Tubs") {
         const G4Tubs* tube = dynamic_cast<const G4Tubs*>(theSolid);
         // Root takes the angles in degrees so there is no extra
         // conversion.
-        double zhalf = tube->GetZHalfLength()/mm;
-        double rmin = tube->GetInnerRadius()/mm;
-        double rmax = tube->GetOuterRadius()/mm;
-        double minPhiDeg = tube->GetStartPhiAngle()/degree;
-        double maxPhiDeg = minPhiDeg + tube->GetDeltaPhiAngle()/degree;
+        double zhalf = tube->GetZHalfLength()/CLHEP::mm;
+        double rmin = tube->GetInnerRadius()/CLHEP::mm;
+        double rmax = tube->GetOuterRadius()/CLHEP::mm;
+        double minPhiDeg = tube->GetStartPhiAngle()/CLHEP::degree;
+        double maxPhiDeg = minPhiDeg + tube->GetDeltaPhiAngle()/CLHEP::degree;
         theShape = new TGeoTubeSeg(rmin, rmax,
                                    zhalf,
                                    minPhiDeg, maxPhiDeg);
@@ -270,12 +271,12 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
         const G4Sphere* sphere = dynamic_cast<const G4Sphere*>(theSolid);
         // Root takes the angles in degrees so there is no extra
         // conversion.
-        double minPhiDeg = sphere->GetStartPhiAngle()/degree;
-        double maxPhiDeg = minPhiDeg + sphere->GetDeltaPhiAngle()/degree;
-        double minThetaDeg = sphere->GetStartThetaAngle()/degree;
-        double maxThetaDeg = minThetaDeg + sphere->GetDeltaThetaAngle()/degree;
-        theShape = new TGeoSphere(sphere->GetInsideRadius()/mm,
-                                  sphere->GetOuterRadius()/mm,
+        double minPhiDeg = sphere->GetStartPhiAngle()/CLHEP::degree;
+        double maxPhiDeg = minPhiDeg + sphere->GetDeltaPhiAngle()/CLHEP::degree;
+        double minThetaDeg = sphere->GetStartThetaAngle()/CLHEP::degree;
+        double maxThetaDeg = minThetaDeg + sphere->GetDeltaThetaAngle()/CLHEP::degree;
+        theShape = new TGeoSphere(sphere->GetInsideRadius()/CLHEP::mm,
+                                  sphere->GetOuterRadius()/CLHEP::mm,
                                   minThetaDeg, maxThetaDeg,
                                   minPhiDeg, maxPhiDeg);
     }
@@ -289,29 +290,29 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
         int sides = polyhedra->GetNumSide();
         int numZ = polyhedra->GetNumRZCorner()/2;
         double g4Factor = std::cos(0.5*dPhi/sides);
-        TGeoPgon* pgon = new TGeoPgon(phi/degree, dPhi/degree, sides, numZ);
+        TGeoPgon* pgon = new TGeoPgon(phi/CLHEP::degree, dPhi/CLHEP::degree, sides, numZ);
         for (int i = 0; i< numZ; ++i) {
             pgon->DefineSection(i,
-                                polyhedra->GetCorner(numZ-i-1).z/mm,
-                                g4Factor*polyhedra->GetCorner(numZ-i-1).r/mm,
-                                g4Factor*polyhedra->GetCorner(numZ+i).r/mm);
+                                polyhedra->GetCorner(numZ-i-1).z/CLHEP::mm,
+                                g4Factor*polyhedra->GetCorner(numZ-i-1).r/CLHEP::mm,
+                                g4Factor*polyhedra->GetCorner(numZ+i).r/CLHEP::mm);
         }
         theShape = pgon;
     }
     else if (geometryType == "G4Trap") {
         const G4Trap* trap
             = dynamic_cast<const G4Trap*>(theSolid);
-        double dz = trap->GetZHalfLength()/mm;
+        double dz = trap->GetZHalfLength()/CLHEP::mm;
         double theta = 0;
         double phi = 0;
-        double h1 = trap->GetYHalfLength1()/mm;
-        double bl1 = trap->GetXHalfLength1()/mm;
-        double tl1 = trap->GetXHalfLength2()/mm;
-        double alpha1 = std::atan(trap->GetTanAlpha1())/degree;
-        double h2 = trap->GetYHalfLength2()/mm;
-        double bl2 = trap->GetXHalfLength3()/mm;
-        double tl2 = trap->GetXHalfLength4()/mm;
-        double alpha2 = std::atan(trap->GetTanAlpha2())/degree;
+        double h1 = trap->GetYHalfLength1()/CLHEP::mm;
+        double bl1 = trap->GetXHalfLength1()/CLHEP::mm;
+        double tl1 = trap->GetXHalfLength2()/CLHEP::mm;
+        double alpha1 = std::atan(trap->GetTanAlpha1())/CLHEP::degree;
+        double h2 = trap->GetYHalfLength2()/CLHEP::mm;
+        double bl2 = trap->GetXHalfLength3()/CLHEP::mm;
+        double tl2 = trap->GetXHalfLength4()/CLHEP::mm;
+        double alpha2 = std::atan(trap->GetTanAlpha2())/CLHEP::degree;
         theShape = new TGeoTrap(dz, theta, phi,
                                 h1, bl1, tl1, alpha1,
                                 h2, bl2, tl2, alpha2);
@@ -319,11 +320,11 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
     else if (geometryType == "G4Trd") {
         const G4Trd* trd
             = dynamic_cast<const G4Trd*>(theSolid);
-        double dz = trd->GetZHalfLength()/mm;
-        double dx1 = trd->GetXHalfLength1()/mm;
-        double dx2 = trd->GetXHalfLength2()/mm;
-        double dy1 = trd->GetYHalfLength1()/mm;
-        double dy2 = trd->GetYHalfLength2()/mm;
+        double dz = trd->GetZHalfLength()/CLHEP::mm;
+        double dx1 = trd->GetXHalfLength1()/CLHEP::mm;
+        double dx2 = trd->GetXHalfLength2()/CLHEP::mm;
+        double dy1 = trd->GetYHalfLength1()/CLHEP::mm;
+        double dy2 = trd->GetYHalfLength2()/CLHEP::mm;
         theShape = new TGeoTrd2(dx1,dx2,dy1,dy2,dz);
     }
     else if (geometryType == "G4SubtractionSolid") {
@@ -356,9 +357,9 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
                                    TMath::RadToDeg()*rotation.phiY(),
                                    TMath::RadToDeg()*rotation.thetaZ(),
                                    TMath::RadToDeg()*rotation.phiZ());
-            *returnMatrix = new TGeoCombiTrans(displacement.x()/mm,
-                                               displacement.y()/mm,
-                                               displacement.z()/mm,
+            *returnMatrix = new TGeoCombiTrans(displacement.x()/CLHEP::mm,
+                                               displacement.y()/CLHEP::mm,
+                                               displacement.z()/CLHEP::mm,
                                                rotate);
         }
     }
@@ -526,7 +527,7 @@ void ND280RootGeometryManager::CreateMaterials(
             for (unsigned j = 0; j < elem->GetNumberOfIsotopes(); ++j) {
                 const G4Isotope *iso = elem->GetIsotope(j);
                 theMix->DefineElement(ielement,
-                                      iso->GetA()/(g/mole),
+                                      iso->GetA()/(CLHEP::g/CLHEP::mole),
                                       iso->GetZ(),
                                       (mat->GetFractionVector()[i])*
                                       (elem->GetRelativeAbundanceVector()[j]));
@@ -539,7 +540,7 @@ void ND280RootGeometryManager::CreateMaterials(
                         = new TGeoElement(iso->GetName(),
                                           elem->GetSymbol(),
                                           iso->GetZ(),
-                                          iso->GetA()/(g/mole));
+                                          iso->GetA()/(CLHEP::g/CLHEP::mole));
                     fIsotope[iso->GetName()] = theEle;
                 }
                 ielement++;
@@ -601,7 +602,7 @@ bool ND280RootGeometryManager::CreateEnvelope(
       //ND280Log("%%% Mass: " << theLog->GetMass(true)/kg/1000.0 << " ton"
       //<< " Volume: " << theG4PhysVol->GetName());
 
-      G4cout << "%%% Mass: " << theLog->GetMass(true)/kg/1000.0 << " ton"
+      G4cout << "%%% Mass: " << theLog->GetMass(true)/CLHEP::kg/1000.0 << " ton"
 	     << " Volume: " << theG4PhysVol->GetName() << " " << G4endl;
 
       //double missingMass = 0.0;
@@ -774,9 +775,9 @@ bool ND280RootGeometryManager::CreateEnvelope(
             for (int i=0; i<nRep; ++i) {
                 G4ThreeVector pos = axis*w*(i-0.5*(nRep-1));
                 TGeoCombiTrans* combi 
-                    = new TGeoCombiTrans(pos.x()/mm,
-                                         pos.y()/mm,
-                                         pos.z()/mm,
+                    = new TGeoCombiTrans(pos.x()/CLHEP::mm,
+                                         pos.y()/CLHEP::mm,
+                                         pos.z()/CLHEP::mm,
                                          rotate);
                 int index = HowManySimilarNodesInVolume(theMother, 
                                                         theVolume->GetName());
@@ -785,9 +786,9 @@ bool ND280RootGeometryManager::CreateEnvelope(
         }
         else {
             TGeoCombiTrans* combi 
-                = new TGeoCombiTrans(trans.x()/mm,
-                                     trans.y()/mm,
-                                     trans.z()/mm,
+                = new TGeoCombiTrans(trans.x()/CLHEP::mm,
+                                     trans.y()/CLHEP::mm,
+                                     trans.z()/CLHEP::mm,
                                      rotate);
             int index = HowManySimilarNodesInVolume(theMother, 
                                                     theVolume->GetName());
@@ -889,7 +890,7 @@ TGeoMedium* ND280RootGeometryManager::AverageMaterial(
     double totalDensity = totalMass/totalVolume;
     std::ostringstream nameStream;
     nameStream << MaterialName(thePhys) 
-               << "Avg" << totalDensity/(g/cm3);
+               << "Avg" << totalDensity/(CLHEP::g/CLHEP::cm3);
     std::string averageName = nameStream.str();
     TGeoMedium* avgMedium = fMedium[averageName];
     if (avgMedium) return avgMedium;

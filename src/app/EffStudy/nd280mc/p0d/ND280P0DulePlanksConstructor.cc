@@ -88,37 +88,37 @@ public:
 
 };
 
-ND280P0DulePlanksConstructor::~ND280P0DulePlanksConstructor() {};
-ND280P0DuleXPlanksConstructor::~ND280P0DuleXPlanksConstructor() {;};
-ND280P0DuleYPlanksConstructor::~ND280P0DuleYPlanksConstructor() {;};
+ND280P0DulePlanksConstructor::~ND280P0DulePlanksConstructor() {}
+ND280P0DuleXPlanksConstructor::~ND280P0DuleXPlanksConstructor() {;}
+ND280P0DuleYPlanksConstructor::~ND280P0DuleYPlanksConstructor() {;}
 
 G4VisAttributes* ND280P0DulePlanksConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(0.8,0.8,0.8,1); // green
     return visual;
-};
+}
 
 G4VisAttributes* ND280P0DuleXPlanksConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(0.5,1.0,0.5,1); // greenish
     return visual;
-};
+}
 
 G4VisAttributes* ND280P0DuleYPlanksConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(1.0,0.5,0.5,1); // redish
     return visual;
-};
+}
 
 void ND280P0DuleXPlanksConstructor::Init(void) {
     MakeXPlanks();
     SetNumberOfBars(126);
-    SetBarLength(2272*mm);
+    SetBarLength(2272*CLHEP::mm);
     /// \todo Bar spacing averages over entire side.  In fact, the bars are
     /// first assembled into planks, and then assembled in to planes.  In a
     /// plank, the spacing between bar centers is about 16.77 mm.  The center
     /// to center space between bars at the edge of a plank is about 17.77 mm.
-    SetBarSpacing(16.82*mm);
+    SetBarSpacing(16.82*CLHEP::mm);
     // The measured average mass for the X layer is 82.91 kg (taken from mass
     // measurements at SBU during construction).  See the P0D mass summary
     // spreadsheet on docdb (808)
@@ -128,12 +128,12 @@ void ND280P0DuleXPlanksConstructor::Init(void) {
 void ND280P0DuleYPlanksConstructor::Init(void) {
     MakeYPlanks();
     SetNumberOfBars(134);
-    SetBarLength(2133*mm);
+    SetBarLength(2133*CLHEP::mm);
     /// \todo Bar spacing averages over entire side.  In fact, the bars are
     /// first assembled into planks, and then assembled in to planes.  In a
     /// plank, the spacing between bar centers is about 16.77 mm.  The center
     /// to center space between bars at the edge of a plank is about 17.77 mm.
-    SetBarSpacing(16.83*mm);
+    SetBarSpacing(16.83*CLHEP::mm);
     // The measured average mass for the Y layer is 83.05 kg (taken from mass
     // measurements at SBU during construction).  See the P0D mass summary
     // spreadsheet on docdb (808)
@@ -149,29 +149,29 @@ void ND280P0DulePlanksConstructor::Init() {
     fMakeXPlanks = true;
 
     // The thickness of the planks was measured at SBU.
-    SetPlankThickness(17.34*mm);
+    SetPlankThickness(17.34*CLHEP::mm);
 
     // Design Specification (based on enclosing triangle).  The measured base
     // length of the bar is 32.5 mm, but the enclosing triangle is designed to
     // be 33 mm.  The enclosing triangle is 17 mm high.  
-    SetBarBase(33.0*mm);
-    SetBarHeight(17.0*mm);
+    SetBarBase(33.0*CLHEP::mm);
+    SetBarHeight(17.0*CLHEP::mm);
 
     // The design spec from Kuraray.
-    SetBarFiberRadius(0.6*mm);
+    SetBarFiberRadius(0.6*CLHEP::mm);
     // The designed hold diameter.  The actual hole diameter varied
     // significantly.
-    SetBarHoleRadius(1.3*mm);  
+    SetBarHoleRadius(1.3*CLHEP::mm);  
     // The coating thickness is set to give the right fractional area to the
     // coating.  This is based on measurements of the bar.
-    SetBarCoatingThickness(0.21*mm);
+    SetBarCoatingThickness(0.21*CLHEP::mm);
 
     //SetSensitiveDetector("p0d","segment");
     //SetMaximumHitLength(5*cm);
     //SetMaximumHitSagitta(1*cm);
 
     SetMessenger(new ND280P0DulePlanksMessenger(this));
-};
+}
 
 double ND280P0DulePlanksConstructor::GetLength() {
     if (GetPlankThickness() < GetBarHeight()) {
@@ -345,17 +345,17 @@ G4LogicalVolume *ND280P0DulePlanksConstructor::GetPiece(void) {
     if (fMakeXPlanks) {
         SinOrientation = 0;
         CosOrientation = 1;
-        rotDownstream->rotateX( 90*degree);
-        rotDownstream->rotateZ(180*degree);
-        rotUpstream->rotateX( 90*degree);
+        rotDownstream->rotateX( 90*CLHEP::degree);
+        rotDownstream->rotateZ(180*CLHEP::degree);
+        rotUpstream->rotateX( 90*CLHEP::degree);
     }
     else {
         SinOrientation = 1;
         CosOrientation = 0;
-        rotDownstream->rotateY(-90*degree);
-        rotDownstream->rotateZ(-90*degree);
-        rotUpstream->rotateY(-90*degree);
-        rotUpstream->rotateZ( 90*degree);
+        rotDownstream->rotateY(-90*CLHEP::degree);
+        rotDownstream->rotateZ(-90*CLHEP::degree);
+        rotUpstream->rotateY(-90*CLHEP::degree);
+        rotUpstream->rotateZ( 90*CLHEP::degree);
     }
     
     double offset = ((fNumberOfBars-1) * GetBarSpacing())/2;

@@ -8,7 +8,8 @@
 
 #include "ND280UserStackingAction.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 ND280UserStackingAction::ND280UserStackingAction() { }
 
@@ -32,7 +33,7 @@ ND280UserStackingAction::ClassifyNewTrack(const G4Track* aTrack) {
     // This is where we can throw away particles that we don't want to
     // track.
     if (particle->GetParticleName() == "gamma") {
-      if (aTrack->GetKineticEnergy() < 10.*keV) return fKill;
+      if (aTrack->GetKineticEnergy() < 10.*CLHEP::keV) return fKill;
     }
 
     // // NEW ND280UPGRADE

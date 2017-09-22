@@ -60,7 +60,7 @@ public:
     };
 };
 
-ND280UA1MagnetConstructor::~ND280UA1MagnetConstructor() {;};
+ND280UA1MagnetConstructor::~ND280UA1MagnetConstructor() {;}
 
 void ND280UA1MagnetConstructor::Init(void) {
   
@@ -80,12 +80,12 @@ void ND280UA1MagnetConstructor::Init(void) {
   
   ////////
  
-  fMagnetWidth = 5.72*meter;
-  fMagnetHeight = 6.2*meter;
-  fMagnetLength = 8*meter;  // Magnet is actually about 7.7 m long
+  fMagnetWidth = 5.72*CLHEP::meter;
+  fMagnetHeight = 6.2*CLHEP::meter;
+  fMagnetLength = 8*CLHEP::meter;  // Magnet is actually about 7.7 m long
   
-  fLeftClamSplit = 0*cm;
-  fRightClamSplit = 0*cm;
+  fLeftClamSplit = 0*CLHEP::cm;
+  fRightClamSplit = 0*CLHEP::cm;
 
   AddConstructor(new ND280UA1ClamConstructor("LeftClam",this));
   Get<ND280UA1ClamConstructor>("LeftClam").SetLeftClamshell();
@@ -151,7 +151,7 @@ G4LogicalVolume *ND280UA1MagnetConstructor::GetPiece(void) {
   
   // The left and right clams are vertically offset from the center of the
   // unloaded basket.
-  const double clamYOffset = -1*cm;
+  const double clamYOffset = -1*CLHEP::cm;
 
   
   //------------------------------ 
@@ -184,16 +184,16 @@ G4LogicalVolume *ND280UA1MagnetConstructor::GetPiece(void) {
       || rightClam.GetInnerLength() < basket.GetLength()) {
     
     // ND280Error(basket.GetName());
-    // ND280Error(" Is " << basket.GetLength()/cm << " cm long with "
-    // 		 << leftClam.GetInnerLength()/cm << " cm"
+    // ND280Error(" Is " << basket.GetLength()/CLHEP::cm << " cm long with "
+    // 		 << leftClam.GetInnerLength()/CLHEP::cm << " cm"
     // 		 << " or " << rightClam.GetInnerLength()/cm
     // 		 << " cm available");
     // G4Exception("ND280UA1MagnetConstructor:: Basket is too long");
     
     G4cout << basket.GetName() << G4endl;
-    G4cout << " Is " << basket.GetLength()/cm << " cm long with "
-	   << leftClam.GetInnerLength()/cm << " cm"
-	   << " or " << rightClam.GetInnerLength()/cm
+    G4cout << " Is " << basket.GetLength()/CLHEP::cm << " cm long with "
+	   << leftClam.GetInnerLength()/CLHEP::cm << " cm"
+	   << " or " << rightClam.GetInnerLength()/CLHEP::cm
 	   << " cm available" << G4endl;
     G4Exception("ND280UA1MagnetConstructor:: Basket",
 		"MyCode0002",FatalException,"Basket is too long");      

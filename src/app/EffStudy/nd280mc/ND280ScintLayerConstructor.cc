@@ -80,27 +80,27 @@ public:
 
 };
 
-ND280ScintLayerConstructor::~ND280ScintLayerConstructor() {};
-ND280ScintXLayerConstructor::~ND280ScintXLayerConstructor() {;};
-ND280ScintYLayerConstructor::~ND280ScintYLayerConstructor() {;};
+ND280ScintLayerConstructor::~ND280ScintLayerConstructor() {}
+ND280ScintXLayerConstructor::~ND280ScintXLayerConstructor() {;}
+ND280ScintYLayerConstructor::~ND280ScintYLayerConstructor() {;}
 
 G4VisAttributes* ND280ScintLayerConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(0.8,0.8,0.8,1); // green
     return visual;
-};
+}
 
 G4VisAttributes* ND280ScintXLayerConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(0.5,1.0,0.5,1); // greenish
     return visual;
-};
+}
 
 G4VisAttributes* ND280ScintYLayerConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(1.0,0.5,0.5,1); // redish
     return visual;
-};
+}
 
 void ND280ScintLayerConstructor::Init() {
     
@@ -112,19 +112,19 @@ void ND280ScintLayerConstructor::Init() {
     fMakeXLayer = true;
     fAntiParallelBars = true;
 
-    SetWidth(250*cm);
-    SetHeight(250*cm);
+    SetWidth(250*CLHEP::cm);
+    SetHeight(250*CLHEP::cm);
     SetLength(GetBarHeight());
 
-    SetEdgeSpace(0*cm);
+    SetEdgeSpace(0*CLHEP::cm);
 
     //SetSensitiveDetector("scint","segment");
-    //SetMaximumHitLength(5*cm);
-    //SetMaximumHitSagitta(1*cm);
+    //SetMaximumHitLength(5*CLHEP::cm);
+    //SetMaximumHitSagitta(1*CLHEP::cm);
 
     SetMessenger(new ND280ScintLayerMessenger(this));
 
-};
+}
 
 void ND280ScintLayerConstructor::SetBarNumber(G4int n) {
     fNumBars = n;
@@ -316,34 +316,34 @@ G4LogicalVolume *ND280ScintLayerConstructor::GetPiece(void) {
     G4double maxBound;
 
     if (fMakeXLayer) {
-       orientation = 90*degree;
+       orientation = 90*CLHEP::degree;
        if (barShape == ND280ExtrudedScintConstructor::eTriangle) {
-          rot1->rotateX( 90*degree);
-          rot1->rotateZ(180*degree);
-          rot2->rotateX( 90*degree);
+          rot1->rotateX( 90*CLHEP::degree);
+          rot1->rotateZ(180*CLHEP::degree);
+          rot2->rotateX( 90*CLHEP::degree);
        }
        else {
-          rot1->rotateX( 90*degree);
-          rot2->rotateX(-90*degree);
+          rot1->rotateX( 90*CLHEP::degree);
+          rot2->rotateX(-90*CLHEP::degree);
        }
 
        maxBound = GetPhysicalWidth()/2;
 
     }
     else {
-       orientation = 0*degree;
+       orientation = 0*CLHEP::degree;
 
        if ( barShape == ND280ExtrudedScintConstructor::eTriangle) {
-          rot1->rotateY(-90*degree);
-          rot1->rotateZ(-90*degree);
-          rot2->rotateY(-90*degree);
-          rot2->rotateZ( 90*degree);
+          rot1->rotateY(-90*CLHEP::degree);
+          rot1->rotateZ(-90*CLHEP::degree);
+          rot2->rotateY(-90*CLHEP::degree);
+          rot2->rotateZ( 90*CLHEP::degree);
        }
        else {
-          rot1->rotateY(-90*degree);
-          rot1->rotateZ(-90*degree);
-          rot2->rotateY( 90*degree);
-          rot2->rotateZ(-90*degree);
+          rot1->rotateY(-90*CLHEP::degree);
+          rot1->rotateZ(-90*CLHEP::degree);
+          rot2->rotateY( 90*CLHEP::degree);
+          rot2->rotateZ(-90*CLHEP::degree);
        }
 
        maxBound = GetPhysicalHeight()/2;

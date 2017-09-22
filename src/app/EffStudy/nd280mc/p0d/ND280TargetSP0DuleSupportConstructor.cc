@@ -69,13 +69,13 @@ public:
     };
 };
 
-ND280TargetSP0DuleSupportConstructor::~ND280TargetSP0DuleSupportConstructor() {;};
+ND280TargetSP0DuleSupportConstructor::~ND280TargetSP0DuleSupportConstructor() {;}
 
 void ND280TargetSP0DuleSupportConstructor::Init(void) {
 
-    fHeight  = 137*mm;
-    fWidth   = 890*mm;
-    fLength  = 2320*mm;
+  fHeight  = 137*CLHEP::mm;
+  fWidth   = 890*CLHEP::mm;
+  fLength  = 2320*CLHEP::mm;
     
     fvisual = new G4VisAttributes();
     fvisual->SetColor(0.5,0.5,0.5,1); // Grey
@@ -114,15 +114,15 @@ G4LogicalVolume *ND280TargetSP0DuleSupportConstructor::GetPiece(void) {
 
     // Construct the side I-beams (1)
 
-    G4double railWidth  = 76.2*mm;
+    G4double railWidth  = 76.2*CLHEP::mm;
     G4double railHeight = GetHeight();
     G4double railLength = GetLength();
     rail.SetWidth(railWidth);
     rail.SetHeight(railHeight);
     rail.SetLength(railLength);
 
-    rail.SetStemThickness(5*mm);
-    rail.SetBaseThickness(8*mm);
+    rail.SetStemThickness(5*CLHEP::mm);
+    rail.SetBaseThickness(8*CLHEP::mm);
 
     new G4PVPlacement(0,          //rotation
 		      G4ThreeVector( -(GetWidth()/2-railWidth/2),
@@ -146,21 +146,21 @@ G4LogicalVolume *ND280TargetSP0DuleSupportConstructor::GetPiece(void) {
 
     //Construct the horizontal support beams (2)
 
-    railWidth  = 63.5*mm;
-    railHeight = 65.5*mm;
-    railLength = GetWidth() - 2*76.2*mm;
+    railWidth  = 63.5*CLHEP::mm;
+    railHeight = 65.5*CLHEP::mm;
+    railLength = GetWidth() - 2*76.2*CLHEP::mm;
     
     rail.SetWidth(railWidth);
     rail.SetHeight(railHeight);
     rail.SetLength(railLength);
 
-    rail.SetStemThickness(4*mm);
-    rail.SetBaseThickness(5*mm);
+    rail.SetStemThickness(4*CLHEP::mm);
+    rail.SetBaseThickness(5*CLHEP::mm);
 
     G4double railSpacing = (GetLength()-8*railWidth)/7;
 
     G4RotationMatrix* rotP90Y = new G4RotationMatrix();
-    rotP90Y->rotateY(90*degree);
+    rotP90Y->rotateY(90*CLHEP::degree);
 
     new G4PVPlacement(rotP90Y,          //rotation
 		      G4ThreeVector( 0,

@@ -29,7 +29,7 @@ public:
     };
 };
 
-ND280UA1FluxReturnConstructor::~ND280UA1FluxReturnConstructor() {;};
+ND280UA1FluxReturnConstructor::~ND280UA1FluxReturnConstructor() {;}
 
 void ND280UA1FluxReturnConstructor::Init(void) {
 
@@ -49,14 +49,14 @@ void ND280UA1FluxReturnConstructor::Init(void) {
   
   ////////
 
-    fPlateThickness = 48*mm;    // average iron plate thickness
-    fPlateWidth = 876*mm;       // length of flux return along beam axis
-    fGapThickness = 17*mm;      // average gap between iron plates
-    fSideSpacerDiameter = 25*mm;
-    fArmSpacerDiameter = 25*mm;
-    fSideGapLength = 910*mm;
-    fArmGapLength = 700*mm;
-    fArmSpacerOffset = 300*mm; 
+  fPlateThickness = 48*CLHEP::mm;    // average iron plate thickness
+    fPlateWidth = 876*CLHEP::mm;       // length of flux return along beam axis
+    fGapThickness = 17*CLHEP::mm;      // average gap between iron plates
+    fSideSpacerDiameter = 25*CLHEP::mm;
+    fArmSpacerDiameter = 25*CLHEP::mm;
+    fSideGapLength = 910*CLHEP::mm;
+    fArmGapLength = 700*CLHEP::mm;
+    fArmSpacerOffset = 300*CLHEP::mm; 
 
     fPlateSpacing = fPlateThickness + fGapThickness;
     fPlateCount = 16;
@@ -67,8 +67,8 @@ void ND280UA1FluxReturnConstructor::Init(void) {
     for (unsigned int i = 0; i<fPlateCount; ++i)
       fScintInstalled.push_back(i < 6 ? -1 : 0);
 
-    fInnerHeight = 4040*mm;
-    fOuterArmLength = 2823*mm;
+    fInnerHeight = 4040*CLHEP::mm;
+    fOuterArmLength = 2823*CLHEP::mm;
     fInnerArmLength = fOuterArmLength 
         - fPlateThickness*fPlateCount 
         - fGapThickness*(fPlateCount - 1);
@@ -180,7 +180,7 @@ G4AssemblyVolume *ND280UA1FluxReturnConstructor::GetAssembly(void) {
         G4ThreeVector volCenter(armHeight,armPos,0);
         G4LogicalVolume *logVolume = MakeIronPlate(armLength);
         G4RotationMatrix *rotation = new G4RotationMatrix();
-        rotation->rotateZ(-90*degree);
+        rotation->rotateZ(-90*CLHEP::degree);
         assembly->AddPlacedVolume(logVolume,volCenter,rotation);
         logVolume->SetVisAttributes(GetVisual());
 
@@ -221,17 +221,17 @@ G4AssemblyVolume *ND280UA1FluxReturnConstructor::GetAssembly(void) {
                 // Max. allowed = +- (fGapThickness - mrdArm.GetHeight()) / 2.0
                 // ... move completely downwards (+2.5mm -> module's frame) ...
                 correctedSpacing += (fIsLefthandReturn ? 1.0 : -1.0) *
-                    (-((fGapThickness - mrdArm.GetHeight()) / 2.0) + 2.5*mm);
+                    (-((fGapThickness - mrdArm.GetHeight()) / 2.0) + 2.5*CLHEP::mm);
                 // Max. allowed = +- (fArmGapLength - mrdArm.GetWidth()) / 2.0
                 correctedOffset += (-1.0) *
-                    (0.0*mm);
+                    (0.0*CLHEP::mm);
 #endif /* 0 or 1 */
                 G4ThreeVector scintOffset(correctedSpacing,
                                           correctedOffset,
                                           0);
                 G4ThreeVector scintCenter = scintOffset + volCenter;
                 G4RotationMatrix *mrdRotation = new G4RotationMatrix();
-                mrdRotation->rotateZ(-90*degree);
+                mrdRotation->rotateZ(-90*CLHEP::degree);
                 assembly->AddPlacedVolume(scintVolume,scintCenter,mrdRotation);
             }
         }
@@ -265,7 +265,7 @@ G4AssemblyVolume *ND280UA1FluxReturnConstructor::GetAssembly(void) {
                                        0);
             G4ThreeVector spacerCenter = spacerOffset + volCenter;
             assembly->AddPlacedVolume(spacerVolume,spacerCenter,NULL);
-            if (offset>1*cm) {
+            if (offset>1*CLHEP::cm) {
                 spacerOffset.setX(-offset);
                 spacerCenter = spacerOffset + volCenter;
                 assembly->AddPlacedVolume(spacerVolume,spacerCenter,NULL);
@@ -284,11 +284,11 @@ G4AssemblyVolume *ND280UA1FluxReturnConstructor::GetAssembly(void) {
 #if 1
                 // Max. allowed = +- (fGapThickness - mrdSide.GetHeight()) / 2.0
                 correctedSpacing += (-1.0) *
-                    (0.0*mm);
+                    (0.0*CLHEP::mm);
                 // Max. allowed = +- (fSideGapLength - mrdSide.GetWidth()) / 2.0
                 // ... move completely downwards (+1mm -> module's frame) ...
                 correctedOffset += (fIsLefthandReturn ? 1.0 : -1.0) *
-                    (-((fSideGapLength - mrdSide.GetWidth()) / 2.0) + 1.0*mm);
+                    (-((fSideGapLength - mrdSide.GetWidth()) / 2.0) + 1.0*CLHEP::mm);
 #endif /* 0 or 1 */
                 // Place one SMRD scintillator in the magnet.
                 G4ThreeVector scintOffset(correctedOffset,
@@ -319,7 +319,7 @@ G4AssemblyVolume *ND280UA1FluxReturnConstructor::GetAssembly(void) {
         G4ThreeVector volCenter(armHeight,armPos,0);
         G4LogicalVolume *logVolume = MakeIronPlate(armLength);
         G4RotationMatrix *rotation = new G4RotationMatrix();
-        rotation->rotateZ(90*degree);
+        rotation->rotateZ(90*CLHEP::degree);
         assembly->AddPlacedVolume(logVolume,volCenter,rotation);
         logVolume->SetVisAttributes(GetVisual());
 
@@ -361,17 +361,17 @@ G4AssemblyVolume *ND280UA1FluxReturnConstructor::GetAssembly(void) {
                 // Max. allowed = +- (fGapThickness - mrdArm.GetHeight()) / 2.0
                 // ... move completely downwards (+2.5mm -> module's frame) ...
                 correctedSpacing += (fIsLefthandReturn ? 1.0 : -1.0) *
-                    (-((fGapThickness - mrdArm.GetHeight()) / 2.0) + 2.5*mm);
+                    (-((fGapThickness - mrdArm.GetHeight()) / 2.0) + 2.5*CLHEP::mm);
                 // Max. allowed = +- (fArmGapLength - mrdArm.GetWidth()) / 2.0
                 correctedOffset += (-1.0) *
-                    (0.0*mm);
+                    (0.0*CLHEP::mm);
 #endif /* 0 or 1 */
                 G4ThreeVector scintOffset(correctedSpacing,
                                           correctedOffset,
                                           0.0);
                 G4ThreeVector scintCenter = scintOffset + volCenter;
                 G4RotationMatrix *mrdRotation = new G4RotationMatrix();
-                mrdRotation->rotateZ(90*degree);
+                mrdRotation->rotateZ(90*CLHEP::degree);
                 assembly->AddPlacedVolume(scintVolume,scintCenter,mrdRotation);
             }
         }

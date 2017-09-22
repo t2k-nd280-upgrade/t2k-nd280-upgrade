@@ -24,12 +24,12 @@ public:
         : ND280Constructor(n,c), fLength(0.0), 
           fMaximumWidth(0.0), fMaximumHeight(0.0),
           fSensitiveDetector(NULL), 
-          fMaximumHitLength(5*mm), fMaximumHitSagitta(1*mm) {}
+          fMaximumHitLength(5*CLHEP::mm), fMaximumHitSagitta(1*CLHEP::mm) {}
     ND280ComponentConstructor(G4String n, ND280Constructor* p)
         : ND280Constructor(n,p), fLength(0.0),
           fMaximumWidth(0.0), fMaximumHeight(0.0),
           fSensitiveDetector(NULL), 
-          fMaximumHitLength(5*mm), fMaximumHitSagitta(1*mm) {}
+          fMaximumHitLength(5*CLHEP::mm), fMaximumHitSagitta(1*CLHEP::mm) {}
     virtual ~ND280ComponentConstructor() {;};
 
     /// Set the width of the component.  This is the X dimension of the space
@@ -181,7 +181,7 @@ public:
         : ND280ConstructorMessenger(c,guide),
           fConstructor(c) {
 
-        fWidthCMD = new G4UIcmdWithADoubleAndUnit(CommandName("width"),this);
+      fWidthCMD = new G4UIcmdWithADoubleAndUnit(CommandName("width"),this);
         fWidthCMD->SetGuidance("Set the width of the component.");
         fWidthCMD->SetParameterName("Width",false);
         fWidthCMD->SetUnitCategory("Length");

@@ -31,20 +31,20 @@ public:
 
     /// Get the height of the ecal radiator.  The value of the height is fixed
     /// by the "As-Built" drawings.  Checked against the physical parts.
-    double GetHeight() const {return 2350*mm;}
+  double GetHeight() const {return 2350*CLHEP::mm;}
     
     /// Get the width of the ecal radiator.  The value of the width is fixed
     /// by the "As-Built" drawings.  Checked against the physical parts.
-    double GetWidth() const {return 2200*mm;}
+  double GetWidth() const {return 2200*CLHEP::mm;}
 
     /// Get the height of the steel skins. Checked against the physical parts.
-    double GetSteelHeight() const {return 2340*mm;}
+  double GetSteelHeight() const {return 2340*CLHEP::mm;}
 
     /// Get the width of the steel skins.  Checked agains the physical parts.
-    double GetSteelWidth() const {return 2190*mm;}
+  double GetSteelWidth() const {return 2190*CLHEP::mm;}
 
     /// Get the thickness of the steel skins for the P0D radiator.
-    double GetSteelThickness() const {return 0.46*mm;}
+  double GetSteelThickness() const {return 0.46*CLHEP::mm;}
 
     /// Set the average thickness of the lead.  The actual lead thickness will
     /// varry from plate to plate.
@@ -64,20 +64,20 @@ public:
 
     /// Get the "width" of the bottom aluminum frame.  This frame stretchs
     /// the full width of the radiator.
-    double GetBottomFrame() const {return 98.43*mm;}
+  double GetBottomFrame() const {return 98.43*CLHEP::mm;}
 
     /// Get the "width" of the side aluminum frame.
-    double GetSideFrame() const {return 88.9*mm;}
+  double GetSideFrame() const {return 88.9*CLHEP::mm;}
 
     /// Get the "width of the top aluminum frame.  This frame stretchs the
     /// full width of the radiator.
-    double GetTopFrame() const {return 88.9*mm;}
+  double GetTopFrame() const {return 88.9*CLHEP::mm;}
 
     /// Get the "length" of the side radiator.
-    double GetSideFrameLength() const {return 2248.6*mm;}
+  double GetSideFrameLength() const {return 2248.6*CLHEP::mm;}
 
     /// Get the "length" of the top radiator.
-    double GetTopFrameLength() const {return 2019.7*mm;}
+  double GetTopFrameLength() const {return 2019.7*CLHEP::mm;}
 
     /// Get the height of a lead plate.  This is the nominal size manufactured
     /// by Sullivan Metals, Inc.  The lead plates come in two varieties.  Most
@@ -96,11 +96,11 @@ public:
     ///
     /// The weights have been measured for each plate.  This matches the
     /// layout of the plates recorded on the radiator assembly traveler.
-    double GetPlateHeight() const {return 431.8*mm;}
+  double GetPlateHeight() const {return 431.8*CLHEP::mm;}
 
     /// Get the width of a lead plate.  This is the nominal size manufactured
     /// by Sullivan Metals, Inc.
-    double GetPlateWidth() const {return 403.23*mm;}
+  double GetPlateWidth() const {return 403.23*CLHEP::mm;}
 
     /// Construct and return a G4 volume for the object.  This is a pure
     /// virtual function, which means it must be implemented by the inheriting

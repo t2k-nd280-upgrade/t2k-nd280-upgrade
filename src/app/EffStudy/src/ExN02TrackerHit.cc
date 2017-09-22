@@ -43,7 +43,8 @@
 #include <fstream>
 #include "Const.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 #define SideView 0 // resolution of vertical-direction
 
@@ -192,7 +193,6 @@ void ExN02TrackerHit::Draw()
       pVVisManager->Draw(circle);
     }
   #endif
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -241,7 +241,7 @@ bool ExN02TrackerHit::SameHit(G4Step* theStep) {
 
     double deltaT = std::abs(theStep->GetPostStepPoint()->GetGlobalTime()
                              - fStopT);
-    if (deltaT>1*ns) return false;
+    if (deltaT>1*CLHEP::ns) return false;
 
     int trackId = theStep->GetTrack()->GetTrackID();
     if (fContributors.front() == trackId) {
@@ -282,10 +282,10 @@ void ExN02TrackerHit::AddStep(G4Step* theStep, double start, double end) {
     double stepLength = (prePos-postPos).mag();
     double trackLength = theStep->GetStepLength();
 
-    if (trackLength < 0.75*stepLength || trackLength < stepLength - 1*mm) {
+    if (trackLength < 0.75*stepLength || trackLength < stepLength - 1*CLHEP::mm) {
         // ND280Warn("Track length shorter than step: " 
-        //           << trackLength/mm << " mm "
-        //           << "<" << stepLength/mm << " mm");
+        //           << trackLength/CLHEP::mm << " CLHEP::mm "
+        //           << "<" << stepLength/CLHEP::mm << " CLHEP::mm");
         // ND280Warn("    Volume: "
         //           << theStep->GetTrack()->GetVolume()->GetName());
         // ND280Warn("    Particle: " << particle->GetParticleName()
@@ -311,8 +311,8 @@ void ExN02TrackerHit::AddStep(G4Step* theStep, double start, double end) {
         && std::abs(particle->GetPDGCharge()) < 0.1) {
         double origStep = stepLength;
         G4ThreeVector dir = (postPos - prePos).unit();
-        stepLength = trackLength = std::min(0.5*mm,0.8*origStep);
-        prePos = postPos - stepLength*mm*dir;
+        stepLength = trackLength = std::min(0.5*CLHEP::mm,0.8*origStep);
+        prePos = postPos - stepLength*CLHEP::mm*dir;
         // ND280Debug("ND280HitSegment:: " << particle->GetParticleName()
         //            << " Deposited " << energyDeposit/MeV << " MeV");
         // ND280Debug("    Original step: " << origStep/mm << " mm");
@@ -320,8 +320,9 @@ void ExN02TrackerHit::AddStep(G4Step* theStep, double start, double end) {
     }
 
     if (stepLength>fMaxLength || trackLength>fMaxLength) {
-        G4Track* trk = theStep->GetTrack();
-        // ND280Warn("ND280HitSegment:: Long step in "
+      //G4Track* trk = theStep->GetTrack(); // not used
+      
+      // ND280Warn("ND280HitSegment:: Long step in "
         //           << trk->GetVolume()->GetName());
         // ND280Warn("  Step Length is " 
         //           << stepLength/mm 
@@ -377,7 +378,7 @@ void ExN02TrackerHit::AddStep(G4Step* theStep, double start, double end) {
 
         // Check to see if we have a new stopping point.
         if (trackId == fContributors.front()
-            && (fPath.back()-prePos).mag()<0.1*mm) {
+            && (fPath.back()-prePos).mag()<0.1*CLHEP::mm) {
             fStopX = postPos.x();
             fStopY = postPos.y();
             fStopZ = postPos.z();
@@ -398,7 +399,7 @@ double ExN02TrackerHit::FindSagitta(G4Step* theStep) {
 
     // Make sure that the step began at the end of the current segment.  If
     // not, return a ridiculously large sagitta.
-    if ((point-preStep).mag()>0.01*mm) return 10*m;
+    if ((point-preStep).mag()>0.01*CLHEP::mm) return 10*CLHEP::m;
 
     const G4ThreeVector& postStep = theStep->GetPostStepPoint()->GetPosition();
     // The proposed new segment direction; 
@@ -432,13 +433,13 @@ double ExN02TrackerHit::FindSeparation(G4Step* theStep) {
 
     // Check to make sure the beginning of the new step isn't after the
     // end of this segment.
-    if ((preStep-back)*dir>0.0) return 10*m;
+    if ((preStep-back)*dir>0.0) return 10*CLHEP::m;
 
     // Check to make sure the beginning of the new step isn't before the
     // beginning of this segment.
     G4ThreeVector frontDelta = preStep-front;
     double cosDelta = frontDelta*dir;
-    if (cosDelta<0.0) return 10*m;
+    if (cosDelta<0.0) return 10*CLHEP::m;
 
     // Find the distance from the segment center line to the initial point of
     // the new step.

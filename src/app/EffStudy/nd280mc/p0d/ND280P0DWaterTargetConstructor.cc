@@ -72,30 +72,30 @@ public:
     };
 };
 
-ND280P0DWaterTargetConstructor::~ND280P0DWaterTargetConstructor() {;};
+ND280P0DWaterTargetConstructor::~ND280P0DWaterTargetConstructor() {;}
 
 const G4VisAttributes* ND280P0DWaterTargetConstructor::GetVisual(void) const {
     G4VisAttributes *visual = new G4VisAttributes();
     visual->SetColor(0.8,0.8,0.8,1); 
     return visual;
-};
+}
 
 void ND280P0DWaterTargetConstructor::Init() {
     NoBackCover();
 
     // This gasket thickness is tuned to take all of the "slop" space from the
     // P0Dule, radiator and water target and put it into the water volume.
-    SetGasketThickness(0.21*mm);
+    SetGasketThickness(0.21*CLHEP::mm);
 
     // This is the effective thickness of the water bag to account for all of
     // the folds and overlaps in the fiducial volume.  The actual thickness is
     // 0.1524 mm.
-    SetBagThickness(0.161*mm);
+    SetBagThickness(0.161*CLHEP::mm);
 
     SetLeftWaterDepth(GetSideFrameLength()
                       -GetBottomFrameWidth()
                       -GetTopFrameWidth()
-                      -75*mm);
+                      -75*CLHEP::mm);
     SetRightWaterDepth(GetLeftWaterDepth());
 
     // Account for the volume that would be taken up by the missing water
@@ -103,17 +103,17 @@ void ND280P0DWaterTargetConstructor::Init() {
     SetMassCorrection(-0.0158);
 
     SetMessenger(new ND280P0DWaterTargetMessenger(this));
-};
+}
 
 double ND280P0DWaterTargetConstructor::GetLeftWaterDepth() const {
-    const double minDepth = 10*mm;
+  const double minDepth = 10*CLHEP::mm;
     if (fLeftDepth<minDepth) {
         // ND280Warn("Depth is below level of drain tubes: " 
         //              << fLeftDepth/mm << " mm reset to " 
         //              << minDepth << " mm");
       G4ExceptionDescription msg;
       msg << "Depth is below level of drain tubes: " 
-	  << fLeftDepth/mm << " mm reset to " 
+	  << fLeftDepth/CLHEP::mm << " mm reset to " 
 	  << minDepth << " mm" << G4endl;
       G4Exception("ND280P0DWaterTargetConstructor::GetLeftWaterDepth",
 		  "MyCode0002",JustWarning, msg);
@@ -124,7 +124,7 @@ double ND280P0DWaterTargetConstructor::GetLeftWaterDepth() const {
 }
 
 double ND280P0DWaterTargetConstructor::GetRightWaterDepth() const {
-    const double minDepth = 10*mm;
+  const double minDepth = 10*CLHEP::mm;
     if (fRightDepth<minDepth) {
         // ND280Warn("Depth is below level of drain tubes: " 
         //              << fRightDepth/mm << " mm reset to " 
@@ -132,7 +132,7 @@ double ND280P0DWaterTargetConstructor::GetRightWaterDepth() const {
         
       G4ExceptionDescription msg;
       msg << "Depth is below level of drain tubes: " 
-	 << fRightDepth/mm << " mm reset to " 
+	  << fRightDepth/CLHEP::mm << " mm reset to " 
 	  << minDepth << " mm" << G4endl;
       G4Exception("ND280P0DWaterTargetConstructor::GetRightWaterDepth",
 		  "MyCode0002",JustWarning, msg);

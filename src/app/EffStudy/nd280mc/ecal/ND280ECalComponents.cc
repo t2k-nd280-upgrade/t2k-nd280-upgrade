@@ -11,7 +11,7 @@
 #include "ecal/ND280ECal.hh"
 #include "ecal/ND280ECalComponents.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
 
 G4LogicalVolume* ND280ECalComponents::Lead(double x, double y, double z) const {
     G4VSolid *lead_solid = new G4Box(fPrefix+"/Absorber",

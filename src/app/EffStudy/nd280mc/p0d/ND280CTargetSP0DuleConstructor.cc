@@ -127,11 +127,11 @@ void ND280CTargetSP0DuleConstructor::Init(void) {
     // Set possible extra space between the brass and p0dule.  This can
     // account for voids opened up by the stiff brass against the irregular
     // P0Dule.
-    SetWastedSpace(0.0*mm);
+    SetWastedSpace(0.0*CLHEP::mm);
 
     // Set the ladder offsets.
-    SetTopLadderOffset(10*mm);
-    SetSideLadderOffset(10*mm);
+    SetTopLadderOffset(10*CLHEP::mm);
+    SetSideLadderOffset(10*CLHEP::mm);
 
     AddConstructor(new ND280P0DuleConstructor("P0Dule",this));
     AddConstructor(new ND280P0DTargetRadiatorConstructor("Radiator",this));
@@ -293,8 +293,8 @@ G4LogicalVolume *ND280CTargetSP0DuleConstructor::GetPiece(void) {
     ND280P0DSideLadderConstructor &sideLadder 
         = Get<ND280P0DSideLadderConstructor>("SideLadder");
 
-    double upstreamLadder = 6*cm;
-    double downstreamLadder = 9*cm;
+    double upstreamLadder = 6*CLHEP::cm;
+    double downstreamLadder = 9*CLHEP::cm;
     new G4PVPlacement(0,                    // no rotation
                       G4ThreeVector(0,
                                     - GetHeight()/2
@@ -362,13 +362,13 @@ G4LogicalVolume *ND280CTargetSP0DuleConstructor::GetPiece(void) {
     //          << radiator.GetLength()/mm << " mm");
     // ND280Log("   US Target Water Thickness:    " 
     //          << target.GetLength()/mm << " mm");
-    G4cout << "P0D US Target Length: " << GetLength()/mm << " mm" << G4endl;
+    G4cout << "P0D US Target Length: " << GetLength()/CLHEP::mm << " mm" << G4endl;
     G4cout << "   US Target P0Dule Thickness:   " 
-	   << p0dule.GetLength()/mm << " mm" << G4endl;
+	   << p0dule.GetLength()/CLHEP::mm << " mm" << G4endl;
     G4cout << "   US Target Radiator Thickness: "
-	   << radiator.GetLength()/mm << " mm" << G4endl;
+	   << radiator.GetLength()/CLHEP::mm << " mm" << G4endl;
     G4cout << "   US Target Water Thickness:    " 
-	   << target.GetLength()/mm << " mm" << G4endl;
+	   << target.GetLength()/CLHEP::mm << " mm" << G4endl;
 
     return logVolume;
 }

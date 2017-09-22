@@ -76,6 +76,11 @@ public:
 
   void Draw();
   void Print();
+  //void Draw(const bool empty = false);
+  //void Print(const bool empty = false);
+
+
+  
   void Print_Hit();
 
 private:

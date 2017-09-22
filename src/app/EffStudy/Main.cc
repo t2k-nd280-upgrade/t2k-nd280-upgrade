@@ -39,7 +39,9 @@
 
 
 
-#include "ExN02DetectorConstruction.hh"
+#include <iostream>
+#include <fstream>
+
 #include "ExN02ActionInitialization.hh"
 #include "ExN02Constants.hh"
 
@@ -61,6 +63,8 @@
 #include "ND280PersistencyManager.hh"
 #include "ND280RootPersistencyManager.hh"
 
+#include "G4Navigator.hh"
+
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 
@@ -72,8 +76,7 @@
 #include "G4UIExecutive.hh"
 #endif
 
-#include <iostream>
-#include <fstream>
+#include "ExN02DetectorConstruction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -112,7 +115,6 @@ int main(int argc,char** argv)
 		FatalException,
 		"The file is not open");    
   }  
-
 
   //
   // Set the input configuration file

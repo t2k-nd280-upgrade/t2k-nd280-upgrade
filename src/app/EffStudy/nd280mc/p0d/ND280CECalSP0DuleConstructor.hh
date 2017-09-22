@@ -32,10 +32,10 @@ public:
     double GetWidth(void);
 
     /// Get the thickness of the central ECal brace.
-    double GetECalBraceThickness() const {return 0.75*25.4*mm;}
+  double GetECalBraceThickness() const {return 0.75*25.4*CLHEP::mm;}
 
     /// Get the width of the central ECal brace bars.
-    double GetECalBraceWidth() const {return 3*25.4*mm;}
+  double GetECalBraceWidth() const {return 3*25.4*CLHEP::mm;}
 
     /// Method to set translation parameters in a P0Dule.  The third component
     /// of the vector (z) is ignored since the P0Dules are closely packed.

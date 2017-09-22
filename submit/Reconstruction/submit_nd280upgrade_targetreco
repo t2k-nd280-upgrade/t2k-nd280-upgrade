@@ -22,7 +22,7 @@ foreach (@ARGV) {
     elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
     elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
     elsif($_ eq '--inputfile'        ) { $inputfile       = $ARGV[$iarg+1]; }
-    elsif($_ eq '--first_expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--first-expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
     elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
     elsif($_ eq '--detector'         ) { $detector        = $ARGV[$iarg+1]; } 
     elsif($_ eq '--debug'            ) { $debug           = $ARGV[$iarg+1]; }
@@ -30,7 +30,8 @@ foreach (@ARGV) {
     elsif($_ eq '--use-view-xz'      ) { $useviewXZ       = $ARGV[$iarg+1]; }
     elsif($_ eq '--use-view-yz'      ) { $useviewYZ       = $ARGV[$iarg+1]; }
     elsif($_ eq '--min-track-dist'   ) { $min_trk_dist    = $ARGV[$iarg+1]; }
-   
+    elsif($_ eq '--cut-truth-fv'     ) { $cut_truthfv     = $ARGV[$iarg+1]; }
+
     # where to put the output files
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
     # where is the software (/t2k-nd280-upgrade)
@@ -43,8 +44,7 @@ foreach (@ARGV) {
 
 $resource        = "interactive"                 unless defined $resource;
 
-#$tag            = "FGDlike" unless defined $tag;
-$tag            = "SuperFGD" unless defined $tag;
+$tag            = "" unless defined $tag;
 
 $useviewXY      = 1 unless defined $useviewXY; # (0 or 1)
 $useviewXZ      = 1 unless defined $useviewXZ; # (0 or 1)
@@ -52,16 +52,25 @@ $useviewYZ      = 1 unless defined $useviewYZ; # (0 or 1)
 
 $min_trk_dist    = 10 unless defined $min_trk_dist; # if <0 --> use default (mm)
 
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
-$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
+$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/20_8_17/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
+#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/20_8_17/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
+
+#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/18_7_17/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
+#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/18_7_17/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
+
+#$inputfile        = "g4ND280Up_Test-Exp123703-Nexpt2.root" unless defined $inputfile;
+#$inputfile        = "g4ND280Up_Test-Exp10-Nexpt10.root" unless defined $inputfile;
+#$inputfile        = "NOFreeTlist_nue-Exp0-Nexpt5000.root" unless defined $inputfile;
 
 $first_expt      = 0                             unless defined $first_expt;
-$nruns           = 1                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
-$nexpts          = 10                          unless defined $nexpts;
+$nruns           = 6                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
+$nexpts          = 5000                          unless defined $nexpts;
 
-$detector        = 1   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
+$detector        = 0   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
 
 $debug           = 0   unless defined $debug; # flag for debugging output: 0 --> NO printout, 1 --> printout
+
+$cut_truthfv     = 1   unless defined $cut_truthfv;
   
 ##################################
 
@@ -71,7 +80,34 @@ while($irun < $nruns) { # loop over the jobs
     $evt_first = $first_expt + $irun * $nexpts;
     
     $newtag = "$tag";
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$tag $detector $debug $useviewXY $useviewXZ $useviewYZ $min_trk_dist";
+    
+    if   ($detector eq 0){$newtag = "SuperFGD";}
+    elsif($detector eq 1){$newtag = "FGDlike";}
+    else{ 
+	print "\n";
+	print "The detector ID $detector is not defined";
+	exit;
+    }
+    
+    if($useviewXY eq 0){}
+    else{ $newtag = "$newtag-UseXY";}
+    
+    if($useviewXZ eq 0){}
+    else{ $newtag = "$newtag-UseXZ";}
+
+    if($useviewYZ eq 0){}
+    else{ $newtag = "$newtag-UseYZ";}
+
+    if($cut_truthfv eq 0){}
+    else{ $newtag = "$newtag-TruthFV";}
+
+    if($min_trk_dist ge 0){
+	$newtag = "$newtag-Separate$min_trk_dist";
+    }
+ 
+   
+
+    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv";
     $command = "$arguments";
     
     print "\n";
@@ -92,7 +128,8 @@ while($irun < $nruns) { # loop over the jobs
 	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
 	print PBS "$command \n";
 	close(PBS);	
-	`qsub -q short -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
+	#`qsub -q short -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
+	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
     }
     if($resource eq "interactive") {
 	system($command);
