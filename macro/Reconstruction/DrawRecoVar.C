@@ -14,21 +14,10 @@ void DrawRecoVar
  
   const int NFiles = 2;
   string infilename[NFiles] = {
-    
-    "RECONSTRUCTION/20_8_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root",
-    "RECONSTRUCTION/20_8_17/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root"
 
-    //"RECONSTRUCTION/20_8_17/SuperFGD_30k.root",
-    //"RECONSTRUCTION/20_8_17/FGDlike_30k.root"
-    
-    //"RECONSTRUCTION/20_8_17/SuperFGD_newTrkLen_30k.root",
-    //"RECONSTRUCTION/20_8_17/FGDlike_newTrkLen_30k.root"
+    "RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root",
 
-    //"RECONSTRUCTION/18_7_17/SuperFGD_30k_separated1cm_Iso_NewOutFV.root",
-    //"RECONSTRUCTION/18_7_17/FGDlike_30k_separated1cm_Iso_NewOutFV.root"
-
-    //"RECONSTRUCTION/18_7_17/SuperFGD_30k_separated1cm_Iso.root",
-    //"RECONSTRUCTION/18_7_17/FGDlike_30k_separated1cm_Iso.root"
+    "RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root"
 
   };
 

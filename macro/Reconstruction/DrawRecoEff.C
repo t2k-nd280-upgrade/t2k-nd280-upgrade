@@ -2,8 +2,8 @@
 void DrawRecoEff
 ( 
  bool doPrint = true,
- bool doStore = false,
- string tag = "prova",
+ bool doStore = true,
+ TString tag = "prova",
  bool doDrawLegend = true
   )
 {
@@ -11,8 +11,31 @@ void DrawRecoEff
   const int NFiles = 2;
   string infilename[NFiles] = {
  
-    "RECONSTRUCTION/20_8_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root",
-    "RECONSTRUCTION/20_8_17/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root"
+    //
+    // Real MPPC efficiency
+    //
+
+    "RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root",
+
+    //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers40mm_NoCutAngle_100k.root",
+    "RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root"
+    //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
+    
+
+    //
+    // Straight MPPC efficiency
+    //
+    //"RECONSTRUCTION/26_9_17/StraightMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root",
+    //"RECONSTRUCTION/26_9_17/StraightMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
+
+
+
+    //
+    // OLD
+    //
+    
+    //"RECONSTRUCTION/20_8_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root",
+    //"RECONSTRUCTION/20_8_17/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root"
     
     //"RECONSTRUCTION/20_8_17/SuperFGD_newTrkLen_30k.root",
     //"RECONSTRUCTION/20_8_17/FGDlike_newTrkLen_30k.root",
@@ -44,7 +67,12 @@ void DrawRecoEff
   };
 
   TString label[NFiles] = {
+
+    //"CutLayers30mm",
+    //"CutLayers40mm"
+    
     "SuperFGD",
+    "FGDXZ"
     
     //"SuperFGD New",
     //"SuperFGD Old"
@@ -54,7 +82,6 @@ void DrawRecoEff
     //"SuperFGD XY - separated 1cm",
     //"SuperFGD XZ - separated 1cm",
     
-    "FGD XZ"
     //"FGD XZ - separated 2cm"
     //"FGD XZ - Truth OutFV"
   };
@@ -357,6 +384,28 @@ void DrawRecoEff
   if(doDrawLegend) legend->Draw();
   
 
+  // Store efficiencies in output ROOT file
+  if(doStore){
+
+    TString name = TString::Format("TargetEfficiency_%s.root",tag.Data());
+    TFile *outfile = new TFile(name,"RECREATE");
+
+    for(int ifile=0;ifile<NFiles;ifile++){
+
+      name = TString::Format("%s_TrueMomVsTrueCosTh_IsoTarget_Muon",label[ifile].Data());
+      hMuon_EffIso_TrMomVsTrCosTh[ifile]->SetName(name);
+      hMuon_EffIso_TrMomVsTrCosTh[ifile]->Write();
+
+      name = TString::Format("%s_TrueMomVsTrueCosTh_IsoTarget_Pion",label[ifile].Data());
+      hPion_EffIso_TrMomVsTrCosTh[ifile]->SetName(name);    
+      hPion_EffIso_TrMomVsTrCosTh[ifile]->Write();    
+
+      name = TString::Format("%s_TrueMomVsTrueCosTh_IsoTarget_Prot",label[ifile].Data());
+      hProt_EffIso_TrMomVsTrCosTh[ifile]->SetName(name);
+      hProt_EffIso_TrMomVsTrCosTh[ifile]->Write();
+    }
+
+  }
 
   return;
 }

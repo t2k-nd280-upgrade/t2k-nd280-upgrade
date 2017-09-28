@@ -1,10 +1,13 @@
 #include <algorithm>
 #include <globals.hh>
 
-#include <CLHEP/Random/Randomize.h>
+//#include <CLHEP/Random/Randomize.h>
 #include <CLHEP/Units/SystemOfUnits.h>
 
-#include <TRandom.h>
+//#include <TRandom.h>
+#include <TString.h>
+
+#include "Randomize.hh"
 
 #include "ND280UpTargReadOut.hh"
 
@@ -206,6 +209,13 @@ void ND280UpTargReadOut::ApplyFiberTime(double &time, double x)
   time += TransTimeInFiber*x;
 }
 
+
+
+
+/*
+
+// No Stat fluctuations
+
 void ND280UpTargReadOut::ApplyMPPCResponse(double &npe)
 {
   if(GetTargType() == nd280upconv::kSuperFGD ||
@@ -221,7 +231,41 @@ void ND280UpTargReadOut::ApplyMPPCResponse(double &npe)
     cout << "The selected Target type does not exist!!!" << endl;
     exit(1);
   }
+*/
+
+
+void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
+{
+
+  double rndunif =0.;
+  double npe_passed = 0.;
+  double mppc_eff = 0.;
+  
+  int npe_integer = (int) (npe+0.5);
+  
+  if(GetTargType() == nd280upconv::kSuperFGD ||
+     GetTargType() == nd280upconv::kFGDlike){
+    mppc_eff = MPPCEff_SuperFGD;
+  }
+  else if(GetTargType() == nd280upconv::kSciFi){
+    mppc_eff = MPPCEff_SciFi;
+  }
+  else{
+    G4Exception("ExN02TargReadOut::ApplyMPPCResponse",
+		"MyCode0002",FatalException,
+		"The selected Target type does not exist!!!");
+  }
+  
+  for (int i=0;i<npe_integer;i++){
+    rndunif = G4UniformRand();
+    if (rndunif < MPPCEff_SuperFGD) npe_passed++;
+  }
+  
+  //cout << "npe = " << npe << " - npe_passed = " << npe_passed << endl;
+  
+  npe = npe_passed;
   
   return;
 }
+
 
