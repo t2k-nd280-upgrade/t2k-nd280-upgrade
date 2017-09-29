@@ -12,26 +12,26 @@ void DrawRecoVar
   )
 {
  
-  const int NFiles = 2;
+  const int NFiles = 1;
   string infilename[NFiles] = {
 
-    "RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root",
+    "SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_Evt0_NEvt5000.root" 
 
-    "RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root"
-
+    //"RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
+    //,"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root"
   };
 
   int color[NFiles] = {
-    kBlue,
-    kRed
+    kBlue
+    //,kRed
     //kGreen
     //kOrange
     //kCyan
   };
 
   TString label[NFiles] = {
-    "SuperFGD",
-    "FGDlike"
+    "SuperFGD"
+    //,"FGDlike"
 
     //"Normal",
     //"True OOFV"
@@ -47,6 +47,20 @@ void DrawRecoVar
 
   TString name;
   TFile *infile[NFiles];
+
+  TCanvas *cVtxOut_XY[NFiles];
+  TCanvas *cVtxOut_XZ[NFiles];
+  TCanvas *cVtxOut_YZ[NFiles];
+  TCanvas *cVtx_XY[NFiles];
+  TCanvas *cVtx_XZ[NFiles];
+  TCanvas *cVtx_YZ[NFiles];
+  
+  TH2F *hVtxOut_XY[NFiles];
+  TH2F *hVtxOut_XZ[NFiles];
+  TH2F *hVtxOut_YZ[NFiles];
+  TH2F *hVtx_XY[NFiles];
+  TH2F *hVtx_XZ[NFiles];
+  TH2F *hVtx_YZ[NFiles];
 
   TH2F *hMPPCHits_XY[NFiles]; // done
   TH2F *hMPPCHits_XZ[NFiles]; // done
@@ -83,6 +97,13 @@ void DrawRecoVar
     cout << "Read file: " << infilename[ifile].c_str() << endl;
     
     infile[ifile] = new TFile(infilename[ifile].c_str(),"READ");
+
+    hVtxOut_XY[ifile] = (TH2F*)infile[ifile]->Get("hVtxOut_XY");
+    hVtxOut_XZ[ifile] = (TH2F*)infile[ifile]->Get("hVtxOut_XZ");
+    hVtxOut_YZ[ifile] = (TH2F*)infile[ifile]->Get("hVtxOut_YZ");
+    hVtx_XY[ifile] = (TH2F*)infile[ifile]->Get("hVtx_XY");
+    hVtx_XZ[ifile] = (TH2F*)infile[ifile]->Get("hVtx_XZ");
+    hVtx_YZ[ifile] = (TH2F*)infile[ifile]->Get("hVtx_YZ");
 
     name = TString::Format("hMPPCHits_XY_%d",myevt);
     hMPPCHits_XY[ifile] = (TH2F*)infile[ifile]->Get(name);
@@ -137,7 +158,7 @@ void DrawRecoVar
   legend->SetTextFont(132);
   legend->SetTextSize(0.05);
   for(int ifile=0;ifile<NFiles;ifile++){
-    legend->AddEntry(hMuon_Len_RecMinTr[ifile],label[ifile],"l");
+    legend->AddEntry(hMuon_Len_RecMinTr[ifile],label[ifile].Data(),"l");
   }
 
   // Event display
@@ -181,6 +202,92 @@ void DrawRecoVar
     }
   }
 
+  // Truth Vertex distribtuion
+  
+
+  for(int ifile=0;ifile<NFiles;ifile++){
+
+    double NbinsX = hMPPCHits_XY[ifile]->GetXaxis()->GetNbins();
+    double minX = hMPPCHits_XY[ifile]->GetXaxis()->GetBinLowEdge(1);
+    double maxX = hMPPCHits_XY[ifile]->GetXaxis()->GetBinLowEdge(NbinsX);
+    double NbinsY = hMPPCHits_XY[ifile]->GetYaxis()->GetNbins();
+    double minY = hMPPCHits_XY[ifile]->GetYaxis()->GetBinLowEdge(1);
+    double maxY = hMPPCHits_XY[ifile]->GetYaxis()->GetBinLowEdge(NbinsY);
+
+    TLine *lEdgesXY_1 = new TLine(minX,minY,maxX,minY);
+    TLine *lEdgesXY_2 = new TLine(minX,maxY,maxX,maxY);
+    TLine *lEdgesXY_3 = new TLine(minX,minY,minX,maxY);
+    TLine *lEdgesXY_4 = new TLine(maxX,minY,maxX,maxY);
+
+    name = TString::Format("cVtxOut_%s_XY",label[ifile].Data());
+    cVtxOut_XY[ifile] = new TCanvas(name,name);
+    hVtxOut_XY[ifile]->GetXaxis()->SetTitle("X (mm)");
+    hVtxOut_XY[ifile]->GetYaxis()->SetTitle("Y (mm)");
+    hVtxOut_XY[ifile]->SetStats(0);
+    hVtxOut_XY[ifile]->DrawClone("colz");    
+
+    lEdgesXY_1->Draw();
+    lEdgesXY_2->Draw();
+    lEdgesXY_3->Draw();
+    lEdgesXY_4->Draw();
+  }  
+
+  
+  for(int ifile=0;ifile<NFiles;ifile++){
+
+    double NbinsX = hMPPCHits_XZ[ifile]->GetXaxis()->GetNbins();
+    double minX = hMPPCHits_XZ[ifile]->GetXaxis()->GetBinLowEdge(1);
+    double maxX = hMPPCHits_XZ[ifile]->GetXaxis()->GetBinLowEdge(NbinsX);
+    double NbinsZ = hMPPCHits_XZ[ifile]->GetYaxis()->GetNbins();
+    double minZ = hMPPCHits_XZ[ifile]->GetYaxis()->GetBinLowEdge(1);
+    double maxZ = hMPPCHits_XZ[ifile]->GetYaxis()->GetBinLowEdge(NbinsZ);
+
+    TLine *lEdgesXZ_1 = new TLine(minX,minZ,maxX,minZ);
+    TLine *lEdgesXZ_2 = new TLine(minX,maxZ,maxX,maxZ);
+    TLine *lEdgesXZ_3 = new TLine(minX,minZ,minX,maxZ);
+    TLine *lEdgesXZ_4 = new TLine(maxX,minZ,maxX,maxZ);
+
+    name = TString::Format("cVtxOut_%s_XZ",label[ifile].Data());
+    cVtxOut_XZ[ifile] = new TCanvas(name,name);
+    hVtxOut_XZ[ifile]->GetXaxis()->SetTitle("X (mm)");
+    hVtxOut_XZ[ifile]->GetYaxis()->SetTitle("Z (mm)");
+    hVtxOut_XZ[ifile]->SetStats(0);
+    hVtxOut_XZ[ifile]->DrawClone("colz");    
+
+    lEdgesXZ_1->Draw();
+    lEdgesXZ_2->Draw();
+    lEdgesXZ_3->Draw();
+    lEdgesXZ_4->Draw();
+  } 
+
+
+  for(int ifile=0;ifile<NFiles;ifile++){
+
+    double NbinsY = hMPPCHits_YZ[ifile]->GetXaxis()->GetNbins();
+    double minY = hMPPCHits_YZ[ifile]->GetXaxis()->GetBinLowEdge(1);
+    double maxY = hMPPCHits_YZ[ifile]->GetXaxis()->GetBinLowEdge(NbinsY);
+    double NbinsZ = hMPPCHits_YZ[ifile]->GetYaxis()->GetNbins();
+    double minZ = hMPPCHits_YZ[ifile]->GetYaxis()->GetBinLowEdge(1);
+    double maxZ = hMPPCHits_YZ[ifile]->GetYaxis()->GetBinLowEdge(NbinsZ);
+
+    TLine *lEdgesYZ_1 = new TLine(minY,minZ,maxY,minZ);
+    TLine *lEdgesYZ_2 = new TLine(minY,maxZ,maxY,maxZ);
+    TLine *lEdgesYZ_3 = new TLine(minY,minZ,minY,maxZ);
+    TLine *lEdgesYZ_4 = new TLine(maxY,minZ,maxY,maxZ);
+
+    name = TString::Format("cVtxOut_%s_YZ",label[ifile].Data());
+    cVtxOut_YZ[ifile] = new TCanvas(name,name);
+    hVtxOut_YZ[ifile]->GetXaxis()->SetTitle("Y (mm)");
+    hVtxOut_YZ[ifile]->GetYaxis()->SetTitle("Z (mm)");
+    hVtxOut_YZ[ifile]->SetStats(0);
+    hVtxOut_YZ[ifile]->DrawClone("colz");    
+
+    lEdgesYZ_1->Draw();
+    lEdgesYZ_2->Draw();
+    lEdgesYZ_3->Draw();
+    lEdgesYZ_4->Draw();
+  } 
+
 
   // Muons
 
@@ -189,7 +296,7 @@ void DrawRecoVar
     TCanvas *cMuon_CosTh_TrueVsReco[NFiles];
     for(int ifile=0;ifile<NFiles;ifile++){
       name = TString::Format("cMuon_CosTh_TrueVsReco_%i",ifile);
-      cMuon_CosTh_TrueVsReco[ifile] = new TCanvas(name,label[ifile]);
+      cMuon_CosTh_TrueVsReco[ifile] = new TCanvas(name,label[ifile].Data());
       hMuon_CosTh_TrueVsReco[ifile]->GetXaxis()->SetTitle("True cos #theta");
       hMuon_CosTh_TrueVsReco[ifile]->GetYaxis()->SetTitle("Reco cos #theta");
       hMuon_CosTh_TrueVsReco[ifile]->SetStats(0);
@@ -211,7 +318,7 @@ void DrawRecoVar
     TCanvas *cMuon_Len_TrueVsReco[NFiles];
     for(int ifile=0;ifile<NFiles;ifile++){
       name = TString::Format("cMuon_Len_TrueVsReco_%i",ifile);
-      cMuon_Len_TrueVsReco[ifile] = new TCanvas(name,label[ifile]);
+      cMuon_Len_TrueVsReco[ifile] = new TCanvas(name,label[ifile].Data());
       hMuon_Len_TrueVsReco[ifile]->GetXaxis()->SetTitle("True Length [mm]");
       hMuon_Len_TrueVsReco[ifile]->GetYaxis()->SetTitle("Reco Length [mm]");
       hMuon_Len_TrueVsReco[ifile]->SetStats(0);
@@ -242,7 +349,7 @@ void DrawRecoVar
     TCanvas *cPion_CosTh_TrueVsReco[NFiles];
     for(int ifile=0;ifile<NFiles;ifile++){
       name = TString::Format("cPion_CosTh_TrueVsReco_%i",ifile);
-      cPion_CosTh_TrueVsReco[ifile] = new TCanvas(name,label[ifile]);
+      cPion_CosTh_TrueVsReco[ifile] = new TCanvas(name,label[ifile].Data());
       hPion_CosTh_TrueVsReco[ifile]->GetXaxis()->SetTitle("True cos #theta");
       hPion_CosTh_TrueVsReco[ifile]->GetYaxis()->SetTitle("Reco cos #theta");
       hPion_CosTh_TrueVsReco[ifile]->SetStats(0);
@@ -264,7 +371,7 @@ void DrawRecoVar
     TCanvas *cPion_Len_TrueVsReco[NFiles];
     for(int ifile=0;ifile<NFiles;ifile++){
       name = TString::Format("cPion_Len_TrueVsReco_%i",ifile);
-      cPion_Len_TrueVsReco[ifile] = new TCanvas(name,label[ifile]);
+      cPion_Len_TrueVsReco[ifile] = new TCanvas(name,label[ifile].Data());
       hPion_Len_TrueVsReco[ifile]->GetXaxis()->SetTitle("True Length [mm]");
       hPion_Len_TrueVsReco[ifile]->GetYaxis()->SetTitle("Reco Length [mm]");
       hPion_Len_TrueVsReco[ifile]->SetStats(0);

@@ -501,6 +501,12 @@ void ND280UpRecoTrack::CalcLengthFit(){
   return;
 
   /*
+  
+  //
+  // For simplest look at the following link:
+  //
+  // https://root.cern.ch/root/html/tutorials/fit/fitLinear.C.html
+  //
     
   //
   // TODO: Calculate the track length precisely, from the fit
@@ -517,7 +523,7 @@ void ND280UpRecoTrack::CalcLengthFit(){
   //double chi2   = fit_XY->Chi2(); // to retrieve the fit chi2
   //Double_t par0   = fit_XY->Parameter(0); // retrieve the value for the parameter 0
   //Double_t err0   = fit_XY->ParError(0); // retrieve the error for the parameter 0
-  fit_XY->Print("V");     // print full information of fit including covariance matrix
+  //fit_XY->Print("V");     // print full information of fit including covariance matrix
   //fit_XY->Write();        // store the result in a file
   
   int fitstatus = fit_XY; // OK if 0
@@ -616,6 +622,40 @@ bool ND280UpRecoTrack::CalcOutFVTrue(TH2F *h2dmppchit,TGraph *gmchit){
   return TruthOutFV;
 }
 
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+bool ND280UpRecoTrack::CalcOutFVTrue(TH2F *h2dmppchitXY,double VtxX,double VtxY){
+
+  //
+  // Look at the Truth Vertex position that must be 
+  // within the MPPC histogram ranges (except the outer bins)
+  //
+  
+  //cout << "Vtx: " << VtxX << ", " << VtxY << endl;
+  
+  int NbinsX = h2dmppchitXY->GetXaxis()->GetNbins();
+  double MinX = h2dmppchitXY->GetXaxis()->GetBinLowEdge(2);
+  double MaxX = h2dmppchitXY->GetXaxis()->GetBinUpEdge(NbinsX-1);
+
+  //cout << "Edges X: " << MinX << ", " << MaxX << endl;
+
+  if(VtxX < MinX || VtxX > MaxX) return true;
+
+  //cout << "In FV X" << endl;
+
+  int NbinsY = h2dmppchitXY->GetYaxis()->GetNbins();
+  double MinY = h2dmppchitXY->GetYaxis()->GetBinLowEdge(2); 
+  double MaxY = h2dmppchitXY->GetYaxis()->GetBinUpEdge(NbinsY-1);
+
+  //cout << "Edges Y: " << MinY << ", " << MaxY << endl;
+
+  if(VtxY < MinY || VtxY > MaxY) return true;
+
+  //cout << "In FV Y" << endl;
+  
+  return false;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

@@ -89,6 +89,7 @@ public:
   bool IsSeparated(){return fIsSeparated;}
 
   bool CalcOutFVTrue(TH2F *h2dmppchit,TGraph *gmchit); // based on the MC hits
+  bool CalcOutFVTrue(TH2F *h2dmppchitXY,double VtxX,double VtxY); // based on the truth vtx
   
 private:
 

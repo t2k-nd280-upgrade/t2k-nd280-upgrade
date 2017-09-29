@@ -32,6 +32,7 @@
 #include <TMath.h>
 #include <TStopwatch.h>
 #include <TPolyMarker3D.h>
+#include <TMarker.h>
 
 #include <iostream>
 #include <fstream>
@@ -232,6 +233,13 @@ inline void PrintTruth(TND280UpEvent *event,int mytrkid){
 
 
 inline void FindVtxTruth(TND280UpEvent *event,double &myVtxX,double &myVtxY,double &myVtxZ){  
+  
+  TND280UpVertex *nd280UpVtx = event->GetVertex(0);
+  
+  myVtxX = nd280UpVtx->GetPosition().X();
+  myVtxY = nd280UpVtx->GetPosition().Y();
+  myVtxZ = nd280UpVtx->GetPosition().Z();
+    
   return;
 }
 
@@ -447,6 +455,17 @@ int main(int argc,char** argv)
   TH1F *hPEVsTime_y[NEvtDisplTot]; 
   TH1F *hPEVsTime_z[NEvtDisplTot]; 
 
+  // Truth Vertex distributions
+
+  // Vertex
+  TH2D *hVtxOut_XY = new TH2D("hVtxOut_XY","hVtxOut_XY",400,-2000,2000,400,-2000,2000); // mm 
+  TH2D *hVtxOut_XZ = new TH2D("hVtxOut_XZ","hVtxOut_XZ",400,-2000,2000,800,-4000,4000); // mm  
+  TH2D *hVtxOut_YZ = new TH2D("hVtxOut_YZ","hVtxOut_YZ",400,-2000,2000,800,-4000,4000); // mm   
+  TH2D *hVtx_XY = new TH2D("hVtx_XY","hVtx_XY",400,-2000,2000,400,-2000,2000); // mm 
+  TH2D *hVtx_XZ = new TH2D("hVtx_XZ","hVtx_XZ",400,-2000,2000,800,-4000,4000); // mm  
+  TH2D *hVtx_YZ = new TH2D("hVtx_YZ","hVtx_YZ",400,-2000,2000,800,-4000,4000); // mm  
+
+  
   // Track measurement resolutions
 
   TH2F * hMuon_CosTh_TrueVsReco = new TH2F("hMuon_CosTh_TrueVsReco","Muon CosTheta True Vs Reco",50,-1,+1,50,-1,+1);
@@ -738,29 +757,19 @@ int main(int argc,char** argv)
   h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
 
 
+  // Take the World origin position in the target (local) reference system
 
-
-
-  // // SONO ARRIVATO QUI
-
-  // TPolyMarker3D *WorldOrigInLocal = (TPolyMarker3D*)finput->Get("WorldOrigInLocal");
-  // double OrigInLocX=0.;
-  // double OrigInLocY=0.;
-  // double OrigInLocZ=0.;
-  // WorldOrigInLocal->GetPoint(0,OrigInLocX,OrigInLocY,OrigInLocZ);
+  TPolyMarker3D *WorldOrigInLocal = (TPolyMarker3D*)finput->Get("WorldOrigInLocal");
+  double OrigInLocX=0.;
+  double OrigInLocY=0.;
+  double OrigInLocZ=0.;
+  WorldOrigInLocal->GetPoint(0,OrigInLocX,OrigInLocY,OrigInLocZ);
   
-  // cout << "The World origin in local coordinates is:" << endl; 
-  // cout << OrigInLocX << ", " << OrigInLocY << ", " << OrigInLocZ << endl;
-  // cout << endl;
+  cout << "The World origin in local coordinates is:" << endl; 
+  cout << OrigInLocX << ", " << OrigInLocY << ", " << OrigInLocZ << endl;
+  cout << endl;
 
-  // cout << "SONO ARRIVATO QUI" << endl;
-  // exit(1);
-
-
-
-
-
-
+  //
 
   TGraph *mygraph = new TGraph();
   mygraph->SetName("mygraph");
@@ -945,6 +954,35 @@ int main(int argc,char** argv)
       cMPPCHits_YZ[ievt] = new TCanvas(name,name);
     }
     
+
+    
+    // Get the Truth Vertex position in the Target reference system
+    
+    double WorldVtx_X = 0.;
+    double WorldVtx_Y = 0.;
+    double WorldVtx_Z = 0.;
+    
+    FindVtxTruth(nd280UpEvent,WorldVtx_X,WorldVtx_Y,WorldVtx_Z);
+    
+    double TargVtx_X = WorldVtx_X + OrigInLocX;
+    double TargVtx_Y = WorldVtx_Y + OrigInLocY;
+    double TargVtx_Z = WorldVtx_Z + OrigInLocZ;
+    
+    TMarker *TargVtx_XY = new TMarker(TargVtx_X,TargVtx_Y,0);
+    TargVtx_XY->SetMarkerStyle(22);
+    TargVtx_XY->SetMarkerColor(kRed);
+    TMarker *TargVtx_XZ = new TMarker(TargVtx_X,TargVtx_Z,0);
+    TargVtx_XZ->SetMarkerStyle(22);
+    TargVtx_XZ->SetMarkerColor(kRed);
+    TMarker *TargVtx_YZ = new TMarker(TargVtx_Y,TargVtx_Z,0);
+    TargVtx_YZ->SetMarkerStyle(22);
+    TargVtx_YZ->SetMarkerColor(kRed);      
+    
+    ///
+
+
+
+
     // Loop over the hits
     
     int NHits = nd280UpEvent->GetNHits();
@@ -1252,17 +1290,39 @@ int main(int argc,char** argv)
       // Cut on the Truth OutFV
       if(UseTruthFV){	
 	bool IsTruthOutFV = false;
+	
 	// Inputs are: for each projections give the th2f with mppc hit and the tgraph with mc hit
 	// Analogous to define the OutFV in all the detectors same as for SuperFGD real OutFV cut
+
+	// Define a track In FV truth also by looking the Truth Vtx position
+	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XY[itrk],TargVtx_X,TargVtx_Y);
+	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],TargVtx_X,TargVtx_Z);
+	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],TargVtx_Y,TargVtx_Z);
+	
+	// Define a track In FV truth by looking the MPPC hits
 	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XY[itrk],fTrueTrack_MCHit_XY[itrk]); 
 	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],fTrueTrack_MCHit_XZ[itrk]); 
-	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],fTrueTrack_MCHit_YZ[itrk]); 	
+	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],fTrueTrack_MCHit_YZ[itrk]); 		
+
+	if(IsTruthOutFV){
+	  hVtxOut_XY->Fill(TargVtx_X,TargVtx_Y);
+	  hVtxOut_XZ->Fill(TargVtx_X,TargVtx_Z);
+	  hVtxOut_YZ->Fill(TargVtx_Y,TargVtx_Z);
+	}
+	else{
+	  hVtx_XY->Fill(TargVtx_X,TargVtx_Y);
+	  hVtx_XZ->Fill(TargVtx_X,TargVtx_Z);
+	  hVtx_YZ->Fill(TargVtx_Y,TargVtx_Z);
+	}
+
 	if(IsTruthOutFV){
 	  if(DEBUG) cout << "Out the Truth FV --> skip it!!!" << endl;	  
 	  continue;
 	}
       }
 
+      //
+      
       nd280UpRecoTrack.SetMPPCXY(fRecoTrack_MPPCHit_XY[itrk]);
       nd280UpRecoTrack.SetMPPCXZ(fRecoTrack_MPPCHit_XZ[itrk]);
       nd280UpRecoTrack.SetMPPCYZ(fRecoTrack_MPPCHit_YZ[itrk]);
@@ -1365,21 +1425,6 @@ int main(int argc,char** argv)
       FindTruth(nd280UpEvent,trkid,mom_true,costh_true,lengthSD_true);
       
       bool IsLastPtMomZero_truth = IsLastPtMomZero(nd280UpEvent,trkid); 
-
-    
-
-
-      // // SONO ARRIVATO QUI
-      // // TODO:
-      // // - take truth vertex and shift to local position
-      // //TPolyMarker3D WorldOrigInLocal
-      // // FindVtxTruth();
-      
-      // cout << "SONO ARRIVATO QUI" << endl;
-      // exit(1);
-
-
-
 
       double trklen_true = fRecoTrack_true_length[itrk];
       double trkedep_true = fRecoTrack_true_edep[itrk];
@@ -1694,14 +1739,20 @@ int main(int argc,char** argv)
 	cMPPCHits_XY[ievt]->cd();
 	hMPPCHits_XY[ievt]->Draw("colz");
 	gMCHits_XY[ievt]->Draw("p same");
+	TargVtx_XY->Draw();
+
 	cMPPCHits_YZ[ievt]->cd();
 	hMPPCHits_YZ[ievt]->Draw("colz");
 	gMCHits_YZ[ievt]->Draw("p same");
+	TargVtx_YZ->Draw();
+
 	cMPPCHits_XZ[ievt]->cd();
 	hMPPCHits_XZ[ievt]->Draw("colz");
 	gMCHits_XZ[ievt]->Draw("p same");
+	TargVtx_XZ->Draw();
       }
       
+    
       // Store the track info
       TND280UpRecoTrack *fND280UpRecoTrack = new TND280UpRecoTrack();
       fND280UpRecoTrack->SetTrackID(trkid);
@@ -2069,7 +2120,13 @@ int main(int argc,char** argv)
     }
   }
 
-
+  // Vertex distribution
+  hVtx_XY->Write();
+  hVtx_XZ->Write();
+  hVtx_YZ->Write();
+  hVtxOut_XY->Write();
+  hVtxOut_XZ->Write();
+  hVtxOut_YZ->Write();
 
   // Resolution
 
