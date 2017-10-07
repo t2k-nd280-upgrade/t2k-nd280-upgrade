@@ -27,10 +27,12 @@ void DrawRecoPID
   const int NFiles = 2;
   string infilename[NFiles] = {
 
-    // Real MPPC efficiency (sampling)
+    "RECONSTRUCTION/5_10_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E21POT.root",
 
-    "RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root",
-    "RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root"
+
+    // Real MPPC efficiency (sampling)
+    "RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
+    //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root"
 
     // Straight MPPC efficiency
 
@@ -57,8 +59,10 @@ void DrawRecoPID
   };
  
   TString label[NFiles] = {
-    "SuperFGD"    
-    ,"FGDXZ"
+    "OK",
+    "Uniform"
+    //"SuperFGD"    
+    //,"FGDXZ"
   };
 
   

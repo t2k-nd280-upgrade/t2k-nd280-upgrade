@@ -11,14 +11,17 @@ void DrawRecoEff
   const int NFiles = 2;
   string infilename[NFiles] = {
  
+
+    "RECONSTRUCTION/5_10_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E21POT.root",
+    
     //
     // Real MPPC efficiency
     //
 
-    "RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root",
+    "RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
 
     //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers40mm_NoCutAngle_100k.root",
-    "RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root"
+    //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root" // OK
     //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
     
 
@@ -68,11 +71,14 @@ void DrawRecoEff
 
   TString label[NFiles] = {
 
-    //"CutLayers30mm",
+     //"CutLayers30mm",
     //"CutLayers40mm"
+
+    "OK",
+    "Uniform"
     
-    "SuperFGD",
-    "FGDXZ"
+    //"SuperFGD",
+    //"FGDXZ"
     
     //"SuperFGD New",
     //"SuperFGD Old"
