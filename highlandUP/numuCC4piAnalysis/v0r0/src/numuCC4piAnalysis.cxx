@@ -150,6 +150,7 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   //--- info by global
   AddVarI(output(),   selmu_detectors, "");
   AddVarF(output(),   selmu_charge,    "");
+  AddVarF(output(),   selmu_target_length,    "");
   AddVar3VF(output(), selmu_dir,       "");
   AddVar3VF(output(), selmu_enddir,    "");
   AddVar4VF(output(), selmu_pos,       "");
@@ -244,6 +245,8 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     //output().FillVar(selmu_detectors,                 track->Detectors);
     output().FillVar(selmu_charge,                    track->Charge);
     output().FillVar(selmu_mom,                       track->SmearedMomentum);
+    if (track->nTargetSegments>0 && track->TargetSegments[0])
+      output().FillVar(selmu_target_length,           (float)track->TargetSegments[0]->DeltaLYZ);
     output().FillVectorVarFromArray(selmu_dir,        track->DirectionStart, 3);
     output().FillVectorVarFromArray(selmu_enddir,     track->DirectionEnd, 3);
     output().FillVectorVarFromArray(selmu_pos,        track->PositionStart, 4);

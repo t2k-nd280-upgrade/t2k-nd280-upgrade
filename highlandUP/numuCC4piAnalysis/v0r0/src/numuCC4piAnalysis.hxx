@@ -83,7 +83,8 @@ public:
     selmu_enddir,
     selmu_pos,
     selmu_endpos,
-	selmu_categ,
+    selmu_categ,
+    selmu_target_length,
 
     selmu_ecal_mipem,
     selmu_ecal_EneOnL,

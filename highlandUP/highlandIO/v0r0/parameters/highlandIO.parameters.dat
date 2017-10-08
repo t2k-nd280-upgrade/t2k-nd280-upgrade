@@ -1,3 +1,5 @@
+--- Type:  0 = FGD XZ, 1 = SuperFGD ---
+ < highlandIO.Target.Type = 1 >
  < highlandIO.Target.CutLength = 50. >
 
  < highlandIO.FGD.CutLength = 70. >

@@ -363,6 +363,7 @@ class AnaTargetParticleB:public AnaParticleB {
   Float_t DeltaLYZ;
   Float_t SegLength;
   Bool_t IsReconstructed;
+  Bool_t IdAsProton;
 
 };
 

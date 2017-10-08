@@ -9,7 +9,7 @@ AnaTargetParticleB::AnaTargetParticleB(){
 //********************************************************************
     DeltaLYZ=-9999;
     IsReconstructed=false;
-
+    IdAsProton=true;
 }
 
 //********************************************************************
@@ -17,7 +17,7 @@ AnaTargetParticleB::AnaTargetParticleB(const AnaTargetParticleB& seg):AnaParticl
 //********************************************************************
     DeltaLYZ=seg.DeltaLYZ;
     IsReconstructed=seg.IsReconstructed;
-
+    IdAsProton=seg.IdAsProton;
 }
 
 //********************************************************************

@@ -4,8 +4,8 @@
 
 --- Which ndUp configuration to use --------
 --- 0 - nd280 Current; 1 - ndUp Reference; 2 - ndUp Target-->TPC; 3 - ndUp TPC-->Target
-
  < psycheNDUPUtils.Geometry.nd280upConfiguration = 1 >
+
  < psycheNDUPUtils.Geometry.AddToFOnTargets      = 0 >
  < psycheNDUPUtils.Geometry.AddToF               = 1 >
  < psycheNDUPUtils.ToF.TimeResolution            = 0.600 >
@@ -24,17 +24,20 @@
  < numuCC4piAnalysis.MuonPID.Cut.Lmu   = 0.05 >
  < numuCC4piAnalysis.MuonPID.Cut.p_mip = 500  >
 
- < numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_Target    = 0.7  >
- < numuCC4piAnalysis.IsoTargetPi.ContaminationPID_Target = 0.08 >
- < numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_FGD    = 0.7  >
- < numuCC4piAnalysis.IsoTargetPi.ContaminationPID_FGD = 0.08 >
+ < numuCC4piAnalysis.IsoTargetPi.PID_MuonToMuon_Target     = 0.921044  >
+ < numuCC4piAnalysis.IsoTargetPi.PID_ProtonToProton_Target = 0.813446 >
+ < numuCC4piAnalysis.IsoTargetPi.PID_MuonToMuon_FGD        = 0.933545  >
+ < numuCC4piAnalysis.IsoTargetPi.PID_ProtonToProton_FGD    = 0.848534 >
 
  < numuCC4piAnalysis.MEPions.ME.EfficiencyTarget = 0.5 >
  < numuCC4piAnalysis.MEPions.ME.EfficiencyFGD1   = 0.56 >
  < numuCC4piAnalysis.MEPions.ME.EfficiencyFGD2   = 0.42 >
  < numuCC4piAnalysis.MEPions.ME.MomentumCut = 2. >
 
+--- Type:  0 = FGD XZ, 1 = SuperFGD ---
+ < highlandIO.Target.Type = 0 >
  < highlandIO.Target.CutLength = 50. >
+
  < highlandIO.FGD.CutLength = 70. >
  < highlandIO.FGD.LayerWidth = 10.1 >
  < highlandIO.FGD.CutNumLayers = 4  >

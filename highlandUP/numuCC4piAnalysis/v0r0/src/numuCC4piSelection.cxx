@@ -326,11 +326,15 @@ namespace numuCC4piUtils{
 			
       AnaTrackB* track = cc4pibox->TargetTracks[i];
       if (!track) continue;
-
-      // mimic a 90% reco efficiency
-      Float_t x = gRandom->Rndm();
-      if (x>0.9) continue;
-
+			
+      // pseudo-PID reconstruction
+      bool prot_pid=false;
+      for (int i=0; i<track->nTargetSegments; i++){
+	if (track->TargetSegments[i]->IdAsProton)
+	  prot_pid=true;
+      }
+      if (prot_pid) continue; // reject event if it is seen as a proton
+			
       cc4pibox->MainTrack = track; cc4pibox->categMuon = 3;
 			
     }

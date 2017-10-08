@@ -1,9 +1,3 @@
-/*
-   converter for DUNE NueTree input format
-
-   A. Cervera AprilMay 2016
-*/
-
 #ifndef AnaTreeConverterEvent_h
 #define AnaTreeConverterEvent_h
 
@@ -87,10 +81,12 @@ class AnaTreeConverterEvent: public InputConverter{
   AnaTrueObjectC* FindTrueParticle(Int_t g4id, std::vector<AnaTrueParticleB*>& trueParticles);
 
   virtual bool IsReconstructedFGD(float* pos_start, float* pos_end, double length, double theta);
-  virtual bool IsReconstructedTarget(double length, double theta);
+  virtual bool IsReconstructedTarget(int pdg, double mom, double cos, double length);
   virtual bool IsReconstructedECal(TVector3 P, TString det);
 
+  virtual bool IdAsProton(int pdg, double mom);
   virtual bool ChargeConfused(AnaTrueParticleB* trueParticle);
+  virtual void Merge(TND280UpTrack* t1, TND280UpTrack* t2);
   
 protected:
   
@@ -120,7 +116,17 @@ protected:
   TList *fListOfTracks;
   
   TFile* fefficiency_target;
-  TH2D*  hefficiency_target;
+  TH2D*  hefficiency_target_muon;
+  TH2D*  hefficiency_target_pion;
+  TH2D*  hefficiency_target_proton;
+
+  TFile* fmisid_target;
+  TH1F*  hmisid_muon_as_proton;
+  TH1F*  hmisid_proton_as_muon;
+  TH1F*  hmisid_pion_as_proton;
+  TH1F*  hmisid_proton_as_pion;
+
+  int TargetType;
 
   TFile *_file_charge_confusion;
   TSpline3 *elecspline;
@@ -135,8 +141,6 @@ protected:
   Int_t TriggerWord;
   Float_t POTPerSpill;
 };
-
-void Merge(TND280UpTrack* t1, TND280UpTrack* t2);
 
 #endif
 

@@ -504,20 +504,7 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
 	dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
       if (!TargetSegment) continue;
       if (!TargetSegment->IsReconstructed) continue;
-
-      AnaTrueParticleB* true_part = track->GetTrueParticle();
-      if (!true_part) continue;
-
-      float r=gRandom->Rndm();
-      float cut=0;
-      if (abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13)
-	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_Target");
-      else
-	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.ContaminationPID_Target");
-      if (r<cut) {
-	box->nIsoTargetPiontracks++;
-	box->IsoTargetPiontracks.push_back(track);
-      }
+      if (TargetSegment->IdAsProton) continue;
 
     }
     if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
@@ -534,17 +521,12 @@ void numuCC4pi_utils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDet
       float r=gRandom->Rndm();
       float cut=0;
       if (abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13)
-	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.EfficiencyPID_FGD");
+	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.PID_MuonToMuon_FGD");
       else
-	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.ContaminationPID_FGD");
+	cut = 1-ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.PID_ProtonToProton_FGD");
       if (r<cut) {
 	box->nIsoTargetPiontracks++;
 	box->IsoTargetPiontracks.push_back(track);
-	/*
-	double prange;
-	ND::tman().GetMomentumFromRangeLinear(*track, prange, ParticleId::kPiPos);
-	std::cout << track->Momentum << " " << prange << std::endl;
-	*/
       }
 
     }
