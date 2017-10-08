@@ -240,10 +240,15 @@ void ND280UpRecoTrack::DefineRecoTrack(){
   else if(fDetType == nd280upconv::kFGDlike){
     
     // FGD cut on # of layers
-    //   - 40 mm track length is equivalent to AT LEAST 4 layers (???)
+    //   - 35 mm track length is equivalent to AT LEAST 4 layers 
+    //     because the length is calculated as straigth from the 
+    //     cube/bar center (1cm edge)
+    //
+    // p.s.: It should be equivalent to look at the number of filled bins 
+    //       in the Z histo projection --> must be >= 4 bins 
     
-    double cut_length = 40; // mm
-    double length_layer = 0;
+    double cut_length = 30.; // mm
+    double length_layer = 0.;
 
     if     ( !fUseView_xy ){
       length_layer = fTrkLengthStraightZ;
@@ -254,11 +259,12 @@ void ND280UpRecoTrack::DefineRecoTrack(){
     else if( !fUseView_yz ){
       length_layer = fTrkLengthStraightX;
     }
-
+    
     if(length_layer < cut_length){ 
       SetIsReco(false);
       return;
     }
+
 
     double recosintheta = sqrt( 1. - fRecoCosTheta*fRecoCosTheta );
 
@@ -275,7 +281,7 @@ void ND280UpRecoTrack::DefineRecoTrack(){
        SetIsReco(false);
       return;
     }
-    
+        
     NHitViewMin = 3;
     NHitTotMin = 6; 
   }
@@ -365,7 +371,7 @@ void ND280UpRecoTrack::CalcVtxReco(){
 void ND280UpRecoTrack::CalcLength(){
   
   CalcLengthStraight();
-  CalcLengthFit();
+  //CalcLengthFit();
 
   SetLength( fTrkLengthStraight );
   SetLengthX(fTrkLengthStraightX);
@@ -404,8 +410,14 @@ void ND280UpRecoTrack::CalcLengthStraight(){
   len2 = 0.;
   if(f2d_xy) len1 = CalcLengthStraight1D(f2d_xy,true);
   if(f2d_xz) len2 = CalcLengthStraight1D(f2d_xz,true);
-  lengthX = TMath::Max(len1,len2);
 
+  lengthX = TMath::Max(len1,len2);
+  
+  if(fDetType == nd280upconv::kFGDlike){
+    if(len1 == len2) lengthX = len1 + 10.;
+  }
+  
+  
   //cout << "X: len1 = " << len1 << ", len2 = " << len2 << ", max = " << lengthX << endl;
 
   // length along Y
@@ -413,8 +425,14 @@ void ND280UpRecoTrack::CalcLengthStraight(){
   len2 = 0.;
   if(f2d_xy) len1 = CalcLengthStraight1D(f2d_xy,false);
   if(f2d_yz) len2 = CalcLengthStraight1D(f2d_yz,true);
-  lengthY = TMath::Max(len1,len2);
 
+  lengthY = TMath::Max(len1,len2);
+ 
+  if(fDetType == nd280upconv::kFGDlike){
+    if(len1 == len2) lengthY = len1 + 10.;
+  }
+
+  
   //cout << "Y: len1 = " << len1 << ", len2 = " << len2 << ", max = " << lengthY << endl;
 
   // length along Z
@@ -422,7 +440,13 @@ void ND280UpRecoTrack::CalcLengthStraight(){
   len2 = 0.;
   if(f2d_xz) len1 = CalcLengthStraight1D(f2d_xz,false);
   if(f2d_yz) len2 = CalcLengthStraight1D(f2d_yz,false);
+
   lengthZ = TMath::Max(len1,len2);
+    
+  if(fDetType == nd280upconv::kFGDlike){
+    if(len1 == len2) lengthZ = len1 + 10.;
+  }
+
 
   //cout << "Z: len1 = " << len1 << ", len2 = " << len2 << ", max = " << lengthZ << endl;
   //cout << endl;
@@ -477,6 +501,12 @@ void ND280UpRecoTrack::CalcLengthFit(){
   return;
 
   /*
+  
+  //
+  // For simplest look at the following link:
+  //
+  // https://root.cern.ch/root/html/tutorials/fit/fitLinear.C.html
+  //
     
   //
   // TODO: Calculate the track length precisely, from the fit
@@ -493,7 +523,7 @@ void ND280UpRecoTrack::CalcLengthFit(){
   //double chi2   = fit_XY->Chi2(); // to retrieve the fit chi2
   //Double_t par0   = fit_XY->Parameter(0); // retrieve the value for the parameter 0
   //Double_t err0   = fit_XY->ParError(0); // retrieve the error for the parameter 0
-  fit_XY->Print("V");     // print full information of fit including covariance matrix
+  //fit_XY->Print("V");     // print full information of fit including covariance matrix
   //fit_XY->Write();        // store the result in a file
   
   int fitstatus = fit_XY; // OK if 0
@@ -595,6 +625,40 @@ bool ND280UpRecoTrack::CalcOutFVTrue(TH2F *h2dmppchit,TGraph *gmchit){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+bool ND280UpRecoTrack::CalcOutFVTrue(TH2F *h2dmppchitXY,double VtxX,double VtxY){
+
+  //
+  // Look at the Truth Vertex position that must be 
+  // within the MPPC histogram ranges (except the outer bins)
+  //
+  
+  //cout << "Vtx: " << VtxX << ", " << VtxY << endl;
+  
+  int NbinsX = h2dmppchitXY->GetXaxis()->GetNbins();
+  double MinX = h2dmppchitXY->GetXaxis()->GetBinLowEdge(2);
+  double MaxX = h2dmppchitXY->GetXaxis()->GetBinUpEdge(NbinsX-1);
+
+  //cout << "Edges X: " << MinX << ", " << MaxX << endl;
+
+  if(VtxX < MinX || VtxX > MaxX) return true;
+
+  //cout << "In FV X" << endl;
+
+  int NbinsY = h2dmppchitXY->GetYaxis()->GetNbins();
+  double MinY = h2dmppchitXY->GetYaxis()->GetBinLowEdge(2); 
+  double MaxY = h2dmppchitXY->GetYaxis()->GetBinUpEdge(NbinsY-1);
+
+  //cout << "Edges Y: " << MinY << ", " << MaxY << endl;
+
+  if(VtxY < MinY || VtxY > MaxY) return true;
+
+  //cout << "In FV Y" << endl;
+  
+  return false;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 bool ND280UpRecoTrack::CalcOutFVView(TH2F *h2D){
 
   TH1F *hX; 
@@ -604,14 +668,21 @@ bool ND280UpRecoTrack::CalcOutFVView(TH2F *h2D){
   hY = (TH1F*) h2D->ProjectionY();
   
   double bincontX_first = hX->GetBinContent(1);
+  double bincontX_second = hX->GetBinContent(2);
   double bincontX_last  = hX->GetBinContent(hX->GetNbinsX());
+  double bincontX_secondlast  = hX->GetBinContent(hX->GetNbinsX()-1);
+
   if(bincontX_first>0. || bincontX_last>0.){
+    // || bincontX_second>0. || bincontX_secondlast>0.){
     return true;
   }
 
   double bincontY_first = hY->GetBinContent(1);
+  double bincontY_second = hY->GetBinContent(2);
   double bincontY_last  = hY->GetBinContent(hY->GetNbinsX());
+  double bincontY_secondlast  = hY->GetBinContent(hY->GetNbinsX()-1);
   if(bincontY_first>0. || bincontY_last>0.){
+    // || bincontY_second>0. || bincontY_secondlast>0.){
     return true;
   }
   

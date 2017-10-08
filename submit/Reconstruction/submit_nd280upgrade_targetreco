@@ -26,6 +26,7 @@ foreach (@ARGV) {
     elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
     elsif($_ eq '--detector'         ) { $detector        = $ARGV[$iarg+1]; } 
     elsif($_ eq '--debug'            ) { $debug           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--debug-plot'       ) { $debug_plot      = $ARGV[$iarg+1]; }
     elsif($_ eq '--use-view-xy'      ) { $useviewXY       = $ARGV[$iarg+1]; }
     elsif($_ eq '--use-view-xz'      ) { $useviewXZ       = $ARGV[$iarg+1]; }
     elsif($_ eq '--use-view-yz'      ) { $useviewYZ       = $ARGV[$iarg+1]; }
@@ -52,8 +53,8 @@ $useviewYZ      = 1 unless defined $useviewYZ; # (0 or 1)
 
 $min_trk_dist    = 10 unless defined $min_trk_dist; # if <0 --> use default (mm)
 
-$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/20_8_17/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/20_8_17/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
+#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/20_8_17/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
+$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/20_8_17/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
 
 #$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/18_7_17/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
 #$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/18_7_17/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
@@ -66,9 +67,10 @@ $first_expt      = 0                             unless defined $first_expt;
 $nruns           = 6                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
 $nexpts          = 5000                          unless defined $nexpts;
 
-$detector        = 0   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
+$detector        = 1   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
 
 $debug           = 0   unless defined $debug; # flag for debugging output: 0 --> NO printout, 1 --> printout
+$debug_plot      = 0   unless defined $debug_plot; # flag for debugging plots: 0 --> NO, 1 --> YES
 
 $cut_truthfv     = 1   unless defined $cut_truthfv;
   
@@ -107,7 +109,7 @@ while($irun < $nruns) { # loop over the jobs
  
    
 
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv";
+    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv";
     $command = "$arguments";
     
     print "\n";

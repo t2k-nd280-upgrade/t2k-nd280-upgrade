@@ -2,8 +2,8 @@
 void DrawRecoEff
 ( 
  bool doPrint = true,
- bool doStore = false,
- string tag = "prova",
+ bool doStore = true,
+ TString tag = "prova",
  bool doDrawLegend = true
   )
 {
@@ -11,8 +11,34 @@ void DrawRecoEff
   const int NFiles = 2;
   string infilename[NFiles] = {
  
-    "RECONSTRUCTION/20_8_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root",
-    "RECONSTRUCTION/20_8_17/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root"
+
+    "RECONSTRUCTION/5_10_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E21POT.root",
+    
+    //
+    // Real MPPC efficiency
+    //
+
+    "RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
+
+    //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers40mm_NoCutAngle_100k.root",
+    //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root" // OK
+    //"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
+    
+
+    //
+    // Straight MPPC efficiency
+    //
+    //"RECONSTRUCTION/26_9_17/StraightMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root",
+    //"RECONSTRUCTION/26_9_17/StraightMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
+
+
+
+    //
+    // OLD
+    //
+    
+    //"RECONSTRUCTION/20_8_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root",
+    //"RECONSTRUCTION/20_8_17/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_30k.root"
     
     //"RECONSTRUCTION/20_8_17/SuperFGD_newTrkLen_30k.root",
     //"RECONSTRUCTION/20_8_17/FGDlike_newTrkLen_30k.root",
@@ -44,7 +70,15 @@ void DrawRecoEff
   };
 
   TString label[NFiles] = {
-    "SuperFGD",
+
+     //"CutLayers30mm",
+    //"CutLayers40mm"
+
+    "OK",
+    "Uniform"
+    
+    //"SuperFGD",
+    //"FGDXZ"
     
     //"SuperFGD New",
     //"SuperFGD Old"
@@ -54,7 +88,6 @@ void DrawRecoEff
     //"SuperFGD XY - separated 1cm",
     //"SuperFGD XZ - separated 1cm",
     
-    "FGD XZ"
     //"FGD XZ - separated 2cm"
     //"FGD XZ - Truth OutFV"
   };
@@ -161,7 +194,7 @@ void DrawRecoEff
   legend->SetTextFont(132);
   legend->SetTextSize(0.05);
   for(int ifile=0;ifile<NFiles;ifile++){
-    legend->AddEntry(hMuon_EffIso_TrMom[ifile],label[ifile],"l");
+    legend->AddEntry(hMuon_EffIso_TrMom[ifile],label[ifile].Data(),"l");
   }
 
   // Muons
@@ -169,7 +202,7 @@ void DrawRecoEff
   TCanvas *cMuon_AllIso_TrMomVsTrCosTh[NFiles];
   for(int ifile=0;ifile<NFiles;ifile++){
     TString name = TString::Format("cMuon_AllIso_TrMomVsTrCosTh_%i",ifile);
-    cMuon_AllIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile]);
+    cMuon_AllIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile].Data());
     hMuon_AllIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitle("True cos #theta");
     hMuon_AllIso_TrMomVsTrCosTh[ifile]->GetXaxis()->SetTitle("True Momentum (MeV/c)");
     hMuon_AllIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitleSize(0.05);
@@ -183,7 +216,7 @@ void DrawRecoEff
   TCanvas *cMuon_EffIso_TrMomVsTrCosTh[NFiles];
   for(int ifile=0;ifile<NFiles;ifile++){
     TString name = TString::Format("cMuon_EffIso_TrMomVsTrCosTh_%i",ifile);
-    cMuon_EffIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile]);
+    cMuon_EffIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile].Data());
     hMuon_EffIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitle("True cos #theta");
     hMuon_EffIso_TrMomVsTrCosTh[ifile]->GetXaxis()->SetTitle("True Momentum (MeV/c)");
     hMuon_EffIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitleSize(0.05);
@@ -235,7 +268,7 @@ void DrawRecoEff
   TCanvas* cPion_AllIso_TrMomVsTrCosTh[NFiles];
   for(int ifile=0;ifile<NFiles;ifile++){
     TString name = TString::Format("cPion_AllIso_TrMomVsTrCosTh_%i",ifile);
-    cPion_AllIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile]);
+    cPion_AllIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile].Data());
     hPion_AllIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitle("True cos #theta");
     hPion_AllIso_TrMomVsTrCosTh[ifile]->GetXaxis()->SetTitle("True Momentum (MeV/c)");
     hPion_AllIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitleSize(0.05);
@@ -249,7 +282,7 @@ void DrawRecoEff
   TCanvas* cPion_EffIso_TrMomVsTrCosTh[NFiles];
   for(int ifile=0;ifile<NFiles;ifile++){
     TString name = TString::Format("cPion_EffIso_TrMomVsTrCosTh_%i",ifile);
-    cPion_EffIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile]);
+    cPion_EffIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile].Data());
     hPion_EffIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitle("True cos #theta");
     hPion_EffIso_TrMomVsTrCosTh[ifile]->GetXaxis()->SetTitle("True Momentum (MeV/c)");  
     hPion_EffIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitleSize(0.05);
@@ -299,7 +332,7 @@ void DrawRecoEff
   TCanvas *cProt_AllIso_TrMomVsTrCosTh[NFiles];
   for(int ifile=0;ifile<NFiles;ifile++){
     TString name = TString::Format("cProt_AllIso_TrMomVsTrCosTh_%i",ifile);
-    cProt_AllIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile]);
+    cProt_AllIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile].Data());
     hProt_AllIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitle("True cos #theta");
     hProt_AllIso_TrMomVsTrCosTh[ifile]->GetXaxis()->SetTitle("True Momentum (MeV/c)");
     hProt_AllIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitleSize(0.05);
@@ -313,7 +346,7 @@ void DrawRecoEff
   TCanvas *cProt_EffIso_TrMomVsTrCosTh[NFiles];
   for(int ifile=0;ifile<NFiles;ifile++){
     TString name = TString::Format("cProt_EffIso_TrMomVsTrCosTh_%i",ifile);
-    cProt_EffIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile]);
+    cProt_EffIso_TrMomVsTrCosTh[ifile] = new TCanvas(name,label[ifile].Data());
     hProt_EffIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitle("True cos #theta");
     hProt_EffIso_TrMomVsTrCosTh[ifile]->GetXaxis()->SetTitle("True Momentum (MeV/c)");    
     hProt_EffIso_TrMomVsTrCosTh[ifile]->GetYaxis()->SetTitleSize(0.05);
@@ -357,6 +390,28 @@ void DrawRecoEff
   if(doDrawLegend) legend->Draw();
   
 
+  // Store efficiencies in output ROOT file
+  if(doStore){
+
+    TString name = TString::Format("TargetEfficiency_%s.root",tag.Data());
+    TFile *outfile = new TFile(name,"RECREATE");
+
+    for(int ifile=0;ifile<NFiles;ifile++){
+
+      name = TString::Format("%s_TrueMomVsTrueCosTh_IsoTarget_Muon",label[ifile].Data());
+      hMuon_EffIso_TrMomVsTrCosTh[ifile]->SetName(name);
+      hMuon_EffIso_TrMomVsTrCosTh[ifile]->Write();
+
+      name = TString::Format("%s_TrueMomVsTrueCosTh_IsoTarget_Pion",label[ifile].Data());
+      hPion_EffIso_TrMomVsTrCosTh[ifile]->SetName(name);    
+      hPion_EffIso_TrMomVsTrCosTh[ifile]->Write();    
+
+      name = TString::Format("%s_TrueMomVsTrueCosTh_IsoTarget_Prot",label[ifile].Data());
+      hProt_EffIso_TrMomVsTrCosTh[ifile]->SetName(name);
+      hProt_EffIso_TrMomVsTrCosTh[ifile]->Write();
+    }
+
+  }
 
   return;
 }
