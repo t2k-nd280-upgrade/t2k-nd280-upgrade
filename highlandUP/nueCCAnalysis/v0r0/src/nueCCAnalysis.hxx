@@ -2,6 +2,7 @@
 #define nueCCAnalysis_h
 
 #include "nueCCSelection.hxx"
+#include "nueCCMultiPiSelection.hxx"
 
 #include "baseAnalysis.hxx"
 
@@ -87,7 +88,6 @@ public:
     selelec_truepos,
     selelec_trueendpos,
     selelec_truefgdlayer,
-    selelec_daughterPDG,
 
     selelec_detectors,
     selelec_charge,
@@ -118,6 +118,8 @@ public:
     PairTrack_startpos,
     PairTrack_true_startdir,
     PairTrack_true_startpos,
+    selelec_true_isoTar,
+
     PairTrack_likemuon,
     PairTrack_likeelec,
     PairTrack_likepion,
@@ -166,7 +168,6 @@ public:
     true_Nu_mom,
     true_reaction_code,
     true_vertex_position,
-    true_vertex_intarget,
     enumStandardMicroTreesLast_numuCC4piAnalysis
   };
 

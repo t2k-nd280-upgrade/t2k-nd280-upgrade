@@ -21,15 +21,16 @@ void nueCCUtils::AddCategories(bool AntiNu){
   anaUtils::AddStandardCategories();
 
   ///  nuesimple  ///  GetNuESimpleCat  ///
-  const int NNUE1 = 7;
-  std::string reac_nue1[NNUE1]  = {"#nu_{e} CC0pi", "#nu_{e} CCOther", "OOFV #gamma background", "FV #gamma background", "#mu background", "Other background", "Proton background"};
-  int reac_nue1code[NNUE1]      = {1,                2,                 6,                        3,                      4,                5,                  8};
-  int reac_nue1col[NNUE1]       = {6,                7,                 4,                        5,                      3,                1,                  48};
+  const int NNUE1 = 8;
+  std::string reac_nue1[NNUE1]  = {"#nu_{e} CC0pi", "#nu_{e}CC1pi", "#nu_{e} CCOther", "OOFV #gamma background", "FV #gamma background", "#mu background", "Other background", "Proton background"};
+  int reac_nue1code[NNUE1]      = {0,                1,             2,                 6,                        3,                      4,                5,                  8};
+  int reac_nue1col[NNUE1]       = {2,                6,                7,                 4,                        5,                      3,                1,                  48};
   
   // for AntiNu selection rename the categories
   if (AntiNu) {
     reac_nue1[0] = "#bar{#nu}_{e} CC0pi";
-    reac_nue1[1] = "#bar{#nu}_{e} CCOther";
+    reac_nue1[1] = "#bar{#nu}_{e} CC1pi";
+    reac_nue1[2] = "#bar{#nu}_{e} CCOther";
   }
   anaUtils::_categ->AddCategory("nueCC",       NNUE1, reac_nue1, reac_nue1code, reac_nue1col);
 
@@ -52,9 +53,10 @@ int nueCCUtils::nueCCCategory(AnaEventB* event, AnaTrack* track, const SubDetId:
   if (IsNuESignal(vtx, det, AntiNu) && abs(track->GetTrueParticle()->PDG) == 11 && parent_pdg != 111){
 
     if (IsNuECC0pi(vtx, det, AntiNu))
-      return 1; // nue CC0pi
-    else 
-      return 2; // nue CCother
+      return 0; // nue CC0pi
+    else if (IsNuECC1pi(vtx, det, AntiNu))
+      return 1; // nue CC1pi
+    else return 2; // nue CCOther
   
   }
 
@@ -89,6 +91,25 @@ bool nueCCUtils::IsNuECC0pi(AnaTrueVertex* vtx, const SubDetId::SubDetEnum det, 
   }
   
   return 0; // NOT nue CC0pi
+}
+
+//********************************************************************
+bool nueCCUtils::IsNuECC1pi(AnaTrueVertex* vtx, const SubDetId::SubDetEnum det, bool AntiNu) {
+  //********************************************************************
+
+  if (!IsNuESignal(vtx, det, AntiNu))
+    return false;
+
+  Int_t Nmeson =    vtx->NPrimaryParticles[ParticleId::kMesons];
+  Int_t Npipos =    vtx->NPrimaryParticles[ParticleId::kPiPos];
+  Int_t Npineg =    vtx->NPrimaryParticles[ParticleId::kPiNeg];
+
+  if (!AntiNu && Npipos == 1 && Nmeson == 1)
+    return true;
+  else if (AntiNu && Npineg == 1 && Nmeson == 1)
+    return true;
+  
+  return false;
 }
 
 //********************************************************************
@@ -286,4 +307,21 @@ bool nueCCUtils::TPCMuonPIDCut(const AnaTrackB& candidate, Float_t Lmu) {
 
   return true;
 
+}
+
+//**************************************************
+bool nueCCUtils::compare_length(const AnaTrackB* lhs, const AnaTrackB* rhs) const {
+  //**************************************************
+  Float_t left_length  = GetDistance(lhs->PositionStart, lhs->PositionEnd);
+  Float_t right_length = GetDistance(rhs->PositionStart, rhs->PositionEnd);
+  return (left_length > right_length);
+}
+
+//**************************************************
+Float_t GetDistance(Float_t* pos1, Float_t* pos2) {
+  //**************************************************
+  TVector3 vec1(pos1[0], pos1[1], pos1[2]);
+  TVector3 vec2(pos2[0], pos2[1], pos2[2]);
+
+  return (vec1 - vec2).Mag();
 }

@@ -27,6 +27,7 @@ namespace nueCCUtils{
   int nueCCCategory(AnaEventB* event, AnaTrack* track, const SubDetId::SubDetEnum det, bool AntiNu);
   bool IsNuESignal(AnaTrueVertex* vtx, const SubDetId::SubDetEnum det, bool AntiNu);
   bool IsNuECC0pi(AnaTrueVertex* vtx, const SubDetId::SubDetEnum det, bool AntiNu);
+  bool IsNuECC1pi(AnaTrueVertex* vtx, const SubDetId::SubDetEnum det, bool AntiNu);
   bool IsGammaSignal(AnaTrack* track, const SubDetId::SubDetEnum det, int parent);
   bool IsGammaSignalOOFGD(AnaTrack* track, const SubDetId::SubDetEnum det, int parent);
 
@@ -45,6 +46,9 @@ namespace nueCCUtils{
   bool TPCMuonPIDCut(const AnaTrackB& candidate, Float_t Lmu);
   /// Check whether a track is forward going
   bool IsForward(const AnaTrackB& track);
+
+  bool compare_length( AnaTrackB* lhs,  AnaTrackB* rhs);
+  Float_t GetDistance(Float_t* pos1, Float_t* pos2);
 }
 
 

@@ -128,6 +128,9 @@ public:
 
   /// Ecal veto track
   AnaECalParticleB* ECalVetoTrack;
+
+  AnaTrackB** IsoTargetTracks;
+  Int_t       nIsoTargetTracks;
   
 };
 
@@ -306,6 +309,28 @@ public:
   StepBase* MakeClone(){return new PairCut();}
 protected:
   Float_t _inv_mass_min;
+};
+
+// iso target cuts
+class noTpcHMeleCut: public StepBase{
+public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& boxB) const;
+  StepBase* MakeClone(){return new noTpcHMeleCut();}
+};
+
+class FindIsoTargetElectrons: public StepBase{
+public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& boxB) const;
+  StepBase* MakeClone(){return new FindIsoTargetElectrons();}
+};
+
+class LengthPIDcut: public StepBase{
+public:
+  using StepBase::Apply;
+  bool Apply(AnaEventC& event, ToyBoxB& boxB) const;
+  StepBase* MakeClone(){return new LengthPIDcut();}
 };
 
 #endif

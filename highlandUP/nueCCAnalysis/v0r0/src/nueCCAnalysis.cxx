@@ -57,8 +57,12 @@ bool nueCCAnalysis::Initialize(){
 void nueCCAnalysis::DefineSelections(){
   //********************************************************************
 
-  // ----- Inclusive CC -----------
-  sel().AddSelection("kTrackerNueCC", "inclusive nueCC4pi selection", new nueCCSelection()); //true/false for forcing break
+  bool Inclusive = (bool)ND::params().GetParameterI("nueCCAnalysis.Inclusive");
+  
+  if (Inclusive)
+    sel().AddSelection("kTrackerNueCC",        "inclusive nueCC4pi selection", new nueCCSelection()); //true/false for forcing break
+  else 
+    sel().AddSelection("kTrackerNueCCMultiPi", "MultiPi nueCC4pi selection",    new nueCCMultiPiSelection()); //true/false for forcing break
 
 }
 
@@ -135,7 +139,6 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddVar3VF(output(),   truelepton_dir,       "");
   AddVarF(output(),     truelepton_costheta,  "");
   AddVar4VF(output(),   truelepton_pos,       "");
-  AddVarI(output(),     true_vertex_intarget, "");
   AddVarI(output(),     truelepton_det,       "");
 
   //--- info from true track
@@ -150,8 +153,8 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddVar4VF(output(),   selelec_truepos,        "");
   AddVar4VF(output(),   selelec_trueendpos,     "");
   AddVar3VF(output(),   selelec_truedir,        "");
-  AddVarI(output(),     selelec_daughterPDG,    "");
   AddVarI(output(),     selelec_flipped,        "");
+  AddVarI(output(),     selelec_true_isoTar,    "");
 
   //--- info by global
   AddVarI(output(),     selelec_detectors,      "");
@@ -234,7 +237,6 @@ void nueCCAnalysis::DefineTruthTree(){
   AddVar3VF(output(),   truelepton_dir,       "");
   AddVarF(output(),     truelepton_costheta,  "");
   AddVar4VF(output(),   truelepton_pos,       "");
-  AddVarI(output(),     true_vertex_intarget, "");
   AddVarI(output(),     truelepton_det,       "");
 
 }
@@ -250,7 +252,6 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
   EventBoxB* EventBox = (*_event).EventBoxes[EventBoxId::kEventBoxNDUP];
   (void)EventBox;
 
-  output().FillVar(selelec_daughterPDG,             cc4pibox().daughterPDG);
   
   if (cc4pibox().MainTrack->TrueObject) {
     AnaTrueVertex *vtx = static_cast<AnaTrueVertex*>(cc4pibox().MainTrack->GetTrueParticle()->TrueVertex);
@@ -266,15 +267,21 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
       output().FillVar(truelepton_costheta,           (Float_t)costheta_mu_nu);
       output().FillVectorVarFromArray(truelepton_pos, vtx->Position,4);
       output().FillVar(truelepton_det,                anaUtils::GetDetector(vtx->Position));
-      
-      int intarget = 0;
-      if( (_useTarget1 && cutUtils::FiducialCut(vtx->Position, SubDetId::kTarget1)) ||
-	  (_useTarget2 && cutUtils::FiducialCut(vtx->Position, SubDetId::kTarget2)) ||
-	  (_useFGD1    && cutUtils::FiducialCut(vtx->Position, SubDetId::kFGD1   )) ||
-	  (_useFGD2    && cutUtils::FiducialCut(vtx->Position, SubDetId::kFGD2   )))
-	intarget = 1;
-      
-      output().FillVar(true_vertex_intarget,                intarget);
+
+      AnaTrueParticleB* ele = NULL;
+      for (UInt_t i = 0; i < vtx->TrueParticlesVect.size(); ++i) {
+        if (vtx->TrueParticlesVect[i]->ParentID == 0 && abs(vtx->TrueParticlesVect[i]->PDG) == 11 && abs(vtx->TrueParticlesVect[i]->TrueVertex->NuPDG) == 12 ) {
+          ele = vtx->TrueParticlesVect[i];
+          break;
+        }
+      }
+
+      if (ele) {
+        bool ele_iso_tar = (anaUtils::InDetVolume(SubDetId::kTarget, ele->Position) && anaUtils::InDetVolume(SubDetId::kTarget, ele->PositionEnd));
+
+        output().FillVar(selelec_true_isoTar, ele_iso_tar);
+      }
+
     }
     
     output().FillVar(selelec_ID,                        cc4pibox().MainTrack->GetTrueParticle()->ID);
@@ -283,10 +290,12 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selelec_truecostheta,              cc4pibox().MainTrack->GetTrueParticle()->CosTheta);
     output().FillVar(selelec_stopped,                   cc4pibox().MainTrack->GetTrueParticle()->stopped);
     output().FillVar(selelec_flipped,                   cc4pibox().MainTrack->HasFlipped);
+    
     output().FillVar(true_target_length,                cc4pibox().Target_length);
     output().FillVar(true_target_end_mom,               cc4pibox().Mom_Target_end);
     output().FillVar(true_target_start_mom,             cc4pibox().Mom_Target_start);
     output().FillVar(true_target_dE,                    cc4pibox().Target_dE);
+    
     output().FillVectorVarFromArray(selelec_truedir,    cc4pibox().MainTrack->GetTrueParticle()->Direction, 3);
     output().FillVectorVarFromArray(selelec_truepos,    cc4pibox().MainTrack->GetTrueParticle()->Position, 4);
     output().FillVectorVarFromArray(selelec_trueendpos, cc4pibox().MainTrack->GetTrueParticle()->PositionEnd, 4);

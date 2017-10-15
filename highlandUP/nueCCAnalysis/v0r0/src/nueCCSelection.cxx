@@ -41,35 +41,49 @@ void nueCCSelection::DefineSteps(){
   // Find the main track
   AddStep(StepBase::kAction, "Sort TPC tracks",       new SortTracksAction());
 
-  // FV and quality
-  AddStep(StepBase::kCut,    "quality+fiducial",      new TrackGQandFVCut());
+  
 
-  AddStep(StepBase::kAction, "find vertex",           new FindVertexAction());
-  AddStep(StepBase::kAction, "fill summary",          new FillSummaryAction_nueCC());
-  //AddStep(StepBase::kAction, "find pions",            new FindPionsAction());
+  AddStep(0, StepBase::kAction, "find vertex",           new FindVertexAction());
+  AddStep(0, StepBase::kAction, "fill summary",          new FillSummaryAction_nueCC());
+
+  AddSplit(2);
+
+  // FV and quality
+  AddStep(0,  StepBase::kCut,"quality+fiducial",      new TrackGQandFVCut());
+  
 
   // Track length cut
-  AddStep(StepBase::kCut,    "TPC Quality Cut",       new TPC_Quality());
+  AddStep(0,  StepBase::kCut,    "TPC Quality Cut",       new TPC_Quality());
 
   // ToF info
-  AddStep(StepBase::kAction, "ToF",                   new ToF_senseDetermination());
+  AddStep(0,  StepBase::kAction, "ToF",                   new ToF_senseDetermination());
 
   // TPC+ECal PID
-  AddStep(StepBase::kCut,    "TPC Electron PID Cut",  new TPCElectronPID());
-  AddStep(StepBase::kCut,    "ECal PID Cut",          new ECal_PID(_file_ECAL_PDF));
-  AddStep(StepBase::kCut,    "TPC Muon PID Cut",      new TPCMuonPID()); // For events not going in the Ecal
+  AddStep(0,  StepBase::kCut,    "TPC Electron PID Cut",  new TPCElectronPID());
+  AddStep(0,  StepBase::kCut,    "ECal PID Cut",          new ECal_PID(_file_ECAL_PDF));
+  AddStep(0,  StepBase::kCut,    "TPC Muon PID Cut",      new TPCMuonPID()); // For events not going in the Ecal
 
   // Pair cut
-  AddStep(StepBase::kAction, "find best e+e- pair",   new FindPairsAction());
-  AddStep(StepBase::kCut,    "Pair Veto",	            new PairCut());
+  AddStep(0,  StepBase::kAction, "find best e+e- pair",   new FindPairsAction());
+  AddStep(0,  StepBase::kCut,    "Pair Veto",	            new PairCut());
 
   // TPC Veto
-  AddStep(StepBase::kCut,    "TPC Veto Cut",          new TPCVeto());
+  AddStep(0,  StepBase::kCut,    "TPC Veto Cut",          new TPCVeto());
 
   // ECal Veto
-  AddStep(StepBase::kCut,    "ECal Veto Cut",         new ECalVeto());
+  AddStep(0,  StepBase::kCut,    "ECal Veto Cut",         new ECalVeto());
 
-  SetBranchAlias(0,  "CCNuE Inclusive");
+  // no TPC HM electrons
+  AddStep(1,  StepBase::kCut,     "No TPC HM electron",   new noTpcHMeleCut(),          true); // break if have HM electron
+
+  // find all iso target tracks, replace Main Track
+  AddStep(1,  StepBase::kAction,  "Find Iso-tar tracks",  new FindIsoTargetElectrons());
+
+  // sucsessfully reconstructed iso target track
+  AddStep(1, StepBase::kCut,       "Length and PID",       new LengthPIDcut());
+
+  SetBranchAlias(0,  "CCNuE Inclusive TPC", 0);
+  SetBranchAlias(1,  "CCNuE Inclusive target", 1);
   //SetPreSelectionAccumLevel(0);
 
 }
@@ -125,17 +139,6 @@ void nueCCSelection::InitializeEvent(AnaEventC& eventBB){
   }
  
   boxUtils::FillTracksWithECal(event);  
-
-  /*for (Int_t i = 0; i < event.nTrueParticles; ++i) {
-    if (!event.TrueParticles[i])
-      continue;
-
-    if (abs(event.TrueParticles[i]->PDG ) != 11)
-      continue;
-
-    if (event.TrueParticles[i]->ProcessName.compare("msc") == 0)
-      std::cout << "ALARM" << std::endl;
-  }*/
 }
 
 //********************************************************************
@@ -165,9 +168,6 @@ bool FindTrueVertexAction::Apply(AnaEventC & event, ToyBoxB & boxB) const {
   
   if (!box.Vertex) return false;
   box.TrueVertex = box.Vertex->TrueVertex;
-  //std::cout << "vertex" << std::endl;
-
-  AnaTrueParticleB* trueTrack = NULL;
 
   return true;
 }
@@ -299,13 +299,14 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   //cc4pibox->MainTrack = cc4pibox->ECalTracks[0];
   else return false;  
 
+  
   //========================
   // Look at the energy loss in target
   //========================
   AnaTrueParticleB* trueTrack = static_cast<AnaTrueParticleB*>(cc4pibox->MainTrack->GetTrueParticle());
   if (trueTrack) {
 
-    for (Int_t j = 0; j < trueTrack->DetCrossingsVect.size(); ++j) {
+    for (UInt_t j = 0; j < trueTrack->DetCrossingsVect.size(); ++j) {
       if (anaUtils::InFiducialVolume(SubDetId::kTarget1,trueTrack->DetCrossingsVect[j]->EntrancePosition)) {
         Float_t endMom= sqrt(pow(trueTrack->DetCrossingsVect[j]->ExitMomentum[0], 2)
                          + pow(trueTrack->DetCrossingsVect[j]->ExitMomentum[1], 2)
@@ -323,6 +324,7 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
       }
     }
   }
+  
 
   // Protection
   if(cc4pibox->MainTrack->SmearedMomentum <= 0.0) return false;
@@ -780,6 +782,88 @@ bool PairCut::Apply(AnaEventC& event, ToyBoxB& boxB) const {
   return true;
 
 }
+
+
+//**************************************************
+bool noTpcHMeleCut::Apply(AnaEventC& eventC, ToyBoxB& boxB) const {
+  //**************************************************
+  (void) eventC;
+
+  return (boxB.AccumLevel[0] < 6);
+
+}
+
+//**************************************************
+bool FindIsoTargetElectrons::Apply(AnaEventC& eventC, ToyBoxB& boxB) const {
+  //**************************************************
+  (void) eventC;
+
+  ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
+
+  AnaEventB& event = *static_cast<AnaEventB*>(&eventC); 
+
+  box->nIsoTargetTracks = 0;
+
+  anaUtils::CreateArray(box->IsoTargetTracks, NMAXPARTICLES);
+
+  // TODO maybe use segmens instead of the tracks
+  for (Int_t i = 0; i < event.nParticles; ++i ) {
+    if (!event.Particles[i]) continue;
+
+    AnaTrackB* track = static_cast<AnaTrackB*>(event.Particles[i]);
+
+    if (!anaUtils::TrackUsesOnlyDet(*track, SubDetId::kTarget))
+      continue;
+
+    box->IsoTargetTracks[box->nIsoTargetTracks++] = track;
+
+  }
+
+  anaUtils::ResizeArray(box->IsoTargetTracks, box->nIsoTargetTracks);
+
+  std::sort(box->IsoTargetTracks[0], box->IsoTargetTracks[box->nIsoTargetTracks-1],  nueCCUtils::compare_length);
+
+  return true;  
+
+}
+
+//**************************************************
+bool LengthPIDcut::Apply(AnaEventC& eventC, ToyBoxB& boxB) const {
+  //**************************************************
+  (void) eventC;
+
+  ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
+
+  AnaEventB& event = *static_cast<AnaEventB*>(&eventC); 
+
+  Double_t MIP_eff_tar     = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.EfficiencyPID_Target");
+  Double_t MIP_mis_eff_tar = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.ContaminationPID_Target");
+
+  Double_t IsoTargetLength = ND::params().GetParameterD("nueCCAnalysis.IsoTargetEle.MinLength");
+
+  // TODO maybe start using Segments instead of the tracks
+  for (Int_t i = 0; i < box->nIsoTargetTracks; ++i) {
+    AnaTrueParticleB* true_part = static_cast<AnaTrueParticleB*>(box->IsoTargetTracks[i]->GetTrueParticle());
+
+    if (true_part->Length < IsoTargetLength)
+      break;
+
+    // determination ele/proton against muon/pion
+    float r=gRandom->Rndm();
+    if ((abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13) && r < MIP_eff_tar)
+      continue;
+
+    // electron proton separation is 100% effective at the moment
+    if (abs(true_part->PDG) == 11)
+      return true;
+    else return false;
+  }
+
+  return false;
+}
+
+
+
 
 //**************************************************
 bool nueCCSelection::IsRelevantSystematic(const AnaEventC& event, const ToyBoxB& box, SystId_h systId, Int_t branch) const{
