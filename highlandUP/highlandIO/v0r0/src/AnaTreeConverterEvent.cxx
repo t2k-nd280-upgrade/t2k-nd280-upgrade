@@ -2124,7 +2124,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
     true_ToF = p2->PositionStart[3]-p1->PositionStart[3];
     // if we have a timing saying to flip the track, do it (even if we know it is wrong from true info)
     //if (reco_ToF*true_ToF<0)
-    if (reco_ToF*true_ToF<0 && reco_ToF > 2*sigma_ToF)
+    if (reco_ToF*true_ToF<0 && abs(reco_ToF) > 2*sigma_ToF)
       anaUtils::FlipTrack(reconParticle);
 
     ToF_length = anaUtils::GetLength(reconParticle, p1, p2, sigma_ToF_length, true);
