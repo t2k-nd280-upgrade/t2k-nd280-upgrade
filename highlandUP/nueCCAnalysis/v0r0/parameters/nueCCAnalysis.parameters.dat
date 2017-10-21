@@ -30,10 +30,10 @@
  Run the Inclusive selection (1) or separate CC0pi, CC1pi CCOther (0)
  < nueCCAnalysis.Inclusive    = 0 >
 
- < nueCCAnalysis.IsoTargetPi.EfficiencyPID_Target    = 0.7  >
- < nueCCAnalysis.IsoTargetPi.ContaminationPID_Target = 0.08 >
  < nueCCAnalysis.IsoTargetPi.EfficiencyPID_FGD    = 0.7  >
  < nueCCAnalysis.IsoTargetPi.ContaminationPID_FGD = 0.08 >
 
  < nueCCAnalysis.IsoTargetEle.MinLength = 100 >
 
+ < nueCCAnalysis.ECal.UseP0DECal = 1 >
+ < nueCCAnalysis.ECal.ECalOnlyVeto = 1 >
