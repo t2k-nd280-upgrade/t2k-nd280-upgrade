@@ -10,9 +10,9 @@
 #include <ND280BrlECalRightConstructor.hh>
 
 void ND280BrlECalRightConstructor::Init() {
-    SetLengthX(4140*mm);
-    SetWidthY(2503*mm);
-    SetHeightZ(492*mm);
+  SetLengthX(4140*CLHEP::mm);
+  SetWidthY(2503*CLHEP::mm);
+  SetHeightZ(492*CLHEP::mm);
     AddConstructor(new ND280BrlECalActiveConstructor("Active",this));
     Get<ND280BrlECalActiveConstructor>("Active").SetIsSide(true);
 }
@@ -177,7 +177,7 @@ G4LogicalVolume* ND280BrlECalRightConstructor::GetPiece() {
     double cppara_pos_y = ((GetWidthY() - ND280ECal::CoolingPlateBaseWidth) / 2.0)
         - ND280ECal::CoolingPlateBrlSideInset;
     G4RotationMatrix* cppara_rotation = new G4RotationMatrix();
-    cppara_rotation->rotateZ(-90*degree);
+    cppara_rotation->rotateZ(-90*CLHEP::degree);
  
     // Perpendicular plates
     double cpperp_length = GetWidthY() - ND280ECal::BulkheadPlateThickness
@@ -187,7 +187,7 @@ G4LogicalVolume* ND280BrlECalRightConstructor::GetPiece() {
     double cpperp_pos_y = ((-GetWidthY() + cpperp_length) / 2.0) 
         + ND280ECal::BulkheadPlateThickness;
     G4RotationMatrix* cpperp1_rotation = new G4RotationMatrix();
-    cpperp1_rotation->rotateZ(180*degree);
+    cpperp1_rotation->rotateZ(180*CLHEP::degree);
  
     G4LogicalVolume* cpperp_logical
         = components.CoolingPlate(cp_height, cpperp_length);

@@ -31,11 +31,11 @@ public:
 
     /// Get the height of the ecal radiator.  The value of the height is fixed
     /// by the "As-Built" drawings.  Checked against the physical parts.
-    double GetHeight() const {return 2350*mm;}
+  double GetHeight() const {return 2350*CLHEP::mm;}
     
     /// Get the width of the ecal radiator.  The value of the width is fixed
     /// by the "As-Built" drawings.  Checked against the physical parts.
-    double GetWidth() const {return 2200*mm;}
+  double GetWidth() const {return 2200*CLHEP::mm;}
 
     /// Set the thickness of the radiator.
     void SetThickness(double s) {fLength=s;}

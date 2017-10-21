@@ -63,13 +63,13 @@ public:
     /// half the width of the basket (e.g. 1260*mm) plus the design clearance
     /// around the tracker (e.g. 25*mm).  The tracker is designed to stay
     /// fully inside of the magnet.
-    double GetTrackerVoidWidth() {return 1260*mm+25*mm;}
+  double GetTrackerVoidWidth() {return 1260*CLHEP::mm+25*CLHEP::mm;}
 
     /// Get the height of the void around the tracker.  This is calculated as
     /// the height of the basket (e.g. 2480*mm) plus the design clearance
     /// around the tracker (e.g. 25*mm).  The tracker is designed to stay
     /// fully inside of the magnet.
-    double GetTrackerVoidHeight() {return 2480*mm+2*35*mm;}
+    double GetTrackerVoidHeight() {return 2480*CLHEP::mm+2*35*CLHEP::mm;}
 
     /// Get the width of the void around the P0D. This is calculated as the
     /// width of the basket (i.e. 1260*mm) plus the design clearance around
@@ -78,7 +78,7 @@ public:
     /// The P0D is designed to stay inside a 203 mm envelope outside of the
     /// top and bottom of the basket (i.e. 203mm < 248mm and finally 203mm <
     /// 225mm).
-    double GetP0DVoidWidth() {return 1260*mm+225*mm;}
+    double GetP0DVoidWidth() {return 1260*CLHEP::mm+225*CLHEP::mm;}
 
     /// Get the height of the void around the P0D.  This is calculated as the
     /// height of the basket (i.e. 2480mm) plus the design clearance around
@@ -88,16 +88,16 @@ public:
     /// for the P0DECal.  The P0D is designed to stay inside a 203mm envelope
     /// outside of the top and bottom of the basket (i.e. 203mm < 248mm, and
     /// finally 203mm < 225mm).
-    double GetP0DVoidHeight() {return 2480*mm+2*225*mm;}
+    double GetP0DVoidHeight() {return 2480*CLHEP::mm+2*225*CLHEP::mm;}
 
     /// The length of the void around the P0D.  This is the design envelope
     /// for the P0D (2436*mm), plus the upstream thickness of the
     /// basket. (e.g. 140*mm).
-    double GetP0DVoidLength() {return 2436*mm + 140*mm;}
+    double GetP0DVoidLength() {return 2436*CLHEP::mm + 140*CLHEP::mm;}
 
     /// The outer dimension of the basket.  This will be checked to make sure
     /// that it is less than the inner volume length.
-    double GetBasketLength() {return 6930*mm;}
+    double GetBasketLength() {return 6930*CLHEP::mm;}
 
     /// @{Set or get flags to build the various ecal modules.
     void SetBuildTopBrlECal(bool build) {fBuildTopBrlECal = build;}

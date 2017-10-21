@@ -83,6 +83,8 @@ public:
     selmu_enddir,
     selmu_pos,
     selmu_endpos,
+    selmu_categ,
+    selmu_target_length,
 
     selmu_ecal_mipem,
     selmu_ecal_EneOnL,
@@ -93,14 +95,17 @@ public:
     sel_TruePiPlus_reco,
     sel_TruePiPlus_mom,
     sel_TruePiPlus_cos,
+    sel_TruePiPlus_merged,
     sel_nTruePiMinus,
     sel_TruePiMinus_reco,
     sel_TruePiMinus_mom,
     sel_TruePiMinus_cos,
+    sel_TruePiMinus_merged,
     sel_nTruePiZero,
     sel_TruePiZero_reco,
     sel_TruePiZero_mom,
     sel_TruePiZero_cos,
+    sel_TruePiZero_merged,
 
     selmu_ToF_time,
     selmu_ToF_true_time,
@@ -131,6 +136,7 @@ public:
     true_Nu_mom,
     true_reaction_code,
     true_vertex_position,
+	true_contained,
 
     trueHMN_pdg,
 

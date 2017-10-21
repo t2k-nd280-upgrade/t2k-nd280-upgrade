@@ -39,7 +39,6 @@ public:
   bool CheckRedoSelection(const AnaEventC& event, const ToyBoxB& PreviousToyBox, Int_t& redoFromStep);
 
 private:
-  BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
   TFile *_file_ECAL_PDF;
 
 };
@@ -52,7 +51,8 @@ public:
     track_ECal_MipEM = -0xABCDEF;
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
-    TPCTracks.clear();       ECalTracks.clear();
+    categMuon = -1;
+    TPCTracks.clear();       ECalTracks.clear();    TargetTracks.clear();
     TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
     NegativePionTPCtracks.clear();
     PositivePionTPCtracks.clear();
@@ -68,7 +68,8 @@ public:
     track_ECal_MipEM = -0xABCDEF;
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
-    TPCTracks.clear();       ECalTracks.clear();
+    categMuon = -1;
+    TPCTracks.clear();       ECalTracks.clear();    TargetTracks.clear();
     TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
     NegativePionTPCtracks.clear();
     PositivePionTPCtracks.clear();
@@ -84,8 +85,9 @@ public:
   /// For storing tracks information in the bunch
   float track_ECal_MipEM, track_ECal_EneOnL;
   AnaTrackB* MainTrack;
-  std::vector<AnaTrackB*> TPCTracks, ECalTracks;
+  std::vector<AnaTrackB*> TPCTracks, ECalTracks, TargetTracks;
   SubDetId::SubDetEnum TPC_det;
+  int categMuon;
 
   std::vector<AnaTrueParticleB*> TruePiPlus, TruePiMinus, TruePiZero;
 
@@ -142,6 +144,16 @@ namespace numuCC4piUtils{
   private:
     bool useTarget1, useTarget2;
     bool useFGD1, useFGD2;
+  };
+
+  class FindMuonCut: public StepBase{
+  public:
+    FindMuonCut(TFile *f){_file_ECAL_PDF=f;}
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new FindMuonCut(_file_ECAL_PDF);}
+  private:
+    TFile* _file_ECAL_PDF; 
   };
 
   class TrackGQandFVCut: public StepBase{
@@ -261,16 +273,11 @@ namespace numuCC4piUtils{
 
   class ECal_Quality: public StepBase{
   public:
-    ECal_Quality(BinnedParams* b1, BinnedParams* b2){
-      _ECal_reco_eff = b1;
-      _ECal_FGDmatch_eff = b2;
-    }
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new ECal_Quality(_ECal_reco_eff, _ECal_FGDmatch_eff);}
+    StepBase* MakeClone(){return new ECal_Quality();}
   private:
     TRandom3* _randomGen;
-    BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
   };
 
   class ECal_PID: public StepBase{
@@ -304,6 +311,56 @@ namespace numuCC4piUtils{
     StepBase* MakeClone(){return new CCoth();}
   };
 
+  class FWD: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const{
+	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+	 return (cc4pibox->categMuon == 0);
+	};
+    StepBase* MakeClone(){return new FWD();}
+  };
+  
+  class BWD: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const{
+	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+	 return (cc4pibox->categMuon == 1);
+	};
+    StepBase* MakeClone(){return new BWD();}
+  };
+  
+  class HA: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const{
+	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+	 return (cc4pibox->categMuon == 2);
+	};
+    StepBase* MakeClone(){return new HA();}
+  };
+  
+  class Target: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const{
+	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+	 return (cc4pibox->categMuon == 3);
+	};
+    StepBase* MakeClone(){return new Target();}
+  };
+  
+  class ECal: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const{
+	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+	 return (cc4pibox->categMuon == 4);
+	};
+    StepBase* MakeClone(){return new ECal();}
+  };
+  
 }
   
 /*

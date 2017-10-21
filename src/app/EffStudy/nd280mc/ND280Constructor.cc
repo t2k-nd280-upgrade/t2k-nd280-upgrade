@@ -25,7 +25,7 @@ ND280Constructor::ND280Constructor(G4String n, ND280Constructor* p)
     fMessenger = fParent->GetMessenger();
 }
 
-ND280Constructor::~ND280Constructor() {;};
+ND280Constructor::~ND280Constructor() {;}
 
 G4LogicalVolume *ND280Constructor::GetPiece(void) {
   //G4Exception("ND280Constructor::GetPiece(): Not implemented");
@@ -109,7 +109,7 @@ G4RotationMatrix ND280Constructor::stringToRotationMatrix(G4String rotation)
         G4double angle;
         char* p(0);
         G4String current=rotation.substr(place+1);
-        angle = strtod(current.c_str(),&p) * deg;
+        angle = strtod(current.c_str(),&p) * CLHEP::deg;
 
         if (!p || (*p != ',' && *p != '\0')) {
 	  //ND280Error("Invalid rotation specification: "

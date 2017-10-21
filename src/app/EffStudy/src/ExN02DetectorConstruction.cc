@@ -30,16 +30,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo...... 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
-#include "ExN02DetectorConstruction.hh"
-#include "ExN02DetectorMessenger.hh"
-#include "ExN02ChamberParameterisation.hh"
-//#include "ExN02MagneticField.hh" // OLD
-#include "ExN02TrackerSD.hh"
-#include "ExN02Constants.hh"
-
-//#include "ND280InputPersistencyManager.hh"
-#include "ND280RootPersistencyManager.hh"
-
 #include "G4Material.hh"
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
@@ -55,6 +45,21 @@
 #include "G4Colour.hh"
 #include "G4ios.hh"
 #include "G4AutoDelete.hh"
+
+//#ifdef USE_PAI
+#include <G4Region.hh> // used also to keep a list of SD logical volumes
+//#endif  
+#include "G4RegionStore.hh"
+
+
+// VGM demo
+//#include "Geant4GM/volumes/Factory.h"
+//#include "RootGM/volumes/Factory.h"
+// end VGM demo
+
+#include "TGeoManager.h"
+
+#include <TH2F.h>
 
 // nd280mc - TPC
 #include "MyND280BeamConstructor.hh" // modified version for ND280upgrade
@@ -76,35 +81,28 @@
 // FGD3D
 #include "ND280WaffleActiveConstructor.hh"
 
-//#ifdef USE_PAI
-#include <G4Region.hh> // used also to keep a list of SD logical volumes
-//#endif  
-#include "G4RegionStore.hh"
-
 // Magnetic field
 #include "ExN02FieldSetup.hh"
 //
 
-// VGM demo
-//#include "Geant4GM/volumes/Factory.h"
-//#include "RootGM/volumes/Factory.h"
-// end VGM demo
-
-#include "TGeoManager.h"
-
 #include "ND280RootGeometryManager.hh"
-
-//ROOT
-//#include "TROOT.h"
-//#include "TFile.h"
-//#include "TSystem.h"
-//#include "Cintex/Cintex.h"
 
 //#include "ExN02GeoTree.hh"
 
-#include <TH2F.h>
+#include "ExN02DetectorConstruction.hh"
+#include "ExN02DetectorMessenger.hh"
+#include "ExN02ChamberParameterisation.hh"
+//#include "ExN02MagneticField.hh" // OLD
+#include "ExN02TrackerSD.hh"
+#include "ExN02Constants.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "ND280InputPersistencyManager.hh"
+#include "ND280RootPersistencyManager.hh"
+
+
+//#include "G4SystemOfUnits.hh"
+//#include <CLHEP/Units/SystemOfUnits.h> // NEW GLOBAL
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
@@ -227,7 +225,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   G4GeometryManager::GetInstance()->SetWorldMaximumExtent(fWorldLength);
   G4cout << "Computed tolerance = "
-         << G4GeometryTolerance::GetInstance()->GetSurfaceTolerance()/mm
+         << G4GeometryTolerance::GetInstance()->GetSurfaceTolerance()/CLHEP::mm
          << " mm" << G4endl;
 
   solidWorld= new G4Box(cNameSolidWorld,HalfWorldWidth,HalfWorldHeight,HalfWorldLength);
@@ -246,11 +244,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //fCheckOverlaps); // checking overlaps
  
   G4cout << "World is "
-  	 << fWorldWidth/mm  << " (width) x " 
-  	 << fWorldHeight/mm << " (height) x " 
-  	 << fWorldLength/mm << " (length) mm^3" 
+  	 << fWorldWidth/CLHEP::mm  << " (width) x " 
+  	 << fWorldHeight/CLHEP::mm << " (height) x " 
+  	 << fWorldLength/CLHEP::mm << " (length) mm^3" 
 	 << " of " << WorldMater->GetName() << G4endl;
-  G4cout << " mass="<<logicWorld->GetMass()/kg   <<" kg";
+  G4cout << " mass="<<logicWorld->GetMass()/CLHEP::kg   <<" kg";
   G4cout << " name: " << logicWorld->GetName() << G4endl;
   G4cout << G4endl;
   
@@ -331,25 +329,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   double rotX=0,rotY=0,rotZ=0;
   
   if( ND280XMLInput->GetXMLUseToF_TopDown() ){
-    G4double x = ND280XMLInput->GetXMLToFPosX_TopDown() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_TopDown() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_TopDown() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_TopDown() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_TopDown() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_TopDown() * CLHEP::mm;
     SetToFPos_TopDown(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_TopDown();
     fToFConstructor_TopDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer 
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_TopDown() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_TopDown() * CLHEP::mm;
     fToFConstructor_TopDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_TopDown() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_TopDown() * CLHEP::mm;
     fToFConstructor_TopDown->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_TopDown();
     fToFConstructor_TopDown->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_TopDown();
     fToFConstructor_TopDown->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_TopDown() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_TopDown() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_TopDown() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_TopDown() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_TopDown() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_TopDown() * CLHEP::degree;
     rotation_tof_TopDown->rotateX(rotX); 
     rotation_tof_TopDown->rotateY(rotY); 
     rotation_tof_TopDown->rotateZ(rotZ);      
@@ -366,28 +364,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_TopDown->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_TopDown->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_TopDown->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_TopDown->GetLength() / mm << " (length)"
+	   << fToFConstructor_TopDown->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_TopDown->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_TopDown->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF TopDown: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_TopDown().x()/mm << ", "
-	   << GetToFPos_TopDown().y()/mm << ", "
-	   << GetToFPos_TopDown().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_TopDown().x()/CLHEP::mm << ", "
+	   << GetToFPos_TopDown().y()/CLHEP::mm << ", "
+	   << GetToFPos_TopDown().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_TopDown->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_TopDown->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_TopDown->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_TopDown->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_TopDown->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_TopDown->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_TopDown->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_TopDown->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_TopDown->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_TopDown->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_TopDown->GetLayerHorizNBar() << " (horiz) - "
@@ -406,25 +404,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_BotDown() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_BotDown() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_BotDown() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_BotDown() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_BotDown() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_BotDown() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_BotDown() * CLHEP::mm;
     SetToFPos_BotDown(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_BotDown();
     fToFConstructor_BotDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BotDown() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BotDown() * CLHEP::mm;
     fToFConstructor_BotDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BotDown() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BotDown() * CLHEP::mm;
     fToFConstructor_BotDown->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BotDown();
     fToFConstructor_BotDown->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BotDown();
     fToFConstructor_BotDown->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_BotDown() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_BotDown() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_BotDown() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_BotDown() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_BotDown() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_BotDown() * CLHEP::degree;
     rotation_tof_BotDown->rotateX(rotX); 
     rotation_tof_BotDown->rotateY(rotY); 
     rotation_tof_BotDown->rotateZ(rotZ);      
@@ -441,28 +439,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_BotDown->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_BotDown->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_BotDown->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_BotDown->GetLength() / mm << " (length)"
+	   << fToFConstructor_BotDown->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_BotDown->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_BotDown->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF BotDown: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_BotDown().x()/mm << ", "
-	   << GetToFPos_BotDown().y()/mm << ", "
-	   << GetToFPos_BotDown().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_BotDown().x()/CLHEP::mm << ", "
+	   << GetToFPos_BotDown().y()/CLHEP::mm << ", "
+	   << GetToFPos_BotDown().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_BotDown->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_BotDown->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_BotDown->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_BotDown->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_BotDown->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_BotDown->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_BotDown->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_BotDown->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_BotDown->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_BotDown->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_BotDown->GetLayerHorizNBar() << " (horiz) - "
@@ -480,25 +478,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_RightDown() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_RightDown() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_RightDown() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_RightDown() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_RightDown() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_RightDown() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_RightDown() * CLHEP::mm;
     SetToFPos_RightDown(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_RightDown();
     fToFConstructor_RightDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_RightDown() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_RightDown() * CLHEP::mm;
     fToFConstructor_RightDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_RightDown() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_RightDown() * CLHEP::mm;
     fToFConstructor_RightDown->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_RightDown();
     fToFConstructor_RightDown->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_RightDown();
     fToFConstructor_RightDown->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_RightDown() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_RightDown() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_RightDown() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_RightDown() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_RightDown() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_RightDown() * CLHEP::degree;
     rotation_tof_RightDown->rotateX(rotX); 
     rotation_tof_RightDown->rotateY(rotY); 
     rotation_tof_RightDown->rotateZ(rotZ);      
@@ -515,28 +513,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_RightDown->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_RightDown->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_RightDown->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_RightDown->GetLength() / mm << " (length)"
+	   << fToFConstructor_RightDown->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_RightDown->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_RightDown->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF RightDown: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_RightDown().x()/mm << ", "
-	   << GetToFPos_RightDown().y()/mm << ", "
-	   << GetToFPos_RightDown().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_RightDown().x()/CLHEP::mm << ", "
+	   << GetToFPos_RightDown().y()/CLHEP::mm << ", "
+	   << GetToFPos_RightDown().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_RightDown->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_RightDown->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_RightDown->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_RightDown->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_RightDown->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_RightDown->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_RightDown->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_RightDown->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_RightDown->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_RightDown->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_RightDown->GetLayerHorizNBar() << " (horiz) - "
@@ -556,25 +554,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_LeftDown() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_LeftDown() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_LeftDown() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_LeftDown() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_LeftDown() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_LeftDown() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_LeftDown() * CLHEP::mm;
     SetToFPos_LeftDown(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_LeftDown();
     fToFConstructor_LeftDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_LeftDown() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_LeftDown() * CLHEP::mm;
     fToFConstructor_LeftDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_LeftDown() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_LeftDown() * CLHEP::mm;
     fToFConstructor_LeftDown->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_LeftDown();
     fToFConstructor_LeftDown->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_LeftDown();
     fToFConstructor_LeftDown->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_LeftDown() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_LeftDown() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_LeftDown() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_LeftDown() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_LeftDown() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_LeftDown() * CLHEP::degree;
     rotation_tof_LeftDown->rotateX(rotX); 
     rotation_tof_LeftDown->rotateY(rotY); 
     rotation_tof_LeftDown->rotateZ(rotZ);      
@@ -591,28 +589,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_LeftDown->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_LeftDown->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_LeftDown->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_LeftDown->GetLength() / mm << " (length)"
+	   << fToFConstructor_LeftDown->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_LeftDown->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_LeftDown->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF LeftDown: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_LeftDown().x()/mm << ", "
-	   << GetToFPos_LeftDown().y()/mm << ", "
-	   << GetToFPos_LeftDown().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_LeftDown().x()/CLHEP::mm << ", "
+	   << GetToFPos_LeftDown().y()/CLHEP::mm << ", "
+	   << GetToFPos_LeftDown().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_LeftDown->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_LeftDown->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_LeftDown->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_LeftDown->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_LeftDown->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_LeftDown->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_LeftDown->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_LeftDown->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_LeftDown->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_LeftDown->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_LeftDown->GetLayerHorizNBar() << " (horiz) - "
@@ -631,25 +629,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_BackDown() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_BackDown() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_BackDown() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_BackDown() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_BackDown() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_BackDown() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_BackDown() * CLHEP::mm;
     SetToFPos_BackDown(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_BackDown();
     fToFConstructor_BackDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BackDown() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BackDown() * CLHEP::mm;
     fToFConstructor_BackDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BackDown() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BackDown() * CLHEP::mm;
     fToFConstructor_BackDown->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BackDown();
     fToFConstructor_BackDown->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BackDown();
     fToFConstructor_BackDown->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_BackDown() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_BackDown() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_BackDown() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_BackDown() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_BackDown() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_BackDown() * CLHEP::degree;
     rotation_tof_BackDown->rotateX(rotX); 
     rotation_tof_BackDown->rotateY(rotY); 
     rotation_tof_BackDown->rotateZ(rotZ);      
@@ -666,28 +664,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_BackDown->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_BackDown->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_BackDown->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_BackDown->GetLength() / mm << " (length)"
+	   << fToFConstructor_BackDown->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_BackDown->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_BackDown->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF BackDown: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_BackDown().x()/mm << ", "
-	   << GetToFPos_BackDown().y()/mm << ", "
-	   << GetToFPos_BackDown().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_BackDown().x()/CLHEP::mm << ", "
+	   << GetToFPos_BackDown().y()/CLHEP::mm << ", "
+	   << GetToFPos_BackDown().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_BackDown->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_BackDown->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_BackDown->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_BackDown->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_BackDown->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_BackDown->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_BackDown->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_BackDown->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_BackDown->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_BackDown->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_BackDown->GetLayerHorizNBar() << " (horiz) - "
@@ -706,25 +704,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_FrontDown() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_FrontDown() * mm; 
-    G4double y = ND280XMLInput->GetXMLToFPosY_FrontDown() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_FrontDown() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_FrontDown() * CLHEP::mm; 
+    G4double y = ND280XMLInput->GetXMLToFPosY_FrontDown() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_FrontDown() * CLHEP::mm;
     SetToFPos_FrontDown(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_FrontDown();
     fToFConstructor_FrontDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_FrontDown() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_FrontDown() * CLHEP::mm;
     fToFConstructor_FrontDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontDown() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontDown() * CLHEP::mm;
     fToFConstructor_FrontDown->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_FrontDown();
     fToFConstructor_FrontDown->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_FrontDown();
     fToFConstructor_FrontDown->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_FrontDown() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_FrontDown() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_FrontDown() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_FrontDown() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_FrontDown() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_FrontDown() * CLHEP::degree;
     rotation_tof_FrontDown->rotateX(rotX); 
     rotation_tof_FrontDown->rotateY(rotY); 
     rotation_tof_FrontDown->rotateZ(rotZ);      
@@ -741,28 +739,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_FrontDown->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_FrontDown->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_FrontDown->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_FrontDown->GetLength() / mm << " (length)"
+	   << fToFConstructor_FrontDown->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_FrontDown->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_FrontDown->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF FrontDown: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_FrontDown().x()/mm << ", "
-	   << GetToFPos_FrontDown().y()/mm << ", "
-	   << GetToFPos_FrontDown().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_FrontDown().x()/CLHEP::mm << ", "
+	   << GetToFPos_FrontDown().y()/CLHEP::mm << ", "
+	   << GetToFPos_FrontDown().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_FrontDown->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_FrontDown->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_FrontDown->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_FrontDown->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_FrontDown->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_FrontDown->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_FrontDown->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_FrontDown->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_FrontDown->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_FrontDown->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_FrontDown->GetLayerHorizNBar() << " (horiz) - "
@@ -782,25 +780,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_TopUp() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_TopUp() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_TopUp() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_TopUp() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_TopUp() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_TopUp() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_TopUp() * CLHEP::mm;
     SetToFPos_TopUp(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_TopUp();
     fToFConstructor_TopUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer     
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_TopUp() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_TopUp() * CLHEP::mm;
     fToFConstructor_TopUp->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_TopUp() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_TopUp() * CLHEP::mm;
     fToFConstructor_TopUp->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_TopUp();
     fToFConstructor_TopUp->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_TopUp();
     fToFConstructor_TopUp->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_TopUp() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_TopUp() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_TopUp() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_TopUp() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_TopUp() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_TopUp() * CLHEP::degree;
     rotation_tof_TopUp->rotateX(rotX); 
     rotation_tof_TopUp->rotateY(rotY); 
     rotation_tof_TopUp->rotateZ(rotZ);      
@@ -817,28 +815,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_TopUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_TopUp->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_TopUp->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_TopUp->GetLength() / mm << " (length)"
+	   << fToFConstructor_TopUp->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_TopUp->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_TopUp->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF TopUp: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_TopUp().x()/mm << ", "
-	   << GetToFPos_TopUp().y()/mm << ", "
-	   << GetToFPos_TopUp().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_TopUp().x()/CLHEP::mm << ", "
+	   << GetToFPos_TopUp().y()/CLHEP::mm << ", "
+	   << GetToFPos_TopUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_TopUp->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_TopUp->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_TopUp->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_TopUp->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_TopUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_TopUp->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_TopUp->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_TopUp->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_TopUp->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_TopUp->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_TopUp->GetLayerHorizNBar() << " (horiz) - "
@@ -857,25 +855,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_BotUp() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_BotUp() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_BotUp() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_BotUp() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_BotUp() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_BotUp() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_BotUp() * CLHEP::mm;
     SetToFPos_BotUp(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_BotUp();
     fToFConstructor_BotUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BotUp() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BotUp() * CLHEP::mm;
     fToFConstructor_BotUp->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BotUp() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BotUp() * CLHEP::mm;
     fToFConstructor_BotUp->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BotUp();
     fToFConstructor_BotUp->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BotUp();
     fToFConstructor_BotUp->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_BotUp() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_BotUp() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_BotUp() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_BotUp() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_BotUp() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_BotUp() * CLHEP::degree;
     rotation_tof_BotUp->rotateX(rotX); 
     rotation_tof_BotUp->rotateY(rotY); 
     rotation_tof_BotUp->rotateZ(rotZ);      
@@ -892,28 +890,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_BotUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_BotUp->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_BotUp->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_BotUp->GetLength() / mm << " (length)"
+	   << fToFConstructor_BotUp->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_BotUp->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_BotUp->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF BotUp: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_BotUp().x()/mm << ", "
-	   << GetToFPos_BotUp().y()/mm << ", "
-	   << GetToFPos_BotUp().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_BotUp().x()/CLHEP::mm << ", "
+	   << GetToFPos_BotUp().y()/CLHEP::mm << ", "
+	   << GetToFPos_BotUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_BotUp->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_BotUp->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_BotUp->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_BotUp->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_BotUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_BotUp->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_BotUp->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_BotUp->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_BotUp->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_BotUp->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_BotUp->GetLayerHorizNBar() << " (horiz) - "
@@ -932,25 +930,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_RightUp() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_RightUp() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_RightUp() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_RightUp() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_RightUp() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_RightUp() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_RightUp() * CLHEP::mm;
     SetToFPos_RightUp(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_RightUp();
     fToFConstructor_RightUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_RightUp() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_RightUp() * CLHEP::mm;
     fToFConstructor_RightUp->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_RightUp() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_RightUp() * CLHEP::mm;
     fToFConstructor_RightUp->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_RightUp();
     fToFConstructor_RightUp->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_RightUp();
     fToFConstructor_RightUp->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_RightUp() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_RightUp() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_RightUp() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_RightUp() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_RightUp() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_RightUp() * CLHEP::degree;
     rotation_tof_RightUp->rotateX(rotX); 
     rotation_tof_RightUp->rotateY(rotY); 
     rotation_tof_RightUp->rotateZ(rotZ);      
@@ -967,28 +965,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_RightUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_RightUp->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_RightUp->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_RightUp->GetLength() / mm << " (length)"
+	   << fToFConstructor_RightUp->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_RightUp->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_RightUp->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF RightUp: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_RightUp().x()/mm << ", "
-	   << GetToFPos_RightUp().y()/mm << ", "
-	   << GetToFPos_RightUp().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_RightUp().x()/CLHEP::mm << ", "
+	   << GetToFPos_RightUp().y()/CLHEP::mm << ", "
+	   << GetToFPos_RightUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_RightUp->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_RightUp->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_RightUp->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_RightUp->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_RightUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_RightUp->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_RightUp->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_RightUp->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_RightUp->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_RightUp->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_RightUp->GetLayerHorizNBar() << " (horiz) - "
@@ -1007,25 +1005,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_LeftUp() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_LeftUp() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_LeftUp() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_LeftUp() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_LeftUp() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_LeftUp() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_LeftUp() * CLHEP::mm;
     SetToFPos_LeftUp(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_LeftUp();
     fToFConstructor_LeftUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_LeftUp() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_LeftUp() * CLHEP::mm;
     fToFConstructor_LeftUp->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_LeftUp() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_LeftUp() * CLHEP::mm;
     fToFConstructor_LeftUp->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_LeftUp();
     fToFConstructor_LeftUp->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_LeftUp();
     fToFConstructor_LeftUp->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_LeftUp() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_LeftUp() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_LeftUp() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_LeftUp() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_LeftUp() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_LeftUp() * CLHEP::degree;
     rotation_tof_LeftUp->rotateX(rotX); 
     rotation_tof_LeftUp->rotateY(rotY); 
     rotation_tof_LeftUp->rotateZ(rotZ);      
@@ -1042,28 +1040,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_LeftUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_LeftUp->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_LeftUp->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_LeftUp->GetLength() / mm << " (length)"
+	   << fToFConstructor_LeftUp->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_LeftUp->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_LeftUp->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF LeftUp: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_LeftUp().x()/mm << ", "
-	   << GetToFPos_LeftUp().y()/mm << ", "
-	   << GetToFPos_LeftUp().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_LeftUp().x()/CLHEP::mm << ", "
+	   << GetToFPos_LeftUp().y()/CLHEP::mm << ", "
+	   << GetToFPos_LeftUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_LeftUp->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_LeftUp->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_LeftUp->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_LeftUp->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_LeftUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_LeftUp->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_LeftUp->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_LeftUp->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_LeftUp->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_LeftUp->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_LeftUp->GetLayerHorizNBar() << " (horiz) - "
@@ -1082,25 +1080,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_BackUp() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_BackUp() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_BackUp() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_BackUp() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_BackUp() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_BackUp() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_BackUp() * CLHEP::mm;
     SetToFPos_BackUp(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_BackUp();
     fToFConstructor_BackUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BackUp() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BackUp() * CLHEP::mm;
     fToFConstructor_BackUp->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BackUp() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BackUp() * CLHEP::mm;
     fToFConstructor_BackUp->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BackUp();
     fToFConstructor_BackUp->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BackUp();
     fToFConstructor_BackUp->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_BackUp() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_BackUp() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_BackUp() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_BackUp() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_BackUp() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_BackUp() * CLHEP::degree;
     rotation_tof_BackUp->rotateX(rotX); 
     rotation_tof_BackUp->rotateY(rotY); 
     rotation_tof_BackUp->rotateZ(rotZ);      
@@ -1117,28 +1115,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_BackUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_BackUp->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_BackUp->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_BackUp->GetLength() / mm << " (length)"
+	   << fToFConstructor_BackUp->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_BackUp->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_BackUp->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF BackUp: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_BackUp().x()/mm << ", "
-	   << GetToFPos_BackUp().y()/mm << ", "
-	   << GetToFPos_BackUp().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_BackUp().x()/CLHEP::mm << ", "
+	   << GetToFPos_BackUp().y()/CLHEP::mm << ", "
+	   << GetToFPos_BackUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_BackUp->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_BackUp->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_BackUp->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_BackUp->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_BackUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_BackUp->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_BackUp->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_BackUp->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_BackUp->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_BackUp->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_BackUp->GetLayerHorizNBar() << " (horiz) - "
@@ -1157,25 +1155,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_FrontUp() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_FrontUp() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_FrontUp() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_FrontUp() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_FrontUp() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_FrontUp() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_FrontUp() * CLHEP::mm;
     SetToFPos_FrontUp(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_FrontUp();
     fToFConstructor_FrontUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_FrontUp() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_FrontUp() * CLHEP::mm;
     fToFConstructor_FrontUp->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontUp() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontUp() * CLHEP::mm;
     fToFConstructor_FrontUp->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_FrontUp();
     fToFConstructor_FrontUp->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_FrontUp();
     fToFConstructor_FrontUp->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_FrontUp() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_FrontUp() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_FrontUp() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_FrontUp() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_FrontUp() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_FrontUp() * CLHEP::degree;
     rotation_tof_FrontUp->rotateX(rotX); 
     rotation_tof_FrontUp->rotateY(rotY); 
     rotation_tof_FrontUp->rotateZ(rotZ);      
@@ -1192,28 +1190,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_FrontUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_FrontUp->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_FrontUp->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_FrontUp->GetLength() / mm << " (length)"
+	   << fToFConstructor_FrontUp->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_FrontUp->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_FrontUp->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF FrontUp: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_FrontUp().x()/mm << ", "
-	   << GetToFPos_FrontUp().y()/mm << ", "
-	   << GetToFPos_FrontUp().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_FrontUp().x()/CLHEP::mm << ", "
+	   << GetToFPos_FrontUp().y()/CLHEP::mm << ", "
+	   << GetToFPos_FrontUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_FrontUp->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_FrontUp->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_FrontUp->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_FrontUp->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_FrontUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_FrontUp->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_FrontUp->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_FrontUp->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_FrontUp->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_FrontUp->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_FrontUp->GetLayerHorizNBar() << " (horiz) - "
@@ -1236,25 +1234,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   if( ND280XMLInput->GetXMLUseToF_ECalP0D() ){
 
-    G4double x = ND280XMLInput->GetXMLToFPosX_ECalP0D() * mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_ECalP0D() * mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_ECalP0D() * mm;
+    G4double x = ND280XMLInput->GetXMLToFPosX_ECalP0D() * CLHEP::mm;                        
+    G4double y = ND280XMLInput->GetXMLToFPosY_ECalP0D() * CLHEP::mm;
+    G4double z = ND280XMLInput->GetXMLToFPosZ_ECalP0D() * CLHEP::mm;
     SetToFPos_ECalP0D(x,y,z);
     
     int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_ECalP0D();
     fToFConstructor_ECalP0D->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_ECalP0D() * mm;
+    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_ECalP0D() * CLHEP::mm;
     fToFConstructor_ECalP0D->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_ECalP0D() * mm;
+    double BarHeight = ND280XMLInput->GetXMLToFBarheight_ECalP0D() * CLHEP::mm;
     fToFConstructor_ECalP0D->SetBarHeight(BarHeight);
     int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_ECalP0D();
     fToFConstructor_ECalP0D->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_ECalP0D();
     fToFConstructor_ECalP0D->SetLayerVertNBar(NBarVert); 
 
-    rotX = ND280XMLInput->GetXMLToFRotX_ECalP0D() * degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_ECalP0D() * degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_ECalP0D() * degree;
+    rotX = ND280XMLInput->GetXMLToFRotX_ECalP0D() * CLHEP::degree;
+    rotY = ND280XMLInput->GetXMLToFRotY_ECalP0D() * CLHEP::degree;
+    rotZ = ND280XMLInput->GetXMLToFRotZ_ECalP0D() * CLHEP::degree;
     rotation_tof_ECalP0D->rotateX(rotX); 
     rotation_tof_ECalP0D->rotateY(rotY); 
     rotation_tof_ECalP0D->rotateZ(rotZ);      
@@ -1271,28 +1269,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << " - name: " << logicToF_ECalP0D->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_ECalP0D->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_ECalP0D->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_ECalP0D->GetLength() / mm << " (length)"
+	   << fToFConstructor_ECalP0D->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_ECalP0D->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_ECalP0D->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF ECalP0D: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_ECalP0D().x()/mm << ", "
-	   << GetToFPos_ECalP0D().y()/mm << ", "
-	   << GetToFPos_ECalP0D().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_ECalP0D().x()/CLHEP::mm << ", "
+	   << GetToFPos_ECalP0D().y()/CLHEP::mm << ", "
+	   << GetToFPos_ECalP0D().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_ECalP0D->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_ECalP0D->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_ECalP0D->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_ECalP0D->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_ECalP0D->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_ECalP0D->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_ECalP0D->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_ECalP0D->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_ECalP0D->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_ECalP0D->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_ECalP0D->GetLayerHorizNBar() << " (horiz) - "
@@ -1326,25 +1324,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
   rotX=0,rotY=0,rotZ=0;
   
-  G4double x = ND280XMLInput->GetXMLToFPosX_FrontUp() * mm;                        
-  G4double y = ND280XMLInput->GetXMLToFPosY_FrontUp() * mm;
-  G4double z = ND280XMLInput->GetXMLToFPosZ_FrontUp() * mm;
+  G4double x = ND280XMLInput->GetXMLToFPosX_FrontUp() * CLHEP::mm;                        
+  G4double y = ND280XMLInput->GetXMLToFPosY_FrontUp() * CLHEP::mm;
+  G4double z = ND280XMLInput->GetXMLToFPosZ_FrontUp() * CLHEP::mm;
   SetToFPos_FrontUp(x,y,z);
   
   int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_FrontUp();
   fToFConstructor_FrontUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-  double BarWidth = ND280XMLInput->GetXMLToFBarwidth_FrontUp() * mm;
+  double BarWidth = ND280XMLInput->GetXMLToFBarwidth_FrontUp() * CLHEP::mm;
   fToFConstructor_FrontUp->SetBarWidth(BarWidth);
-  double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontUp() * mm;
+  double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontUp() * CLHEP::mm;
   fToFConstructor_FrontUp->SetBarHeight(BarHeight);
   int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_FrontUp();
   fToFConstructor_FrontUp->SetLayerHorizNBar(NBarHoriz); 
   int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_FrontUp();
   fToFConstructor_FrontUp->SetLayerVertNBar(NBarVert); 
   
-  rotX = ND280XMLInput->GetXMLToFRotX_FrontUp() * degree;
-  rotY = ND280XMLInput->GetXMLToFRotY_FrontUp() * degree;
-  rotZ = ND280XMLInput->GetXMLToFRotZ_FrontUp() * degree;
+  rotX = ND280XMLInput->GetXMLToFRotX_FrontUp() * CLHEP::degree;
+  rotY = ND280XMLInput->GetXMLToFRotY_FrontUp() * CLHEP::degree;
+  rotZ = ND280XMLInput->GetXMLToFRotZ_FrontUp() * CLHEP::degree;
   rotation_tof_FrontUp->rotateX(rotX); 
   rotation_tof_FrontUp->rotateY(rotY); 
   rotation_tof_FrontUp->rotateZ(rotZ);      
@@ -1365,28 +1363,28 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
     G4cout << " - name: " << logicToF_FrontUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_FrontUp->GetWidth() / mm << " (width) x "
-	   << fToFConstructor_FrontUp->GetHeight() / mm << " (height) x "
-	   << fToFConstructor_FrontUp->GetLength() / mm << " (length)"
+	   << fToFConstructor_FrontUp->GetWidth() / CLHEP::mm << " (width) x "
+	   << fToFConstructor_FrontUp->GetHeight() / CLHEP::mm << " (height) x "
+	   << fToFConstructor_FrontUp->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Rotation ToF FrontUp: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_FrontUp().x()/mm << ", "
-	   << GetToFPos_FrontUp().y()/mm << ", "
-	   << GetToFPos_FrontUp().z()/mm << " ) mm" << G4endl;
+	   << GetToFPos_FrontUp().x()/CLHEP::mm << ", "
+	   << GetToFPos_FrontUp().y()/CLHEP::mm << ", "
+	   << GetToFPos_FrontUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_FrontUp->GetPlaneXYNum() 
 	   << " --> " << fToFConstructor_FrontUp->GetPlaneXYNum() * 2. << " layers"
 	   << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_FrontUp->GetBarWidth() / mm << " (width) x " 
-	   << fToFConstructor_FrontUp->GetBarHeight() / mm << " (height)" 
+	   << fToFConstructor_FrontUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+	   << fToFConstructor_FrontUp->GetBarHeight() / CLHEP::mm << " (height)" 
 	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_FrontUp->GetBarHorizLength() / mm 
-	   << " / Vert length = " << fToFConstructor_FrontUp->GetBarVertLength() / mm 
+	   << "   Horiz length = " << fToFConstructor_FrontUp->GetBarHorizLength() / CLHEP::mm 
+	   << " / Vert length = " << fToFConstructor_FrontUp->GetBarVertLength() / CLHEP::mm 
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_FrontUp->GetLayerHorizNBar() << " (horiz) - "
@@ -1436,13 +1434,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 		      0);
     
     G4cout << " - name: " << tpc1Volume->GetName() << G4endl;
-    G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
-    G4cout << " - width (mm): " << GetWidthForwTPC() / mm << G4endl;
-    G4cout << " - height (mm): " << GetHeightForwTPC() / mm << G4endl;
+    G4cout << " - length (mm): " << GetLengthForwTPC() / CLHEP::mm << G4endl;
+    G4cout << " - width (mm): " << GetWidthForwTPC() / CLHEP::mm << G4endl;
+    G4cout << " - height (mm): " << GetHeightForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - position: ( " 
-	   << GetForwTPCPos1().x()/mm << ", "
-	   << GetForwTPCPos1().y()/mm << ", "
-	   << GetForwTPCPos1().z()/mm << " ) mm"  
+	   << GetForwTPCPos1().x()/CLHEP::mm << ", "
+	   << GetForwTPCPos1().y()/CLHEP::mm << ", "
+	   << GetForwTPCPos1().z()/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
 
@@ -1477,13 +1475,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 		      0);
     
     G4cout << " - name: " << tpc2Volume->GetName() << G4endl;
-    G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
-    G4cout << " - width (mm): " << GetWidthForwTPC() / mm << G4endl;
-    G4cout << " - height (mm): " << GetHeightForwTPC() / mm << G4endl;
+    G4cout << " - length (mm): " << GetLengthForwTPC() / CLHEP::mm << G4endl;
+    G4cout << " - width (mm): " << GetWidthForwTPC() / CLHEP::mm << G4endl;
+    G4cout << " - height (mm): " << GetHeightForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - position: ( " 
-	   << GetForwTPCPos2().x()/mm << ", "
-	   << GetForwTPCPos2().y()/mm << ", "
-	   << GetForwTPCPos2().z()/mm << " ) mm"  
+	   << GetForwTPCPos2().x()/CLHEP::mm << ", "
+	   << GetForwTPCPos2().y()/CLHEP::mm << ", "
+	   << GetForwTPCPos2().z()/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
   
@@ -1518,13 +1516,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 		      0);
     
     G4cout << " - name: " << tpc3Volume->GetName() << G4endl;
-    G4cout << " - length (mm): " << GetLengthForwTPC() / mm << G4endl;
-    G4cout << " - width (mm): " << GetWidthForwTPC() / mm << G4endl;
-    G4cout << " - height (mm): " << GetHeightForwTPC() / mm << G4endl;
+    G4cout << " - length (mm): " << GetLengthForwTPC() / CLHEP::mm << G4endl;
+    G4cout << " - width (mm): " << GetWidthForwTPC() / CLHEP::mm << G4endl;
+    G4cout << " - height (mm): " << GetHeightForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - position: ( " 
-	   << GetForwTPCPos3().x()/mm << ", "
-	   << GetForwTPCPos3().y()/mm << ", "
-	   << GetForwTPCPos3().z()/mm << " ) mm"  
+	   << GetForwTPCPos3().x()/CLHEP::mm << ", "
+	   << GetForwTPCPos3().y()/CLHEP::mm << ", "
+	   << GetForwTPCPos3().z()/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
 
@@ -1578,16 +1576,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "FGD 1: " << G4endl
   	   << " - dimensions: "
-  	   << GetFGDFullWidth1()/mm  << " (width) x " 
-  	   << GetFGDFullHeight1()/mm << " (height) x " 
-  	   << GetFGDFullLength1()/mm << " (length) mm^3" 
+  	   << GetFGDFullWidth1()/CLHEP::mm  << " (width) x " 
+  	   << GetFGDFullHeight1()/CLHEP::mm << " (height) x " 
+  	   << GetFGDFullLength1()/CLHEP::mm << " (length) mm^3" 
   	   << " of " << logicFGD1->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicFGD1->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " mass="<<logicFGD1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
     G4cout << " name: " << logicFGD1->GetName() << G4endl;
     G4cout << " - position: ( " 
-  	   << GetFGDPos1().x()/mm << ", "
-  	   << GetFGDPos1().y()/mm << ", "
-  	   << GetFGDPos1().z()/mm << " ) mm"  
+  	   << GetFGDPos1().x()/CLHEP::mm << ", "
+  	   << GetFGDPos1().y()/CLHEP::mm << ", "
+  	   << GetFGDPos1().z()/CLHEP::mm << " ) mm"  
   	   << G4endl << G4endl;
   }
 
@@ -1637,16 +1635,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "FGD 2: " << G4endl
   	   << " - dimensions: "
-  	   << GetFGDFullWidth2()/mm  << " (width) x " 
-  	   << GetFGDFullHeight2()/mm << " (height) x " 
-  	   << GetFGDFullLength2()/mm << " (length) mm^3" 
+  	   << GetFGDFullWidth2()/CLHEP::mm  << " (width) x " 
+  	   << GetFGDFullHeight2()/CLHEP::mm << " (height) x " 
+  	   << GetFGDFullLength2()/CLHEP::mm << " (length) mm^3" 
   	   << " of " << logicFGD2->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicFGD2->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " mass="<<logicFGD2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicFGD2->GetName() << G4endl;
     G4cout << " - position: ( " 
-  	   << GetFGDPos2().x()/mm << ", "
-  	   << GetFGDPos2().y()/mm << ", "
-  	   << GetFGDPos2().z()/mm << " ) mm"  
+  	   << GetFGDPos2().x()/CLHEP::mm << ", "
+  	   << GetFGDPos2().y()/CLHEP::mm << ", "
+  	   << GetFGDPos2().z()/CLHEP::mm << " ) mm"  
   	   << G4endl << G4endl;
   }
 
@@ -1775,16 +1773,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Target 2: " << G4endl
 	   << " - dimensions: "
-	   << GetTargetFullWidth2()/mm  << " (width) x " 
-	   << GetTargetFullHeight2()/mm << " (height) x " 
-	   << GetTargetFullLength2()/mm << " (length) mm^3" 
+	   << GetTargetFullWidth2()/CLHEP::mm  << " (width) x " 
+	   << GetTargetFullHeight2()/CLHEP::mm << " (height) x " 
+	   << GetTargetFullLength2()/CLHEP::mm << " (length) mm^3" 
 	   << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " mass="<<logicTarget2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicTarget2->GetName() << G4endl;
     G4cout << " - position: ( " 
-	   << GetTargetPos2().x()/mm << ", "
-	   << GetTargetPos2().y()/mm << ", "
-	   << GetTargetPos2().z()/mm << " ) mm"  
+	   << GetTargetPos2().x()/CLHEP::mm << ", "
+	   << GetTargetPos2().y()/CLHEP::mm << ", "
+	   << GetTargetPos2().z()/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
 
@@ -1825,7 +1823,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4double y = ND280XMLInput->GetXMLSuperFGDPos1_Y();
     G4double z = ND280XMLInput->GetXMLSuperFGDPos1_Z();
 
-    fSuperFGDConstructor1->SetEdge(edge*mm);
+    fSuperFGDConstructor1->SetEdge(edge*CLHEP::mm);
     fSuperFGDConstructor1->SetCubeNumX(cubenumX);
     fSuperFGDConstructor1->SetCubeNumY(cubenumY);
     fSuperFGDConstructor1->SetCubeNumZ(cubenumZ);
@@ -1877,24 +1875,24 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Target 1: " << G4endl;
     G4cout << " - Total size (mm^3): " 
-	   << width / mm << " (width) x " 
-	   << height / mm << " (height) x " 
-	   << length / mm << " (length) x " 
+	   << width / CLHEP::mm << " (width) x " 
+	   << height / CLHEP::mm << " (height) x " 
+	   << length / CLHEP::mm << " (length) x " 
 	   << G4endl;
     G4cout << "SuperFGD 1: " << G4endl
 	   << " - Cube size: "
-	   << fSuperFGDConstructor1->GetEdge() / mm << G4endl;
+	   << fSuperFGDConstructor1->GetEdge() / CLHEP::mm << G4endl;
     G4cout << " - # of cubes: " << G4endl
 	   << "   " << fSuperFGDConstructor1->GetCubeNumX() << " (width) "
 	   << "   " << fSuperFGDConstructor1->GetCubeNumY() << " (height) "
 	   << "   " << fSuperFGDConstructor1->GetCubeNumZ() << " (length) "
 	   << G4endl;
-    G4cout << " mass="<<logicSuperFGD1->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " mass="<<logicSuperFGD1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
     G4cout << " name: " << logicSuperFGD1->GetName() << G4endl;
     //G4cout << " - position inside the Basket: ( " 
-    //<< fSuperFGDConstructor1->GetPosX()/mm << ", "
-    //<< fSuperFGDConstructor1->GetPosY()/mm << ", "
-    //<< fSuperFGDConstructor1->GetPosZ()/mm << ") "
+    //<< fSuperFGDConstructor1->GetPosX()/CLHEP::mm << ", "
+    //<< fSuperFGDConstructor1->GetPosY()/CLHEP::mm << ", "
+    //<< fSuperFGDConstructor1->GetPosZ()/CLHEP::mm << ") "
     //<< G4endl << G4endl;   
 
   }
@@ -1973,7 +1971,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
     logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
     
-    rotX = 90*deg; // vertical bars are along Z
+    rotX = 90*CLHEP::deg; // vertical bars are along Z
     rotY = 0.;
     rotZ = 0.;
     G4RotationMatrix* rotation_scifi = new G4RotationMatrix();
@@ -2037,18 +2035,18 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Target 1: " << G4endl;
     G4cout << " - Total size (mm^3): " 
-	   << width / mm << " (width) x " 
-	   << height / mm << " (height) x " 
-	   << length / mm << " (length) x " 
+	   << width / CLHEP::mm << " (width) x " 
+	   << height / CLHEP::mm << " (height) x " 
+	   << length / CLHEP::mm << " (length) x " 
 	   << G4endl;
     G4cout << "SciFi 1: " << G4endl;
     G4cout << " - Total size before rotation (mm^3): "
-	   << fSciFiConstructor1->GetWidth() / mm << " (width) x "
-	   << fSciFiConstructor1->GetHeight() / mm << " (height) x "
-	   << fSciFiConstructor1->GetLength() / mm << " (length)"
+	   << fSciFiConstructor1->GetWidth() / CLHEP::mm << " (width) x "
+	   << fSciFiConstructor1->GetHeight() / CLHEP::mm << " (height) x "
+	   << fSciFiConstructor1->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Fiber edge: "
-	   << fSciFiConstructor1->GetEdge() / mm << " mm" << G4endl;
+	   << fSciFiConstructor1->GetEdge() / CLHEP::mm << " mm" << G4endl;
     G4cout << " - # of fibers: " << G4endl
 	   << "   " << fSciFiConstructor1->GetFiberHorizNum() << " horizontal (along X) "
 	   << "   " << fSciFiConstructor1->GetFiberVertNum() << " vertical (along Y) "
@@ -2056,16 +2054,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4cout << " - # of layers (XY each): " << G4endl
 	   << "   " << fSciFiConstructor1->GetLayerNum() << G4endl; 
     G4cout << " - Rotation SciFi: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
-    G4cout << " mass="<<logicSciFi1->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " mass="<<logicSciFi1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
     G4cout << " name: " << logicSciFi1->GetName() << G4endl;
     G4cout << " - position inside the Basket: ( " 
-	   << fSciFiConstructor1->GetPosX()/mm << ", "
-	   << fSciFiConstructor1->GetPosY()/mm << ", "
-	   << fSciFiConstructor1->GetPosZ()/mm << ") "
+	   << fSciFiConstructor1->GetPosX()/CLHEP::mm << ", "
+	   << fSciFiConstructor1->GetPosY()/CLHEP::mm << ", "
+	   << fSciFiConstructor1->GetPosZ()/CLHEP::mm << ") "
 	   << G4endl << G4endl;    
   }
   
@@ -2133,7 +2131,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
     logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
     
-    rotX = 90*deg; // vertical bars are along Z
+    rotX = 90*CLHEP::deg; // vertical bars are along Z
     rotY = 0.;
     rotZ = 0.;
     G4RotationMatrix* rotation_fgdlike = new G4RotationMatrix();
@@ -2200,18 +2198,18 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Target 1: " << G4endl;
     G4cout << " - Total size (mm^3): " 
-	   << width / mm << " (width) x " 
-	   << height / mm << " (height) x " 
-	   << length / mm << " (length) x " 
+	   << width / CLHEP::mm << " (width) x " 
+	   << height / CLHEP::mm << " (height) x " 
+	   << length / CLHEP::mm << " (length) x " 
 	   << G4endl;
     G4cout << "FGDlike 1: " << G4endl;
     G4cout << " - Total size before rotation (mm^3): "
-	   << fFGDlikeConstructor1->GetWidth() / mm << " (width) x "
-	   << fFGDlikeConstructor1->GetHeight() / mm << " (height) x "
-	   << fFGDlikeConstructor1->GetLength() / mm << " (length)"
+	   << fFGDlikeConstructor1->GetWidth() / CLHEP::mm << " (width) x "
+	   << fFGDlikeConstructor1->GetHeight() / CLHEP::mm << " (height) x "
+	   << fFGDlikeConstructor1->GetLength() / CLHEP::mm << " (length)"
 	   << G4endl;
     G4cout << " - Bar edge: "
-	   << fFGDlikeConstructor1->GetEdge() / mm << " mm" << G4endl;
+	   << fFGDlikeConstructor1->GetEdge() / CLHEP::mm << " mm" << G4endl;
     G4cout << " - # of bars: " << G4endl
 	   << "   " << fFGDlikeConstructor1->GetBarHorizNum() << " horizontal (along X) "
 	   << "   " << fFGDlikeConstructor1->GetBarVertNum() << " vertical (along Y) "
@@ -2219,16 +2217,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4cout << " - # of layers (XY each): " << G4endl
 	   << "   " << fFGDlikeConstructor1->GetLayerNum() << G4endl; 
     G4cout << " - Rotation FGDlike: ("
-	   << rotX / degree << ","
-	   << rotY / degree << ","
-	   << rotZ / degree << ")"
+	   << rotX / CLHEP::degree << ","
+	   << rotY / CLHEP::degree << ","
+	   << rotZ / CLHEP::degree << ")"
 	   << G4endl;
-    G4cout << " mass="<<logicFGDlike1->GetMass()/kg   <<" kg" << G4endl; 
+    G4cout << " mass="<<logicFGDlike1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
     G4cout << " name: " << logicFGDlike1->GetName() << G4endl;
     G4cout << " - position inside the Basket: ( " 
-	   << fFGDlikeConstructor1->GetPosX()/mm << ", "
-	   << fFGDlikeConstructor1->GetPosY()/mm << ", "
-	   << fFGDlikeConstructor1->GetPosZ()/mm << ") "
+	   << fFGDlikeConstructor1->GetPosX()/CLHEP::mm << ", "
+	   << fFGDlikeConstructor1->GetPosY()/CLHEP::mm << ", "
+	   << fFGDlikeConstructor1->GetPosZ()/CLHEP::mm << ") "
 	   << G4endl << G4endl;    
   }
 
@@ -2304,16 +2302,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Target 1: " << G4endl
 	   << " - dimensions: "
-	   << width/mm  << " (width) x " 
-	   << height/mm << " (height) x " 
-	   << length/mm << " (length) mm^3" 
+	   << width/CLHEP::mm  << " (width) x " 
+	   << height/CLHEP::mm << " (height) x " 
+	   << length/CLHEP::mm << " (length) mm^3" 
 	   << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " mass="<<logicTarget1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicTarget1->GetName() << G4endl;
     G4cout << " - position: ( " 
-	   << x/mm << ", "
-	   << y/mm << ", "
-	   << z/mm << " ) mm"  
+	   << x/CLHEP::mm << ", "
+	   << y/CLHEP::mm << ", "
+	   << z/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
 
@@ -2370,16 +2368,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Target 1: " << G4endl
 	   << " - dimensions: "
-	   << width/mm  << " (width) x " 
-	   << height/mm << " (height) x " 
-	   << length/mm << " (length) mm^3" 
+	   << width/CLHEP::mm  << " (width) x " 
+	   << height/CLHEP::mm << " (height) x " 
+	   << length/CLHEP::mm << " (length) mm^3" 
 	   << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " mass="<<logicTarget1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicTarget1->GetName() << G4endl;
     G4cout << " - position: ( " 
-	   << x/mm << ", "
-	   << y/mm << ", "
-	   << z/mm << " ) mm"  
+	   << x/CLHEP::mm << ", "
+	   << y/CLHEP::mm << ", "
+	   << z/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
 
@@ -2460,16 +2458,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Side TPC Up 1: " << G4endl
 	   << " - dimensions: "
-	   << GetSideTPCFullWidth1()/mm  << " (width) x " 
-	   << GetSideTPCFullHeight1()/mm << " (height) x " 
-	   << GetSideTPCFullLength1()/mm << " (length) mm^3" 
+	   << GetSideTPCFullWidth1()/CLHEP::mm  << " (width) x " 
+	   << GetSideTPCFullHeight1()/CLHEP::mm << " (height) x " 
+	   << GetSideTPCFullLength1()/CLHEP::mm << " (length) mm^3" 
 	   << " of " << logicSideTPCUp1->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicSideTPCUp1->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " mass="<<logicSideTPCUp1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicSideTPCUp1->GetName() << G4endl;
     G4cout << " - position: ( " 
-	   << GetSideTPCUpPos1().x()/mm << ", "
-	   << GetSideTPCUpPos1().y()/mm << ", "
-	   << GetSideTPCUpPos1().z()/mm << " ) mm"  
+	   << GetSideTPCUpPos1().x()/CLHEP::mm << ", "
+	   << GetSideTPCUpPos1().y()/CLHEP::mm << ", "
+	   << GetSideTPCUpPos1().z()/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
   
@@ -2509,16 +2507,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Side TPC Down 1: " << G4endl
 	   << " - dimensions: "
-	   << GetSideTPCFullWidth1()/mm  << " (width) x " 
-	   << GetSideTPCFullHeight1()/mm << " (height) x " 
-	   << GetSideTPCFullLength1()/mm << " (length) mm^3" 
+	   << GetSideTPCFullWidth1()/CLHEP::mm  << " (width) x " 
+	   << GetSideTPCFullHeight1()/CLHEP::mm << " (height) x " 
+	   << GetSideTPCFullLength1()/CLHEP::mm << " (length) mm^3" 
 	   << " of " << logicSideTPCDown1->GetMaterial()->GetName() << G4endl;
-    G4cout << " mass="<<logicSideTPCDown1->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " mass="<<logicSideTPCDown1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicSideTPCDown1->GetName() << G4endl;
     G4cout << " - position: ( " 
-	   << GetSideTPCDownPos1().x()/mm << ", "
-	   << GetSideTPCDownPos1().y()/mm << ", "
-	   << GetSideTPCDownPos1().z()/mm << " ) mm"  
+	   << GetSideTPCDownPos1().x()/CLHEP::mm << ", "
+	   << GetSideTPCDownPos1().y()/CLHEP::mm << ", "
+	   << GetSideTPCDownPos1().z()/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
   
@@ -2558,16 +2556,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Side TPC Up 2: " << G4endl
 	   << " - dimensions: "
-	   << GetSideTPCFullWidth2()/mm  << " (width) x " 
-	   << GetSideTPCFullHeight2()/mm << " (height) x " 
-	   << GetSideTPCFullLength2()/mm << " (length) mm^3" 
+	   << GetSideTPCFullWidth2()/CLHEP::mm  << " (width) x " 
+	   << GetSideTPCFullHeight2()/CLHEP::mm << " (height) x " 
+	   << GetSideTPCFullLength2()/CLHEP::mm << " (length) mm^3" 
 	   << " of " << logicSideTPCUp2->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicSideTPCUp2->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " mass="<<logicSideTPCUp2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicSideTPCUp2->GetName() << G4endl;
     G4cout << " - position: ( " 
-	   << GetSideTPCUpPos2().x()/mm << ", "
-	   << GetSideTPCUpPos2().y()/mm << ", "
-	   << GetSideTPCUpPos2().z()/mm << " ) mm"  
+	   << GetSideTPCUpPos2().x()/CLHEP::mm << ", "
+	   << GetSideTPCUpPos2().y()/CLHEP::mm << ", "
+	   << GetSideTPCUpPos2().z()/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
 
   }
@@ -2608,16 +2606,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Side TPC Down 2: " << G4endl
 	   << " - dimensions: "
-	   << GetSideTPCFullWidth2()/mm  << " (width) x " 
-	   << GetSideTPCFullHeight2()/mm << " (height) x " 
-	   << GetSideTPCFullLength2()/mm << " (length) mm^3" 
+	   << GetSideTPCFullWidth2()/CLHEP::mm  << " (width) x " 
+	   << GetSideTPCFullHeight2()/CLHEP::mm << " (height) x " 
+	   << GetSideTPCFullLength2()/CLHEP::mm << " (length) mm^3" 
 	   << " of " << logicSideTPCDown2->GetMaterial()->GetName() << G4endl;
-    G4cout << " mass="<<logicSideTPCDown2->GetMass()/kg   <<" kg" << G4endl;
+    G4cout << " mass="<<logicSideTPCDown2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicSideTPCDown2->GetName() << G4endl;
     G4cout << " - position: ( " 
-	   << GetSideTPCDownPos2().x()/mm << ", "
-	   << GetSideTPCDownPos2().y()/mm << ", "
-	   << GetSideTPCDownPos2().z()/mm << " ) mm"  
+	   << GetSideTPCDownPos2().x()/CLHEP::mm << ", "
+	   << GetSideTPCDownPos2().y()/CLHEP::mm << ", "
+	   << GetSideTPCDownPos2().z()/CLHEP::mm << " ) mm"  
 	   << G4endl << G4endl;
   }
 
@@ -2700,16 +2698,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // Sensitive detectors
   //------------------------------------------------ 
   
-  if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
-  if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );  
-  //if( ND280XMLInput->GetXMLUseSuperFGD1() )logicSuperFGD1->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseSuperFGD2() )logicSuperFGD2->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
+  //if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );  
+  // //if( ND280XMLInput->GetXMLUseSuperFGD1() )logicSuperFGD1->SetSensitiveDetector( GetSensitiveDetector() );
+  // //if( ND280XMLInput->GetXMLUseSuperFGD2() )logicSuperFGD2->SetSensitiveDetector( GetSensitiveDetector() );
 
   // Construct the field creator - this will register the field it creates
   if (!fEmFieldSetup.Get()) {
@@ -2826,21 +2824,21 @@ void ExN02DetectorConstruction::setMaterial_Target1(G4String materialName)
     {TargetMater1 = pttoMaterial;
       logicTarget1->SetMaterial(pttoMaterial); 
       
-      //G4cout << "\n----> The target 1 is " << GetTargetFullLength1()/mm << " mm of "
+      //G4cout << "\n----> The target 1 is " << GetTargetFullLength1()/CLHEP::mm << " mm of "
       //<< materialName << G4endl;
       
       G4cout << "Target 1: " << G4endl
 	     << " - dimensions: "
-	     << GetTargetFullWidth1()/mm  << " (width) x " 
-	     << GetTargetFullHeight1()/mm << " (height) x " 
-	     << GetTargetFullLength1()/mm << " (length) mm^3" 
+	     << GetTargetFullWidth1()/CLHEP::mm  << " (width) x " 
+	     << GetTargetFullHeight1()/CLHEP::mm << " (height) x " 
+	     << GetTargetFullLength1()/CLHEP::mm << " (length) mm^3" 
 	     << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-      G4cout << " mass="<<logicTarget1->GetMass()/kg   <<" kg" << G4endl; 
+      G4cout << " mass="<<logicTarget1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
       G4cout << " name: " << logicTarget1->GetName() << G4endl;
       G4cout << " - position: ( " 
-	     << GetTargetPos1().x()/mm << ", "
-	     << GetTargetPos1().y()/mm << ", "
-	     << GetTargetPos1().z()/mm << " ) mm"  
+	     << GetTargetPos1().x()/CLHEP::mm << ", "
+	     << GetTargetPos1().y()/CLHEP::mm << ", "
+	     << GetTargetPos1().z()/CLHEP::mm << " ) mm"  
 	     << G4endl << G4endl;
       
     }             
@@ -2863,21 +2861,21 @@ void ExN02DetectorConstruction::setMaterial_Target2(G4String materialName)
     {TargetMater2 = pttoMaterial;
       logicTarget2->SetMaterial(pttoMaterial); 
       
-      //G4cout << "\n----> The target 2 is " << GetTargetFullLength2()/mm << " mm of "
+      //G4cout << "\n----> The target 2 is " << GetTargetFullLength2()/CLHEP::mm << " CLHEP::mm of "
       //<< materialName << G4endl;
 
       G4cout << "Target 2: " << G4endl
 	     << " - dimensions: "
-	     << GetTargetFullWidth2()/mm  << " (width) x " 
-	     << GetTargetFullHeight2()/mm << " (height) x " 
-	     << GetTargetFullLength2()/mm << " (length) mm^3" 
+	     << GetTargetFullWidth2()/CLHEP::mm  << " (width) x " 
+	     << GetTargetFullHeight2()/CLHEP::mm << " (height) x " 
+	     << GetTargetFullLength2()/CLHEP::mm << " (length) mm^3" 
 	     << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
-      G4cout << " mass="<<logicTarget2->GetMass()/kg   <<" kg" << G4endl; 
+      G4cout << " mass="<<logicTarget2->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
       G4cout << " name: " << logicTarget2->GetName() << G4endl;
       G4cout << " - position: ( " 
-	     << GetTargetPos2().x()/mm << ", "
-	     << GetTargetPos2().y()/mm << ", "
-	     << GetTargetPos2().z()/mm << " ) mm"  
+	     << GetTargetPos2().x()/CLHEP::mm << ", "
+	     << GetTargetPos2().y()/CLHEP::mm << ", "
+	     << GetTargetPos2().z()/CLHEP::mm << " ) mm"  
 	     << G4endl << G4endl;
     }             
 }
@@ -2901,21 +2899,21 @@ void ExN02DetectorConstruction::setMaterial_FGD1(G4String materialName)
     {FGDMater1 = pttoMaterial;
       logicFGD1->SetMaterial(pttoMaterial); 
       
-      //G4cout << "\n----> The FGD 1 is " << GetFGDFullLength1()/mm << " mm of "
+      //G4cout << "\n----> The FGD 1 is " << GetFGDFullLength1()/CLHEP::mm << " mm of "
       //<< materialName << G4endl;
       
       G4cout << "FGD 1: " << G4endl
 	     << " - dimensions: "
-	     << GetFGDFullWidth1()/mm  << " (width) x " 
-	     << GetFGDFullHeight1()/mm << " (height) x " 
-	     << GetFGDFullLength1()/mm << " (length) mm^3" 
+	     << GetFGDFullWidth1()/CLHEP::mm  << " (width) x " 
+	     << GetFGDFullHeight1()/CLHEP::mm << " (height) x " 
+	     << GetFGDFullLength1()/CLHEP::mm << " (length) mm^3" 
 	     << " of " << logicFGD1->GetMaterial()->GetName() << G4endl; 
-      G4cout << " mass="<<logicFGD1->GetMass()/kg   <<" kg" << G4endl; 
+      G4cout << " mass="<<logicFGD1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
       G4cout << " name: " << logicFGD1->GetName() << G4endl;
       G4cout << " - position: ( " 
-	     << GetFGDPos1().x()/mm << ", "
-	     << GetFGDPos1().y()/mm << ", "
-	     << GetFGDPos1().z()/mm << " ) mm"  
+	     << GetFGDPos1().x()/CLHEP::mm << ", "
+	     << GetFGDPos1().y()/CLHEP::mm << ", "
+	     << GetFGDPos1().z()/CLHEP::mm << " ) mm"  
 	     << G4endl << G4endl;
       
     }             
@@ -2931,21 +2929,21 @@ void ExN02DetectorConstruction::setMaterial_FGD2(G4String materialName)
     {FGDMater2 = pttoMaterial;
       logicFGD2->SetMaterial(pttoMaterial); 
       
-      //G4cout << "\n----> The FGD 2 is " << GetFGDFullLength2()/mm << " mm of "
+      //G4cout << "\n----> The FGD 2 is " << GetFGDFullLength2()/CLHEP::mm << " CLHEP::mm of "
       //<< materialName << G4endl;
 
       G4cout << "FGD 2: " << G4endl
 	     << " - dimensions: "
-	     << GetFGDFullWidth2()/mm  << " (width) x " 
-	     << GetFGDFullHeight2()/mm << " (height) x " 
-	     << GetFGDFullLength2()/mm << " (length) mm^3" 
+	     << GetFGDFullWidth2()/CLHEP::mm  << " (width) x " 
+	     << GetFGDFullHeight2()/CLHEP::mm << " (height) x " 
+	     << GetFGDFullLength2()/CLHEP::mm << " (length) mm^3" 
 	     << " of " << logicFGD2->GetMaterial()->GetName() << G4endl; 
-      G4cout << " mass="<<logicFGD2->GetMass()/kg   <<" kg" << G4endl; 
+      G4cout << " mass="<<logicFGD2->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
       G4cout << " name: " << logicFGD2->GetName() << G4endl;
       G4cout << " - position: ( " 
-	     << GetFGDPos2().x()/mm << ", "
-	     << GetFGDPos2().y()/mm << ", "
-	     << GetFGDPos2().z()/mm << " ) mm"  
+	     << GetFGDPos2().x()/CLHEP::mm << ", "
+	     << GetFGDPos2().y()/CLHEP::mm << ", "
+	     << GetFGDPos2().z()/CLHEP::mm << " ) mm"  
 	     << G4endl << G4endl;
     }             
 }
@@ -2978,9 +2976,9 @@ void ExN02DetectorConstruction::setMaterial_SideTPC(G4String materialName)
     if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetMaterial(pttoMaterial); 
     if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetMaterial(pttoMaterial); 
     if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetMaterial(pttoMaterial); 
-    G4cout << "\n----> The side TPCs are " << GetSideTPCFullWidth1()/mm << " mm of "
+    G4cout << "\n----> The side TPCs are " << GetSideTPCFullWidth1()/CLHEP::mm << " mm of "
 	   << materialName << G4endl;
-    G4cout << "\n---->              and " << GetSideTPCFullWidth2()/mm << " mm of "
+    G4cout << "\n---->              and " << GetSideTPCFullWidth2()/CLHEP::mm << " mm of "
 	   << materialName << G4endl;
   }
 }
@@ -3037,96 +3035,96 @@ void ExN02DetectorConstruction::DefineMaterials() {
 #ifdef Define_Vacuum
   //Vacuum (set as default material)
   density     = universe_mean_density;
-  pressure    = 3.e-18*pascal;
-  temperature = 2.73*kelvin;
+  pressure    = 3.e-18*CLHEP::pascal;
+  temperature = 2.73*CLHEP::kelvin;
   vacuum = new G4Material(name="Vacuum", z=1., a=1.01*g/mole,
 			  density,kStateGas,temperature,pressure);
   gMan->SetColor(vacuum->GetName(),-1); // ND280 class
 #endif
 
   //Air
-  density = 1.29*mg/cm3;
-  pressure    = 1*atmosphere;
-  temperature = 293.15*kelvin;
+  density = 1.29*CLHEP::mg/CLHEP::cm3;
+  pressure    = 1*CLHEP::atmosphere;
+  temperature = 293.15*CLHEP::kelvin;
   G4Material* air =  new G4Material(name="Air", density,
 				    nel=2,kStateGas,temperature,
 				    pressure);
-  air->AddElement(elN, fractionmass = 70*perCent);
-  air->AddElement(elO, fractionmass = 30*perCent);
+  air->AddElement(elN, fractionmass = 70*CLHEP::perCent);
+  air->AddElement(elO, fractionmass = 30*CLHEP::perCent);
   fDefaultMaterial = air;
   gMan->SetDrawAtt(air,kGray+3); // ND280 class
 
   // //Earth
-  // density = 2.15*g/cm3;
+  // density = 2.15*g/CLHEP::cm3;
   // G4Material* earth = new G4Material(name="Earth", density, nel=2);
   // earth->AddElement(elSi, natoms=1);
   // earth->AddElement(elO, natoms=2);
   // gMan->SetDrawAtt(earth,49,0.2); // ND280 class
     
   // //Cement
-  // density = 2.5*g/cm3;
+  // density = 2.5*g/CLHEP::cm3;
   // G4Material* cement = new G4Material(name="Cement", density, nel=2);
   // cement->AddElement(elSi, natoms=1);
   // cement->AddElement(elO, natoms=2);
   // gMan->SetDrawAtt(cement,14,0.2); // ND280 class
 
   //Water
-  density = 1.0*g/cm3;
+  density = 1.0*CLHEP::g/CLHEP::cm3;
   G4Material* water = new G4Material(name="Water", density, nel=2);
   water->AddElement(elH, natoms=2);
   water->AddElement(elO, natoms=1);
   gMan->SetDrawAtt(water,kBlue); // ND280 class
 
   //Aluminum
-  density = 2.70*g/cm3;
+  density = 2.70*CLHEP::g/CLHEP::cm3;
   G4Material* aluminum = new G4Material(name="Aluminum",density, nel=1);
-  aluminum->AddElement(elAl,100.*perCent);
+  aluminum->AddElement(elAl,100.*CLHEP::perCent);
   gMan->SetDrawAtt(aluminum,kYellow-5); // ND280 class
 
   //Iron.
-  density = 7.87*g/cm3;
+  density = 7.87*CLHEP::g/CLHEP::cm3;
   G4Material* iron = new G4Material(name="Iron",density, nel=1);
-  iron->AddElement(elFe,100.*perCent);
+  iron->AddElement(elFe,100.*CLHEP::perCent);
   gMan->SetDrawAtt(iron,kRed+2,0.3); // ND280 class
 
   //Copper
-  density = 8.94*g/cm3;
+  density = 8.94*CLHEP::g/CLHEP::cm3;
   G4Material* copper = new G4Material(name="Copper",density, nel=1);
-  copper->AddElement(elCu,100.*perCent);
+  copper->AddElement(elCu,100.*CLHEP::perCent);
   gMan->SetDrawAtt(copper,kRed+1,0.3);// ND280 class
 
   //Lead
-  density = 11.35*g/cm3;
+  density = 11.35*CLHEP::g/CLHEP::cm3;
   G4Material* lead = new G4Material(name="Lead",density, nel=1);
-  lead->AddElement(elPb,100.*perCent);
+  lead->AddElement(elPb,100.*CLHEP::perCent);
   gMan->SetDrawAtt(lead,kGray+1);// ND280 class
 
   //Brass -- The density is from simetric.co.uk is 8400 -- 8730 gm/cm3
-  density = 8.50*g/cm3;
+  density = 8.50*CLHEP::g/CLHEP::cm3;
   G4Material* brass = new G4Material(name="Brass", density, nel=2);
-  brass->AddElement(elCu, fractionmass = 90*perCent);
-  brass->AddElement(elZn, fractionmass = 10*perCent);
+  brass->AddElement(elCu, fractionmass = 90*CLHEP::perCent);
+  brass->AddElement(elZn, fractionmass = 10*CLHEP::perCent);
   gMan->SetDrawAtt(brass,kOrange-2);// ND280 class
 
   //Bronze -- The density is from simetric.co.uk is 7700 -- 8920 gm/cm3
-  density = 8.5*g/cm3;
+  density = 8.5*CLHEP::g/CLHEP::cm3;
   G4Material* bronze = new G4Material(name="Bronze", density, nel=2);
-  bronze->AddElement(elCu, fractionmass = 60*perCent);
-  bronze->AddElement(elSn, fractionmass = 40*perCent);
+  bronze->AddElement(elCu, fractionmass = 60*CLHEP::perCent);
+  bronze->AddElement(elSn, fractionmass = 40*CLHEP::perCent);
   gMan->SetDrawAtt(bronze,kOrange-3);// ND280 class
 
   //Stainless Steel.  The density is taken from average 304 grade SS.
-  density = 8.0*g/cm3;
+  density = 8.0*CLHEP::g/CLHEP::cm3;
   G4Material* steel = new G4Material(name="Steel", density, nel=3);
-  steel->AddElement(elC,  fractionmass =  4*perCent);
-  steel->AddElement(elFe, fractionmass = 88*perCent);
-  steel->AddElement(elCo, fractionmass =  8*perCent);
+  steel->AddElement(elC,  fractionmass =  4*CLHEP::perCent);
+  steel->AddElement(elFe, fractionmass = 88*CLHEP::perCent);
+  steel->AddElement(elCo, fractionmass =  8*CLHEP::perCent);
   gMan->SetDrawAtt(steel,kBlue-10);// ND280 class
 
   //Argon
-  density     = 1.66*mg/cm3;    
-  pressure    = 1*atmosphere;
-  temperature = 293.15*kelvin;
+  density     = 1.66*CLHEP::mg/CLHEP::cm3;    
+  pressure    = 1*CLHEP::atmosphere;
+  temperature = 293.15*CLHEP::kelvin;
   G4Material* argon =  new G4Material(name="Ar", density,
 				      nel=1,kStateGas,temperature,
 				      pressure);
@@ -3134,9 +3132,9 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(argon,kBlue-10,0.1);// ND280 class
 
   //Methane
-  density     = 0.667*mg/cm3;
-  pressure    = 1*atmosphere;
-  temperature = 293.15*kelvin;
+  density     = 0.667*CLHEP::mg/CLHEP::cm3;
+  pressure    = 1*CLHEP::atmosphere;
+  temperature = 293.15*CLHEP::kelvin;
   G4Material* methane = new G4Material(name="CH4", density,
 				       nel=2,kStateGas,temperature,
 				       pressure);
@@ -3145,17 +3143,17 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(methane,kBlue-10,0.1);// ND280 class
 
   //Argon + 10% Methane
-  density     = 2.33*mg/cm3;
+  density     = 2.33*CLHEP::mg/CLHEP::cm3;
   G4Material* gasMixture 
     = new G4Material(name="GasMixture", density, ncomponents=2);
-  gasMixture->AddMaterial(argon, fractionmass = 90*perCent);
-  gasMixture->AddMaterial(methane, fractionmass = 10*perCent);
+  gasMixture->AddMaterial(argon, fractionmass = 90*CLHEP::perCent);
+  gasMixture->AddMaterial(methane, fractionmass = 10*CLHEP::perCent);
   gMan->SetDrawAtt(gasMixture,kBlue-10,0.1);// ND280 class
 
   // CarbonDioxide
-  density     = 1.828*mg/cm3;
-  pressure    = 1.*atmosphere;
-  temperature = 293.15*kelvin;
+  density     = 1.828*CLHEP::mg/CLHEP::cm3;
+  pressure    = 1.*CLHEP::atmosphere;
+  temperature = 293.15*CLHEP::kelvin;
   G4Material* CO2 = new G4Material(name="CO2", density,
 				   nel=2,kStateGas,temperature,
 				   pressure);
@@ -3164,9 +3162,9 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(CO2,kBlue-10,0.1);// ND280 class
 
   // CarbonTetrafluoride
-  density     = 3.66*mg/cm3;
-  pressure    = 1.*atmosphere;
-  temperature = 293.15*kelvin;
+  density     = 3.66*CLHEP::mg/CLHEP::cm3;
+  pressure    = 1.*CLHEP::atmosphere;
+  temperature = 293.15*CLHEP::kelvin;
   G4Material* CF4 = new G4Material(name="CF4", density,
 				   nel=2,kStateGas,temperature,
 				   pressure);
@@ -3175,9 +3173,9 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(CF4,kBlue-10,0.1);// ND280 class
 
   // Isobutane
-  density     = 2.47*mg/cm3;
-  pressure    = 1.*atmosphere;
-  temperature = 293.15*kelvin;
+  density     = 2.47*CLHEP::mg/CLHEP::cm3;
+  pressure    = 1.*CLHEP::atmosphere;
+  temperature = 293.15*CLHEP::kelvin;
   G4Material* C4H10 = new G4Material(name="C410", density,
                                      nel=2,kStateGas,temperature,
                                      pressure);
@@ -3186,47 +3184,47 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(C4H10,kBlue-10,0.1);// ND280 class
 
   // // Ar-CO2
-  // density     = 1.958*mg/cm3;
+  // density     = 1.958*CLHEP::mg/CLHEP::cm3;
   // G4Material* gasMixtureArCO2
   //   = new G4Material(name="GasMixtureArCO2", density, ncomponents=2);
-  // gasMixtureArCO2->AddMaterial(argon, fractionmass = 90*perCent);
-  // gasMixtureArCO2->AddMaterial(CO2, fractionmass = 10*perCent);
+  // gasMixtureArCO2->AddMaterial(argon, fractionmass = 90*CLHEP::perCent);
+  // gasMixtureArCO2->AddMaterial(CO2, fractionmass = 10*CLHEP::perCent);
   // gMan->SetDrawAtt(gasMixtureArCO2,kBlue-10,0.1);// ND280 class
 
   // TPC Gas
 #ifdef OLD_TPC_DENSITY
-  density     = 1.485*mg/cm3;
+  density     = 1.485*CLHEP::mg/CLHEP::cm3;
 #else
   // Gas density calculated by R. Openshaw [See bug 402 for a full
   // discussion].  The density is calculated for a Ar/CF4/iBu 95:03:02
   // mixture at Normal Pressure and Temperature (NTP).
-  density     = 1.738*mg/cm3;
+  density     = 1.738*CLHEP::mg/CLHEP::cm3;
 #endif
   G4Material* gasMixtureTPC
     = new G4Material(name="GasMixtureTPC", density, ncomponents=3);
-  gasMixtureTPC->AddMaterial(argon, fractionmass = 95*perCent);
-  gasMixtureTPC->AddMaterial(CF4, fractionmass = 3*perCent);
-  gasMixtureTPC->AddMaterial(C4H10, fractionmass = 2*perCent);
+  gasMixtureTPC->AddMaterial(argon, fractionmass = 95*CLHEP::perCent);
+  gasMixtureTPC->AddMaterial(CF4, fractionmass = 3*CLHEP::perCent);
+  gasMixtureTPC->AddMaterial(C4H10, fractionmass = 2*CLHEP::perCent);
   gMan->SetDrawAtt(gasMixtureTPC,kBlue-10,0.1);// ND280 class
 
   // Water-SSteel-Air Mixture
-  density     = 2.646*g/cm3;
+  density     = 2.646*CLHEP::g/CLHEP::cm3;
   G4Material* waterSystem
     = new G4Material(name="WaterSystem", density, ncomponents=3);
-  waterSystem->AddMaterial(water, fractionmass = 18*perCent);
-  waterSystem->AddMaterial(steel, fractionmass = 32*perCent);
-  waterSystem->AddMaterial(CO2, fractionmass = 50*perCent);
+  waterSystem->AddMaterial(water, fractionmass = 18*CLHEP::perCent);
+  waterSystem->AddMaterial(steel, fractionmass = 32*CLHEP::perCent);
+  waterSystem->AddMaterial(CO2, fractionmass = 50*CLHEP::perCent);
   gMan->SetDrawAtt(waterSystem,kBlue-7);// ND280 class
     
   // add TPC field cage mixture NB rough guesses !!!!
-  density = 0.221*g/cm3; // this gives 1.4 10-2 X0 for 2.2 cm
-  a = 16.*g/mole;
+  density = 0.221*CLHEP::g/CLHEP::cm3; // this gives 1.4 10-2 X0 for 2.2 cm
+  a = 16.*CLHEP::g/CLHEP::mole;
   G4Material* tpcFieldCage 
     = new G4Material(name="TPCWallMaterial",8,a,density);
   gMan->SetDrawAtt(tpcFieldCage,kYellow-7);// ND280 class
     
   // Titanium Dioxide -- Used in coextruded scintillator.
-  density     = 4.26*g/cm3;
+  density     = 4.26*CLHEP::g/CLHEP::cm3;
   G4Material* TIO2 = new G4Material(name="TIO2", density, nel=2);
   TIO2->AddElement(elTi, natoms=1);
   TIO2->AddElement(elO , natoms=2);
@@ -3234,7 +3232,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
     
   // Polystyrene -- This is polystyrene defined in the PDG C6H5CH=CH2 (this
   // is a net C8H8)
-  density = 1.050*g/cm3; // the density of the "extruded polystyrene"
+  density = 1.050*CLHEP::g/CLHEP::cm3; // the density of the "extruded polystyrene"
   G4Material* polystyrene 
     = new G4Material(name="Polystyrene", density, nel=2);
   polystyrene->AddElement(elC, 8);
@@ -3245,7 +3243,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   // defined in the PDG C6H5CH=CH2 (this is a net C8H8).  The SMRD and ECal
   // geometries have been tuned to this value.  The 1.05 value represents a
   // typical extruded polystyrene.
-  density = 1.050*g/cm3; 
+  density = 1.050*CLHEP::g/CLHEP::cm3; 
   G4Material* scintillator 
     = new G4Material(name="Scintillator", density, nel=2);
   scintillator->AddElement(elC, 8);
@@ -3260,7 +3258,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   // density of the MINERvA strips are 1.058 +- 0.003, including the Ti02
   // coating.  This corresponds to a scintillator density of 1.0506, which
   // has been rounded to 1.051
-  density = 1.051*g/cm3; 
+  density = 1.051*CLHEP::g/CLHEP::cm3; 
   G4Material* p0dScintillator 
     = new G4Material(name="P0DScintillator", density, nel=2);
   p0dScintillator->AddElement(elC, 8);
@@ -3271,7 +3269,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   // the FGD.  The FGD density is based on our measurements of individual
   // bars, in combination with the measurements of the cross-sectional area
   // of the bars.
-  density = 1.032*g/cm3; 
+  density = 1.032*CLHEP::g/CLHEP::cm3; 
   G4Material* fgdScintillator 
     = new G4Material(name="FGDScintillator", density, nel=2);
   fgdScintillator->AddElement(elC, 8);
@@ -3283,15 +3281,15 @@ void ExN02DetectorConstruction::DefineMaterials() {
   // rho = (m_Sc + m_Ti) / (V_Sc + V_Ti)
   //     = (0.85 + 0.15) / ( 0.85/1.032 + 0.15/4.26 )
   //     = 1.164 g/cm^3
-  density = 1.164*g/cm3;
+  density = 1.164*CLHEP::g/CLHEP::cm3;
   G4Material* scintillatorCoating
     = new G4Material(name="ScintillatorCoating", density, ncomponents=2);
-  scintillatorCoating->AddMaterial(TIO2        ,fractionmass = 15*perCent);
-  scintillatorCoating->AddMaterial(scintillator,fractionmass = 85*perCent);
+  scintillatorCoating->AddMaterial(TIO2        ,fractionmass = 15*CLHEP::perCent);
+  scintillatorCoating->AddMaterial(scintillator,fractionmass = 85*CLHEP::perCent);
   gMan->SetDrawAtt(scintillatorCoating,kGreen);// ND280 class
     
   // PVC -- Polyvinyl Chloride CH2=CHCl = C3H3Cl
-  density = 1.38*g/cm3;
+  density = 1.38*CLHEP::g/CLHEP::cm3;
   G4Material* pvc
     = new G4Material(name="PVC", density, nel=3);
   pvc->AddElement(elC, 3);
@@ -3300,7 +3298,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(pvc,kGray+1);// ND280 class
 
   // HDPE -- High Density Polyethylene used in P0D water bag
-  density = 0.94*g/cm3;
+  density = 0.94*CLHEP::g/CLHEP::cm3;
   G4Material* hdpe
     = new G4Material(name="HDPE", density, nel=2);
   hdpe->AddElement(elC, natoms=1);
@@ -3309,7 +3307,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
     
   // P0DuleEpoxy -- The Epoxy used to hold the P0Dule together.  Density is
   // from the Henkel Hysol data sheet.
-  density = 1.36*g/cm3;
+  density = 1.36*CLHEP::g/CLHEP::cm3;
   G4Material* p0duleEpoxy
     = new G4Material(name="P0DuleEpoxy", density, nel=3);
   p0duleEpoxy->AddElement(elC, 3);
@@ -3318,28 +3316,28 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(p0duleEpoxy,kBlue+4);// ND280 class
     
   // // FGD Glue
-  // density = 1.365*g/cm3;
+  // density = 1.365*CLHEP::g/CLHEP::cm3;
   // G4Material* fgdGlue
   //   = new G4Material(name="FGDGlue", density, nel=4);
-  // fgdGlue->AddElement(elO,fractionmass=62.5*perCent);
-  // fgdGlue->AddElement(elC,fractionmass=27.9*perCent);
-  // fgdGlue->AddElement(elH,fractionmass= 8.4*perCent);
-  // fgdGlue->AddElement(elN,fractionmass= 1.2*perCent);
+  // fgdGlue->AddElement(elO,fractionmass=62.5*CLHEP::perCent);
+  // fgdGlue->AddElement(elC,fractionmass=27.9*CLHEP::perCent);
+  // fgdGlue->AddElement(elH,fractionmass= 8.4*CLHEP::perCent);
+  // fgdGlue->AddElement(elN,fractionmass= 1.2*CLHEP::perCent);
   // gMan->SetDrawAtt(fgdGlue,kOrange);// ND280 class
     
   // // FGD Water Module Epoxy
-  // density = 0.6573*g/cm3;
+  // density = 0.6573*CLHEP::g/CLHEP::cm3;
   // G4Material* fgdWaterModuleEpoxy
   //   = new G4Material(name="FGDWaterModuleEpoxy", density, nel=4);
-  // fgdWaterModuleEpoxy->AddElement(elO,fractionmass=62.5*perCent);
-  // fgdWaterModuleEpoxy->AddElement(elC,fractionmass=27.9*perCent);
-  // fgdWaterModuleEpoxy->AddElement(elH,fractionmass= 8.4*perCent);
-  // fgdWaterModuleEpoxy->AddElement(elN,fractionmass= 1.2*perCent);
+  // fgdWaterModuleEpoxy->AddElement(elO,fractionmass=62.5*CLHEP::perCent);
+  // fgdWaterModuleEpoxy->AddElement(elC,fractionmass=27.9*CLHEP::perCent);
+  // fgdWaterModuleEpoxy->AddElement(elH,fractionmass= 8.4*CLHEP::perCent);
+  // fgdWaterModuleEpoxy->AddElement(elN,fractionmass= 1.2*CLHEP::perCent);
   // gMan->SetDrawAtt(fgdWaterModuleEpoxy,kOrange);// ND280 class
      
     
   // // Polypropylene
-  // density = 0.9*g/cm3;
+  // density = 0.9*CLHEP::g/CLHEP::cm3;
   // G4Material* polypropylene
   //   = new G4Material(name="Polypropylene", density, nel=2);
   // polypropylene->AddElement(elC, 3);
@@ -3347,17 +3345,17 @@ void ExN02DetectorConstruction::DefineMaterials() {
   // gMan->SetDrawAtt(polypropylene,kYellow-5);// ND280 class
 
   // Polycarbonate
-  density = 1.2*g/cm3;
+  density = 1.2*CLHEP::g/CLHEP::cm3;
   G4Material* polycarbonate
     = new G4Material(name="Polycarbonate", density, nel=3);
-  polycarbonate->AddElement(elH,fractionmass= 5.5491*perCent);
-  polycarbonate->AddElement(elC,fractionmass=75.5751*perCent);
-  polycarbonate->AddElement(elO,fractionmass=18.8758*perCent);
+  polycarbonate->AddElement(elH,fractionmass= 5.5491*CLHEP::perCent);
+  polycarbonate->AddElement(elC,fractionmass=75.5751*CLHEP::perCent);
+  polycarbonate->AddElement(elO,fractionmass=18.8758*CLHEP::perCent);
   gMan->SetDrawAtt(polycarbonate,kYellow-2);// ND280 class
 
   //carbon fibre
   // NB : chemical composition may not be completely right but  close 
-  density = 1.75*g/cm3;
+  density = 1.75*CLHEP::g/CLHEP::cm3;
   G4Material* carbonFibre
     = new G4Material(name="CarbonFibre", density, nel=2);
   carbonFibre->AddElement(elC,6);
@@ -3365,44 +3363,44 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(carbonFibre,kGray+3);// ND280 class
 
   // G10 - by volume 57% glass, 43% epoxy (CH2)
-  density = 1.70*g/cm3;
+  density = 1.70*CLHEP::g/CLHEP::cm3;
   G4Material* g10
     = new G4Material(name="G10", density, nel=6);
-  g10->AddElement(elH,6.2*perCent);
-  g10->AddElement(elC,36.8*perCent);
-  g10->AddElement(elO,30.7*perCent);
-  g10->AddElement(elSi,21.9*perCent);
-  g10->AddElement(elB,2.2*perCent);
-  g10->AddElement(elNa,2.2*perCent);
+  g10->AddElement(elH,6.2*CLHEP::perCent);
+  g10->AddElement(elC,36.8*CLHEP::perCent);
+  g10->AddElement(elO,30.7*CLHEP::perCent);
+  g10->AddElement(elSi,21.9*CLHEP::perCent);
+  g10->AddElement(elB,2.2*CLHEP::perCent);
+  g10->AddElement(elNa,2.2*CLHEP::perCent);
   gMan->SetDrawAtt(g10,kGreen+3);// ND280 class
 
   // Diluted G10-FGD1
-  density = 0.365*g/cm3;
+  density = 0.365*CLHEP::g/CLHEP::cm3;
   G4Material* g10fgd1
     = new G4Material(name="G10FGD1", density, nel=6);
-  g10fgd1->AddElement(elH,6.2*perCent);
-  g10fgd1->AddElement(elC,36.8*perCent);
-  g10fgd1->AddElement(elO,30.7*perCent);
-  g10fgd1->AddElement(elSi,21.9*perCent);
-  g10fgd1->AddElement(elB,2.2*perCent);
-  g10fgd1->AddElement(elNa,2.2*perCent);
+  g10fgd1->AddElement(elH,6.2*CLHEP::perCent);
+  g10fgd1->AddElement(elC,36.8*CLHEP::perCent);
+  g10fgd1->AddElement(elO,30.7*CLHEP::perCent);
+  g10fgd1->AddElement(elSi,21.9*CLHEP::perCent);
+  g10fgd1->AddElement(elB,2.2*CLHEP::perCent);
+  g10fgd1->AddElement(elNa,2.2*CLHEP::perCent);
   gMan->SetDrawAtt(g10fgd1,kGreen+3);// ND280 class
 
   // // Diluted G10-FGD2
-  // density = 0.171*g/cm3;
+  // density = 0.171*CLHEP::g/CLHEP::cm3;
   // G4Material* g10fgd2
   //   = new G4Material(name="G10FGD2", density, nel=6);
-  // g10fgd2->AddElement(elH,6.2*perCent);
-  // g10fgd2->AddElement(elC,36.8*perCent);
-  // g10fgd2->AddElement(elO,30.7*perCent);
-  // g10fgd2->AddElement(elSi,21.9*perCent);
-  // g10fgd2->AddElement(elB,2.2*perCent);
-  // g10fgd2->AddElement(elNa,2.2*perCent);
+  // g10fgd2->AddElement(elH,6.2*CLHEP::perCent);
+  // g10fgd2->AddElement(elC,36.8*CLHEP::perCent);
+  // g10fgd2->AddElement(elO,30.7*CLHEP::perCent);
+  // g10fgd2->AddElement(elSi,21.9*CLHEP::perCent);
+  // g10fgd2->AddElement(elB,2.2*CLHEP::perCent);
+  // g10fgd2->AddElement(elNa,2.2*CLHEP::perCent);
   // gMan->SetDrawAtt(g10fgd2,kGreen+3);// ND280 class
 
   // Rohacell (polymethacrylimide, chemical formula to be confirmed from 
   // "Polymethyl methacrylate" C5O2H8)
-  density = 0.052*g/cm3;
+  density = 0.052*CLHEP::g/CLHEP::cm3;
   G4Material* rohacell 
     = new G4Material(name="Rohacell", density, nel=3);
   // Rohacell C:H:O=5:8:2
@@ -3418,7 +3416,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   //     = (2.7g/cm3 * 1.52mm + 0.052g/cm3 * 13.68 mm) / 15.2mm
   //     = 0.3168 g/cm3
 
-  density = 0.3168*g/cm3;
+  density = 0.3168*CLHEP::g/CLHEP::cm3;
 
   G4Material* alroha
     = new G4Material(name="AlRoha", density, ncomponents=2);
@@ -3432,19 +3430,19 @@ void ExN02DetectorConstruction::DefineMaterials() {
   //       = (rho_Roha*A*1.52mm) / (rho*A*15.2mm)
   //       = (0.052g/cm3*13.68mm) / (0.3168g/cm3*15.2mm)
   //       = 0.1477
-  alroha->AddMaterial(aluminum, fractionmass = 85.23*perCent);
-  alroha->AddMaterial(rohacell, fractionmass = 14.77*perCent);
+  alroha->AddMaterial(aluminum, fractionmass = 85.23*CLHEP::perCent);
+  alroha->AddMaterial(rohacell, fractionmass = 14.77*CLHEP::perCent);
   gMan->SetDrawAtt(alroha,kGreen-9);// ND280 class
 
   // add Al/Rohacell TPC cage wall material
   // (same as above but only 13.2mm thick)
-  density = 0.3569*g/cm3;
+  density = 0.3569*CLHEP::g/CLHEP::cm3;
 
   G4Material* alroha2
     = new G4Material(name="AlRoha2", density, ncomponents=2);
 
-  alroha2->AddMaterial(aluminum, fractionmass = 87.11*perCent);
-  alroha2->AddMaterial(rohacell, fractionmass = 12.89*perCent);
+  alroha2->AddMaterial(aluminum, fractionmass = 87.11*CLHEP::perCent);
+  alroha2->AddMaterial(rohacell, fractionmass = 12.89*CLHEP::perCent);
   gMan->SetDrawAtt(alroha2,kGreen-9);// ND280 class
 
   // G10/Roha/Cu TPC cage wall material
@@ -3459,7 +3457,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   //    = ( 1.7g/cm^3*1.52mm + 0.052g/cm^3*11.68mm + 8.94g/cm^3*0.07mm) 
   //                    / 13.27mm
   //    = 0.2877 g/cm^3
-  density = 0.2877*g/cm3;
+  density = 0.2877*CLHEP::g/CLHEP::cm3;
   G4Material* g10roha
     = new G4Material(name="G10Roha", density, ncomponents=3);
 
@@ -3476,25 +3474,25 @@ void ExN02DetectorConstruction::DefineMaterials() {
   //       = (rho_Cu*A*0.07mm) / (rho*A*13.27mm)
   //       = (8.94g/cm^3*0.07mm) / (0.2877g/cm^3*13.27mm)
   //       = 0.1640
-  g10roha->AddMaterial(g10, fractionmass = 67.69*perCent);  
-  g10roha->AddMaterial(rohacell, fractionmass = 15.91*perCent);
-  g10roha->AddMaterial(copper, fractionmass = 16.40*perCent);
+  g10roha->AddMaterial(g10, fractionmass = 67.69*CLHEP::perCent);  
+  g10roha->AddMaterial(rohacell, fractionmass = 15.91*CLHEP::perCent);
+  g10roha->AddMaterial(copper, fractionmass = 16.40*CLHEP::perCent);
   gMan->SetDrawAtt(g10roha,kGreen-9);// ND280 class
 
   // FGD Electronics card (95mm x 252mm x 8mm) with total mass of 400g. The
   // composition is 50% Al and 50% G10 by weight.  -> density =
   // 400g/191.52cm3
-  density = 2.0885*g/cm3;
+  density = 2.0885*CLHEP::g/CLHEP::cm3;
 
   G4Material* alg10
     = new G4Material(name="AlG10", density, ncomponents=2);
 
-  alg10->AddMaterial(aluminum, fractionmass = 50.0*perCent);
-  alg10->AddMaterial(g10, fractionmass = 50.0*perCent);
+  alg10->AddMaterial(aluminum, fractionmass = 50.0*CLHEP::perCent);
+  alg10->AddMaterial(g10, fractionmass = 50.0*CLHEP::perCent);
   gMan->SetDrawAtt(alg10,kGreen-9);// ND280 class
 
   // Material for the fiber core.
-  density = 1.05*g/cm3;
+  density = 1.05*CLHEP::g/CLHEP::cm3;
   G4Material* fiberCore
     = new G4Material(name="FiberCore", density, nel=2);
   fiberCore->AddElement(elC, 9);
@@ -3502,7 +3500,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(fiberCore,kCyan-4);// ND280 class
     
   // Material for the fiber cladding
-  density = 1.19*g/cm3;
+  density = 1.19*CLHEP::g/CLHEP::cm3;
   G4Material* fiberCladding
     = new G4Material(name="FiberCladding", density, nel=3);
   fiberCladding->AddElement(elH,8);
@@ -3511,7 +3509,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(fiberCladding,kBlue);// ND280 class
 
   // Fluorinated fiber cladding
-  density = 1.43*g/cm3;
+  density = 1.43*CLHEP::g/CLHEP::cm3;
   G4Material* fiberCladdingFluor
     = new G4Material(name="FiberCladdingFluor", density, nel=2);
   fiberCladdingFluor->AddElement(elH,4);
@@ -3526,11 +3524,11 @@ void ExN02DetectorConstruction::DefineMaterials() {
   // of water (average of the 6 deployed panels).  water+PC layer by mass is
   // 0.342/(0.342+2.2226)=0.1335 polycarbonate, so rho = 1 / (0.1335/1.2 +
   // 0.8666/1.0) = 1.0226 g/cm^3
-  density = 1.0226*g/cm3;
+  density = 1.0226*CLHEP::g/CLHEP::cm3;
   G4Material* activeWater 
     = new G4Material("ActiveWater", density, ncomponents=2);
-  activeWater->AddMaterial(water        ,fractionmass = 86.672*perCent);
-  activeWater->AddMaterial(polycarbonate,fractionmass = 13.328*perCent);
+  activeWater->AddMaterial(water        ,fractionmass = 86.672*CLHEP::perCent);
+  activeWater->AddMaterial(polycarbonate,fractionmass = 13.328*CLHEP::perCent);
   gMan->SetDrawAtt(activeWater,kAzure+8);// ND280 class
 
   // Uniform material for the FGD2 
@@ -3543,17 +3541,17 @@ void ExN02DetectorConstruction::DefineMaterials() {
   // rho = (1.0226*6*2.5 + 1.032*7*2.02) / (6*2.5 + 7*2.02) = 1.027 g/cm3
   // fractionmass (ActiveWater) = 51.247%
   // fractionmass (FGDScintillator) = 48.753%
-  density = 1.027*g/cm3;
+  density = 1.027*CLHEP::g/CLHEP::cm3;
   G4Material *FGD2Uniform 
     = new G4Material("FGD2Uniform",  density, ncomponents=2);
-  FGD2Uniform->AddMaterial(activeWater,    fractionmass = 51.247*perCent);
-  FGD2Uniform->AddMaterial(fgdScintillator,fractionmass = 48.753*perCent);
+  FGD2Uniform->AddMaterial(activeWater,    fractionmass = 51.247*CLHEP::perCent);
+  FGD2Uniform->AddMaterial(fgdScintillator,fractionmass = 48.753*CLHEP::perCent);
   gMan->SetDrawAtt(FGD2Uniform,kAzure+8);
   
   // WAGASCI
   
   //Scintillator // B.Q
-  density = 1.032*g/cm3;
+  density = 1.032*CLHEP::g/CLHEP::cm3;
   G4Material *WAGASCIScint 
     = new G4Material(name="WAGASCIScintillator", density, nel=2);
   WAGASCIScint->AddElement(elC, 8);
@@ -3561,7 +3559,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   gMan->SetDrawAtt(WAGASCIScint,kAzure+8);//ND280 class
 
   //Scintillator empty --> average density ~40% of normal one
-  density = 1.032*g/cm3 * 0.3;
+  density = 1.032*CLHEP::g/CLHEP::cm3 * 0.3;
   G4Material *WAGASCIScint_Empty 
     = new G4Material(name="WAGASCIScintillatorEmpty", density,nel=2);
   WAGASCIScint_Empty->AddElement(elC, 9);
@@ -3588,28 +3586,28 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   // FROM INIT nd280mc
   //
   
-  SetWidth(2300*mm);  // Full TPC width
-  SetHeight(2400*mm); // Full TPC height
+  SetWidth(2300*CLHEP::mm);  // Full TPC width
+  SetHeight(2400*CLHEP::mm); // Full TPC height
 
   DebugTPCMass = true ; //set to true to get extra printouts on component masses
 
   //SetMaximumHitLength(10.*mm);
   //SetMaximumHitSagitta(0.5*mm);
 
-  SetDriftWidth(1807.2*mm);                         
-  SetDriftHeight(2148.0*mm); 
-  SetDriftLength(772.0*mm);  
-  SetCathodeThickness(13.2*mm);  
-  SetCO2Top(67.8*mm);        
-  SetCO2Sides(67.8*mm);     
-  SetCO2Bottom(117.8*mm);   
-  SetInnerBoxWall(13.2*mm); 
-  SetOuterBoxWall(15.2*mm);  
+  SetDriftWidth(1807.2*CLHEP::mm);                         
+  SetDriftHeight(2148.0*CLHEP::mm); 
+  SetDriftLength(772.0*CLHEP::mm);  
+  SetCathodeThickness(13.2*CLHEP::mm);  
+  SetCO2Top(67.8*CLHEP::mm);        
+  SetCO2Sides(67.8*CLHEP::mm);     
+  SetCO2Bottom(117.8*CLHEP::mm);   
+  SetInnerBoxWall(13.2*CLHEP::mm); 
+  SetOuterBoxWall(15.2*CLHEP::mm);  
   
   SetShowOuterVolume(false);
-  SetSteppingLimit(1.*mm);
+  SetSteppingLimit(1.*CLHEP::mm);
 
-  fActiveTPCVerticalOffset = 25*mm;
+  fActiveTPCVerticalOffset = 25*CLHEP::mm;
   
   // Initialize all translations and rotations to 0.
   for (int rp = 0; rp < 2; rp++)
@@ -3635,9 +3633,9 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   double height = GetDriftHeight()/2.;
   double length = GetDriftLength()/2.;
   
-  //double DriftWidth = 1807.2*mm;
-  //double DriftHeight = 2148.0*mm;
-  //double DriftLength = 772.0*mm;
+  //double DriftWidth = 1807.2*CLHEP::mm;
+  //double DriftHeight = 2148.0*CLHEP::mm;
+  //double DriftLength = 772.0*CLHEP::mm;
   //double width = DriftWidth / 2.;
   //double height = DriftHeight / 2.;
   //double length = DriftLength / 2.;
@@ -3661,31 +3659,31 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //logDrift->SetVisAttributes(G4VisAttributes::Invisible);
   //}
 
-  //
-  // Don't set the logDrift as sensitive region because it contains also the 
-  // other pieces like the cathode...
-  //
-  // if (GetSensitiveDetector()) {
-  //   logDrift->SetSensitiveDetector(GetSensitiveDetector());
-  // }  
-  // //logDrift->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
+  // //
+  // // Don't set the logDrift as sensitive region because it contains also the 
+  // // other pieces like the cathode...
+  // //
+  // // if (GetSensitiveDetector()) {
+  // //   logDrift->SetSensitiveDetector(GetSensitiveDetector());
+  // // }  
+  // // //logDrift->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
   
-  // if (SDRegion) {
-  //   SDRegion->AddRootLogicalVolume(logDrift);
-  // } 
-  // else {
-  //   G4ExceptionDescription msg;
-  //   msg << "The SD region does not exist" << G4endl;
-  //   G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-  // 		"MyCode0002",FatalException, msg);
-  // }
+  // // if (SDRegion) {
+  // //   SDRegion->AddRootLogicalVolume(logDrift);
+  // // } 
+  // // else {
+  // //   G4ExceptionDescription msg;
+  // //   msg << "The SD region does not exist" << G4endl;
+  // //   G4Exception("ExN02DetectorConstruction::GetPieceTPC",
+  // // 		"MyCode0002",FatalException, msg);
+  // // }
   
 
   // CO2 space
 
-  width  = 1150.0*mm;
-  height = (1149.5*mm + 30.5*mm + 45.0*mm + 1130.0*mm + 45.0*mm)/2.;
-  length = 442.0*mm + 45.0*mm;
+  width  = 1150.0*CLHEP::mm;
+  height = (1149.5*CLHEP::mm + 30.5*CLHEP::mm + 45.0*CLHEP::mm + 1130.0*CLHEP::mm + 45.0*CLHEP::mm)/2.;
+  length = 442.0*CLHEP::mm + 45.0*CLHEP::mm;
   
   G4VSolid* solidCO2 = new G4Box("CO2Space",width,height,length);
   
@@ -3709,8 +3707,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   /// Create the inactive volume around the TPC.
   
-  SetLength(2*(442.0*mm+45.0*mm));
-  //double length_inact = (2*(442.0*mm+45.0*mm));
+  SetLength(2*(442.0*CLHEP::mm+45.0*CLHEP::mm));
+  //double length_inact = (2*(442.0*CLHEP::mm+45.0*CLHEP::mm));
   
   G4LogicalVolume* logVolume
     = new G4LogicalVolume(new G4Box(
@@ -3743,8 +3741,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
 
   // Now do all envelope volume placements
   
-  double CO2Top = 67.8*mm;
-  double CO2Bottom = 117.8*mm;
+  double CO2Top = 67.8*CLHEP::mm;
+  double CO2Bottom = 117.8*CLHEP::mm;
   
   fActiveTPCVerticalOffset = (GetCO2Bottom() - GetCO2Top())/2;
   //fActiveTPCVerticalOffset = (CO2Bottom - CO2Top)/2;
@@ -3786,7 +3784,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //length = DriftLength/2.;
   
   width -= GetCathodeThickness()/2.;
-  //double CathodeThickness = 13.2*mm;
+  //double CathodeThickness = 13.2*CLHEP::mm;
   //width -= CathodeThickness/2.;
   width /= 2.;
   
@@ -3821,8 +3819,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   // }
   
   if (GetSensitiveDetector()) {
-    logHalf0->SetSensitiveDetector(GetSensitiveDetector());
-    logHalf1->SetSensitiveDetector(GetSensitiveDetector());
+    //logHalf0->SetSensitiveDetector(GetSensitiveDetector());
+    //logHalf1->SetSensitiveDetector(GetSensitiveDetector());
     
     if (SDRegion) {
       SDRegion->AddRootLogicalVolume(logHalf0);
@@ -3858,7 +3856,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //double delta = width + CathodeThickness/2.;
   
   G4RotationMatrix rm;
-  rm.rotateY(90.0*deg);
+  rm.rotateY(90.0*CLHEP::deg);
   
   new G4PVPlacement(G4Transform3D(rm,G4ThreeVector(-delta,0,0)),
 		    logHalf0,
@@ -3870,7 +3868,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
 		    0);
   //fCheckOverlaps);
   
-  rm.rotateY(180.0*deg);    
+  rm.rotateY(180.0*CLHEP::deg);    
   
   new G4PVPlacement(G4Transform3D(rm,G4ThreeVector(delta,0,0)),
 		    logHalf1,
@@ -3885,8 +3883,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   // add 12 Micromegas Modules to readout-plane
     
-  double mmWidth  = 35.29*cm;
-  double mmHeight = 33.61*cm;
+  double mmWidth  = 35.29*CLHEP::cm;
+  double mmHeight = 33.61*CLHEP::cm;
   double mmLength = 2.*width;
   
   G4LogicalVolume* logMM
@@ -3910,7 +3908,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   //logMM->SetUserLimits(new G4UserLimits(GetSteppingLimit()));
   
   if (GetSensitiveDetector()) {
-    logMM->SetSensitiveDetector(GetSensitiveDetector());
+    //logMM->SetSensitiveDetector(GetSensitiveDetector());
   }
   
   if (SDRegion) {
@@ -3924,15 +3922,15 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   }
 
   int nmod = 12;  
-  double xmod[12] = {  189.65*mm ,  189.65*mm ,  189.65*mm ,
-		       189.65*mm ,  189.65*mm ,  189.65*mm ,
-		       -189.65*mm , -189.65*mm , -189.65*mm ,
-		       -189.65*mm , -189.65*mm , -189.65*mm  };
+  double xmod[12] = {  189.65*CLHEP::mm ,  189.65*CLHEP::mm ,  189.65*CLHEP::mm ,
+		       189.65*CLHEP::mm ,  189.65*CLHEP::mm ,  189.65*CLHEP::mm ,
+		       -189.65*CLHEP::mm , -189.65*CLHEP::mm , -189.65*CLHEP::mm ,
+		       -189.65*CLHEP::mm , -189.65*CLHEP::mm , -189.65*CLHEP::mm  };
   
-  double ymod[12] = {  881.65*mm ,  538.05*mm ,  194.45*mm ,
-		       -149.15*mm , -492.75*mm , -836.35*mm ,
-		       836.35*mm ,  492.75*mm ,  149.15*mm ,
-		       -194.45*mm , -538.05*mm , -881.65*mm  };
+  double ymod[12] = {  881.65*CLHEP::mm ,  538.05*CLHEP::mm ,  194.45*CLHEP::mm ,
+		       -149.15*CLHEP::mm , -492.75*CLHEP::mm , -836.35*CLHEP::mm ,
+		       836.35*CLHEP::mm ,  492.75*CLHEP::mm ,  149.15*CLHEP::mm ,
+		       -194.45*CLHEP::mm , -538.05*CLHEP::mm , -881.65*CLHEP::mm  };
   
   // Translations and rotations get applied in this version
   // Placement in first readout plane
@@ -3950,7 +3948,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
 			imod);
     }
     else {
-      tpcMMRot[0][imod]->rotateZ(180.0*deg);
+      tpcMMRot[0][imod]->rotateZ(180.0*CLHEP::deg);
       new G4PVPlacement(tpcMMRot[0][imod],
 			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(),0.),
 			logMM,
@@ -3977,7 +3975,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
 			imod);
     }
     else {
-      tpcMMRot[1][imod]->rotateZ(180.0*deg);
+      tpcMMRot[1][imod]->rotateZ(180.0*CLHEP::deg);
       new G4PVPlacement(tpcMMRot[1][imod],
 			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
 			logMM,
@@ -3991,10 +3989,10 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   }
   
   if (DebugTPCMass){
-    G4cout << "DriftGas (2) mass="<<logHalf0->GetMass()/kg<<" kg" << G4endl;
-    G4cout << "CO2 Gap (1) mass="<<logGasGap->GetMass()/kg<<" kg" << G4endl;
-    G4cout << "MM (12) mass="<<logMM->GetMass()/kg<<" kg" << G4endl;
-    G4cout << "Sum of gases and MM :"<< (2*logHalf0->GetMass()+logGasGap->GetMass()+12*logMM->GetMass())/kg << " kg" << G4endl;
+    G4cout << "DriftGas (2) mass="<<logHalf0->GetMass()/CLHEP::kg<<" kg" << G4endl;
+    G4cout << "CO2 Gap (1) mass="<<logGasGap->GetMass()/CLHEP::kg<<" kg" << G4endl;
+    G4cout << "MM (12) mass="<<logMM->GetMass()/CLHEP::kg<<" kg" << G4endl;
+    G4cout << "Sum of gases and MM :"<< (2*logHalf0->GetMass()+logGasGap->GetMass()+12*logMM->GetMass())/CLHEP::kg << " kg" << G4endl;
   }
   
   BuildTPCCentralCathode(logDrift);
@@ -4017,8 +4015,8 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     //Get<ND280BeamConstructor>("CentralCathode");
     MyND280BeamConstructor middleG10RoPlate(parentname+"/CentralCathode");
     middleG10RoPlate.SetWidth(GetCathodeThickness());
-    middleG10RoPlate.SetHeight(2*1061.0*mm);
-    middleG10RoPlate.SetLength(2*373.0*mm);
+    middleG10RoPlate.SetHeight(2*1061.0*CLHEP::mm);
+    middleG10RoPlate.SetLength(2*373.0*CLHEP::mm);
 
     //middleG10RoPlate.SetMaterialName("G10Roha");
     middleG10RoPlate.SetMaterial(FindMaterial("G10Roha"));
@@ -4054,8 +4052,8 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     //Get<ND280BeamConstructor>("FrBaCon1");
     MyND280BeamConstructor frbaCon1(parentname+"/FrBaCon1");
     frbaCon1.SetWidth(GetCathodeThickness());
-    frbaCon1.SetHeight(2*1074.0*mm);
-    frbaCon1.SetLength(386.0*mm - 373.0*mm);
+    frbaCon1.SetHeight(2*1074.0*CLHEP::mm);
+    frbaCon1.SetLength(386.0*CLHEP::mm - 373.0*CLHEP::mm);
 
     //frbaCon1.SetMaterialName("G10");
     frbaCon1.SetMaterial(FindMaterial("G10"));
@@ -4070,7 +4068,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     int k = 0;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        z = d * (373.0*mm + length/2.);
+        z = d * (373.0*CLHEP::mm + length/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(0,0,z),
                           log_frbaCon1,
@@ -4094,8 +4092,8 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     MyND280BeamConstructor toboCon1(parentname+"/ToBoCon1");
 
     toboCon1.SetWidth(GetCathodeThickness());
-    toboCon1.SetHeight(386.0*mm - 373.0*mm);
-    toboCon1.SetLength(2*373.0*mm);
+    toboCon1.SetHeight(386.0*CLHEP::mm - 373.0*CLHEP::mm);
+    toboCon1.SetLength(2*373.0*CLHEP::mm);
 
     //toboCon1.SetMaterialName("G10");
     toboCon1.SetMaterial(FindMaterial("G10"));
@@ -4109,7 +4107,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     k = 0;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        y = d * (1074.0*mm - height/2.);
+        y = d * (1074.0*CLHEP::mm - height/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(0,y,0),
                           log_toboCon1,
@@ -4128,10 +4126,10 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     }
 
     if (DebugTPCMass){
-      G4cout << "CentralCathode (1) mass="<<log_middleG10RoPlate->GetMass()/kg<<" kg" << G4endl;
-      G4cout << "FrBaCon1 (2) mass="<<log_frbaCon1->GetMass()/kg<<" kg" << G4endl;
-      G4cout << "ToBoCon1 (2) mass="<<log_toboCon1->GetMass()/kg<<" kg" << G4endl;
-      G4cout << "Sum of central cathode parts: "<<(log_middleG10RoPlate->GetMass()+2*log_frbaCon1->GetMass()+2*log_toboCon1->GetMass())/kg<<" kg" << G4endl;
+      G4cout << "CentralCathode (1) mass="<<log_middleG10RoPlate->GetMass()/CLHEP::kg<<" kg" << G4endl;
+      G4cout << "FrBaCon1 (2) mass="<<log_frbaCon1->GetMass()/CLHEP::kg<<" kg" << G4endl;
+      G4cout << "ToBoCon1 (2) mass="<<log_toboCon1->GetMass()/CLHEP::kg<<" kg" << G4endl;
+      G4cout << "Sum of central cathode parts: "<<(log_middleG10RoPlate->GetMass()+2*log_frbaCon1->GetMass()+2*log_toboCon1->GetMass())/CLHEP::kg<<" kg" << G4endl;
     }
 
 }
@@ -4153,10 +4151,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("SideG10Plate");
     MyND280BeamConstructor sideG10Plate(parentname+"/SideG10Plate");
     
-    // was sideG10Plate.SetWidth(27.0*mm) - change suggested by Doug Storey
-    sideG10Plate.SetWidth(47.29*mm);
-    sideG10Plate.SetHeight(2*1085.6*mm);
-    sideG10Plate.SetLength(2*397.6*mm);
+    // was sideG10Plate.SetWidth(27.0*CLHEP::mm) - change suggested by Doug Storey
+    sideG10Plate.SetWidth(47.29*CLHEP::mm);
+    sideG10Plate.SetHeight(2*1085.6*CLHEP::mm);
+    sideG10Plate.SetLength(2*397.6*CLHEP::mm);
     
     //sideG10Plate.SetMaterialName("G10");
     sideG10Plate.SetMaterial(FindMaterial("G10"));
@@ -4171,7 +4169,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     y = GetActiveTPCVerticalOffset();
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (869.1*mm + 35.0*mm + width/2.);
+        x = d * (869.1*CLHEP::mm + 35.0*CLHEP::mm + width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_sideG10Plate,
@@ -4199,9 +4197,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("VerticalG10Frame");
     MyND280BeamConstructor verticalG10Frame(parentname+"/VerticalG10Frame");
 
-    verticalG10Frame.SetWidth(35.0*mm);
-    verticalG10Frame.SetHeight(2*(1074.0*mm + 47.6*mm));
-    verticalG10Frame.SetLength(47.6*mm);
+    verticalG10Frame.SetWidth(35.0*CLHEP::mm);
+    verticalG10Frame.SetHeight(2*(1074.0*CLHEP::mm + 47.6*CLHEP::mm));
+    verticalG10Frame.SetLength(47.6*CLHEP::mm);
 
     //verticalG10Frame.SetMaterialName("G10");
     verticalG10Frame.SetMaterial(FindMaterial("G10"));
@@ -4216,10 +4214,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     y = GetActiveTPCVerticalOffset();
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (869.1*mm + width/2.);
+        x = d * (869.1*CLHEP::mm + width/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            z = e * (386.0*mm + length/2.);
+            z = e * (386.0*CLHEP::mm + length/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,z),
                               log_verticalG10Frame,
@@ -4245,9 +4243,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("HorizontalG10Frame");
 
     MyND280BeamConstructor horizontalG10Frame(parentname+"/HorizontalG10Frame");
-    horizontalG10Frame.SetWidth(35.0*mm);
-    horizontalG10Frame.SetHeight(47.6*mm);
-    horizontalG10Frame.SetLength(2*386.0*mm);
+    horizontalG10Frame.SetWidth(35.0*CLHEP::mm);
+    horizontalG10Frame.SetHeight(47.6*CLHEP::mm);
+    horizontalG10Frame.SetLength(2*386.0*CLHEP::mm);
 
     //horizontalG10Frame.SetMaterialName("G10");
     horizontalG10Frame.SetMaterial(FindMaterial("G10"));
@@ -4261,10 +4259,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     k = 0;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (869.1*mm + width/2.);
+        x = d * (869.1*CLHEP::mm + width/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            y = e * (1074.0*mm + height/2.) + GetActiveTPCVerticalOffset();
+            y = e * (1074.0*CLHEP::mm + height/2.) + GetActiveTPCVerticalOffset();
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,0),
                               log_horizontalG10Frame,
@@ -4291,9 +4289,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     MyND280BeamConstructor verticalG10Plate(parentname+"/VerticalG10Plate"); 
 
-    verticalG10Plate.SetWidth(160.0*mm);
-    verticalG10Plate.SetHeight(2*1085.6*mm);
-    verticalG10Plate.SetLength(12.7*mm);
+    verticalG10Plate.SetWidth(160.0*CLHEP::mm);
+    verticalG10Plate.SetHeight(2*1085.6*CLHEP::mm);
+    verticalG10Plate.SetLength(12.7*CLHEP::mm);
 
     //verticalG10Plate.SetMaterialName("G10");
     verticalG10Plate.SetMaterial(FindMaterial("G10"));
@@ -4308,7 +4306,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     y = GetActiveTPCVerticalOffset();
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (961.8*mm + width/2.);
+        x = d * (961.8*CLHEP::mm + width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_verticalG10Plate,
@@ -4333,10 +4331,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("SideAlPlate");
     MyND280BeamConstructor sideAlPlate(parentname+"/SideAlPlate");
 
-    // was sideAlPlate.SetWidth(20.0*mm) change suggested by Doug Storey
-    sideAlPlate.SetWidth(4.84*mm);
-    sideAlPlate.SetHeight(2*1020.9*mm);
-    sideAlPlate.SetLength(375.2*mm - 21.4*mm);
+    // was sideAlPlate.SetWidth(20.0*CLHEP::mm) change suggested by Doug Storey
+    sideAlPlate.SetWidth(4.84*CLHEP::mm);
+    sideAlPlate.SetHeight(2*1020.9*CLHEP::mm);
+    sideAlPlate.SetLength(375.2*CLHEP::mm - 21.4*CLHEP::mm);
 
     width  = sideAlPlate.GetWidth();
     height = sideAlPlate.GetHeight();
@@ -4350,10 +4348,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     y = GetActiveTPCVerticalOffset();
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (1007.2*mm + width/2.);
+        x = d * (1007.2*CLHEP::mm + width/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            z = e * (21.4*mm + length/2.);
+            z = e * (21.4*CLHEP::mm + length/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,z),
                               log_sideAlPlate,
@@ -4377,9 +4375,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //ND280BeamConstructor& post = Get<ND280BeamConstructor>("Post");
     MyND280BeamConstructor post(parentname+"/Post");
 
-    post.SetWidth(50.0*mm);
-    post.SetHeight(1068.2*mm + 1149.5*mm);
-    post.SetLength(50.0*mm);
+    post.SetWidth(50.0*CLHEP::mm);
+    post.SetHeight(1068.2*CLHEP::mm + 1149.5*CLHEP::mm);
+    post.SetLength(50.0*CLHEP::mm);
 
     //post.SetMaterialName("WaterSystem");
     post.SetMaterial(FindMaterial("WaterSystem"));
@@ -4392,13 +4390,13 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += -1149.5*mm + height/2.;
+    y += -1149.5*CLHEP::mm + height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (1060.4*mm + width/2.);
+        x = d * (1060.4*CLHEP::mm + width/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            z = e * (401.7*mm + length/2.);
+            z = e * (401.7*CLHEP::mm + length/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,z),
                               log_post,
@@ -4423,9 +4421,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("SideAlRoPlate");
     MyND280BeamConstructor sideAlRoPlate(parentname+"/SideAlRoPlate");
 
-    sideAlRoPlate.SetWidth(13.2*mm);
-    sideAlRoPlate.SetHeight(1146.8*mm + 1149.5*mm + 47.3*mm);
-    sideAlRoPlate.SetLength(2*421.0*mm);
+    sideAlRoPlate.SetWidth(13.2*CLHEP::mm);
+    sideAlRoPlate.SetHeight(1146.8*CLHEP::mm + 1149.5*CLHEP::mm + 47.3*CLHEP::mm);
+    sideAlRoPlate.SetLength(2*421.0*CLHEP::mm);
 
     //sideAlRoPlate.SetMaterialName("AlRoha2");
     sideAlRoPlate.SetMaterial(FindMaterial("AlRoha2"));
@@ -4438,10 +4436,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += (1146.8*mm - (1149.5*mm + 47.3*mm))/2.;
+    y += (1146.8*CLHEP::mm - (1149.5*CLHEP::mm + 47.3*CLHEP::mm))/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (1150.0*mm - width/2.);
+        x = d * (1150.0*CLHEP::mm - width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_sideAlRoPlate,
@@ -4465,9 +4463,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("FrBaAlRoPlate");
     MyND280BeamConstructor frbaAlRoPlate(parentname+"/FrBaAlRoPlate");
 
-    frbaAlRoPlate.SetWidth(895.3*mm-18.0*mm);
-    frbaAlRoPlate.SetHeight(1155.0*mm + 15.2*mm + 1205.0*mm + 15.2*mm);
-    frbaAlRoPlate.SetLength(15.2*mm);
+    frbaAlRoPlate.SetWidth(895.3*CLHEP::mm-18.0*CLHEP::mm);
+    frbaAlRoPlate.SetHeight(1155.0*CLHEP::mm + 15.2*CLHEP::mm + 1205.0*CLHEP::mm + 15.2*CLHEP::mm);
+    frbaAlRoPlate.SetLength(15.2*CLHEP::mm);
 
     //frbaAlRoPlate.SetMaterialName("AlRoha");
     frbaAlRoPlate.SetMaterial(FindMaterial("AlRoha"));
@@ -4480,13 +4478,13 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += ((1155.0*mm + 15.2*mm) - (1205.0*mm + 15.2*mm))/2.;
+    y += ((1155.0*CLHEP::mm + 15.2*CLHEP::mm) - (1205.0*CLHEP::mm + 15.2*CLHEP::mm))/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        z = d * (467.0*mm + length/2.);
+        z = d * (467.0*CLHEP::mm + length/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            x = e * (18.0*mm + width/2.);
+            x = e * (18.0*CLHEP::mm + width/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,z),
                               log_frbaAlRoPlate,
@@ -4513,9 +4511,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("ToBoAlRoPlate");
     MyND280BeamConstructor toboAlRoPlate(parentname+"/ToBoAlRoPlate");
 
-    toboAlRoPlate.SetWidth(895.3*mm - 18.0*mm);
-    toboAlRoPlate.SetHeight(15.2*mm);
-    toboAlRoPlate.SetLength(2*467.0*mm);
+    toboAlRoPlate.SetWidth(895.3*CLHEP::mm - 18.0*CLHEP::mm);
+    toboAlRoPlate.SetHeight(15.2*CLHEP::mm);
+    toboAlRoPlate.SetLength(2*467.0*CLHEP::mm);
 
     //toboAlRoPlate.SetMaterialName("AlRoha");
     toboAlRoPlate.SetMaterial(FindMaterial("AlRoha"));
@@ -4528,10 +4526,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += 1155.0*mm + height/2.;
+    y += 1155.0*CLHEP::mm + height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (18.0*mm + width/2.);
+        x = d * (18.0*CLHEP::mm + width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_toboAlRoPlate,
@@ -4545,7 +4543,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     y += -1205.0 - height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (18.0*mm + width/2.);
+        x = d * (18.0*CLHEP::mm + width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_toboAlRoPlate,
@@ -4569,9 +4567,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("FrBaG10RoPlate");
     MyND280BeamConstructor frbaG10RoPlate(parentname+"/FrBaG10RoPlate");
     
-    frbaG10RoPlate.SetWidth(869.1*mm - 18.1*mm);
-    frbaG10RoPlate.SetHeight(2*(1061.0*mm + 13.2*mm));
-    frbaG10RoPlate.SetLength(13.2*mm);
+    frbaG10RoPlate.SetWidth(869.1*CLHEP::mm - 18.1*CLHEP::mm);
+    frbaG10RoPlate.SetHeight(2*(1061.0*CLHEP::mm + 13.2*CLHEP::mm));
+    frbaG10RoPlate.SetLength(13.2*CLHEP::mm);
 
     //frbaG10RoPlate.SetMaterialName("G10Roha");
     frbaG10RoPlate.SetMaterial(FindMaterial("G10Roha"));
@@ -4586,10 +4584,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     y = GetActiveTPCVerticalOffset();
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        z = d * (386.0*mm + length/2.);
+        z = d * (386.0*CLHEP::mm + length/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            x = e * (18.1*mm + width/2.);
+            x = e * (18.1*CLHEP::mm + width/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,z),
                               log_frbaG10RoPlate,
@@ -4614,9 +4612,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("ToBoG10RoPlate");
     MyND280BeamConstructor toboG10RoPlate(parentname+"/ToBoG10RoPlate");
 
-    toboG10RoPlate.SetWidth(869.1*mm - 18.1*mm);
-    toboG10RoPlate.SetHeight(13.2*mm);
-    toboG10RoPlate.SetLength(2*386.0*mm);
+    toboG10RoPlate.SetWidth(869.1*CLHEP::mm - 18.1*CLHEP::mm);
+    toboG10RoPlate.SetHeight(13.2*CLHEP::mm);
+    toboG10RoPlate.SetLength(2*386.0*CLHEP::mm);
 
     //toboG10RoPlate.SetMaterialName("G10Roha");
     toboG10RoPlate.SetMaterial(FindMaterial("G10Roha"));
@@ -4630,10 +4628,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     k = 0;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        y = d * (1074.0*mm + height/2.) + GetActiveTPCVerticalOffset();
+        y = d * (1074.0*CLHEP::mm + height/2.) + GetActiveTPCVerticalOffset();
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            x = e * (18.1*mm + width/2.);
+            x = e * (18.1*CLHEP::mm + width/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,0),
                               log_toboG10RoPlate,
@@ -4658,9 +4656,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("FrBaPiece1");
     MyND280BeamConstructor frbaPiece1(parentname+"/FrBaPiece1");
 
-    frbaPiece1.SetWidth(40.7*mm);
-    frbaPiece1.SetHeight(1130.0*mm + 45.0*mm + 1149.5*mm + 30.5*mm + 45.0*mm);
-    frbaPiece1.SetLength(45.0*mm);
+    frbaPiece1.SetWidth(40.7*CLHEP::mm);
+    frbaPiece1.SetHeight(1130.0*CLHEP::mm + 45.0*CLHEP::mm + 1149.5*CLHEP::mm + 30.5*CLHEP::mm + 45.0*CLHEP::mm);
+    frbaPiece1.SetLength(45.0*CLHEP::mm);
 
     // In nd280mc code it's Aluminum by default
     frbaPiece1.SetMaterial(FindMaterial("Aluminum"));
@@ -4673,13 +4671,13 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += ((1130.0*mm + 45.0*mm) - (1149.5*mm + 30.5*mm + 45.0*mm))/2.;
+    y += ((1130.0*CLHEP::mm + 45.0*CLHEP::mm) - (1149.5*CLHEP::mm + 30.5*CLHEP::mm + 45.0*CLHEP::mm))/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        z = d * (442.0*mm + length/2.);
+        z = d * (442.0*CLHEP::mm + length/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            x = e * (895.3*mm + width/2.);
+            x = e * (895.3*CLHEP::mm + width/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,z),
                               log_frbaPiece1,
@@ -4703,9 +4701,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("FrBaPiece2");
     MyND280BeamConstructor frbaPiece2(parentname+"/FrBaPiece2");
 
-    frbaPiece2.SetWidth(29.7*mm);
-    frbaPiece2.SetHeight(1170*mm + 1220.0*mm);
-    frbaPiece2.SetLength(45.8*mm);
+    frbaPiece2.SetWidth(29.7*CLHEP::mm);
+    frbaPiece2.SetHeight(1170*CLHEP::mm + 1220.0*CLHEP::mm);
+    frbaPiece2.SetLength(45.8*CLHEP::mm);
 
     width  = frbaPiece2.GetWidth();
     height = frbaPiece2.GetHeight();
@@ -4718,13 +4716,13 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += (1170.0*mm - 1220.0*mm)/2.;
+    y += (1170.0*CLHEP::mm - 1220.0*CLHEP::mm)/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        z = d * (421.0*mm + length/2.);
+        z = d * (421.0*CLHEP::mm + length/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            x = e * (1150.0*mm - width/2.);
+            x = e * (1150.0*CLHEP::mm - width/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,z),
                               log_frbaPiece2,
@@ -4748,9 +4746,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("FrBaPiece3");
     MyND280BeamConstructor frbaPiece3(parentname+"/FrBaPiece3");
 
-    frbaPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
-    frbaPiece3.SetHeight(1146.8*mm + 7.9*mm + 1149.5*mm + 7.9*mm);
-    frbaPiece3.SetLength(7.9*mm);
+    frbaPiece3.SetWidth((1150.0*CLHEP::mm-29.7*CLHEP::mm) - (895.3*CLHEP::mm+40.7*CLHEP::mm));
+    frbaPiece3.SetHeight(1146.8*CLHEP::mm + 7.9*CLHEP::mm + 1149.5*CLHEP::mm + 7.9*CLHEP::mm);
+    frbaPiece3.SetLength(7.9*CLHEP::mm);
 
     width  = frbaPiece3.GetWidth();
     height = frbaPiece3.GetHeight();
@@ -4763,13 +4761,13 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += ((1146.8*mm + 7.9*mm) - (1149.5*mm + 7.9*mm))/2.;
+    y += ((1146.8*CLHEP::mm + 7.9*CLHEP::mm) - (1149.5*CLHEP::mm + 7.9*CLHEP::mm))/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        z = d * (421.0*mm + 45.8*mm - length/2.);
+        z = d * (421.0*CLHEP::mm + 45.8*CLHEP::mm - length/2.);
         for (int j=0; j<2; j++) {
             double e = pow(-1,j);
-            x = e * (895.3*mm + 40.7*mm + width/2.);
+            x = e * (895.3*CLHEP::mm + 40.7*CLHEP::mm + width/2.);
             new G4PVPlacement(0,
                               G4ThreeVector(x,y,z),
                               log_frbaPiece3,
@@ -4794,9 +4792,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("BoPiece1");
     MyND280BeamConstructor boPiece1(parentname+"/BoPiece1");
     
-    boPiece1.SetWidth(40.7*mm);
-    boPiece1.SetHeight(45.0*mm);
-    boPiece1.SetLength(2*442.0*mm);
+    boPiece1.SetWidth(40.7*CLHEP::mm);
+    boPiece1.SetHeight(45.0*CLHEP::mm);
+    boPiece1.SetLength(2*442.0*CLHEP::mm);
 
     width  = boPiece1.GetWidth();
     height = boPiece1.GetHeight();
@@ -4809,10 +4807,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += -1149.5*mm - 30.5*mm - height/2.;
+    y += -1149.5*CLHEP::mm - 30.5*CLHEP::mm - height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (895.3*mm + width/2);
+        x = d * (895.3*CLHEP::mm + width/2);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_boPiece1,
@@ -4834,9 +4832,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("BoPiece2");
     MyND280BeamConstructor boPiece2(parentname+"/BoPiece2");
     
-    boPiece2.SetWidth(29.7*mm);
-    boPiece2.SetHeight(23.2*mm);
-    boPiece2.SetLength(2*421.0*mm);
+    boPiece2.SetWidth(29.7*CLHEP::mm);
+    boPiece2.SetHeight(23.2*CLHEP::mm);
+    boPiece2.SetLength(2*421.0*CLHEP::mm);
 
     width  = boPiece2.GetWidth();
     height = boPiece2.GetHeight();
@@ -4849,10 +4847,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += -1149.5*mm - 47.3*mm - height/2.;
+    y += -1149.5*CLHEP::mm - 47.3*CLHEP::mm - height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (1150.0*mm - width/2.);
+        x = d * (1150.0*CLHEP::mm - width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_boPiece2,
@@ -4874,9 +4872,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("BoPiece3");
     MyND280BeamConstructor boPiece3(parentname+"/BoPiece3");
 
-    boPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
-    boPiece3.SetHeight(7.9*mm);
-    boPiece3.SetLength(2*(421.0*mm + 45.8*mm - 7.9*mm));
+    boPiece3.SetWidth((1150.0*CLHEP::mm-29.7*CLHEP::mm) - (895.3*CLHEP::mm+40.7*CLHEP::mm));
+    boPiece3.SetHeight(7.9*CLHEP::mm);
+    boPiece3.SetLength(2*(421.0*CLHEP::mm + 45.8*CLHEP::mm - 7.9*CLHEP::mm));
 
     width  = boPiece3.GetWidth();
     height = boPiece3.GetHeight();
@@ -4889,10 +4887,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += -1149.5*mm - height/2.;
+    y += -1149.5*CLHEP::mm - height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (895.3*mm + 40.7*mm + width/2.);
+        x = d * (895.3*CLHEP::mm + 40.7*CLHEP::mm + width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_boPiece3,
@@ -4914,9 +4912,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("BoPiece4");
     MyND280BeamConstructor boPiece4(parentname+"/BoPiece4");
 
-    boPiece4.SetWidth(9.5*mm);
-    boPiece4.SetHeight(30.5*mm);
-    boPiece4.SetLength(2*421.0*mm);
+    boPiece4.SetWidth(9.5*CLHEP::mm);
+    boPiece4.SetHeight(30.5*CLHEP::mm);
+    boPiece4.SetLength(2*421.0*CLHEP::mm);
 
     width  = boPiece4.GetWidth();
     height = boPiece4.GetHeight();
@@ -4929,10 +4927,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += -1149.5*mm - height/2.;
+    y += -1149.5*CLHEP::mm - height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (895.3*mm + 40.7*mm - width/2.);
+        x = d * (895.3*CLHEP::mm + 40.7*CLHEP::mm - width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_boPiece4,
@@ -4954,9 +4952,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("BoPiece5");
     MyND280BeamConstructor boPiece5(parentname+"/BoPiece5");
 
-    boPiece5.SetWidth(16.5*mm);
-    boPiece5.SetHeight(47.3*mm);
-    boPiece5.SetLength(2*421.0*mm);
+    boPiece5.SetWidth(16.5*CLHEP::mm);
+    boPiece5.SetHeight(47.3*CLHEP::mm);
+    boPiece5.SetLength(2*421.0*CLHEP::mm);
 
     width  = boPiece5.GetWidth();
     height = boPiece5.GetHeight();
@@ -4972,7 +4970,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     y += -1149.5 - height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (1150.0*mm - 29.7*mm + width/2.);
+        x = d * (1150.0*CLHEP::mm - 29.7*CLHEP::mm + width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_boPiece5,
@@ -4996,9 +4994,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("ToPiece1");
     MyND280BeamConstructor toPiece1(parentname+"/ToPiece");
 
-    toPiece1.SetWidth(40.7*mm);
-    toPiece1.SetHeight(45.0*mm);
-    toPiece1.SetLength(2*442.0*mm);
+    toPiece1.SetWidth(40.7*CLHEP::mm);
+    toPiece1.SetHeight(45.0*CLHEP::mm);
+    toPiece1.SetLength(2*442.0*CLHEP::mm);
 
     width  = toPiece1.GetWidth();
     height = toPiece1.GetHeight();
@@ -5011,10 +5009,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += 1130.0*mm + height/2.;
+    y += 1130.0*CLHEP::mm + height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (895.3*mm + width/2.);
+        x = d * (895.3*CLHEP::mm + width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_toPiece1,
@@ -5036,9 +5034,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("ToPiece2");
     MyND280BeamConstructor toPiece2(parentname+"/ToPiece2");
     
-    toPiece2.SetWidth(29.7*mm);
-    toPiece2.SetHeight(1170.0*mm - 1146.8*mm);
-    toPiece2.SetLength(2*421.0*mm);
+    toPiece2.SetWidth(29.7*CLHEP::mm);
+    toPiece2.SetHeight(1170.0*CLHEP::mm - 1146.8*CLHEP::mm);
+    toPiece2.SetLength(2*421.0*CLHEP::mm);
 
     width  = toPiece2.GetWidth();
     height = toPiece2.GetHeight();
@@ -5051,10 +5049,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += 1146.8*mm + height/2.;
+    y += 1146.8*CLHEP::mm + height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (1150.0*mm - width/2.);
+        x = d * (1150.0*CLHEP::mm - width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_toPiece2,
@@ -5076,9 +5074,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("ToPiece3");
     MyND280BeamConstructor toPiece3(parentname+"/ToPiece3");
 
-    toPiece3.SetWidth((1150.0*mm-29.7*mm) - (895.3*mm+40.7*mm));
-    toPiece3.SetHeight(7.9*mm);
-    toPiece3.SetLength(2*(421.0*mm + 45.8*mm - 7.9*mm));
+    toPiece3.SetWidth((1150.0*CLHEP::mm-29.7*CLHEP::mm) - (895.3*CLHEP::mm+40.7*CLHEP::mm));
+    toPiece3.SetHeight(7.9*CLHEP::mm);
+    toPiece3.SetLength(2*(421.0*CLHEP::mm + 45.8*CLHEP::mm - 7.9*CLHEP::mm));
 
     width  = toPiece3.GetWidth();
     height = toPiece3.GetHeight();
@@ -5091,10 +5089,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += 1146.8*mm + height/2.;
+    y += 1146.8*CLHEP::mm + height/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        x = d * (895.3*mm + 40.7*mm + width/2.);
+        x = d * (895.3*CLHEP::mm + 40.7*CLHEP::mm + width/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(x,y,0),
                           log_toPiece3,
@@ -5118,9 +5116,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("FrBaCon2");
     MyND280BeamConstructor frbaCon2(parentname+"/FrBaCon2");
 
-    frbaCon2.SetWidth(2*18.1*mm);
-    frbaCon2.SetHeight(2*(1074.0*mm + 13.2*mm));
-    frbaCon2.SetLength(13.2*mm);
+    frbaCon2.SetWidth(2*18.1*CLHEP::mm);
+    frbaCon2.SetHeight(2*(1074.0*CLHEP::mm + 13.2*CLHEP::mm));
+    frbaCon2.SetLength(13.2*CLHEP::mm);
 
     //frbaCon2.SetMaterialName("G10");
     frbaCon2.SetMaterial(FindMaterial("G10"));
@@ -5135,7 +5133,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     y = GetActiveTPCVerticalOffset();
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        z = d * (386.0*mm + length/2.);
+        z = d * (386.0*CLHEP::mm + length/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(0,y,z),
                           log_frbaCon2,
@@ -5157,9 +5155,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("ToBoCon2");
     MyND280BeamConstructor toboCon2(parentname+"/ToBoCon2");
     
-    toboCon2.SetWidth(2*18.1*mm);
-    toboCon2.SetHeight(13.2*mm);
-    toboCon2.SetLength(2*(373.0*mm +(386.0*mm - 373.0*mm)));
+    toboCon2.SetWidth(2*18.1*CLHEP::mm);
+    toboCon2.SetHeight(13.2*CLHEP::mm);
+    toboCon2.SetLength(2*(373.0*CLHEP::mm +(386.0*CLHEP::mm - 373.0*CLHEP::mm)));
 
     //toboCon2.SetMaterialName("G10");
     toboCon2.SetMaterial(FindMaterial("G10"));
@@ -5173,7 +5171,7 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     k = 0;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        y = d * (1074.0*mm + height/2.) + GetActiveTPCVerticalOffset();
+        y = d * (1074.0*CLHEP::mm + height/2.) + GetActiveTPCVerticalOffset();
         new G4PVPlacement(0,
                           G4ThreeVector(0,y,0),
                           log_toboCon2,
@@ -5197,9 +5195,9 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("FrBaCon");
     MyND280BeamConstructor frbaCon(parentname+"/FrBaCon");
 
-    frbaCon.SetWidth(2*18.0*mm);
-    frbaCon.SetHeight(1155.0*mm + 15.2*mm + 1205.0*mm + 15.2*mm);
-    frbaCon.SetLength(15.2*mm);
+    frbaCon.SetWidth(2*18.0*CLHEP::mm);
+    frbaCon.SetHeight(1155.0*CLHEP::mm + 15.2*CLHEP::mm + 1205.0*CLHEP::mm + 15.2*CLHEP::mm);
+    frbaCon.SetLength(15.2*CLHEP::mm);
 
     width  = frbaCon.GetWidth();
     height = frbaCon.GetHeight();
@@ -5212,10 +5210,10 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
 
     k = 0;
     y = GetActiveTPCVerticalOffset();
-    y += ((1155.0*mm + 15.2*mm) - (1205.0*mm + 15.2*mm))/2.;
+    y += ((1155.0*CLHEP::mm + 15.2*CLHEP::mm) - (1205.0*CLHEP::mm + 15.2*CLHEP::mm))/2.;
     for (int i=0; i<2; i++) {
         double d = pow(-1,i);
-        z = d * (467.0*mm + length/2.);
+        z = d * (467.0*CLHEP::mm + length/2.);
         new G4PVPlacement(0,
                           G4ThreeVector(0,y,z),
                           log_frbaCon,
@@ -5237,8 +5235,8 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     //Get<ND280BeamConstructor>("ToBoCon");
     MyND280BeamConstructor toboCon(parentname+"/ToBoCon");
 
-    toboCon.SetWidth(2*18.0*mm);
-    toboCon.SetHeight(15.2*mm);
+    toboCon.SetWidth(2*18.0*CLHEP::mm);
+    toboCon.SetHeight(15.2*CLHEP::mm);
     toboCon.SetLength(2*467.0);
 
     width  = toboCon.GetWidth();
@@ -5281,60 +5279,60 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
     }
     
     if (DebugTPCMass){
-      G4cout << "SideG10Plate        (2) mass="<<log_sideG10Plate->GetMass()/kg       <<" kg" << G4endl;
-      G4cout << "VerticalG10Frame    (4) mass="<<log_verticalG10Frame->GetMass()/kg   <<" kg" << G4endl;
-      G4cout << "HorizontallG10Frame (4) mass="<<log_horizontalG10Frame->GetMass()/kg <<" kg" << G4endl;
-      G4cout << "VerticalG10Plate    (2) mass="<<log_verticalG10Plate->GetMass()/kg   <<" kg" << G4endl;
-      G4cout << "SideAlPlate         (4) mass="<<log_sideAlPlate->GetMass()/kg        <<" kg" << G4endl;
-      G4cout << "Water Post          (4) mass="<<log_post->GetMass()/kg               <<" kg" << G4endl;
-      G4cout << "SideAlRoPlate       (2) mass="<<log_sideAlRoPlate->GetMass()/kg      <<" kg" << G4endl;
-      G4cout << "FrBaAlRoPlate       (4) mass="<<log_frbaAlRoPlate->GetMass()/kg      <<" kg" << G4endl;
-      G4cout << "ToBoAlRoPlate       (4) mass="<<log_toboAlRoPlate->GetMass()/kg      <<" kg" << G4endl;
-      G4cout << "FrBaG10RoPlate      (4) mass="<<log_frbaG10RoPlate->GetMass()/kg     <<" kg" << G4endl;
-      G4cout << "ToBoG10RoPlate      (4) mass="<<log_toboG10RoPlate->GetMass()/kg     <<" kg" << G4endl;
-      G4cout << "FrBaPiece1          (4) mass="<<log_frbaPiece1->GetMass()/kg         <<" kg" << G4endl;
-      G4cout << "FrBaPiece2          (4) mass="<<log_frbaPiece2->GetMass()/kg         <<" kg" << G4endl;
-      G4cout << "FrBaPiece3          (4) mass="<<log_frbaPiece3->GetMass()/kg         <<" kg" << G4endl;
-      G4cout << "BoPiece1            (2) mass="<<log_boPiece1->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "BoPiece2            (2) mass="<<log_boPiece2->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "BoPiece3            (2) mass="<<log_boPiece3->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "BoPiece4            (2) mass="<<log_boPiece4->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "BoPiece5            (2) mass="<<log_boPiece5->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "ToPiece1            (2) mass="<<log_toPiece1->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "ToPiece2            (2) mass="<<log_toPiece2->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "ToPiece3            (2) mass="<<log_toPiece3->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "FrBaCon2            (2) mass="<<log_frbaCon2->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "ToBoCon2            (2) mass="<<log_toboCon2->GetMass()/kg           <<" kg" << G4endl;
-      G4cout << "FrBaCon             (2) mass="<<log_frbaCon->GetMass()/kg            <<" kg" << G4endl;
-      G4cout << "ToBoCon             (2) mass="<<log_toboCon->GetMass()/kg            <<" kg" << G4endl;
+      G4cout << "SideG10Plate        (2) mass="<<log_sideG10Plate->GetMass()/CLHEP::kg       <<" kg" << G4endl;
+      G4cout << "VerticalG10Frame    (4) mass="<<log_verticalG10Frame->GetMass()/CLHEP::kg   <<" kg" << G4endl;
+      G4cout << "HorizontallG10Frame (4) mass="<<log_horizontalG10Frame->GetMass()/CLHEP::kg <<" kg" << G4endl;
+      G4cout << "VerticalG10Plate    (2) mass="<<log_verticalG10Plate->GetMass()/CLHEP::kg   <<" kg" << G4endl;
+      G4cout << "SideAlPlate         (4) mass="<<log_sideAlPlate->GetMass()/CLHEP::kg        <<" kg" << G4endl;
+      G4cout << "Water Post          (4) mass="<<log_post->GetMass()/CLHEP::kg               <<" kg" << G4endl;
+      G4cout << "SideAlRoPlate       (2) mass="<<log_sideAlRoPlate->GetMass()/CLHEP::kg      <<" kg" << G4endl;
+      G4cout << "FrBaAlRoPlate       (4) mass="<<log_frbaAlRoPlate->GetMass()/CLHEP::kg      <<" kg" << G4endl;
+      G4cout << "ToBoAlRoPlate       (4) mass="<<log_toboAlRoPlate->GetMass()/CLHEP::kg      <<" kg" << G4endl;
+      G4cout << "FrBaG10RoPlate      (4) mass="<<log_frbaG10RoPlate->GetMass()/CLHEP::kg     <<" kg" << G4endl;
+      G4cout << "ToBoG10RoPlate      (4) mass="<<log_toboG10RoPlate->GetMass()/CLHEP::kg     <<" kg" << G4endl;
+      G4cout << "FrBaPiece1          (4) mass="<<log_frbaPiece1->GetMass()/CLHEP::kg         <<" kg" << G4endl;
+      G4cout << "FrBaPiece2          (4) mass="<<log_frbaPiece2->GetMass()/CLHEP::kg         <<" kg" << G4endl;
+      G4cout << "FrBaPiece3          (4) mass="<<log_frbaPiece3->GetMass()/CLHEP::kg         <<" kg" << G4endl;
+      G4cout << "BoPiece1            (2) mass="<<log_boPiece1->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "BoPiece2            (2) mass="<<log_boPiece2->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "BoPiece3            (2) mass="<<log_boPiece3->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "BoPiece4            (2) mass="<<log_boPiece4->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "BoPiece5            (2) mass="<<log_boPiece5->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "ToPiece1            (2) mass="<<log_toPiece1->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "ToPiece2            (2) mass="<<log_toPiece2->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "ToPiece3            (2) mass="<<log_toPiece3->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "FrBaCon2            (2) mass="<<log_frbaCon2->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "ToBoCon2            (2) mass="<<log_toboCon2->GetMass()/CLHEP::kg           <<" kg" << G4endl;
+      G4cout << "FrBaCon             (2) mass="<<log_frbaCon->GetMass()/CLHEP::kg            <<" kg" << G4endl;
+      G4cout << "ToBoCon             (2) mass="<<log_toboCon->GetMass()/CLHEP::kg            <<" kg" << G4endl;
       
       G4cout << "Total TPC cage mass : "<<
-	2*log_sideG10Plate->GetMass()/kg       +
-	4*log_verticalG10Frame->GetMass()/kg   +
-	4*log_horizontalG10Frame->GetMass()/kg +
-	2*log_verticalG10Plate->GetMass()/kg   +
-	4*log_sideAlPlate->GetMass()/kg        +
-	4*log_post->GetMass()/kg               +
-	2*log_sideAlRoPlate->GetMass()/kg      +
-	4*log_frbaAlRoPlate->GetMass()/kg      +
-	4*log_toboAlRoPlate->GetMass()/kg      +
-	4*log_frbaG10RoPlate->GetMass()/kg     +
-	4*log_toboG10RoPlate->GetMass()/kg     +
-	4*log_frbaPiece1->GetMass()/kg         +
-	4*log_frbaPiece2->GetMass()/kg         +
-	4*log_frbaPiece3->GetMass()/kg         +
-	2*log_boPiece1->GetMass()/kg           +
-	2*log_boPiece2->GetMass()/kg           +
-	2*log_boPiece3->GetMass()/kg           +
-	2*log_boPiece4->GetMass()/kg           +
-	2*log_boPiece5->GetMass()/kg           +
-	2*log_toPiece1->GetMass()/kg           +
-	2*log_toPiece2->GetMass()/kg           +
-	2*log_toPiece3->GetMass()/kg           +
-	2*log_frbaCon2->GetMass()/kg           +
-	2*log_toboCon2->GetMass()/kg           +
-	2*log_frbaCon->GetMass()/kg            +
-	2*log_toboCon->GetMass()/kg            
+	2*log_sideG10Plate->GetMass()/CLHEP::kg       +
+	4*log_verticalG10Frame->GetMass()/CLHEP::kg   +
+	4*log_horizontalG10Frame->GetMass()/CLHEP::kg +
+	2*log_verticalG10Plate->GetMass()/CLHEP::kg   +
+	4*log_sideAlPlate->GetMass()/CLHEP::kg        +
+	4*log_post->GetMass()/CLHEP::kg               +
+	2*log_sideAlRoPlate->GetMass()/CLHEP::kg      +
+	4*log_frbaAlRoPlate->GetMass()/CLHEP::kg      +
+	4*log_toboAlRoPlate->GetMass()/CLHEP::kg      +
+	4*log_frbaG10RoPlate->GetMass()/CLHEP::kg     +
+	4*log_toboG10RoPlate->GetMass()/CLHEP::kg     +
+	4*log_frbaPiece1->GetMass()/CLHEP::kg         +
+	4*log_frbaPiece2->GetMass()/CLHEP::kg         +
+	4*log_frbaPiece3->GetMass()/CLHEP::kg         +
+	2*log_boPiece1->GetMass()/CLHEP::kg           +
+	2*log_boPiece2->GetMass()/CLHEP::kg           +
+	2*log_boPiece3->GetMass()/CLHEP::kg           +
+	2*log_boPiece4->GetMass()/CLHEP::kg           +
+	2*log_boPiece5->GetMass()/CLHEP::kg           +
+	2*log_toPiece1->GetMass()/CLHEP::kg           +
+	2*log_toPiece2->GetMass()/CLHEP::kg           +
+	2*log_toPiece3->GetMass()/CLHEP::kg           +
+	2*log_frbaCon2->GetMass()/CLHEP::kg           +
+	2*log_toboCon2->GetMass()/CLHEP::kg           +
+	2*log_frbaCon->GetMass()/CLHEP::kg            +
+	2*log_toboCon->GetMass()/CLHEP::kg            
 	     <<" kg" << G4endl;
     }
     
@@ -5365,7 +5363,7 @@ G4ThreeVector ExN02DetectorConstruction::GetRotOffset(G4ThreeVector axis, double
   trackerRotMatrix[8] = 2*pow(sin(angle/2),2)*pow(axis.z(),2) + cos(angle);
 
   // Quantities to offset the 25mm shift in Y for trackers
-  G4ThreeVector offset(trackerRotMatrix[1]*-25*mm, (trackerRotMatrix[4]-1)*-25*mm, trackerRotMatrix[7]*-25*mm);
+  G4ThreeVector offset(trackerRotMatrix[1]*-25*CLHEP::mm, (trackerRotMatrix[4]-1)*-25*CLHEP::mm, trackerRotMatrix[7]*-25*CLHEP::mm);
 
   return offset;
 }
@@ -5421,17 +5419,17 @@ void ExN02DetectorConstruction::DefineDimensions(){
   // - don't include the P0D
   // - use same size variables 
   
-  G4double cBasketInnerWidth    = 2320.0 * mm;
-  G4double cBasketSideThickness = 100.0  * mm;
+  G4double cBasketInnerWidth    = 2320.0 * CLHEP::mm;
+  G4double cBasketSideThickness = 100.0  * CLHEP::mm;
   G4double cBasketOuterWidth    = 
     cBasketInnerWidth + 
     cBasketSideThickness * 2.;
   
-  G4double cBasketOuterHeight   = 2480.0 * mm;
+  G4double cBasketOuterHeight   = 2480.0 * CLHEP::mm;
   
-  G4double cBasketInnerLength         = 6650.0 * mm;
-  G4double cBasketUpStreamThickness   = 140.0  * mm;
-  G4double cBasketDownStreamThickness = 140.0  * mm;
+  G4double cBasketInnerLength         = 6650.0 * CLHEP::mm;
+  G4double cBasketUpStreamThickness   = 140.0  * CLHEP::mm;
+  G4double cBasketDownStreamThickness = 140.0  * CLHEP::mm;
   G4double cBasketOuterLength   = 
     cBasketInnerLength + 
     cBasketUpStreamThickness + 
@@ -5443,9 +5441,9 @@ void ExN02DetectorConstruction::DefineDimensions(){
   // SetBasketFullLength(cBasketLength);
   // SetBasketFullWidth(cBasketWidth);
   // SetBasketFullHeight(cBasketHeight);
-  SetBasketFullLength(8000*mm);
-  SetBasketFullWidth(8000*mm);
-  SetBasketFullHeight(8000*mm);
+  SetBasketFullLength(8000*CLHEP::mm);
+  SetBasketFullWidth(8000*CLHEP::mm);
+  SetBasketFullHeight(8000*CLHEP::mm);
 
   // World
 
@@ -5458,16 +5456,16 @@ void ExN02DetectorConstruction::DefineDimensions(){
 
   // Tracker 
   G4double cTrackerLength = cBasketLength;    // Full length of Tracker
-  G4double cTrackerWidth  = 2320. * mm;  // Full width of Tracker
-  G4double cTrackerHeight = cBasketHeight; //2414. * mm;  // Full height of Tracker 
+  G4double cTrackerWidth  = 2320. * CLHEP::mm;  // Full width of Tracker
+  G4double cTrackerHeight = cBasketHeight; //2414. * CLHEP::mm;  // Full height of Tracker 
   SetTrackerFullLength(cTrackerLength);
   SetTrackerFullWidth(cTrackerWidth);
   SetTrackerFullHeight(cTrackerHeight);
   
   // Target 1 (plastic scintillator)
-  G4double targetlength1 = ND280XMLInput->GetXMLTargetlength1() * mm;
-  G4double targetwidth1  = ND280XMLInput->GetXMLTargetwidth1() * mm;
-  G4double targetheight1 = ND280XMLInput->GetXMLTargetheight1() * mm;
+  G4double targetlength1 = ND280XMLInput->GetXMLTargetlength1() * CLHEP::mm;
+  G4double targetwidth1  = ND280XMLInput->GetXMLTargetwidth1() * CLHEP::mm;
+  G4double targetheight1 = ND280XMLInput->GetXMLTargetheight1() * CLHEP::mm;
   if( ND280XMLInput->GetXMLUseTarget1() ){
     SetTargetFullLength1(targetlength1);
     SetTargetFullWidth1(targetwidth1);
@@ -5480,9 +5478,9 @@ void ExN02DetectorConstruction::DefineDimensions(){
   }
 
   // Target 2 (water)  
-  G4double targetlength2 = ND280XMLInput->GetXMLTargetlength2() * mm;
-  G4double targetwidth2  = ND280XMLInput->GetXMLTargetwidth2() * mm;
-  G4double targetheight2 = ND280XMLInput->GetXMLTargetheight2() * mm;
+  G4double targetlength2 = ND280XMLInput->GetXMLTargetlength2() * CLHEP::mm;
+  G4double targetwidth2  = ND280XMLInput->GetXMLTargetwidth2() * CLHEP::mm;
+  G4double targetheight2 = ND280XMLInput->GetXMLTargetheight2() * CLHEP::mm;
   if( ND280XMLInput->GetXMLUseTarget2() ){
     SetTargetFullLength2(targetlength2);
     SetTargetFullWidth2(targetwidth2);
@@ -5495,9 +5493,9 @@ void ExN02DetectorConstruction::DefineDimensions(){
   }
   
   // FGD 1 (FGDScintillator)
-  G4double FGDlength1 = ND280XMLInput->GetXMLFGDlength1() * mm;
-  G4double FGDwidth1  = ND280XMLInput->GetXMLFGDwidth1() * mm;
-  G4double FGDheight1 = ND280XMLInput->GetXMLFGDheight1() * mm;
+  G4double FGDlength1 = ND280XMLInput->GetXMLFGDlength1() * CLHEP::mm;
+  G4double FGDwidth1  = ND280XMLInput->GetXMLFGDwidth1() * CLHEP::mm;
+  G4double FGDheight1 = ND280XMLInput->GetXMLFGDheight1() * CLHEP::mm;
   if( ND280XMLInput->GetXMLUseFGD1() ){
     SetFGDFullLength1(FGDlength1);
     SetFGDFullWidth1(FGDwidth1);
@@ -5510,9 +5508,9 @@ void ExN02DetectorConstruction::DefineDimensions(){
   }
 
   // FGD 2 (FGD2Uniform)  
-  G4double FGDlength2 = ND280XMLInput->GetXMLFGDlength2() * mm;
-  G4double FGDwidth2  = ND280XMLInput->GetXMLFGDwidth2() * mm;
-  G4double FGDheight2 = ND280XMLInput->GetXMLFGDheight2() * mm;
+  G4double FGDlength2 = ND280XMLInput->GetXMLFGDlength2() * CLHEP::mm;
+  G4double FGDwidth2  = ND280XMLInput->GetXMLFGDwidth2() * CLHEP::mm;
+  G4double FGDheight2 = ND280XMLInput->GetXMLFGDheight2() * CLHEP::mm;
   if( ND280XMLInput->GetXMLUseFGD2() ){
     SetFGDFullLength2(FGDlength2);
     SetFGDFullWidth2(FGDwidth2);
@@ -5526,9 +5524,9 @@ void ExN02DetectorConstruction::DefineDimensions(){
 
   // Side TPCs 1
   
-  G4double sidetpclength1 = ND280XMLInput->GetXMLSideTPClength1() * mm;
-  G4double sidetpcwidth1  = ND280XMLInput->GetXMLSideTPCwidth1() * mm;
-  G4double sidetpcheight1 = ND280XMLInput->GetXMLSideTPCheight1() * mm;
+  G4double sidetpclength1 = ND280XMLInput->GetXMLSideTPClength1() * CLHEP::mm;
+  G4double sidetpcwidth1  = ND280XMLInput->GetXMLSideTPCwidth1() * CLHEP::mm;
+  G4double sidetpcheight1 = ND280XMLInput->GetXMLSideTPCheight1() * CLHEP::mm;
   if( ND280XMLInput->GetXMLUseTPCDown1() ||
       ND280XMLInput->GetXMLUseTPCUp1()
       ){
@@ -5543,9 +5541,9 @@ void ExN02DetectorConstruction::DefineDimensions(){
   }
 
   // Side TPCs 2
-  G4double sidetpclength2 = ND280XMLInput->GetXMLSideTPClength2() * mm;
-  G4double sidetpcwidth2  = ND280XMLInput->GetXMLSideTPCwidth2() * mm;
-  G4double sidetpcheight2 = ND280XMLInput->GetXMLSideTPCheight2() * mm;
+  G4double sidetpclength2 = ND280XMLInput->GetXMLSideTPClength2() * CLHEP::mm;
+  G4double sidetpcwidth2  = ND280XMLInput->GetXMLSideTPCwidth2() * CLHEP::mm;
+  G4double sidetpcheight2 = ND280XMLInput->GetXMLSideTPCheight2() * CLHEP::mm;
   if( ND280XMLInput->GetXMLUseTPCDown2() ||
       ND280XMLInput->GetXMLUseTPCUp2()
       ){

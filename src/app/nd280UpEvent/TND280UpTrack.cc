@@ -142,6 +142,21 @@ TND280UpTrack::~TND280UpTrack()
 
   fNPoints = 0;
 
+  // /////
+  //
+  // // https://root-forum.cern.ch/t/solved-memory-leak-with-tfile-get/19683/3 
+  //
+  // //THIS PIECE OF CODE HAS NO EFFECT ON THE RAM...  
+  //
+  // TIter next(fListOfPoints);
+  // TObject *obj = nullptr;
+  // while( (obj = next()) ) {
+  //   TList *list = dynamic_cast<TList*>(obj);
+  //   if (list) list->Delete();  // alternatively list->SetOwner(true);
+  // }
+  // fListOfPoints->Delete(); // alternatively  list->SetOwner(true);   
+  // delete fListOfPoints;
+
   fListOfPoints->Delete();
   delete fListOfPoints;
 }

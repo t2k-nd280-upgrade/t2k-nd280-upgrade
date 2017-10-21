@@ -40,7 +40,9 @@
 #include "G4Run.hh"
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
-#include "G4SystemOfUnits.hh"
+
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -73,7 +75,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
   //
 
   // // Creating histograms 
-  analysisManager->CreateH1("Edep_abs_tpcup","Edep in TPC Up", 100, 0., 800*MeV);
+  analysisManager->CreateH1("Edep_abs_tpcup","Edep in TPC Up", 100, 0., 800*CLHEP::MeV);
   
   // Creating ntuple
   //             
@@ -339,9 +341,17 @@ void ExN02RunAction::BeginOfRunAction(const G4Run* aRun)
   // set the Seed
   if(IsRandomSeed) SetSeed();
 
+
+
+
   //inform the runManager to save random number seed  
   //G4RunManager::GetRunManager()->SetRandomNumberStore(true);      
+  // // Store the seed
+  //G4RunManager::GetRunManager()->rndmSaveThisEvent();
 
+
+
+  
   // Get analysis manager
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   

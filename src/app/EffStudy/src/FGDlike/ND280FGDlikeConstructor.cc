@@ -75,15 +75,15 @@ ND280FGDlikeConstructor::~ND280FGDlikeConstructor() {;}
 void ND280FGDlikeConstructor::Init(void) {
   
   /// The edge of a bar of the FGDlike detector 
-  fEdge = 2.*mm;
+  fEdge = 2.*CLHEP::mm;
 
   // Number of bars along each axis 
   fBarHorizNum = 1;
   fBarVertNum = 1;
 
-  SetWidth( 100*mm);
-  SetHeight(100*mm);  
-  SetLength(1000*mm);
+  SetWidth( 100*CLHEP::mm);
+  SetHeight(100*CLHEP::mm);  
+  SetLength(1000*CLHEP::mm);
 
   // Position of the center of the FGDlike detector
   fPosX = 0.;
@@ -143,10 +143,10 @@ G4LogicalVolume *ND280FGDlikeConstructor::GetPiece(void) {
   barVert.SetBarDir(conv::kAlongY);
   barVert.SetBase( fEdge); // 
   barVert.SetAxisLength(TotHeight); // lengthVert based on # of bars along X 
-  barVert.SetHoleRadius(0.7*mm);
-  barVert.SetFiberRadius(0.5*mm);
-  barVert.SetCoatingThickness(0.25*mm);
-  barVert.SetGap(0.0*mm);
+  barVert.SetHoleRadius(0.7*CLHEP::mm);
+  barVert.SetFiberRadius(0.5*CLHEP::mm);
+  barVert.SetCoatingThickness(0.25*CLHEP::mm);
+  barVert.SetGap(0.0*CLHEP::mm);
   G4LogicalVolume* barVert_logical = barVert.GetPiece();
 
 
@@ -159,10 +159,10 @@ G4LogicalVolume *ND280FGDlikeConstructor::GetPiece(void) {
   barHoriz.SetBarDir(conv::kAlongX);
   barHoriz.SetBase( fEdge); // 
   barHoriz.SetAxisLength(TotWidth); // lengthVert based on # of bars along Y 
-  barHoriz.SetHoleRadius(0.7*mm);
-  barHoriz.SetFiberRadius(0.5*mm);
-  barHoriz.SetCoatingThickness(0.25*mm);
-  barHoriz.SetGap(0.0*mm);
+  barHoriz.SetHoleRadius(0.7*CLHEP::mm);
+  barHoriz.SetFiberRadius(0.5*CLHEP::mm);
+  barHoriz.SetCoatingThickness(0.25*CLHEP::mm);
+  barHoriz.SetGap(0.0*CLHEP::mm);
   G4LogicalVolume* barHoriz_logical = barHoriz.GetPiece();
 
   //

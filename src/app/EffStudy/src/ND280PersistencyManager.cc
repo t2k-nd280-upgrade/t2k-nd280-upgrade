@@ -27,16 +27,17 @@
 #include "G4HCofThisEvent.hh"
 #include "G4VHitsCollection.hh"
 
-#include <G4SystemOfUnits.hh>
+//#include <G4SystemOfUnits.hh> // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 // Creator for the persistency manager.  This is NOT a public routine
 // since it is only used by this class to create a singleton object.
 ND280PersistencyManager::ND280PersistencyManager() 
   : G4VPersistencyManager(), fFilename("/dev/null"),
-    fLengthThreshold(1*cm), // default nd280mc is 2*cm (NOT APPLIED!!!)
-    fGammaThreshold(20*MeV), // default nd280mc is 50*MeV 
-    fNeutronThreshold(50*MeV),
-    fTrajectoryPointAccuracy(1*cm), 
+    fLengthThreshold(1*CLHEP::cm), // default nd280mc is 2*cm (NOT APPLIED!!!)
+    fGammaThreshold(20*CLHEP::MeV), // default nd280mc is 50*MeV 
+    fNeutronThreshold(50*CLHEP::MeV),
+    fTrajectoryPointAccuracy(1*CLHEP::cm), 
     fSaveAllPrimaryTrajectories(true) //default nd280mc is false
 {
   fPersistencyMessenger = new ND280PersistencyMessenger(this);
@@ -148,6 +149,8 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
 
 void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Event *event) {
   
+  //G4cout << "ND280PersistencyManager::MarkTrajectory" << G4endl;
+  
   // Go through all of the trajectories and save:
   //
   //   ** Trajectories from primary particles if
@@ -172,14 +175,29 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   // children, deposited energy in a sensitive detector.  If the primary
   // didn't deposit energy in a sensitive detector, then it will only be
   // saved if SaveAllPrimaryTrajectories is true.
+  
+  // N.B. The variable GetSDTotalEnergyDeposit() is filled in ExN02EventAction
+  //      with the energy deposited by the G4Hits in sensitive detectors 
+
   if (ndTraj->GetParentID() == 0) {
-    if (ndTraj->GetSDTotalEnergyDeposit()>1*eV 
-	|| GetSaveAllPrimaryTrajectories()) {
+
+    //
+    // DON'T APPLY ANY CUT ON THE SD ENERGY DEPOSIT
+    // Applied in nd280mc!!!
+    // This is not needed because it's always 0 w/o storing hits, 
+    // i.e. when using a uniform target!!!
+    //
+    //if (ndTraj->GetSDTotalEnergyDeposit()>1*eV 
+    //|| GetSaveAllPrimaryTrajectories()) {
+    //
+    
+    if (GetSaveAllPrimaryTrajectories()) {
+      
       ndTraj->MarkTrajectory();
       return;
     }
   }
-  
+    
   // Don't save the neutrinos
   if (particleName == "anti_nu_e") return;
   if (particleName == "anti_nu_mu") return;
@@ -187,9 +205,15 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   if (particleName == "nu_e") return;
   if (particleName == "nu_mu") return;
   if (particleName == "nu_tau") return;
+
+  // Don't save low momentum charged particles (My cuts)
+  if (particleName == "gamma") return;
+  if (particleName == "neutron") return;
+  if (particleName == "proton" && initialMomentum<200*CLHEP::MeV) return;
+  //
   
   // Save any decay product
-  if (processName == "Decay") {
+  if (processName == "Decay") { // useful for Michel electrons
     ndTraj->MarkTrajectory(false);
     return;
   }
@@ -205,30 +229,122 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   //return;
   //}
   
+  //
+  // DON'T APPLY ANY CUT ON THE SD ENERGY DEPOSIT
+  // Applied in nd280mc!!!
+  // This is not needed because it's always 0 w/o storing hits, 
+  // i.e. when using a uniform target!!!
+  //
   // For the next part, only consider particles where the children have
   // deposited energy in a sensitive detector.
-  if (ndTraj->GetSDTotalEnergyDeposit()<1*eV) return;
+  //if (ndTraj->GetSDTotalEnergyDeposit()<1*eV) return; 
   
+
   // Save higher energy gamma rays that have descendents depositing
   // energy in a sensitive detector.
-  if (particleName == "gamma" && initialMomentum > GetGammaThreshold()) {
-    ndTraj->MarkTrajectory(false);
-    return;
-  }
+  // if (particleName == "gamma" && initialMomentum > GetGammaThreshold()) {
+  //   ndTraj->MarkTrajectory(false);
+  //   return;
+  // }
   
   // Save higher energy neutrons that have descendents depositing energy
   // in a sensitive detector.
-  if (particleName == "neutron" 
-      && initialMomentum > GetNeutronThreshold()) {
-    ndTraj->MarkTrajectory(false);
-    return;
-  }
+  // if (particleName == "neutron" 
+  //     && initialMomentum > GetNeutronThreshold()) {
+  //   ndTraj->MarkTrajectory(false);
+  //   return;
+  // }
   
   // Since I don't apply any cut on track length
   // I store all the tracks that were not rejected at this point.
   // Not done in nd280mc!!!
-  ndTraj->MarkTrajectory(false);
+  //ndTraj->MarkTrajectory(false);
+
+
+  //
+  // TODO:
+  // - comment  ndTraj->MarkTrajectory(false); --> don't store all the tracks
+  // - store all the following particles 
+  //    pi+/- (+-211)
+  //    mu+/- (+-13) (see whether to make cuts on mom, length for those coming from pi+ -> mu+ 
+  //    prot (2212) (apply cut on momentum)
+  //    e+/- (+-11) (apply cut on momentum --> avoid electrons from ionization etc...)
+  // - store tracks that passed pdg cuts but with some physical processes (elastic, inelastic,...)
+  // - don't store gammas ???
+  //
+  // Look at process names here:
+  // http://geant4.web.cern.ch/geant4/support/proc_mod_catalog/processes/
+  //
+
+
+
+
+  // My cuts
+
+  // gamma conversion
+  if (particleName == "e+" || particleName == "e-"){
+    if (processName == "conv"){
+      if(initialMomentum > 100*CLHEP::MeV){
+	ndTraj->MarkTrajectory(false); 
+     	return;
+      }
+    }
+  }
+
+  // electron multiple scattering
+  if ( (particleName == "e-" || particleName == "e+") &&
+       processName == "msc"){ 
+    ndTraj->MarkTrajectory(false);
+  }
+
+  // muon multiple scattering
+  if ( (particleName == "mu-" || particleName == "mu+") &&
+       processName == "msc"){ // multiple scattering
+    ndTraj->MarkTrajectory(false);
+  }
+    
+  // pion inelastic 
+  if (processName == "pi+Inelastic"){
+    if (particleName == "pi+"){
+      ndTraj->MarkTrajectory(false);
+      return;
+    }
+  }
+  if (processName == "pi-Inelastic"){
+    if (particleName == "pi-"){
+      ndTraj->MarkTrajectory(false);
+      return;
+    }
+  }
+
+  // proton inelastic 
+  if (processName == "protonInelastic"){
+    if (particleName == "proton"){
+      ndTraj->MarkTrajectory(false);
+      return;
+    }
+  }  
+
+  // hadronic elastic processes
+  if (processName == "hadElastic"){
+    if ( particleName == "proton" ||
+	 particleName == "pi-"    ||
+	 particleName == "pi+"
+	 ){
+      ndTraj->MarkTrajectory(false);
+      return;    
+    }
+  }
   
+  return;
+
+
+  //
+  // THE LAST CUT MUST BE RECONSIDERED!!!
+  // USE TRUE INFORMATIONS INSTEAD OF STORING EVERYTHING,
+  // I.E. PDG, INITIALKINETICENERGY, MOMENTUM, RANGE, ETC...
+  //
+
 
   //
   // SHADOWED, BECAUSE ND280Trajectory ALREADY DECLARED
@@ -278,6 +394,9 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
 
 void ND280PersistencyManager::MarkTrajectories(const G4Event* event) {
 
+  //G4cout << "ND280PersistencyManager::MarkTrajectories" << endl;
+ 
+
   const G4TrajectoryContainer* trajectories = event->GetTrajectoryContainer();
   if (!trajectories) {
     //ND280Verbose("No Trajectories ");
@@ -302,7 +421,7 @@ double ND280PersistencyManager::FindTrajectoryAccuracy(
     G4ThreeVector p1 = g4Traj->GetPoint(point1)->GetPosition();
     G4ThreeVector p2 = g4Traj->GetPoint(point2)->GetPosition();
 
-    if ( (p2-p1).mag() < 0.1*mm) return 0;
+    if ( (p2-p1).mag() < 0.1*CLHEP::mm) return 0;
 
     G4ThreeVector dir = (p2-p1).unit();
 
@@ -319,6 +438,8 @@ double ND280PersistencyManager::FindTrajectoryAccuracy(
 
 int ND280PersistencyManager::SplitTrajectory(
     G4VTrajectory* g4Traj, int point1, int point2) {
+
+  //G4cout << "ND280PersistencyManager::SplitTrajectory" << G4endl;
 
     int point3 = 0.5*(point1 + point2);
     if (point3 <= point1){
@@ -356,6 +477,8 @@ int ND280PersistencyManager::SplitTrajectory(
 void ND280PersistencyManager::SelectTrajectoryPoints(
     std::vector<int>& selected, G4VTrajectory* g4Traj) {
 
+  //G4cout << "ND280PersistencyManager::SelectTrajectoryPoints" << G4endl;
+    
     selected.clear();
     if (g4Traj->GetPointEntries() < 1) return;
 
@@ -379,7 +502,7 @@ void ND280PersistencyManager::SelectTrajectoryPoints(
     // 
     //////////////////////////////////////////////
     ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(g4Traj);    
-    if (ndTraj->GetSDEnergyDeposit() < 1*eV) return;
+    if (ndTraj->GetSDEnergyDeposit() < 1*CLHEP::eV) return;
 
     // Find the trajectory points where particles are entering and leaving the
     // detectors.

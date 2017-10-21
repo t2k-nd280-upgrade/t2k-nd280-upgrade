@@ -64,7 +64,7 @@ G4LogicalVolume *ND280P0DTopLadderConstructor::GetPiece(void) {
     // holder.  Enough said...
     /////////////////////////////////////////////
     
-    double diameter = 20*mm;
+    double diameter = 20*CLHEP::mm;
     G4LogicalVolume *logCooling
 	= new G4LogicalVolume(new G4Box(GetName()+"/Cooling",
                                         GetLadderLength()/2, 
@@ -75,7 +75,7 @@ G4LogicalVolume *ND280P0DTopLadderConstructor::GetPiece(void) {
     new G4PVPlacement(0, // no rotation
                       G4ThreeVector(0,
                                     - GetLadderThickness()/2+diameter/2,
-                                    -75*mm),// position 
+                                    -75*CLHEP::mm),// position 
                       logCooling, // logical volume
                       GetName()+"/Cooling", // name
                       logVolume, // mother  volume
@@ -84,31 +84,31 @@ G4LogicalVolume *ND280P0DTopLadderConstructor::GetPiece(void) {
 
     new G4PVPlacement(0, // no rotation
                       G4ThreeVector(0,
-                                    - GetLadderThickness()/2+diameter/2 + 2*mm,
-                                    +75*mm),// position 
+                                    - GetLadderThickness()/2+diameter/2 + 2*CLHEP::mm,
+                                    +75*CLHEP::mm),// position 
                       logCooling, // logical volume
                       GetName()+"/Cooling", // name
                       logVolume, // mother  volume
                       false, // no boolean operations
                       0); // no specific field
 
-    double thickness = 6.35*mm;
+    double thickness = 6.35*CLHEP::mm;
     G4LogicalVolume *logPlate
 	= new G4LogicalVolume(new G4Box(GetName()+"/Plate",
-                                        20*cm/2, 
+                                        20*CLHEP::cm/2, 
                                         thickness/2,
-                                        25*cm/2),
+                                        25*CLHEP::cm/2),
                               FindMaterial("Aluminum"),
                               GetName()+"/Plate");
 
-    double step = (GetLadderLength() - 2*10*cm  - 20*cm)/6;
+    double step = (GetLadderLength() - 2*10*CLHEP::cm  - 20*CLHEP::cm)/6;
     for (int i=0; i<7; ++i) {
-        double offset = - GetLadderLength()/2 + 10*cm + 20*cm/2 + i*step;
+      double offset = - GetLadderLength()/2 + 10*CLHEP::cm + 20*CLHEP::cm/2 + i*step;
         new G4PVPlacement(0, // no rotation
                           G4ThreeVector(offset,
                                         - GetLadderThickness()/2
                                         +diameter
-                                        +thickness/2 + 2*mm,
+                                        +thickness/2 + 2*CLHEP::mm,
                                         0),// position 
                           logPlate, // logical volume
                           GetName()+"/Plate", // name

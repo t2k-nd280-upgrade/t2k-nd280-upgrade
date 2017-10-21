@@ -44,11 +44,11 @@ public:
 
     /// Get the height of the P0Dule not including the MPPCs or the LI.  This
     /// is the size of the glued P0Dule.
-    double GetP0DuleHeight(void) const {return 2338*mm;}
+  double GetP0DuleHeight(void) const {return 2338*CLHEP::mm;}
 
     /// Get the width of the P0Dule not including the MPPCs or the LI.  This
     /// is the size of the glued P0Dule.
-    double GetP0DuleWidth(void) const {return 2200*mm;}
+  double GetP0DuleWidth(void) const {return 2200*CLHEP::mm;}
 
     /// Get the thickness of the P0Dule lamination.  The p0dule lamination
     /// consists of a light tight skin, epoxy, the X bars, epoxy, the Y bars,
@@ -74,70 +74,70 @@ public:
     /// thickness implies.  This is approximated in the MC by adjusting the
     /// P0Dule thickness to equal this value minus the GetP0DuleFrameInset
     /// value which can be tuned.  Checked against parts.
-    double GetSideMPPCFrameThickness() const {return 38.75*mm;}
+  double GetSideMPPCFrameThickness() const {return 38.75*CLHEP::mm;}
 
     /// Get the amount that the light tight skin is inset into the frames.
     /// Twice this amount must be subtracted from the frame thickness to find
     /// the P0Dule stacking length.  This is consistent with the tolerance on
     /// measured values (0.5 +- 0.1 mm for the entire P0Dule), and is tuned to
     /// match the lamination thickness.
-    double GetP0DuleFrameInset() const {return 0.28*mm;}
+  double GetP0DuleFrameInset() const {return 0.28*CLHEP::mm;}
 
     /// Get the width of the Side MPPC frame.  Checked against parts.
-    double GetSideMPPCFrameWidth() const {return 30*mm;}
+  double GetSideMPPCFrameWidth() const {return 30*CLHEP::mm;}
 
     /// Get the length of the side MPPC frame.  This ignores the dovetail with
     /// the top and bottom frames.  The dovetail material is added to the
     /// top and bottom.  Checked against parts.
-    double GetSideMPPCFrameLength() const {return 2278*mm;}
+  double GetSideMPPCFrameLength() const {return 2278*CLHEP::mm;}
 
     /// Get the thickness of the Top MPPC frame.  Note that the frame pieces
     /// have insets for the light tight skins.  In the MC this is approximated
     /// by not extending the skin over the frame.  Checked against
     /// parts.  NOTE: See GetSideMPPCFrameThickness().
-    double GetTopMPPCFrameThickness() const {return 38.75*mm;}
+  double GetTopMPPCFrameThickness() const {return 38.75*CLHEP::mm;}
 
     /// Get the width of the Top MPPC frame.  Checked against parts.
-    double GetTopMPPCFrameWidth() const {return 30*mm;}
+  double GetTopMPPCFrameWidth() const {return 30*CLHEP::mm;}
 
     /// Get the length of the top MPPC frame.  This ignores the dovetail with
     /// the side frames.  The dovetail material is added to the
     /// top and bottom.  Checked against parts.
-    double GetTopMPPCFrameLength() const {return 2200*mm;}
+  double GetTopMPPCFrameLength() const {return 2200*CLHEP::mm;}
 
     /// Get the thickness of the Side LI frame.  Note that the frame pieces
     /// have insets for the light tight skins.  In the MC this is approximated
     /// by not exgtending the skin over the frame.  Checked against parts.
     /// NOTE: See GetSideMPPCFrameThickness().
-    double GetSideLIFrameThickness() const {return 38.75*mm;}
+  double GetSideLIFrameThickness() const {return 38.75*CLHEP::mm;}
 
     /// Get the width of the Side LI frame.  Checked against parts.
-    double GetSideLIFrameWidth() const {return 30*mm;}
+  double GetSideLIFrameWidth() const {return 30*CLHEP::mm;}
 
     /// Get the length of the side LI frame.  This ignores the dovetail with
     /// the top and bottom frames.  The dovetail material is added to the
     /// top and bottom.  Checked against parts.
-    double GetSideLIFrameLength() const {return 2278*mm;}
+  double GetSideLIFrameLength() const {return 2278*CLHEP::mm;}
 
     /// Get the thickness of the Top LI frame.  Note that the frame pieces
     /// have insets for the light tight skins.  In the MC this is approximated
     /// by not extending the skin over the frame.  Checked against parts.
     /// NOTE: See GetSideMPPCFrameThickness().
-    double GetBottomLIFrameThickness() const {return 38.75*mm;}
+  double GetBottomLIFrameThickness() const {return 38.75*CLHEP::mm;}
 
     /// Get the width of the Top LI frame.  Checked against parts.
-    double GetBottomLIFrameWidth() const {return 30*mm;}
+  double GetBottomLIFrameWidth() const {return 30*CLHEP::mm;}
 
     /// Get the length of the top LI frame.  This ignores the dovetail with
     /// the side frames.  The dovetail material is added to the
     /// top and bottom.  Checked against parts.
-    double GetBottomLIFrameLength() const {return 2200*mm;}
+  double GetBottomLIFrameLength() const {return 2200*CLHEP::mm;}
 
     /// Get the LI cover thickness.
-    double GetLICoverThickness() const {return 9.8*mm;}
+  double GetLICoverThickness() const {return 9.8*CLHEP::mm;}
     
     /// Get the thickness of the light tight sheet.
-    double GetLightTightThickness(void) const {return 1.375*mm;}
+  double GetLightTightThickness(void) const {return 1.375*CLHEP::mm;}
 
     /// @{ Get the width of the light tight sheet.  There is a cut out in the
     /// frame pieces to make space for the light tight sheet, but the MC
@@ -151,10 +151,10 @@ public:
     /// Get the space required to hold the MPPCs and cables.  This is the
     /// amount that the MPPC shroud extends beyond the glued part of the
     /// P0Dule.
-    double GetMPPCSpace(void) const {return 21*mm;}
+  double GetMPPCSpace(void) const {return 21*CLHEP::mm;}
     
     /// Get the diameter of the MPPC shrouds.
-    double GetMPPCShroudDiameter(void) const {return 10*mm;}
+  double GetMPPCShroudDiameter(void) const {return 10*CLHEP::mm;}
 
     /// Get the number of X (vertical) bars.
     int GetNumberOfXBars() const {return 126;}

@@ -31,11 +31,11 @@ public:
 
     /// Get the height of the target volume.  This matchs the height of the
     /// P0Dule.
-    double GetHeight() const {return 2348*mm;}
+  double GetHeight() const {return 2348*CLHEP::mm;}
     
     /// Get the width of the target volume.  The value of the width is fixed
     /// by the size of the P0Dule.
-    double GetWidth() const {return 2200*mm;}
+  double GetWidth() const {return 2200*CLHEP::mm;}
 
     /// Get the water depth in the left-hand target.  Control the water depth
     /// in the left-hand target (looking towards SK from the neutrino target,
@@ -57,33 +57,33 @@ public:
     /// both the actual frame, and the footer installed on the HDPE bag.  The
     /// frame is actually 75mm wide, and the footer is 88mm wide. Checked
     /// against the physical parts.
-    double GetBottomFrameWidth() const {return 163*mm;}
+  double GetBottomFrameWidth() const {return 163*CLHEP::mm;}
 
     /// Get the length of the bottom frame.  Checked against the physical
     /// parts.  This includes the dovetail with the side frame at each end.
-    double GetBottomFrameLength() const {return 2168*mm;}
+  double GetBottomFrameLength() const {return 2168*CLHEP::mm;}
 
     /// Get the "width" of the side HDPE frames.  Checked against the
     /// physical parts.
-    double GetSideFrameWidth() const {return 77.5*mm;}
+  double GetSideFrameWidth() const {return 77.5*CLHEP::mm;}
 
     /// Get the "length" of the side HDPE frames.  Checked against the
     /// physical parts.  This includes the dovetail with the bottom frame at
     /// each end.
-    double GetSideFrameLength() const {return 2334*mm;}
+  double GetSideFrameLength() const {return 2334*CLHEP::mm;}
 
     /// Get the "width" of the top HDPE Frame.  This frame is actually the
     /// header of the water target bags.  Checked against the physical parts.
-    double GetTopFrameWidth() const {return 75*mm;}
+  double GetTopFrameWidth() const {return 75*CLHEP::mm;}
 
     /// Get the "Length" of the top HDPE Frame.  This approximates the frame
     /// as a single piece across the top of the water bag.
-    double GetTopFrameLength() const {return 2168*mm;}
+  double GetTopFrameLength() const {return 2168*CLHEP::mm;}
 
     /// Get the "width" of the center frame.  This stretchs from the bottom to
     /// the top down the center of the water target.  Checked against the
     /// physical parts.
-    double GetCenterFrameWidth() const {return 18*mm;}
+  double GetCenterFrameWidth() const {return 18*CLHEP::mm;}
 
     /// Get the "length" of the center frame.  This stretchs from the bottom
     /// to the top down the center of the water target.  This is the same as
@@ -93,10 +93,10 @@ public:
     /// Get the thickness of the frame pieces.  This thickness doesn't include
     /// the gasket between the frame and the adjacent P0Dule (or radiator).
     /// Checked against the physical parts.
-    double GetFrameThickness() const {return 28*mm;}
+  double GetFrameThickness() const {return 28*CLHEP::mm;}
 
     /// Get the back cover thickness.
-    double GetBackCoverThickness() const {return 6.35*mm;}
+  double GetBackCoverThickness() const {return 6.35*CLHEP::mm;}
 
     /// Get the thickness of the (compressed) gasket.  The nominal gasket
     /// thickness is zero since the gasket should be fully compressed into

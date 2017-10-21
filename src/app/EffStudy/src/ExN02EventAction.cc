@@ -128,10 +128,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       // << ", " << G4BestUnit(vtx->GetY0(),"Length") 
       // << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
       // << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
-  	   << " (" << vtx->GetX0() / mm
-  	   << ", " << vtx->GetY0() / mm
-  	   << ", " << vtx->GetZ0() / mm 
-  	   << ", " << vtx->GetT0() / second << ")"
+  	   << " (" << vtx->GetX0() / CLHEP::mm
+  	   << ", " << vtx->GetY0() / CLHEP::mm
+  	   << ", " << vtx->GetZ0() / CLHEP::mm 
+  	   << ", " << vtx->GetT0() / CLHEP::second << ")"
   	   << G4endl;
 
     ExN02VertexInfo* vInfo 
@@ -171,10 +171,10 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 	// << ", " << G4BestUnit(vtx->GetY0(),"Length") 
 	// << ", " << G4BestUnit(vtx->GetZ0(),"Length") 
 	// << ", " << G4BestUnit(vtx->GetT0(),"Time") << ")"
-	     << " (" << incvtx->GetX0() / mm
-	     << ", " << incvtx->GetY0() / mm
-	     << ", " << incvtx->GetZ0() / mm 
-	     << ", " << incvtx->GetT0() / second << ")"
+	     << " (" << incvtx->GetX0() / CLHEP::mm
+	     << ", " << incvtx->GetY0() / CLHEP::mm
+	     << ", " << incvtx->GetZ0() / CLHEP::mm 
+	     << ", " << incvtx->GetT0() / CLHEP::second << ")"
 	     << G4endl;
       
       for (G4int nu=0; nu<incvtx->GetNumberOfParticle(); ++nu) {
@@ -282,19 +282,19 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   }
 
   // // Print out the informations from SteppingAction
-  // std::cout << std::endl;
-  // std::cout << "Print out the informations from SteppingAction:" << std::endl;
-  // std::cout << std::endl;
-  // std::cout << "# of Tracks = " << fNTracks << std::endl;
-  // for(G4int itrk=0;itrk<fNTracks;itrk++){
-  // std::cout << "Track ID: = " << fVecTrackID[itrk] 
-  // 	      << " - Track PDG: = " << fVecTrackPDG[itrk]   
-  // 	      << " - Track E: = " << fVecTrackE[itrk]   
-  //  	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
-  //  	      << std::endl;
-  // }
-  // std::cout << std::endl;
-
+  //std::cout << std::endl;
+  //std::cout << "Print out the informations from SteppingAction:" << std::endl;
+  //std::cout << std::endl;
+  //std::cout << "# of Tracks = " << fNTracks << std::endl;
+  //for(G4int itrk=0;itrk<fNTracks;itrk++){
+  //std::cout << "Track ID: = " << fVecTrackID[itrk] 
+  //	      << " - Track PDG: = " << fVecTrackPDG[itrk]   
+  //   	      << " - Track E: = " << fVecTrackE[itrk]   
+  //	      << " - Track Mom: = " << fVecTrackMomMag[itrk]   
+  //	      << std::endl;
+  //}
+  //std::cout << std::endl;
+  
 
 
 
@@ -308,11 +308,11 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
   
   // periodic printing
   //
-  if (eventID < 100 || eventID%100 == 0) {
-    G4cout << ">>> Event " << event->GetEventID() << G4endl;
-    G4cout << "    " << n_trajectories 
-	   << " trajectories stored in this event." << G4endl;
-  }
+  //if (eventID < 100 || eventID%100 == 0) {
+  G4cout << ">>> Event " << event->GetEventID() << G4endl;
+  G4cout << "    " << n_trajectories 
+	 << " trajectories stored in this event." << G4endl;
+  //}
   G4cout << G4endl;
 
   
@@ -368,6 +368,8 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
 		    "ExN02Code001", FatalException, msg);
        	continue;
       }
+
+    
       ND280Trajectory* traj = dynamic_cast<ND280Trajectory*>(g4Traj);
       if (!traj) {
 	G4ExceptionDescription msg;
@@ -384,16 +386,12 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       //}
 
       
-
-
-
-
-      
       traj->AddSDEnergyDeposit(energy);      
       //traj->AddSDLength(g4Hit->GetLength()); // used in nd280mc
       traj->AddSDLength(g4Hit->GetStepLength());
+      
 
-
+   
 
       //
       // THE FOLLOWING PIECE OF CODE OF nd280mc IS NOT IMPLEMENTED YET
@@ -430,6 +428,12 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       
     } // end loop over hits    
   } // end loop over hit containers
+
+
+
+  // Store the seed
+  //G4RunManager::GetRunManager()->rndmSaveThisEvent();
+
 
   G4cout << "End of EndOfEvent" << G4endl;
 

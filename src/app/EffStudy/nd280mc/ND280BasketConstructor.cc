@@ -146,12 +146,12 @@ void ND280BasketConstructor::Init(void) {
     SetLength(GetOuterLength());
     
     // Calculated later from P0DConstructor.
-    fP0DPosition = 990*meter;  
+    fP0DPosition = 990*CLHEP::meter;  
     
     // Offset taken from design measurements in unversioned copy of
     // ND280.org/integration/survey/measurements/"FGD and TPC Surveying-2.dwg"
     // provided by D. Karlen.  This is the center of TPC1.
-    fTrackerPosition = -0.5*GetInnerLength() + 4286.0*mm;
+    fTrackerPosition = -0.5*GetInnerLength() + 4286.0*CLHEP::mm;
 
     fDsECalPosition = 0.0;
     fDsECalVerticalPosition = 0.0;
@@ -283,7 +283,7 @@ double ND280BasketConstructor::GetTrackerServiceLength() {
   //
   // Value taken from ND280TrackerConstructor.cc ( through SetLength() )
   //
-  return 3702.0*mm;
+  return 3702.0*CLHEP::mm;
 }
 
 G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
@@ -395,7 +395,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     beam.SetLength(beamLength);
 
     G4RotationMatrix* rotP90Y = new G4RotationMatrix();
-    rotP90Y->rotateY(90*degree);
+    rotP90Y->rotateY(90*CLHEP::degree);
     beam.SetLocalName("beamTopDownstream");
     new G4PVPlacement(rotP90Y,          // rotation
                       G4ThreeVector(0,
@@ -447,7 +447,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     beam.SetLength(beamLength);
 
     G4RotationMatrix* rotP90X = new G4RotationMatrix();
-    rotP90X->rotateX(90*degree);
+    rotP90X->rotateX(90*CLHEP::degree);
     beam.SetLocalName("beamDownstreamSouth");
     new G4PVPlacement(rotP90X,          // rotation
                       G4ThreeVector((GetInnerWidth()/2+beamWidth/2),
@@ -624,8 +624,8 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     beam.SetLength(beamLength);
 
     G4RotationMatrix* rotP90YP90X = new G4RotationMatrix();
-    rotP90YP90X->rotateY(90*degree);
-    rotP90YP90X->rotateX(90*degree);
+    rotP90YP90X->rotateY(90*CLHEP::degree);
+    rotP90YP90X->rotateX(90*CLHEP::degree);
 
     beam.SetLocalName("hubDownstreamTop");
     new G4PVPlacement(rotP90YP90X,      // rotation
@@ -681,7 +681,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     G4LogicalVolume *logHub
         = new G4LogicalVolume(new G4Polyhedra(GetName()+"/CentreHub",
-                                              0*degree, 360*degree, 8,
+                                              0*CLHEP::degree, 360*CLHEP::degree, 8,
                                               2, zPlane, rInner, rOuter),
                                               FindMaterial("Steel"),
                                               GetName()+"/CentreHub");
@@ -696,7 +696,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     G4LogicalVolume *logHubAir
         = new G4LogicalVolume(new G4Polyhedra(GetName()+"/CentreHubAir",
-                                              0*degree, 360*degree, 8,
+                                              0*CLHEP::degree, 360*CLHEP::degree, 8,
                                               2,zPlaneAir,rInnerAir,rOuterAir),
                                               FindMaterial("Air"),
                                               GetName()+"/CentreHubAir");
@@ -716,7 +716,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                                          0, (GetAxleDiameter()/2 
                                              - GetAxleWallThickness()),
                                          beam.GetWallThickness()/2,
-                                         0*degree, 360*degree),
+                                         0*CLHEP::degree, 360*CLHEP::degree),
                                          FindMaterial("Air"),
                                          GetName()+"/CentreHubAirDisk");
 
@@ -749,7 +749,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                                          GetAxleDiameter()/2,
                                          GetUpstreamThickness()/2-
                                          beam.GetWallThickness(),
-                                         0*degree, 360*degree),
+                                         0*CLHEP::degree, 360*CLHEP::degree),
                                          FindMaterial("Steel"),
                                          GetName()+"/CentreHubSteelTube");
 
@@ -764,7 +764,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       0);               // copy #
 
     G4RotationMatrix* rotP45b2Z = new G4RotationMatrix();
-    rotP45b2Z->rotateZ(0.5*45.0*degree);
+    rotP45b2Z->rotateZ(0.5*45.0*CLHEP::degree);
 
     new G4PVPlacement(rotP45b2Z,        // rotation
                       G4ThreeVector(0, 0,
@@ -795,10 +795,10 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     G4LogicalVolume *logSupportTube
         = new G4LogicalVolume(new G4Tubs(GetName()+"/SupportTube",
-                                         250*mm/2-10*mm,
-                                         250*mm/2,
-                                         1250*mm/2,
-                                         0*degree, 360*degree),
+                                         250*CLHEP::mm/2-10*CLHEP::mm,
+                                         250*CLHEP::mm/2,
+                                         1250*CLHEP::mm/2,
+                                         0*CLHEP::degree, 360*CLHEP::degree),
                                          FindMaterial("Steel"),
                                          GetName()+"/SupportTube");
 
@@ -807,7 +807,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     new G4PVPlacement(0,                // rotation
                       G4ThreeVector(0,
                                     0,
-                                    -(GetOuterLength()+1250*mm)/2), // position
+                                    -(GetOuterLength()+1250*CLHEP::mm)/2), // position
                       logSupportTube,  // logical volume
                       GetName()+"/SupportTube", // name
                       logVolume,        // mother  volume
@@ -816,7 +816,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     new G4PVPlacement(0,                // rotation
                       G4ThreeVector(0,
                                     0,
-                                    (GetOuterLength()+1250*mm)/2), // position
+                                    (GetOuterLength()+1250*CLHEP::mm)/2), // position
                       logSupportTube,  // logical volume
                       GetName()+"/SupportTube", // name
                       logVolume,        // mother  volume
@@ -827,9 +827,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     G4LogicalVolume *logUStiffPlate
          = new G4LogicalVolume(new G4Box(GetName()+"/UStiffPlate",
-                                         640*mm/2,
-                                         765*mm/2,
-                                         15*mm/2),
+                                         640*CLHEP::mm/2,
+                                         765*CLHEP::mm/2,
+                                         15*CLHEP::mm/2),
                                          FindMaterial("Steel"),
                                          GetName()+"/UStiffPlate");
 
@@ -837,21 +837,21 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     
     G4LogicalVolume *logUStiffPlateAir
         = new G4LogicalVolume(new G4Trap(GetName()+"/UStiffPlateAir",
-                                         15*mm,
-                                         (765*mm-165*mm),
-                                         (640*mm-250*mm),
-                                         1*mm),
+                                         15*CLHEP::mm,
+                                         (765*CLHEP::mm-165*CLHEP::mm),
+                                         (640*CLHEP::mm-250*CLHEP::mm),
+                                         1*CLHEP::mm),
                                          FindMaterial("Air"),
                                          GetName()+"/UStiffPlateAir");
 
     SetVisAttributes(logUStiffPlateAir);
     
     G4RotationMatrix* rotP180Z = new G4RotationMatrix();
-    rotP180Z->rotateZ(180*degree);
+    rotP180Z->rotateZ(180*CLHEP::degree);
 
     new G4PVPlacement(rotP180Z,         // rotation
-                      G4ThreeVector(640*mm/2-(640*mm-250*mm)/4,
-                                    765*mm/2-(765*mm-165*mm)/2,
+                      G4ThreeVector(640*CLHEP::mm/2-(640*CLHEP::mm-250*CLHEP::mm)/4,
+                                    765*CLHEP::mm/2-(765*CLHEP::mm-165*CLHEP::mm)/2,
                                     0), // position
                       logUStiffPlateAir,  // logical volume
                       GetName()+"/UStiffPlateAir", // name
@@ -861,8 +861,8 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     new G4PVPlacement(rotP90Y,          // rotation
                       G4ThreeVector( 0,
-                                     (250*mm/2+765*mm/2),
-                                     (GetOuterLength()/2+640*mm/2)), // position
+                                     (250*CLHEP::mm/2+765*CLHEP::mm/2),
+                                     (GetOuterLength()/2+640*CLHEP::mm/2)), // position
                       logUStiffPlate,   // logical volume
                       GetName()+"/UStiffPlate", // name
                       logVolume,        // mother  volume
@@ -870,12 +870,12 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       0);               // copy #
 
     G4RotationMatrix* rotM90Y = new G4RotationMatrix();
-    rotM90Y->rotateY(-90*degree);
+    rotM90Y->rotateY(-90*CLHEP::degree);
 
     new G4PVPlacement(rotM90Y,          // rotation
                       G4ThreeVector( 0,
-                                     (250*mm/2+765*mm/2),
-                                    -(GetOuterLength()/2+640*mm/2)), // position
+                                     (250*CLHEP::mm/2+765*CLHEP::mm/2),
+                                    -(GetOuterLength()/2+640*CLHEP::mm/2)), // position
                       logUStiffPlate,   // logical volume
                       GetName()+"/UStiffPlate", // name
                       logVolume,        // mother  volume
@@ -886,9 +886,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     G4LogicalVolume *logLStiffPlate
          = new G4LogicalVolume(new G4Box(GetName()+"/LStiffPlate",
-                                         640*mm/2,
-                                         765*mm/2,
-                                         15*mm/2),
+                                         640*CLHEP::mm/2,
+                                         765*CLHEP::mm/2,
+                                         15*CLHEP::mm/2),
                                          FindMaterial("Steel"),
                                          GetName()+"/LStiffPlate");
 
@@ -896,8 +896,8 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     
     new G4PVPlacement(rotP90Y,          // rotation
                       G4ThreeVector( 0,
-                                    -(250*mm/2+765*mm/2),
-                                     (GetOuterLength()/2+640*mm/2)), // position
+                                    -(250*CLHEP::mm/2+765*CLHEP::mm/2),
+                                     (GetOuterLength()/2+640*CLHEP::mm/2)), // position
                       logLStiffPlate,   // logical volume
                       GetName()+"/LStiffPlate", // name
                       logVolume,        // mother  volume
@@ -905,8 +905,8 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       0);               // copy #
     new G4PVPlacement(rotM90Y,          // rotation
                       G4ThreeVector( 0,
-                                    -(250*mm/2+765*mm/2),
-                                    -(GetOuterLength()/2+640*mm/2)), // position
+                                    -(250*CLHEP::mm/2+765*CLHEP::mm/2),
+                                    -(GetOuterLength()/2+640*CLHEP::mm/2)), // position
                       logLStiffPlate,   // logical volume
                       GetName()+"/LStiffPlate", // name
                       logVolume,        // mother  volume
@@ -916,16 +916,16 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     // Construct the Diagonal Lower Bracing P0D Side (13)
 
-    G4double dx1 = (GetOuterHeight()/2-300*mm) * std::sin(pi/4);
-    G4double dx2 = dx1 - std::tan(pi/4)*200*mm;
+    G4double dx1 = (GetOuterHeight()/2-300*CLHEP::mm) * std::sin(pi/4);
+    G4double dx2 = dx1 - std::tan(pi/4)*200*CLHEP::mm;
 
     G4LogicalVolume *logDiagLBracing
          = new G4LogicalVolume(new G4Trd(GetName()+"/DiagLBracing",
                                          dx1,
                                          dx2,
-                                         100/2*mm,
-                                         100/2*mm,
-                                         200/2*mm),
+                                         100/2*CLHEP::mm,
+                                         100/2*CLHEP::mm,
+                                         200/2*CLHEP::mm),
                                          FindMaterial("Steel"),
                                          GetName()+"/DiagLBracing");
 
@@ -933,11 +933,11 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     
     G4LogicalVolume *logDiagLBracingAir
          = new G4LogicalVolume(new G4Trd(GetName()+"/DiagLBracingAir",
-                                         dx1-6*mm*std::tan(pi/4),
-                                         dx2+6*mm*std::tan(pi/4),
-                                         100/2*mm-6*mm,
-                                         100/2*mm-6*mm,
-                                         200/2*mm-6*mm),
+                                         dx1-6*CLHEP::mm*std::tan(pi/4),
+                                         dx2+6*CLHEP::mm*std::tan(pi/4),
+                                         100/2*CLHEP::mm-6*CLHEP::mm,
+                                         100/2*CLHEP::mm-6*CLHEP::mm,
+                                         200/2*CLHEP::mm-6*CLHEP::mm),
                                          FindMaterial("Air"),
                                          GetName()+"/DiagLBracingAir");
 
@@ -953,29 +953,29 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       false,            // no boolean operations
                       0);               // copy #
 
-    G4double s1 = (GetOuterHeight()/2-300*mm)*std::cos(pi/4);
+    G4double s1 = (GetOuterHeight()/2-300*CLHEP::mm)*std::cos(pi/4);
 
     G4RotationMatrix* rotP90ZP225Y = new G4RotationMatrix();
-    rotP90ZP225Y->rotateZ(90*degree);
-    rotP90ZP225Y->rotateY(225*degree);
+    rotP90ZP225Y->rotateZ(90*CLHEP::degree);
+    rotP90ZP225Y->rotateY(225*CLHEP::degree);
 
     new G4PVPlacement(rotP90ZP225Y,      // rotation
-                      G4ThreeVector( (GetOuterWidth()/2-100*mm/2),
-                                    -(GetOuterHeight()/2-300*mm-
-                                      (s1-200/2*mm)*std::sin(pi/4)),
+                      G4ThreeVector( (GetOuterWidth()/2-100*CLHEP::mm/2),
+                                    -(GetOuterHeight()/2-300*CLHEP::mm-
+                                      (s1-200/2*CLHEP::mm)*std::sin(pi/4)),
                                     -(GetInnerLength()/2-
-                                      (s1-200/2*mm)*std::cos(pi/4))),// position
+                                      (s1-200/2*CLHEP::mm)*std::cos(pi/4))),// position
                       logDiagLBracing,   // logical volume
                       GetName()+"/DiagLBracing", // name
                       logVolume,        // mother  volume
                       false,            // no boolean operations
                       0);               // copy #
     new G4PVPlacement(rotP90ZP225Y,     // rotation
-                      G4ThreeVector(-(GetOuterWidth()/2-100*mm/2),
-                                    -(GetOuterHeight()/2-300*mm-
-                                      (s1-200/2*mm)*std::sin(pi/4)),
+                      G4ThreeVector(-(GetOuterWidth()/2-100*CLHEP::mm/2),
+                                    -(GetOuterHeight()/2-300*CLHEP::mm-
+                                      (s1-200/2*CLHEP::mm)*std::sin(pi/4)),
                                     -(GetInnerLength()/2-
-                                      (s1-200/2*mm)*std::cos(pi/4))),// position
+                                      (s1-200/2*CLHEP::mm)*std::cos(pi/4))),// position
                       logDiagLBracing,   // logical volume
                       GetName()+"/DiagLBracing", // name
                       logVolume,        // mother  volume
@@ -984,16 +984,16 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     // Construct the Diagonal Upper Bracing P0D Side (12)
 
-    dx1 = (GetOuterHeight()/2-200*mm) * std::sin(pi/4);
-    dx2 = dx1 - std::tan(pi/4)*200*mm;
+    dx1 = (GetOuterHeight()/2-200*CLHEP::mm) * std::sin(pi/4);
+    dx2 = dx1 - std::tan(pi/4)*200*CLHEP::mm;
 
     G4LogicalVolume *logDiagUBracing
          = new G4LogicalVolume(new G4Trd(GetName()+"/DiagUBracing",
                                          dx1,
                                          dx2,
-                                         100/2*mm,
-                                         100/2*mm,
-                                         200/2*mm),
+                                         100/2*CLHEP::mm,
+                                         100/2*CLHEP::mm,
+                                         200/2*CLHEP::mm),
                                          FindMaterial("Steel"),
                                          GetName()+"/DiagUBracing");
 
@@ -1001,11 +1001,11 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     
     G4LogicalVolume *logDiagUBracingAir
          = new G4LogicalVolume(new G4Trd(GetName()+"/DiagUBracingAir",
-                                         dx1-6*mm*std::tan(pi/4),
-                                         dx2+6*mm*std::tan(pi/4),
-                                         100/2*mm-6*mm,
-                                         100/2*mm-6*mm,
-                                         200/2*mm-6*mm),
+                                         dx1-6*CLHEP::mm*std::tan(pi/4),
+                                         dx2+6*CLHEP::mm*std::tan(pi/4),
+                                         100/2*CLHEP::mm-6*CLHEP::mm,
+                                         100/2*CLHEP::mm-6*CLHEP::mm,
+                                         200/2*CLHEP::mm-6*CLHEP::mm),
                                          FindMaterial("Air"),
                                          GetName()+"/DiagUBracingAir");
 
@@ -1021,29 +1021,29 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       false,            // no boolean operations
                       0);               // copy #
 
-    s1 = (GetOuterHeight()/2-200*mm)*std::cos(pi/4);
+    s1 = (GetOuterHeight()/2-200*CLHEP::mm)*std::cos(pi/4);
 
     G4RotationMatrix* rotP90ZP135Y = new G4RotationMatrix();
-    rotP90ZP135Y->rotateZ(90*degree);
-    rotP90ZP135Y->rotateY(135*degree);
+    rotP90ZP135Y->rotateZ(90*CLHEP::degree);
+    rotP90ZP135Y->rotateY(135*CLHEP::degree);
 
     new G4PVPlacement(rotP90ZP135Y,      // rotation
-                      G4ThreeVector( (GetOuterWidth()/2-100*mm/2),
-                                     (GetOuterHeight()/2-200*mm-
-                                      (s1-200/2*mm)*std::sin(pi/4)),
+                      G4ThreeVector( (GetOuterWidth()/2-100*CLHEP::mm/2),
+                                     (GetOuterHeight()/2-200*CLHEP::mm-
+                                      (s1-200/2*CLHEP::mm)*std::sin(pi/4)),
                                     -(GetInnerLength()/2-
-                                      (s1-200/2*mm)*std::cos(pi/4))),// position
+                                      (s1-200/2*CLHEP::mm)*std::cos(pi/4))),// position
                       logDiagUBracing,   // logical volume
                       GetName()+"/DiagUBracing", // name
                       logVolume,        // mother  volume
                       false,            // no boolean operations
                       0);               // copy #
     new G4PVPlacement(rotP90ZP135Y,     // rotation
-                      G4ThreeVector(-(GetOuterWidth()/2-100*mm/2),
-                                     (GetOuterHeight()/2-200*mm-
-                                      (s1-200/2*mm)*std::sin(pi/4)),
+                      G4ThreeVector(-(GetOuterWidth()/2-100*CLHEP::mm/2),
+                                     (GetOuterHeight()/2-200*CLHEP::mm-
+                                      (s1-200/2*CLHEP::mm)*std::sin(pi/4)),
                                     -(GetInnerLength()/2-
-                                      (s1-200/2*mm)*std::cos(pi/4))),// position
+                                      (s1-200/2*CLHEP::mm)*std::cos(pi/4))),// position
                       logDiagUBracing,   // logical volume
                       GetName()+"/DiagUBracing", // name
                       logVolume,        // mother  volume
@@ -1052,16 +1052,16 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     // Construct the Diagonal Bracing ECAL Side (14)
 
-    dx1 = 500.63*mm * std::sin(pi/4);
-    dx2 = dx1 - std::tan(pi/4)*200*mm;
+    dx1 = 500.63*CLHEP::mm * std::sin(pi/4);
+    dx2 = dx1 - std::tan(pi/4)*200*CLHEP::mm;
 
     G4LogicalVolume *logDiagBracing
          = new G4LogicalVolume(new G4Trd(GetName()+"/DiagBracing",
                                          dx1,
                                          dx2,
-                                         100/2*mm,
-                                         100/2*mm,
-                                         200/2*mm),
+                                         100/2*CLHEP::mm,
+                                         100/2*CLHEP::mm,
+                                         200/2*CLHEP::mm),
                                          FindMaterial("Steel"),
                                          GetName()+"/DiagBracing");
 
@@ -1069,11 +1069,11 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     
     G4LogicalVolume *logDiagBracingAir
          = new G4LogicalVolume(new G4Trd(GetName()+"/DiagBracingAir",
-                                         dx1-6*mm*std::tan(pi/4),
-                                         dx2+6*mm*std::tan(pi/4),
-                                         100/2*mm-6*mm,
-                                         100/2*mm-6*mm,
-                                         200/2*mm-6*mm),
+                                         dx1-6*CLHEP::mm*std::tan(pi/4),
+                                         dx2+6*CLHEP::mm*std::tan(pi/4),
+                                         100/2*CLHEP::mm-6*CLHEP::mm,
+                                         100/2*CLHEP::mm-6*CLHEP::mm,
+                                         200/2*CLHEP::mm-6*CLHEP::mm),
                                          FindMaterial("Air"),
                                          GetName()+"/DiagBracingAir");
 
@@ -1089,29 +1089,29 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       false,            // no boolean operations
                       0);               // copy #
 
-    s1 = 500.63*mm*std::cos(pi/4);
+    s1 = 500.63*CLHEP::mm*std::cos(pi/4);
 
     G4RotationMatrix* rotP90ZM45Y = new G4RotationMatrix();
-    rotP90ZM45Y->rotateZ(90*degree);
-    rotP90ZM45Y->rotateY(-45*degree);
+    rotP90ZM45Y->rotateZ(90*CLHEP::degree);
+    rotP90ZM45Y->rotateY(-45*CLHEP::degree);
 
     new G4PVPlacement(rotP90ZM45Y,      // rotation
-                      G4ThreeVector( (GetOuterWidth()/2-100*mm/2),
-                                    -(GetOuterHeight()/2-300*mm-
-                                      (s1-200/2*mm)*std::sin(pi/4)),
+                      G4ThreeVector( (GetOuterWidth()/2-100*CLHEP::mm/2),
+                                    -(GetOuterHeight()/2-300*CLHEP::mm-
+                                      (s1-200/2*CLHEP::mm)*std::sin(pi/4)),
                                      (GetInnerLength()/2-
-                                      (s1-200/2*mm)*std::cos(pi/4))),// position
+                                      (s1-200/2*CLHEP::mm)*std::cos(pi/4))),// position
                       logDiagBracing,   // logical volume
                       GetName()+"/DiagBracing", // name
                       logVolume,        // mother  volume
                       false,            // no boolean operations
                       0);               // copy #
     new G4PVPlacement(rotP90ZM45Y,      // rotation
-                      G4ThreeVector(-(GetOuterWidth()/2-100*mm/2),
-                                    -(GetOuterHeight()/2-300*mm-
-                                      (s1-200/2*mm)*std::sin(pi/4)),
+                      G4ThreeVector(-(GetOuterWidth()/2-100*CLHEP::mm/2),
+                                    -(GetOuterHeight()/2-300*CLHEP::mm-
+                                      (s1-200/2*CLHEP::mm)*std::sin(pi/4)),
                                      (GetInnerLength()/2-
-                                      (s1-200/2*mm)*std::cos(pi/4))),// position
+                                      (s1-200/2*CLHEP::mm)*std::cos(pi/4))),// position
                       logDiagBracing,   // logical volume
                       GetName()+"/DiagBracing", // name
                       logVolume,        // mother  volume
@@ -1119,26 +1119,26 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       1);               // copy #
 
     G4RotationMatrix* rotP90ZP45Y = new G4RotationMatrix();
-    rotP90ZP45Y->rotateZ(90*degree);
-    rotP90ZP45Y->rotateY(45*degree);
+    rotP90ZP45Y->rotateZ(90*CLHEP::degree);
+    rotP90ZP45Y->rotateY(45*CLHEP::degree);
 
     new G4PVPlacement(rotP90ZP45Y,      // rotation
-                      G4ThreeVector( (GetOuterWidth()/2-100*mm/2),
-                                     (GetOuterHeight()/2-200*mm-
-                                      (s1-200/2*mm)*std::sin(pi/4)),
+                      G4ThreeVector( (GetOuterWidth()/2-100*CLHEP::mm/2),
+                                     (GetOuterHeight()/2-200*CLHEP::mm-
+                                      (s1-200/2*CLHEP::mm)*std::sin(pi/4)),
                                      (GetInnerLength()/2-
-                                      (s1-200/2*mm)*std::cos(pi/4))),// position
+                                      (s1-200/2*CLHEP::mm)*std::cos(pi/4))),// position
                       logDiagBracing,   // logical volume
                       GetName()+"/DiagBracing", // name
                       logVolume,        // mother  volume
                       false,            // no boolean operations
                       2);               // copy #
     new G4PVPlacement(rotP90ZP45Y,      // rotation
-                      G4ThreeVector(-(GetOuterWidth()/2-100*mm/2),
-                                     (GetOuterHeight()/2-200*mm-
-                                      (s1-200/2*mm)*std::sin(pi/4)),
+                      G4ThreeVector(-(GetOuterWidth()/2-100*CLHEP::mm/2),
+                                     (GetOuterHeight()/2-200*CLHEP::mm-
+                                      (s1-200/2*CLHEP::mm)*std::sin(pi/4)),
                                      (GetInnerLength()/2-
-                                      (s1-200/2*mm)*std::cos(pi/4))),// position
+                                      (s1-200/2*CLHEP::mm)*std::cos(pi/4))),// position
                       logDiagBracing,   // logical volume
                       GetName()+"/DiagBracing", // name
                       logVolume,        // mother  volume
@@ -1147,13 +1147,13 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 
     // Construct the ECAL Support (18)
 
-    dx1 = 715*mm - 300*mm - (500.63*mm+140*mm-492.5*mm)*std::tan(pi/4);
-    dx2 = dx1 - 200*mm/std::tan(pi/4);
+    dx1 = 715*CLHEP::mm - 300*CLHEP::mm - (500.63*CLHEP::mm+140*CLHEP::mm-492.5*CLHEP::mm)*std::tan(pi/4);
+    dx2 = dx1 - 200*CLHEP::mm/std::tan(pi/4);
 
     G4LogicalVolume *logEcalSupport
          = new G4LogicalVolume(new G4Trap(GetName()+"/EcalSupport",
-                                         100*mm,
-                                         200*mm,
+                                         100*CLHEP::mm,
+                                         200*CLHEP::mm,
                                          dx1,
                                          dx2),
                                          FindMaterial("Steel"),
@@ -1163,17 +1163,17 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     
     G4LogicalVolume *logEcalSupportAir
          = new G4LogicalVolume(new G4Trap(GetName()+"/EcalSupportAir",
-                                         100*mm-2*6*mm,
-                                         200*mm-2*6*mm,
-                                         dx1-6*mm*std::tan(pi/4)-25*mm,
-                                         dx2+6*mm*std::tan(pi/4)-25*mm),
+                                         100*CLHEP::mm-2*6*CLHEP::mm,
+                                         200*CLHEP::mm-2*6*CLHEP::mm,
+                                         dx1-6*CLHEP::mm*std::tan(pi/4)-25*CLHEP::mm,
+                                         dx2+6*CLHEP::mm*std::tan(pi/4)-25*CLHEP::mm),
                                          FindMaterial("Air"),
                                          GetName()+"/EcalSupportAir");
 
     SetVisAttributes(logEcalSupportAir);
 
     new G4PVPlacement(0,                // rotation
-                      G4ThreeVector(25*mm/2,
+                      G4ThreeVector(25*CLHEP::mm/2,
                                     0,
                                     0), // position
                       logEcalSupportAir,// logical volume
@@ -1183,16 +1183,16 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       0);               // copy #
 
     G4RotationMatrix* rotP90YP90Z = new G4RotationMatrix();
-    rotP90YP90Z->rotateY(90*degree);
-    rotP90YP90Z->rotateZ(90*degree);
+    rotP90YP90Z->rotateY(90*CLHEP::degree);
+    rotP90YP90Z->rotateZ(90*CLHEP::degree);
 
-    s1 = (dx1 - 200*mm/2*std::tan(pi/4))/2;
+    s1 = (dx1 - 200*CLHEP::mm/2*std::tan(pi/4))/2;
 
     // Don't build because of overlaps.
     new G4PVPlacement(rotP90YP90Z,      // rotation
-                      G4ThreeVector( (GetOuterWidth()/2-100*mm/2),
-                                    -(GetOuterHeight()/2 - 715*mm + s1),
-                                     (GetOuterLength()/2-492.5*mm+200*mm/2)),
+                      G4ThreeVector( (GetOuterWidth()/2-100*CLHEP::mm/2),
+                                    -(GetOuterHeight()/2 - 715*CLHEP::mm + s1),
+                                     (GetOuterLength()/2-492.5*CLHEP::mm+200*CLHEP::mm/2)),
                       logEcalSupport,   // logical volume
                       GetName()+"/EcalSupport", // name
                       logVolume,        // mother  volume
@@ -1200,9 +1200,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
                       0);               // copy #
 
     new G4PVPlacement(rotP90YP90Z,      // rotation
-                      G4ThreeVector(-(GetOuterWidth()/2-100*mm/2),
-                                    -(GetOuterHeight()/2 - 715*mm + s1),
-                                     (GetOuterLength()/2-492.5*mm+200*mm/2)),
+                      G4ThreeVector(-(GetOuterWidth()/2-100*CLHEP::mm/2),
+                                    -(GetOuterHeight()/2 - 715*CLHEP::mm + s1),
+                                     (GetOuterLength()/2-492.5*CLHEP::mm+200*CLHEP::mm/2)),
                       logEcalSupport,   // logical volume
                       GetName()+"/EcalSupport", // name
                       logVolume,        // mother  volume
@@ -1391,12 +1391,12 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     // ND280Log("Basket Inner Length: " << GetInnerLength()
     //          << "   Total Length: " << GetOuterLength()/mm << " mm");
 
-    G4cout << "Basket Inner Width: " << GetInnerWidth()/mm << " mm"
-	   << "   Total Width: " << GetOuterWidth()/mm << " mm" << G4endl;
-    G4cout << "Basket Inner Height: " << GetInnerHeight()/mm << " mm"
-	   << "   Total Height: " << GetOuterHeight()/mm << " mm" << G4endl;
+    G4cout << "Basket Inner Width: " << GetInnerWidth()/CLHEP::mm << " mm"
+	   << "   Total Width: " << GetOuterWidth()/CLHEP::mm << " mm" << G4endl;
+    G4cout << "Basket Inner Height: " << GetInnerHeight()/CLHEP::mm << " mm"
+	   << "   Total Height: " << GetOuterHeight()/CLHEP::mm << " mm" << G4endl;
     G4cout << "Basket Inner Length: " << GetInnerLength()
-	   << "   Total Length: " << GetOuterLength()/mm << " mm" << G4endl;
+	   << "   Total Length: " << GetOuterLength()/CLHEP::mm << " mm" << G4endl;
 
   }
   
@@ -1420,7 +1420,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
       
       G4LogicalVolume* p0dVolume = p0d.GetPiece();
       
-      if (fP0DPosition>10*meter) {
+      if (fP0DPosition>10*CLHEP::meter) {
         fP0DPosition = -GetInnerLength()/2;
         fP0DPosition += p0d.GetUpstreamSpace();
         fP0DPosition += p0d.GetLength()/2;
@@ -1434,12 +1434,12 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
       //          << " to " 
       //          << (fP0DPosition + p0d.GetLength()/2)/mm << " mm");
       G4cout << "P0D Envelope Length: "
-	     << p0d.GetLength()/mm << " mm" << G4endl;
-      G4cout << "P0D Z Center: " << fP0DPosition / mm << " mm"
+	     << p0d.GetLength()/CLHEP::mm << " mm" << G4endl;
+      G4cout << "P0D Z Center: " << fP0DPosition / CLHEP::mm << " mm"
 	     << " from "
-	     << (fP0DPosition - p0d.GetLength()/2)/mm << " mm"
+	     << (fP0DPosition - p0d.GetLength()/2)/CLHEP::mm << " mm"
 	     << " to " 
-	     << (fP0DPosition + p0d.GetLength()/2)/mm << " mm" << G4endl;
+	     << (fP0DPosition + p0d.GetLength()/2)/CLHEP::mm << " mm" << G4endl;
       
       double p0dDownstreamEnd = fP0DPosition + p0d.GetLength()/2;
       
@@ -1515,7 +1515,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
   /// system, the tracker remains at a fixed global coordinate.
   ///////////////////////////////////////////
   const G4double centerLineX = -GetDeflectedCenter().x();
-  const G4double centerLineY = 30*mm - GetDeflectedCenter().y();
+  const G4double centerLineY = 30*CLHEP::mm - GetDeflectedCenter().y();
   
   //////////////////////////////////////////
   // CONSTRUCT THE DOWNSTREAM ECAL INSIDE BASKET
@@ -1541,9 +1541,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
       G4ExceptionDescription msg;
       msg << dsECal.GetName()
 	  << " is "
-	  << dsECal.GetWidth()/cm
+	  << dsECal.GetWidth()/CLHEP::cm
 	  << " cm wide with "
-	  << GetInnerWidth()/cm << " cm"
+	  << GetInnerWidth()/CLHEP::cm << " cm"
 	  << " available" << G4endl
 	  << "ND280BasketConstructor:: DSECal volume too wide"
 	  << G4endl;
@@ -1564,9 +1564,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
       G4ExceptionDescription msg;
       msg << dsECal.GetName()
 	  << " is "
-	  << dsECal.GetHeight()/cm
+	  << dsECal.GetHeight()/CLHEP::cm
 	  << " cm height with "
-	  << GetInnerWidth()/cm << " cm"
+	  << GetInnerWidth()/CLHEP::cm << " cm"
 	  << " available" << G4endl
 	  << "ND280BasketConstructor:: DSECal volume too high"
 	  << G4endl;
@@ -1601,7 +1601,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
     // Position
     //
     
-    G4ThreeVector DsECalPos(centerLineX, centerLineY-30.0*mm, 0.0);
+    G4ThreeVector DsECalPos(centerLineX, centerLineY-30.0*CLHEP::mm, 0.0);
     if( dsECal.GetExtraOffset().mag() != 0.0 ) {
         DsECalPos += dsECal.GetOffset();
     }
@@ -1646,18 +1646,18 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
         // ND280Log("Downstream ECal Y Position: " << DsECalPos.y()/mm << " mm");
       
         G4cout << "Downstream ECal Envelope Length: " 
-	       << dsECal.GetLength()/mm << " mm"
+	       << dsECal.GetLength()/CLHEP::mm << " mm"
 	       << G4endl
 	       << "Downstream ECal Z Center: " 
-	       << DsECalPos.z() / mm << " mm"
+	       << DsECalPos.z() / CLHEP::mm << " mm"
 	       << " from "
-	       << dsECalUpstreamEnd/mm << " mm"
+	       << dsECalUpstreamEnd/CLHEP::mm << " mm"
 	       << " to " 
-	       << dsECalDownstreamEnd/mm << " mm" 
+	       << dsECalDownstreamEnd/CLHEP::mm << " mm" 
 	       << G4endl
-	       << "Downstream ECal X Position: " << DsECalPos.x()/mm << " mm"
+	       << "Downstream ECal X Position: " << DsECalPos.x()/CLHEP::mm << " mm"
 	       << G4endl
-	       << "Downstream ECal Y Position: " << DsECalPos.y()/mm << " mm"
+	       << "Downstream ECal Y Position: " << DsECalPos.y()/CLHEP::mm << " mm"
 	       << G4endl;
 
     }
@@ -1682,9 +1682,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
       G4ExceptionDescription msg;
       msg << dsECal.GetName()
 	  << " downstream end is at "
-	  << dsECalDownstreamEnd/mm
+	  << dsECalDownstreamEnd/CLHEP::mm
 	  << " mm, but inner basket ends at " 
-	  << GetInnerWidth()/mm << " mm"
+	  << GetInnerWidth()/CLHEP::mm << " mm"
 	  << "ND280BasketConstructor:: volume out of basket"
 	  << G4endl;
       G4Exception("ND280BasketConstructor::GetPiece",
@@ -1721,9 +1721,9 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
       G4ExceptionDescription msg;
       msg << dsECal.GetName()
 	  << " downstream end is at "
-	  << dsECalUpstreamEnd/mm
+	  << dsECalUpstreamEnd/CLHEP::mm
 	  << " mm, but collides basket at " 
-	  << GetInnerLength()/mm << " mm"
+	  << GetInnerLength()/CLHEP::mm << " mm"
 	  << "ND280BasketConstructor:: volume collision"
 	  << G4endl;
       G4Exception("ND280BasketConstructor::GetPiece",

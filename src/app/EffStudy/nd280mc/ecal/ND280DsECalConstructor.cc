@@ -19,9 +19,9 @@ void ND280DsECalModuleConstructor::Init() {
     fND280XMLInput = InputPersistencyManager->GetXMLInput();  
     ////////
 
-    SetLengthX(2300*mm);
-    SetWidthY(2300*mm);
-    SetHeightZ(485*mm);
+    SetLengthX(2300*CLHEP::mm);
+    SetWidthY(2300*CLHEP::mm);
+    SetHeightZ(485*CLHEP::mm);
     fBuild = true;
 
     AddConstructor(new ND280DsCarbonPanelConstructor("BasePanel",this));
@@ -251,16 +251,16 @@ G4LogicalVolume* ND280DsECalModuleConstructor::GetPiece() {
     double cphoriz_pos_x = 0.0;
     double cphoriz_pos_y = (GetWidthY() - ND280ECal::CoolingPlateBaseWidth) / 2.0;
     G4RotationMatrix* cphoriz0_rotation = new G4RotationMatrix();
-    cphoriz0_rotation->rotateZ(-90*degree);
+    cphoriz0_rotation->rotateZ(-90*CLHEP::degree);
     G4RotationMatrix* cphoriz1_rotation = new G4RotationMatrix();
-    cphoriz1_rotation->rotateZ(90*degree);
+    cphoriz1_rotation->rotateZ(90*CLHEP::degree);
 	
     // Vertical plate
     double cpvert_pos_x = (GetLengthX() - ND280ECal::CoolingPlateBaseWidth) / 2.0;
     double cpvert_pos_y = 0.0;
     G4RotationMatrix* cpvert0_rotation = new G4RotationMatrix();
     G4RotationMatrix* cpvert1_rotation = new G4RotationMatrix();
-    cpvert1_rotation->rotateZ(180*degree);
+    cpvert1_rotation->rotateZ(180*CLHEP::degree);
 	
     // horizontal top
     new G4PVPlacement(cphoriz0_rotation,           // rotation

@@ -58,8 +58,8 @@ G4LogicalVolume* ND280BrlECalConstructor::GetPiece() {
             ND280ECalModuleConstructor& module
                 = Get<ND280ECalModuleConstructor>("LeftSide");
             module_logical = module.GetPiece();
-            module_rotation->rotateX(-180*degree);
-            module_rotation->rotateY(-90*degree);
+            module_rotation->rotateX(-180*CLHEP::degree);
+            module_rotation->rotateY(-90*CLHEP::degree);
             SetWidth(module.GetHeightZ());
             SetHeight(module.GetWidthY());
             SetLength(module.GetLengthX());
@@ -68,8 +68,8 @@ G4LogicalVolume* ND280BrlECalConstructor::GetPiece() {
             ND280ECalModuleConstructor& module
                 = Get<ND280ECalModuleConstructor>("RightSide");
             module_logical = module.GetPiece();
-            module_rotation->rotateX(-180*degree);
-            module_rotation->rotateY(90*degree);
+            module_rotation->rotateX(-180*CLHEP::degree);
+            module_rotation->rotateY(90*CLHEP::degree);
             SetWidth(module.GetHeightZ());
             SetHeight(module.GetWidthY());
             SetLength(module.GetLengthX());
@@ -81,8 +81,8 @@ G4LogicalVolume* ND280BrlECalConstructor::GetPiece() {
             ND280ECalModuleConstructor& module
                 = Get<ND280ECalModuleConstructor>("TopLeftBotRight");
             module_logical = module.GetPiece();
-            module_rotation->rotateY(90*degree);
-            module_rotation->rotateX(90*degree);
+            module_rotation->rotateY(90*CLHEP::degree);
+            module_rotation->rotateX(90*CLHEP::degree);
             SetWidth(module.GetWidthY());
             SetHeight(module.GetHeightZ());
             SetLength(module.GetLengthX());
@@ -91,8 +91,8 @@ G4LogicalVolume* ND280BrlECalConstructor::GetPiece() {
             ND280ECalModuleConstructor& module
                 = Get<ND280ECalModuleConstructor>("BotLeftTopRight");
             module_logical = module.GetPiece();
-            module_rotation->rotateY(-90*degree);
-            module_rotation->rotateX(90*degree);
+            module_rotation->rotateY(-90*CLHEP::degree);
+            module_rotation->rotateX(90*CLHEP::degree);
             SetWidth(module.GetWidthY());
             SetHeight(module.GetHeightZ());
             SetLength(module.GetLengthX());
@@ -104,8 +104,8 @@ G4LogicalVolume* ND280BrlECalConstructor::GetPiece() {
             ND280ECalModuleConstructor& module
                 = Get<ND280ECalModuleConstructor>("BotLeftTopRight");
             module_logical = module.GetPiece();
-            module_rotation->rotateY(-90*degree);
-            module_rotation->rotateX(-90*degree);
+            module_rotation->rotateY(-90*CLHEP::degree);
+            module_rotation->rotateX(-90*CLHEP::degree);
             SetWidth(module.GetWidthY());
             SetHeight(module.GetHeightZ());
             SetLength(module.GetLengthX());
@@ -114,8 +114,8 @@ G4LogicalVolume* ND280BrlECalConstructor::GetPiece() {
             ND280ECalModuleConstructor& module
                 = Get<ND280ECalModuleConstructor>("TopLeftBotRight");
             module_logical = module.GetPiece();
-            module_rotation->rotateY(90*degree);
-            module_rotation->rotateX(-90*degree);
+            module_rotation->rotateY(90*CLHEP::degree);
+            module_rotation->rotateX(-90*CLHEP::degree);
             SetWidth(module.GetWidthY());
             SetHeight(module.GetHeightZ());
             SetLength(module.GetLengthX());

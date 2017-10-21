@@ -59,7 +59,7 @@ void ND280P0DuleConstructor::Init() {
     // thickness is set to the nominal value.  The range of possible values is
     // between 0.20 mm and 0.27*mm.  This range was estimated based on the
     // amount of epoxy used during construction.
-    SetEpoxyThickness(0.25*mm);
+    SetEpoxyThickness(0.25*CLHEP::mm);
 
     AddConstructor(new ND280GapConstructor("LightTight",this));
     Get<ND280GapConstructor>("LightTight").SetMaterialName("Polystyrene");
@@ -71,7 +71,7 @@ void ND280P0DuleConstructor::Init() {
     AddConstructor(new ND280P0DuleYPlanksConstructor("Y",this));
 
     SetMessenger(new ND280P0DuleMessenger(this));
-};
+}
 
 double ND280P0DuleConstructor::GetLightTightWidth() const {
     return GetP0DuleWidth() - GetSideMPPCFrameWidth() - GetSideLIFrameWidth();
@@ -108,11 +108,11 @@ double ND280P0DuleConstructor::GetLength(void) {
 
 G4VisAttributes* ND280P0DuleConstructor::GetVisual(void) const {
     return fVisual;
-};
+}
 
 namespace {
     bool gFirstPiece=true;
-};
+}
 
 G4LogicalVolume *ND280P0DuleConstructor::GetPiece(void) {
 
@@ -394,7 +394,7 @@ G4LogicalVolume *ND280P0DuleConstructor::GetPiece(void) {
     }
 
     // Make sure that the Z length of the P0Dule adds up to the correct value.
-    if (std::abs(2*currentZCenter - GetLaminationThickness()) > 0.01*mm) {
+    if (std::abs(2*currentZCenter - GetLaminationThickness()) > 0.01*CLHEP::mm) {
         // ND280Error("Error in P0Dule Lamination Thickness Calculation");
         // ND280Error("     Calculated Length " << 2*currentZCenter);
         // ND280Error("     Expected Length " << GetLaminationThickness());
@@ -432,12 +432,12 @@ G4LogicalVolume *ND280P0DuleConstructor::GetPiece(void) {
         // ND280Log("   X Plank Thickness: " << x.GetLength()/mm << " mm");
         // ND280Log("   Y Plank Thickness: " << y.GetLength()/mm << " mm");
 
-        G4cout << "P0Dule Thickness:   " << GetLength()/mm << " mm" << G4endl;
-	G4cout << "   Lamination Thickness: " << GetLaminationThickness()/mm << " mm" << G4endl;
-	G4cout << "   Skin Thickness: " << lightTight.GetLength()/mm << " mm" << G4endl;
-	G4cout << "   Epoxy Thickness: " << GetEpoxyThickness()/mm << " mm" << G4endl;
-	G4cout << "   X Plank Thickness: " << x.GetLength()/mm << " mm" << G4endl;
-	G4cout << "   Y Plank Thickness: " << y.GetLength()/mm << " mm" << G4endl;
+        G4cout << "P0Dule Thickness:   " << GetLength()/CLHEP::mm << " mm" << G4endl;
+	G4cout << "   Lamination Thickness: " << GetLaminationThickness()/CLHEP::mm << " mm" << G4endl;
+	G4cout << "   Skin Thickness: " << lightTight.GetLength()/CLHEP::mm << " mm" << G4endl;
+	G4cout << "   Epoxy Thickness: " << GetEpoxyThickness()/CLHEP::mm << " mm" << G4endl;
+	G4cout << "   X Plank Thickness: " << x.GetLength()/CLHEP::mm << " mm" << G4endl;
+	G4cout << "   Y Plank Thickness: " << y.GetLength()/CLHEP::mm << " mm" << G4endl;
     }
 
     return logVolume;

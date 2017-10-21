@@ -114,16 +114,16 @@ public:
   }
 };
   
-  ND280FiberScintConstructor::~ND280FiberScintConstructor() {;};
+ND280FiberScintConstructor::~ND280FiberScintConstructor() {;}
 
 void ND280FiberScintConstructor::Init() {
   
-  SetBase(10*mm);
-  SetWidth(10*mm);
-  SetHeight(10*mm);
-  SetLength(10*mm);
-  SetCoatingThickness(0.25*mm);
-  SetGap(0.0*mm);
+  SetBase(10*CLHEP::mm);
+  SetWidth(10*CLHEP::mm);
+  SetHeight(10*CLHEP::mm);
+  SetLength(10*CLHEP::mm);
+  SetCoatingThickness(0.25*CLHEP::mm);
+  SetGap(0.0*CLHEP::mm);
   
   //SetSensitiveDetector(NULL);
   SetVisibility(false);

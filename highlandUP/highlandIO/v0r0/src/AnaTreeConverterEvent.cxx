@@ -21,7 +21,14 @@ AnaTreeConverterEvent::AnaTreeConverterEvent():InputConverter("ND280upEvents"){
   _previousRunID = -1;
   _previousSubrunID = -1;
   _previousRefEventID = -1;
-  hefficiency_target=NULL;
+  hefficiency_target_muon=NULL;
+  hefficiency_target_pion=NULL;
+  hefficiency_target_proton=NULL;
+
+  hmisid_muon_as_proton=NULL;
+  hmisid_proton_as_muon=NULL;
+  hmisid_pion_as_proton=NULL;
+  hmisid_proton_as_pion=NULL;
 
 }
 
@@ -45,8 +52,33 @@ bool AnaTreeConverterEvent::Initialize(){
     ND280upEvents->SetBranchAddress("Event", &nd280UpEvent);;
   }
 
-  fefficiency_target = new TFile("$HIGHLANDIOROOT/data/target_recon_efficiency.root");
-  hefficiency_target = (TH2D*)fefficiency_target->Get("theta_length_Eff");
+  TargetType = ND::params().GetParameterI("highlandIO.Target.Type");
+
+  fefficiency_target = new TFile("$HIGHLANDIOROOT/data/TargetEfficiency_28_9_17.root");
+  if (TargetType == 1) {
+    hefficiency_target_muon   = (TH2D*)fefficiency_target->Get("SuperFGD_TrueMomVsTrueCosTh_IsoTarget_Muon");
+    hefficiency_target_pion   = (TH2D*)fefficiency_target->Get("SuperFGD_TrueMomVsTrueCosTh_IsoTarget_Pion");
+    hefficiency_target_proton = (TH2D*)fefficiency_target->Get("SuperFGD_TrueMomVsTrueCosTh_IsoTarget_Prot");
+  }
+  else {
+    hefficiency_target_muon   = (TH2D*)fefficiency_target->Get("FGDXZ_TrueMomVsTrueCosTh_IsoTarget_Muon");
+    hefficiency_target_pion   = (TH2D*)fefficiency_target->Get("FGDXZ_TrueMomVsTrueCosTh_IsoTarget_Pion");
+    hefficiency_target_proton = (TH2D*)fefficiency_target->Get("FGDXZ_TrueMomVsTrueCosTh_IsoTarget_Prot");
+  }
+
+  fmisid_target = new TFile("$HIGHLANDIOROOT/data/TargetPID_28_9_17.root");
+  if (TargetType == 1) {
+    hmisid_muon_as_proton = (TH1F*)fmisid_target->Get("hMuonMisidAsProt_VsTrMom_SuperFGD");
+    hmisid_proton_as_muon = (TH1F*)fmisid_target->Get("hProtMisidAsMuon_VsTrMom_SuperFGD");
+    hmisid_pion_as_proton = (TH1F*)fmisid_target->Get("hPionMisidAsProt_VsTrMom_SuperFGD");
+    hmisid_proton_as_pion = (TH1F*)fmisid_target->Get("hProtMisidAsPion_VsTrMom_SuperFGD");
+  }
+  else {
+    hmisid_muon_as_proton = (TH1F*)fmisid_target->Get("hMuonMisidAsProt_VsTrMom_FGDXZ");
+    hmisid_proton_as_muon = (TH1F*)fmisid_target->Get("hProtMisidAsMuon_VsTrMom_FGDXZ");
+    hmisid_pion_as_proton = (TH1F*)fmisid_target->Get("hPionMisidAsProt_VsTrMom_FGDXZ");
+    hmisid_proton_as_pion = (TH1F*)fmisid_target->Get("hProtMisidAsPion_VsTrMom_FGDXZ");
+  }
 
   _ECal_reco_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
 				    "ECal_recoEff", BinnedParams::k1D_SYMMETRIC); 
@@ -73,7 +105,9 @@ AnaTreeConverterEvent::~AnaTreeConverterEvent(){
   delete nd280UpEvent;
   if (ND280upEvents) delete ND280upEvents->GetCurrentFile();
 
-  if (hefficiency_target) delete hefficiency_target;
+  if (hefficiency_target_muon)   delete hefficiency_target_muon;
+  if (hefficiency_target_pion)   delete hefficiency_target_pion;
+  if (hefficiency_target_proton) delete hefficiency_target_proton;
   if (fefficiency_target) delete fefficiency_target;
 
   if (elecspline) delete elecspline;
@@ -92,7 +126,7 @@ bool AnaTreeConverterEvent::AddFileToTChain(const std::string& inputString){
 
   // Chain only the directories we are interested in
 
-  if (ND280upEvents            )          ND280upEvents->AddFile(inputString.c_str());
+  if (ND280upEvents) ND280upEvents->AddFile(inputString.c_str());
 
   // Read one entry from the tree tree such that Run and Subrun are available
   ND280upEvents->GetEntry(ND280upEvents->GetEntries() - 1);
@@ -204,11 +238,62 @@ void AnaTreeConverterEvent::FillInfo(AnaSpill* spill, Int_t entry){
 
   spill->Bunches.push_back(bunch);
 }
+
 //*****************************************************************************
 void AnaTreeConverterEvent::FillBeamInfo(AnaBeam* beam){
   //*****************************************************************************
 
   beam->GoodSpill = true;
+}
+
+//*****************************************************************************
+void AnaTreeConverterEvent::Merge(TND280UpTrack* t1, TND280UpTrack* t2){
+  //*****************************************************************************
+  
+  for (int i=0; i<t2->GetNPoints(); i++)
+    t1->AddPoint(t2->GetPoint(i));
+  t1->SetRange(t1->GetRange()+t2->GetRange());
+  t1->SetSDTotalEnergyDeposit(t1->GetSDTotalEnergyDeposit()+t2->GetSDTotalEnergyDeposit());
+  t1->SetSDLength(t1->GetSDLength()+t2->GetSDLength());
+
+  t1->SetLengthTarget1(t1->GetLengthTarget1()+t2->GetLengthTarget1());
+  t1->SetLengthTarget2(t1->GetLengthTarget2()+t2->GetLengthTarget2());
+  t1->SetLengthFGD1(t1->GetLengthFGD1()+t2->GetLengthFGD1());
+  t1->SetLengthFGD2(t1->GetLengthFGD2()+t2->GetLengthFGD2());
+  t1->SetLengthTPCUp1(t1->GetLengthTPCUp1()+t2->GetLengthTPCUp1());
+  t1->SetLengthTPCUp2(t1->GetLengthTPCUp2()+t2->GetLengthTPCUp2());
+  t1->SetLengthTPCDown1(t1->GetLengthTPCDown1()+t2->GetLengthTPCDown1());
+  t1->SetLengthTPCDown2(t1->GetLengthTPCDown2()+t2->GetLengthTPCDown2());
+  t1->SetLengthForwTPC1(t1->GetLengthForwTPC1()+t2->GetLengthForwTPC1());
+  t1->SetLengthForwTPC2(t1->GetLengthForwTPC2()+t2->GetLengthForwTPC2());
+  t1->SetLengthForwTPC3(t1->GetLengthForwTPC3()+t2->GetLengthForwTPC3());
+  t1->SetLengthDsECal(t1->GetLengthDsECal()+t2->GetLengthDsECal());
+  t1->SetLengthP0DECal(t1->GetLengthP0DECal()+t2->GetLengthP0DECal());
+  t1->SetLengthBrlECal(t1->GetLengthBrlECal()+t2->GetLengthBrlECal());
+
+  t1->SetLyzTPCUp1(t1->GetLyzTPCUp1()+t2->GetLyzTPCUp1());
+  t1->SetLyzTPCUp2(t1->GetLyzTPCUp2()+t2->GetLyzTPCUp2());
+  t1->SetLyzTPCDown1(t1->GetLyzTPCDown1()+t2->GetLyzTPCDown1());
+  t1->SetLyzTPCDown2(t1->GetLyzTPCDown2()+t2->GetLyzTPCDown2());
+  t1->SetLyzForwTPC1(t1->GetLyzForwTPC1()+t2->GetLyzForwTPC1());
+  t1->SetLyzForwTPC2(t1->GetLyzForwTPC2()+t2->GetLyzForwTPC2());
+  t1->SetLyzForwTPC3(t1->GetLyzForwTPC3()+t2->GetLyzForwTPC3());
+
+  t1->SetEdepTarget1(t1->GetEdepTarget1()+t2->GetEdepTarget1());
+  t1->SetEdepTarget2(t1->GetEdepTarget2()+t2->GetEdepTarget2());
+  t1->SetEdepFGD1(t1->GetEdepFGD1()+t2->GetEdepFGD1());
+  t1->SetEdepFGD2(t1->GetEdepFGD2()+t2->GetEdepFGD2());
+  t1->SetEdepTPCUp1(t1->GetEdepTPCUp1()+t2->GetEdepTPCUp1());
+  t1->SetEdepTPCUp2(t1->GetEdepTPCUp2()+t2->GetEdepTPCUp2());
+  t1->SetEdepTPCDown1(t1->GetEdepTPCDown1()+t2->GetEdepTPCDown1());
+  t1->SetEdepTPCDown2(t1->GetEdepTPCDown2()+t2->GetEdepTPCDown2());
+  t1->SetEdepForwTPC1(t1->GetEdepForwTPC1()+t2->GetEdepForwTPC1());
+  t1->SetEdepForwTPC2(t1->GetEdepForwTPC2()+t2->GetEdepForwTPC2());
+  t1->SetEdepForwTPC3(t1->GetEdepForwTPC3()+t2->GetEdepForwTPC3());
+  t1->SetEdepDsECal(t1->GetEdepDsECal()+t2->GetEdepDsECal());
+  t1->SetEdepP0DECal(t1->GetEdepP0DECal()+t2->GetEdepP0DECal());
+  t1->SetEdepBrlECal(t1->GetEdepBrlECal()+t2->GetEdepBrlECal());
+
 }
 
 //*****************************************************************************
@@ -225,8 +310,6 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
 
   int nVertices = std::min((int)NMAXTRUEVERTICES, 1);
   TND280UpVertex *nd280UpVertex = dynamic_cast<TND280UpVertex*>(nd280UpEvent->GetVertex(0));
-
-  
   AnaTrueVertex* trueVertex = MakeTrueVertex();
   FillTrueVertexInfo(nd280UpVertex, trueVertex);
     
@@ -237,30 +320,50 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
 
   AnaTrueParticleB *highestMomTrack=0, *leptonTrack=0;
   
+  map<int, TND280UpTrack*> trueMTracks;
+  map<int, int> mergMTracks;
   for (int i = 0; i < nd280UpEvent->GetNTracks(); i++) {
-    TND280UpTrack *nd280UpTrack = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
 
+    TND280UpTrack *track = dynamic_cast<TND280UpTrack*>(nd280UpEvent->GetTrack(i));
+    bool track_merged = false;
+    
+    if ( track->GetProcessName() != "primary" && trueMTracks[track->GetParentID()] ) {
+      TND280UpTrack *parent = trueMTracks[track->GetParentID()];
+      if ( track->GetPDG() == parent->GetPDG() &&
+	   cos(track->GetInitMom().Angle(parent->GetInitMom())) > 0. ) {
+	Merge(parent, track);
+	mergMTracks[track->GetParentID()]++;
+	track_merged = true;
+      }
+    }
+    
+    if (!track_merged) {
+      trueMTracks[track->GetTrackID()] = track;
+      mergMTracks[track->GetTrackID()] = 0;
+    }
+  }
+
+  for (std::map<int,TND280UpTrack*>::iterator it=trueMTracks.begin(); it!=trueMTracks.end(); ++it) {
+    TND280UpTrack *nd280UpTrack = it->second;
+    if (!nd280UpTrack) continue;
     AnaTrueParticleB* truePart = MakeTrueParticle();
-	
-    if (!highestMomTrack || highestMomTrack->Momentum < truePart->Momentum)
-      highestMomTrack = truePart;
 
+    truePart->Merged = mergMTracks[nd280UpTrack->GetTrackID()];
     if ( ((trueVertex->NuPDG == 14 && nd280UpTrack->GetPDG() == 13) ||
-	 (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
-	 (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
-	 (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11)) &&
-    nd280UpTrack->GetParentID() == 0 )  {
+	  (trueVertex->NuPDG == 12 && nd280UpTrack->GetPDG() == 11) ||
+	  (trueVertex->NuPDG == -14 && nd280UpTrack->GetPDG() == -13) ||
+	  (trueVertex->NuPDG == -12 && nd280UpTrack->GetPDG() == -11)) 
+	 && nd280UpTrack->GetParentID() == 0) {
       if(nd280UpTrack->GetInitMom().Mag() > 0){
 	//std::cout << "ERROR: LeptonMom is -999 (something wrong in RooTrackerVtx ?), setting it from TruthTrajectoryModule (" << truthTraj->InitMomentum.Vect().Mag() << "), for vertex ID " << true_vertex->ID << std::endl;
 	leptonTrack = truePart;
 	trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
 	trueVertex->LeptonPDG = nd280UpTrack->GetPDG();
 	trueVertex->Q2 = - (nd280UpTrack->GetInitMom() - nd280UpVertex->GetInTrack(0)->GetInitMom()).Mag2();
-  trueVertex->LeptonMom = nd280UpTrack->GetInitMom().Mag();
   anaUtils::VectorToArray(nd280UpTrack->GetInitMom().Unit(), trueVertex->LeptonDir);
       }
 
-    } else if (  nd280UpTrack->GetPDG() == 2212 && nd280UpTrack->GetParentID() == 0) {
+    } else if (nd280UpTrack->GetPDG() == 2212 && nd280UpTrack->GetParentID() == 0) {
       // if many, take the first one, that should be the first primary one (not from FSI)
       if (trueVertex->ProtonMom < 0) {
 	trueVertex->ProtonMom = nd280UpTrack->GetInitMom().Mag();
@@ -270,7 +373,8 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     } // end if proton
 
       // If no rooTrackerVtx, fill true pion vars, using the TruthTrajectoryModule (old way)
-    else if (  (nd280UpTrack->GetPDG() == 211  || nd280UpTrack->GetPDG() == -211) && nd280UpTrack->GetParentID() == 0) {
+    else if (  (nd280UpTrack->GetPDG() == 211  || nd280UpTrack->GetPDG() == -211) && 
+	       nd280UpTrack->GetParentID() == 0) {
       // if many, take the highest momentum one, that should be most likely to be reconstructed
       if (trueVertex->PionMom < nd280UpTrack->GetInitMom().Mag()) {
 	trueVertex->PionMom = nd280UpTrack->GetInitMom().Mag();
@@ -283,6 +387,9 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     spill->TrueParticles.push_back(truePart);
     truePart->TrueVertex = trueVertex;
     trueVertex->TrueParticlesVect.push_back(truePart);
+
+    if (!highestMomTrack || highestMomTrack->Momentum < truePart->Momentum)
+      highestMomTrack = truePart;
 
     int index = ParticleId::GetParticle(nd280UpTrack->GetPDG(),false);
     
@@ -443,7 +550,6 @@ void AnaTreeConverterEvent::FillTrueParticleInfo(TND280UpVertex* trueVertex, TND
   truePart->PDG = upTrack->GetPDG();
   truePart->ParentID = upTrack->GetParentID();
   truePart->CosTheta=upTrack->GetInitCosTheta();
-
   truePart->ProcessName = upTrack->GetProcessName();
 
   double tmpp=-9999;
@@ -1823,10 +1929,36 @@ bool AnaTreeConverterEvent::IsReconstructedFGD(float* pos_start, float* pos_end,
 }
 
 
-bool AnaTreeConverterEvent::IsReconstructedTarget(double length, double theta){
+bool AnaTreeConverterEvent::IsReconstructedTarget(int pdg, double mom, double cos, double length){
 
-  float cut_length = ND::params().GetParameterD("highlandIO.Target.CutLength");
-  if (length>cut_length)
+  TH2D *h=0;
+  
+  if (abs(pdg)==13)
+    h = hefficiency_target_muon;
+  else if (abs(pdg)==211)
+    h = hefficiency_target_pion;
+  else if (abs(pdg)==2212)
+    h = hefficiency_target_proton;
+  else {
+    float cut_length = ND::params().GetParameterD("highlandIO.Target.CutLength");
+    if (length>cut_length)
+      return true;
+    return false;
+  }
+
+  
+  int bin = h->FindBin(mom, cos);
+  int binX=-1, binY=-1, binZ=-1;
+  h->GetBinXYZ(bin, binX, binY, binZ);
+
+  double eff=0;
+  while (eff==0 && binX>0) {
+    eff = h->GetBinContent(binX,binY);
+    binX--;
+  }
+
+  double r = gRandom->Rndm();
+  if (r<eff)
     return true;
   return false;
   
@@ -1885,6 +2017,46 @@ bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, TString det){
   
 }
 
+
+bool AnaTreeConverterEvent::IdAsProton(int pdg, double mom) {
+
+  TH1F *h=0;
+  
+  if (abs(pdg)==13)
+    h = hmisid_muon_as_proton;
+  else if (abs(pdg)==211)
+    h = hmisid_pion_as_proton;
+  else if (abs(pdg)==2212)
+    h = hmisid_proton_as_muon;
+  else
+    return false;
+
+  int bin = h->FindBin(mom);
+  int binX=-1, binY=-1, binZ=-1;
+  h->GetBinXYZ(bin, binX, binY, binZ);
+
+  double misid=0;
+  misid = h->GetBinContent(binX);
+
+  double r = gRandom->Rndm();
+
+  if (abs(pdg)==13 || abs(pdg)==211){
+    if (r<misid)
+      return true; // misid as proton
+    else 
+      return false;
+  }
+
+  if (pdg==2212){
+    if (r<misid && misid>=0) return false; // misid as muon/pion
+    else                     return true;
+	}
+
+    return false;
+  
+}
+
+
 bool AnaTreeConverterEvent::ChargeConfused(AnaTrueParticleB* trueParticle) {
 
   Double_t mom = (Double_t)trueParticle->Momentum;
@@ -1936,12 +2108,12 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   reconParticle->nTargetSegments = 0;
   reconParticle->nFGDSegments = 0;
   reconParticle->nTPCSegments = 0;
-  reconParticle->TrueObject=dynamic_cast<AnaTrueObjectC*>(trueParticle);
+  reconParticle->TrueObject=trueParticle;
 
   // find the last segment of the track
   AnaDetCrossingB *pEnd = 0;
   Float_t max_time=-9999;
-  for (int i=0; i<trueParticle->DetCrossingsVect.size(); i++) {
+  for (UInt_t i=0; i<trueParticle->DetCrossingsVect.size(); i++) {
     if (trueParticle->DetCrossingsVect[i]->ExitPosition[3]>max_time) {
       max_time = trueParticle->DetCrossingsVect[i]->ExitPosition[3];
       pEnd = trueParticle->DetCrossingsVect[i];
@@ -1961,7 +2133,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
 
   // collect the detector segments
 
-  for (int i = 0; i < trueParticle->DetCrossingsVect.size(); i++) {
+  for (UInt_t i = 0; i < trueParticle->DetCrossingsVect.size(); i++) {
 
     if (SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp1)   || 
 	SubDetId::GetDetectorUsed(trueParticle->DetCrossingsVect[i]->Detector, SubDetId::kTPCUp2)   || 
@@ -2004,6 +2176,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum[0] / mom, 
 				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[1] / mom, 
 				       trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
+
       anaUtils::VectorToArray(TVector3(trueParticle->DetCrossingsVect[i]->ExitMomentum[0] / mom, 
 				       trueParticle->DetCrossingsVect[i]->ExitMomentum[1] / mom, 
 				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
@@ -2015,7 +2188,13 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
-      seg->IsReconstructed = IsReconstructedTarget(seg->SegLength, seg->DirectionStart[2]);
+      seg->IsReconstructed = IsReconstructedTarget(trueParticle->PDG, mom,
+						   trueParticle->DetCrossingsVect[i]->EntranceMomentum[2] / mom,
+						   seg->SegLength);
+      seg->IdAsProton = IdAsProton(trueParticle->PDG, mom);
+
+      if (trueParticle->PDG==2212)
+	std::cout << mom << " " << seg->IdAsProton << std::endl;
       reconParticle->TargetSegments[reconParticle->nTargetSegments++] = seg;
 
     }
@@ -2117,6 +2296,10 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   if (!p1 || !p2) { // no ToF found
     // by default, we consider that all tracks are going forward
     // if the track is going backward, we flip it
+    if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2])
+      anaUtils::FlipTrack(reconParticle);
+  }
+  else if (fabs(reco_ToF/sigma_ToF) < 2) { // ToF not good enough (below 2sigma separation)
     if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2])
       anaUtils::FlipTrack(reconParticle);
   }

@@ -73,13 +73,13 @@ public:
     };
 };
 
-ND280BeamConstructor::~ND280BeamConstructor() {;};
+ND280BeamConstructor::~ND280BeamConstructor() {;}
 
 void ND280BeamConstructor::Init(void) {
 
-    SetWidth(10*cm);
-    SetHeight(10*cm);
-    SetLength(2.9*meter);
+  SetWidth(10*CLHEP::cm);
+  SetHeight(10*CLHEP::cm);
+  SetLength(2.9*CLHEP::meter);
 
     SetMessenger(new ND280BeamMessenger(this));
 }

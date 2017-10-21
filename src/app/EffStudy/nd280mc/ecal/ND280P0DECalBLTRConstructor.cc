@@ -12,9 +12,9 @@
 #include "ecal/ND280P0DECalBLTRConstructor.hh"
 
 void ND280P0DECalBLTRConstructor::Init() {
-    SetLengthX(2454.0*mm);
-    SetWidthY(1584.0*mm);
-    fModuleHeightZ = 147.0*mm;
+  SetLengthX(2454.0*CLHEP::mm);
+  SetWidthY(1584.0*CLHEP::mm);
+  fModuleHeightZ = 147.0*CLHEP::mm;
     SetHeightZ(ND280ECal::P0D::BulkheadReadoutHeight 
                + ND280ECal::P0D::BaseThickness);
     AddConstructor(new ND280P0DECalActiveConstructor("Active",this));

@@ -36,7 +36,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
   	
   //
 
-  G4ThreeVector WafflePosition    ( 0.0*mm, 0.0*mm, 0.0*mm );
+  G4ThreeVector WafflePosition    ( 0.0*CLHEP::mm, 0.0*CLHEP::mm, 0.0*CLHEP::mm );
   
   //const G4Rotation WaffleRotation    (0,0,0);
   G4RotationMatrix WaffleRotation (G4ThreeVector(0.,0.,0.),0.);
@@ -44,9 +44,9 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
   //------------------ Target ---------------------
 
   // Target size
-  double TargetWidth = 2300.0 * mm;
-  double TargetHeight = 600.0 * mm;
-  double TargetThickness = 1300.0 * mm;
+  double TargetWidth = 2300.0 * CLHEP::mm;
+  double TargetHeight = 600.0 * CLHEP::mm;
+  double TargetThickness = 1300.0 * CLHEP::mm;
 
   TargetWidth = ModuleSize[0];
   TargetHeight = ModuleSize[1];
@@ -63,44 +63,44 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
   // No submodule is assumed. The plans are created one after another until it is not possible anymore due to target space limitation.
   // As for within one layer, we have added a gap between the layers and also, an offset between the target and the first (and therefore, last) scintillator layer.
   //Offset of the first scintillator of the grid layer in one layer / in the target
-  const double LayerOffset = 0.0 * mm; // Offset in Z direction
+  const double LayerOffset = 0.0 * CLHEP::mm; // Offset in Z direction
 
   //Spacing between a layer of plan and a layer of Grid scintillator.
-  const double LayerGap = 1.0 * mm;
+  const double LayerGap = 1.0 * CLHEP::mm;
   //const double LayerGap = 500.0 * mm;
 
 
   //Scintillator's defintition: part I
   //Individual plan scintillator size. 
-  double ScintiPlanWidth = 25.0 * mm;
-  double ScintiPlanThickness = 25.0 * mm;
+  double ScintiPlanWidth = 25.0 * CLHEP::mm;
+  double ScintiPlanThickness = 25.0 * CLHEP::mm;
 
   //Individual grid scintillator size.
-  double ScintiGridWidth = 25.0 * mm;
-  double ScintiGridThickness = 25.0 * mm;
+  double ScintiGridWidth = 25.0 * CLHEP::mm;
+  double ScintiGridThickness = 25.0 * CLHEP::mm;
   
   //------------------ Layers of scintillators ---------------------
   // We have added a possibility of offset of the first (and therefore, last) scintillator in the layer. Note that there is also Gap between the scintillators.
  
   //Offset of the first scintillator of the plan layer in one layer / in the target
-  const double InitialLayerWidthPlanFirstScintiOffset = 0.0 * mm;
+  const double InitialLayerWidthPlanFirstScintiOffset = 0.0 * CLHEP::mm;
 
   //Offset of the first scintillator of the plan layer in one layer / in the target
-  const double InitialLayerHeightPlanFirstScintiOffset = 0.0 * mm;
+  const double InitialLayerHeightPlanFirstScintiOffset = 0.0 * CLHEP::mm;
 
   //Offset of the first transvserse scintillator of the longitudinal (along z direction) layer in one layer / in the target
-  const double InitialLayerThicknessPlanFirstScintiOffset = 0.0 * mm;
+  const double InitialLayerThicknessPlanFirstScintiOffset = 0.0 * CLHEP::mm;
 
 
   //Offset of the first scintillator of the grid horizontal layer in one layer / in the target
-  const double InitialLayerWidthGridFirstScintiOffset = 0.0 * mm;
+  const double InitialLayerWidthGridFirstScintiOffset = 0.0 * CLHEP::mm;
 
   //Offset of the first scintillator of the grid vertical layer in one layer / in the target
-  const double InitialLayerHeightGridFirstScintiOffset = 0.0 * mm;
+  const double InitialLayerHeightGridFirstScintiOffset = 0.0 * CLHEP::mm;
 
   
   //Spacing between grid scintillators (consecutive scintillators in the same layer)
-  const double GapBtwGridPlan = 1*mm;//We assume same spacing between GRID and Y scintillators and X scintillators.
+  const double GapBtwGridPlan = 1*CLHEP::mm;//We assume same spacing between GRID and Y scintillators and X scintillators.
 
   //Spacing between grid scintillators (consecutive scintillators in the same layer)
   const double ScintiGridGap = ScintiPlanWidth + 2*GapBtwGridPlan;
@@ -234,7 +234,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
   */
   //Third, place them <=> Create a physical volume => Create a layer
   double LayerCenter = 0.; // D.S
-  G4ThreeVector FromLayertoTarget (0.0*mm, 0.0*mm, LayerCenter);
+  G4ThreeVector FromLayertoTarget (0.0*CLHEP::mm, 0.0*CLHEP::mm, LayerCenter);
   G4ThreeVector FromTargettoGlobal (/*WafflePosition[0]*/-TargetWidth/2.,/*WafflePosition[1]*/-TargetHeight/2.,/*WafflePosition[2]*/-TargetThickness/2.);
   //G4ThreeVector FromTargettoGlobal (0.,0.,0.);
   //G4ThreeVector FromTargettoGlobal (-TargetWidth/2.,-TargetHeight/2.,-TargetThickness/2.);
@@ -265,7 +265,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
       if(PlanType==0){//layer plan vertical
 	//Second, create and place the scintillators
 	LayerCenter = LayerUpstreamEdge + LayerPlanThickness/2;//Center of the layer in z position
-	G4ThreeVector FromLayerToTarget (0.0*mm, 0.0*mm, LayerCenter);	
+	G4ThreeVector FromLayerToTarget (0.0*CLHEP::mm, 0.0*CLHEP::mm, LayerCenter);	
 #ifdef DEBUG
 	G4cout << "Layer #" << NumberOfLayerPlan << " is of type 2D horizontal, number of scintillators = " << LayerPlanNumberOfScintiVertical << G4endl;
 #endif
@@ -291,7 +291,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
       else if(PlanType==1){
 	//Second, create and place the scintillators
 	LayerCenter = LayerUpstreamEdge + LayerPlanThickness/2;
-	G4ThreeVector FromLayerToTarget (0.0*mm, 0.0*mm, LayerCenter);
+	G4ThreeVector FromLayerToTarget (0.0*CLHEP::mm, 0.0*CLHEP::mm, LayerCenter);
 #ifdef DEBUG
 	G4cout << "Layer #" << NumberOfLayerPlan << " is of type grid, number of scintillators = " << LayerPlanNumberOfScintiHorizontal << G4endl;
 #endif
@@ -327,7 +327,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
 	
 	//Create the layers from (0,0,center) of the module.
 	LayerCenter = LayerUpstreamEdge + LayerGridWidth/2;
-	G4ThreeVector FromLayerToTarget (LayerCenter, 0.0*mm, 0.0*mm);
+	G4ThreeVector FromLayerToTarget (LayerCenter, 0.0*CLHEP::mm, 0.0*CLHEP::mm);
 
 #ifdef DEBUG
 	G4cout << "Layer #" << NumberOfLayerGrid << " is of type grid, number of scintillators horizontal grid= " << LayerGridNumberOfScintiHorizontal << ", Position = " << LayerCenter << ", Layer width = " << LayerGridWidth << ", Layer height = " << LayerGridHeight << G4endl;

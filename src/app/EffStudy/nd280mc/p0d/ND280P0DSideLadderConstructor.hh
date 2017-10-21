@@ -27,13 +27,13 @@ public:
     }
     
     /// Get the total thickness of the ladder.
-    double GetLadderThickness() const {return 40*mm;}
+  double GetLadderThickness() const {return 40*CLHEP::mm;}
 
     /// Get the total length of the ladder.
-    double GetLadderLength() const {return 2138*mm;}
+  double GetLadderLength() const {return 2138*CLHEP::mm;}
 
     /// Get the total width of the ladder.
-    double GetLadderWidth() const {return 300*mm;}
+  double GetLadderWidth() const {return 300*CLHEP::mm;}
 
     /// Construct and return a G4 volume for the object.  This is a pure
     /// virtual function, which means it must be implemented by the inheriting

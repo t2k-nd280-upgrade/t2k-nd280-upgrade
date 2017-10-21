@@ -75,15 +75,15 @@ ND280SciFiConstructor::~ND280SciFiConstructor() {;}
 void ND280SciFiConstructor::Init(void) {
   
   /// The edge of a fiber of the SciFi detector 
-  fEdge = 2.*mm;
+  fEdge = 2.*CLHEP::mm;
 
   // Number of fibers along each axis 
   fFiberHorizNum = 1;
   fFiberVertNum = 1;
 
-  SetWidth( 10*cm);
-  SetHeight(10*cm);  
-  SetLength(1000*mm);
+  SetWidth( 10*CLHEP::cm);
+  SetHeight(10*CLHEP::cm);  
+  SetLength(1000*CLHEP::mm);
 
   // Position of the center of the SciFi detector
   fPosX = 0.;
@@ -139,8 +139,8 @@ G4LogicalVolume *ND280SciFiConstructor::GetPiece(void) {
   fiberVert.SetFiberDir(conv::kAlongY);
   fiberVert.SetBase( fEdge); // 
   fiberVert.SetAxisLength(TotHeight); // lengthVert based on # of fibers along X 
-  fiberVert.SetCoatingThickness(0.0*mm);
-  fiberVert.SetGap(0.0*mm);
+  fiberVert.SetCoatingThickness(0.0*CLHEP::mm);
+  fiberVert.SetGap(0.0*CLHEP::mm);
   G4LogicalVolume* fiberVert_logical = fiberVert.GetPiece();
 
 
@@ -153,8 +153,8 @@ G4LogicalVolume *ND280SciFiConstructor::GetPiece(void) {
   fiberHoriz.SetFiberDir(conv::kAlongX);
   fiberHoriz.SetBase( fEdge); // 
   fiberHoriz.SetAxisLength(TotWidth); // lengthVert based on # of fibers along Y 
-  fiberHoriz.SetCoatingThickness(0.0*mm);
-  fiberHoriz.SetGap(0.0*mm);
+  fiberHoriz.SetCoatingThickness(0.0*CLHEP::mm);
+  fiberHoriz.SetGap(0.0*CLHEP::mm);
   G4LogicalVolume* fiberHoriz_logical = fiberHoriz.GetPiece();
 
   //

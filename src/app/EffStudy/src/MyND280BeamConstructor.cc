@@ -8,7 +8,8 @@
 
 #include "MyND280BeamConstructor.hh"
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 MyND280BeamConstructor::~MyND280BeamConstructor(){
   // delete
@@ -16,9 +17,9 @@ MyND280BeamConstructor::~MyND280BeamConstructor(){
 
 void MyND280BeamConstructor::Init(void) {
   SetVisible(true);
-  SetWidth(10*cm);
-  SetHeight(10*cm);
-  SetLength(2.9*meter);
+  SetWidth(10*CLHEP::cm);
+  SetHeight(10*CLHEP::cm);
+  SetLength(2.9*CLHEP::meter);
 }
 
 G4LogicalVolume *MyND280BeamConstructor::GetPiece(void) {

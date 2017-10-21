@@ -305,10 +305,10 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // Add primary vertex
   
   G4PrimaryVertex* theVertex 
-    = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*m,
-   					fEvtVtx[1]*m,
-   					fEvtVtx[2]*m),
-   			  fEvtVtx[3]*second);
+    = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*CLHEP::m,
+   					fEvtVtx[1]*CLHEP::m,
+   					fEvtVtx[2]*CLHEP::m),
+   			  fEvtVtx[3]*CLHEP::second);
   anEvent->AddPrimaryVertex(theVertex);
 
   // Add an information field to the vertex.
@@ -335,18 +335,18 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // Set the interaction number to that of the RooTracker pass-through tree.
   //vertexInfo->SetInteractionNumber(ND280KinemPassThrough::GetInstance()->LastEntryNumber());
   vertexInfo->SetInteractionNumber(evtID);
-  vertexInfo->SetCrossSection(fEvtXSec*1E-38*cm2);
-  vertexInfo->SetDiffCrossSection(fEvtDXSec*1E-38*cm2);
+  vertexInfo->SetCrossSection(fEvtXSec*1E-38*CLHEP::cm2);
+  vertexInfo->SetDiffCrossSection(fEvtDXSec*1E-38*CLHEP::cm2);
   vertexInfo->SetWeight(fEvtWght);
   vertexInfo->SetProbability(fEvtProb);  
   
   // Add an informational vertex for storing the incoming 
   // neutrino particle and target nucleus.
   G4PrimaryVertex* theIncomingVertex 
-    = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*m,
-					fEvtVtx[1]*m,
-					fEvtVtx[2]*m),
-			  fEvtVtx[3]*second);
+    = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*CLHEP::m,
+					fEvtVtx[1]*CLHEP::m,
+					fEvtVtx[2]*CLHEP::m),
+			  fEvtVtx[3]*CLHEP::second);
   vertexInfo->AddInformationalVertex(theIncomingVertex);
   
   // Add an information field to the vertex.
@@ -374,7 +374,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
       G4int type = (fStdHepPdg[cnt]/100000000);
       if (type == 10 && ionZ > 0 && ionA > ionZ) {
 	//particleDef = particleTable->GetIon(ionZ, ionA, 0.*MeV);
-	particleDef = ionTable->GetIon(ionZ, ionA, 0.*MeV);
+	particleDef = ionTable->GetIon(ionZ, ionA, 0.*CLHEP::MeV);
       }
       else if (type == 20) {
 	// This is a pseudo-particle so skip it.
@@ -387,15 +387,15 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
       particleDef ? particleDef->GetParticleName(): "unknown";
     
     // Get the momentum.
-    G4LorentzVector momentum(fStdHepP4[cnt][0]*GeV,
-			     fStdHepP4[cnt][1]*GeV,
-			     fStdHepP4[cnt][2]*GeV,
-			     fStdHepP4[cnt][3]*GeV);
+    G4LorentzVector momentum(fStdHepP4[cnt][0]*CLHEP::GeV,
+			     fStdHepP4[cnt][1]*CLHEP::GeV,
+			     fStdHepP4[cnt][2]*CLHEP::GeV,
+			     fStdHepP4[cnt][3]*CLHEP::GeV);
     
     if (fStdHepStatus[cnt] != 1) {
       G4cout << "Untracked particle: " << cnt 
 	     << " " << particleName
-	     << " with " << momentum.e()/MeV 
+	     << " with " << momentum.e()/CLHEP::MeV 
 	     << " MeV " 
 	     << " w/ mothers " << fStdHepFm[cnt]
 	     << " to " << fStdHepLm[cnt] 
@@ -439,10 +439,10 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // Fill the particles at the decay vertex.  These are the first info
   // vertex.
   G4PrimaryVertex* theDecayVertex 
-    = new G4PrimaryVertex(G4ThreeVector(fNuParentDecX4[0]*m,
-					fNuParentDecX4[1]*m,
-					fNuParentDecX4[2]*m),
-			  fNuParentDecX4[3]*second);
+    = new G4PrimaryVertex(G4ThreeVector(fNuParentDecX4[0]*CLHEP::m,
+					fNuParentDecX4[1]*CLHEP::m,
+					fNuParentDecX4[2]*CLHEP::m),
+			  fNuParentDecX4[3]*CLHEP::second);
   vertexInfo->AddInformationalVertex(theDecayVertex);
   
   // Add an information field to the vertex.
@@ -457,17 +457,17 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   
   G4PrimaryParticle* theDecayParticle
     = new G4PrimaryParticle(fNuParentPdg,
-			    fNuParentDecP4[0]*GeV,
-			    fNuParentDecP4[1]*GeV,
-			    fNuParentDecP4[2]*GeV);
+			    fNuParentDecP4[0]*CLHEP::GeV,
+			    fNuParentDecP4[1]*CLHEP::GeV,
+			    fNuParentDecP4[2]*CLHEP::GeV);
   theDecayVertex->SetPrimary(theDecayParticle);
   
   // Fill the particles at the production vertex.
   G4PrimaryVertex* theProductionVertex 
-    = new G4PrimaryVertex(G4ThreeVector(fNuParentProX4[0]*m,
-					fNuParentProX4[1]*m,
-					fNuParentProX4[2]*m),
-			  fNuParentProX4[3]*second);
+    = new G4PrimaryVertex(G4ThreeVector(fNuParentProX4[0]*CLHEP::m,
+					fNuParentProX4[1]*CLHEP::m,
+					fNuParentProX4[2]*CLHEP::m),
+			  fNuParentProX4[3]*CLHEP::second);
   decayVertexInfo->AddInformationalVertex(theProductionVertex);
   
   // Add information about the production vertex.
@@ -478,9 +478,9 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   
   G4PrimaryParticle* theProductionParticle
     = new G4PrimaryParticle(fNuParentPdg,
-			    fNuParentProP4[0]*GeV,
-			    fNuParentProP4[1]*GeV,
-			    fNuParentProP4[2]*GeV);
+			    fNuParentProP4[0]*CLHEP::GeV,
+			    fNuParentProP4[1]*CLHEP::GeV,
+			    fNuParentProP4[2]*CLHEP::GeV);
   theProductionVertex->SetPrimary(theProductionParticle);
   
   fCurrEntry++; // move to next event
@@ -500,7 +500,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   //G4cout << " - fEvtVtx[0] = " << fEvtVtx[0] << " m" << G4endl;
   //G4cout << " - fEvtVtx[1] = " << fEvtVtx[1] << " m" << G4endl;
   //G4cout << " - fEvtVtx[2] = " << fEvtVtx[2] << " m" << G4endl;
-  //G4cout << " - fEvtVtx[3]*second = " << fEvtVtx[3]*second << G4endl;  
+  //G4cout << " - fEvtVtx[3]*CLHEP::second = " << fEvtVtx[3]*CLHEP::second << G4endl;  
   //G4cout << G4endl;
   
 }

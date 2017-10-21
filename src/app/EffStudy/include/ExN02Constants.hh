@@ -1,7 +1,8 @@
 #ifndef constants_h
 #define constants_h
 
-#include "G4SystemOfUnits.hh"
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
 
 /////////////////////////////////                 
 //                             //                    
@@ -29,8 +30,8 @@ const G4double kBadNum = -9999999.;
 //                        //
 ////////////////////////////
 
-const G4double cMagFieldX   = 0.20 * tesla; // Default ND280 magnetic field (NIM A 659 (2011) 106–135)
-const G4double cMinStep     = 1.0 * mm;    // Minimal step of 1 mm is default
+const G4double cMagFieldX   = 0.20 * CLHEP::tesla; // Default ND280 magnetic field (NIM A 659 (2011) 106–135)
+const G4double cMinStep     = 1.0 * CLHEP::mm;    // Minimal step of 1 mm is default
 const G4int    cStepperType = 4;           // ClassicalRK4 is default stepper
 
 ////////////////////////////
@@ -39,7 +40,7 @@ const G4int    cStepperType = 4;           // ClassicalRK4 is default stepper
 //                        //
 ////////////////////////////
 
-const G4double cStepLimit = 1.0 * mm; // used in the TPC drift region for charge particles
+const G4double cStepLimit = 1.0 * CLHEP::mm; // used in the TPC drift region for charge particles
 
 
 //namespace conv {

@@ -110,8 +110,8 @@ void ND280USECalSP0DuleConstructor::Init(void) {
     for (int i=0; i<7; ++i) SetP0DuleTrans(i,G4ThreeVector(0,0,0));
 
     // Set the ladder offsets.
-    SetTopLadderOffset(10*mm);
-    SetSideLadderOffset(10*mm);
+    SetTopLadderOffset(10*CLHEP::mm);
+    SetSideLadderOffset(10*CLHEP::mm);
 
     AddConstructor(new ND280P0DuleConstructor("P0Dule",this));
     AddConstructor(new ND280P0DECalRadiatorConstructor("Radiator",this));
@@ -273,9 +273,9 @@ G4LogicalVolume *ND280USECalSP0DuleConstructor::GetPiece(void) {
     // ND280Log("P0D USECal Length: " << GetLength()/mm << " mm");
     // ND280Log("   USECal P0Dule Thickness:   " << p0dule.GetLength()/mm <<" mm");
     // ND280Log("   USECal Radiator Thickness: " <<radiator.GetLength()/mm<<" mm");
-    G4cout << "P0D USECal Length: " << GetLength()/mm << " mm" << G4endl;
-    G4cout << "   USECal P0Dule Thickness:   " << p0dule.GetLength()/mm <<" mm" << G4endl;
-    G4cout << "   USECal Radiator Thickness: " <<radiator.GetLength()/mm<<" mm" << G4endl;
+    G4cout << "P0D USECal Length: " << GetLength()/CLHEP::mm << " mm" << G4endl;
+    G4cout << "   USECal P0Dule Thickness:   " << p0dule.GetLength()/CLHEP::mm <<" mm" << G4endl;
+    G4cout << "   USECal Radiator Thickness: " <<radiator.GetLength()/CLHEP::mm<<" mm" << G4endl;
     
     return logVolume;
 }

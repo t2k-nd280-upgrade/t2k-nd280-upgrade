@@ -262,6 +262,11 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
       if (!track->TPCSegments[i])
         continue;
 
+      // Target ToF is over target. 
+      // As it's not simulated check the target usage to avoid horisontal TPC tracks w/o target ToF
+      if (!anaUtils::TrackUsesDet(*track, SubDetId::kTarget))
+        continue;
+
       // look at the TPC up segments
       if (SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp1   ||
           SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp2) {         

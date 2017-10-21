@@ -49,6 +49,8 @@
 #include "G4HCofThisEvent.hh"
 #include "G4VHitsCollection.hh"
 
+//#include "G4ProcessManager.hh"
+
 TROOT root("ROOT","Root of Everything");
 
 ND280RootPersistencyManager::ND280RootPersistencyManager() 
@@ -451,6 +453,11 @@ bool ND280RootPersistencyManager::Close() {
 
 bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
+  //G4ProcessManager* pmanager = particle->GetProcessManager();
+  //pmanager->
+  //GetProcessList;
+
+
   //
   // Get the stored hits
   //
@@ -484,6 +491,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   fND280UpEvent->SetEventID(anEvent->GetEventID());  
   
 
+
+
+
+     
   //
   // Store the hits
   // 
@@ -604,7 +615,6 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
 
 
-
   
 
 
@@ -691,10 +701,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       nd280Vertex->SetReacMode(vInfo->GetReactionNum());
       nd280Vertex->SetReacModeString(vInfo->GetReaction());
       
-      nd280Vertex->SetPosition(vtx->GetX0()/mm,
-			       vtx->GetY0()/mm,
-			       vtx->GetZ0()/mm);
-      nd280Vertex->SetTime(vtx->GetT0()/second);
+      nd280Vertex->SetPosition(vtx->GetX0()/CLHEP::mm,
+			       vtx->GetY0()/CLHEP::mm,
+			       vtx->GetZ0()/CLHEP::mm);
+      nd280Vertex->SetTime(vtx->GetT0()/CLHEP::second);
       
       // Add the vertex to the event
       fND280UpEvent->AddVertex(nd280Vertex);
@@ -722,6 +732,14 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
    		"ExN02Code001", JustWarning, msg);
     return false;
   }
+
+
+ 
+  cout << "ND280RootPersistencyManager::Store()" << endl;
+  cout << "# of Tracks: " << trajectories->entries() << endl;
+
+
+
   
   // loop over the trajectories
   for (TrajectoryVector::iterator t = trajectories->GetVector()->begin();
@@ -730,7 +748,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
     ND280Trajectory* ndTraj = dynamic_cast<ND280Trajectory*>(*t);
     //   G4VTrajectory* g4Traj = dynamic_cast<G4VTrajectory*>(*t);
-
+    
     G4String particleName = ndTraj->GetParticleName();
     G4int NptTraj = ndTraj->GetPointEntries();
     G4int TrajTrkId = ndTraj->GetTrackID(); 
@@ -754,6 +772,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetSDTotalEnergyDeposit(ndTraj->GetSDTotalEnergyDeposit());
     nd280Track->SetSDLength(ndTraj->GetSDLength());
     
+    //cout << "ndTraj->GetSDLength() = " << ndTraj->GetSDLength() << endl;
 
     
     //
@@ -804,6 +823,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     G4String detname_prev = "undefined";
     
     int NPoints = ndTraj->GetPointEntries();
+
     for(int itp=0;itp<NPoints;itp++){ // loop over all the points
       
       G4String detname_curr = "undefined";
@@ -1088,10 +1108,20 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     // // MarkTrajectories(anEvent); // loop over all the tracks again... --> don't use it!!!
     MarkTrajectory(ndTraj,anEvent);
     if(ndTraj->SaveTrajectory()){
-      nd280Track->SaveIt(true);     
+      nd280Track->SaveIt(true); // useless     
       fND280UpEvent->AddTrack(nd280Track);
+
+      G4cout << "TrajTrkId = " << TrajTrkId 
+	     << ", ParID = " << ndTraj->GetParentID() 
+	     << ", pdg = " << ndTraj->GetPDGEncoding()
+	     << ", name = " << ndTraj->GetParticleName()
+	     << ", mom = " << ndTraj->GetInitialMomentum().mag()
+	//<< ", ekin = " << ndTraj->GetInitialKineticEnergy()
+	     << ", sdedep = " << ndTraj->GetSDTotalEnergyDeposit()
+	     << ", process = " << ndTraj->GetProcessName()
+	     << G4endl;
     }
-    
+  
     // 
     // ND280Trajectory::ShowTrajectory()
     // and 
@@ -1114,7 +1144,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     //nd280Track=NULL;
 
   } // end loop over Trajectories
-  
+
+
+  cout << "Tot # of Tracks stored in output event: " << fND280UpEvent->GetNTracks() << endl;
+
+    
   
   fOutput->cd();
   
@@ -1131,8 +1165,17 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     
   //G4cout << "delete fND280UpEvent;" << G4endl;
 
+
+
+
+  //delete nd280Track; 
+  //nd280Track=NULL;
+ 
   delete fND280UpEvent;
   fND280UpEvent = NULL;
+
+
+
 
   // ++fEventsNotSaved;
   // if (fEventsNotSaved>100) {

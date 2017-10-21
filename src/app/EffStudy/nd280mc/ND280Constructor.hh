@@ -156,7 +156,7 @@ public:
 			"MyCode0002",JustWarning, msg);
         }
         return *c;
-    };
+    }
 
     /// Find a sub constructor by name and do the dynamic cast.  This returns
     /// a pointer that will be NULL if you request an undefined name.
@@ -166,7 +166,7 @@ public:
         if (p==fSubConstructors.end()) return NULL;
         T* c = dynamic_cast<T*>((*p).second);
         return c;
-    };
+    }
 
     /// stringToRotationMatrix() converts a string "X90,Y45" into a
     /// G4RotationMatrix.

@@ -59,7 +59,12 @@
 #include "G4RKG3_Stepper.hh"
 
 #include "G4PhysicalConstants.hh"
-#include "G4SystemOfUnits.hh"
+
+
+//#include "G4SystemOfUnits.hh" // NEW GLOBAL
+#include <CLHEP/Units/SystemOfUnits.h>
+
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -76,7 +81,7 @@ ExN02FieldSetup::ExN02FieldSetup(G4ThreeVector fieldVector)
    fFieldMessenger(0)
 {
   G4cout << " ExN02FieldSetup: magnetic field set to Uniform( "
-         << fieldVector / tesla << " ) T" << G4endl;
+         << fieldVector / CLHEP::tesla << " ) T" << G4endl;
   InitialiseAll();
 }
 
@@ -130,7 +135,7 @@ void ExN02FieldSetup::CreateStepperAndChordFinder()
   // Update field
 
   SetStepper();
-  G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl;
+  G4cout<<"The minimal step is equal to "<<fMinStep/CLHEP::mm<<" mm"<<G4endl;
   
   fFieldManager->SetDetectorField(fMagneticField );
 
@@ -145,7 +150,7 @@ void ExN02FieldSetup::CreateStepperAndChordFinder()
   this->GetGlobalFieldManager()->GetDetectorField()->GetFieldValue( position, fieldValue);
   G4ThreeVector fieldVec(fieldValue[0], fieldValue[1], fieldValue[2]);
   G4cout << "Magnetic field vector is "
-	 << fieldVec / tesla << " T " << G4endl;
+	 << fieldVec / CLHEP::tesla << " T " << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -210,7 +215,7 @@ void ExN02FieldSetup::SetFieldValue(G4double fieldStrength)
 
 #ifdef G4VERBOSE
   G4cout << "Setting Field strength to "
-         << fieldStrength / tesla  << " Tesla."; // << G4endl;
+         << fieldStrength / CLHEP::tesla  << " Tesla."; // << G4endl;
 #endif
 
   G4ThreeVector fieldSetVec(fieldStrength, 0.0, 0.0);
@@ -224,7 +229,7 @@ void ExN02FieldSetup::SetFieldValue(G4double fieldStrength)
     G4ThreeVector fieldVec(fieldValue[0], fieldValue[1], fieldValue[2]);
     // G4cout << " fMagneticField is now " << fMagneticField
     G4cout << " Magnetic field vector is "
-           << fieldVec / tesla << " T " << G4endl;
+           << fieldVec / CLHEP::tesla << " T " << G4endl;
   } else {
     if ( fMagneticField == 0 )
       G4cout << " Magnetic field pointer is null." << G4endl;
@@ -244,7 +249,7 @@ void ExN02FieldSetup::SetFieldValue(G4ThreeVector fieldVector)
   // Set the value of the Global Field
 
   G4cout << " ExN02FieldSetup: magnetic field set to Uniform( "
-         << fieldVector / tesla << " ) T" << G4endl;
+         << fieldVector / CLHEP::tesla << " ) T" << G4endl;
 
   if (fMagneticField) delete fMagneticField;
  
