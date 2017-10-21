@@ -48,7 +48,7 @@ namespace nueCCUtils{
   bool IsForward(const AnaTrackB& track);
 
   bool compare_length( AnaTrackB* lhs,  AnaTrackB* rhs);
-  Float_t GetDistance(Float_t* pos1, Float_t* pos2);
+  Float_t GetDistance(const Float_t* pos1, const Float_t* pos2);
 }
 
 

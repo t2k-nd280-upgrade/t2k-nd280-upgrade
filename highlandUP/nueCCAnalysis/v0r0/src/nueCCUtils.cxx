@@ -310,15 +310,15 @@ bool nueCCUtils::TPCMuonPIDCut(const AnaTrackB& candidate, Float_t Lmu) {
 }
 
 //**************************************************
-bool nueCCUtils::compare_length(const AnaTrackB* lhs, const AnaTrackB* rhs) const {
+bool nueCCUtils::compare_length( AnaTrackB* lhs,  AnaTrackB* rhs) {
   //**************************************************
-  Float_t left_length  = GetDistance(lhs->PositionStart, lhs->PositionEnd);
-  Float_t right_length = GetDistance(rhs->PositionStart, rhs->PositionEnd);
+  Float_t left_length  = nueCCUtils::GetDistance(lhs->PositionStart, lhs->PositionEnd);
+  Float_t right_length = nueCCUtils::GetDistance(rhs->PositionStart, rhs->PositionEnd);
   return (left_length > right_length);
 }
 
 //**************************************************
-Float_t GetDistance(Float_t* pos1, Float_t* pos2) {
+Float_t nueCCUtils::GetDistance(const Float_t* pos1, const Float_t* pos2) {
   //**************************************************
   TVector3 vec1(pos1[0], pos1[1], pos1[2]);
   TVector3 vec2(pos2[0], pos2[1], pos2[2]);
