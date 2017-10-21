@@ -156,18 +156,18 @@ bool nueCCUtils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetE
       PionLklh /= norm; 
       
       if( ProtonLklh > ElLklh && ProtonLklh > PionLklh )
-  continue;
+        continue;
       
       // Id associated to the largest of the two probabilities.
       if (PionLklh > ElLklh) {
-  box->nPositivePionTPCtracks++;
-  box->PositivePionTPCtracks.push_back(ptrack);
+        box->nPositivePionTPCtracks++;
+        box->PositivePionTPCtracks.push_back(ptrack);
       }
       else {
-  if (ptrack->Momentum > 900.) // This is mainly protons.
-    continue;
-  box->nPosPi0TPCtracks++;
-  box->PosPi0TPCtracks.push_back(ptrack);
+        if (ptrack->Momentum > 900.) // This is mainly protons.
+          continue;
+        box->nPosPi0TPCtracks++;
+        box->PosPi0TPCtracks.push_back(ptrack);
       }
     }
     
@@ -185,18 +185,17 @@ bool nueCCUtils::FindTPCPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetE
       PionLklh /= norm;
       
       if( PionLklh > 0.8 ) {
-  box->nNegativePionTPCtracks++;
-  box->NegativePionTPCtracks.push_back(ptrack);
+        box->nNegativePionTPCtracks++;
+        box->NegativePionTPCtracks.push_back(ptrack);
       }
       else {
-  box->nElPi0TPCtracks++;
-  box->ElPi0TPCtracks.push_back(ptrack);
-      }
-      
-    }
-    
-  } // end loop on tracks
-   return true;
+        box->nElPi0TPCtracks++;
+        box->ElPi0TPCtracks.push_back(ptrack);
+      }    
+    }   
+  } 
+  // end loop on tracks
+  return true;
 }
 
 //*********************************************************************
@@ -215,49 +214,37 @@ bool nueCCUtils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::S
     
   EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
 
-  Double_t MIP_eff_tar     = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.EfficiencyPID_Target");
-  Double_t MIP_mis_eff_tar = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.ContaminationPID_Target");
-
   Double_t MIP_eff_fgd     = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.EfficiencyPID_FGD");
   Double_t MIP_mis_eff_fgd = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.ContaminationPID_FGD");
     
   //loop over tracks
   for (int i=0;i<EventBox->nRecObjectsInGroup[groupID]; i++ ){
     AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[groupID][i]);
+    // not the main
     if (track == box->MainTrack) continue;
     
+    // should be inside target
     if (!anaUtils::InFiducialVolume(det, track->PositionStart) ||
-  !anaUtils::InFiducialVolume(det, track->PositionEnd) )
+        !anaUtils::InFiducialVolume(det, track->PositionEnd) )
       continue;
         
     if (det==SubDetId::kTarget1 || det==SubDetId::kTarget2) {
       if (track->nTargetSegments != 1) continue;
       
-      AnaTargetParticleB* TargetSegment = 
-  dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
+      AnaTargetParticleB* TargetSegment = static_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
       if (!TargetSegment) continue;
       if (!TargetSegment->IsReconstructed) continue;
+      if (TargetSegment->IdAsProton) continue;
 
-      AnaTrueParticleB* true_part = track->GetTrueParticle();
-      if (!true_part) continue;
-
-      float r=gRandom->Rndm();
-      float cut=0;
-      if (abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13)
-  cut = MIP_eff_tar;
-      else
-  cut = MIP_mis_eff_tar;
-      if (r<cut) {
-  box->nIsoTargetPiontracks++;
-  box->IsoTargetPiontracks.push_back(track);
-      }
-
+      box->nIsoTargetPiontracks++;
+      box->IsoTargetPiontracks.push_back(track);
     }
+
+    
     if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
       if (track->nFGDSegments != 1) continue;
     
-      AnaFGDParticleB* FGDSegment = 
-  dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
+      AnaFGDParticleB* FGDSegment = static_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
       if (!FGDSegment) continue;
       if (!FGDSegment->IsReconstructed) continue;
       
@@ -267,21 +254,15 @@ bool nueCCUtils::FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::S
       float r=gRandom->Rndm();
       float cut=0;
       if (abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13)
-  cut = MIP_eff_fgd;
+        cut = MIP_eff_fgd;
       else
-  cut = MIP_mis_eff_fgd;
+        cut = MIP_mis_eff_fgd;
       if (r<cut) {
-  box->nIsoTargetPiontracks++;
-  box->IsoTargetPiontracks.push_back(track);
-  /*
-  double prange;
-  ND::tman().GetMomentumFromRangeLinear(*track, prange, ParticleId::kPiPos);
-  std::cout << track->Momentum << " " << prange << std::endl;
-  */
-      }
-
+        box->nIsoTargetPiontracks++;
+        box->IsoTargetPiontracks.push_back(track);
+      }    
     }
-    
   }
+
   return true;
 }
