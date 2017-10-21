@@ -350,11 +350,22 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   // Find ECal veto track
   //========================
   AnaTrackB* ecaltracks[500];
+  bool useP0DECal = (bool)ND::params().GetParameterD("nueCCAnalysis.ECal.UseP0DECal");
+  bool ECalOnlyVeto = (bool)ND::params().GetParameterD("nueCCAnalysis.ECal.ECalOnlyVeto");
+
   // TODO understand if we need ECal only or ECal using tracks. Need OOFV samples for this
-  Int_t nEcal = anaUtils::GetAllTracksUsingOnlyDet(static_cast<const AnaEventB&> (event), SubDetId::kBrlECal, ecaltracks);
-  //Int_t nEcal = anaUtils::GetAllTracksUsingDet(static_cast<const AnaEventB&> (event), SubDetId::kECal, ecaltracks);
+  Int_t nEcal = 0;
+  if (ECalOnlyVeto)
+    nEcal  = anaUtils::GetAllTracksUsingOnlyDet(static_cast<const AnaEventB&> (event), SubDetId::kECAL, ecaltracks);
+  else
+    nEcal = anaUtils::GetAllTracksUsingDet(static_cast<const AnaEventB&> (event), SubDetId::kECAL, ecaltracks);
+
   for(Int_t i=0; i<nEcal; i++){
     AnaTrackB* ecaltrack = ecaltracks[i];
+    if (SubDetId::GetDetectorUsed(ecaltrack->Detector,SubDetId::kDsECal) && !SubDetId::GetDetectorUsed(ecaltrack->Detector,SubDetId::kBrlECal))
+      continue;
+    if (!useP0DECal && SubDetId::GetDetectorUsed(ecaltrack->Detector,SubDetId::kP0DECal) && !SubDetId::GetDetectorUsed(ecaltrack->Detector,SubDetId::kBrlECal))
+      continue;
     if(ecaltrack->PositionStart[2] == -999) continue;
 
     for (Int_t j = 0; j < ecaltrack->nECalSegments; ++j) {
@@ -549,12 +560,9 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   if (!trueParticle) return false;
   
   bool IsEcalReco = false;
-  //std::cout << "test" << std::endl;
   for(int i=0; i<cc4pibox->MainTrack->nECalSegments; i++){
-    //std::cout << "test" << std::endl;
     if(cc4pibox->MainTrack->ECalSegments[i]->IsReconstructed){
       IsEcalReco = true;
-      //std::cout << "WOW" << std::endl;
       break;
     }
   }
@@ -605,8 +613,10 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   else
     findecal = 0;
 
-  // No P0DEcal
-  if(findecal < 0){
+  // No P0DUSEcal & switch P0D ECal
+  bool useP0DECal = (bool)ND::params().GetParameterD("nueCCAnalysis.ECal.UseP0DECal");
+  if(findecal < 0
+    || (!useP0DECal && firstECal_cross->Detector_name.Contains("POD"))){
     cc4pibox->track_ECal_MipEM  = -999.0;
     cc4pibox->track_ECal_EneOnL = -999.0;
     
@@ -821,7 +831,7 @@ bool FindIsoTargetElectrons::Apply(AnaEventC& eventC, ToyBoxB& boxB) const {
 
   anaUtils::ResizeArray(box->IsoTargetTracks, box->nIsoTargetTracks);
 
-  std::sort(box->IsoTargetTracks[0], box->IsoTargetTracks[box->nIsoTargetTracks-1],  nueCCUtils::compare_length);
+  std::sort(&(box->IsoTargetTracks[0]), &(box->IsoTargetTracks[box->nIsoTargetTracks-1]),  nueCCUtils::compare_length);
 
   return true;  
 
