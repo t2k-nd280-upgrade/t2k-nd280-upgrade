@@ -2193,8 +2193,8 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
 						   seg->SegLength);
       seg->IdAsProton = IdAsProton(trueParticle->PDG, mom);
 
-      if (trueParticle->PDG==2212)
-	std::cout << mom << " " << seg->IdAsProton << std::endl;
+      /*if (trueParticle->PDG==2212)
+	std::cout << mom << " " << seg->IdAsProton << std::endl;*/
       reconParticle->TargetSegments[reconParticle->nTargetSegments++] = seg;
 
     }
