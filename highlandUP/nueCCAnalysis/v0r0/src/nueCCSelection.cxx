@@ -580,7 +580,7 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   }
   
   // Check if track is actually reconstructed in ecal
-  if(!IsEcalReco){
+  if(!IsEcalReco or !_useECal){
     cc4pibox->track_ECal_MipEM  = -999.0;
     cc4pibox->track_ECal_EneOnL = -999.0;
     

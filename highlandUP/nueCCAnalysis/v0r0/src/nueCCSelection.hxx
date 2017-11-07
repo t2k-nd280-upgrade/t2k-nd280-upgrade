@@ -276,12 +276,16 @@ private:
 
 class ECal_PID: public StepBase{
 public:
-  ECal_PID(TFile *f){_file_ECAL_PDF=f;}
+  ECal_PID(TFile *f){
+    _file_ECAL_PDF=f;
+    _useECal = (bool)ND::params().GetParameterD("nueCCAnalysis.ECal.UseP0DECal");
+  }
   using StepBase::Apply;
   bool Apply(AnaEventC& event, ToyBoxB& box) const;
   StepBase* MakeClone(){return new ECal_PID(_file_ECAL_PDF);}
 private:
   TFile* _file_ECAL_PDF; 
+  bool _useECal;
 };
 
 class ToF_senseDetermination: public StepBase{
