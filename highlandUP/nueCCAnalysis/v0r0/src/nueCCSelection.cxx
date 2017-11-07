@@ -43,8 +43,8 @@ void nueCCSelection::DefineSteps(){
 
   
 
-  AddStep(0, StepBase::kAction, "find vertex",           new FindVertexAction());
-  AddStep(0, StepBase::kAction, "fill summary",          new FillSummaryAction_nueCC());
+  AddStep(StepBase::kAction, "find vertex",           new FindVertexAction());
+  AddStep(StepBase::kAction, "fill summary",          new FillSummaryAction_nueCC());
 
   AddSplit(2);
 
@@ -72,9 +72,6 @@ void nueCCSelection::DefineSteps(){
 
   // ECal Veto
   AddStep(0,  StepBase::kCut,    "ECal Veto Cut",         new ECalVeto());
-
-  // no TPC HM electrons
-  AddStep(1,  StepBase::kCut,     "No TPC HM electron",   new noTpcHMeleCut(),          true); // break if have HM electron
 
   // find all iso target tracks, replace Main Track
   AddStep(1,  StepBase::kAction,  "Find Iso-tar tracks",  new FindIsoTargetElectrons());
@@ -196,6 +193,8 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
   
   // Retrieve the EventBoxNDUP
   EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+
+  AnaEventB& eventB = static_cast<AnaEventB&>(event);
   
   //========================
   //Find TPCGoodQuality tracks in Fwd and Bwd
@@ -301,27 +300,31 @@ bool SortTracksAction::Apply(AnaEventC& event, ToyBoxB& box) const{
 
   
   //========================
-  // Look at the energy loss in target
+  // Look at the iso target primary track
   //========================
-  AnaTrueParticleB* trueTrack = static_cast<AnaTrueParticleB*>(cc4pibox->MainTrack->GetTrueParticle());
-  if (trueTrack) {
+  for (Int_t i = 0; i < eventB.nTrueParticles; ++i) {
+    AnaTrueParticleB* TrueTrack = eventB.TrueParticles[i];
+    if (!TrueTrack)
+      continue;
 
-    for (UInt_t j = 0; j < trueTrack->DetCrossingsVect.size(); ++j) {
-      if (anaUtils::InFiducialVolume(SubDetId::kTarget1,trueTrack->DetCrossingsVect[j]->EntrancePosition)) {
-        Float_t endMom= sqrt(pow(trueTrack->DetCrossingsVect[j]->ExitMomentum[0], 2)
-                         + pow(trueTrack->DetCrossingsVect[j]->ExitMomentum[1], 2)
-                         + pow(trueTrack->DetCrossingsVect[j]->ExitMomentum[2], 2));
+    if (TrueTrack->DetCrossingsVect.size() != 1)
+      continue;
+    if (TrueTrack->DetCrossingsVect[0]->Detector != pow(2, (int)SubDetId::kTarget1))
+      continue;
 
-        Float_t StartMom = sqrt(pow(trueTrack->DetCrossingsVect[j]->EntranceMomentum[0], 2)
-                         + pow(trueTrack->DetCrossingsVect[j]->EntranceMomentum[1], 2)
-                         + pow(trueTrack->DetCrossingsVect[j]->EntranceMomentum[2], 2));
-      
-        cc4pibox->Mom_Target_start  = StartMom;
-        cc4pibox->Mom_Target_end    = endMom;
-        cc4pibox->Target_length     = trueTrack->DetCrossingsVect[j]->SegLength;
-        cc4pibox->Target_dE         = sqrt(StartMom*StartMom + 0.511*0.511) - sqrt(endMom*endMom + 0.511*0.511);
-        break;
-      }
+    if (TrueTrack->ParentID != 0 || (abs(TrueTrack->TrueVertex->NuPDG) != 12 && abs(TrueTrack->TrueVertex->NuPDG) != 14))
+      continue;
+
+    Double_t L = TrueTrack->DetCrossingsVect[0]->SegLength;
+
+    if (abs(TrueTrack->PDG) == 11) {
+      cc4pibox->EleTargetLength   = L;
+    } else if (abs(TrueTrack->PDG) == 211) {
+      cc4pibox->PiTargetLength   = L;
+    } else if (abs(TrueTrack->PDG) == 13) {
+      cc4pibox->MuTargetLength   = L;
+    } else if (abs(TrueTrack->PDG) == 2212) {
+      cc4pibox->PrTargetLength   = L;
     }
   }
   
@@ -512,6 +515,8 @@ bool TPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
   (void)event;
   
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+  if (!cc4pibox->MainTrack)
+    return false;
   if(!cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)) return false;
   
   return true;
@@ -525,6 +530,8 @@ bool TPCElectronPID::Apply(AnaEventC& event, ToyBoxB& box) const{
   // TODO implement pull cuts
   
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+  if (!cc4pibox->MainTrack)
+    return false;
 
   return ( nueCCUtils::TPCElectronPIDCut(*cc4pibox->MainTrack, lik_elec) );
 
@@ -536,6 +543,8 @@ bool TPCMuonPID::Apply(AnaEventC& event, ToyBoxB& box) const{
   (void)event;
   
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+  if (!cc4pibox->MainTrack)
+    return false;
 
   if(cc4pibox->MainTrack->SmearedMomentum > lik_mom && cc4pibox->track_ECal_MipEM  != -999.0) return true;
 
@@ -555,6 +564,9 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   }
   
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+
+  if (!cc4pibox->MainTrack)
+    return false;
   
   AnaTrueParticleB* trueParticle = cc4pibox->MainTrack->GetTrueParticle();
   if (!trueParticle) return false;
@@ -590,7 +602,8 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
     
     return true;
   }
- 
+
+
   Int_t findecal = -1;
   if (firstECal_cross->Detector_name.Contains("RightClam") &&
       firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
@@ -608,7 +621,7 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
     findecal = 1;
   else if (firstECal_cross->Detector_name.Contains("RightSide"))
     findecal = 1;
-  else if(firstECal_cross->Detector_name.Contains("POD/USECal"))
+  else if(firstECal_cross->Detector_name.Contains("P0D/USECal"))
     findecal = -1;
   else
     findecal = 0;
@@ -616,10 +629,9 @@ bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
   // No P0DUSEcal & switch P0D ECal
   bool useP0DECal = (bool)ND::params().GetParameterD("nueCCAnalysis.ECal.UseP0DECal");
   if(findecal < 0
-    || (!useP0DECal && firstECal_cross->Detector_name.Contains("POD"))){
+    || (!useP0DECal && firstECal_cross->Detector_name.Contains("P0D"))){
     cc4pibox->track_ECal_MipEM  = -999.0;
     cc4pibox->track_ECal_EneOnL = -999.0;
-    
     return true;
   }
 
@@ -682,6 +694,9 @@ bool TPCVeto::Apply(AnaEventC& event, ToyBoxB& box) const{
   
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
 
+  if (!cc4pibox->MainTrack)
+    return false;
+
   if(!cc4pibox->TPCVetoTrack) return true;
 
   Float_t DZ = cc4pibox->TPCVetoTrack->PositionStart[2] - cc4pibox->MainTrack->PositionStart[2];
@@ -696,6 +711,9 @@ bool ECalVeto::Apply(AnaEventC& event, ToyBoxB& box) const{
   (void)event;
   
   ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
+
+  if (!cc4pibox->MainTrack)
+    return false;
 
   if(!cc4pibox->ECalVetoTrack) return true;
 
@@ -795,15 +813,6 @@ bool PairCut::Apply(AnaEventC& event, ToyBoxB& boxB) const {
 
 
 //**************************************************
-bool noTpcHMeleCut::Apply(AnaEventC& eventC, ToyBoxB& boxB) const {
-  //**************************************************
-  (void) eventC;
-
-  return (boxB.AccumLevel[0] < 6);
-
-}
-
-//**************************************************
 bool FindIsoTargetElectrons::Apply(AnaEventC& eventC, ToyBoxB& boxB) const {
   //**************************************************
   (void) eventC;
@@ -822,16 +831,17 @@ bool FindIsoTargetElectrons::Apply(AnaEventC& eventC, ToyBoxB& boxB) const {
 
     AnaTrackB* track = static_cast<AnaTrackB*>(event.Particles[i]);
 
-    if (!anaUtils::TrackUsesOnlyDet(*track, SubDetId::kTarget))
+    if (!anaUtils::TrackUsesOnlyDet(*track, SubDetId::kTarget1))
       continue;
 
     box->IsoTargetTracks[box->nIsoTargetTracks++] = track;
-
   }
 
   anaUtils::ResizeArray(box->IsoTargetTracks, box->nIsoTargetTracks);
 
-  std::sort(&(box->IsoTargetTracks[0]), &(box->IsoTargetTracks[box->nIsoTargetTracks-1]),  nueCCUtils::compare_length);
+  if (box->nIsoTargetTracks > 0) {
+    std::sort(&(box->IsoTargetTracks[0]), &(box->IsoTargetTracks[box->nIsoTargetTracks-1]),  nueCCUtils::compare_length);
+  }
 
   return true;  
 
@@ -844,28 +854,32 @@ bool LengthPIDcut::Apply(AnaEventC& eventC, ToyBoxB& boxB) const {
 
   ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
 
-  AnaEventB& event = *static_cast<AnaEventB*>(&eventC); 
-
-  Double_t MIP_eff_tar     = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.EfficiencyPID_Target");
-  Double_t MIP_mis_eff_tar = ND::params().GetParameterD("nueCCAnalysis.IsoTargetPi.ContaminationPID_Target");
 
   Double_t IsoTargetLength = ND::params().GetParameterD("nueCCAnalysis.IsoTargetEle.MinLength");
 
   // TODO maybe start using Segments instead of the tracks
   for (Int_t i = 0; i < box->nIsoTargetTracks; ++i) {
     AnaTrueParticleB* true_part = static_cast<AnaTrueParticleB*>(box->IsoTargetTracks[i]->GetTrueParticle());
+    AnaTargetParticleB* target_part = static_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*box->IsoTargetTracks[i], SubDetId::kTarget1));
 
-    if (true_part->Length < IsoTargetLength)
-      break;
+    if (!target_part || !true_part)
+      continue;
 
-    // determination ele/proton against muon/pion
-    float r=gRandom->Rndm();
-    if ((abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13) && r < MIP_eff_tar)
+    if (target_part->SegLength < IsoTargetLength)
+      continue;
+
+    // efficiency for muon/pion/proton reconstruction are pre-calculated
+    if ((abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13 || abs(true_part->PDG) == 2212) && !target_part->IsReconstructed)
+      continue;
+
+    if ((abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13) && !target_part->IdAsProton)
       continue;
 
     // electron proton separation is 100% effective at the moment
-    if (abs(true_part->PDG) == 11)
+    if (abs(true_part->PDG) == 11) {
+      box->MainTrack = box->IsoTargetTracks[i];
       return true;
+    }
     else return false;
   }
 
