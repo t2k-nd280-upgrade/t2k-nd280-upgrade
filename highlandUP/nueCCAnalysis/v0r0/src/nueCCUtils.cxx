@@ -119,7 +119,7 @@ bool nueCCUtils::IsGammaSignal(AnaTrack* track, const SubDetId::SubDetEnum det, 
   AnaTrueParticle* truetrack = static_cast<AnaTrueParticle*>( track->TrueObject );
   if(!truetrack) return false;
 
-  if(parent == 22 && abs(truetrack->PDG) == 11 && anaUtils::InFiducialVolume(det,truetrack->Position) )
+  if((parent == 22 || truetrack->ProcessName == "conv") && abs(truetrack->PDG) == 11 && anaUtils::InFiducialVolume(det,truetrack->Position) )
     return true;
 
   return false;
@@ -135,7 +135,7 @@ bool nueCCUtils::IsGammaSignalOOFGD(AnaTrack* track, const SubDetId::SubDetEnum 
   AnaTrueVertex* vtx = static_cast<AnaTrueVertex*> (track->GetTrueParticle()->TrueVertex);
   if(!vtx) return false;
 
-  if(parent == 22 && abs(truetrack->PDG) == 11 && !(anaUtils::InDetVolume(det, vtx->Position)))
+  if((parent == 22 || truetrack->ProcessName == "conv") && abs(truetrack->PDG) == 11 && !(anaUtils::InDetVolume(det, vtx->Position)))
     return true;
 
   return false;

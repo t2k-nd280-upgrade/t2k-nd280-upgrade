@@ -16,7 +16,7 @@
 
 class nueCCSelection: public SelectionBase{
 public:
-  nueCCSelection(bool forceBreak=true);
+  nueCCSelection(bool forceBreak=false);
   virtual ~nueCCSelection(){
     _file_ECAL_PDF->Close();
 
@@ -64,6 +64,8 @@ public:
     daughterPDG = -999;
     beta_ToF = beta_true_ToF = -999.;
     FirstToF = SecondToF = SubDetId::kInvalid;
+
+    nIsoTargetTracks = 0;
   }
 
   virtual void Reset(){
@@ -88,7 +90,9 @@ public:
     beta_ToF = beta_true_ToF = -999.;
     FirstToF = SecondToF = SubDetId::kInvalid;
 
-    Mom_Target_end = Target_length = Mom_Target_start = Target_dE = -999.;
+    EleTargetLength = PiTargetLength = MuTargetLength = PrTargetLength = -999.;
+
+    nIsoTargetTracks = 0;
   }
 
   virtual ~ToyBoxCC4pi(){}
@@ -100,10 +104,10 @@ public:
   SubDetId::SubDetEnum TPC_det;
 
   /// Energy loss in target
-  Float_t Mom_Target_start;
-  Float_t Mom_Target_end;
-  Float_t Target_length;
-  Float_t Target_dE;
+  Float_t EleTargetLength;
+  Float_t PiTargetLength;
+  Float_t MuTargetLength;
+  Float_t PrTargetLength;
 
   /// ToF vars
   float main_ToF, main_ToF_true;
@@ -309,14 +313,6 @@ public:
   StepBase* MakeClone(){return new PairCut();}
 protected:
   Float_t _inv_mass_min;
-};
-
-// iso target cuts
-class noTpcHMeleCut: public StepBase{
-public:
-  using StepBase::Apply;
-  bool Apply(AnaEventC& event, ToyBoxB& boxB) const;
-  StepBase* MakeClone(){return new noTpcHMeleCut();}
 };
 
 class FindIsoTargetElectrons: public StepBase{
