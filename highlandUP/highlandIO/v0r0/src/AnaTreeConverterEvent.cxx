@@ -2182,7 +2182,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
 				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
-      seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
@@ -2193,8 +2192,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
 						   seg->SegLength);
       seg->IdAsProton = IdAsProton(trueParticle->PDG, mom);
 
-      /*if (trueParticle->PDG==2212)
-	std::cout << mom << " " << seg->IdAsProton << std::endl;*/
       reconParticle->TargetSegments[reconParticle->nTargetSegments++] = seg;
 
     }
@@ -2212,7 +2209,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
 				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
-      seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
@@ -2239,7 +2235,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
 				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,  seg->PositionEnd, 4);
-      seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
@@ -2264,7 +2259,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
 				       trueParticle->DetCrossingsVect[i]->ExitMomentum[2] / mom), seg->DirectionEnd);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->EntrancePosition, seg->PositionStart, 4);
       anaUtils::CopyArray(trueParticle->DetCrossingsVect[i]->ExitPosition,     seg->PositionEnd, 4);
-      seg->DeltaLYZ = trueParticle->DetCrossingsVect[i]->DeltaLYZ;
       seg->SegLength = trueParticle->DetCrossingsVect[i]->SegLength;
       seg->EDeposit = trueParticle->DetCrossingsVect[i]->EDeposit;
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);

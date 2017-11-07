@@ -15,7 +15,7 @@ AnaTargetParticleB::AnaTargetParticleB(){
 //********************************************************************
 AnaTargetParticleB::AnaTargetParticleB(const AnaTargetParticleB& seg):AnaParticleB(seg){
 //********************************************************************
-    DeltaLYZ=seg.DeltaLYZ;
+    SegLength=seg.SegLength;
     IsReconstructed=seg.IsReconstructed;
     IdAsProton=seg.IdAsProton;
 }
@@ -51,7 +51,7 @@ AnaFGDParticleB::AnaFGDParticleB(){
 //********************************************************************
 AnaFGDParticleB::AnaFGDParticleB(const AnaFGDParticleB& seg):AnaParticleB(seg){
 //********************************************************************
-    DeltaLYZ=seg.DeltaLYZ;
+    SegLength=seg.SegLength;
     IsReconstructed=seg.IsReconstructed;
 
 }
@@ -86,7 +86,7 @@ AnaToFParticleB::AnaToFParticleB(){
 //********************************************************************
 AnaToFParticleB::AnaToFParticleB(const AnaToFParticleB& seg):AnaParticleB(seg){
 //********************************************************************
-    DeltaLYZ=seg.DeltaLYZ;
+    SegLength=seg.SegLength;
     IsReconstructed=seg.IsReconstructed;
     Detector_name=seg.Detector_name;
 }
@@ -121,7 +121,7 @@ AnaECalParticleB::AnaECalParticleB(){
 //********************************************************************
 AnaECalParticleB::AnaECalParticleB(const AnaECalParticleB& seg):AnaParticleB(seg){
 //********************************************************************
-    DeltaLYZ=seg.DeltaLYZ;
+    SegLength=seg.SegLength;
     IsReconstructed=seg.IsReconstructed;
 
 }
