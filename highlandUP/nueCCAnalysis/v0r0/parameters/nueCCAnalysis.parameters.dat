@@ -35,5 +35,6 @@
 
  < nueCCAnalysis.IsoTargetEle.MinLength = 100 >
 
+ < nueCCAnalysis.ECal.UseECal = 1 >
  < nueCCAnalysis.ECal.UseP0DECal = 1 >
  < nueCCAnalysis.ECal.ECalOnlyVeto = 1 >
