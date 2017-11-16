@@ -9,7 +9,7 @@ void nue_4pi_eff(){
   mc_path += conf;
   prefix  += conf;
 
-  mc_path           += "v11/";
+  mc_path           += "v13/";
   std::string timing = "600/";
 
   if (conf != "Current/") {
@@ -894,40 +894,48 @@ void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::str
 
   exp.SetCurrentTree("default");
 
-  signal = "abs(selelec_PDG) == 11";
-  cut_pur_before  = "accum_level[][0]>3";
-  cut_pur_after   = cut_pur_before + " && " + signal;
+  std::string signalP = "abs(selelec_PDG) == 11";
+  std::string signalE = "abs(true_pdg) == 11";
   
+  cut_pur_before  = "accum_level[][0]>3";
+  cut_pur_after   = cut_pur_before + " && " + signalP;
+
+  cut_eff_before  = "accum_level[0]>2 && " + signalE;
+  cut_eff_after   = "accum_level[0]>3 && " + signalE;
+  
+  exp.SetCurrentTree("truth");
+  //draw.DrawPur(exp, "truelepton_mom", NBins_Mom2, BinEdges_Mom2, cut_eff_after, cut_eff_before, "", "OVER");
+  exp.SetCurrentTree("default");
+  Eff_FGD1 = draw.GetLastGraph()->GetY()[0];
+  //std::cout << Eff_FGD1 << "       ";
   draw.DrawPur(exp, "selelec_mom",  NBins_Mom2, BinEdges_Mom2, cut_pur_after, cut_pur_before, "", "OVER");
-  std::cout << "w/0 ECal  " << draw.GetLastGraph()->GetY()[0] << std::endl;
+  std::cout << draw.GetLastGraph()->GetY()[0] << std::endl;
 
   cut_pur_before  = "accum_level[][0]>4";
-  cut_pur_after   = cut_pur_before + " && " + signal;
-  draw.DrawPur(exp, "selelec_mom  ",  NBins_Mom2, BinEdges_Mom2, cut_pur_after, cut_pur_before, "", "OVER");
-  std::cout << "w/ ECal  " << draw.GetLastGraph()->GetY()[0] << std::endl;
+  cut_pur_after   = cut_pur_before + " && " + signalP;
 
-  cut_pur_before  = "accum_level[][0]>5";
-  cut_pur_after   = cut_pur_before + " && " + signal;
-  draw.DrawPur(exp, "selelec_mom  ",  NBins_Mom2, BinEdges_Mom2, cut_pur_after, cut_pur_before, "", "OVER");
-  std::cout << "w/ ECal + PID2 " << draw.GetLastGraph()->GetY()[0] << std::endl;
-
-  cut_pur_before  = "accum_level[][0]>3 && selelec_likemu < 0.03";
-  cut_pur_after   = cut_pur_before + " && " + signal;
-  draw.DrawPur(exp, "selelec_mom  ",  NBins_Mom2, BinEdges_Mom2, cut_pur_after, cut_pur_before, "", "OVER");
-  std::cout << "PID2 only " << draw.GetLastGraph()->GetY()[0] << std::endl;
-
+  cut_eff_before  = "accum_level[0]>2 && " + signalE;
+  cut_eff_after   = "accum_level[0]>4 && " + signalE;
+  
   exp.SetCurrentTree("truth");
-  signal = "abs(true_pdg) == 11";
-  cut_eff_before  = "accum_level[0]>3 && " + signal;
-  cut_eff_after   = "accum_level[0]>5 && " + signal;
-  draw.DrawPur(exp, "truelepton_mom", NBins_Mom2, BinEdges_Mom2, cut_eff_after_TAR, cut_eff_before_TAR, "", "OVER");
-   std::cout << "w/ ECal + PID2 " << draw.GetLastGraph()->GetY()[0] << std::endl;
+  //draw.DrawPur(exp, "truelepton_mom", NBins_Mom2, BinEdges_Mom2, cut_eff_after, cut_eff_before, "", "OVER");
+  exp.SetCurrentTree("default");
+  //std::cout <<" TPC dE/dx + ECal    "  << draw.GetLastGraph()->GetY()[0] << "          ";
+  draw.DrawPur(exp, "selelec_mom",  NBins_Mom2, BinEdges_Mom2, cut_pur_after, cut_pur_before, "", "OVER");
+  std::cout << draw.GetLastGraph()->GetY()[0] << std::endl;
 
+ cut_pur_before  = "accum_level[][0]>5";
+  cut_pur_after   = cut_pur_before + " && " + signalP;
 
-  cut_eff_before  = "accum_level[0]>-1 && " + signal;
-  cut_eff_after   = "accum_level[0]>8 && " + signal;
-  draw.DrawEff(exp, false, "truelepton_mom",  NBins_Mom1, BinEdges_Mom1, cut_eff_after, cut_eff_before, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_eff_true.png").c_str());
+  cut_eff_before  = "accum_level[0]>2 && " + signalE;
+  cut_eff_after   = "accum_level[0]>5 && " + signalE;
+  
+  exp.SetCurrentTree("truth");
+  //draw.DrawPur(exp, "truelepton_mom", NBins_Mom2, BinEdges_Mom2, cut_eff_after, cut_eff_before, "", "OVER");
+  exp.SetCurrentTree("default");
+  //std::cout <<" TPC dE/dx + ECal + TPC2    "  << draw.GetLastGraph()->GetY()[0] << "          ";
+  draw.DrawPur(exp, "selelec_mom",  NBins_Mom2, BinEdges_Mom2, cut_pur_after, cut_pur_before, "", "OVER");
+  std::cout << draw.GetLastGraph()->GetY()[0] << std::endl;
 
 }
 
