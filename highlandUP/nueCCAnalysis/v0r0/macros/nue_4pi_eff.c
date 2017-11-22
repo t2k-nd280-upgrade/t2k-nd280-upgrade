@@ -9,7 +9,7 @@ void nue_4pi_eff(){
   mc_path += conf;
   prefix  += conf;
 
-  mc_path           += "v13/";
+  mc_path           += "v11/";
   std::string timing = "600/";
 
   if (conf != "Current/") {
@@ -64,13 +64,14 @@ void nue_4pi_eff(){
   //signal = "particle == 11 && nu_pdg == 12";
   std::string opt = "OVER";
 
-  //dump(*exp, prefix, cut_base, opt, mc_path, signal);
+  dump(*exp, prefix, cut_base, opt, mc_path, signal);
   //SelectionKinem(*exp, prefix, cut_base, opt, mc_path, signal);
   //IsoTargetStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);
-  EffStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);
+  //EffStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);
   //PlotToF(*exp, prefix, cut_base, opt, mc_path, signal);
   //ScanCut(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"));
   //TopoStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);
+  //ECalStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);;
 }
 
 // ********************************************************
@@ -1114,6 +1115,16 @@ void TopoStudy(Experiment exp, std::string prefix, std::string cut_base, std::st
   exp.SetCurrentTree("default");
 }
 
+
+// ********************************************************
+void ECalStudy(Experiment exp, std::string prefix, std::string cut_base, std::string opt, std::string mc_path, std::string signal, bool RHC, bool Current, std::string det) {
+  // ********************************************************
+  DrawingTools  draw((mc_path + "All_ToF_noTarToF_nue.root").c_str(), 1);
+  TCanvas c1("canva","",50,50,1000,800);
+  draw.Draw(exp, "1", 11, 0, 11, "all",  "accum_level[][0] > 3", "", "UNDER OVER");
+  draw.Draw(exp, "1", 11, 0, 11, "all",  "accum_level[][0] > 3 && selelec_ecal_mipem != -999", "", "UNDER OVER");
+
+}
 // ********************************************************
 void dump(Experiment exp, std::string prefix, std::string cut_base, std::string opt, std::string mc_path, std::string signal) {
   // ********************************************************
@@ -1122,6 +1133,9 @@ void dump(Experiment exp, std::string prefix, std::string cut_base, std::string 
 
   draw.DumpSteps("kTrackerNueCC");
   draw.DumpCuts();
+
+  draw.DrawEventsVSCut(exp);
+  draw.DrawEventsVSCut(exp, "abs(particle) == 11");
 
   std::string cut = cut_base + " && truelepton_mom > 200 && (selelec_ToF_mass == 0)";
   std::string cut2 = cut + " && " + signal;
@@ -1135,6 +1149,8 @@ void dump(Experiment exp, std::string prefix, std::string cut_base, std::string 
 
   std::cout << "N = " << N << "   S = " << S << "  pur = " << S/N << std::endl;
   std::cout << "S = " << S/N*sqrt(N) << std::endl;
+
+  
 
 }
 

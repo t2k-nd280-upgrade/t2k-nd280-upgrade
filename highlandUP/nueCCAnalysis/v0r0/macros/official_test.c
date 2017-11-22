@@ -58,18 +58,37 @@
   std::string nuEoofvGamma = "nuesimple == 6";
   std::string nuEinfvGamma = "nuesimple == 3";
 
-  //draw.DrawEffVSCut(*exp, nuEoofvGamma);
-  //c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/oofv_eff.png");
 
-  draw.Draw(*exp, "selelec_mom", 50, 0., 5000., "nuesimple", "accum_level[][] > 17" , "", "OVER");
+  /*draw.Draw(*exp, "selelec_mom", 50, 0., 5000., "nuesimple", "accum_level[][] > 17" , "", "OVER");
   c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/mom.png");
 
+  draw.Draw(*exp, "selelec_mom", 50, 0., 5000., "particle", "accum_level[][] > 5 && selelec_mom > 200" , "", "OVER");
+  c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/mom5.png");
+  draw.Draw(*exp, "selelec_mom", 50, 0., 5000., "particle", "accum_level[][] > 7 && selelec_mom > 200" , "", "OVER");
+  c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/mom7.png");
+  draw.Draw(*exp, "selelec_mom", 50, 0., 5000., "particle", "accum_level[][] > 8 && selelec_mom > 200" , "", "OVER");
+  c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/mom8.png");*/
+
+  //draw.DrawEffPurVSCut(*exp, nuEsignal, "", 0, 17);
+
+  /*draw.SetMinY(100);
+  draw.SetLogY(1);
   draw.DrawEventsVSCut(*exp, nuEoofvGamma);
   c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/oofv_ev.png");
+  draw.SetLogY(0);
+  draw.SetMinY();
 
   draw.DrawEventsVSCut(*exp, nuEinfvGamma);
   c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/infv_ev.png");
-
-  draw.DrawEventsVSCut(*exp, nuEsignal);
+*/
+  draw.DrawEventsVSCut(*exp, "abs(particle) == 11");
   c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/sig_ev.png");
+
+  draw.SetMinY(1000);
+  draw.SetLogY(1);
+  draw.DrawEventsVSCut(*exp);
+  c1.Print("$bars/dev/t2k-nd280-upgrade/highlandUP/figures/official/all_ev.png");
+  draw.SetLogY(0);
+  draw.SetMinY();
+  
 }
