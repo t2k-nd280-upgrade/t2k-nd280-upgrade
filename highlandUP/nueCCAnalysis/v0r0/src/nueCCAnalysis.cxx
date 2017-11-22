@@ -155,6 +155,7 @@ void nueCCAnalysis::DefineMicroTrees(bool addBase){
   AddVar3VF(output(),   selelec_truedir,        "");
   AddVarI(output(),     selelec_flipped,        "");
   AddVarI(output(),     selelec_true_isoTar,    "");
+  AddVarI(output(),     selelec_true_conv,      "");
 
   //--- info by global
   AddVarI(output(),     selelec_detectors,      "");
@@ -293,6 +294,7 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selelec_truecostheta,              cc4pibox().MainTrack->GetTrueParticle()->CosTheta);
     output().FillVar(selelec_stopped,                   cc4pibox().MainTrack->GetTrueParticle()->stopped);
     output().FillVar(selelec_flipped,                   cc4pibox().MainTrack->HasFlipped);
+    output().FillVar(selelec_true_conv,                 (int)(cc4pibox().MainTrack->GetTrueParticle()->ProcessName == "conv"));
     
     output().FillVar(true_target_ele_length,               cc4pibox().EleTargetLength);
     output().FillVar(true_target_pi_length,                cc4pibox().PiTargetLength);
@@ -308,23 +310,23 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
       output().FillVar(selelec_ParentPDG,               parent->PDG);
       AnaTrueVertex *vtx = static_cast<AnaTrueVertex*>(cc4pibox().MainTrack->GetTrueParticle()->TrueVertex);
       if(vtx) {
-	std::vector<AnaTrueParticleB*> TrueParticles = vtx->TrueParticlesVect;
-	for (unsigned int i = 0; i < TrueParticles.size(); i++) {
-	  AnaTrueParticle* ttruth = static_cast<AnaTrueParticle*> (TrueParticles[i]);
-	  
-	    if(ttruth == cc4pibox().MainTrack->TrueObject) continue;
-	    if(ttruth->ParentID == parent->ID){
-	      output().FillVar(TruePairTrack_true_mom,      ttruth->Momentum);
-	      output().FillVar(TruePairTrack_pdg,           ttruth->PDG);
-	      break;
-	    }
-	}
+        std::vector<AnaTrueParticleB*> TrueParticles = vtx->TrueParticlesVect;
+        for (unsigned int i = 0; i < TrueParticles.size(); i++) {
+          AnaTrueParticle* ttruth = static_cast<AnaTrueParticle*> (TrueParticles[i]);
+    
+          if(ttruth == cc4pibox().MainTrack->TrueObject) continue;
+          if(ttruth->ParentID == parent->ID){
+            output().FillVar(TruePairTrack_true_mom,      ttruth->Momentum);
+            output().FillVar(TruePairTrack_pdg,           ttruth->PDG);
+            break;
+          }
+        }
       }
       
       // Grandparent
       AnaTrueParticle* gparent = static_cast<AnaTrueParticle*> ( anaUtils::GetTrueParticleByID(static_cast<const AnaEventB&> (GetEvent()), parent->ParentID) );
       if(gparent)
-	output().FillVar(selelec_GParentPDG,            gparent->PDG);
+	       output().FillVar(selelec_GParentPDG,            gparent->PDG);
     }
     
     AnaTrackB* track = cc4pibox().MainTrack;
@@ -417,7 +419,7 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
       // Direction of the gamma
       Float_t gamma_dir[3];
       for(int i = 0; i < 3; i++){
-	gamma_dir[i] = track->DirectionStart[i] + pairtrack->DirectionStart[i];
+      gamma_dir[i] = track->DirectionStart[i] + pairtrack->DirectionStart[i];
       }
       output().FillVectorVarFromArray(PairTrack_gamma_dir, gamma_dir, 3);
 
@@ -425,15 +427,15 @@ void nueCCAnalysis::FillMicroTrees(bool addBase){
       AnaTrueParticle* pair_truth = static_cast<AnaTrueParticle*> (pairtrack->TrueObject);
 
       if(pair_truth){
-	output().FillVectorVarFromArray(PairTrack_true_startdir, pair_truth->Direction, 4);
-	output().FillVectorVarFromArray(PairTrack_true_startpos, pair_truth->Position, 4);
-	output().FillVar(PairTrack_pdg, pair_truth->PDG);
-	if (cc4pibox().MainTrack->GetTrueParticle()){
-	  for(int i = 0; i < 3; i++){
-	    gamma_dir[i] = cc4pibox().MainTrack->GetTrueParticle()->Direction[i] + pair_truth->Direction[i];
-	  }
-	  output().FillVectorVarFromArray(PairTrack_gamma_true_dir, gamma_dir, 3);
-	}
+        output().FillVectorVarFromArray(PairTrack_true_startdir, pair_truth->Direction, 4);
+        output().FillVectorVarFromArray(PairTrack_true_startpos, pair_truth->Position, 4);
+        output().FillVar(PairTrack_pdg, pair_truth->PDG);
+        if (cc4pibox().MainTrack->GetTrueParticle()){
+          for(int i = 0; i < 3; i++){
+            gamma_dir[i] = cc4pibox().MainTrack->GetTrueParticle()->Direction[i] + pair_truth->Direction[i];
+          }
+          output().FillVectorVarFromArray(PairTrack_gamma_true_dir, gamma_dir, 3);
+        }
       }
 
     }
