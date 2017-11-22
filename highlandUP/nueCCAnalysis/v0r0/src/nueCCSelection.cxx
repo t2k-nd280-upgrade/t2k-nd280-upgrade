@@ -36,6 +36,7 @@ void nueCCSelection::DefineSteps(){
   //last true means that if that cut is not fulfill the sequence is stop
   AddStep(StepBase::kAction, "find true vertex",      new FindTrueVertexAction());
 
+  // 0
   AddStep(StepBase::kCut,    "> 0 tracks ",           new TotalMultiplicityCut(), true);
   
   // Find the main track
@@ -48,29 +49,31 @@ void nueCCSelection::DefineSteps(){
 
   AddSplit(2);
 
-  // FV and quality
+  // 1 FV and quality
   AddStep(0,  StepBase::kCut,"quality+fiducial",      new TrackGQandFVCut());
   
 
-  // Track length cut
+  // 2 Track length cut
   AddStep(0,  StepBase::kCut,    "TPC Quality Cut",       new TPC_Quality());
 
   // ToF info
   AddStep(0,  StepBase::kAction, "ToF",                   new ToF_senseDetermination());
 
-  // TPC+ECal PID
+  // 3 TPC PID
   AddStep(0,  StepBase::kCut,    "TPC Electron PID Cut",  new TPCElectronPID());
+  // 4 ECal PID
   AddStep(0,  StepBase::kCut,    "ECal PID Cut",          new ECal_PID(_file_ECAL_PDF));
+  // 5 TPC PID 2
   AddStep(0,  StepBase::kCut,    "TPC Muon PID Cut",      new TPCMuonPID()); // For events not going in the Ecal
 
-  // Pair cut
+  // 6 Pair cut
   AddStep(0,  StepBase::kAction, "find best e+e- pair",   new FindPairsAction());
   AddStep(0,  StepBase::kCut,    "Pair Veto",	            new PairCut());
 
-  // TPC Veto
+  // 7 TPC Veto
   AddStep(0,  StepBase::kCut,    "TPC Veto Cut",          new TPCVeto());
 
-  // ECal Veto
+  // 8 ECal Veto
   AddStep(0,  StepBase::kCut,    "ECal Veto Cut",         new ECalVeto());
 
   // find all iso target tracks, replace Main Track
