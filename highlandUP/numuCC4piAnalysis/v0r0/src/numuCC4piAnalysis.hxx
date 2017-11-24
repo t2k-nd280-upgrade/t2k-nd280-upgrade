@@ -107,6 +107,9 @@ public:
     sel_TruePiZero_cos,
     sel_TruePiZero_merged,
 
+    sel_nTPCProtons,
+    sel_nTargetProtons,
+
     selmu_ToF_time,
     selmu_ToF_true_time,
     selmu_ToF_length,

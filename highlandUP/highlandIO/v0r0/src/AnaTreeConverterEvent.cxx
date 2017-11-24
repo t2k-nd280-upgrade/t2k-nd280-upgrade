@@ -330,7 +330,7 @@ void AnaTreeConverterEvent::FillTrueInfo(AnaSpill* spill){
     if ( track->GetProcessName() != "primary" && trueMTracks[track->GetParentID()] ) {
       TND280UpTrack *parent = trueMTracks[track->GetParentID()];
       if ( track->GetPDG() == parent->GetPDG() &&
-	   cos(track->GetInitMom().Angle(parent->GetInitMom())) > 0. ) {
+	   cos(track->GetInitMom().Angle(parent->GetInitMom())) > 0.95 ) {
 	Merge(parent, track);
 	mergMTracks[track->GetParentID()]++;
 	track_merged = true;

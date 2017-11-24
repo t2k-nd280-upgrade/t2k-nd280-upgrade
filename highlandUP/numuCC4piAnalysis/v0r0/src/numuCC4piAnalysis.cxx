@@ -179,6 +179,9 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVarVI(output(),  sel_TruePiMinus_merged, "", sel_nTruePiMinus);
   AddVarVI(output(),  sel_TruePiZero_merged,  "", sel_nTruePiZero);
 
+  AddVarI(output(),   sel_nTPCProtons,  "");
+  AddVarI(output(),   sel_nTargetProtons,  "");
+
 }
 
 //********************************************************************
@@ -246,7 +249,7 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selmu_charge,                    track->Charge);
     output().FillVar(selmu_mom,                       track->SmearedMomentum);
     if (track->nTargetSegments>0 && track->TargetSegments[0])
-      output().FillVar(selmu_target_length,           (float)track->TargetSegments[0]->DeltaLYZ);
+      output().FillVar(selmu_target_length,           (float)track->TargetSegments[0]->SegLength);
     output().FillVectorVarFromArray(selmu_dir,        track->DirectionStart, 3);
     output().FillVectorVarFromArray(selmu_enddir,     track->DirectionEnd, 3);
     output().FillVectorVarFromArray(selmu_pos,        track->PositionStart, 4);
@@ -274,7 +277,10 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
     output().FillVar(selmu_ToF_mass,         anaUtils::ComputeToFMass(track->SmearedMomentum, 
 								      track->ToF_reco_time,
 								      track->ToF_reco_length));
-	
+
+    output().FillVar(sel_nTPCProtons,    cc4pibox().nProtonTPCtracks);
+    output().FillVar(sel_nTargetProtons, cc4pibox().nIsoTargetProtontracks);
+
     if (track->TrueObject)
       output().FillVar(selmu_ToF_true_mass,    anaUtils::ComputeToFMass(track->GetTrueParticle()->Momentum, 
 									track->ToF_true_time,

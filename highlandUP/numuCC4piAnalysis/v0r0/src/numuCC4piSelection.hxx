@@ -16,6 +16,10 @@
 
 //#include "ToFSenseCorrector.hxx"
 
+struct MuonCategory { 
+  enum Categ { FwdTPC=0, BwdTPC, HATPC, Target, ECal };
+};
+
 class numuCC4piSelection: public SelectionBase{
 public:
   numuCC4piSelection(bool forceBreak=true);
@@ -104,9 +108,15 @@ public:
   int nMichelElectrons;
   std::vector<AnaTrackB*> MichelElectrons;
 
+  int nProtonTPCtracks;
+  std::vector<AnaTrackB*> ProtonTPCtracks;
+  int nIsoTargetProtontracks;
+  std::vector<AnaTrackB*> IsoTargetProtontracks;
+
   int nPosPions;
   int nNegPions;
   int nOtherPions;
+  int nProtons;
   
 };
 
@@ -226,69 +236,13 @@ namespace numuCC4piUtils{
     StepBase* MakeClone(){return new FindPionsAction();}
   };
 
-  class FwdTPC_Quality: public StepBase{
+  class FindProtonsAction: public StepBase{
   public:
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new FwdTPC_Quality();}
+    StepBase* MakeClone(){return new FindProtonsAction();}
   };
 
-  class FwdTPC_PID: public StepBase{
-  public:
-    using StepBase::Apply;
-    bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new FwdTPC_PID();}
-  };
-
-
-  class BwdTPC_Quality: public StepBase{
-  public:
-    using StepBase::Apply;
-    bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new BwdTPC_Quality();}
-  };
-
-  class BwdTPC_PID: public StepBase{
-  public:
-    using StepBase::Apply;
-    bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new BwdTPC_PID();}
-  };
-
-
-  class HATPC_Quality: public StepBase{
-  public:
-    using StepBase::Apply;
-    bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new HATPC_Quality();}
-  };
-
-  class HATPC_PID: public StepBase{
-  public:
-    using StepBase::Apply;
-    bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new HATPC_PID();}
-  };
-
-
-  class ECal_Quality: public StepBase{
-  public:
-    using StepBase::Apply;
-    bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new ECal_Quality();}
-  private:
-    TRandom3* _randomGen;
-  };
-
-  class ECal_PID: public StepBase{
-  public:
-    ECal_PID(TFile *f){_file_ECAL_PDF=f;}
-    using StepBase::Apply;
-    bool Apply(AnaEventC& event, ToyBoxB& box) const;
-    StepBase* MakeClone(){return new ECal_PID(_file_ECAL_PDF);}
-  private:
-    TFile* _file_ECAL_PDF; 
-  };
 
   class CC0pi: public StepBase{
   public:
@@ -316,7 +270,7 @@ namespace numuCC4piUtils{
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const{
 	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-	 return (cc4pibox->categMuon == 0);
+	 return (cc4pibox->categMuon == MuonCategory::FwdTPC);
 	};
     StepBase* MakeClone(){return new FWD();}
   };
@@ -326,7 +280,7 @@ namespace numuCC4piUtils{
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const{
 	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-	 return (cc4pibox->categMuon == 1);
+	 return (cc4pibox->categMuon == MuonCategory::BwdTPC);
 	};
     StepBase* MakeClone(){return new BWD();}
   };
@@ -336,7 +290,7 @@ namespace numuCC4piUtils{
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const{
 	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-	 return (cc4pibox->categMuon == 2);
+	 return (cc4pibox->categMuon == MuonCategory::HATPC);
 	};
     StepBase* MakeClone(){return new HA();}
   };
@@ -346,7 +300,7 @@ namespace numuCC4piUtils{
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const{
 	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-	 return (cc4pibox->categMuon == 3);
+	 return (cc4pibox->categMuon == MuonCategory::Target);
 	};
     StepBase* MakeClone(){return new Target();}
   };
@@ -356,7 +310,7 @@ namespace numuCC4piUtils{
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const{
 	 ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-	 return (cc4pibox->categMuon == 4);
+	 return (cc4pibox->categMuon == MuonCategory::ECal);
 	};
     StepBase* MakeClone(){return new ECal();}
   };
