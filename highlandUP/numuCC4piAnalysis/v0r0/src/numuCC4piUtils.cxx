@@ -206,14 +206,6 @@ bool numuCC4pi_utils::HGlobalMomFirst(AnaTrackB* a, AnaTrackB* b){
 }
 
 //********************************************************************
-//bool numuCC4pi_utils::HRangeMomFirst(AnaTrackB* a, AnaTrackB* b){
-//********************************************************************
-/*
-  return a->RangeMomentumMuon > b->RangeMomentumMuon;
-  }
-*/
-
-//********************************************************************
 bool numuCC4pi_utils::isHMNT(const AnaTrackB* candidate, std::vector<AnaTrackB*> GroupTracks, bool lowangle) {
   //********************************************************************
 	
@@ -613,137 +605,119 @@ void numuCC4pi_utils::FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::Sub
 
 
 //*********************************************************************
-float numuCC4pi_utils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, float& sigma, TRandom3* gen){
+void numuCC4pi_utils::FindTPCProtons(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det){
   //*********************************************************************
 	
-  if (!track) return -1.;
+  ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
+  AnaEventB& eventB = *static_cast<AnaEventB*>(&event); 
 	
-  Float_t ToF_time_resolution = ND::params().GetParameterD("numuCC4piAnalysis.ToF.TimeResolution");
-  Int_t add_ToF_on_targets    = ND::params().GetParameterI("numuCC4piAnalysis.AddToFOnTargets");
-  std::vector< std::pair<AnaParticleB*, std::vector<float> > > detTiming;
+  box->nProtonTPCtracks = 0;
+
+  EventBox::RecObjectGroupEnum groupID;
+  if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithGoodQualityTPCInTarget1FV;
+  else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithGoodQualityTPCInTarget2FV;
+  else if (det==SubDetId::kFGD1)    groupID = EventBox::kTracksWithGoodQualityTPCInFGD1FV;
+  else if (det==SubDetId::kFGD2)    groupID = EventBox::kTracksWithGoodQualityTPCInFGD2FV;
+  else return;
 	
-  // find timing information in Targets
-  for (int i=0; i<track->nTargetSegments; i++)
-    if (track->TargetSegments[i]->IsReconstructed) {
-      float true_time = track->TargetSegments[i]->PositionStart[3];
-      float     sigma = sqrt(pow(3/sqrt(track->TargetSegments[i]->DeltaLYZ/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
-      float      time = gen->Gaus(true_time, sigma);
-		
-      std::vector<float> vec;
-      vec.push_back(time); vec.push_back(sigma);
-      detTiming.push_back(std::make_pair(track->TargetSegments[i], vec));
-    }
+  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
 	
-  if (add_ToF_on_targets) {
-    // find timing information in additionnal ToF
-    if (track->nTPCSegments && track->TPCSegments[0]) {
-      if (SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp1   ||
-	  SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp2   ||
-	  SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown1 ||
-	  SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown2 ){
-				
-	if ( fabs(track->TPCSegments[0]->PositionStart[1]+316)<1 ||
-	     fabs(track->TPCSegments[0]->PositionStart[1]-284)<1 ) {
-					
-	  float true_time = track->TPCSegments[0]->PositionStart[3];
-	  float     sigma = ToF_time_resolution;
-	  float      time = gen->Gaus(true_time, sigma);
-					
-	  std::vector<float> vec;
-	  vec.push_back(time); vec.push_back(sigma);
-	  detTiming.push_back(std::make_pair(track->TPCSegments[0], vec));
-					
-	}
-      }
-    }
-  }
+  // Look for pions in positive tracks 
+  for(int i = 0; i < EventBox->nRecObjectsInGroup[groupID]; i++ ) {
 	
-  // find timing information in FGDs
-  for (int i=0; i<track->nFGDSegments; i++)
-    if (track->FGDSegments[i]->IsReconstructed) {
-      float true_time = track->FGDSegments[i]->PositionStart[3];
-      float     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->DeltaLYZ/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
-      float      time = gen->Gaus(true_time, sigma);
-		
-      std::vector<float> vec;
-      vec.push_back(time); vec.push_back(sigma);
-      detTiming.push_back(std::make_pair(track->FGDSegments[i], vec));
-    }
-	
-  // find timing information in ECal
-  for (int i=0; i<track->nECalSegments; i++) {
-    if (track->ECalSegments[i]->IsReconstructed) {
-      float true_time = track->ECalSegments[i]->PositionStart[3];
-      float     sigma = 5; // 5ns
-      float      time = gen->Gaus(true_time, sigma);
+    AnaTrackB *ptrack = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[groupID][i]);
+    if( box->MainTrack == ptrack ) continue; // Same as the leading track.
+    if (ptrack->Momentum < 20) continue;
+    if (ptrack->Charge<0) continue;
 			
-      std::vector<float> vec;
-      vec.push_back(time); vec.push_back(sigma);
-      detTiming.push_back(std::make_pair(track->ECalSegments[i], vec));
-    }
-  }
+      Float_t PIDLikelihood[4];
+      anaUtils::GetPIDLikelihood(*ptrack, PIDLikelihood);
+			
+      // For Positive tracks we distinguish pions, electrons and protons.
+      double ElLklh = PIDLikelihood[1];  
+      double ProtonLklh = PIDLikelihood[2];  
+      double PionLklh = PIDLikelihood[3];
+      double norm = ElLklh+ProtonLklh+PionLklh;
+      ProtonLklh /= norm; 
+      ElLklh /= norm; 
+      PionLklh /= norm; 
+			
+      if( ProtonLklh > ElLklh && ProtonLklh > PionLklh ) {
+	box->nProtonTPCtracks++;
+	box->ProtonTPCtracks.push_back(ptrack);
+      }
+			
+      // Id associated to the largest of the two probabilities.
+      if (PionLklh < ElLklh && ptrack->Momentum > 900.) {
+	box->nProtonTPCtracks++;
+	box->ProtonTPCtracks.push_back(ptrack);
+      }
 	
-  // find timing information in ToF counters
-  for (int i=0; i<track->nToFSegments; i++) {
-    float true_time = track->ToFSegments[i]->PositionStart[3];
-    float     sigma = ToF_time_resolution; // 0.6ns by default
-    float      time = gen->Gaus(true_time, sigma);
-		
-    std::vector<float> vec;
-    vec.push_back(time); vec.push_back(sigma);
-    detTiming.push_back(std::make_pair(track->ToFSegments[i], vec));
-  }
+  } // end loop on tracks
+	
+}
+
+//*********************************************************************
+void numuCC4pi_utils::FindIsoTargetProtons(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det){
+  //*********************************************************************
+	
+  ToyBoxCC4pi* box = static_cast<ToyBoxCC4pi*>(&boxB);
+  box->nIsoTargetProtontracks = 0;
+	
+  EventBox::RecObjectGroupEnum groupID;
+  if      (det==SubDetId::kTarget1) groupID = EventBox::kTracksWithTarget1;
+  else if (det==SubDetId::kTarget2) groupID = EventBox::kTracksWithTarget2;
+  else if (det==SubDetId::kFGD1)    groupID = EventBox::kTracksWithFGD1;
+  else if (det==SubDetId::kFGD2)    groupID = EventBox::kTracksWithFGD2;
+  else return;
     
-  // if we don't have 2, give up
-  if (detTiming.size() < 2)
-    return -999;
-	
-  float ToF = -999, max_t_over_s = 0;
-  for (unsigned int i=0; i<detTiming.size(); i++){
-    for (unsigned int j=i+1; j<detTiming.size(); j++){
+  EventBoxB* EventBox = event.EventBoxes[EventBoxId::kEventBoxNDUP];
+    
+  //loop over tracks
+  for (int i=0;i<EventBox->nRecObjectsInGroup[groupID]; i++ ){
+    AnaTrackB* track = static_cast<AnaTrackB*>(EventBox->RecObjectsInGroup[groupID][i]);
+    if (track == box->MainTrack) continue;
+		
+    if (!anaUtils::InFiducialVolume(det, track->PositionStart) ||
+	!anaUtils::InFiducialVolume(det, track->PositionEnd) )
+      continue;
+				
+    if (det==SubDetId::kTarget1 || det==SubDetId::kTarget2) {
+      if (track->nTargetSegments < 1) continue;
 			
-      float  t1 = detTiming[i].second[0],  t2 = detTiming[j].second[0];
-      float  s1 = detTiming[i].second[1],  s2 = detTiming[j].second[1];
-      float t_over_s = fabs( (t2-t1)/sqrt(s1*s1+s2*s2) );
-			
-      if ( t_over_s > max_t_over_s ){
-	max_t_over_s = t_over_s;
-	ToF = t2-t1;
-	seg1 = detTiming[i].first;
-	seg2 = detTiming[j].first;
-	sigma = sqrt(s1*s1+s2*s2);
+      AnaTargetParticleB* TargetSegment = 
+	dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
+      if (!TargetSegment) continue;
+      if (!TargetSegment->IsReconstructed) continue;
+      if (TargetSegment->IdAsProton) {
+	box->nIsoTargetProtontracks++;
+	box->IsoTargetProtontracks.push_back(track);
       }
+
+    }
+    if (det==SubDetId::kFGD1 || det==SubDetId::kFGD2) {
+      if (track->nFGDSegments < 1) continue;
+		
+      AnaFGDParticleB* FGDSegment = 
+	dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet(*track, det));
+      if (!FGDSegment) continue;
+      if (!FGDSegment->IsReconstructed) continue;
 			
-    } // end second loop on timing info
-  } // end first loop on timing info
-	
-	
-  if (seg2->PositionStart[3]-seg1->PositionStart[3] < 0) {
-    AnaParticleB* temp;
-    temp = seg1;
-    seg1 = seg2;
-    seg2 = temp;
-    ToF  = -ToF;
+      AnaTrueParticleB* true_part = track->GetTrueParticle();
+      if (!true_part) continue;
+
+      float r=gRandom->Rndm();
+      float cut=0;
+      if (abs(true_part->PDG) == 211 || abs(true_part->PDG) == 13)
+	cut = 1-ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.PID_MuonToMuon_FGD");
+      else
+	cut = ND::params().GetParameterD("numuCC4piAnalysis.IsoTargetPi.PID_ProtonToProton_FGD");
+      if (r<cut) {
+	box->nIsoTargetProtontracks++;
+	box->IsoTargetProtontracks.push_back(track);
+      }
+
+    }
+		
   }
-	
-  return ToF;
-	
-}
-
-//*********************************************************************
-float numuCC4pi_utils::ComputeToFMass(float mom, float ToF, float length){
-  //*********************************************************************
-	
-  double c = 299.792458; // mm/ns
-  return mom*sqrt(pow(c*ToF/length, 2) -1);
-	
-}
-
-//*********************************************************************
-float numuCC4pi_utils::ComputeToFTime(float mom, float mass, float length){
-  //*********************************************************************
-	
-  double c = 299.792458; // mm/ns
-  return length/c*sqrt(pow(mass/mom, 2) +1);
-	
 }

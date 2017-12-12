@@ -132,63 +132,7 @@ void anaUtils::IncrementPOTBySpill(const AnaSpillB& spill, Header& header) {
   }
 
 }
-/*
-void anaUtils::Fill_Tracks_Recon_From_True(AnaTrueParticleB* trueParticle,AnaTrack* reconParticle){
 
-  reconParticle->UniqueID       = trueParticle->ID;
-//  reconParticle->NNodes         = trueParticle->NNodes;
-  reconParticle->Detectors      = trueParticle->nDetCrossings;
- // reconParticle->Length         = trueParticle->Length;
-  reconParticle->Momentum       = trueParticle->Momentum;
-//  reconParticle->MomentumError  = trueParticle->MomentumError;
-  reconParticle->Charge         = trueParticle->Charge;
-  anaUtils::CopyArray(trueParticle->Direction, reconParticle->DirectionStart,3);
-//  anaUtils::VectorToArray(trueParticle->DirectionEnd,  reconParticle->DirectionEnd);
-  anaUtils::CopyArray(trueParticle->Position,  reconParticle->PositionStart,4);
-  anaUtils::CopyArray(trueParticle->Position,   reconParticle->PositionEnd,4);
-
-
-  reconParticle->MomentumEle = -10000;
-  reconParticle->MomentumMuon = -10000;
-  reconParticle->MomentumProton = -10000;
-  reconParticle->MomentumErrorEle = -10000;
-  reconParticle->MomentumErrorMuon = -10000;
-  reconParticle->MomentumErrorProton = -10000;
-  reconParticle->nTargetSegments=0;
-  reconParticle->nTPCSegments=0;
-
-  AnaDetCrossingB** det = trueParticle->DetCrossings;
-  for (int i = 0; i < trueParticle->nDetCrossings; i++) {
-    det[i]->Print();
-    if (SubDetId::GetDetectorUsed(det[i]->Detector, SubDetId::kTPC)) {
-      AnaTPCParticleB* seg = new AnaTPCParticleB();
-      Float_t mom = sqrt(det[i]->EntranceMomentum[0] * det[i]->EntranceMomentum[0] + det[i]->EntranceMomentum[1] * det[i]->EntranceMomentum[1] + det[i]->EntranceMomentum[2] * det[i]->EntranceMomentum[2]) * units::GeV;
-      anaUtils::VectorToArray(TVector3(det[i]->EntranceMomentum[0] / mom, det[i]->EntranceMomentum[1] / mom, det[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
-      anaUtils::CopyArray(det[i]->EntrancePosition, seg->PositionStart, 4);
-      anaUtils::CopyArray(det[i]->ExitPosition,  seg->PositionEnd, 4);
-    //  seg->Momentum       = mom;
-      seg->DeltaLYZ=det[i]->DeltaLYZ;
-      seg->Length=det[i]->Length;
-      reconParticle->TPCSegments[reconParticle->nTPCSegments++] = seg;
-
-    } else if (SubDetId::GetDetectorUsed(det[i]->Detector, SubDetId::kTarget)) {
-      AnaTargetParticleB* seg = new AnaTargetParticleB() ;
-      Float_t mom = sqrt(det[i]->EntranceMomentum[0] * det[i]->EntranceMomentum[0] + det[i]->EntranceMomentum[1] * det[i]->EntranceMomentum[1] + det[i]->EntranceMomentum[2] * det[i]->EntranceMomentum[2]) * units::GeV;
-      anaUtils::VectorToArray(TVector3(det[i]->EntranceMomentum[0] / mom, det[i]->EntranceMomentum[1] / mom, det[i]->EntranceMomentum[2] / mom), seg->DirectionStart);
-      anaUtils::CopyArray(det[i]->EntrancePosition, seg->PositionStart, 4);
-      anaUtils::CopyArray(det[i]->ExitPosition,  seg->PositionEnd, 4);
-    //  seg->Momentum       = mom;
-      seg->DeltaLYZ=det[i]->DeltaLYZ;
-      seg->Length=det[i]->Length;
-      reconParticle->TargetSegments[reconParticle->nTargetSegments++] = seg;
-
-    }
-  }
-
-
-
-
-}*/
 //********************************************************************
 Float_t anaUtils::ComputeInversePT( AnaDetCrossingB &cross, bool entrance) {
 //********************************************************************
@@ -234,7 +178,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   for (int i=0; i<track->nTargetSegments; i++){
     if (track->TargetSegments[i]->IsReconstructed) {
       Float_t true_time = track->TargetSegments[i]->PositionStart[3];
-      Float_t     sigma = sqrt(pow(3/sqrt(track->TargetSegments[i]->DeltaLYZ/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
+      Float_t     sigma = sqrt(pow(3/sqrt(track->TargetSegments[i]->SegLength/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
       Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
@@ -329,7 +273,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   for (int i=0; i<track->nFGDSegments; i++){
     if (track->FGDSegments[i]->IsReconstructed) {
       Float_t true_time = track->FGDSegments[i]->PositionStart[3];
-      Float_t     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->DeltaLYZ/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
+      Float_t     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->SegLength/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
       Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
@@ -390,6 +334,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   if (!seg1 || !seg2)
     return -999.;
 
+  // flip so that seg1 true time is always before seg2
   if (seg2->PositionStart[3]-seg1->PositionStart[3] < 0) {
     AnaParticleB* temp;
     temp = seg1;
@@ -401,7 +346,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   if (UseSmearing)
     return ToF;
 
-  return (abs(seg2->PositionStart[3]-seg1->PositionStart[3]));
+  return seg2->PositionStart[3]-seg1->PositionStart[3];
 }
 
 //*********************************************************************

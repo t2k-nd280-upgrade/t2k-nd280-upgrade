@@ -43,9 +43,8 @@ namespace numuCC4pi_utils{
   void FindIsoTargetPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
   void FindMEPions(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
 
-  float GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, float& sigma, TRandom3* gen);
-  float ComputeToFMass(float mom, float ToF, float length);
-  float ComputeToFTime(float mom, float mass, float length);
+  void FindTPCProtons(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
+  void FindIsoTargetProtons(AnaEventC& event, ToyBoxB& boxB, SubDetId::SubDetEnum det);
 
 }
 

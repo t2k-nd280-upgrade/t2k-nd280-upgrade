@@ -43,6 +43,7 @@ void numuCC4piSelection::DefineSteps(){
   AddStep(StepBase::kAction, "find vertex",         new numuCC4piUtils::FindVertexAction());
   AddStep(StepBase::kAction, "fill summary",        new numuCC4piUtils::FillSummaryAction_numuCC4pi());
   AddStep(StepBase::kAction, "find pions",          new numuCC4piUtils::FindPionsAction());
+  AddStep(StepBase::kAction, "find protons",        new numuCC4piUtils::FindProtonsAction());
 	
   AddSplit(8);
 	
@@ -247,7 +248,6 @@ namespace numuCC4piUtils{
     //Find Target only tracks
     //======================== 
 		
-		
     if (useTarget1 || useTarget2) {
       UInt_t nTarget=EventBox->nRecObjectsInGroup[smpl2];
       for (UInt_t i=0; i<nTarget; i++){
@@ -261,7 +261,11 @@ namespace numuCC4piUtils{
 	  dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet(*track, det));
 	if (!TargetSegment) continue;
 	if (!TargetSegment->IsReconstructed) continue;
-				
+
+	//      if (!track->TrueObject) continue;
+	//	if ( nu_mode==1  && track->GetTrueParticle()->Charge>=-0.5 ) continue;
+	//	if ( nu_mode==-1 && track->GetTrueParticle()->Charge<= 0.5 ) continue;
+	
 	cc4pibox->TargetTracks.push_back(track);
       }
     }
@@ -307,16 +311,16 @@ namespace numuCC4piUtils{
 	// FWD category
 	if (numuCC4pi_utils::IsForward(*track) &&
 	    numuCC4pi_utils::MuonPIDCut(*track, true) ) 
-	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = 0;}
+	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::FwdTPC;}
 	// BWD category
 	else if (!numuCC4pi_utils::IsForward(*track) &&
 		 numuCC4pi_utils::MuonPIDCut(*track, false) ) 
-	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = 1;}
+	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::BwdTPC;}
       }
       else {
 	// HA category
 	if (numuCC4pi_utils::MuonPIDCut(*track, false))
-	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = 2;}
+	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::HATPC;}
       }
 			
     }
@@ -335,7 +339,7 @@ namespace numuCC4piUtils{
       }
       if (prot_pid) continue; // reject event if it is seen as a proton
 			
-      cc4pibox->MainTrack = track; cc4pibox->categMuon = 3;
+      cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::Target;
 			
     }
 		
@@ -352,7 +356,7 @@ namespace numuCC4piUtils{
 	  reco=true;
       // ECal category
       if (reco && numuCC4pi_utils::MuonECalPIDCut(*track, box, _file_ECAL_PDF))
-	{cc4pibox->MainTrack = track; cc4pibox->categMuon = 4;}
+	{cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::ECal;}
 			
     }
 		
@@ -501,6 +505,23 @@ namespace numuCC4piUtils{
 		
     return true;
   }
+
+
+  //*********************************************************************
+  bool FindProtonsAction::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //*********************************************************************
+		
+    SubDetId::SubDetEnum det = static_cast<SubDetId::SubDetEnum>(boxB.DetectorFV);
+		
+    ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
+		
+    numuCC4pi_utils::FindTPCProtons(event, boxB, det);
+    numuCC4pi_utils::FindIsoTargetProtons(event, boxB, det);
+		
+    box->nProtons = box->nProtonTPCtracks + box->nIsoTargetProtontracks;		
+    return true;
+  }
+
 	
   //********************************************************************
   bool FillSummaryAction_numuCC4pi::Apply(AnaEventC& event, ToyBoxB& boxB) const{
@@ -535,191 +556,7 @@ namespace numuCC4piUtils{
     return true;
 		
   }
-	
-  //**************************************************
-  bool FwdTPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-    //**************************************************
-    (void)event;
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)   && 
-	 numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) &&
-	 !(cc4pibox->TPC_det == SubDetId::kTPCUp1 ||
-	   cc4pibox->TPC_det == SubDetId::kTPCUp2 || 
-	   cc4pibox->TPC_det == SubDetId::kTPCDown1 || 
-	   cc4pibox->TPC_det == SubDetId::kTPCDown2) ) {
-      return true;
-    }
-    return false;
-  }
-	
-  //**************************************************
-  bool FwdTPC_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-    //**************************************************
-    (void)event;
-		
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-		
-    if ( numuCC4pi_utils::MuonPIDCut(*cc4pibox->MainTrack, true) ) return true;
-    return false;
-  }
-	
-  //**************************************************
-  bool BwdTPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-    //**************************************************
-    (void)event;
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack)    && 
-	 !numuCC4pi_utils::IsForward(*cc4pibox->MainTrack) &&
-	 !(cc4pibox->TPC_det == SubDetId::kTPCUp1 ||
-	   cc4pibox->TPC_det == SubDetId::kTPCUp2 || 
-	   cc4pibox->TPC_det == SubDetId::kTPCDown1 || 
-	   cc4pibox->TPC_det == SubDetId::kTPCDown2) )
-      return true;
-    return false;
-  }
-	
-  //**************************************************
-  bool BwdTPC_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-    //**************************************************
-    (void)event;
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if ( numuCC4pi_utils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
-    return false;
-  }
-	
-  //**************************************************
-  bool HATPC_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-    //**************************************************
-    (void)event;
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if ( cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack) && 
-	 (cc4pibox->TPC_det == SubDetId::kTPCUp1   ||
-	  cc4pibox->TPC_det == SubDetId::kTPCUp2   || 
-	  cc4pibox->TPC_det == SubDetId::kTPCDown1 ||
-	  cc4pibox->TPC_det == SubDetId::kTPCDown2 ) )
-      return true;
-    return false;
-  }
-	
-  //**************************************************
-  bool HATPC_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-    //**************************************************
-    (void)event;
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-    if ( numuCC4pi_utils::MuonPIDCut(*cc4pibox->MainTrack, false) ) return true;
-    return false;
-  }
-	
-  //**************************************************
-  bool ECal_Quality::Apply(AnaEventC& event, ToyBoxB& box) const{
-    //**************************************************
-		
-    (void)event;
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-		
-    // do not consider this category in RHC
-    if (ND::params().GetParameterI("numuCC4piAnalysis.NeutrinoMode") == -1)
-      return false;
-		
-    // if long enough TPC track, it should be selected by other branches
-    if (cutUtils::DeltaLYZTPCCut(*cc4pibox->MainTrack))
-      return false;
-		
-    if (!cutUtils::StoppingECALCut( *cc4pibox->MainTrack ))
-      return false;
-		
-    for (int i=0; i<cc4pibox->MainTrack->nECalSegments; i++)
-      if (cc4pibox->MainTrack->ECalSegments[i]->IsReconstructed)
-	return true;
-		
-    return false;
-  }
-	
-  //**************************************************
-  bool ECal_PID::Apply(AnaEventC& event, ToyBoxB& box) const{
-    //**************************************************
-    (void)event;
-		
-		
-    // initializing
-		
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&box);
-		
-    if (!_file_ECAL_PDF) {
-      std::cerr << "In cutUtils::MuonECALPIDCut : No file found to define the PDFs for ECal variables" << std::endl;
-      return false;
-    }
-		
-    TH2F *h_binning = (TH2F*)_file_ECAL_PDF->Get("hBinning");
-    AnaTrueParticleB* trueParticle = cc4pibox->MainTrack->GetTrueParticle();
-    if (!trueParticle) return false;
-		
-		
-    // find the first segment in an ECal
-		
-    AnaDetCrossingB* firstECal_cross=NULL;
-    for (unsigned int i=0; i<trueParticle->DetCrossingsVect.size(); i++) {
-      AnaDetCrossingB* cross = trueParticle->DetCrossingsVect[i];
-      if (!cross->Detector_name.Contains("ECal") || !cross->Detector_name.Contains("Bar")) continue;
-      firstECal_cross = cross;
-    }
-		
-		
-    // fill the information at ECal entry
-		
-    if (!firstECal_cross)
-      return false;
-		
-    TVector3 P   = anaUtils::ArrayToTVector3(firstECal_cross->EntranceMomentum);
-    TVector3 pos = anaUtils::ArrayToTVector3(firstECal_cross->EntrancePosition);
-    TVector3 entryNormal_vect(0,0,0);
-		
-    if (firstECal_cross->Detector_name.Contains("RightClam") &&
-	firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
-      entryNormal_vect.SetY(1);  // (+Y)
-    else if (firstECal_cross->Detector_name.Contains("RightClam") &&
-	     firstECal_cross->Detector_name.Contains("TopLeftBotRight"))
-      entryNormal_vect.SetY(-1); // (-Y)
-    else if (firstECal_cross->Detector_name.Contains("LeftClam") &&
-	     firstECal_cross->Detector_name.Contains("BotLeftTopRight"))
-      entryNormal_vect.SetY(-1); // (-Y)
-    else if (firstECal_cross->Detector_name.Contains("LeftClam") &&
-	     firstECal_cross->Detector_name.Contains("TopLeftBotRight"))
-      entryNormal_vect.SetY(1);  // (+Y)
-    else if (firstECal_cross->Detector_name.Contains("LeftSide"))
-      entryNormal_vect.SetX(1);  // (+X)
-    else if (firstECal_cross->Detector_name.Contains("RightSide"))
-      entryNormal_vect.SetX(-1); // (-X)
-    else if(firstECal_cross->Detector_name.Contains("POD/USECal"))
-      entryNormal_vect.SetZ(-1); // (-Z)
-    else
-      entryNormal_vect.SetZ(1);  // (+Z)
-		
-    float mom = P.Mag();
-    float cos = P.Dot(entryNormal_vect)/mom;
-    int bin   = h_binning->GetBinContent(h_binning->FindBin(cos,mom));
-		
-		
-    // throw random the ECal variables using the pdfs
-		
-    TH2F *h_bin  = (TH2F*)_file_ECAL_PDF->Get(TString::Format("mipem_Vs_EneOnL_%i", bin));
-    double MipEM, EneOnL;
-    h_bin->GetRandom2(MipEM, EneOnL);
-		
-		
-    // fill the ECal variables in the box
-		
-    cc4pibox->track_ECal_MipEM  = MipEM;
-    cc4pibox->track_ECal_EneOnL = EneOnL;
-		
-		
-    // apply cuts on ECal variables
-		
-    if (MipEM < 0 && EneOnL < 1.25)
-      return true;
-    return false;
-		
-  }
+
 	
   //**************************************************
   bool CC0pi::Apply(AnaEventC& event, ToyBoxB& boxB) const{
@@ -727,6 +564,11 @@ namespace numuCC4piUtils{
 		
     (void)event;
     ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
+    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&boxB);
+	/*
+    if (cc4pibox->categMuon == MuonCategory::Target)
+      return (box->nPosPions == 0 && box->nNegPions == 0 && box->nOtherPions == 0 && box->nProtonTPCtracks > 0);
+	*/
     return (box->nPosPions == 0 && box->nNegPions == 0 && box->nOtherPions == 0);
 		
   }
