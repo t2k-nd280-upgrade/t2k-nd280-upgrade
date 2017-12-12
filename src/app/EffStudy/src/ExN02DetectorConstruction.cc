@@ -2737,6 +2737,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //if(ND280XMLInput->GetXMLUseSuperFGD1())   logicSuperFGD1->SetVisAttributes(SuperFGDScintVisAtt);
   //if(ND280XMLInput->GetXMLUseSuperFGD2())   logicSuperFGD2->SetVisAttributes(SuperFGDScintVisAtt);
 
+
+  //G4VisAttributes *prova_tpc = new G4VisAttributes(G4Colour(1.0,0.0,1.0,1.0));
+  //G4VisAttributes *prova_target = new G4VisAttributes(G4Colour(0.5,0.5,0.5,1.0));
+  //logicSideTPCUp1->SetVisAttributes(prova_tpc);
+  //logicSideTPCDown1->SetVisAttributes(prova_tpc);
+  //logicTarget1 ->SetVisAttributes(prova_target);
+
+
   //if(ND280XMLInput->GetXMLUseSciFi1())
   //if(1) logicSciFi1->SetVisAttributes(SciFiScintVisAtt);
  

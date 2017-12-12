@@ -182,7 +182,9 @@ void ND280CubeScintConstructor::Init() {
 
   SetCoatingMaterial("ScintillatorCoating");
   //SetScintillatorMaterial("Scintillator");
-  SetScintillatorMaterial("FGDScintillator");  
+
+  //SetScintillatorMaterial("GasMixtureTPC");  // CHANGED!!!
+  SetScintillatorMaterial("FGDScintillator"); // OK  
   SetFiberMaterial("FiberCore");
 
   SetMessenger(new ND280CubeScintMessenger(this));
