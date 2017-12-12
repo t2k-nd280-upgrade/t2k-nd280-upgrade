@@ -82,7 +82,7 @@ class AnaTreeConverterEvent: public InputConverter{
 
   virtual bool IsReconstructedFGD(float* pos_start, float* pos_end, double length, double theta);
   virtual bool IsReconstructedTarget(int pdg, double mom, double cos, double length);
-  virtual bool IsReconstructedECal(TVector3 P, TString det);
+  virtual bool IsReconstructedECal(TVector3 P, int PDG, TString det, bool useTPC, bool useFGD);
 
   virtual bool IdAsProton(int pdg, double mom);
   virtual bool ChargeConfused(AnaTrueParticleB* trueParticle);
@@ -134,7 +134,7 @@ protected:
   TSpline3 *pionspline;
   TSpline3 *protspline;
 
-  BinnedParams *_ECal_reco_eff, *_ECal_FGDmatch_eff;
+  BinnedParams *_ECal_FGDmatch_eff, *_TPC_ECal_eff;
   
   // Header's
   Int_t EventTime;

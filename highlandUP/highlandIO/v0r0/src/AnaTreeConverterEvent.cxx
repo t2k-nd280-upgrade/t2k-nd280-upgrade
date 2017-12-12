@@ -79,12 +79,12 @@ bool AnaTreeConverterEvent::Initialize(){
     hmisid_pion_as_proton = (TH1F*)fmisid_target->Get("hPionMisidAsProt_VsTrMom_FGDXZ");
     hmisid_proton_as_pion = (TH1F*)fmisid_target->Get("hProtMisidAsPion_VsTrMom_FGDXZ");
   }
-
-  _ECal_reco_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
-				    "ECal_recoEff", BinnedParams::k1D_SYMMETRIC); 
   
   _ECal_FGDmatch_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
 					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC);
+
+  _TPC_ECal_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
+          "TPC_ECal_matchEff", BinnedParams::k3D_SYMMETRIC);
 
   _file_charge_confusion = TFile::Open(TString::Format("%s/data/ChargeConfusion_TrueMom.root", 
 						       getenv("HIGHLANDIOROOT")));
@@ -1965,56 +1965,86 @@ bool AnaTreeConverterEvent::IsReconstructedTarget(int pdg, double mom, double co
 }
 
 
-bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, TString det){
-
-  float reco_eff_Brl, FGDmatch_eff_Brl;
-  float reco_eff_Ds,  FGDmatch_eff_Ds;
-
-  TVector3 entryNormal_vect(0,0,0);
-    
-  if (det.Contains("RightClam") &&
-      det.Contains("BotLeftTopRight"))
-    entryNormal_vect.SetY(1);  // (+Y)
-  else if (det.Contains("RightClam") &&
-	   det.Contains("TopLeftBotRight"))
-    entryNormal_vect.SetY(-1); // (-Y)
-  else if (det.Contains("LeftClam") &&
-	   det.Contains("BotLeftTopRight"))
-    entryNormal_vect.SetY(-1); // (-Y)
-  else if (det.Contains("LeftClam") &&
-	   det.Contains("TopLeftBotRight"))
-    entryNormal_vect.SetY(1);  // (+Y)
-  else if (det.Contains("LeftSide"))
-    entryNormal_vect.SetX(1);  // (+X)
-  else if (det.Contains("RightSide"))
-    entryNormal_vect.SetX(-1); // (-X)
-  else if (det.Contains("POD/USECal"))
-    entryNormal_vect.SetZ(-1); // (-Z)
-  else
-    entryNormal_vect.SetZ(1);  // (+Z)
+bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, int PDG, TString det, bool useTPC, bool useFGD){
 
   float mom = P.Mag();
-  float cos = P.Dot(entryNormal_vect)/mom;
-  
-  if (!_ECal_reco_eff->GetBinValues(mom, reco_eff_Brl, reco_eff_Ds)) return false;
-  if (!_ECal_FGDmatch_eff->GetBinValues(cos, FGDmatch_eff_Brl, FGDmatch_eff_Ds)) return false;
+  float cos;
+  int ECal = -1;
+  // 6 - DS, 7 - Top, 8 - Bottom, 9 - Left, 10 - right
 
-  // throw two random numbers between 0 and 1
-  double r_eff[2];
-  gRandom->RndmArray(2, r_eff);
+  TVector3 entryNormal_vect(0,0,0);
+      
+  if (det.Contains("RightClam") &&
+      det.Contains("BotLeftTopRight")) {
+    entryNormal_vect.SetY(1);  // (+Y)
+    ECal = 10;
+  } else if (det.Contains("RightClam") &&
+    det.Contains("TopLeftBotRight")) {
+    entryNormal_vect.SetY(-1); // (-Y)
+    ECal = 10;
+  } else if (det.Contains("LeftClam") &&
+    det.Contains("BotLeftTopRight")) {
+    entryNormal_vect.SetY(-1); // (-Y)
+    ECal = 9;
+  } else if (det.Contains("LeftClam") &&
+    det.Contains("TopLeftBotRight")) {
+    entryNormal_vect.SetY(1);  // (+Y)
+    ECal = 9;
+  } else if (det.Contains("LeftSide")) {
+    entryNormal_vect.SetX(1);  // (+X)
+    ECal = 9;
+  } else if (det.Contains("RightSide")) {
+    entryNormal_vect.SetX(-1); // (-X)
+    ECal = 10;
+  } else if (det.Contains("P0D/USECal")) {
+    entryNormal_vect.SetZ(-1); // (-Z)
+    ECal = 7;
+  } else {
+    entryNormal_vect.SetZ(1);  // (+Z)
+    ECal = 6;
+  }
 
-  // select artificially only a fraction of the events, 
-  // by applying the reconstruction/FGD-ECal match efficiencies
-  if (det.Contains("DsECal")) {
-    if (r_eff[1] < FGDmatch_eff_Ds)
-      return true;
-  }
-  else {
-    if (r_eff[0] < reco_eff_Brl && r_eff[1] < FGDmatch_eff_Brl)
-      return true;
-  }
-  return false;
+  if (!useTPC) {
+
+    float FGDmatch_eff_Ds, FGDmatch_eff_Brl;
+   
+    cos = P.Dot(entryNormal_vect)/mom;
+    
+    if (!_ECal_FGDmatch_eff->GetBinValues(cos, FGDmatch_eff_Brl, FGDmatch_eff_Ds)) return false;
   
+    // throw random number between 0 and 1
+    double r = gRandom->Rndm();
+  
+    // select artificially only a fraction of the events, 
+    // by applying the FGD-ECal match efficiencies
+    if (det.Contains("DsECal")) {
+      if (r < FGDmatch_eff_Ds)
+        return true;
+    } else {
+      if (r < FGDmatch_eff_Brl)
+        return true;
+    }
+
+    return false;
+  } else {
+    float TPC_ECal_eff;
+    // if not use TPC consider two cases : p < 200 MeV/c and p > 200 MeV/c - for p < 200 MeV/c efficiency is very small
+    // for target-->top/bottom P0D ECal consider Downstream ECal eff
+    if (!useFGD && det.Contains("P0D") && (det.Contains("Top") || det.Contains("Bot"))){
+      if (! _TPC_ECal_eff->GetBinValues(PDG, 6, mom, TPC_ECal_eff)) return false;         
+    } else {
+      // for P0D left/right & for FGD--> top/bottom P0D ECal use Barell ECal,   
+      if (!_TPC_ECal_eff->GetBinValues(PDG, ECal, mom, TPC_ECal_eff)) return false; 
+    }
+
+    double r = gRandom->Rndm();
+    
+    if (r < TPC_ECal_eff)
+      return true;
+    return false;
+    
+  }
+    
 }
 
 
@@ -2240,9 +2270,11 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       SubDetId::SubDetEnum dsub = SubDetId::GetSubdetectorEnum(trueParticle->DetCrossingsVect[i]->Detector);
       SubDetId::SetDetectorUsed(reconParticle->Detectors, dsub);
       seg->Detectors = trueParticle->DetCrossingsVect[i]->Detector;
+      bool useTPC = anaUtils::TrueParticleCrossesTPC(trueParticle);
+      bool useFGD = anaUtils::TrueParticleCrossesFGD(trueParticle);
       seg->IsReconstructed =
-	IsReconstructedECal(anaUtils::ArrayToTVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum),
-			    trueParticle->DetCrossingsVect[i]->Detector_name);
+	IsReconstructedECal(anaUtils::ArrayToTVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum), abs(trueParticle->PDG),
+			    trueParticle->DetCrossingsVect[i]->Detector_name, useTPC, useFGD);
       reconParticle->ECalSegments[reconParticle->nECalSegments++] = seg;
 
     }
