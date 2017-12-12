@@ -10,7 +10,7 @@
 // - apply cut on FV --> DONE                                   //
 // - use TSpline3 instead of TF1 --> DONE                       //
 // - don't use Birk for neutrons? --> DONE                      // 
-// - Add Poisson fluct to response                              //
+// - Add Poisson fluct to response --> DONE                     //
 // - Ereco and momentum                                         //
 // - Fill the TND280UpRecoTrack class w/ MPPC hits (NOT NEEDED) //
 // - Store ND280UpRecoEvent object Tree in output file          //
@@ -247,7 +247,7 @@ inline void FindVtxTruth(TND280UpEvent *event,double &myVtxX,double &myVtxY,doub
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &mycosth,double &mylength){
+inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &mycosth,double &myphi,double &mylength){
   int NTracks = event->GetNTracks();
 
   bool foundtrack = false;
@@ -265,6 +265,15 @@ inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &myc
     double dirY = nd280UpTrack->GetInitMom().Y() / mom;
     double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
     double costheta = dirZ;
+    
+    double phi = atan2(dirY,dirX);
+    double cosphi = cos(phi);
+    if(cosphi<-1 || cosphi>+1){
+      cerr << endl;
+      cerr << "cosphi = " << cosphi << " !!!" << endl;
+      cerr << endl;
+      exit(1);
+    }
     
     int NPoints = nd280UpTrack->GetNPoints();
     
@@ -288,6 +297,7 @@ inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &myc
       
       mymom = mom;
       mycosth = costheta;
+      myphi = phi;
       mylength = length;
       foundtrack = true;
     }
@@ -388,6 +398,7 @@ int main(int argc,char** argv)
   const int UseViewYZ = atoi(argv[10]);
   const double MinSeparation = atof(argv[11]); // if <0 --> use the default one
   const int UseTruthFV = atoi(argv[12]);
+
 
   // Set the inputs
 
@@ -500,6 +511,16 @@ int main(int argc,char** argv)
   TH2F * hProt_TrMomVsTrCosTh = new TH2F("hProt_TrMomVsTrCosTh","All Protons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hElec_TrMomVsTrCosTh = new TH2F("hElec_TrMomVsTrCosTh","All Electrons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
 
+  TH2F * hMuon_TrPhiVsTrCosTh = new TH2F("hMuon_TrPhiVsTrCosTh","All Muons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hPion_TrPhiVsTrCosTh = new TH2F("hPion_TrPhiVsTrCosTh","All Pions True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hProt_TrPhiVsTrCosTh = new TH2F("hProt_TrPhiVsTrCosTh","All Protons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hElec_TrPhiVsTrCosTh = new TH2F("hElec_TrPhiVsTrCosTh","All Electrons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+
+  TH2F * hMuon_TrMomVsTrPhi = new TH2F("hMuon_TrMomVsTrPhi","All Muons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hPion_TrMomVsTrPhi = new TH2F("hPion_TrMomVsTrPhi","All Pions True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hProt_TrMomVsTrPhi = new TH2F("hProt_TrMomVsTrPhi","All Protons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hElec_TrMomVsTrPhi = new TH2F("hElec_TrMomVsTrPhi","All Electrons True Mom Vs Phi",100,0,10000,10,-1,+1);
+
   TH2F * hMuon_AllIso_TrMomVsTrCosTh = new TH2F("hMuon_AllIso_TrMomVsTrCosTh","All IsoTarget Muons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hPion_AllIso_TrMomVsTrCosTh = new TH2F("hPion_AllIso_TrMomVsTrCosTh","All IsoTarget Pions True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hProt_AllIso_TrMomVsTrCosTh = new TH2F("hProt_AllIso_TrMomVsTrCosTh","All IsoTarget Protons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
@@ -508,6 +529,24 @@ int main(int argc,char** argv)
   TH2F * hPion_EffIso_TrMomVsTrCosTh = new TH2F("hPion_EffIso_TrMomVsTrCosTh","Efficiency IsoTarget Pions True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hProt_EffIso_TrMomVsTrCosTh = new TH2F("hProt_EffIso_TrMomVsTrCosTh","Efficiency IsoTarget Protons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hElec_EffIso_TrMomVsTrCosTh = new TH2F("hElec_EffIso_TrMomVsTrCosTh","Efficiency IsoTarget Electrons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
+
+  TH2F * hMuon_AllIso_TrMomVsTrPhi = new TH2F("hMuon_AllIso_TrMomVsTrPhi","All IsoTarget Muons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hPion_AllIso_TrMomVsTrPhi = new TH2F("hPion_AllIso_TrMomVsTrPhi","All IsoTarget Pions True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hProt_AllIso_TrMomVsTrPhi = new TH2F("hProt_AllIso_TrMomVsTrPhi","All IsoTarget Protons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hElec_AllIso_TrMomVsTrPhi = new TH2F("hElec_AllIso_TrMomVsTrPhi","All IsoTarget Electrons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hMuon_EffIso_TrMomVsTrPhi = new TH2F("hMuon_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Muons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hPion_EffIso_TrMomVsTrPhi = new TH2F("hPion_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Pions True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hProt_EffIso_TrMomVsTrPhi = new TH2F("hProt_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Protons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hElec_EffIso_TrMomVsTrPhi = new TH2F("hElec_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Electrons True Mom Vs Phi",100,0,10000,10,-1,+1);
+
+  TH2F * hMuon_AllIso_TrPhiVsTrCosTh = new TH2F("hMuon_AllIso_TrPhiVsTrCosTh","All IsoTarget Muons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hPion_AllIso_TrPhiVsTrCosTh = new TH2F("hPion_AllIso_TrPhiVsTrCosTh","All IsoTarget Pions True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hProt_AllIso_TrPhiVsTrCosTh = new TH2F("hProt_AllIso_TrPhiVsTrCosTh","All IsoTarget Protons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hElec_AllIso_TrPhiVsTrCosTh = new TH2F("hElec_AllIso_TrPhiVsTrCosTh","All IsoTarget Electrons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hMuon_EffIso_TrPhiVsTrCosTh = new TH2F("hMuon_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Muons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hPion_EffIso_TrPhiVsTrCosTh = new TH2F("hPion_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Pions True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hProt_EffIso_TrPhiVsTrCosTh = new TH2F("hProt_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Protons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hElec_EffIso_TrPhiVsTrCosTh = new TH2F("hElec_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Electrons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
 
   TH1F * hMuon_AllIso_TrMom = new TH1F("hMuon_AllIso_TrMom","All IsoTarget Muons True Mom",100,0,10000);
   TH1F * hPion_AllIso_TrMom = new TH1F("hPion_AllIso_TrMom","All IsoTarget Pions True Mom",100,0,10000);
@@ -526,6 +565,15 @@ int main(int argc,char** argv)
   TH1F * hPion_EffIso_TrCosTh = new TH1F("hPion_EffIso_TrCosTh","Efficiency IsoTarget Pions True CosTheta",10,-1,+1);
   TH1F * hProt_EffIso_TrCosTh = new TH1F("hProt_EffIso_TrCosTh","Efficiency IsoTarget Protons True CosTheta",10,-1,+1);
   TH1F * hElec_EffIso_TrCosTh = new TH1F("hElec_EffIso_TrCosTh","Efficiency IsoTarget Electrons True CosTheta",10,-1,+1);
+
+  TH1F * hMuon_AllIso_TrPhi = new TH1F("hMuon_AllIso_TrPhi","All IsoTarget Muons True Phi",10,-1,+1);
+  TH1F * hPion_AllIso_TrPhi = new TH1F("hPion_AllIso_TrPhi","All IsoTarget Pions True Phi",10,-1,+1);
+  TH1F * hProt_AllIso_TrPhi = new TH1F("hProt_AllIso_TrPhi","All IsoTarget Protons True Phi",10,-1,+1);
+  TH1F * hElec_AllIso_TrPhi = new TH1F("hElec_AllIso_TrPhi","All IsoTarget Electrons True Phi",10,-1,+1);
+  TH1F * hMuon_EffIso_TrPhi = new TH1F("hMuon_EffIso_TrPhi","Efficiency IsoTarget Muons True Phi",10,-1,+1);
+  TH1F * hPion_EffIso_TrPhi = new TH1F("hPion_EffIso_TrPhi","Efficiency IsoTarget Pions True Phi",10,-1,+1);
+  TH1F * hProt_EffIso_TrPhi = new TH1F("hProt_EffIso_TrPhi","Efficiency IsoTarget Protons True Phi",10,-1,+1);
+  TH1F * hElec_EffIso_TrPhi = new TH1F("hElec_EffIso_TrPhi","Efficiency IsoTarget Electrons True Phi",10,-1,+1);
 
   // True PDFs and Like ratio for PID
 
@@ -550,11 +598,12 @@ int main(int argc,char** argv)
   TH1F * hMuon_EdepOverLen = new TH1F("hMuon_EdepOverLen","Muon energy deposit over track length",200,0,200); // ~ pe / mm (cube)
   TH1F * hPion_EdepOverLen = new TH1F("hPion_EdepOverLen","Pion energy deposit over track length",200,0,200); 
   TH1F * hProt_EdepOverLen = new TH1F("hProt_EdepOverLen","Prot energy deposit over track length",200,0,200);
-  TH1F * hElec_EdepOverLen = new TH1F("hElec_EdepOverLen","Elec energy deposit over track length",200,0,200);
+  TH1F * hElec_EdepOverLen = new TH1F("hElec_EdepOverLen","Elec energy deposit over track length",400,0,200);
 
   //////////// PDFs for PID
 
   int nbins = 50;
+  int nbins_nue = 1000;
 
   double max = 0.;
   if     (DetType == nd280upconv::kSuperFGD) max = 200;
@@ -563,7 +612,7 @@ int main(int argc,char** argv)
   TH1F * hMuon_Stopped_EdepOverLen = new TH1F("hMuon_Stopped_EdepOverLen","Stopping Muon energy deposit over track length",nbins,0,max);
   TH1F * hPion_Stopped_EdepOverLen = new TH1F("hPion_Stopped_EdepOverLen","Stopping Pion energy deposit over track length",nbins,0,max);
   TH1F * hProt_Stopped_EdepOverLen = new TH1F("hProt_Stopped_EdepOverLen","Stopping Prot energy deposit over track length",nbins,0,max);
-  TH1F * hElec_Stopped_EdepOverLen = new TH1F("hElec_Stopped_EdepOverLen","Stopping Elec energy deposit over track length",nbins,0,max);
+  TH1F * hElec_Stopped_EdepOverLen = new TH1F("hElec_Stopped_EdepOverLen","Stopping Elec energy deposit over track length",nbins_nue,0,max);
 
   TH1F * hMuon_Stopped_EdepOverLen_ManyBins = new TH1F("hMuon_Stopped_EdepOverLen_ManyBins","Stopping Muon energy deposit over track length (for p-value)",200000,0,max);
   TH1F * hPion_Stopped_EdepOverLen_ManyBins = new TH1F("hPion_Stopped_EdepOverLen_ManyBins","Stopping Pion energy deposit over track length (for p-value)",200000,0,max);
@@ -596,9 +645,80 @@ int main(int argc,char** argv)
   gElec_Stopped_EdepVsLen_Truth->SetName("gElec_Stopped_EdepVsLen_Truth"); 
   gElec_Stopped_EdepVsLen_Truth->SetTitle("Elec Stopped energy deposit Vs track length (Truth)"); // ~ MeV Vs mm (cube)
 
+  // dEdx Vs Momentum
+  
+  TGraph * gMuon_Stopped_MomVsdEdx = new TGraph(); 
+  gMuon_Stopped_MomVsdEdx->SetName("gMuon_Stopped_MomVsdEdx"); 
+  gMuon_Stopped_MomVsdEdx->SetTitle("Muon Stopped Momentum Vs dE/dx"); 
+  TGraph * gPion_Stopped_MomVsdEdx = new TGraph(); 
+  gPion_Stopped_MomVsdEdx->SetName("gPion_Stopped_MomVsdEdx"); 
+  gPion_Stopped_MomVsdEdx->SetTitle("Pion Stopped Momentum Vs dE/dx"); 
+  TGraph * gProt_Stopped_MomVsdEdx = new TGraph(); 
+  gProt_Stopped_MomVsdEdx->SetName("gProt_Stopped_MomVsdEdx"); 
+  gProt_Stopped_MomVsdEdx->SetTitle("Prot Stopped Momentum Vs dE/dx"); 
+  TGraph * gElec_Stopped_MomVsdEdx = new TGraph(); 
+  gElec_Stopped_MomVsdEdx->SetName("gElec_Stopped_MomVsdEdx"); 
+  gElec_Stopped_MomVsdEdx->SetTitle("Elec Stopped Momentum Vs dE/dx"); 
+ 
 
-  const int NBinsMom = 5;
-  const double BinsMom[NBinsMom+1] = {0., 200., 600., 1000., 2000, 30000.};
+  TGraph * gMuon_Stopped_MomVsdEdx_Truth = new TGraph(); 
+  gMuon_Stopped_MomVsdEdx_Truth->SetName("gMuon_Stopped_MomVsdEdx_Truth"); 
+  gMuon_Stopped_MomVsdEdx_Truth->SetTitle("Muon Stopped Momentum Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)  
+  TGraph * gPion_Stopped_MomVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gPion_Stopped_MomVsdEdx_Truth->SetName("gPion_Stopped_MomVsdEdx_Truth"); 
+  gPion_Stopped_MomVsdEdx_Truth->SetTitle("Pion Stopped Momentum Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+  TGraph * gProt_Stopped_MomVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gProt_Stopped_MomVsdEdx_Truth->SetName("gProt_Stopped_MomVsdEdx_Truth"); 
+  gProt_Stopped_MomVsdEdx_Truth->SetTitle("Prot Stopped Momentum Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+  TGraph * gElec_Stopped_MomVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gElec_Stopped_MomVsdEdx_Truth->SetName("gElec_Stopped_MomVsdEdx_Truth"); 
+  gElec_Stopped_MomVsdEdx_Truth->SetTitle("Elec Stopped Momentum Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+
+  TGraph * gMuon_All_MomVsdEdx_Truth = new TGraph(); 
+  gMuon_All_MomVsdEdx_Truth->SetName("gMuon_All_MomVsdEdx_Truth"); 
+  gMuon_All_MomVsdEdx_Truth->SetTitle("Muon All Momentum Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)  
+  TGraph * gPion_All_MomVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gPion_All_MomVsdEdx_Truth->SetName("gPion_All_MomVsdEdx_Truth"); 
+  gPion_All_MomVsdEdx_Truth->SetTitle("Pion All Momentum Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+  TGraph * gProt_All_MomVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gProt_All_MomVsdEdx_Truth->SetName("gProt_All_MomVsdEdx_Truth"); 
+  gProt_All_MomVsdEdx_Truth->SetTitle("Prot All Momentum Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+  TGraph * gElec_All_MomVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gElec_All_MomVsdEdx_Truth->SetName("gElec_All_MomVsdEdx_Truth"); 
+  gElec_All_MomVsdEdx_Truth->SetTitle("Elec All Momentum Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+
+  // dEdx Vs Track Length
+  
+  TGraph * gMuon_Stopped_LenVsdEdx = new TGraph(); 
+  gMuon_Stopped_LenVsdEdx->SetName("gMuon_Stopped_LenVsdEdx"); 
+  gMuon_Stopped_LenVsdEdx->SetTitle("Muon Stopped track length Vs dE/dx"); // ~ MeV Vs mm (cube)  
+  TGraph * gPion_Stopped_LenVsdEdx = new TGraph(); // ~ pe Vs mm (cube)
+  gPion_Stopped_LenVsdEdx->SetName("gPion_Stopped_LenVsdEdx"); 
+  gPion_Stopped_LenVsdEdx->SetTitle("Pion Stopped track length Vs dE/dx"); // ~ MeV Vs mm (cube)
+  TGraph * gProt_Stopped_LenVsdEdx = new TGraph(); // ~ pe Vs mm (cube)
+  gProt_Stopped_LenVsdEdx->SetName("gProt_Stopped_LenVsdEdx"); 
+  gProt_Stopped_LenVsdEdx->SetTitle("Prot Stopped track length Vs dE/dx"); // ~ MeV Vs mm (cube)
+  TGraph * gElec_Stopped_LenVsdEdx = new TGraph(); // ~ pe Vs mm (cube)
+  gElec_Stopped_LenVsdEdx->SetName("gElec_Stopped_LenVsdEdx"); 
+  gElec_Stopped_LenVsdEdx->SetTitle("Elec Stopped track length Vs dE/dx"); // ~ MeV Vs mm (cube)
+  
+  TGraph * gMuon_Stopped_LenVsdEdx_Truth = new TGraph(); 
+  gMuon_Stopped_LenVsdEdx_Truth->SetName("gMuon_Stopped_LenVsdEdx_Truth"); 
+  gMuon_Stopped_LenVsdEdx_Truth->SetTitle("Muon Stopped track length Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)  
+  TGraph * gPion_Stopped_LenVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gPion_Stopped_LenVsdEdx_Truth->SetName("gPion_Stopped_LenVsdEdx_Truth"); 
+  gPion_Stopped_LenVsdEdx_Truth->SetTitle("Pion Stopped track length Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+  TGraph * gProt_Stopped_LenVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gProt_Stopped_LenVsdEdx_Truth->SetName("gProt_Stopped_LenVsdEdx_Truth"); 
+  gProt_Stopped_LenVsdEdx_Truth->SetTitle("Prot Stopped track length Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+  TGraph * gElec_Stopped_LenVsdEdx_Truth = new TGraph(); // ~ pe Vs mm (cube)
+  gElec_Stopped_LenVsdEdx_Truth->SetName("gElec_Stopped_LenVsdEdx_Truth"); 
+  gElec_Stopped_LenVsdEdx_Truth->SetTitle("Elec Stopped track length Vs dE/dx (Truth)"); // ~ MeV Vs mm (cube)
+
+  // Histograms for different momenta ranges
+
+  const int NBinsMom = 6;
+  const double BinsMom[NBinsMom+1] = {0., 300., 600., 800., 1000., 2000, 30000.};
   TH1F *hBinsMom = new TH1F("hBinsMom","hBinsMom",NBinsMom,BinsMom);
   
   TH1F * hMuon_Stopped_EdepOverLen_Mom[NBinsMom];
@@ -611,11 +731,6 @@ int main(int argc,char** argv)
   TH1F * hProt_Stopped_EdepOverLen_Mom_ManyBins[NBinsMom];
   TH1F * hElec_Stopped_EdepOverLen_Mom_ManyBins[NBinsMom];  
   
-  TGraph * gMuon_Stopped_EdepVsLen_Mom[NBinsMom];
-  TGraph * gPion_Stopped_EdepVsLen_Mom[NBinsMom];
-  TGraph * gProt_Stopped_EdepVsLen_Mom[NBinsMom];
-  TGraph * gElec_Stopped_EdepVsLen_Mom[NBinsMom];
-  
   for(int imom=0;imom<NBinsMom;imom++){
 
     int histobin = imom+1;
@@ -625,51 +740,73 @@ int main(int argc,char** argv)
     TString name;
     name = TString::Format("hMuon_Stopped_EdepOverLen_Mom_%1.0f_%1.0f",lowmom,upmom);
     hMuon_Stopped_EdepOverLen_Mom[imom] = new TH1F(name,name,nbins,0,max);
-    name = TString::Format("hMuon_Stopped_EdepOverLen_ManyBins_Mom_%1.0f_%1.0f",lowmom,upmom);
+    name = TString::Format("hMuon_Stopped_EdepOverLen_Mom_ManyBins_%1.0f_%1.0f",lowmom,upmom);
     hMuon_Stopped_EdepOverLen_Mom_ManyBins[imom] = new TH1F(name,name,200000,0,max);
 
     name = TString::Format("hPion_Stopped_EdepOverLen_Mom_%1.0f_%1.0f",lowmom,upmom);
     hPion_Stopped_EdepOverLen_Mom[imom] = new TH1F(name,name,nbins,0,max);
-    name = TString::Format("hPion_Stopped_EdepOverLen_ManyBins_Mom_%1.0f_%1.0f",lowmom,upmom);
-    hPion_Stopped_EdepOverLen_Mom_ManyBins[imom] = new TH1F(name,name,200000,0,200);
+    name = TString::Format("hPion_Stopped_EdepOverLen_Mom_ManyBins_%1.0f_%1.0f",lowmom,upmom);
+    hPion_Stopped_EdepOverLen_Mom_ManyBins[imom] = new TH1F(name,name,200000,0,max);
 
     name = TString::Format("hProt_Stopped_EdepOverLen_Mom_%1.0f_%1.0f",lowmom,upmom);
     hProt_Stopped_EdepOverLen_Mom[imom] = new TH1F(name,name,nbins,0,max);
-    name = TString::Format("hProt_Stopped_EdepOverLen_ManyBins_Mom_%1.0f_%1.0f",lowmom,upmom);
-    hProt_Stopped_EdepOverLen_Mom_ManyBins[imom] = new TH1F(name,name,200000,0,200);
+    name = TString::Format("hProt_Stopped_EdepOverLen_Mom_ManyBins_%1.0f_%1.0f",lowmom,upmom);
+    hProt_Stopped_EdepOverLen_Mom_ManyBins[imom] = new TH1F(name,name,200000,0,max);
 
     name = TString::Format("hElec_Stopped_EdepOverLen_Mom_%1.0f_%1.0f",lowmom,upmom);
-    hElec_Stopped_EdepOverLen_Mom[imom] = new TH1F(name,name,nbins,0,max);
-    name = TString::Format("hElec_Stopped_EdepOverLen_ManyBins_Mom_%1.0f_%1.0f",lowmom,upmom);
-    hElec_Stopped_EdepOverLen_Mom_ManyBins[imom] = new TH1F(name,name,200000,0,200);
+    hElec_Stopped_EdepOverLen_Mom[imom] = new TH1F(name,name,nbins_nue,0,max);
+    name = TString::Format("hElec_Stopped_EdepOverLen_Mom_ManyBins_%1.0f_%1.0f",lowmom,upmom);
+    hElec_Stopped_EdepOverLen_Mom_ManyBins[imom] = new TH1F(name,name,200000,0,max);
 
-    //
-
-    gMuon_Stopped_EdepVsLen_Mom[imom] = new TGraph(); 
-    name = TString::Format("gMuon_Stopped_EdepVsLen_Mom_%1.0f_%1.0f",lowmom,upmom);
-    gMuon_Stopped_EdepVsLen_Mom[imom]->SetName(name); 
-    name = TString::Format("Muon Stopped energy deposit Vs track length of p=%1.0f-%1.0f MeV/c",lowmom,upmom);
-    gMuon_Stopped_EdepVsLen_Mom[imom]->SetTitle(name); // ~ pe Vs mm (cube)  
-    
-    gPion_Stopped_EdepVsLen_Mom[imom] = new TGraph(); 
-    name = TString::Format("gPion_Stopped_EdepVsLen_Mom_%1.0f_%1.0f",lowmom,upmom);
-    gPion_Stopped_EdepVsLen_Mom[imom]->SetName(name); 
-    name = TString::Format("Pion Stopped energy deposit Vs track length of p=%1.0f-%1.0f MeV/c",lowmom,upmom);
-    gPion_Stopped_EdepVsLen_Mom[imom]->SetTitle(name); // ~ pe Vs mm (cube)  
-
-    gProt_Stopped_EdepVsLen_Mom[imom] = new TGraph(); 
-    name = TString::Format("gProt_Stopped_EdepVsLen_Mom_%1.0f_%1.0f",lowmom,upmom);
-    gProt_Stopped_EdepVsLen_Mom[imom]->SetName(name); 
-    name = TString::Format("Prot Stopped energy deposit Vs track length of p=%1.0f-%1.0f MeV/c",lowmom,upmom);
-    gProt_Stopped_EdepVsLen_Mom[imom]->SetTitle(name); // ~ pe Vs mm (cube)  
-
-    gElec_Stopped_EdepVsLen_Mom[imom] = new TGraph(); 
-    name = TString::Format("gElec_Stopped_EdepVsLen_Mom_%1.0f_%1.0f",lowmom,upmom);
-    gElec_Stopped_EdepVsLen_Mom[imom]->SetName(name); 
-    name = TString::Format("Elec Stopped energy deposit Vs track length of p=%1.0f-%1.0f MeV/c",lowmom,upmom);
-    gElec_Stopped_EdepVsLen_Mom[imom]->SetTitle(name); // ~ pe Vs mm (cube)  
-    
   }
+
+
+  // Histograms for different reco track lengths
+
+  const int NBinsLen = 5;
+  const double BinsLen[NBinsLen+1] = {0., 200., 400., 600., 1000., 2500.}; // mm
+  TH1F *hBinsLen = new TH1F("hBinsLen","hBinsLen",NBinsLen,BinsLen);
+  
+  TH1F * hMuon_Stopped_EdepOverLen_Len[NBinsLen];
+  TH1F * hPion_Stopped_EdepOverLen_Len[NBinsLen];
+  TH1F * hProt_Stopped_EdepOverLen_Len[NBinsLen];
+  TH1F * hElec_Stopped_EdepOverLen_Len[NBinsLen];
+  
+  TH1F * hMuon_Stopped_EdepOverLen_Len_ManyBins[NBinsLen];
+  TH1F * hPion_Stopped_EdepOverLen_Len_ManyBins[NBinsLen];
+  TH1F * hProt_Stopped_EdepOverLen_Len_ManyBins[NBinsLen];
+  TH1F * hElec_Stopped_EdepOverLen_Len_ManyBins[NBinsLen];  
+  
+  for(int ilen=0;ilen<NBinsLen;ilen++){
+
+    int histobin = ilen+1;
+    double lowlen = hBinsLen->GetXaxis()->GetBinLowEdge(histobin);
+    double uplen  = hBinsLen->GetXaxis()->GetBinUpEdge(histobin);
+
+    TString name;
+    name = TString::Format("hMuon_Stopped_EdepOverLen_Len_%1.0f_%1.0f",lowlen,uplen);
+    hMuon_Stopped_EdepOverLen_Len[ilen] = new TH1F(name,name,nbins,0,max);
+    name = TString::Format("hMuon_Stopped_EdepOverLen_Len_ManyBins_%1.0f_%1.0f",lowlen,uplen);
+    hMuon_Stopped_EdepOverLen_Len_ManyBins[ilen] = new TH1F(name,name,200000,0,max);
+
+    name = TString::Format("hPion_Stopped_EdepOverLen_Len_%1.0f_%1.0f",lowlen,uplen);
+    hPion_Stopped_EdepOverLen_Len[ilen] = new TH1F(name,name,nbins,0,max);
+    name = TString::Format("hPion_Stopped_EdepOverLen_Len_ManyBins_%1.0f_%1.0f",lowlen,uplen);
+    hPion_Stopped_EdepOverLen_Len_ManyBins[ilen] = new TH1F(name,name,200000,0,max);
+
+    name = TString::Format("hProt_Stopped_EdepOverLen_Len_%1.0f_%1.0f",lowlen,uplen);
+    hProt_Stopped_EdepOverLen_Len[ilen] = new TH1F(name,name,nbins,0,max);
+    name = TString::Format("hProt_Stopped_EdepOverLen_Len_ManyBins_%1.0f_%1.0f",lowlen,uplen);
+    hProt_Stopped_EdepOverLen_Len_ManyBins[ilen] = new TH1F(name,name,200000,0,max);
+
+    name = TString::Format("hElec_Stopped_EdepOverLen_Len_%1.0f_%1.0f",lowlen,uplen);
+    hElec_Stopped_EdepOverLen_Len[ilen] = new TH1F(name,name,nbins_nue,0,max);
+    name = TString::Format("hElec_Stopped_EdepOverLen_Len_ManyBins_%1.0f_%1.0f",lowlen,uplen);
+    hElec_Stopped_EdepOverLen_Len_ManyBins[ilen] = new TH1F(name,name,200000,0,max);
+
+  }
+
+  //
 
   TH1F * hLikeRatio_MuProt_TrueMu = new TH1F("hLikeRatio_MuProt_TrueMu","hLikeRatio_MuProt_TrueMu",100,-10,10);
   TH1F * hLikeRatio_MuProt_TrueProt = new TH1F("hLikeRatio_MuProt_TrueProt","hLikeRatio_MuProt_TrueProt",100,-10,10);
@@ -680,7 +817,9 @@ int main(int argc,char** argv)
   TH1F * hLikeRatio_PionProt_TruePion = new TH1F("hLikeRatio_PionProt_TruePion","hLikeRatio_PionProt_TruePion",100,-10,10);
   TH1F * hLikeRatio_PionProt_TrueProt = new TH1F("hLikeRatio_PionProt_TrueProt","hLikeRatio_PionProt_TrueProt",100,-10,10);
 
-
+  TH1F * hLikeRatio_ElecProt_TrueElec = new TH1F("hLikeRatio_ElecProt_TrueElec","hLikeRatio_ElecProt_TrueElec",100,-10,10);
+  TH1F * hLikeRatio_ElecPion_TrueElec = new TH1F("hLikeRatio_ElecPion_TrueElec","hLikeRatio_ElecPion_TrueElec",100,-10,10);
+  TH1F * hLikeRatio_ElecMu_TrueElec = new TH1F("hLikeRatio_ElecMu_TrueElec","hLikeRatio_ElecMu_TrueElec",100,-10,10);
 
 
   /*
@@ -854,8 +993,6 @@ int main(int argc,char** argv)
 
   TStopwatch sw_event;
 
-  //ND280UpRecoTrack nd280UpRecoTrack; 
-      
   for(int ievt=evtfirst;ievt<=EntryLast;ievt++){ // get last entry
     tinput->GetEntry(ievt);
 
@@ -954,7 +1091,7 @@ int main(int argc,char** argv)
       cMPPCHits_YZ[ievt] = new TCanvas(name,name);
     }
     
-
+  
     
     // Get the Truth Vertex position in the Target reference system
     
@@ -980,7 +1117,7 @@ int main(int argc,char** argv)
     
     ///
 
-
+  
 
 
     // Loop over the hits
@@ -1091,10 +1228,13 @@ int main(int argc,char** argv)
 	hPEVsTime_z[ievt]->Fill(timepez,pez);
       }
       
+      //cout << edep << ", " << endl;
       //cout << nd280UpHit->GetPEX() << ", " << pex << endl;
       //cout << nd280UpHit->GetPEY() << ", " << pey << endl;
       //cout << nd280UpHit->GetPEZ() << ", " << pez << endl;
       //cout << endl;      
+
+
 
 
 
@@ -1196,17 +1336,11 @@ int main(int argc,char** argv)
 	infoXY.push_back(pez);
 	fRecoTrack_hitXY[idx].push_back(infoXY);
       }
-            
+      
+      //cout << "length_true_mchit = " << length_true_mchit << endl;
+
       fRecoTrack_true_length[idx] += length_true_mchit; // initialized to 0 at first mc hit ( if(!used) )
       fRecoTrack_true_edep[idx]   += edep; // initialized to 0 at first mc hit ( if(!used) )
-
-    
-
-      
-
-
-
-
 
 
       // Fill the event display
@@ -1279,16 +1413,48 @@ int main(int argc,char** argv)
 	//cout << "First MC hit: " << truth_first_mchit[0] << ", " << truth_first_mchit[1] << ", " << truth_first_mchit[2] << endl;
       }
 
-
-
-
-
-      
+          
       // Initialize the object for track reconstruction
       ND280UpRecoTrack nd280UpRecoTrack; 
 
+
+
+      //
+      // CHANGED!!!
+      //
+
+      // 
+      // Get the Truth
+      //
+      
+      double mom_true = nd280upconv::kBadNum;
+      double costh_true = nd280upconv::kBadNum;
+      double lengthSD_true = nd280upconv::kBadNum;
+      double phi_true = nd280upconv::kBadNum;
+
+      FindTruth(nd280UpEvent,trkid,mom_true,costh_true,phi_true,lengthSD_true);
+
+      //bool IsLastPtMomZero_truth = IsLastPtMomZero(nd280UpEvent,trkid); 
+            
+      double trklen_true = fRecoTrack_true_length[itrk];
+      double trkedep_true = fRecoTrack_true_edep[itrk];
+
+      //cout << "trkedep_true = " << trkedep_true << endl;
+      //cout << "trklen_true = " << trklen_true << endl;
+
+      if(pdg==13)        gMuon_All_MomVsdEdx_Truth->SetPoint(gMuon_All_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // CHANGED!!!
+      else if(pdg==211)  gPion_All_MomVsdEdx_Truth->SetPoint(gPion_All_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // CHANGED!!!  
+      else if(pdg==2212) gProt_All_MomVsdEdx_Truth->SetPoint(gProt_All_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // CHANGED!!!
+      else if(pdg==11)   gElec_All_MomVsdEdx_Truth->SetPoint(gElec_All_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // CHANGED!!!
+
+      /////////
+
+
+
+   
       // Cut on the Truth OutFV
-      if(UseTruthFV){	
+      if( UseTruthFV ){   // do it only for the first track to avoid multiple filling
+
 	bool IsTruthOutFV = false;
 	
 	// Inputs are: for each projections give the th2f with mppc hit and the tgraph with mc hit
@@ -1299,27 +1465,33 @@ int main(int argc,char** argv)
 	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],TargVtx_X,TargVtx_Z);
 	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],TargVtx_Y,TargVtx_Z);
 	
-	// Define a track In FV truth by looking the MPPC hits
+	// Define a track In FV truth by looking the MPPC hits: starting and stopping in FV
 	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XY[itrk],fTrueTrack_MCHit_XY[itrk]); 
 	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],fTrueTrack_MCHit_XZ[itrk]); 
 	if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],fTrueTrack_MCHit_YZ[itrk]); 		
 
-	if(IsTruthOutFV){
-	  hVtxOut_XY->Fill(TargVtx_X,TargVtx_Y);
-	  hVtxOut_XZ->Fill(TargVtx_X,TargVtx_Z);
-	  hVtxOut_YZ->Fill(TargVtx_Y,TargVtx_Z);
-	}
-	else{
-	  hVtx_XY->Fill(TargVtx_X,TargVtx_Y);
-	  hVtx_XZ->Fill(TargVtx_X,TargVtx_Z);
-	  hVtx_YZ->Fill(TargVtx_Y,TargVtx_Z);
+       	//IsTruthOutFV = false; // CHANGED!!!
+
+	if( itrk==0 ){ // Fill only once per event
+	  if(IsTruthOutFV){
+	    hVtxOut_XY->Fill(TargVtx_X,TargVtx_Y);
+	    hVtxOut_XZ->Fill(TargVtx_X,TargVtx_Z);
+	    hVtxOut_YZ->Fill(TargVtx_Y,TargVtx_Z);
+	  }
+	  else{
+	    hVtx_XY->Fill(TargVtx_X,TargVtx_Y);
+	    hVtx_XZ->Fill(TargVtx_X,TargVtx_Z);
+	    hVtx_YZ->Fill(TargVtx_Y,TargVtx_Z);
+	  }
 	}
 
 	if(IsTruthOutFV){
 	  if(DEBUG) cout << "Out the Truth FV --> skip it!!!" << endl;	  
-	  continue;
+	  continue; 
 	}
       }
+          
+      //cout << "CIAO!!!" << endl;
 
       //
       
@@ -1388,10 +1560,6 @@ int main(int argc,char** argv)
 	if(!isseparated) break; // if separated with 
       }
 
-
-    
-   
-    
       
       //
       // Get the Reco
@@ -1399,8 +1567,11 @@ int main(int argc,char** argv)
       
       // if the reco track is reconstructed 
       bool isreco = nd280UpRecoTrack.IsReco();
+      
       // if the reco track is OutFV (entering or exiting)
       bool isoutfv = nd280UpRecoTrack.IsOutFV();
+      //isoutfv = false; // CHANGED!!!
+      
       // reco track deposited energy
       double trkedep = nd280UpRecoTrack.GetEdep();
       // reco track length
@@ -1414,20 +1585,35 @@ int main(int argc,char** argv)
       // reco track costheta
       double costh_reco = nd280UpRecoTrack.GetRecoCosTheta();
       
-      // 
-      // Get the Truth
+
       //
+      // CHANGED!!!
+      //
+
+      // // 
+      // // Get the Truth
+      // //
       
-      double mom_true = nd280upconv::kBadNum;
-      double costh_true = nd280upconv::kBadNum;
-      double lengthSD_true = nd280upconv::kBadNum;
+      // double mom_true = nd280upconv::kBadNum;
+      // double costh_true = nd280upconv::kBadNum;
+      // double lengthSD_true = nd280upconv::kBadNum;
       
-      FindTruth(nd280UpEvent,trkid,mom_true,costh_true,lengthSD_true);
+      // FindTruth(nd280UpEvent,trkid,mom_true,costh_true,phi_true,lengthSD_true);
       
       bool IsLastPtMomZero_truth = IsLastPtMomZero(nd280UpEvent,trkid); 
 
-      double trklen_true = fRecoTrack_true_length[itrk];
-      double trkedep_true = fRecoTrack_true_edep[itrk];
+      // double trklen_true = fRecoTrack_true_length[itrk];
+      // double trkedep_true = fRecoTrack_true_edep[itrk];
+
+      // if(pdg==13)        gMuon_All_MomVsdEdx_Truth->SetPoint(gMuon_All_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // CHANGED!!!
+      // else if(pdg==211)  gPion_All_MomVsdEdx_Truth->SetPoint(gPion_All_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // CHANGED!!!  
+      // else if(pdg==2212) gProt_All_MomVsdEdx_Truth->SetPoint(gProt_All_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // CHANGED!!!
+      // else if(pdg==11)   gElec_All_MomVsdEdx_Truth->SetPoint(gElec_All_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // CHANGED!!!
+      
+      ////////
+
+
+
 
       if(DEBUG){
 	cout << endl;
@@ -1446,6 +1632,7 @@ int main(int argc,char** argv)
 	cout << " - pdg = " << pdg 
 	     << ", mom = " << mom_true
 	     << ", costh = " << costh_true
+	     << ", phi = " << phi_true
 	     << ", trk edep = " << trkedep_true	 
 	     << ", trk length = " << trklen_true	 
 	     << ", trk length SD = " << lengthSD_true
@@ -1491,49 +1678,52 @@ int main(int argc,char** argv)
       ///
 
 
-
-
-      if(mom_true>3000 
-	 && (pdg==211)
-	 && !isoutfv 
-	 && (!isreco || !isseparated)){
+    
+      if(DEBUG){
 	
-	// InFV but not Reco
-
-	cout << "Evt ID: " << EvtID << endl;
-	cout << "pdg = " << pdg << endl;
-	cout << "trkid = " << trkid << endl;
-	cout << "This track is rejected though:"<< endl;
-	cout << " mom_true = " << mom_true << endl;
-	cout << " costh_true = " << costh_true << endl;
-	cout << " costh_reco = " << costh_reco << endl;
-	cout << " trk edep = " << trkedep_true << endl;	 
-	cout << " trk length = " << trklen_true << endl;	 
-	cout << " trklen_reco = " << trklen_reco << endl;
-	cout << " - # of hits:" << endl;
-	cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
-	cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
-	cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
-	if(!isreco) cout << "Is not reconstructed!!!" << endl;
-	if(isoutfv) cout << "Is outfv!!!" << endl;
-	if(!isseparated) cout << "Is not separated!!!" << endl;	
-
-	//PrintTruth(nd280UpEvent,trkid);
-
-	if(DEBUGPLOT){
+	if(mom_true>3000 
+	   && (pdg==211)
+	   && !isoutfv 
+	   && (!isreco || !isseparated)){
 	  
-	  name = TString::Format("fRecoTrack_MPPCHit_XY_Evt%d_Trk%d.pdf",ievt,itrk);
-	  TCanvas *cXY = new TCanvas(name,name);
-	  fRecoTrack_MPPCHit_XY[itrk]->Draw("colz");
-	  cXY->Print(name);
-	  name = TString::Format("fRecoTrack_MPPCHit_XZ_Evt%d_Trk%d.pdf",ievt,itrk);
-	  TCanvas *cXZ = new TCanvas(name,name);
-	  fRecoTrack_MPPCHit_XZ[itrk]->Draw("colz");
-	  cXZ->Print(name);
-	  name = TString::Format("fRecoTrack_MPPCHit_YZ_Evt%d_Trk%d.pdf",ievt,itrk);
-	  TCanvas *cYZ = new TCanvas(name,name);
-	  fRecoTrack_MPPCHit_YZ[itrk]->Draw("colz");
-	  cYZ->Print(name);	
+	  // InFV but not Reco
+	  
+	  cout << "Evt ID: " << EvtID << endl;
+	  cout << "pdg = " << pdg << endl;
+	  cout << "trkid = " << trkid << endl;
+	  cout << "This track is rejected though:"<< endl;
+	  cout << " mom_true = " << mom_true << endl;
+	  cout << " phi_true = " << phi_true << endl;
+	  cout << " costh_true = " << costh_true << endl;
+	  cout << " costh_reco = " << costh_reco << endl;
+	  cout << " trk edep = " << trkedep_true << endl;	 
+	  cout << " trk length = " << trklen_true << endl;	 
+	  cout << " trklen_reco = " << trklen_reco << endl;
+	  cout << " - # of hits:" << endl;
+	  cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
+	  cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
+	  cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
+	  if(!isreco) cout << "Is not reconstructed!!!" << endl;
+	  if(isoutfv) cout << "Is outfv!!!" << endl;
+	  if(!isseparated) cout << "Is not separated!!!" << endl;	
+	  
+	  //PrintTruth(nd280UpEvent,trkid);
+	  
+	  if(DEBUGPLOT){
+	    
+	    name = TString::Format("fRecoTrack_MPPCHit_XY_Evt%d_Trk%d.pdf",ievt,itrk);
+	    TCanvas *cXY = new TCanvas(name,name);
+	    fRecoTrack_MPPCHit_XY[itrk]->Draw("colz");
+	    cXY->Print(name);
+	    name = TString::Format("fRecoTrack_MPPCHit_XZ_Evt%d_Trk%d.pdf",ievt,itrk);
+	    TCanvas *cXZ = new TCanvas(name,name);
+	    fRecoTrack_MPPCHit_XZ[itrk]->Draw("colz");
+	    cXZ->Print(name);
+	    name = TString::Format("fRecoTrack_MPPCHit_YZ_Evt%d_Trk%d.pdf",ievt,itrk);
+	    TCanvas *cYZ = new TCanvas(name,name);
+	    fRecoTrack_MPPCHit_YZ[itrk]->Draw("colz");
+	    cYZ->Print(name);	
+	  }
 	}
       }
     
@@ -1572,22 +1762,28 @@ int main(int argc,char** argv)
 	      } 
 	    }
 	    
-	    if(pdg==13){	      
-	      hMuon_Stopped_EdepOverLen->Fill(trkedep/trklen_reco);
-	      hMuon_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco);
-	      
-	      hMuon_Stopped_Edep->Fill(trkedep);
+	    if(pdg==13){
+	      hMuon_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
+	      hMuon_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
+	      hMuon_Stopped_Edep->Fill(trkedep); 
 	      hMuon_Stopped_Len->Fill(trklen_reco);
 
 	      gMuon_Stopped_EdepVsLen->SetPoint(gMuon_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
+	      gMuon_Stopped_EdepVsLen_Truth->SetPoint(gMuon_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); 
 
-	      gMuon_Stopped_EdepVsLen_Truth->SetPoint(gMuon_Stopped_EdepVsLen->GetN(),trklen_true,trkedep_true); /// QUI
-	      	      
+	      gMuon_Stopped_MomVsdEdx->SetPoint(gMuon_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
+	      gMuon_Stopped_MomVsdEdx_Truth->SetPoint(gMuon_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH  
+	      gMuon_Stopped_LenVsdEdx->SetPoint(gMuon_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
+	      gMuon_Stopped_LenVsdEdx_Truth->SetPoint(gMuon_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
+
 	      int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
-	      gMuon_Stopped_EdepVsLen_Mom[index]->SetPoint(gMuon_Stopped_EdepVsLen_Mom[index]->GetN(),trklen_reco,trkedep);
 	      hMuon_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
 	      hMuon_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
-	      
+
+	      index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
+	      hMuon_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
+	      hMuon_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
+	      	      
 	      hMuon_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
 	      hMuon_CosTh_RecMinTr->Fill(costh_reco-costh_true);
 	      hMuon_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
@@ -1601,13 +1797,20 @@ int main(int argc,char** argv)
 	      hPion_Stopped_Len->Fill(trklen_reco);
 
 	      gPion_Stopped_EdepVsLen->SetPoint(gPion_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
+	      gPion_Stopped_EdepVsLen_Truth->SetPoint(gPion_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
 
-	      gPion_Stopped_EdepVsLen_Truth->SetPoint(gPion_Stopped_EdepVsLen->GetN(),trklen_true,trkedep_true); /// QUI
+	      gPion_Stopped_MomVsdEdx->SetPoint(gPion_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
+	      gPion_Stopped_MomVsdEdx_Truth->SetPoint(gPion_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
+	      gPion_Stopped_LenVsdEdx->SetPoint(gPion_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
+	      gPion_Stopped_LenVsdEdx_Truth->SetPoint(gPion_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
 
 	      int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
-	      gPion_Stopped_EdepVsLen_Mom[index]->SetPoint(gPion_Stopped_EdepVsLen_Mom[index]->GetN(),trklen_reco,trkedep);
 	      hPion_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
 	      hPion_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
+
+	      index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
+	      hPion_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
+	      hPion_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
 	      	      
 	      hPion_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
 	      hPion_CosTh_RecMinTr->Fill(costh_reco-costh_true);
@@ -1622,14 +1825,21 @@ int main(int argc,char** argv)
 	      hProt_Stopped_Len->Fill(trklen_reco);
 
 	      gProt_Stopped_EdepVsLen->SetPoint(gProt_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
+	      gProt_Stopped_EdepVsLen_Truth->SetPoint(gProt_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
 
-	      gProt_Stopped_EdepVsLen_Truth->SetPoint(gProt_Stopped_EdepVsLen->GetN(),trklen_true,trkedep_true); /// QUI
+	      gProt_Stopped_MomVsdEdx->SetPoint(gProt_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
+	      gProt_Stopped_MomVsdEdx_Truth->SetPoint(gProt_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
+	      gProt_Stopped_LenVsdEdx->SetPoint(gProt_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
+	      gProt_Stopped_LenVsdEdx_Truth->SetPoint(gProt_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
 
 	      int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
-	      gProt_Stopped_EdepVsLen_Mom[index]->SetPoint(gProt_Stopped_EdepVsLen_Mom[index]->GetN(),trklen_reco,trkedep);
 	      hProt_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
 	      hProt_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
 	      
+	      index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
+	      hProt_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
+	      hProt_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
+
 	      hProt_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
 	      hProt_CosTh_RecMinTr->Fill(costh_reco-costh_true);
 	      hProt_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
@@ -1643,14 +1853,21 @@ int main(int argc,char** argv)
 	      hElec_Stopped_Len->Fill(trklen_reco);
 
 	      gElec_Stopped_EdepVsLen->SetPoint(gElec_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
+	      gElec_Stopped_EdepVsLen_Truth->SetPoint(gElec_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
 
-	      gElec_Stopped_EdepVsLen_Truth->SetPoint(gElec_Stopped_EdepVsLen->GetN(),trklen_true,trkedep_true); /// QUI
+	      gElec_Stopped_MomVsdEdx->SetPoint(gElec_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
+	      gElec_Stopped_MomVsdEdx_Truth->SetPoint(gElec_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
+	      gElec_Stopped_LenVsdEdx->SetPoint(gElec_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
+	      gElec_Stopped_LenVsdEdx_Truth->SetPoint(gElec_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
 	      
 	      int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
-	      gElec_Stopped_EdepVsLen_Mom[index]->SetPoint(gElec_Stopped_EdepVsLen_Mom[index]->GetN(),trklen_reco,trkedep);
 	      hElec_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
 	      hElec_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
 	      
+	      index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
+	      hElec_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
+	      hElec_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
+
 	      hElec_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
 	      hElec_CosTh_RecMinTr->Fill(costh_reco-costh_true);
 	      hElec_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
@@ -1716,12 +1933,19 @@ int main(int argc,char** argv)
 	  } // if outfv
 	} // if separated
       } // if reco
-    
-      
-      // Fill the total event display
+
+
+
+
+      // Fill the total event display (ONLY FULLY CONTAINED PARTICLES!!!)
+
       if(ievt<NEvtDisplTot){
-	//if(fRecoTrack_PDG[itrk] == 13){
+	//if(fRecoTrack_PDG[itrk] == 2112){
 	//if(fRecoTrack_ID[itrk] == 4){
+	
+	// sono qui
+	cout << "Track PDG = " << fRecoTrack_PDG[itrk] << endl;
+
 	hMPPCHits_XY[ievt]->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z 
 	hMPPCHits_XZ[ievt]->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
 	hMPPCHits_YZ[ievt]->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
@@ -1751,8 +1975,9 @@ int main(int argc,char** argv)
 	gMCHits_XZ[ievt]->Draw("p same");
 	TargVtx_XZ->Draw();
       }
-      
-    
+
+
+
       // Store the track info
       TND280UpRecoTrack *fND280UpRecoTrack = new TND280UpRecoTrack();
       fND280UpRecoTrack->SetTrackID(trkid);
@@ -1765,6 +1990,12 @@ int main(int argc,char** argv)
       fND280UpRecoTrack->SetIsSeparated(isseparated);
       fND280UpRecoTrack->SetTruthMom(mom_true); 
       fND280UpRecoTrack->SetTruthCosTheta(costh_true);
+
+
+      // ADD PHI
+      fND280UpRecoTrack->SetTruthPhi(phi_true);
+
+
       fND280UpRecoTrack->SetTruthLength(trklen_true);
       
       //fND280UpRecoTrack->SetRecoCosTheta(costh_true); // TODO!!!
@@ -1840,19 +2071,38 @@ int main(int argc,char** argv)
   cout << "Calculate PID on Reco Events" << endl;
   cout << endl;
   
-  // Normalize the PDFs
-  hMuon_Stopped_EdepOverLen->Scale(hMuon_Stopped_EdepOverLen->Integral());
-  hProt_Stopped_EdepOverLen->Scale(hProt_Stopped_EdepOverLen->Integral());
-  hPion_Stopped_EdepOverLen->Scale(hPion_Stopped_EdepOverLen->Integral());
+  cout << "# of entries: " << endl;
+  cout << " - Muons: " << hMuon_Stopped_EdepOverLen->Integral() << endl;
+  cout << " - Pions: " << hPion_Stopped_EdepOverLen->Integral() << endl;
+  cout << " - Protons: " << hProt_Stopped_EdepOverLen->Integral() << endl;
+  cout << " - Electrons: " << hElec_Stopped_EdepOverLen->Integral() << endl;
+  cout << endl;
 
-  hMuon_Stopped_EdepOverLen_ManyBins->Scale(hMuon_Stopped_EdepOverLen_ManyBins->Integral());
-  hProt_Stopped_EdepOverLen_ManyBins->Scale(hProt_Stopped_EdepOverLen_ManyBins->Integral());
-  hPion_Stopped_EdepOverLen_ManyBins->Scale(hPion_Stopped_EdepOverLen_ManyBins->Integral());
+  /*
+
+  // Normalize the PDFs (attention!!! before it was multiplying not subtractring!!! histograms before 16/11/17 have wrong normalization!!!)
+
+  hMuon_Stopped_EdepOverLen->Scale(1./hMuon_Stopped_EdepOverLen->Integral());
+  hProt_Stopped_EdepOverLen->Scale(1./hProt_Stopped_EdepOverLen->Integral());
+  hPion_Stopped_EdepOverLen->Scale(1./hPion_Stopped_EdepOverLen->Integral());
+  hElec_Stopped_EdepOverLen->Scale(1./hElec_Stopped_EdepOverLen->Integral());
+
+  hMuon_Stopped_EdepOverLen_ManyBins->Scale(1./hMuon_Stopped_EdepOverLen_ManyBins->Integral());
+  hProt_Stopped_EdepOverLen_ManyBins->Scale(1./hProt_Stopped_EdepOverLen_ManyBins->Integral());
+  hPion_Stopped_EdepOverLen_ManyBins->Scale(1./hPion_Stopped_EdepOverLen_ManyBins->Integral());
+  hElec_Stopped_EdepOverLen_ManyBins->Scale(1./hElec_Stopped_EdepOverLen_ManyBins->Integral());
+
+  */
   
+
+
+  /*
   ND280UpPID nd280UpPID; 
   nd280UpPID.SetPDF("Muon",hMuon_Stopped_EdepOverLen); // ok until TSpline3 (no TF1!)
   nd280UpPID.SetPDF("Pion",hPion_Stopped_EdepOverLen);
   nd280UpPID.SetPDF("Prot",hProt_Stopped_EdepOverLen);
+  nd280UpPID.SetPDF("Elec",hElec_Stopped_EdepOverLen);
+  */
   
   fOutEventTree->SetBranchAddress("RecoEvent",&fND280UpRecoEvent);  
   int nrecoevents = fOutEventTree->GetEntries();
@@ -1892,7 +2142,24 @@ int main(int argc,char** argv)
       int parentID = fND280UpRecoTrack->GetParentID();
       int pdg = fND280UpRecoTrack->GetPDG();
       double mom_true = fND280UpRecoTrack->GetTruthMom();
+      
       double costheta_true = fND280UpRecoTrack->GetTruthCosTheta();
+      double phi_true = fND280UpRecoTrack->GetTruthPhi();
+      
+      // double dirX_true = fND280UpRecoTrack->GetInitMom().X() / mom;
+      // double dirY_true = fND280UpRecoTrack->GetInitMom().Y() / mom;
+      // double dirZ_true = fND280UpRecoTrack->GetInitMom().Z() / mom;
+      // double phi_true = atan2(dirY_true,dirX_true);
+      // double cosphi_true = cos(phi_true);
+      // if(cosphi_true<-1 || cosphi_true>+1){
+      // 	cerr << endl;
+      // 	cerr << "cosphi_true = " << cosphi_true << " !!!" << endl;
+      // 	cerr << endl;
+      // 	exit(1);
+      // }
+
+      
+      
       double edepoverrange = edep / range;
       
       NTOTALTRACKSALL_2ndLOOP++;
@@ -1901,7 +2168,9 @@ int main(int argc,char** argv)
 	cout << "Track id: " << trkID << ", "
 	     << "PDG: " << pdg << ", "
 	     << "ParID: " << parentID << ", "
-	     << " costh_true: " << costheta_true << ", mom_true: " << mom_true << ", "
+	     << " costh_true: " << costheta_true 
+	     << ", phi_true: " << phi_true
+	     << ", mom_true: " << mom_true << ", "
 	     << " len: " << range << ", edep: " << edep << ", edep/len: " << edep/range << endl;	
 	if(isoutfv) cout << ", Track OutFV!!!" << endl;   
 	if(!isreco) cout << ", Track NOT Reconstructed!!!" << endl;   	
@@ -1913,60 +2182,112 @@ int main(int argc,char** argv)
       // Reject not reconstructed or outFV tracks
       //
 
-      if     (pdg==13)   hMuon_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
-      else if(pdg==211)  hPion_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
-      else if(pdg==2212) hProt_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
-
+      if     (pdg==13){   
+	hMuon_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hMuon_TrPhiVsTrCosTh->Fill(phi_true,costheta_true); 
+	hMuon_TrMomVsTrPhi->Fill(mom_true,phi_true);
+     }
+      else if(pdg==211){
+	hPion_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hPion_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
+	hPion_TrMomVsTrPhi->Fill(mom_true,phi_true);
+      }
+      else if(pdg==2212){
+	hProt_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hProt_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
+	hProt_TrMomVsTrPhi->Fill(mom_true,phi_true);
+      }
+      else if(pdg==11){
+	hElec_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hElec_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
+	hElec_TrMomVsTrPhi->Fill(mom_true,phi_true);
+      }
+      
       if(isoutfv) continue;     
       
       if     (pdg==13){
 	hMuon_AllIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hMuon_AllIso_TrMomVsTrPhi->Fill(mom_true,phi_true);
+	hMuon_AllIso_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
 	hMuon_AllIso_TrMom->Fill(mom_true);
 	hMuon_AllIso_TrCosTh->Fill(costheta_true);
+	hMuon_AllIso_TrPhi->Fill(phi_true);
 
 	NTOTALINFV_2ndLOOP_mu++;
       }
       else if(pdg==211){
 	hPion_AllIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hPion_AllIso_TrMomVsTrPhi->Fill(mom_true,phi_true);
+	hPion_AllIso_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
 	hPion_AllIso_TrMom->Fill(mom_true);
 	hPion_AllIso_TrCosTh->Fill(costheta_true);
+	hPion_AllIso_TrPhi->Fill(phi_true);
 	
 	NTOTALINFV_2ndLOOP_pi++;
       }
       else if(pdg==2212){
 	hProt_AllIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hProt_AllIso_TrMomVsTrPhi->Fill(mom_true,phi_true);
+	hProt_AllIso_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
 	hProt_AllIso_TrMom->Fill(mom_true);
 	hProt_AllIso_TrCosTh->Fill(costheta_true);
+	hProt_AllIso_TrPhi->Fill(phi_true);
 	
 	NTOTALINFV_2ndLOOP_prot++;
+      }
+      else if(pdg==11){
+	hElec_AllIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hElec_AllIso_TrMomVsTrPhi->Fill(mom_true,phi_true);
+	hElec_AllIso_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
+	hElec_AllIso_TrMom->Fill(mom_true);
+	hElec_AllIso_TrCosTh->Fill(costheta_true);
+	hElec_AllIso_TrPhi->Fill(phi_true);
+	
+	NTOTALINFV_2ndLOOP_elec++;
       }
       
       if(!isreco)  continue;
       if(!isseparated)  continue;
-
-
-
       
       if     (pdg==13){
 	hMuon_EffIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hMuon_EffIso_TrMomVsTrPhi->Fill(mom_true,phi_true);
+	hMuon_EffIso_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
 	hMuon_EffIso_TrMom->Fill(mom_true);
 	hMuon_EffIso_TrCosTh->Fill(costheta_true);
+	hMuon_EffIso_TrPhi->Fill(phi_true);
 
 	NTOTALRECO_2ndLOOP_mu++;
       }
       else if(pdg==211){
 	hPion_EffIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hPion_EffIso_TrMomVsTrPhi->Fill(mom_true,phi_true);
+	hPion_EffIso_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
 	hPion_EffIso_TrMom->Fill(mom_true);
 	hPion_EffIso_TrCosTh->Fill(costheta_true);
+	hPion_EffIso_TrPhi->Fill(phi_true);
 	
 	NTOTALRECO_2ndLOOP_pi++;
       }
       else if(pdg==2212){
 	hProt_EffIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hProt_EffIso_TrMomVsTrPhi->Fill(mom_true,phi_true);
+	hProt_EffIso_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
 	hProt_EffIso_TrMom->Fill(mom_true);
 	hProt_EffIso_TrCosTh->Fill(costheta_true);
+	hProt_EffIso_TrPhi->Fill(phi_true);
 
 	NTOTALRECO_2ndLOOP_prot++;
+      }
+      else if(pdg==11){
+	hElec_EffIso_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
+	hElec_EffIso_TrMomVsTrPhi->Fill(mom_true,phi_true);
+	hElec_EffIso_TrPhiVsTrCosTh->Fill(phi_true,costheta_true);
+	hElec_EffIso_TrMom->Fill(mom_true);
+	hElec_EffIso_TrCosTh->Fill(costheta_true);
+	hElec_EffIso_TrPhi->Fill(phi_true);
+
+	NTOTALRECO_2ndLOOP_elec++;
       }
 
       
@@ -1983,6 +2304,7 @@ int main(int argc,char** argv)
       
 
 
+      /*
 
       if(pdg==13){
 	//double logratio = nd280UpPID.CalcLogLikeRatio(prob_muon,prob_prot); // use TF1
@@ -2011,6 +2333,21 @@ int main(int argc,char** argv)
 	logratio = nd280UpPID.CalcLogLikeRatio("Muon","Pion",edepoverrange); 
 	hLikeRatio_MuPion_TruePion->Fill(logratio);
       }
+      else if(pdg==11){
+	//double logratio = nd280UpPID.CalcLogLikeRatio(prob_elec,prob_prot); // use TF1
+	//cout << "logratio(tf1) = " << logratio << ", ";
+	double logratio = nd280UpPID.CalcLogLikeRatio("Elec","Prot",edepoverrange);
+	hLikeRatio_ElecProt_TrueElec->Fill(logratio);
+     	//cout << "logratio(my) = " << logratio << endl;
+
+	logratio = nd280UpPID.CalcLogLikeRatio("Elec","Pion",edepoverrange);
+	hLikeRatio_ElecPion_TrueElec->Fill(logratio);
+
+	logratio = nd280UpPID.CalcLogLikeRatio("Elec","Muon",edepoverrange);
+	hLikeRatio_ElecMu_TrueElec->Fill(logratio);
+      }
+
+      */
 
       // Apply tracking conditions (simplified pattern recognition)
       // - separation among tracks
@@ -2032,26 +2369,6 @@ int main(int argc,char** argv)
             
     } // end loop reco tracks
   } // end loop events
-
-
-  //
-  // Compute track reconstruction efficiencies
-  //
-  
-
-  
-  //hMuon_EffIso_TrMomVsTrCosTh->Divide(hMuon_AllIso_TrMomVsTrCosTh);
-  //hPion_EffIso_TrMomVsTrCosTh->Divide(hPion_AllIso_TrMomVsTrCosTh);
-  //hProt_EffIso_TrMomVsTrCosTh->Divide(hProt_AllIso_TrMomVsTrCosTh);
- 
-  //hMuon_EffIso_TrMom->Divide(hMuon_AllIso_TrMom);
-  //hPion_EffIso_TrMom->Divide(hPion_AllIso_TrMom);
-  //hProt_EffIso_TrMom->Divide(hProt_AllIso_TrMom);
-
-  //hMuon_EffIso_TrCosTh->Divide(hMuon_AllIso_TrCosTh);
-  //hPion_EffIso_TrCosTh->Divide(hPion_AllIso_TrCosTh);
-  //hProt_EffIso_TrCosTh->Divide(hProt_AllIso_TrCosTh);
- 
 
 
 
@@ -2181,13 +2498,33 @@ int main(int argc,char** argv)
   gProt_Stopped_EdepVsLen_Truth->Write();
   gElec_Stopped_EdepVsLen_Truth->Write();  
 
+  gMuon_Stopped_LenVsdEdx->Write();
+  gPion_Stopped_LenVsdEdx->Write();
+  gProt_Stopped_LenVsdEdx->Write();
+  gElec_Stopped_LenVsdEdx->Write();
+
+  gMuon_Stopped_LenVsdEdx_Truth->Write();
+  gPion_Stopped_LenVsdEdx_Truth->Write();
+  gProt_Stopped_LenVsdEdx_Truth->Write();
+  gElec_Stopped_LenVsdEdx_Truth->Write();  
+
+  gMuon_Stopped_MomVsdEdx->Write();
+  gPion_Stopped_MomVsdEdx->Write();
+  gProt_Stopped_MomVsdEdx->Write();
+  gElec_Stopped_MomVsdEdx->Write();
+
+  gMuon_Stopped_MomVsdEdx_Truth->Write();
+  gPion_Stopped_MomVsdEdx_Truth->Write();
+  gProt_Stopped_MomVsdEdx_Truth->Write();
+  gElec_Stopped_MomVsdEdx_Truth->Write();  
+
+  gMuon_All_MomVsdEdx_Truth->Write();
+  gPion_All_MomVsdEdx_Truth->Write();
+  gProt_All_MomVsdEdx_Truth->Write();
+  gElec_All_MomVsdEdx_Truth->Write();  
+
   hBinsMom->Write();
   for(int imom=0;imom<NBinsMom;imom++){    
-    gMuon_Stopped_EdepVsLen_Mom[imom]->Write();
-    gPion_Stopped_EdepVsLen_Mom[imom]->Write();
-    gProt_Stopped_EdepVsLen_Mom[imom]->Write();
-    gElec_Stopped_EdepVsLen_Mom[imom]->Write();
-
     hMuon_Stopped_EdepOverLen_Mom[imom]->Write();
     hPion_Stopped_EdepOverLen_Mom[imom]->Write();
     hProt_Stopped_EdepOverLen_Mom[imom]->Write();
@@ -2199,10 +2536,26 @@ int main(int argc,char** argv)
     hElec_Stopped_EdepOverLen_Mom_ManyBins[imom]->Write();
   }    
 
-  nd280UpPID.GetGraph("Muon")->Write();
-  nd280UpPID.GetGraph("Pion")->Write();
-  nd280UpPID.GetGraph("Prot")->Write();
-  //nd280UpPID.GetGraph("Elec")->Write();
+  hBinsLen->Write();
+  for(int ilen=0;ilen<NBinsLen;ilen++){    
+    
+    hMuon_Stopped_EdepOverLen_Len[ilen]->Write();
+    hPion_Stopped_EdepOverLen_Len[ilen]->Write();
+    hProt_Stopped_EdepOverLen_Len[ilen]->Write();
+    hElec_Stopped_EdepOverLen_Len[ilen]->Write();
+
+    hMuon_Stopped_EdepOverLen_Len_ManyBins[ilen]->Write();
+    hPion_Stopped_EdepOverLen_Len_ManyBins[ilen]->Write();
+    hProt_Stopped_EdepOverLen_Len_ManyBins[ilen]->Write();
+    hElec_Stopped_EdepOverLen_Len_ManyBins[ilen]->Write();
+  }    
+
+  /*
+    nd280UpPID.GetGraph("Muon")->Write();
+    nd280UpPID.GetGraph("Pion")->Write();
+    nd280UpPID.GetGraph("Prot")->Write();
+    nd280UpPID.GetGraph("Elec")->Write();
+  */
   
   hLikeRatio_MuProt_TrueMu->Write();
   hLikeRatio_MuProt_TrueProt->Write();
@@ -2210,33 +2563,80 @@ int main(int argc,char** argv)
   hLikeRatio_MuPion_TruePion->Write();
   hLikeRatio_PionProt_TruePion->Write();
   hLikeRatio_PionProt_TrueProt->Write();
+  hLikeRatio_ElecProt_TrueElec->Write();
+  hLikeRatio_ElecMu_TrueElec  ->Write();
+  hLikeRatio_ElecPion_TrueElec->Write();
 
   // Reconstruction
 
   hMuon_TrMomVsTrCosTh->Write();
   hPion_TrMomVsTrCosTh->Write();
   hProt_TrMomVsTrCosTh->Write();
+  hElec_TrMomVsTrCosTh->Write();
+
+  hMuon_TrPhiVsTrCosTh->Write();
+  hPion_TrPhiVsTrCosTh->Write();
+  hProt_TrPhiVsTrCosTh->Write();
+  hElec_TrPhiVsTrCosTh->Write();
+
+  hMuon_TrMomVsTrPhi->Write();
+  hPion_TrMomVsTrPhi->Write();
+  hProt_TrMomVsTrPhi->Write();
+  hElec_TrMomVsTrPhi->Write();
 
   hMuon_AllIso_TrMomVsTrCosTh->Write();
   hPion_AllIso_TrMomVsTrCosTh->Write();
   hProt_AllIso_TrMomVsTrCosTh->Write();
+  hElec_AllIso_TrMomVsTrCosTh->Write();
   hMuon_EffIso_TrMomVsTrCosTh->Write();
   hPion_EffIso_TrMomVsTrCosTh->Write();
   hProt_EffIso_TrMomVsTrCosTh->Write();
+  hElec_EffIso_TrMomVsTrCosTh->Write();
+
+  hMuon_AllIso_TrPhiVsTrCosTh->Write();
+  hPion_AllIso_TrPhiVsTrCosTh->Write();
+  hProt_AllIso_TrPhiVsTrCosTh->Write();
+  hElec_AllIso_TrPhiVsTrCosTh->Write();
+  hMuon_EffIso_TrPhiVsTrCosTh->Write();
+  hPion_EffIso_TrPhiVsTrCosTh->Write();
+  hProt_EffIso_TrPhiVsTrCosTh->Write();
+  hElec_EffIso_TrPhiVsTrCosTh->Write();
+
+  hMuon_AllIso_TrMomVsTrPhi->Write();
+  hPion_AllIso_TrMomVsTrPhi->Write();
+  hProt_AllIso_TrMomVsTrPhi->Write();
+  hElec_AllIso_TrMomVsTrPhi->Write();
+  hMuon_EffIso_TrMomVsTrPhi->Write();
+  hPion_EffIso_TrMomVsTrPhi->Write();
+  hProt_EffIso_TrMomVsTrPhi->Write();
+  hElec_EffIso_TrMomVsTrPhi->Write();
 
   hMuon_AllIso_TrMom->Write();
   hPion_AllIso_TrMom->Write();
   hProt_AllIso_TrMom->Write();
+  hElec_AllIso_TrMom->Write();
   hMuon_EffIso_TrMom->Write();
   hPion_EffIso_TrMom->Write();
   hProt_EffIso_TrMom->Write();
+  hElec_EffIso_TrMom->Write();
 
   hMuon_AllIso_TrCosTh->Write();
   hPion_AllIso_TrCosTh->Write();
   hProt_AllIso_TrCosTh->Write();
+  hElec_AllIso_TrCosTh->Write();
   hMuon_EffIso_TrCosTh->Write();
   hPion_EffIso_TrCosTh->Write();
   hProt_EffIso_TrCosTh->Write();
+  hElec_EffIso_TrCosTh->Write();
+
+  hMuon_AllIso_TrPhi->Write();
+  hPion_AllIso_TrPhi->Write();
+  hProt_AllIso_TrPhi->Write();
+  hElec_AllIso_TrPhi->Write();
+  hMuon_EffIso_TrPhi->Write();
+  hPion_EffIso_TrPhi->Write();
+  hProt_EffIso_TrPhi->Write();
+  hElec_EffIso_TrPhi->Write();
  
   //
 
