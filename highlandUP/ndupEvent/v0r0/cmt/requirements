@@ -7,7 +7,7 @@ use ROOT
 
 # Build methods to include.
 document version version *.cxx *.hxx *_LinkDef.h
-document register register 
+# document register register
 document rootcint rootcint *.hxx *_LinkDef.h
 
 # Install the geometry file.
@@ -25,17 +25,17 @@ macro ndupEvent_linkopts " -L$(NDUPEVENTROOT)/$(ndupEvent_tag) -lndupEvent "
 macro ndupEvent_stamps " $(ndupEventstamp)"
 
 # The paths to find this library and it's executables
-path_remove LD_LIBRARY_PATH "$(NDUPEVENTROOT)" 
+path_remove LD_LIBRARY_PATH "$(NDUPEVENTROOT)"
 path_prepend LD_LIBRARY_PATH "$(NDUPEVENTROOT)/$(ndupEvent_tag)"
 
 path_remove DYLD_LIBRARY_PATH "" \
-	    Darwin	      "$(NDUPEVENTROOT)"   
-path_prepend DYLD_LIBRARY_PATH "" \ 
+	    Darwin	      "$(NDUPEVENTROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
 	    Darwin	    "$(NDUPEVENTROOT)/$(ndupEvent_tag)"
 
 path_remove PATH "$(NDUPEVENTROOT)"
 path_prepend PATH "$(NDUPEVENTROOT)/$(ndupEvent_tag)" \
-      WIN32      "$(NDUPEVENTROOT)/$(ndupEvent_tag)" 
+      WIN32      "$(NDUPEVENTROOT)/$(ndupEvent_tag)"
 
 path_append PATH "$(NDUPEVENTROOT)/scripts"
 

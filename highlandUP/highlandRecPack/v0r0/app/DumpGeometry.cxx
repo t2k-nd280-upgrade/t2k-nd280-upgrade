@@ -8,6 +8,7 @@
 #include <TTree.h>
 
 #include <stdio.h>
+#include <getopt.h>
 #include <TApplication.h>
 #include <memory>
 #include <TCanvas.h>
@@ -44,22 +45,22 @@ std::vector<TBox*> box_XY;
 
 int _verb = 0;
 
-//**************************************************************  
+//**************************************************************
 void DrawDetector() {
-//**************************************************************  
+//**************************************************************
 
 
-  
+
   YZ = new TCanvas ("YZ","  YZ  ",100,0,600,400);
   XZ = new TCanvas ("XZ","  XZ  ",720,0,600,400);
   XY = new TCanvas ("XY","  XY  ",100,420,400,400);
-  
+
   YZHisto = new TH2F("YZHisto"," YZ Projection ",100,-4100.,4100.,100,-3200.,3200.);
   XZHisto = new TH2F("XZHisto"," XZ Projection ",100,-4100.,4100.,100,-3000.,3000.);
   XYHisto = new TH2F("XYHisto"," XY Projection ",100,-3000.,3000.,100,-3200.,3200.);
-  
 
-  const std::vector<dict::Key>&  volumes = ND::gman().GetSetup().volumes().keys(); 
+
+  const std::vector<dict::Key>&  volumes = ND::gman().GetSetup().volumes().keys();
   box_XZ.resize(volumes.size());
   box_XY.resize(volumes.size());
   box_YZ.resize(volumes.size());
@@ -75,7 +76,7 @@ void DrawDetector() {
     TVector3 smax(pos[0]+size[0],pos[1]+size[1],pos[2]+size[2]);
     box_XZ[i] = new TBox(smin.Z(),smin.X(), smax.Z(), smax.X());
     box_YZ[i] = new TBox(smin.Z(),smin.Y(), smax.Z(), smax.Y());
-    box_XY[i] = new TBox(smin.X(),smin.Y(), smax.X(), smax.Y());    
+    box_XY[i] = new TBox(smin.X(),smin.Y(), smax.X(), smax.Y());
 
     int color=1;
     int fcolor=0;
@@ -87,7 +88,7 @@ void DrawDetector() {
     if (volumes[i].find("Target") !=std::string::npos ) color=2;
     if (volumes[i].find("TPCUP") !=std::string::npos ) color=3;
     if (volumes[i].find("TPCDown") !=std::string::npos ) color=4;
-  
+
     fstyle=0;
     fcolor=color;
 
@@ -149,7 +150,7 @@ void DrawDetector() {
   return;
 
 
-  
+
 }
 
 
@@ -178,8 +179,8 @@ int main(int argc, char **argv) {
         exit(1);
       }
   }
- } 
-  
+ }
+
   std::cout << RecPackGeometry::Get(_verb).GetSetup() << std::endl;
   std::cout<<"DumpVolumeProperties"<<std::endl;
   RecPackGeometry::Get().DumpVolumeProperties();
@@ -190,9 +191,9 @@ TVector3 point_end(-878.903, 378.169, -2033.4);
 //ND::tman().CorrectEnergyLossLinear( point_start,point_end, prange, ParticleId::kMuon, AnaRecPackManager::kBwd);
   int argc2 = 0;
   char **argv2 = NULL;
-    
+
   theApp = new TApplication("App",&argc2,argv2);
-    
+
   gROOT->SetStyle("Plain");
   gStyle->SetOptStat(0);
 
@@ -200,5 +201,5 @@ TVector3 point_end(-878.903, 378.169, -2033.4);
 
 
   theApp->Run(kTRUE);
-  
+
 }

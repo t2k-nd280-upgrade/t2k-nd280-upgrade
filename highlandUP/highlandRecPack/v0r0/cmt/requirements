@@ -7,11 +7,12 @@ branches cmt src doc app
 
 use RECPACK
 use highlandCore * highlandUP
+use highlandEventModel * highlandUP
 use psycheNDUPUtils * highlandUP
 
 
 # Build methods to include.
-make_fragment doxygen -header=doxygen_header 
+# make_fragment doxygen -header=doxygen_header
 document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
 document rootcint dictionary *_LinkDef.h
 
@@ -43,6 +44,6 @@ document doxygen doxygen -group=documentation ../scripts/* ../doc/*.dox
 
 # Define a setup script to check for geometries and download them if required.
 setup_script geometry_setup
- 
- 
+
+
 

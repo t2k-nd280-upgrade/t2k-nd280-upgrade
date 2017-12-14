@@ -9,7 +9,7 @@ branches cmt src doc dict
 use psycheEventModel     * highlandUP
 
 # Build methods to include.
-make_fragment doxygen -header=doxygen_header 
+# make_fragment doxygen -header=doxygen_header
 document doxygen doxygen -group=documentation src/*.cpp src/*.h src/*.hxx src/*.cxx ../doc/*.dox
 document rootcint dictionary *_LinkDef.h
 
