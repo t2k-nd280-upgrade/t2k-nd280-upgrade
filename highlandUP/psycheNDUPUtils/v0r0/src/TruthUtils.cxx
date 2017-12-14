@@ -3,19 +3,19 @@
 
 //**************************************************
 Float_t anaUtils::GetEntranceMomentum(const AnaDetCrossingB& cross){
-  //************************************************** 
+  //**************************************************
   return sqrt(pow(cross.EntranceMomentum[0],2) +
-              pow(cross.EntranceMomentum[1],2) + 
-              pow(cross.EntranceMomentum[2],2));  
+              pow(cross.EntranceMomentum[1],2) +
+              pow(cross.EntranceMomentum[2],2));
 }
 
 //**************************************************
 Float_t anaUtils::GetExitMomentum(const AnaDetCrossingB& cross){
   //**************************************************
- 
+
   return sqrt(pow(cross.ExitMomentum[0],2) +
-              pow(cross.ExitMomentum[1],2) + 
-              pow(cross.ExitMomentum[2],2));  
+              pow(cross.ExitMomentum[1],2) +
+              pow(cross.ExitMomentum[2],2));
 }
 
 
@@ -37,7 +37,7 @@ Int_t anaUtils::GetNMichelElectrons(const AnaTrueVertexB& trueVertex, SubDetId::
     if( abs(true_track->ParentPDG)!=13  ) continue;
     if( abs(true_track->PDG)!=11  )       continue;
 
-    NMich++;    
+    NMich++;
   }
 
   //  std::cout<<" nb of michel electrons "<<NMich << " " << trueVertex.nTrueParticles <<std::endl;
@@ -99,7 +99,7 @@ bool anaUtils::TrueParticleEntersDet(const AnaTrueParticleB* track, SubDetId::Su
 
   if(!track)
     return false;
-   
+
   //check that a trajectory crosses volume
   for(Int_t idet=0;idet<track->nDetCrossings;idet++){
 
@@ -120,35 +120,21 @@ bool anaUtils::TrueParticleCrossesTPC(const AnaTrueParticleB* track, SubDetId::S
   if(!track)
     return false;
 
-  //for the moment consider the minimum separation in the direction perpendicular to the beam as:
-  // 48 mm (iron) mm (we are intersted for tracks that come from inside,  so should cross the first iron block)
-  // as it comes from oaAnalysis only one point is saved for SMRD,  as I understand the code it should be the exit point
-  // so make a cut in X/Y distance between the point and particular surface inner border  
-
-  if  (det!=SubDetId::kTPC && !SubDetId::IsTPC(det))
+  if  (!SubDetId::IsTPC(det))
     return false;
 
-
   //loop through det crossings
-  for(Int_t idet=0;idet<track->nDetCrossings;idet++){
+  for(Int_t idet=0;idet<track->DetCrossingsVect.size();idet++){
 
-    AnaDetCrossingB* cross = track->DetCrossings[idet];
+    AnaDetCrossingB* cross = track->DetCrossingsVect[idet];
     if(!cross)
       continue;
 
     // i.e crossing the active part of the TPC
-    if (!SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, det) )
+    if (!SubDetId::GetDetectorUsed(cross->Detector, det))
       continue;
 
-    //the separation should be done using the z position, since the fgd is separated by layer in z,
-    //making the z position the reconstructed quantity to be cut on
-
-    //    Float_t sep = fabs(track->DetCrossings[idet]->EntrancePosition[2] - track->DetCrossings[idet]->ExitPosition[2]);
-
-    //should be at least two layers
-    //    if(sep>DetDef::fgdXYModuleWidth)
-    //      return true;
-
+    return true;
   }
 
   return false;
@@ -177,17 +163,17 @@ bool anaUtils::TrueParticleCrossesTarget(const AnaTrueParticleB* track, SubDetId
     // i.e crossing the active part of the TPC
     if (!SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, det) || !track->DetCrossings[idet]->InActive)
       continue;
-    
+
     //i.e crossing the active part of the tpc
     if(SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, det) && track->DetCrossings[idet]->InActive){
         Float_t sep = anaUtils::GetSeparationSquared(track->DetCrossings[idet]->EntrancePosition, track->DetCrossings[idet]->ExitPosition);
         if(sep>dist) dist=sep;
       }
   }
-  
+
   if(dist>62500)//bigger than the ~1/4 of the width of the Target
       return true;
-      
+
   return false;
 
 }
@@ -214,17 +200,17 @@ bool anaUtils::TrueParticleCrossesFGD(const AnaTrueParticleB* track, SubDetId::S
     // i.e crossing the active part of the TPC
     if (!SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, det) || !track->DetCrossings[idet]->InActive)
       continue;
-    
+
     //i.e crossing the active part of the tpc
     if(SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, det) && track->DetCrossings[idet]->InActive){
         Float_t sep = anaUtils::GetSeparationSquared(track->DetCrossings[idet]->EntrancePosition, track->DetCrossings[idet]->ExitPosition);
         if(sep>dist) dist=sep;
       }
   }
-  
+
   if(dist>62500)//bigger than the ~1/4 of the width of the FGD
       return true;
-      
+
   return false;
 
 }
@@ -240,30 +226,30 @@ int anaUtils::GetTPCDetCrossed(const AnaTrueParticleB* track, SubDetId::SubDetEn
   for(Int_t idet=0;idet<track->nDetCrossings;idet++){
 
     // i.e crossing the active part of the TPC
-    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kTPCUp1) 
+    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kTPCUp1)
         && track->DetCrossings[idet]->InActive)
       det[count++] = SubDetId::kTPCUp1;
 
-    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kTPCUp2) 
+    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kTPCUp2)
         && track->DetCrossings[idet]->InActive)
       det[count++] = SubDetId::kTPCUp2;
 
-    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kTPCDown1) 
+    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kTPCDown1)
         && track->DetCrossings[idet]->InActive)
       det[count++] = SubDetId::kTPCDown1;
 
-    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kTPCDown2) 
+    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kTPCDown2)
         && track->DetCrossings[idet]->InActive)
       det[count++] = SubDetId::kTPCDown2;
 
-    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kForwTPC1) 
+    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kForwTPC1)
         && track->DetCrossings[idet]->InActive)
       det[count++] = SubDetId::kForwTPC1;
 
-    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kForwTPC2) 
+    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kForwTPC2)
         && track->DetCrossings[idet]->InActive)
       det[count++] = SubDetId::kForwTPC2;
-    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kForwTPC3) 
+    if (SubDetId::GetDetectorUsed(track->DetCrossings[idet]->Detector, SubDetId::kForwTPC3)
         && track->DetCrossings[idet]->InActive)
       det[count++] = SubDetId::kForwTPC3;
 
@@ -275,12 +261,12 @@ int anaUtils::GetTPCDetCrossed(const AnaTrueParticleB* track, SubDetId::SubDetEn
 
 
 
-//___________________________________________________________________________ 
+//___________________________________________________________________________
 bool anaUtils::IsCCQE(int neut_reaction_mode)
 {
   return neut_reaction_mode ==  1;
 }
-//___________________________________________________________________________ 
+//___________________________________________________________________________
 bool anaUtils::IsCC1pi(int neut_reaction_mode)
 {
   bool is_cc1pi = (neut_reaction_mode == 11 ||
@@ -288,18 +274,18 @@ bool anaUtils::IsCC1pi(int neut_reaction_mode)
                    neut_reaction_mode == 13);
   return is_cc1pi;
 }
-//___________________________________________________________________________ 
+//___________________________________________________________________________
 bool anaUtils::IsCCcoh(int neut_reaction_mode)
 {
   return neut_reaction_mode ==  16;
 }
-//___________________________________________________________________________ 
+//___________________________________________________________________________
 bool anaUtils::Is2p2h(int neut_reaction_mode)
 {
   return neut_reaction_mode ==  2;
 }
 //___________________________________________________________________________
-bool anaUtils::IsCCoth(int neut_reaction_mode)                               
+bool anaUtils::IsCCoth(int neut_reaction_mode)
 {
   bool is_ccoth = (neut_reaction_mode == 17 ||
                      neut_reaction_mode == 21 ||
@@ -308,7 +294,7 @@ bool anaUtils::IsCCoth(int neut_reaction_mode)
                      neut_reaction_mode == 26);
   return is_ccoth;
 }
-//___________________________________________________________________________ 
+//___________________________________________________________________________
 bool anaUtils::IsNC(int neut_reaction_mode)
 {
   bool is_not_nc =  IsCCoth(neut_reaction_mode);
@@ -316,25 +302,25 @@ bool anaUtils::IsNC(int neut_reaction_mode)
   is_not_nc = IsCCcoh(neut_reaction_mode);
   is_not_nc = IsCC1pi(neut_reaction_mode);
   is_not_nc = IsCCQE(neut_reaction_mode);
-  
+
   bool is_nc = !is_not_nc;
   return is_nc;
 }
-//___________________________________________________________________________ 
+//___________________________________________________________________________
 int anaUtils::GetReacAll(int neut_reaction_mode){
-  if(IsCCQE(neut_reaction_mode)){ 
+  if(IsCCQE(neut_reaction_mode)){
     return 0;
   }
-  else if(Is2p2h(neut_reaction_mode)){ 
+  else if(Is2p2h(neut_reaction_mode)){
     return 1;
   }
-  else if(IsCC1pi(neut_reaction_mode)){ 
+  else if(IsCC1pi(neut_reaction_mode)){
     return 2;
   }
-  else if(IsCCcoh(neut_reaction_mode)){ 
+  else if(IsCCcoh(neut_reaction_mode)){
     return 3;
   }
-  else if(IsCCoth(neut_reaction_mode)){ 
+  else if(IsCCoth(neut_reaction_mode)){
     return 4;
   }
   else {
