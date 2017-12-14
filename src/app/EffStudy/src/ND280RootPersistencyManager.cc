@@ -554,6 +554,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       // Calculate the position in the target reference system --> needed for response
       G4ThreeVector lightPos = GetLocalPosition(PMworldPosition); 
       
+      /*
+
+       // CHANGED
+
       ExN02ApplyResponse ApplyResponse;    
       ApplyResponse.CalcResponse(lightPos,trkid,parentid,charge,time,steplength,edep,detname);
 
@@ -568,9 +572,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       double poshitX = ApplyResponse.GetHitPos().x();
       double poshitY = ApplyResponse.GetHitPos().y();
       double poshitZ = ApplyResponse.GetHitPos().z();
-      
+
       trkid = ApplyResponse.GetHitTrkID();
-            
+      */
+
+
       // true
       nd280Hit->SetLocPosX(lightPos.x()); // now in target system
       nd280Hit->SetLocPosY(lightPos.y()); // now in target system
@@ -592,11 +598,17 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       nd280Hit->SetStopY(stopLoc.y()); // now in target system
       nd280Hit->SetStopZ(stopLoc.z()); // now in target system
 
+      //cout << "edep" << edep << endl;
+
       //nd280Hit->SetTime(time);
       //nd280Hit->SetDetName(detname);      
 
       // reco
-      nd280Hit->SetPEX(pex);
+      /*
+
+	// CHANGED
+	
+	nd280Hit->SetPEX(pex);
       nd280Hit->SetPEY(pey);
       nd280Hit->SetPEZ(pez);
       nd280Hit->SetMPPCPosX(poshitX);
@@ -605,7 +617,9 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       nd280Hit->SetTimePEX(timepex);
       nd280Hit->SetTimePEY(timepey);
       nd280Hit->SetTimePEZ(timepez);
+      */
       //
+      
       fND280UpEvent->AddHit(nd280Hit);
       
     } // end loop over hits    
