@@ -131,7 +131,7 @@ bool anaUtils::TrueParticleCrossesTPC(const AnaTrueParticleB* track, SubDetId::S
       continue;
 
     // i.e crossing the active part of the TPC
-    if (!SubDetId::GetDetectorUsed(cross->Detector, det))
+    if (!SubDetId::GetDetectorUsed(cross->Detector, det)  || cross->DeltaLYZ < 50)
       continue;
 
     return true;
