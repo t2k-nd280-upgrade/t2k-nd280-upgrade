@@ -41,7 +41,7 @@ void DrawRecoPID
   //const int NFiles = 1;
   string infilename[NFiles] = {
     
-    "RECONSTRUCTION/16_11_17/USETRACKLENGTH/ciao.root"
+    "RECONSTRUCTION/16_11_17/USETRACKLENGTH_IN_PID/ciao.root"
     
     //"SuperFGD-NuMu-GasAr-UseXY-UseXZ-UseYZ-TruthFV-Separate10_Evt0_NEvt1000.root"
     //"SuperFGD-NuMu-Plastic-UseXY-UseXZ-UseYZ-TruthFV-Separate10_Evt0_NEvt1000.root"
