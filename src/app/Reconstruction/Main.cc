@@ -511,15 +511,15 @@ int main(int argc,char** argv)
   TH2F * hProt_TrMomVsTrCosTh = new TH2F("hProt_TrMomVsTrCosTh","All Protons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hElec_TrMomVsTrCosTh = new TH2F("hElec_TrMomVsTrCosTh","All Electrons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
 
-  TH2F * hMuon_TrPhiVsTrCosTh = new TH2F("hMuon_TrPhiVsTrCosTh","All Muons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hPion_TrPhiVsTrCosTh = new TH2F("hPion_TrPhiVsTrCosTh","All Pions True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hProt_TrPhiVsTrCosTh = new TH2F("hProt_TrPhiVsTrCosTh","All Protons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hElec_TrPhiVsTrCosTh = new TH2F("hElec_TrPhiVsTrCosTh","All Electrons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hMuon_TrPhiVsTrCosTh = new TH2F("hMuon_TrPhiVsTrCosTh","All Muons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hPion_TrPhiVsTrCosTh = new TH2F("hPion_TrPhiVsTrCosTh","All Pions True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hProt_TrPhiVsTrCosTh = new TH2F("hProt_TrPhiVsTrCosTh","All Protons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hElec_TrPhiVsTrCosTh = new TH2F("hElec_TrPhiVsTrCosTh","All Electrons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
 
-  TH2F * hMuon_TrMomVsTrPhi = new TH2F("hMuon_TrMomVsTrPhi","All Muons True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hPion_TrMomVsTrPhi = new TH2F("hPion_TrMomVsTrPhi","All Pions True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hProt_TrMomVsTrPhi = new TH2F("hProt_TrMomVsTrPhi","All Protons True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hElec_TrMomVsTrPhi = new TH2F("hElec_TrMomVsTrPhi","All Electrons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hMuon_TrMomVsTrPhi = new TH2F("hMuon_TrMomVsTrPhi","All Muons True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hPion_TrMomVsTrPhi = new TH2F("hPion_TrMomVsTrPhi","All Pions True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hProt_TrMomVsTrPhi = new TH2F("hProt_TrMomVsTrPhi","All Protons True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hElec_TrMomVsTrPhi = new TH2F("hElec_TrMomVsTrPhi","All Electrons True Mom Vs Phi",100,0,10000,10,-4,+4);
 
   TH2F * hMuon_AllIso_TrMomVsTrCosTh = new TH2F("hMuon_AllIso_TrMomVsTrCosTh","All IsoTarget Muons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hPion_AllIso_TrMomVsTrCosTh = new TH2F("hPion_AllIso_TrMomVsTrCosTh","All IsoTarget Pions True Mom Vs CosTheta",100,0,10000,10,-1,+1);
@@ -530,23 +530,23 @@ int main(int argc,char** argv)
   TH2F * hProt_EffIso_TrMomVsTrCosTh = new TH2F("hProt_EffIso_TrMomVsTrCosTh","Efficiency IsoTarget Protons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
   TH2F * hElec_EffIso_TrMomVsTrCosTh = new TH2F("hElec_EffIso_TrMomVsTrCosTh","Efficiency IsoTarget Electrons True Mom Vs CosTheta",100,0,10000,10,-1,+1);
 
-  TH2F * hMuon_AllIso_TrMomVsTrPhi = new TH2F("hMuon_AllIso_TrMomVsTrPhi","All IsoTarget Muons True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hPion_AllIso_TrMomVsTrPhi = new TH2F("hPion_AllIso_TrMomVsTrPhi","All IsoTarget Pions True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hProt_AllIso_TrMomVsTrPhi = new TH2F("hProt_AllIso_TrMomVsTrPhi","All IsoTarget Protons True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hElec_AllIso_TrMomVsTrPhi = new TH2F("hElec_AllIso_TrMomVsTrPhi","All IsoTarget Electrons True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hMuon_EffIso_TrMomVsTrPhi = new TH2F("hMuon_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Muons True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hPion_EffIso_TrMomVsTrPhi = new TH2F("hPion_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Pions True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hProt_EffIso_TrMomVsTrPhi = new TH2F("hProt_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Protons True Mom Vs Phi",100,0,10000,10,-1,+1);
-  TH2F * hElec_EffIso_TrMomVsTrPhi = new TH2F("hElec_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Electrons True Mom Vs Phi",100,0,10000,10,-1,+1);
+  TH2F * hMuon_AllIso_TrMomVsTrPhi = new TH2F("hMuon_AllIso_TrMomVsTrPhi","All IsoTarget Muons True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hPion_AllIso_TrMomVsTrPhi = new TH2F("hPion_AllIso_TrMomVsTrPhi","All IsoTarget Pions True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hProt_AllIso_TrMomVsTrPhi = new TH2F("hProt_AllIso_TrMomVsTrPhi","All IsoTarget Protons True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hElec_AllIso_TrMomVsTrPhi = new TH2F("hElec_AllIso_TrMomVsTrPhi","All IsoTarget Electrons True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hMuon_EffIso_TrMomVsTrPhi = new TH2F("hMuon_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Muons True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hPion_EffIso_TrMomVsTrPhi = new TH2F("hPion_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Pions True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hProt_EffIso_TrMomVsTrPhi = new TH2F("hProt_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Protons True Mom Vs Phi",100,0,10000,10,-4,+4);
+  TH2F * hElec_EffIso_TrMomVsTrPhi = new TH2F("hElec_EffIso_TrMomVsTrPhi","Efficiency IsoTarget Electrons True Mom Vs Phi",100,0,10000,10,-4,+4);
 
-  TH2F * hMuon_AllIso_TrPhiVsTrCosTh = new TH2F("hMuon_AllIso_TrPhiVsTrCosTh","All IsoTarget Muons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hPion_AllIso_TrPhiVsTrCosTh = new TH2F("hPion_AllIso_TrPhiVsTrCosTh","All IsoTarget Pions True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hProt_AllIso_TrPhiVsTrCosTh = new TH2F("hProt_AllIso_TrPhiVsTrCosTh","All IsoTarget Protons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hElec_AllIso_TrPhiVsTrCosTh = new TH2F("hElec_AllIso_TrPhiVsTrCosTh","All IsoTarget Electrons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hMuon_EffIso_TrPhiVsTrCosTh = new TH2F("hMuon_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Muons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hPion_EffIso_TrPhiVsTrCosTh = new TH2F("hPion_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Pions True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hProt_EffIso_TrPhiVsTrCosTh = new TH2F("hProt_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Protons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
-  TH2F * hElec_EffIso_TrPhiVsTrCosTh = new TH2F("hElec_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Electrons True Phi Vs CosTheta",100,0,10000,10,-1,+1);
+  TH2F * hMuon_AllIso_TrPhiVsTrCosTh = new TH2F("hMuon_AllIso_TrPhiVsTrCosTh","All IsoTarget Muons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hPion_AllIso_TrPhiVsTrCosTh = new TH2F("hPion_AllIso_TrPhiVsTrCosTh","All IsoTarget Pions True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hProt_AllIso_TrPhiVsTrCosTh = new TH2F("hProt_AllIso_TrPhiVsTrCosTh","All IsoTarget Protons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hElec_AllIso_TrPhiVsTrCosTh = new TH2F("hElec_AllIso_TrPhiVsTrCosTh","All IsoTarget Electrons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hMuon_EffIso_TrPhiVsTrCosTh = new TH2F("hMuon_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Muons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hPion_EffIso_TrPhiVsTrCosTh = new TH2F("hPion_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Pions True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hProt_EffIso_TrPhiVsTrCosTh = new TH2F("hProt_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Protons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
+  TH2F * hElec_EffIso_TrPhiVsTrCosTh = new TH2F("hElec_EffIso_TrPhiVsTrCosTh","Efficiency IsoTarget Electrons True Phi Vs CosTheta",10,-4,+4,10,-1,+1);
 
   TH1F * hMuon_AllIso_TrMom = new TH1F("hMuon_AllIso_TrMom","All IsoTarget Muons True Mom",100,0,10000);
   TH1F * hPion_AllIso_TrMom = new TH1F("hPion_AllIso_TrMom","All IsoTarget Pions True Mom",100,0,10000);
@@ -566,14 +566,14 @@ int main(int argc,char** argv)
   TH1F * hProt_EffIso_TrCosTh = new TH1F("hProt_EffIso_TrCosTh","Efficiency IsoTarget Protons True CosTheta",10,-1,+1);
   TH1F * hElec_EffIso_TrCosTh = new TH1F("hElec_EffIso_TrCosTh","Efficiency IsoTarget Electrons True CosTheta",10,-1,+1);
 
-  TH1F * hMuon_AllIso_TrPhi = new TH1F("hMuon_AllIso_TrPhi","All IsoTarget Muons True Phi",10,-1,+1);
-  TH1F * hPion_AllIso_TrPhi = new TH1F("hPion_AllIso_TrPhi","All IsoTarget Pions True Phi",10,-1,+1);
-  TH1F * hProt_AllIso_TrPhi = new TH1F("hProt_AllIso_TrPhi","All IsoTarget Protons True Phi",10,-1,+1);
-  TH1F * hElec_AllIso_TrPhi = new TH1F("hElec_AllIso_TrPhi","All IsoTarget Electrons True Phi",10,-1,+1);
-  TH1F * hMuon_EffIso_TrPhi = new TH1F("hMuon_EffIso_TrPhi","Efficiency IsoTarget Muons True Phi",10,-1,+1);
-  TH1F * hPion_EffIso_TrPhi = new TH1F("hPion_EffIso_TrPhi","Efficiency IsoTarget Pions True Phi",10,-1,+1);
-  TH1F * hProt_EffIso_TrPhi = new TH1F("hProt_EffIso_TrPhi","Efficiency IsoTarget Protons True Phi",10,-1,+1);
-  TH1F * hElec_EffIso_TrPhi = new TH1F("hElec_EffIso_TrPhi","Efficiency IsoTarget Electrons True Phi",10,-1,+1);
+  TH1F * hMuon_AllIso_TrPhi = new TH1F("hMuon_AllIso_TrPhi","All IsoTarget Muons True Phi",10,-4,+4);
+  TH1F * hPion_AllIso_TrPhi = new TH1F("hPion_AllIso_TrPhi","All IsoTarget Pions True Phi",10,-4,+4);
+  TH1F * hProt_AllIso_TrPhi = new TH1F("hProt_AllIso_TrPhi","All IsoTarget Protons True Phi",10,-4,+4);
+  TH1F * hElec_AllIso_TrPhi = new TH1F("hElec_AllIso_TrPhi","All IsoTarget Electrons True Phi",10,-4,+4);
+  TH1F * hMuon_EffIso_TrPhi = new TH1F("hMuon_EffIso_TrPhi","Efficiency IsoTarget Muons True Phi",10,-4,+4);
+  TH1F * hPion_EffIso_TrPhi = new TH1F("hPion_EffIso_TrPhi","Efficiency IsoTarget Pions True Phi",10,-4,+4);
+  TH1F * hProt_EffIso_TrPhi = new TH1F("hProt_EffIso_TrPhi","Efficiency IsoTarget Protons True Phi",10,-4,+4);
+  TH1F * hElec_EffIso_TrPhi = new TH1F("hElec_EffIso_TrPhi","Efficiency IsoTarget Electrons True Phi",10,-4,+4);
 
   // True PDFs and Like ratio for PID
 
@@ -1943,8 +1943,7 @@ int main(int argc,char** argv)
 	//if(fRecoTrack_PDG[itrk] == 2112){
 	//if(fRecoTrack_ID[itrk] == 4){
 	
-	// sono qui
-	cout << "Track PDG = " << fRecoTrack_PDG[itrk] << endl;
+	//cout << "Track PDG = " << fRecoTrack_PDG[itrk] << endl;
 
 	hMPPCHits_XY[ievt]->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z 
 	hMPPCHits_XZ[ievt]->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
@@ -1990,16 +1989,17 @@ int main(int argc,char** argv)
       fND280UpRecoTrack->SetIsSeparated(isseparated);
       fND280UpRecoTrack->SetTruthMom(mom_true); 
       fND280UpRecoTrack->SetTruthCosTheta(costh_true);
-
-
-      // ADD PHI
       fND280UpRecoTrack->SetTruthPhi(phi_true);
-
-
       fND280UpRecoTrack->SetTruthLength(trklen_true);
-      
-      //fND280UpRecoTrack->SetRecoCosTheta(costh_true); // TODO!!!
-      
+
+      //cout << "mom_true = " << mom_true << endl;
+      //cout << "costh_true = " << costh_true << endl;
+      //cout << "phi_true = " << phi_true 
+      //<< ", " << fND280UpRecoTrack->GetTruthPhi()
+      //<< endl;
+
+      //fND280UpRecoTrack->SetRecoCosTheta(costh_true); // TODO!!!      
+
       //fND280UpRecoTrack->SetMPPCHit_XY(fRecoTrack_MPPCHit_XY[itrk]); // NOT NEEDED!!! TOO HEAVY!!!
       //fND280UpRecoTrack->SetMPPCHit_XZ(fRecoTrack_MPPCHit_XZ[itrk]); // NOT NEEDED!!! TOO HEAVY!!!
       //fND280UpRecoTrack->SetMPPCHit_YZ(fRecoTrack_MPPCHit_YZ[itrk]); // NOT NEEDED!!! TOO HEAVY!!!	
@@ -2146,19 +2146,9 @@ int main(int argc,char** argv)
       double costheta_true = fND280UpRecoTrack->GetTruthCosTheta();
       double phi_true = fND280UpRecoTrack->GetTruthPhi();
       
-      // double dirX_true = fND280UpRecoTrack->GetInitMom().X() / mom;
-      // double dirY_true = fND280UpRecoTrack->GetInitMom().Y() / mom;
-      // double dirZ_true = fND280UpRecoTrack->GetInitMom().Z() / mom;
-      // double phi_true = atan2(dirY_true,dirX_true);
-      // double cosphi_true = cos(phi_true);
-      // if(cosphi_true<-1 || cosphi_true>+1){
-      // 	cerr << endl;
-      // 	cerr << "cosphi_true = " << cosphi_true << " !!!" << endl;
-      // 	cerr << endl;
-      // 	exit(1);
-      // }
-
-      
+      //cout << "mom_true = " << mom_true << endl;
+      //cout << "costheta_true = " << costheta_true << endl;
+      //cout << "phi_true = " << phi_true << endl;
       
       double edepoverrange = edep / range;
       
@@ -2181,7 +2171,7 @@ int main(int argc,char** argv)
       //
       // Reject not reconstructed or outFV tracks
       //
-
+	
       if     (pdg==13){   
 	hMuon_TrMomVsTrCosTh->Fill(mom_true,costheta_true);
 	hMuon_TrPhiVsTrCosTh->Fill(phi_true,costheta_true); 

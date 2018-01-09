@@ -38,6 +38,7 @@ public :
   void SetTruthMom(double mom){fTruthMom=mom;}
   void SetTruthLength(double len){fTruthLength=len;}
   void SetTruthCosTheta(double costheta){fTruthCosTheta=costheta;}
+  void SetTruthPhi(double phi){fTruthPhi=phi;}
   void SetCharge(double charge){fCharge=charge;}
   void SetRange(double range){fRange=range;}
   void SetEdep(double ene){fEdep=ene;}
@@ -52,6 +53,7 @@ public :
   double GetTruthMom(){return fTruthMom;}
   double GetTruthLength(){return fTruthLength;}
   double GetTruthCosTheta(){return fTruthCosTheta;}
+  double GetTruthPhi(){return fTruthPhi;}
   double GetCharge(){return fCharge;}
   double GetRange(){return fRange;}
   double GetEdep(){return fEdep;}
@@ -70,6 +72,7 @@ private :
   double fTruthMom;
   double fTruthLength;
   double fTruthCosTheta;
+  double fTruthPhi;
   double fCharge;
   double fRange; 
   double fEdep;

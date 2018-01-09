@@ -26,6 +26,7 @@ TND280UpRecoTrack::TND280UpRecoTrack()
   fPDG           = 0;
   fTruthMom      = nd280upconv::kBadNum;
   fTruthCosTheta = nd280upconv::kBadNum;
+  fTruthPhi      = nd280upconv::kBadNum;
   fCharge        = nd280upconv::kBadNum;
   fRange         = nd280upconv::kBadNum;
   fIsOutFV       = false;
@@ -48,6 +49,7 @@ TND280UpRecoTrack::~TND280UpRecoTrack()
   fPDG           = 0;
   fTruthMom      = nd280upconv::kBadNum;
   fTruthCosTheta = nd280upconv::kBadNum;
+  fTruthPhi      = nd280upconv::kBadNum;
   fCharge        = nd280upconv::kBadNum;
   fRange         = nd280upconv::kBadNum;
   fEdep          = nd280upconv::kBadNum;
@@ -72,6 +74,7 @@ void TND280UpRecoTrack::PrintTrack()
   cout << "PDG: " << fPDG << endl;
   cout << "Truth Momentum: " << fTruthMom << endl;
   cout << "Truth CosTheta: " << fTruthCosTheta << endl;
+  cout << "Truth Phi: " << fTruthPhi << endl;
   cout << "Charge: " << fCharge << endl;
   cout << "Range: " << fRange << endl;
   cout << "oooooooooooooooooooooooooooooooo" << endl;

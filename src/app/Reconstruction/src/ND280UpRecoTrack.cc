@@ -159,6 +159,9 @@ void ND280UpRecoTrack::DoTracking(nd280upconv::TargetType_t dettype){
   CalcOutFV();  
   CalcRecoVar();
 
+  //CalcCharge();
+
+
   DefineRecoTrack();
     
   return;
