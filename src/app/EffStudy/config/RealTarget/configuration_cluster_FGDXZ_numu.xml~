@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-
+ 
 <fileStructure>
 <Main_Package>
    File_Navigate
@@ -25,7 +25,7 @@
   </Path2file>
 
   <filename>
-    GENIE/29_9_17/GENIE_geometry_SuperFGD_1e22_nue.root 
+    GENIE/29_9_17/GENIE_geometry_FGDXZ_1e21_numu.root
   </filename>
 
   <treename>  
