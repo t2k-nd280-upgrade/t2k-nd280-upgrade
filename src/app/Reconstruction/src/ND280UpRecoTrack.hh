@@ -110,6 +110,8 @@ private:
   void DefineRecoTrack(); // cuts 
   void CalcRecoVar(); 
 
+  //void CalcCharge();
+
   void CalcVtxReco();
 
   //
@@ -169,6 +171,8 @@ private:
 
   double fRecoCosTheta;
   double fRecoMom;
+
+  //double fRecoCharge;
 
   nd280upconv::TargetType_t fDetType;  
 

@@ -31,7 +31,7 @@ foreach (@ARGV) {
     elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
     elsif($_ eq '--config'           ) { $config_file     = $ARGV[$iarg+1]; }
     elsif($_ eq '--vis-file'         ) { $vis_file        = $ARGV[$iarg+1]; }
-    elsif($_ eq '--first-exp'        ) { $first_exp       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--first-expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
     elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
     elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }
@@ -44,18 +44,23 @@ foreach (@ARGV) {
     $iarg++;
 }
 
-$exe_clust_dir = "bin/nosteppingaction/" unless defined $exe_clust_dir; # path starting from $softw_dir
+$exe_clust_dir = "bin/" unless defined $exe_clust_dir; # path starting from $softw_dir
 $exe_loc_dir = "bin/" unless defined $exe_loc_dir; # path starting from $softw_dir
 
 $resource        = "interactive"               unless defined $resource;
 
 #$tag             = "test" unless defined $tag;
+#$tag             = "g4ND280Up_NoNorm_Alternative_Targ_TPC_ECal_ToF_oofv"                 unless defined $tag;  
 #$tag             = "g4ND280Up_1E21_Reference_ECal_RHC_numu"                 unless defined $tag;
-#$tag             = "g4ND280Up_1E21_Current_ECal_RHC_numu"               unless defined $tag;
-#$tag             = "g4ND280Up_1E22_Reference_ECal_ToF_nue"               unless defined $tag;
+$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
+#$tag             = "g4ND280Up_1E22_Reference_ECal_nue"               unless defined $tag;
+#$tag             = "g4ND280Up_1E22_Alternative_Targ_TPC_ECal_ToF_nue"               unless defined $tag;
+#$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF_RHC_numu"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_TPC_Targ_ECal_ToF_RHC_numu"    unless defined $tag;
-$tag             = "g4ND280Up_Test"    unless defined $tag;
+#$tag             = "g4ND280Up_AltTargTPC_Only_SuperFGD"    unless defined $tag;
+#$tag             = "g4ND280Up_1E21_SuperFGD_NuMuBar"    unless defined $tag;
+#$tag             = "g4ND280Up_1E21_SuperFGD_NuE"    unless defined $tag;
 
 
 ######################################################################################################################################
@@ -67,51 +72,57 @@ $tag             = "g4ND280Up_Test"    unless defined $tag;
 #$config_file     = "config/configuration_cluster_current.xml" unless defined $config_file; # current: no ecal, no tof, cluster
 #$config_file     = "config/configuration_cluster_ref.xml" unless defined $config_file; # reference: no ecal, no tof, cluste
 #$config_file     = "config/configuration_cluster_targ_ftpc_2fgd.xml" unless defined $config_file; # alternative targ/ftpc: no ecal, no tof, cluster
-#$config_file     = "config/configuration_cluster_ftpc_targ_2fgd.xml" unless defined $config_file; # alternative ftpc/targ: no ecal, no tof, cluster
 
 # w/o ToF, with ECal
-#$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file; # current: no ecal, no tof, cluster
+$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file; # current: no ecal, no tof, cluster
+#$config_file     = "config/configuration_cluster_current_ecal_nue.xml" unless defined $config_file; # current: no tof, cluster
+#$config_file     = "config/configuration_cluster_current_ecal_rhc_nuebar.xml" unless defined $config_file; # current: no ecal, no tof, cluster
 #$config_file     = "config/configuration_cluster_current_ecal_rhc_numubar.xml" unless defined $config_file; # current: no ecal, no tof, rhc-numubar, cluster
 #$config_file     = "config/configuration_cluster_current_ecal_rhc_numu.xml" unless defined $config_file; # current: no ecal, no tof, rhc-numubar, cluster
 #$config_file     = "config/configuration_cluster_ref_ecal.xml" unless defined $config_file; # reference: no ecal, no tof, cluste
 #$config_file     = "config/configuration_cluster_targ_ftpc_2fgd_ecal.xml" unless defined $config_file; # alternative targ/ftpc: no ecal, no tof, cluster
-#$config_file     = "config/configuration_cluster_ftpc_targ_2fgd_ecal.xml" unless defined $config_file; # alternative ftpc/targ: no ecal, no tof, cluster
 
 # with ToF, w/o ECal
 #$config_file     = "config/ToF/configuration_cluster_ref_tof.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_ftpc_targ_2fgd_tof.xml" unless defined $config_file; # reference: no ecal, cluster
  
 # with ToF, with ECal
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
+#$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster   
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_ftpc_targ_2fgd_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_ftpc_targ_2fgd_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_ftpc_targ_2fgd_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
+#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster
+#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_nuebar.xml" unless defined $config_file; # reference: no ecal, cluster
+#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_oofv.xml" unless defined $config_file; # reference: no ecal, cluster     
 
 # ECal, Basket, Magnet (no Tracker)
 #$config_file     = "config/configuration_cluster_outfv.xml" unless defined $config_file;
 
 # TEST 
-$config_file     = "config/Test/configuration_cluster_test.xml" unless defined $config_file;
+#$config_file     = "config/Test/configuration_cluster_test.xml" unless defined $config_file;
+
+# Real Target 
+#$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_numu.xml" unless defined $config_file;
+#$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_numubar.xml" unless defined $config_file;
+#$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_nue.xml" unless defined $config_file;
+#$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_numu.xml" unless defined $config_file;
+#$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_numubar.xml" unless defined $config_file;
+#$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_nue.xml" unless defined $config_file;
 
 ######################################################################################################################################
 
 #$vis_file        = "mac/vis_test.mac"           unless defined $vis_file;  
-$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis.mac"           unless defined $vis_file;
-#$vis_file        = "mac/vis_nd280current.mac"           unless defined $vis_file;
-#$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
-#$vis_file        = "mac/vis_cluster_nd280current.mac"           unless defined $vis_file;
+$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
 
 #$nruns           = 80                          unless defined $nruns;      # number of jobs (current and reference)
-#$nruns           = 123                          unless defined $nruns;      # number of jobs (alternative)
-$nruns           = 34                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
+#$nruns           = 127                          unless defined $nruns;      # number of jobs (alternative)
+#$nruns           = 128                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
+$nruns           = 133                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
 
 #$nexpts          = 5000                        unless defined $nexpts;     # number of events per job (w/o ToF)
 #$nexpts          = 2000                        unless defined $nexpts;     # number of events per job (with ToF RHC-numu) 
@@ -133,9 +144,10 @@ while($irun < $nruns) { # loop over the jobs
 	$arguments = "$softw_dir/$exe_loc_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
     }
     else{
-	$arguments = "$softw_dir/$exe_clust_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+	#$arguments = "$softw_dir/$exe_clust_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+	$arguments = "$softw_dir/$exe_loc_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
     }
-    
+     
     $command = "$arguments";
     
     print "\n";

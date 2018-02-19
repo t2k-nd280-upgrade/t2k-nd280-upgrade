@@ -4,6 +4,7 @@
 //#include <TString.h>
 
 #include "ND280UpConst.hh"
+#include <TRandom3.h>
 
 using namespace nd280upconv;
 
@@ -32,6 +33,7 @@ private:
 
   double fAttLength;
   TargetType_t fTargetID;
+  TRandom3 *fRndm;
 };
 
 #endif

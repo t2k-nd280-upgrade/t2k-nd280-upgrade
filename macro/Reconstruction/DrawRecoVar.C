@@ -1,7 +1,10 @@
 
 void DrawRecoVar
 ( 
- int myevt = -999,
+ int myevt = -999, // select event display to show. If <0 the Truth Vtx distribution is not shown
+
+ bool doNormalize = true,
+
  //bool doPrint = true,
  //bool doStore = false,
  string tag = "prova",
@@ -12,29 +15,39 @@ void DrawRecoVar
   )
 {
  
-  const int NFiles = 2;
+  const int NFiles = 3;
   string infilename[NFiles] = {
 
-    "RECONSTRUCTION/5_10_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E21POT.root"
+    //"SuperFGD-NuMu-UseXY-UseYZ-TruthFV-Separate10_Evt0_NEvt10.root",
+    
+    "RECONSTRUCTION/16_11_17/USETRACKLENGTH/SuperFGD_numu.root",
+    "RECONSTRUCTION/16_11_17/USETRACKLENGTH/SuperFGD_XZ_numu.root",
+    
+    //"RECONSTRUCTION/16_11_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E22POT_NuE.root",
+    //"RECONSTRUCTION/16_11_17/FGDXZ-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E22POT_NuE.root"
 
-    //"RECONSTRUCTION/26_9_17/RealMPPCeff/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_100k.root"
-    ,"RECONSTRUCTION/26_9_17/RealMPPCeff/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_CutLayers30mm_100k.root"
+    //"RECONSTRUCTION/16_11_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E21POT_NuMu.root"
+    "RECONSTRUCTION/16_11_17/FGDXZ-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E21POT_NuMu.root"
+    
+    ///"RECONSTRUCTION/5_10_17/SuperFGD-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E21POT_NuMu.root"
+    //"RECONSTRUCTION/5_10_17/FGDlike-UseXY-UseXZ-UseYZ-TruthFV-Separate10_1E21POT_NuMu.root"
   };
 
   int color[NFiles] = {
     kBlue
     ,kRed
-    //kGreen
+    ,kGreen
     //kOrange
     //kCyan
   };
 
   TString label[NFiles] = {
-    //"SuperFGD"
-    //,"FGDlike"
+    "SuperFGD"
+    ,"SuperFGD-XZ"
+    ,"FGDlike"
 
-    "OK"
-    ,"Uniform"
+    //"OK"
+    //xs,"Uniform"
 
     //"Normal",
     //"True OOFV"
@@ -107,6 +120,9 @@ void DrawRecoVar
     hVtx_XY[ifile] = (TH2F*)infile[ifile]->Get("hVtx_XY");
     hVtx_XZ[ifile] = (TH2F*)infile[ifile]->Get("hVtx_XZ");
     hVtx_YZ[ifile] = (TH2F*)infile[ifile]->Get("hVtx_YZ");
+
+    cout << "Tot # of vertices inside  the FV = " << hVtx_XY[ifile]->Integral() << endl;
+    cout << "Tot # of vertices outside the FV = " << hVtxOut_XY[ifile]->Integral() << endl;
 
     if(myevt >= 0){
       name = TString::Format("hMPPCHits_XY_%d",myevt);
@@ -236,9 +252,20 @@ void DrawRecoVar
       lEdgesXY_2->Draw();
       lEdgesXY_3->Draw();
       lEdgesXY_4->Draw();
+      
+      name = TString::Format("cVtx_%s_XY",label[ifile].Data());
+      cVtx_XY[ifile] = new TCanvas(name,name);
+      hVtx_XY[ifile]->GetXaxis()->SetTitle("X (mm)");
+      hVtx_XY[ifile]->GetYaxis()->SetTitle("Y (mm)");
+      hVtx_XY[ifile]->SetStats(0);
+      hVtx_XY[ifile]->DrawClone("colz");    
+      
+      lEdgesXY_1->Draw();
+      lEdgesXY_2->Draw();
+      lEdgesXY_3->Draw();
+      lEdgesXY_4->Draw();
     }  
-    
-    
+
     for(int ifile=0;ifile<NFiles;ifile++){
       
       double NbinsX = hMPPCHits_XZ[ifile]->GetXaxis()->GetNbins();
@@ -259,6 +286,18 @@ void DrawRecoVar
       hVtxOut_XZ[ifile]->GetYaxis()->SetTitle("Z (mm)");
       hVtxOut_XZ[ifile]->SetStats(0);
       hVtxOut_XZ[ifile]->DrawClone("colz");    
+      
+      lEdgesXZ_1->Draw();
+      lEdgesXZ_2->Draw();
+      lEdgesXZ_3->Draw();
+      lEdgesXZ_4->Draw();
+
+      name = TString::Format("cVtx_%s_XZ",label[ifile].Data());
+      cVtx_XZ[ifile] = new TCanvas(name,name);
+      hVtx_XZ[ifile]->GetXaxis()->SetTitle("X (mm)");
+      hVtx_XZ[ifile]->GetYaxis()->SetTitle("Z (mm)");
+      hVtx_XZ[ifile]->SetStats(0);
+      hVtx_XZ[ifile]->DrawClone("colz");    
       
       lEdgesXZ_1->Draw();
       lEdgesXZ_2->Draw();
@@ -292,6 +331,18 @@ void DrawRecoVar
       lEdgesYZ_2->Draw();
       lEdgesYZ_3->Draw();
       lEdgesYZ_4->Draw();
+
+      name = TString::Format("cVtx_%s_YZ",label[ifile].Data());
+      cVtx_YZ[ifile] = new TCanvas(name,name);
+      hVtx_YZ[ifile]->GetXaxis()->SetTitle("Y (mm)");
+      hVtx_YZ[ifile]->GetYaxis()->SetTitle("Z (mm)");
+      hVtx_YZ[ifile]->SetStats(0);
+      hVtx_YZ[ifile]->DrawClone("colz");    
+      
+      lEdgesYZ_1->Draw();
+      lEdgesYZ_2->Draw();
+      lEdgesYZ_3->Draw();
+      lEdgesYZ_4->Draw();
     } 
   
   } // if myevt >= 0 
@@ -313,6 +364,9 @@ void DrawRecoVar
     
     TCanvas *cMuon_CosTh_RecMinTr = new TCanvas("cMuon_CosTh_RecMinTr","cMuon_CosTh_RecMinTr");
     for(int ifile=0;ifile<NFiles;ifile++){
+
+      if(doNormalize) hMuon_CosTh_RecMinTr[ifile]->Scale(1./hMuon_CosTh_RecMinTr[ifile]->Integral());
+
       hMuon_CosTh_RecMinTr[ifile]->SetLineColor(ifile+1); 
       hMuon_CosTh_RecMinTr[ifile]->SetLineWidth(2); 
       hMuon_CosTh_RecMinTr[ifile]->GetXaxis()->SetTitle("Reco-True cos #theta");
@@ -335,6 +389,9 @@ void DrawRecoVar
     
     TCanvas *cMuon_Len_RecMinTr = new TCanvas("cMuon_Len_RecMinTr","cMuon_Len_RecMinTr");
     for(int ifile=0;ifile<NFiles;ifile++){
+ 
+      if(doNormalize) hMuon_Len_RecMinTr[ifile]->Scale(1./hMuon_Len_RecMinTr[ifile]->Integral());
+
       hMuon_Len_RecMinTr[ifile]->SetLineColor(ifile+1); 
       hMuon_Len_RecMinTr[ifile]->SetLineWidth(2); 
       hMuon_Len_RecMinTr[ifile]->GetXaxis()->SetTitle("Reco-True Length [mm]");
@@ -366,6 +423,9 @@ void DrawRecoVar
   
     TCanvas *cPion_CosTh_RecMinTr = new TCanvas("cPion_CosTh_RecMinTr","cPion_CosTh_RecMinTr");
     for(int ifile=0;ifile<NFiles;ifile++){
+
+      if(doNormalize) hPion_CosTh_RecMinTr[ifile]->Scale(1./hPion_CosTh_RecMinTr[ifile]->Integral());
+
       hPion_CosTh_RecMinTr[ifile]->SetLineColor(ifile+1); 
       hPion_CosTh_RecMinTr[ifile]->SetLineWidth(2); 
       hPion_CosTh_RecMinTr[ifile]->GetXaxis()->SetTitle("Reco-True cos #theta");
@@ -388,6 +448,9 @@ void DrawRecoVar
     
     TCanvas *cPion_Len_RecMinTr = new TCanvas("cPion_Len_RecMinTr","cPion_Len_RecMinTr");
     for(int ifile=0;ifile<NFiles;ifile++){
+
+      if(doNormalize) hPion_Len_RecMinTr[ifile]->Scale(1./hPion_Len_RecMinTr[ifile]->Integral());
+    
       hPion_Len_RecMinTr[ifile]->SetLineColor(ifile+1); 
       hPion_Len_RecMinTr[ifile]->SetLineWidth(2); 
       hPion_Len_RecMinTr[ifile]->GetXaxis()->SetTitle("Reco-True Length [mm]");
@@ -397,6 +460,65 @@ void DrawRecoVar
       else         hPion_Len_RecMinTr[ifile]->Draw("same");
     }
     legend->Draw();
+  }
+
+
+
+
+  // Electrons
+
+  if(drawElec){
+    
+    TCanvas *cElec_CosTh_TrueVsReco[NFiles];
+    for(int ifile=0;ifile<NFiles;ifile++){
+      name = TString::Format("cElec_CosTh_TrueVsReco_%i",ifile);
+      cElec_CosTh_TrueVsReco[ifile] = new TCanvas(name,label[ifile].Data());
+      hElec_CosTh_TrueVsReco[ifile]->GetXaxis()->SetTitle("True cos #theta");
+      hElec_CosTh_TrueVsReco[ifile]->GetYaxis()->SetTitle("Reco cos #theta");
+      hElec_CosTh_TrueVsReco[ifile]->SetStats(0);
+      hElec_CosTh_TrueVsReco[ifile]->DrawClone("colz");
+    }
+    
+    TCanvas *cElec_CosTh_RecMinTr = new TCanvas("cElec_CosTh_RecMinTr","cElec_CosTh_RecMinTr");
+    for(int ifile=0;ifile<NFiles;ifile++){
+
+      if(doNormalize) hElec_CosTh_RecMinTr[ifile]->Scale(1./hElec_CosTh_RecMinTr[ifile]->Integral());
+
+      hElec_CosTh_RecMinTr[ifile]->SetLineColor(ifile+1); 
+      hElec_CosTh_RecMinTr[ifile]->SetLineWidth(2); 
+      hElec_CosTh_RecMinTr[ifile]->GetXaxis()->SetTitle("Reco-True cos #theta");
+      hElec_CosTh_RecMinTr[ifile]->GetYaxis()->SetTitle("Entries");
+      //hElec_CosTh_RecMinTr[ifile]->SetStats(0);
+      if(ifile==0) hElec_CosTh_RecMinTr[ifile]->DrawClone("");
+      else         hElec_CosTh_RecMinTr[ifile]->DrawClone("same");
+    }
+    legend->Draw();
+    
+    TCanvas *cElec_Len_TrueVsReco[NFiles];
+    for(int ifile=0;ifile<NFiles;ifile++){
+      name = TString::Format("cElec_Len_TrueVsReco_%i",ifile);
+      cElec_Len_TrueVsReco[ifile] = new TCanvas(name,label[ifile].Data());
+      hElec_Len_TrueVsReco[ifile]->GetXaxis()->SetTitle("True Length [mm]");
+      hElec_Len_TrueVsReco[ifile]->GetYaxis()->SetTitle("Reco Length [mm]");
+      hElec_Len_TrueVsReco[ifile]->SetStats(0);
+      hElec_Len_TrueVsReco[ifile]->DrawClone("colz");
+    }
+    
+    TCanvas *cElec_Len_RecMinTr = new TCanvas("cElec_Len_RecMinTr","cElec_Len_RecMinTr");
+
+    if(doNormalize) hElec_Len_RecMinTr[ifile]->Scale(1./hElec_Len_RecMinTr[ifile]->Integral());
+
+    for(int ifile=0;ifile<NFiles;ifile++){
+      hElec_Len_RecMinTr[ifile]->SetLineColor(ifile+1); 
+      hElec_Len_RecMinTr[ifile]->SetLineWidth(2); 
+      hElec_Len_RecMinTr[ifile]->GetXaxis()->SetTitle("Reco-True Length [mm]");
+      hElec_Len_RecMinTr[ifile]->GetYaxis()->SetTitle("Entries");
+      //hElec_Len_RecMinTr[ifile]->SetStats(0);
+      if(ifile==0) hElec_Len_RecMinTr[ifile]->DrawClone("");
+      else         hElec_Len_RecMinTr[ifile]->Draw("same");
+    }
+    legend->Draw();
+    
   }
 
 
@@ -436,6 +558,24 @@ void DrawRecoVar
     cout << "   // " << label[ifile] << ": ";
     cout << "  Mean = " << hPion_CosTh_RecMinTr[ifile]->GetMean() 
 	 << ", RMS = " <<  hPion_CosTh_RecMinTr[ifile]->GetRMS()
+	 << endl;
+  }
+  cout << endl;
+
+  cout << endl;
+  cout << "////// Electrons //////" << endl;
+  cout << " - Track Reco-True Length (mm):" << endl;
+  for(int ifile=0;ifile<NFiles;ifile++){
+    cout << "   // " << label[ifile] << ": ";
+    cout << "  Mean = " << hElec_Len_RecMinTr[ifile]->GetMean() 
+	 << ", RMS = " <<  hElec_Len_RecMinTr[ifile]->GetRMS()
+	 << endl;
+  }
+  cout << " - Track Reco-True CosTheta:" << endl;
+  for(int ifile=0;ifile<NFiles;ifile++){
+    cout << "   // " << label[ifile] << ": ";
+    cout << "  Mean = " << hElec_CosTh_RecMinTr[ifile]->GetMean() 
+	 << ", RMS = " <<  hElec_CosTh_RecMinTr[ifile]->GetRMS()
 	 << endl;
   }
   cout << endl;

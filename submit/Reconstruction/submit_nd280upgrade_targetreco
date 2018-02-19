@@ -45,7 +45,9 @@ foreach (@ARGV) {
 
 $resource        = "interactive"                 unless defined $resource;
 
-$tag            = "" unless defined $tag;
+#$tag            = "NuMu-GasAr" unless defined $tag;
+#$tag            = "NuE-Plastic" unless defined $tag;
+$tag            = "NuMu" unless defined $tag;
 
 $useviewXY      = 1 unless defined $useviewXY; # (0 or 1)
 $useviewXZ      = 1 unless defined $useviewXZ; # (0 or 1)
@@ -53,21 +55,20 @@ $useviewYZ      = 1 unless defined $useviewYZ; # (0 or 1)
 
 $min_trk_dist    = 10 unless defined $min_trk_dist; # if <0 --> use default (mm)
 
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/20_8_17/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
-$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/20_8_17/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
+#$inputfile        = "g4ND280Up_1E21_SuperFGD_NuE-Exp0-Nexpt1000_GasAr.root" unless defined $inputfile;
+#$inputfile        = "g4ND280Up_1E21_SuperFGD_NuMu-Exp0-Nexpt1000_GasAr.root" unless defined $inputfile;
 
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/18_7_17/g4ND280Up_Test-All_E21_AltTargTPC_SuperFGD.root" unless defined $inputfile;
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/18_7_17/g4ND280Up_Test-All_E21_AltTargTPC_FGDlike.root" unless defined $inputfile;
+#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E22_SuperFGD_NuE.root" unless defined $inputfile;
+#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E22_FGDXZ_NuE.root" unless defined $inputfile;
 
-#$inputfile        = "g4ND280Up_Test-Exp123703-Nexpt2.root" unless defined $inputfile;
-#$inputfile        = "g4ND280Up_Test-Exp10-Nexpt10.root" unless defined $inputfile;
-#$inputfile        = "NOFreeTlist_nue-Exp0-Nexpt5000.root" unless defined $inputfile;
+$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E21_SuperFGD_NuMu.root" unless defined $inputfile;
+#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E21_FGDXZ_NuMu.root" unless defined $inputfile;
 
 $first_expt      = 0                             unless defined $first_expt;
 $nruns           = 6                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
 $nexpts          = 5000                          unless defined $nexpts;
 
-$detector        = 1   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
+$detector        = 0   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
 
 $debug           = 0   unless defined $debug; # flag for debugging output: 0 --> NO printout, 1 --> printout
 $debug_plot      = 0   unless defined $debug_plot; # flag for debugging plots: 0 --> NO, 1 --> YES
@@ -83,8 +84,8 @@ while($irun < $nruns) { # loop over the jobs
     
     $newtag = "$tag";
     
-    if   ($detector eq 0){$newtag = "SuperFGD";}
-    elsif($detector eq 1){$newtag = "FGDlike";}
+    if   ($detector eq 0){$newtag = "SuperFGD-$newtag";}
+    elsif($detector eq 1){$newtag = "FGDlike-$newtag";}
     else{ 
 	print "\n";
 	print "The detector ID $detector is not defined";
