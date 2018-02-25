@@ -72,6 +72,7 @@ const double CollFactor_DoubleClad = 0.10;
 
 ND280UpTargReadOut::ND280UpTargReadOut()
 {
+  fRndm = new TRandom3(0);
 }
 
 ND280UpTargReadOut::~ND280UpTargReadOut()
@@ -257,10 +258,13 @@ void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
   }
   
   for (int i=0;i<npe_integer;i++){
-    rndunif = G4UniformRand();
+    //rndunif = G4UniformRand();
+    rndunif = fRndm->Uniform();
     if (rndunif < MPPCEff_SuperFGD) npe_passed++;
   }
   
+  //cout << npe << ", " << rndunif << endl;
+
   //cout << "npe = " << npe << " - npe_passed = " << npe_passed << endl;
   
   npe = npe_passed;

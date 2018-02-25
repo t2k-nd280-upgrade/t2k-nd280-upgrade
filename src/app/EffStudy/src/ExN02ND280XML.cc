@@ -22,9 +22,856 @@ ExN02ND280XML::ExN02ND280XML(const G4String inxml){
 
 ExN02ND280XML::~ExN02ND280XML(){
   //delete ...;
+
+  fXMLFile = "";
+  fIsRandomSeed = false;
+  fStoreGeometry = false;
+  fGenerType = "";
+  fPathFiles = "";
+  fGenerTreeName = "";
+  fGenerFileName = "";
+  fGenerStepEvent = 0;
+
+  fForwTPCdefault = false;
+  fForwTPCPos1_X = 0.;
+  fForwTPCPos1_Y = 0.;
+  fForwTPCPos1_Z = 0.;
+  fForwTPCPos2_X = 0.;
+  fForwTPCPos2_Y = 0.;
+  fForwTPCPos2_Z = 0.;
+  fForwTPCPos3_X = 0.;
+  fForwTPCPos3_Y = 0.;
+  fForwTPCPos3_Z = 0.;
+
+  fSideTPCdefault1 = false;
+  fSideTPClength1 = 0.;
+  fSideTPCwidth1 = 0.;
+  fSideTPCheight1 = 0.;
+  fSideTPCUpPos1_X = 0.;
+  fSideTPCUpPos1_Y = 0.;
+  fSideTPCUpPos1_Z = 0.;
+  fSideTPCDownPos1_X = 0.;
+  fSideTPCDownPos1_Y = 0.;
+  fSideTPCDownPos1_Z = 0.;
+
+  fSideTPCdefault2 = false;
+  fSideTPClength2 = 0.;
+  fSideTPCwidth2 = 0.;
+  fSideTPCheight2 = 0.;
+  fSideTPCUpPos2_X = 0.;
+  fSideTPCUpPos2_Y = 0.;
+  fSideTPCUpPos2_Z = 0.;
+  fSideTPCDownPos2_X = 0.;
+  fSideTPCDownPos2_Y = 0.;
+  fSideTPCDownPos2_Z = 0.;
+
+  fTargetdefault1 = false;
+  fTargetMaterial1 = "";
+  fTargetlength1 = 0.;
+  fTargetwidth1 = 0.;
+  fTargetheight1 = 0.;
+  fTargetPos1_X = 0.;
+  fTargetPos1_Y = 0.;
+  fTargetPos1_Z = 0.;
+
+  fTargetdefault2 = false;
+  fTargetMaterial2 = "";
+  fTargetlength2 = 0.;
+  fTargetwidth2 = 0.;
+  fTargetheight2 = 0.;
+  fTargetPos2_X = 0.;
+  fTargetPos2_Y = 0.;
+  fTargetPos2_Z = 0.;
+
+  fFGDdefault1 = false;
+  fFGDMaterial1 = "";
+  fFGDlength1 = 0.;
+  fFGDwidth1 = 0.;
+  fFGDheight1 = 0.;
+  fFGDPos1_X = 0.;
+  fFGDPos1_Y = 0.;
+  fFGDPos1_Z = 0.;
+
+  fFGDdefault2 = false;
+  fFGDMaterial2 = "";
+  fFGDlength2 = 0.;
+  fFGDwidth2 = 0.;
+  fFGDheight2 = 0.;
+  fFGDPos2_X = 0.;
+  fFGDPos2_Y = 0.;
+  fFGDPos2_Z = 0.;
+  
+ fSuperFGDCubeEdge1 = 0.;
+ fSuperFGDCubeNum1_X = 0;
+ fSuperFGDCubeNum1_Y = 0;
+ fSuperFGDCubeNum1_Z = 0;
+ fSuperFGDPos1_X = 0.;
+ fSuperFGDPos1_Y = 0.;
+ fSuperFGDPos1_Z = 0.;
+
+ fSuperFGDCubeEdge2 = 0.;
+ fSuperFGDCubeNum2_X = 0;
+ fSuperFGDCubeNum2_Y = 0;
+ fSuperFGDCubeNum2_Z = 0;
+ fSuperFGDPos2_X = 0.;
+ fSuperFGDPos2_Y = 0.;
+ fSuperFGDPos2_Z = 0.;
+
+  fWAGASCIInactMaterial1 = ":";
+  fWAGASCIlength1 = 0.;
+  fWAGASCIwidth1 = 0.;
+  fWAGASCIheight1 = 0.;
+  fWAGASCIPos1_X = 0.;
+  fWAGASCIPos1_Y = 0.;
+  fWAGASCIPos1_Z = 0.;
+
+  fWAGASCIInactMaterial2 = "";
+  fWAGASCIlength2 = 0.;
+  fWAGASCIwidth2 = 0.;
+  fWAGASCIheight2 = 0.;
+  fWAGASCIPos2_X = 0.;
+  fWAGASCIPos2_Y = 0.;
+  fWAGASCIPos2_Z = 0.;
+
+  fFGD3Dlength1 = 0.;
+  fFGD3Dwidth1 = 0.;
+  fFGD3Dheight1 = 0.;
+  fFGD3DPos1_X = 0.;
+  fFGD3DPos1_Y = 0.;
+  fFGD3DPos1_Z = 0.;
+
+  fFGD3Dlength2 = 0.;
+  fFGD3Dwidth2 = 0.;
+  fFGD3Dheight2 = 0.;
+  fFGD3DPos2_X = 0.;
+  fFGD3DPos2_Y = 0.;
+  fFGD3DPos2_Z = 0.;
+
+  fSciFiFiberEdge = 0.;
+  fSciFiNum_AlongX = 0;
+  fSciFiNum_AlongZ = 0;
+  fSciFiNum_Layer = 0;
+  fSciFiPos_X = 0.;
+  fSciFiPos_Y = 0.;
+  fSciFiPos_Z = 0.;
+
+  fFGDlikeBarEdge = 0.;
+  fFGDlikeNum_AlongX = 0;
+  fFGDlikeNum_AlongZ = 0;
+  fFGDlikeNum_Layer = 0;
+  fFGDlikePos_X = 0.;
+  fFGDlikePos_Y = 0.;
+  fFGDlikePos_Z = 0.;
+
+
+  // ToF Downstream
+
+  fToFdefault_TopDown = false;
+  fToFLayerHorizNBar_TopDown = 0;
+  fToFLayerVertNBar_TopDown = 0;
+  fToFPlaneXYNum_TopDown = 0;
+  fToFBarHorizlength_TopDown = 0.;
+  fToFBarVertlength_TopDown = 0.;
+  fToFBarwidth_TopDown = 0.;
+  fToFBarheight_TopDown = 0.;
+  fToFRotX_TopDown = 0.;
+  fToFRotY_TopDown = 0.;
+  fToFRotZ_TopDown = 0.;
+  fToFPosX_TopDown = 0.;
+  fToFPosY_TopDown = 0.;
+  fToFPosZ_TopDown = 0.;
+
+  fToFdefault_BotDown = false;
+  fToFLayerHorizNBar_BotDown = 0;
+  fToFLayerVertNBar_BotDown = 0;
+  fToFPlaneXYNum_BotDown = 0;
+  fToFBarHorizlength_BotDown = 0.;
+  fToFBarVertlength_BotDown = 0.;
+  fToFBarwidth_BotDown = 0.;
+  fToFBarheight_BotDown = 0.;
+  fToFRotX_BotDown = 0.;
+  fToFRotY_BotDown = 0.;
+  fToFRotZ_BotDown = 0.;
+  fToFPosX_BotDown = 0.;
+  fToFPosY_BotDown = 0.;
+  fToFPosZ_BotDown = 0.;
+
+  fToFdefault_RightDown = false;
+  fToFLayerHorizNBar_RightDown = 0;
+  fToFLayerVertNBar_RightDown = 0;
+  fToFPlaneXYNum_RightDown = 0;
+  fToFBarHorizlength_RightDown = 0.;
+  fToFBarVertlength_RightDown = 0.;
+  fToFBarwidth_RightDown = 0.;
+  fToFBarheight_RightDown = 0.;
+  fToFRotX_RightDown = 0.;
+  fToFRotY_RightDown = 0.;
+  fToFRotZ_RightDown = 0.;
+  fToFPosX_RightDown = 0.;
+  fToFPosY_RightDown = 0.;
+  fToFPosZ_RightDown = 0.;
+
+  fToFdefault_LeftDown = false;
+  fToFLayerHorizNBar_LeftDown = 0;
+  fToFLayerVertNBar_LeftDown = 0;
+  fToFPlaneXYNum_LeftDown = 0;
+  fToFBarHorizlength_LeftDown = 0.;
+  fToFBarVertlength_LeftDown = 0.;
+  fToFBarwidth_LeftDown = 0.;
+  fToFBarheight_LeftDown = 0.;
+  fToFRotX_LeftDown = 0.;
+  fToFRotY_LeftDown = 0.;
+  fToFRotZ_LeftDown = 0.;
+  fToFPosX_LeftDown = 0.;
+  fToFPosY_LeftDown = 0.;
+  fToFPosZ_LeftDown = 0.;
+
+  fToFdefault_BackDown = false;
+  fToFLayerHorizNBar_BackDown = 0;
+  fToFLayerVertNBar_BackDown = 0;
+  fToFPlaneXYNum_BackDown = 0;
+  fToFBarHorizlength_BackDown = 0.;
+  fToFBarVertlength_BackDown = 0.;
+  fToFBarwidth_BackDown = 0.;
+  fToFBarheight_BackDown = 0.;
+  fToFRotX_BackDown = 0.;
+  fToFRotY_BackDown = 0.;
+  fToFRotZ_BackDown = 0.;
+  fToFPosX_BackDown = 0.;
+  fToFPosY_BackDown = 0.;
+  fToFPosZ_BackDown = 0.;
+
+  fToFdefault_FrontDown = false;
+  fToFLayerHorizNBar_FrontDown = 0;
+  fToFLayerVertNBar_FrontDown = 0;
+  fToFPlaneXYNum_FrontDown = 0;
+  fToFBarHorizlength_FrontDown = 0.;
+  fToFBarVertlength_FrontDown = 0.;
+  fToFBarwidth_FrontDown = 0.;
+  fToFBarheight_FrontDown = 0.;
+  fToFRotX_FrontDown = 0.;
+  fToFRotY_FrontDown = 0.;
+  fToFRotZ_FrontDown = 0.;
+  fToFPosX_FrontDown = 0.;
+  fToFPosY_FrontDown = 0.;
+  fToFPosZ_FrontDown = 0.;
+
+  // ToF ECalP0D
+
+  fToFdefault_ECalP0D = false;
+  fToFLayerHorizNBar_ECalP0D = 0;
+  fToFLayerVertNBar_ECalP0D = 0;
+  fToFPlaneXYNum_ECalP0D = 0;
+  fToFBarHorizlength_ECalP0D = 0.;
+  fToFBarVertlength_ECalP0D = 0.;
+  fToFBarwidth_ECalP0D = 0.;
+  fToFBarheight_ECalP0D = 0.;
+  fToFRotX_ECalP0D = 0.;
+  fToFRotY_ECalP0D = 0.;
+  fToFRotZ_ECalP0D = 0.;
+  fToFPosX_ECalP0D = 0.;
+  fToFPosY_ECalP0D = 0.;
+  fToFPosZ_ECalP0D = 0.;
+
+  // ToF Upstream
+
+  fToFdefault_TopUp = false;
+  fToFLayerHorizNBar_TopUp = 0;
+  fToFLayerVertNBar_TopUp = 0;
+  fToFPlaneXYNum_TopUp = 0;
+  fToFBarHorizlength_TopUp = 0.;
+  fToFBarVertlength_TopUp = 0.;
+  fToFBarwidth_TopUp = 0.;
+  fToFBarheight_TopUp = 0.;
+  fToFRotX_TopUp = 0.;
+  fToFRotY_TopUp = 0.;
+  fToFRotZ_TopUp = 0.;
+  fToFPosX_TopUp = 0.;
+  fToFPosY_TopUp = 0.;
+  fToFPosZ_TopUp = 0.;
+
+  fToFdefault_BotUp = false;
+  fToFLayerHorizNBar_BotUp = 0;
+  fToFLayerVertNBar_BotUp = 0;
+  fToFPlaneXYNum_BotUp = 0;
+  fToFBarHorizlength_BotUp = 0.;
+  fToFBarVertlength_BotUp = 0.;
+  fToFBarwidth_BotUp = 0.;
+  fToFBarheight_BotUp = 0.;
+  fToFRotX_BotUp = 0.;
+  fToFRotY_BotUp = 0.;
+  fToFRotZ_BotUp = 0.;
+  fToFPosX_BotUp = 0.;
+  fToFPosY_BotUp = 0.;
+  fToFPosZ_BotUp = 0.;
+
+  fToFdefault_RightUp = false;
+  fToFLayerHorizNBar_RightUp = 0;
+  fToFLayerVertNBar_RightUp = 0;
+  fToFPlaneXYNum_RightUp = 0;
+  fToFBarHorizlength_RightUp = 0.;
+  fToFBarVertlength_RightUp = 0.;
+  fToFBarwidth_RightUp = 0.;
+  fToFBarheight_RightUp = 0.;
+  fToFRotX_RightUp = 0.;
+  fToFRotY_RightUp = 0.;
+  fToFRotZ_RightUp = 0.;
+  fToFPosX_RightUp = 0.;
+  fToFPosY_RightUp = 0.;
+  fToFPosZ_RightUp = 0.;
+
+  fToFdefault_LeftUp = false;
+  fToFLayerHorizNBar_LeftUp = 0;
+  fToFLayerVertNBar_LeftUp = 0;
+  fToFPlaneXYNum_LeftUp = 0;
+  fToFBarHorizlength_LeftUp = 0.;
+  fToFBarVertlength_LeftUp = 0.;
+  fToFBarwidth_LeftUp = 0.;
+  fToFBarheight_LeftUp = 0.;
+  fToFRotX_LeftUp = 0.;
+  fToFRotY_LeftUp = 0.;
+  fToFRotZ_LeftUp = 0.;
+  fToFPosX_LeftUp = 0.;
+  fToFPosY_LeftUp = 0.;
+  fToFPosZ_LeftUp = 0.;
+
+  fToFdefault_BackUp = false;
+  fToFLayerHorizNBar_BackUp = 0;
+  fToFLayerVertNBar_BackUp = 0;
+  fToFPlaneXYNum_BackUp = 0;
+  fToFBarHorizlength_BackUp = 0.;
+  fToFBarVertlength_BackUp = 0.;
+  fToFBarwidth_BackUp = 0.;
+  fToFBarheight_BackUp = 0.;
+  fToFRotX_BackUp = 0.;
+  fToFRotY_BackUp = 0.;
+  fToFRotZ_BackUp = 0.;
+  fToFPosX_BackUp = 0.;
+  fToFPosY_BackUp = 0.;
+  fToFPosZ_BackUp = 0.;
+
+  fToFdefault_FrontUp = false;
+  fToFLayerHorizNBar_FrontUp = 0;
+  fToFLayerVertNBar_FrontUp = 0;
+  fToFPlaneXYNum_FrontUp = 0;
+  fToFBarHorizlength_FrontUp = 0.;
+  fToFBarVertlength_FrontUp = 0.;
+  fToFBarwidth_FrontUp = 0.;
+  fToFBarheight_FrontUp = 0.;
+  fToFRotX_FrontUp = 0.;
+  fToFRotY_FrontUp = 0.;
+  fToFRotZ_FrontUp = 0.;
+  fToFPosX_FrontUp = 0.;
+  fToFPosY_FrontUp = 0.;
+  fToFPosZ_FrontUp = 0.;
+
+  //
+  
+  fUseForwTPC1 = false;
+  fUseForwTPC2 = false;
+  fUseForwTPC3 = false;
+  fUseTarget1 = false;
+  fUseTarget2 = false;
+  fUseTPCUp1 = false;
+  fUseTPCDown1 = false;
+  fUseTPCUp2 = false;
+  fUseTPCDown2 = false;
+  fUseFGD1 = false;
+  fUseFGD2 = false;
+  fUseSuperFGD1 = false;
+  fUseSuperFGD2 = false;
+  fUseWAGASCI1 = false;
+  fUseWAGASCI2 = false;
+  fUseFGD3D1 = false;
+  fUseFGD3D2 = false;
+  fUseSciFi = false;
+  fUseFGDlike = false;
+  fUseMagnet = false;
+  fUseToF_TopDown = false;
+  fUseToF_BotDown = false;
+  fUseToF_RightDown = false;
+  fUseToF_LeftDown = false;
+  fUseToF_BackDown = false;
+  fUseToF_FrontDown = false;
+  fUseToF_ECalP0D = false;
+  fUseToF_TopUp = false;
+  fUseToF_BotUp = false;
+  fUseToF_RightUp = false;
+  fUseToF_LeftUp = false;
+  fUseToF_BackUp = false;
+  fUseToF_FrontUp = false;
+  // fUseSMRD = false;
+  fUseBasket = false;
+  fUseDsECal = false;
+  fUseBrlECal = false;
+  fUseP0DECal = false;
+  fUseP0D = false;
+  
+  fInvisForwTPC1 = false;
+  fInvisForwTPC2 = false;
+  fInvisForwTPC3 = false;
+  fInvisTarget1 = false;
+  fInvisTarget2 = false;
+  fInvisTPCUp1 = false;
+  fInvisTPCDown1 = false;
+  fInvisTPCUp2 = false;
+  fInvisTPCDown2 = false;
+  fInvisFGD1 = false;
+  fInvisFGD2 = false;
+  fInvisSuperFGD = false;
+  fInvisWAGASCI = false;
+  fInvisFGD3D = false;
+  fInvisSciFi = false;
+  fInvisFGDlike = false;
+  fInvisToF_TopDown = false;
+  fInvisToF_BotDown = false;
+  fInvisToF_RightDown = false;
+  fInvisToF_LeftDown = false;
+  fInvisToF_BackDown = false;
+  fInvisToF_FrontDown = false;
+  fInvisToF_ECalP0D = false;
+  fInvisToF_TopUp = false;
+  fInvisToF_BotUp = false;
+  fInvisToF_RightUp = false;
+  fInvisToF_LeftUp = false;
+  fInvisToF_BackUp = false;
+  fInvisToF_FrontUp = false;
+  fInvisMagnet = false;
+  fInvisSMRD = false;
+  fInvisBasket = false;
+  fInvisDsECal = false;
+  fInvisBrlECal = false;
+  fInvisP0DECal = false;
+  fInvisP0D = false;
+
 }
 
 void ExN02ND280XML::SetInputs(){
+
+  //fXMLFile = ""; // already initialized in the constructor
+  fIsRandomSeed = false;
+  fStoreGeometry = false;
+  fGenerType = "";
+  fPathFiles = "";
+  fGenerTreeName = "";
+  fGenerFileName = "";
+  fGenerStepEvent = 0;
+
+  fForwTPCdefault = false;
+  fForwTPCPos1_X = 0.;
+  fForwTPCPos1_Y = 0.;
+  fForwTPCPos1_Z = 0.;
+  fForwTPCPos2_X = 0.;
+  fForwTPCPos2_Y = 0.;
+  fForwTPCPos2_Z = 0.;
+  fForwTPCPos3_X = 0.;
+  fForwTPCPos3_Y = 0.;
+  fForwTPCPos3_Z = 0.;
+
+  fSideTPCdefault1 = false;
+  fSideTPClength1 = 0.;
+  fSideTPCwidth1 = 0.;
+  fSideTPCheight1 = 0.;
+  fSideTPCUpPos1_X = 0.;
+  fSideTPCUpPos1_Y = 0.;
+  fSideTPCUpPos1_Z = 0.;
+  fSideTPCDownPos1_X = 0.;
+  fSideTPCDownPos1_Y = 0.;
+  fSideTPCDownPos1_Z = 0.;
+
+  fSideTPCdefault2 = false;
+  fSideTPClength2 = 0.;
+  fSideTPCwidth2 = 0.;
+  fSideTPCheight2 = 0.;
+  fSideTPCUpPos2_X = 0.;
+  fSideTPCUpPos2_Y = 0.;
+  fSideTPCUpPos2_Z = 0.;
+  fSideTPCDownPos2_X = 0.;
+  fSideTPCDownPos2_Y = 0.;
+  fSideTPCDownPos2_Z = 0.;
+
+  fTargetdefault1 = false;
+  fTargetMaterial1 = "";
+  fTargetlength1 = 0.;
+  fTargetwidth1 = 0.;
+  fTargetheight1 = 0.;
+  fTargetPos1_X = 0.;
+  fTargetPos1_Y = 0.;
+  fTargetPos1_Z = 0.;
+
+  fTargetdefault2 = false;
+  fTargetMaterial2 = "";
+  fTargetlength2 = 0.;
+  fTargetwidth2 = 0.;
+  fTargetheight2 = 0.;
+  fTargetPos2_X = 0.;
+  fTargetPos2_Y = 0.;
+  fTargetPos2_Z = 0.;
+
+  fFGDdefault1 = false;
+  fFGDMaterial1 = "";
+  fFGDlength1 = 0.;
+  fFGDwidth1 = 0.;
+  fFGDheight1 = 0.;
+  fFGDPos1_X = 0.;
+  fFGDPos1_Y = 0.;
+  fFGDPos1_Z = 0.;
+
+  fFGDdefault2 = false;
+  fFGDMaterial2 = "";
+  fFGDlength2 = 0.;
+  fFGDwidth2 = 0.;
+  fFGDheight2 = 0.;
+  fFGDPos2_X = 0.;
+  fFGDPos2_Y = 0.;
+  fFGDPos2_Z = 0.;
+  
+ fSuperFGDCubeEdge1 = 0.;
+ fSuperFGDCubeNum1_X = 0;
+ fSuperFGDCubeNum1_Y = 0;
+ fSuperFGDCubeNum1_Z = 0;
+ fSuperFGDPos1_X = 0.;
+ fSuperFGDPos1_Y = 0.;
+ fSuperFGDPos1_Z = 0.;
+
+ fSuperFGDCubeEdge2 = 0.;
+ fSuperFGDCubeNum2_X = 0;
+ fSuperFGDCubeNum2_Y = 0;
+ fSuperFGDCubeNum2_Z = 0;
+ fSuperFGDPos2_X = 0.;
+ fSuperFGDPos2_Y = 0.;
+ fSuperFGDPos2_Z = 0.;
+
+  fWAGASCIInactMaterial1 = ":";
+  fWAGASCIlength1 = 0.;
+  fWAGASCIwidth1 = 0.;
+  fWAGASCIheight1 = 0.;
+  fWAGASCIPos1_X = 0.;
+  fWAGASCIPos1_Y = 0.;
+  fWAGASCIPos1_Z = 0.;
+
+  fWAGASCIInactMaterial2 = "";
+  fWAGASCIlength2 = 0.;
+  fWAGASCIwidth2 = 0.;
+  fWAGASCIheight2 = 0.;
+  fWAGASCIPos2_X = 0.;
+  fWAGASCIPos2_Y = 0.;
+  fWAGASCIPos2_Z = 0.;
+
+  fFGD3Dlength1 = 0.;
+  fFGD3Dwidth1 = 0.;
+  fFGD3Dheight1 = 0.;
+  fFGD3DPos1_X = 0.;
+  fFGD3DPos1_Y = 0.;
+  fFGD3DPos1_Z = 0.;
+
+  fFGD3Dlength2 = 0.;
+  fFGD3Dwidth2 = 0.;
+  fFGD3Dheight2 = 0.;
+  fFGD3DPos2_X = 0.;
+  fFGD3DPos2_Y = 0.;
+  fFGD3DPos2_Z = 0.;
+
+  fSciFiFiberEdge = 0.;
+  fSciFiNum_AlongX = 0;
+  fSciFiNum_AlongZ = 0;
+  fSciFiNum_Layer = 0;
+  fSciFiPos_X = 0.;
+  fSciFiPos_Y = 0.;
+  fSciFiPos_Z = 0.;
+
+  fFGDlikeBarEdge = 0.;
+  fFGDlikeNum_AlongX = 0;
+  fFGDlikeNum_AlongZ = 0;
+  fFGDlikeNum_Layer = 0;
+  fFGDlikePos_X = 0.;
+  fFGDlikePos_Y = 0.;
+  fFGDlikePos_Z = 0.;
+
+
+  // ToF Downstream
+
+  fToFdefault_TopDown = false;
+  fToFLayerHorizNBar_TopDown = 0;
+  fToFLayerVertNBar_TopDown = 0;
+  fToFPlaneXYNum_TopDown = 0;
+  fToFBarHorizlength_TopDown = 0.;
+  fToFBarVertlength_TopDown = 0.;
+  fToFBarwidth_TopDown = 0.;
+  fToFBarheight_TopDown = 0.;
+  fToFRotX_TopDown = 0.;
+  fToFRotY_TopDown = 0.;
+  fToFRotZ_TopDown = 0.;
+  fToFPosX_TopDown = 0.;
+  fToFPosY_TopDown = 0.;
+  fToFPosZ_TopDown = 0.;
+
+  fToFdefault_BotDown = false;
+  fToFLayerHorizNBar_BotDown = 0;
+  fToFLayerVertNBar_BotDown = 0;
+  fToFPlaneXYNum_BotDown = 0;
+  fToFBarHorizlength_BotDown = 0.;
+  fToFBarVertlength_BotDown = 0.;
+  fToFBarwidth_BotDown = 0.;
+  fToFBarheight_BotDown = 0.;
+  fToFRotX_BotDown = 0.;
+  fToFRotY_BotDown = 0.;
+  fToFRotZ_BotDown = 0.;
+  fToFPosX_BotDown = 0.;
+  fToFPosY_BotDown = 0.;
+  fToFPosZ_BotDown = 0.;
+
+  fToFdefault_RightDown = false;
+  fToFLayerHorizNBar_RightDown = 0;
+  fToFLayerVertNBar_RightDown = 0;
+  fToFPlaneXYNum_RightDown = 0;
+  fToFBarHorizlength_RightDown = 0.;
+  fToFBarVertlength_RightDown = 0.;
+  fToFBarwidth_RightDown = 0.;
+  fToFBarheight_RightDown = 0.;
+  fToFRotX_RightDown = 0.;
+  fToFRotY_RightDown = 0.;
+  fToFRotZ_RightDown = 0.;
+  fToFPosX_RightDown = 0.;
+  fToFPosY_RightDown = 0.;
+  fToFPosZ_RightDown = 0.;
+
+  fToFdefault_LeftDown = false;
+  fToFLayerHorizNBar_LeftDown = 0;
+  fToFLayerVertNBar_LeftDown = 0;
+  fToFPlaneXYNum_LeftDown = 0;
+  fToFBarHorizlength_LeftDown = 0.;
+  fToFBarVertlength_LeftDown = 0.;
+  fToFBarwidth_LeftDown = 0.;
+  fToFBarheight_LeftDown = 0.;
+  fToFRotX_LeftDown = 0.;
+  fToFRotY_LeftDown = 0.;
+  fToFRotZ_LeftDown = 0.;
+  fToFPosX_LeftDown = 0.;
+  fToFPosY_LeftDown = 0.;
+  fToFPosZ_LeftDown = 0.;
+
+  fToFdefault_BackDown = false;
+  fToFLayerHorizNBar_BackDown = 0;
+  fToFLayerVertNBar_BackDown = 0;
+  fToFPlaneXYNum_BackDown = 0;
+  fToFBarHorizlength_BackDown = 0.;
+  fToFBarVertlength_BackDown = 0.;
+  fToFBarwidth_BackDown = 0.;
+  fToFBarheight_BackDown = 0.;
+  fToFRotX_BackDown = 0.;
+  fToFRotY_BackDown = 0.;
+  fToFRotZ_BackDown = 0.;
+  fToFPosX_BackDown = 0.;
+  fToFPosY_BackDown = 0.;
+  fToFPosZ_BackDown = 0.;
+
+  fToFdefault_FrontDown = false;
+  fToFLayerHorizNBar_FrontDown = 0;
+  fToFLayerVertNBar_FrontDown = 0;
+  fToFPlaneXYNum_FrontDown = 0;
+  fToFBarHorizlength_FrontDown = 0.;
+  fToFBarVertlength_FrontDown = 0.;
+  fToFBarwidth_FrontDown = 0.;
+  fToFBarheight_FrontDown = 0.;
+  fToFRotX_FrontDown = 0.;
+  fToFRotY_FrontDown = 0.;
+  fToFRotZ_FrontDown = 0.;
+  fToFPosX_FrontDown = 0.;
+  fToFPosY_FrontDown = 0.;
+  fToFPosZ_FrontDown = 0.;
+
+  // ToF ECalP0D
+
+  fToFdefault_ECalP0D = false;
+  fToFLayerHorizNBar_ECalP0D = 0;
+  fToFLayerVertNBar_ECalP0D = 0;
+  fToFPlaneXYNum_ECalP0D = 0;
+  fToFBarHorizlength_ECalP0D = 0.;
+  fToFBarVertlength_ECalP0D = 0.;
+  fToFBarwidth_ECalP0D = 0.;
+  fToFBarheight_ECalP0D = 0.;
+  fToFRotX_ECalP0D = 0.;
+  fToFRotY_ECalP0D = 0.;
+  fToFRotZ_ECalP0D = 0.;
+  fToFPosX_ECalP0D = 0.;
+  fToFPosY_ECalP0D = 0.;
+  fToFPosZ_ECalP0D = 0.;
+
+  // ToF Upstream
+
+  fToFdefault_TopUp = false;
+  fToFLayerHorizNBar_TopUp = 0;
+  fToFLayerVertNBar_TopUp = 0;
+  fToFPlaneXYNum_TopUp = 0;
+  fToFBarHorizlength_TopUp = 0.;
+  fToFBarVertlength_TopUp = 0.;
+  fToFBarwidth_TopUp = 0.;
+  fToFBarheight_TopUp = 0.;
+  fToFRotX_TopUp = 0.;
+  fToFRotY_TopUp = 0.;
+  fToFRotZ_TopUp = 0.;
+  fToFPosX_TopUp = 0.;
+  fToFPosY_TopUp = 0.;
+  fToFPosZ_TopUp = 0.;
+
+  fToFdefault_BotUp = false;
+  fToFLayerHorizNBar_BotUp = 0;
+  fToFLayerVertNBar_BotUp = 0;
+  fToFPlaneXYNum_BotUp = 0;
+  fToFBarHorizlength_BotUp = 0.;
+  fToFBarVertlength_BotUp = 0.;
+  fToFBarwidth_BotUp = 0.;
+  fToFBarheight_BotUp = 0.;
+  fToFRotX_BotUp = 0.;
+  fToFRotY_BotUp = 0.;
+  fToFRotZ_BotUp = 0.;
+  fToFPosX_BotUp = 0.;
+  fToFPosY_BotUp = 0.;
+  fToFPosZ_BotUp = 0.;
+
+  fToFdefault_RightUp = false;
+  fToFLayerHorizNBar_RightUp = 0;
+  fToFLayerVertNBar_RightUp = 0;
+  fToFPlaneXYNum_RightUp = 0;
+  fToFBarHorizlength_RightUp = 0.;
+  fToFBarVertlength_RightUp = 0.;
+  fToFBarwidth_RightUp = 0.;
+  fToFBarheight_RightUp = 0.;
+  fToFRotX_RightUp = 0.;
+  fToFRotY_RightUp = 0.;
+  fToFRotZ_RightUp = 0.;
+  fToFPosX_RightUp = 0.;
+  fToFPosY_RightUp = 0.;
+  fToFPosZ_RightUp = 0.;
+
+  fToFdefault_LeftUp = false;
+  fToFLayerHorizNBar_LeftUp = 0;
+  fToFLayerVertNBar_LeftUp = 0;
+  fToFPlaneXYNum_LeftUp = 0;
+  fToFBarHorizlength_LeftUp = 0.;
+  fToFBarVertlength_LeftUp = 0.;
+  fToFBarwidth_LeftUp = 0.;
+  fToFBarheight_LeftUp = 0.;
+  fToFRotX_LeftUp = 0.;
+  fToFRotY_LeftUp = 0.;
+  fToFRotZ_LeftUp = 0.;
+  fToFPosX_LeftUp = 0.;
+  fToFPosY_LeftUp = 0.;
+  fToFPosZ_LeftUp = 0.;
+
+  fToFdefault_BackUp = false;
+  fToFLayerHorizNBar_BackUp = 0;
+  fToFLayerVertNBar_BackUp = 0;
+  fToFPlaneXYNum_BackUp = 0;
+  fToFBarHorizlength_BackUp = 0.;
+  fToFBarVertlength_BackUp = 0.;
+  fToFBarwidth_BackUp = 0.;
+  fToFBarheight_BackUp = 0.;
+  fToFRotX_BackUp = 0.;
+  fToFRotY_BackUp = 0.;
+  fToFRotZ_BackUp = 0.;
+  fToFPosX_BackUp = 0.;
+  fToFPosY_BackUp = 0.;
+  fToFPosZ_BackUp = 0.;
+
+  fToFdefault_FrontUp = false;
+  fToFLayerHorizNBar_FrontUp = 0;
+  fToFLayerVertNBar_FrontUp = 0;
+  fToFPlaneXYNum_FrontUp = 0;
+  fToFBarHorizlength_FrontUp = 0.;
+  fToFBarVertlength_FrontUp = 0.;
+  fToFBarwidth_FrontUp = 0.;
+  fToFBarheight_FrontUp = 0.;
+  fToFRotX_FrontUp = 0.;
+  fToFRotY_FrontUp = 0.;
+  fToFRotZ_FrontUp = 0.;
+  fToFPosX_FrontUp = 0.;
+  fToFPosY_FrontUp = 0.;
+  fToFPosZ_FrontUp = 0.;
+
+  //
+  
+  fUseForwTPC1 = false;
+  fUseForwTPC2 = false;
+  fUseForwTPC3 = false;
+  fUseTarget1 = false;
+  fUseTarget2 = false;
+  fUseTPCUp1 = false;
+  fUseTPCDown1 = false;
+  fUseTPCUp2 = false;
+  fUseTPCDown2 = false;
+  fUseFGD1 = false;
+  fUseFGD2 = false;
+  fUseSuperFGD1 = false;
+  fUseSuperFGD2 = false;
+  fUseWAGASCI1 = false;
+  fUseWAGASCI2 = false;
+  fUseFGD3D1 = false;
+  fUseFGD3D2 = false;
+  fUseSciFi = false;
+  fUseFGDlike = false;
+  fUseMagnet = false;
+  fUseToF_TopDown = false;
+  fUseToF_BotDown = false;
+  fUseToF_RightDown = false;
+  fUseToF_LeftDown = false;
+  fUseToF_BackDown = false;
+  fUseToF_FrontDown = false;
+  fUseToF_ECalP0D = false;
+  fUseToF_TopUp = false;
+  fUseToF_BotUp = false;
+  fUseToF_RightUp = false;
+  fUseToF_LeftUp = false;
+  fUseToF_BackUp = false;
+  fUseToF_FrontUp = false;
+  // fUseSMRD = false;
+  fUseBasket = false;
+  fUseDsECal = false;
+  fUseBrlECal = false;
+  fUseP0DECal = false;
+  fUseP0D = false;
+  
+  fInvisForwTPC1 = false;
+  fInvisForwTPC2 = false;
+  fInvisForwTPC3 = false;
+  fInvisTarget1 = false;
+  fInvisTarget2 = false;
+  fInvisTPCUp1 = false;
+  fInvisTPCDown1 = false;
+  fInvisTPCUp2 = false;
+  fInvisTPCDown2 = false;
+  fInvisFGD1 = false;
+  fInvisFGD2 = false;
+  fInvisSuperFGD = false;
+  fInvisWAGASCI = false;
+  fInvisFGD3D = false;
+  fInvisSciFi = false;
+  fInvisFGDlike = false;
+  fInvisToF_TopDown = false;
+  fInvisToF_BotDown = false;
+  fInvisToF_RightDown = false;
+  fInvisToF_LeftDown = false;
+  fInvisToF_BackDown = false;
+  fInvisToF_FrontDown = false;
+  fInvisToF_ECalP0D = false;
+  fInvisToF_TopUp = false;
+  fInvisToF_BotUp = false;
+  fInvisToF_RightUp = false;
+  fInvisToF_LeftUp = false;
+  fInvisToF_BackUp = false;
+  fInvisToF_FrontUp = false;
+  fInvisMagnet = false;
+  fInvisSMRD = false;
+  fInvisBasket = false;
+  fInvisDsECal = false;
+  fInvisBrlECal = false;
+  fInvisP0DECal = false;
+  fInvisP0D = false;
+
+
+
+
   
   G4cout << G4endl;
   G4cout << "Reading inputs from XML file: " 
@@ -547,18 +1394,30 @@ void ExN02ND280XML::XML2Double(string tmp_app,double &dest){
 void ExN02ND280XML::XML2Bool(string tmp_app,bool &dest){
   string dest_string;
   XML2String(tmp_app,dest_string);
-    
+
+  //if(dest) cout << "dest = true" << endl;
+  //else cout << "dest = false" << endl;
+  //if(dest) exit(1);
+
   if(dest_string == "true" || 
      dest_string == "TRUE" || 
      dest_string == "True" || 
      dest_string == "1"    || 
      dest_string == "I") dest=true;
   
-  if(dest_string == "false" || 
-     dest_string == "FALSE" || 
-     dest_string == "False" || 
-     dest_string == "0"    || 
-     dest_string == "O") dest=false;
+  else if(dest_string == "false" || 
+	  dest_string == "FALSE" || 
+	  dest_string == "False" || 
+	  dest_string == "0"    || 
+	  dest_string == "O") dest=false;
+  
+  else{
+    G4ExceptionDescription msg;
+    msg << "Use either True or False" << G4endl;
+    G4Exception("ExN02ND280XML::XML2Bool(",
+		"MyCode0002",FatalException, msg);
+  }
+
   return;
 }
 

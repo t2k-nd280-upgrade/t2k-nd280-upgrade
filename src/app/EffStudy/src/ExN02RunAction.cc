@@ -53,7 +53,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
     fEventAction(eventAction)
 {
   //set the seed engine
-  CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
+  //CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine); // NEW SEED
 
   // set printing event number per each event
   G4RunManager::GetRunManager()->SetPrintProgress(1);
