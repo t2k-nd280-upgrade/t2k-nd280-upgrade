@@ -168,6 +168,7 @@ Float_t anaUtils::ComputeInversePT(AnaTPCParticleB& track){
 //***************************************************************
 Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, Float_t& sigma, bool UseSmearing){
 //***************************************************************
+  
   if (!track) return -999.;
 
   Float_t ToF_time_resolution = ND::params().GetParameterD("psycheNDUPUtils.ToF.TimeResolution");
@@ -273,7 +274,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   for (int i=0; i<track->nFGDSegments; i++){
     if (track->FGDSegments[i]->IsReconstructed) {
       Float_t true_time = track->FGDSegments[i]->PositionStart[3];
-      Float_t     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->SegLength/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
+      Float_t     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->SegLength/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
       Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
@@ -284,7 +285,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
 
   // find timing information in ECal
   for (int i=0; i<track->nECalSegments; i++) {
-    if (track->ECalSegments[i]->IsReconstructed) {
+    if (track->ECalSegments[i]->IsReconstructedMatchFGD) {      
       Float_t true_time = track->ECalSegments[i]->PositionStart[3];
       Float_t     sigma = 5; // 5ns
       Float_t      time = gRandom->Gaus(true_time, sigma);
@@ -347,6 +348,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
     return ToF;
 
   return seg2->PositionStart[3]-seg1->PositionStart[3];
+
 }
 
 //*********************************************************************
@@ -634,5 +636,5 @@ void anaUtils::FlipTrack(AnaParticleB* track){
   anaUtils::CopyArray(track->DirectionStart, temp_dir,              3); //temp_dir = dir_start
   anaUtils::CopyArray(track->DirectionEnd,   track->DirectionStart, 3); //dir_start = dir_end
   anaUtils::CopyArray(temp_dir,              track->DirectionEnd,   3); //dir_end = temp_dir
-
+  
 }

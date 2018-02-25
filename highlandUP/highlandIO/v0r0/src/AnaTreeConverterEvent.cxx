@@ -2275,6 +2275,9 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       seg->IsReconstructed =
 	IsReconstructedECal(anaUtils::ArrayToTVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum), abs(trueParticle->PDG),
 			    trueParticle->DetCrossingsVect[i]->Detector_name, useTPC, useFGD);
+      seg->IsReconstructedMatchFGD =
+	IsReconstructedECal(anaUtils::ArrayToTVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum), abs(trueParticle->PDG),
+			    trueParticle->DetCrossingsVect[i]->Detector_name, false, useFGD);
       reconParticle->ECalSegments[reconParticle->nECalSegments++] = seg;
 
     }
@@ -2316,6 +2319,10 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   Float_t true_ToF = -999, sigma_ToF = -999;
   Float_t reco_ToF = anaUtils::GetToF(reconParticle, p1, p2, sigma_ToF, true);
 
+  if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2]) {
+    std::cout << reco_ToF << " " << sigma_ToF << " " << reco_ToF/sigma_ToF << std::endl;
+  }
+
   Float_t ToF_length = -999, ToF_true_length = -999, sigma_ToF_length = -999;
   SubDetId::SubDetEnum first_ToF_det = SubDetId::kInvalid, second_ToF_det = SubDetId::kInvalid;
 
@@ -2325,7 +2332,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
     if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2])
       anaUtils::FlipTrack(reconParticle);
   }
-  else if (fabs(reco_ToF/sigma_ToF) < 2) { // ToF not good enough (below 2sigma separation)
+  else if (fabs(reco_ToF/sigma_ToF) < 0) { // ToF not good enough (below 2sigma separation)
     if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2])
       anaUtils::FlipTrack(reconParticle);
   }

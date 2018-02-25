@@ -2,9 +2,11 @@
  < numuCC4piAnalysis.Branch = 0 >
  < numuCC4piAnalysis.ForceBreak = 1 > 
 
+ < numuCC4piAnalysis.StoreAll = 0 > 
+
 --- Which ndUp configuration to use --------
 --- 0 - nd280 Current; 1 - ndUp Reference; 2 - ndUp Target-->TPC; 3 - ndUp TPC-->Target
- < psycheNDUPUtils.Geometry.nd280upConfiguration = 1 >
+ < psycheNDUPUtils.Geometry.nd280upConfiguration = 0 >
 
  < psycheNDUPUtils.Geometry.AddToFOnTargets      = 0 >
  < psycheNDUPUtils.Geometry.AddToF               = 1 >
@@ -35,7 +37,7 @@
  < numuCC4piAnalysis.MEPions.ME.MomentumCut = 2. >
 
 --- Type:  0 = FGD XZ, 1 = SuperFGD ---
- < highlandIO.Target.Type = 0 >
+ < highlandIO.Target.Type = 1 >
  < highlandIO.Target.CutLength = 50. >
 
  < highlandIO.FGD.CutLength = 70. >

@@ -352,7 +352,7 @@ namespace numuCC4piUtils{
 			
       bool reco=false;
       for (int i=0; i<track->nECalSegments; i++)
-	if (track->ECalSegments[i]->IsReconstructed)
+	if (track->ECalSegments[i]->IsReconstructedMatchFGD)
 	  reco=true;
       // ECal category
       if (reco && numuCC4pi_utils::MuonECalPIDCut(*track, box, _file_ECAL_PDF))
