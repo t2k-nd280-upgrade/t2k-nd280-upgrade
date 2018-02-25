@@ -2319,10 +2319,6 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
   Float_t true_ToF = -999, sigma_ToF = -999;
   Float_t reco_ToF = anaUtils::GetToF(reconParticle, p1, p2, sigma_ToF, true);
 
-  if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2]) {
-    std::cout << reco_ToF << " " << sigma_ToF << " " << reco_ToF/sigma_ToF << std::endl;
-  }
-
   Float_t ToF_length = -999, ToF_true_length = -999, sigma_ToF_length = -999;
   SubDetId::SubDetEnum first_ToF_det = SubDetId::kInvalid, second_ToF_det = SubDetId::kInvalid;
 
