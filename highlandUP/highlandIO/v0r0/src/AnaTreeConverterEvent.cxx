@@ -2328,7 +2328,7 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
     if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2])
       anaUtils::FlipTrack(reconParticle);
   }
-  else if (fabs(reco_ToF/sigma_ToF) < 0) { // ToF not good enough (below 2sigma separation)
+  else if (fabs(reco_ToF/sigma_ToF) < 2) { // ToF not good enough (below 2sigma separation)
     if (reconParticle->PositionStart[2] > reconParticle->PositionEnd[2])
       anaUtils::FlipTrack(reconParticle);
   }

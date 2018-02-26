@@ -287,7 +287,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   for (int i=0; i<track->nECalSegments; i++) {
     if (track->ECalSegments[i]->IsReconstructedMatchFGD) {      
       Float_t true_time = track->ECalSegments[i]->PositionStart[3];
-      Float_t     sigma = 5; // 5ns
+      Float_t     sigma = 2.5; // 5ns
       Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
