@@ -123,7 +123,7 @@ AnaECalParticleB::AnaECalParticleB(const AnaECalParticleB& seg):AnaParticleB(seg
 //********************************************************************
     SegLength=seg.SegLength;
     IsReconstructed=seg.IsReconstructed;
-    IsReconstructedMatchFGD=seg.IsReconstructedMatchFGD;
+    IsReconstructedForTiming=seg.IsReconstructedForTiming;
 }
 
 //********************************************************************

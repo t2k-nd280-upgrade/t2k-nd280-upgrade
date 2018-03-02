@@ -1,9 +1,0 @@
-#!/bin/csh
-
-set upgrade_dir = /sps/t2k/mlamoure/dev/Upgrade/t2k-nd280-upgrade
-set code_dir = ${upgrade_dir}/highlandUP/numuCC4piAnalysis/v0r0
-set job_dir = ${upgrade_dir}/highlandUP/numuCC4piAnalysis/v0r0/output/jobs
-cd ${job_dir}
-
-rm -f $2
-${code_dir}/Linux-x86_64/RunNumuCC4piAnalysis.exe -p $1 -o $2 $3

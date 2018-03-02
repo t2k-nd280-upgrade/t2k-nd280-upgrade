@@ -443,7 +443,7 @@ class AnaECalParticleB:public AnaParticleB {
   Float_t DeltaLYZ;
   Float_t SegLength;
   Bool_t IsReconstructed;
-  Bool_t IsReconstructedMatchFGD;
+  Bool_t IsReconstructedForTiming;
 
 };
 

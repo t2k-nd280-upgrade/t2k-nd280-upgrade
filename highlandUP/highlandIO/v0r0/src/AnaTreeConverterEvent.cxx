@@ -80,6 +80,9 @@ bool AnaTreeConverterEvent::Initialize(){
     hmisid_proton_as_pion = (TH1F*)fmisid_target->Get("hProtMisidAsPion_VsTrMom_FGDXZ");
   }
   
+  _ECal_reco_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
+				    "ECal_recoEff", BinnedParams::k1D_SYMMETRIC); 
+
   _ECal_FGDmatch_eff = new BinnedParams(std::string(getenv("HIGHLANDIOROOT")) + "/data",
 					"ECal_FGDmatchEff", BinnedParams::k1D_SYMMETRIC);
 
@@ -2004,29 +2007,42 @@ bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, int PDG, TString det
     ECal = 6;
   }
 
+  //==================================
+  // case where we use FGD and ECal
+  //==================================
   if (!useTPC) {
 
-    float FGDmatch_eff_Ds, FGDmatch_eff_Brl;
-   
+    float reco_eff_Brl, FGDmatch_eff_Brl;
+    float reco_eff_Ds, FGDmatch_eff_Ds;
+
     cos = P.Dot(entryNormal_vect)/mom;
     
+    if (!_ECal_reco_eff->GetBinValues(mom, reco_eff_Brl, reco_eff_Ds)) return false;
     if (!_ECal_FGDmatch_eff->GetBinValues(cos, FGDmatch_eff_Brl, FGDmatch_eff_Ds)) return false;
   
     // throw random number between 0 and 1
-    double r = gRandom->Rndm();
+    double r_eff[2];
+    gRandom->RndmArray(2, r_eff);
   
     // select artificially only a fraction of the events, 
     // by applying the FGD-ECal match efficiencies
     if (det.Contains("DsECal")) {
-      if (r < FGDmatch_eff_Ds)
-        return true;
-    } else {
-      if (r < FGDmatch_eff_Brl)
+      if (r_eff[0] < FGDmatch_eff_Ds && r_eff[1] < reco_eff_Ds)
         return true;
     }
-
+    else {
+      if (r_eff[0] < FGDmatch_eff_Brl && r_eff[1] < reco_eff_Brl)
+        return true;
+    }
     return false;
-  } else {
+
+  } 
+
+  //==================================
+  // case where we use TPC and ECal
+  //==================================
+  else {
+
     float TPC_ECal_eff;
     // if not use TPC consider two cases : p < 200 MeV/c and p > 200 MeV/c - for p < 200 MeV/c efficiency is very small
     // for target-->top/bottom P0D ECal consider Downstream ECal eff
@@ -2275,9 +2291,9 @@ void AnaTreeConverterEvent::Fill_Tracks_Recon_From_True(AnaTrueParticleB* truePa
       seg->IsReconstructed =
 	IsReconstructedECal(anaUtils::ArrayToTVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum), abs(trueParticle->PDG),
 			    trueParticle->DetCrossingsVect[i]->Detector_name, useTPC, useFGD);
-      seg->IsReconstructedMatchFGD =
+      seg->IsReconstructedForTiming =
 	IsReconstructedECal(anaUtils::ArrayToTVector3(trueParticle->DetCrossingsVect[i]->EntranceMomentum), abs(trueParticle->PDG),
-			    trueParticle->DetCrossingsVect[i]->Detector_name, false, useFGD);
+			    trueParticle->DetCrossingsVect[i]->Detector_name, false, useFGD) && !( (trueParticle->DetCrossingsVect[i]->Detector_name).Contains("P0D") );
       reconParticle->ECalSegments[reconParticle->nECalSegments++] = seg;
 
     }
