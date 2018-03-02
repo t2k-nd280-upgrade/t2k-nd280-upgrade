@@ -59,6 +59,7 @@ public:
   void SetRandomFlag(G4bool value);
   void SetGeneratorType(G4String name){fGeneratorType=name;};
   void SetTypeDirection(G4String name){fTypeDirection=name;};
+  void SetTypeMomentum(G4String name){fTypeMomentum=name;};
 
 private:
   G4ParticleGun*  fParticleGun; // G4 particle gun
@@ -69,6 +70,7 @@ private:
   ExN02PrimaryGeneratorMessenger *fPrimaryGeneratorMessenger;
   G4String fGeneratorType;
   G4String fTypeDirection;
+  G4String fTypeMomentum;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

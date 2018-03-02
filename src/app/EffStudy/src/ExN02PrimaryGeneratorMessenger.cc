@@ -62,6 +62,10 @@ ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGener
   fTypeDirCmd->SetParameterName("Type Direction",false);
   fTypeDirCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
 
+  fTypeMomCmd = new G4UIcmdWithAString("/generator/typemom",this);
+  fTypeMomCmd->SetGuidance("Choose how to generated the momentum: fixed or uniformly randomized");
+  fTypeMomCmd->SetParameterName("Type Momentum",false);
+  fTypeMomCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -70,6 +74,7 @@ ExN02PrimaryGeneratorMessenger::~ExN02PrimaryGeneratorMessenger()
 {
   delete fGeneratorCmd;
   delete fTypeDirCmd;
+  delete fTypeMomCmd;
   delete fPrimgenDir;
 }
 
@@ -83,7 +88,9 @@ void ExN02PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String n
   else if( command == fTypeDirCmd ){
     myPrimaryGenerator->SetTypeDirection(newValue);
   }  
-
+  else if( command == fTypeMomCmd ){
+    myPrimaryGenerator->SetTypeMomentum(newValue);
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
