@@ -154,12 +154,27 @@ namespace numuCC4piUtils{
     (void)event;
 		
     // Cast the ToyBox to the appropriate type
-    ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
+    ToyBoxCC4pi& box = *dynamic_cast<ToyBoxCC4pi*>(&boxB);
 		
-    return ( (useTarget1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1)) ||
-	     (useTarget2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget2)) ||
-	     (useFGD1    && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD1   )) ||
-	     (useFGD2    && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD2   )));
+    bool foundVertex;
+    if (useTarget1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1)) {
+      foundVertex = true;
+      box.Target_det = SubDetId::kTarget1;
+    }
+    if (useTarget2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget2)) {
+      foundVertex = true;
+      box.Target_det = SubDetId::kTarget2;
+    }
+    if (useFGD1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD1)) {
+      foundVertex = true;
+      box.Target_det = SubDetId::kFGD1;
+    }
+    if (useFGD2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD2)) {
+      foundVertex = true;
+      box.Target_det = SubDetId::kFGD2;
+    }
+
+    return foundVertex;
 		
   }
 	
@@ -309,12 +324,15 @@ namespace numuCC4piUtils{
 	    TPC == SubDetId::kTPCDown1 || 
 	    TPC == SubDetId::kTPCDown2) ) {
 	// FWD category
-	if (numuCC4pi_utils::IsForward(*track) &&
-	    numuCC4pi_utils::MuonPIDCut(*track, true) ) 
-	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::FwdTPC;}
+	if ( (cc4pibox->Target_det == SubDetId::kTarget1 && TPC >= SubDetId::kForwTPC1) ||
+	     (cc4pibox->Target_det == SubDetId::kTarget2 && TPC >= SubDetId::kForwTPC3) ||
+	     (cc4pibox->Target_det == SubDetId::kFGD1    && TPC >= SubDetId::kForwTPC2) ||
+	     (cc4pibox->Target_det == SubDetId::kFGD2    && TPC >= SubDetId::kForwTPC3) ) {
+	    if( numuCC4pi_utils::MuonPIDCut(*track, true) ) 
+	      {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::FwdTPC;}
+	}
 	// BWD category
-	else if (!numuCC4pi_utils::IsForward(*track) &&
-		 numuCC4pi_utils::MuonPIDCut(*track, false) ) 
+	else if ( numuCC4pi_utils::MuonPIDCut(*track, false) ) 
 	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::BwdTPC;}
       }
       else {

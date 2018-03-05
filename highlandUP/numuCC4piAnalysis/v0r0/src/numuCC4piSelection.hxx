@@ -64,6 +64,7 @@ public:
     PosPi0TPCtracks.clear();
     ElPi0TPCtracks.clear();
     MichelElectrons.clear();
+    Target_det = SubDetId::kInvalid;
     TPC_det = SubDetId::kInvalid;
   }
 
@@ -81,6 +82,7 @@ public:
     PosPi0TPCtracks.clear();
     ElPi0TPCtracks.clear();
     MichelElectrons.clear();
+    Target_det = SubDetId::kInvalid;
     TPC_det = SubDetId::kInvalid;
   }
 
@@ -90,6 +92,7 @@ public:
   float track_ECal_MipEM, track_ECal_EneOnL;
   AnaTrackB* MainTrack;
   std::vector<AnaTrackB*> TPCTracks, ECalTracks, TargetTracks;
+  SubDetId::SubDetEnum Target_det;
   SubDetId::SubDetEnum TPC_det;
   int categMuon;
 

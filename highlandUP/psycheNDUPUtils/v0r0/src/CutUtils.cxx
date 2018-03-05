@@ -198,15 +198,11 @@ bool cutUtils::DeltaLYZTargetCut( AnaTrackB& track,const SubDetId::SubDetEnum de
 
   float targetLYZCut = ND::params().GetParameterD("psycheNDUPUtils.cututils.targetLYZCut");
   
-    AnaTargetParticleB* TargetSegment = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( track, det));
-    if (TargetSegment)
-    { if (TargetSegment->DeltaLYZ > targetLYZCut) {
-        return true;
-      }
+  AnaTargetParticleB* TargetSegment = dynamic_cast<AnaTargetParticleB*>(anaUtils::GetSegmentInDet( track, det));
+  if (TargetSegment)
+    if (TargetSegment->DeltaLYZ > targetLYZCut) 
+      return true;
     
-  }
-//    std::cout<<"false"<<std::endl;
-
   return false;
 }
 
@@ -216,14 +212,10 @@ bool cutUtils::DeltaLYZFGDCut( AnaTrackB& track,const SubDetId::SubDetEnum det) 
 
   float targetLYZCut = ND::params().GetParameterD("psycheNDUPUtils.cututils.targetLYZCut");
   
-    AnaFGDParticleB* FGDSegment = dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet( track, det));
-    if (FGDSegment)
-    { if (FGDSegment->DeltaLYZ > targetLYZCut) {
-        return true;
-      }
-    
-  }
-//    std::cout<<"false"<<std::endl;
+  AnaFGDParticleB* FGDSegment = dynamic_cast<AnaFGDParticleB*>(anaUtils::GetSegmentInDet( track, det));
+  if (FGDSegment)
+    if (FGDSegment->DeltaLYZ > targetLYZCut)
+      return true;
 
   return false;
 }
@@ -233,23 +225,20 @@ bool cutUtils::DeltaLYZFGDCut( AnaTrackB& track,const SubDetId::SubDetEnum det) 
 bool cutUtils::DeltaLYZTPCCut(AnaTrackB& track)  {
 //**************************************************
 
-
   // This cut check the existence of track with position inside the Fiducial Volume and
   // with a minimum number of hits
    float tpcLYZCut = ND::params().GetParameterD("psycheNDUPUtils.cututils.tpcLYZCut");
 
   // Cast the ToyBox to the appropriate type
 
-  for (int subdet = 0; subdet < 7; subdet++) {
-    AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( track, static_cast<SubDetId::SubDetEnum >(subdet)));
-    if (TPCSegment) {
-
-      if (TPCSegment->DeltaLYZ > tpcLYZCut) {
-        return true;
-      }
-    }
-  }
+   for (int subdet = 0; subdet < 7; subdet++) {
+     AnaTPCParticleB* TPCSegment = dynamic_cast<AnaTPCParticleB*>(anaUtils::GetSegmentInDet( track, static_cast<SubDetId::SubDetEnum >(subdet)));
+     if (TPCSegment)
+       if (TPCSegment->DeltaLYZ > tpcLYZCut)
+	 return true;
+   }
   return false;
+
 }
 
 bool cutUtils::DeltaLYZTPCCut(AnaTrueParticleB& track)  {
