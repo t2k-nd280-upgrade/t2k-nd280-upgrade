@@ -150,7 +150,7 @@ void ExN02EventAction::EndOfEventAction(const G4Event* event)
       G4cout << "  " << partDef->GetParticleName() << " "
     	     << prim->GetPDGcode()
     	     << " w/ "
-    	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
+	     << G4BestUnit(prim->GetMomentum().mag(),"Energy")
     	     << "  Direction: (" << dir.x()
     	     << ", " << dir.y()
     	     << ", " << dir.z() << ")"

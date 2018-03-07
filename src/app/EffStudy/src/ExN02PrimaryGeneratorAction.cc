@@ -136,8 +136,21 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		  "MyCode0002",FatalException, msg);
     } 
     */
-  
+
+    G4double aMomAmp = fParticleGun->GetParticleMomentum();
+    G4double aEAmp = fParticleGun->GetParticleEnergy();  
     
+    if (fTypeMomentum=="Wide")
+      {
+        G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+        aMomAmp = (G4UniformRand()*(2000.) );
+        fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+        cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
+        aEAmp = fParticleGun->GetParticleEnergy();
+
+      }
+
+
     if(fTypeDirection=="Uniform"){      
       G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
       G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi/2]
