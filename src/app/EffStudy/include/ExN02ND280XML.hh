@@ -48,6 +48,14 @@ public :
   G4double GetXMLForwTPCPos3_X()  {return fForwTPCPos3_X;};
   G4double GetXMLForwTPCPos3_Y()  {return fForwTPCPos3_Y;};
   G4double GetXMLForwTPCPos3_Z()  {return fForwTPCPos3_Z;};
+
+  G4double GetXMLHATPCUpPos_X()  {return fHATPCUpPos_X;};
+  G4double GetXMLHATPCUpPos_Y()  {return fHATPCUpPos_Y;};
+  G4double GetXMLHATPCUpPos_Z()  {return fHATPCUpPos_Z;};
+
+  G4double GetXMLHATPCDownPos_X()  {return fHATPCDownPos_X;};
+  G4double GetXMLHATPCDownPos_Y()  {return fHATPCDownPos_Y;};
+  G4double GetXMLHATPCDownPos_Z()  {return fHATPCDownPos_Z;};
   
   G4bool   GetXMLSideTPCdefault1(){return fSideTPCdefault1;};
   G4double GetXMLSideTPClength1() {return fSideTPClength1;};
@@ -126,6 +134,30 @@ public :
   G4double GetXMLSuperFGDPos2_X()    {return fSuperFGDPos2_X;};
   G4double GetXMLSuperFGDPos2_Y()    {return fSuperFGDPos2_Y;};
   G4double GetXMLSuperFGDPos2_Z()    {return fSuperFGDPos2_Z;};
+
+  G4double GetXMLHATPCUpWidth() {return fHATPCUpWidth;};
+  G4double GetXMLHATPCUpHeight() {return fHATPCUpHeight;};
+  G4double GetXMLHATPCUpLength() {return fHATPCUpLength;};
+  G4double GetXMLHATPCUpDriftWidth() {return fHATPCUpDriftWidth;};
+  G4double GetXMLHATPCUpDriftHeight() {return fHATPCUpDriftHeight;};
+  G4double GetXMLHATPCUpDriftLength() {return fHATPCUpDriftLength;};
+  G4double GetXMLHATPCUpCathodeThickness() {return fHATPCUpCathodeThickness;};
+  G4double GetXMLHATPCUpInnerBoxWall() {return fHATPCUpInnerBoxWall;};
+  G4double GetXMLHATPCUpOuterBoxWall() {return fHATPCUpOuterBoxWall;};
+  G4double GetXMLHATPCUpSteppingLimit() {return fHATPCUpSteppingLimit;};
+  G4double GetXMLActiveHATPCUpVerticalOffset() {return fActiveHATPCUpVerticalOffset;};
+
+  G4double GetXMLHATPCDownWidth() {return fHATPCDownWidth;};
+  G4double GetXMLHATPCDownHeight() {return fHATPCDownHeight;};
+  G4double GetXMLHATPCDownLength() {return fHATPCDownLength;};
+  G4double GetXMLHATPCDownDriftWidth() {return fHATPCDownDriftWidth;};
+  G4double GetXMLHATPCDownDriftHeight() {return fHATPCDownDriftHeight;};
+  G4double GetXMLHATPCDownDriftLength() {return fHATPCDownDriftLength;};
+  G4double GetXMLHATPCDownCathodeThickness() {return fHATPCDownCathodeThickness;};
+  G4double GetXMLHATPCDownInnerBoxWall() {return fHATPCDownInnerBoxWall;};
+  G4double GetXMLHATPCDownOuterBoxWall() {return fHATPCDownOuterBoxWall;};
+  G4double GetXMLHATPCDownSteppingLimit() {return fHATPCDownSteppingLimit;};
+  G4double GetXMLActiveHATPCDownVerticalOffset() {return fActiveHATPCDownVerticalOffset;};
   
   G4String GetXMLWAGASCIInactMaterial1(){return fWAGASCIInactMaterial1;};
   G4double GetXMLWAGASCIlength1()   {return fWAGASCIlength1;};
@@ -349,6 +381,8 @@ public :
   G4double GetXMLToFPosZ_FrontUp()         {return fToFPosZ_FrontUp;};
   
   //
+  G4bool   GetXMLUseHATPCUp()    {return fUseHATPCUp;}; // Edited
+  G4bool   GetXMLUseHATPCDown()    {return fUseHATPCDown;}; // Edited
   G4bool   GetXMLUseForwTPC1()    {return fUseForwTPC1;};
   G4bool   GetXMLUseForwTPC2()    {return fUseForwTPC2;};
   G4bool   GetXMLUseForwTPC3()    {return fUseForwTPC3;};
@@ -452,6 +486,14 @@ private :
   G4double fForwTPCPos3_Y;
   G4double fForwTPCPos3_Z;
 
+  G4double fHATPCUpPos_X;
+  G4double fHATPCUpPos_Y;
+  G4double fHATPCUpPos_Z;
+
+  G4double fHATPCDownPos_X;
+  G4double fHATPCDownPos_Y;
+  G4double fHATPCDownPos_Z;
+
   G4bool   fSideTPCdefault1;
   G4double fSideTPClength1;
   G4double fSideTPCwidth1;
@@ -525,6 +567,30 @@ private :
  G4double fSuperFGDPos2_X;
  G4double fSuperFGDPos2_Y;
  G4double fSuperFGDPos2_Z;
+
+ G4double fHATPCUpWidth;
+ G4double fHATPCUpHeight;
+ G4double fHATPCUpLength;
+ G4double fHATPCUpDriftWidth;
+ G4double fHATPCUpDriftHeight;
+ G4double fHATPCUpDriftLength;
+ G4double fHATPCUpCathodeThickness;
+ G4double fHATPCUpInnerBoxWall;
+ G4double fHATPCUpOuterBoxWall;
+ G4double fHATPCUpSteppingLimit;
+ G4double fActiveHATPCUpVerticalOffset;
+
+ G4double fHATPCDownWidth;
+ G4double fHATPCDownHeight;
+ G4double fHATPCDownLength;
+ G4double fHATPCDownDriftWidth;
+ G4double fHATPCDownDriftHeight;
+ G4double fHATPCDownDriftLength;
+ G4double fHATPCDownCathodeThickness;
+ G4double fHATPCDownInnerBoxWall;
+ G4double fHATPCDownOuterBoxWall;
+ G4double fHATPCDownSteppingLimit;
+ G4double fActiveHATPCDownVerticalOffset;
 
   G4String fWAGASCIInactMaterial1;
   G4double fWAGASCIlength1;
@@ -776,6 +842,8 @@ private :
 
   //
   
+  G4bool fUseHATPCUp;
+  G4bool fUseHATPCDown;
   G4bool fUseForwTPC1;
   G4bool fUseForwTPC2;
   G4bool fUseForwTPC3;

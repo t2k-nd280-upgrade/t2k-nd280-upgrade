@@ -52,15 +52,15 @@ $resource        = "interactive"               unless defined $resource;
 #$tag             = "test" unless defined $tag;
 #$tag             = "g4ND280Up_NoNorm_Alternative_Targ_TPC_ECal_ToF_oofv"                 unless defined $tag;  
 #$tag             = "g4ND280Up_1E21_Reference_ECal_RHC_numu"                 unless defined $tag;
-$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
+#$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
 #$tag             = "g4ND280Up_1E22_Reference_ECal_nue"               unless defined $tag;
 #$tag             = "g4ND280Up_1E22_Alternative_Targ_TPC_ECal_ToF_nue"               unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF_RHC_numu"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_TPC_Targ_ECal_ToF_RHC_numu"    unless defined $tag;
 #$tag             = "g4ND280Up_AltTargTPC_Only_SuperFGD"    unless defined $tag;
-#$tag             = "g4ND280Up_1E21_SuperFGD_NuMuBar"    unless defined $tag;
-#$tag             = "g4ND280Up_1E21_SuperFGD_NuE"    unless defined $tag;
+$tag             = "g4ND280Up_1E21_FGDXZ_NuMu"    unless defined $tag;
+#$tag             = "g4ND280Up_1E21_SuperFGD_NuMu_NEUT"    unless defined $tag;
 
 
 ######################################################################################################################################
@@ -74,7 +74,7 @@ $tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defin
 #$config_file     = "config/configuration_cluster_targ_ftpc_2fgd.xml" unless defined $config_file; # alternative targ/ftpc: no ecal, no tof, cluster
 
 # w/o ToF, with ECal
-$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file; # current: no ecal, no tof, cluster
+#$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file; # current: no ecal, no tof, cluster
 #$config_file     = "config/configuration_cluster_current_ecal_nue.xml" unless defined $config_file; # current: no tof, cluster
 #$config_file     = "config/configuration_cluster_current_ecal_rhc_nuebar.xml" unless defined $config_file; # current: no ecal, no tof, cluster
 #$config_file     = "config/configuration_cluster_current_ecal_rhc_numubar.xml" unless defined $config_file; # current: no ecal, no tof, rhc-numubar, cluster
@@ -96,7 +96,11 @@ $config_file     = "config/configuration_cluster_current_ecal.xml" unless define
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_nuebar.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_oofv.xml" unless defined $config_file; # reference: no ecal, cluster     
+#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_oofv.xml" unless defined $config_file; # reference: no ecal, cluster    
+
+#with hatpc
+$config_file     = "config/HATPC/configuration_cluster_targ_ftpc_2fgd_tof_ecal_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
+ 
 
 # ECal, Basket, Magnet (no Tracker)
 #$config_file     = "config/configuration_cluster_outfv.xml" unless defined $config_file;
@@ -105,6 +109,7 @@ $config_file     = "config/configuration_cluster_current_ecal.xml" unless define
 #$config_file     = "config/Test/configuration_cluster_test.xml" unless defined $config_file;
 
 # Real Target 
+#$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_numu_NEUT.xml" unless defined $config_file;
 #$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_numu.xml" unless defined $config_file;
 #$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_numubar.xml" unless defined $config_file;
 #$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_nue.xml" unless defined $config_file;
@@ -116,14 +121,13 @@ $config_file     = "config/configuration_cluster_current_ecal.xml" unless define
 
 #$vis_file        = "mac/vis_test.mac"           unless defined $vis_file;  
 #$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
-#$vis_file        = "mac/vis.mac"           unless defined $vis_file;
-$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
+$vis_file        = "mac/vis.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
 
 #$nruns           = 80                          unless defined $nruns;      # number of jobs (current and reference)
 #$nruns           = 127                          unless defined $nruns;      # number of jobs (alternative)
-#$nruns           = 128                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
-$nruns           = 133                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
-
+$nruns           = 204                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
+#$nruns           = 133                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
 #$nexpts          = 5000                        unless defined $nexpts;     # number of events per job (w/o ToF)
 #$nexpts          = 2000                        unless defined $nexpts;     # number of events per job (with ToF RHC-numu) 
 $nexpts          = 3000                        unless defined $nexpts;     # number of events per job (with ToF RHC-numubar) 
@@ -132,7 +136,7 @@ $nexpts          = 3000                        unless defined $nexpts;     # num
 $first_expt      = 0                           unless defined $first_expt; # first event
 
 #$queue           = "veryshort"                unless defined $queue;
-$queue           = "short"                unless defined $queue;
+$queue           = "rhel6-short"                unless defined $queue;
 
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
@@ -163,7 +167,10 @@ while($irun < $nruns) { # loop over the jobs
     # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
     #
     if($resource eq "UNIGE-Atlas") {
+
 	$sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
+	$outfiledir = "$job_dir/";
+	$errfiledir = "$job_dir/";
 	#open(PBS, ">$job_dir/$tag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
 	open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
 	print PBS "#!/bin/bash -l  \n";
@@ -175,13 +182,47 @@ while($irun < $nruns) { # loop over the jobs
 	print PBS "\n";
 	print PBS "$command \n";
 	close(PBS);	
-	`qsub -q $queue -l mem=6000mb -l vmem=6000mb $sbatchfile`;
-	#`qsub -q $queue -l mem=6000mb -l vmem=6000mb $job_dir/g4ND280Up-$evt_first-$nexpts.sbatch`;
-	#`qsub -q $queue -l mem=20000mb -l vmem=20000mb $job_dir/g4ND280Up-$evt_first-$nexpts.sbatch`;
+	`qsub -q $queue -l mem=6000mb -l vmem=6000mb $sbatchfile`;	
     }
+    
+    if($resource eq "UNIGE-Atlas-Slurm") {
+
+	#print "Use SLURM \n";
+
+	#$queue = "rhel6-$queue"; # Correct SLURM queue, rhel-short, not short!
+	#print "$queue \n";
+	
+	$sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
+	$outfile = "$job_dir/$tag-$evt_first-$nexpts-%j.out";
+	$errfile = "$job_dir/$tag-$evt_first-$nexpts-%j.err";
+	#open(PBS, ">$job_dir/$tag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+	print PBS "#!/bin/bash -l  \n";
+	print PBS "#SBATCH --time=00:25:00 \n";
+
+	#print PBS "#SBATCH --partition=$queue --mem-per-cpu=6000  \n"; # in MB. Same as dphys_largemem default RAM                           
+	print PBS "#SBATCH --partition=$queue  \n"; # in MB. Same as dphys_largemem default RAM                           
+	print PBS "#SBATCH --mem-per-cpu=6000  \n"; # in MB. Same as dphys_largemem default RAM                           
+
+	print PBS "#SBATCH --nodes=1  \n";
+	print PBS "#SBATCH --ntasks-per-node=1  \n";
+	print PBS "#SBATCH --output=$outfile  \n";
+	print PBS "#SBATCH --error=$errfile  \n";
+	#print PBS "#SBATCH --jobname=myJob \n";
+	#print PBS "echo \$SLURM_JOB_NODELIST \n"; # print the node  number                                                                                          
+	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
+	print PBS "$command \n";
+	close(PBS);
+	`sbatch $sbatchfile`;
+	#`sbatch -t 07:00:00 $sbatchfile`;	
+    }
+    
     if($resource eq "interactive") {
 	system($command);
     }
+
+
+
 
     $irun=$irun+1;
 } # end loop over jobs

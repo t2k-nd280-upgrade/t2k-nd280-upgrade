@@ -127,6 +127,9 @@ public:
   void SetForwTPCPos2(G4double x,G4double y,G4double z) {fForwTPCPos2 = G4ThreeVector(x,y,z);};
   void SetForwTPCPos3(G4double x,G4double y,G4double z) {fForwTPCPos3 = G4ThreeVector(x,y,z);};
 
+  void SetHATPCUpPos(G4double x,G4double y,G4double z) {fHATPCUpPos = G4ThreeVector(x,y,z);};
+  void SetHATPCDownPos(G4double x,G4double y,G4double z) {fHATPCDownPos = G4ThreeVector(x,y,z);};
+
   void SetSideTPCFullLength1(G4double length)  {fSideTPCLength1 = length;};
   void SetSideTPCFullWidth1(G4double width)   {fSideTPCWidth1 = width;};
   void SetSideTPCFullHeight1(G4double height)  {fSideTPCHeight1 = height;};
@@ -243,11 +246,12 @@ public:
   G4double GetFGDFullHeight2()  {return fFGDHeight2;};
   G4ThreeVector GetFGDPos2()    {return fFGDPos2;};
 
-
-
   G4ThreeVector GetForwTPCPos1()  {return fForwTPCPos1;};
   G4ThreeVector GetForwTPCPos2()  {return fForwTPCPos2;};
   G4ThreeVector GetForwTPCPos3()  {return fForwTPCPos3;};
+
+  G4ThreeVector GetHATPCUpPos()  {return fHATPCUpPos;};
+  G4ThreeVector GetHATPCDownPos()  {return fHATPCDownPos;};
 
   G4double GetSideTPCFullLength1()  {return fSideTPCLength1;};
   G4double GetSideTPCFullWidth1()   {return fSideTPCWidth1;};
@@ -400,6 +404,9 @@ private:
   G4LogicalVolume*   logicSuperFGD2;
   G4VPhysicalVolume* physiSuperFGD2;
 
+  G4LogicalVolume*   logicHATPCUp;
+  G4LogicalVolume*   logicHATPCDown;
+
   G4LogicalVolume*   logicSciFi1;
   G4VPhysicalVolume* physiSciFi1; 
 
@@ -540,6 +547,9 @@ private:
   G4ThreeVector fForwTPCPos1;       // Position of Forward TPC 1
   G4ThreeVector fForwTPCPos2;       // Position of Forward TPC 2
   G4ThreeVector fForwTPCPos3;       // Position of Forward TPC 3
+
+  G4ThreeVector fHATPCUpPos;           // Position of High Angle TPC Up
+  G4ThreeVector fHATPCDownPos;           // Position of High Angle TPC Down
 
   G4double fSideTPCLength1;           // length of the side tpcs 1
   G4double fSideTPCWidth1;            // width of the side tpcs 1
