@@ -33,6 +33,8 @@ void ND280UpApplyResponse::Init(){
   fHitPE = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
   fHitTime = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
   fHitTrkID = nd280upconv::kBadNum;
+
+  fDetectorXsize = fDetectorYsize = fDetectorZsize = 0.;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -140,9 +142,9 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     timepeZ = prestepTime;
     
     // light collection + attenuation
-    TargetReadOut.ApplyFiberResponse(peX,timepeX,distX); // along X fiber
-    TargetReadOut.ApplyFiberResponse(peY,timepeY,distY); // along Y fiber
-    TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ); // along Z fiber
+    TargetReadOut.ApplyFiberResponse(peX,timepeX,distX, fDetectorXsize); // along X fiber
+    TargetReadOut.ApplyFiberResponse(peY,timepeY,distY, fDetectorYsize); // along Y fiber
+    TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ, fDetectorZsize); // along Z fiber
     
     // MPPC efficiency
     TargetReadOut.ApplyMPPCResponse(peX);
@@ -204,12 +206,24 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
 
 void ND280UpApplyResponse::SetMPPCProj2D_XY(TH2F *h2d){
   fMPPCProj2D_XY = new TH2F(*h2d);
+  if (!fDetectorXsize)
+    fDetectorXsize = fMPPCProj2D_XY->GetXaxis()->GetBinUpEdge(fMPPCProj2D_XY->GetXaxis()->GetLast());
+  if (!fDetectorYsize)
+    fDetectorYsize = fMPPCProj2D_XY->GetYaxis()->GetBinUpEdge(fMPPCProj2D_XY->GetYaxis()->GetLast());
 }
 void ND280UpApplyResponse::SetMPPCProj2D_XZ(TH2F *h2d){
   fMPPCProj2D_XZ = new TH2F(*h2d);
+  if (!fDetectorXsize)
+    fDetectorXsize = fMPPCProj2D_XZ->GetXaxis()->GetBinUpEdge(fMPPCProj2D_XZ->GetXaxis()->GetLast());
+  if (!fDetectorZsize)
+    fDetectorZsize = fMPPCProj2D_XZ->GetYaxis()->GetBinUpEdge(fMPPCProj2D_XZ->GetYaxis()->GetLast());
 }
 void ND280UpApplyResponse::SetMPPCProj2D_YZ(TH2F *h2d){
   fMPPCProj2D_YZ = new TH2F(*h2d);
+  if (!fDetectorYsize)
+    fDetectorYsize = fMPPCProj2D_YZ->GetXaxis()->GetBinUpEdge(fMPPCProj2D_YZ->GetXaxis()->GetLast());
+  if (!fDetectorZsize)
+    fDetectorZsize = fMPPCProj2D_YZ->GetYaxis()->GetBinUpEdge(fMPPCProj2D_YZ->GetYaxis()->GetLast());
 }
 
 void ND280UpApplyResponse::GetHitPosXY(double lightX,double lightY, double &mppcX,double &mppcY){ 
