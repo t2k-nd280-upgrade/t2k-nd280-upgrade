@@ -94,7 +94,7 @@ ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator()
 
 void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
 { 
-  fneutfile = TFile::Open(filename,"OLD");
+  fneutfile = TFile::Open(filename,"READ");
   if (!fneutfile->IsOpen()) {
     const char *msg = "NEUT file is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadNEUT";
@@ -159,7 +159,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
   // --> GeneratePrimaryVertexGENIE() cannot be used!!!
   //
 
-  fneutfile = TFile::Open(filename,"OLD");
+  fneutfile = TFile::Open(filename,"READ");
   if (!fneutfile->IsOpen()) {
     const char *msg = "GENIE file is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadGENIE";
