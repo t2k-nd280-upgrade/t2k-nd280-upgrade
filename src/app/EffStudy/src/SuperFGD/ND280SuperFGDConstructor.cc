@@ -137,12 +137,12 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
   cube.SetBase(fEdge);
   cube.SetLength(fEdge);
   cube.SetHeight(fEdge);  
-  cube.SetHoleRadius(0.7*CLHEP::mm);
+  cube.SetHoleRadius(0.75*CLHEP::mm);
   cube.SetFiberRadius(0.5*CLHEP::mm);
   cube.SetCoatingThickness(0.25*CLHEP::mm);
   cube.SetGap(0.0*CLHEP::mm);
   
-  double shift = 1.5*CLHEP::mm; //cube.GetHoleRadius();
+  double shift = 2.*CLHEP::mm; //cube.GetHoleRadius();
   G4ThreeVector HolePosAlongX = G4ThreeVector(0.    , shift , shift); // hole along X
   G4ThreeVector HolePosAlongY = G4ThreeVector(shift , 0.    , -shift); // hole along Y
   G4ThreeVector HolePosAlongZ = G4ThreeVector(-shift, -shift, 0.    ); // hole along Z
