@@ -5,6 +5,7 @@
 #include <TVector3.h>
 
 #include "ND280UpTrackerResponse.hh"
+#include "ND280UpTargReadOut.hh"
 #include "ND280UpConst.hh"
 
 class ND280UpApplyResponse {
@@ -97,6 +98,10 @@ private:
   TString fDetNameAlongX;
   TString fDetNameAlongY;
   TString fDetNameAlongZ;
+
+  Float_t fDetectorXsize;
+  Float_t fDetectorYsize;
+  Float_t fDetectorZsize;
 };
 
 #endif

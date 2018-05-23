@@ -39,6 +39,7 @@
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithoutParameter.hh"
+#include "G4UIcmdWith3VectorAndUnit.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -65,14 +66,14 @@ ExN02FieldMessenger::ExN02FieldMessenger(ExN02FieldSetup* fieldSetup)
   fUpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
   fUpdateCmd->SetGuidance("if you changed geometrical value(s).");
   fUpdateCmd->AvailableForStates(G4State_Idle);
- 
-  fMagFieldCmd = new G4UIcmdWithADoubleAndUnit("/field/setFieldX",this);
+
+  fMagFieldCmd = new G4UIcmdWith3VectorAndUnit("/field/setField",this);
   fMagFieldCmd->SetGuidance("Define magnetic field.");
-  fMagFieldCmd->SetGuidance("Magnetic field will be in X direction.");
-  fMagFieldCmd->SetParameterName("Bx",false,false);
+  fMagFieldCmd->SetGuidance("Magnetic field will be given as a vector.");
+  fMagFieldCmd->SetParameterName("Bx", "By", "Bz", false,false);
   fMagFieldCmd->SetDefaultUnit("tesla");
   fMagFieldCmd->AvailableForStates(G4State_Idle);
- 
+
   fMinStepCmd = new G4UIcmdWithADoubleAndUnit("/field/setMinStep",this);
   fMinStepCmd->SetGuidance("Define minimal step");
   fMinStepCmd->SetGuidance("Magnetic field will be in X direction.");
@@ -101,7 +102,7 @@ void ExN02FieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
   if( command == fUpdateCmd )
     fEMfieldSetup->CreateStepperAndChordFinder();
   if( command == fMagFieldCmd )
-    fEMfieldSetup->SetFieldValue(fMagFieldCmd->GetNewDoubleValue(newValue));
+    fEMfieldSetup->SetFieldValue(fMagFieldCmd->GetNew3VectorValue(newValue));
   if( command == fMinStepCmd )
     fEMfieldSetup->SetMinStep(fMinStepCmd->GetNewDoubleValue(newValue));
 }

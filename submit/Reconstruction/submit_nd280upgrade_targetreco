@@ -43,6 +43,9 @@ foreach (@ARGV) {
     $iarg++;
 }
 
+# wheter you want to merge all files into one and delete all the other output
+$merge_output = 0;
+
 $resource        = "interactive"                 unless defined $resource;
 
 #$tag            = "NuMu-GasAr" unless defined $tag;
@@ -142,3 +145,10 @@ while($irun < $nruns) { # loop over the jobs
     
 } # loop over jobs
 
+# output file: $job_dir/$newtag
+if($merge_output eq 1) {
+	$events = $nexpts * $nruns;
+	$command = "rm $job_dir/$newtag\_$events.root; hadd $job_dir/$newtag\_$events.root $job_dir/$newtag\_Evt*; rm $job_dir/$newtag\_Evt*";
+	print "$command \n";
+	system($command);
+}

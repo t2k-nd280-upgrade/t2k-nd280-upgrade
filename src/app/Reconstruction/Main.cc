@@ -21,6 +21,7 @@
 #include <TFile.h>
 #include <TH2F.h>
 #include <TH1F.h>
+#include <TH3F.h>
 #include <TGraph.h>
 #include <TMultiGraph.h>
 #include <TTree.h>
@@ -36,6 +37,8 @@
 
 #include <iostream>
 #include <fstream>
+
+#include <TRandom3.h>
 
 #include "ND280UpConst.hh"
 #include "ND280UpApplyResponse.hh"
@@ -408,7 +411,7 @@ int main(int argc,char** argv)
    
   //
   
-  const int NEvtDisplTot = 10; //atoi(argv[5]); // max # of evt. displays 
+  const int NEvtDisplTot = 50; //atoi(argv[5]); // max # of evt. displays 
 
   int NTOTALTRACKSALL_1stLOOP = 0;
   int NTOTALTRACKSALL_2ndLOOP = 0;
@@ -462,9 +465,46 @@ int main(int argc,char** argv)
   TGraph *gMCHits_XZ[NEvtDisplTot]; 
   TGraph *gMCHits_YZ[NEvtDisplTot];
 
-  TH1F *hPEVsTime_x[NEvtDisplTot]; 
-  TH1F *hPEVsTime_y[NEvtDisplTot]; 
-  TH1F *hPEVsTime_z[NEvtDisplTot]; 
+  TH1F *hPEVsTime_x[NEvtDisplTot];
+  TH1F *hPEVsTime_y[NEvtDisplTot];
+  TH1F *hPEVsTime_z[NEvtDisplTot];
+
+  // L.Y. histoes
+  bool CrossTalk = true;
+  TRandom3* fRndm = new TRandom3(0);
+
+
+  Int_t   ly_nbins  = 300;
+  Float_t ly_first  = 0.;
+  Float_t ly_last   = 300.;
+
+  Int_t   ly_nbins_short  = 100;
+  Float_t ly_first_short  = 0.;
+  Float_t ly_last_short   = 100.;
+
+  Int_t   ly_nbins_ext1  = 1000;
+  Float_t ly_first_ext1  = 0.;
+  Float_t ly_last_ext1   = 1000.;
+
+  Int_t   ly_nbins_ext2  = 5000;
+  Float_t ly_first_ext2  = 0.;
+  Float_t ly_last_ext2   = 5000.;
+
+  TH1F* LY_ch[1728];
+#if PROTO == 1
+    for (Int_t i = 0; i < 12; ++i)
+      LY_ch[i]    = new TH1F(Form("LY_ch%i", i),  "", ly_nbins_short,ly_first_short, ly_last_short);
+#elif PROTO == 2
+    for (Int_t i = 0; i < 192; ++i)
+      LY_ch[i] = new TH1F(Form("LY_ch_XY_%i_%i", int(i/8+1), int(i%8+1)),  "", ly_nbins_ext2,ly_first_ext2, ly_last_ext2);
+
+    for (Int_t i = 192; i < 1344; ++i)
+      LY_ch[i] = new TH1F(Form("LY_ch_XZ_%i_%i", int((i-192)%8+1), int((i-192)/48+1)),  "", ly_nbins_ext1,ly_first_ext1, ly_last_ext1);
+
+    for (Int_t i = 1344; i < 1728; ++i)
+      LY_ch[i] = new TH1F(Form("LY_ch_YZ_%i_%i", int((i-1344)%24+1), int((i-1344)/48+1)),  "", ly_nbins_ext1,ly_first_ext1, ly_last_ext1);
+#endif
+
 
   // Truth Vertex distributions
 
@@ -1138,6 +1178,13 @@ int main(int argc,char** argv)
     double posZ_prev = 0.;
     int trkid_prev = 0.;
 
+    Int_t binsX = h2d_xy->GetXaxis()->GetNbins();
+    Int_t binsY = h2d_xy->GetYaxis()->GetNbins();
+    Int_t binsZ = h2d_xz->GetYaxis()->GetNbins();
+
+    TH3F* event_histo = new TH3F("ev_h", "", binsX, 1., binsX*1. + 1., binsY, 1., binsY*1. + 1., binsZ, 1., binsZ*1. + 1.);
+
+
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
 
@@ -1227,7 +1274,14 @@ int main(int argc,char** argv)
 	hPEVsTime_y[ievt]->Fill(timepey,pey);
 	hPEVsTime_z[ievt]->Fill(timepez,pez);
       }
+
       
+      // store light yield
+      Int_t MPPCx = h2d_xz->GetXaxis()->FindBin(poshitX);
+      Int_t MPPCy = h2d_yz->GetXaxis()->FindBin(poshitY);
+      Int_t MPPCz = h2d_yz->GetYaxis()->FindBin(poshitZ);
+
+      event_histo->Fill(MPPCx, MPPCy, MPPCz, (pex+pey+pez) / 3.);
       //cout << edep << ", " << endl;
       //cout << nd280UpHit->GetPEX() << ", " << pex << endl;
       //cout << nd280UpHit->GetPEY() << ", " << pey << endl;
@@ -1361,7 +1415,276 @@ int main(int argc,char** argv)
       
     } // end loop over the hits
 
+    // FILL HITS MAP
+    TH2F* hits_map_XY = (TH2F*)h2d_xy->Clone("hits_map_XY");
+    TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
+    TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
+    for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
+      hits_map_XY->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z
+      hits_map_XZ->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
+      hits_map_YZ->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
+    }
 
+    // take into account the cross talk
+    if (CrossTalk) {
+
+      for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
+          for (Int_t k = 1; k <= hits_map_XZ->GetYaxis()->GetNbins(); ++k) {
+            if (event_histo->GetBinContent(i, j, k) < 0.5)
+              continue;
+            // add cross talk
+            Int_t phot = (int)(event_histo->GetBinContent(i, j, k) + 0.5);
+            for (Int_t ph = 0; ph < phot; ++ph) {
+              double rndunif = 1.;
+              // left
+              if (i > 1) {
+                rndunif = fRndm->Uniform();
+                if (rndunif < 0.037) {
+                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i-1), hits_map_XY->GetYaxis()->GetBinCenter(j));
+                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i-1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                }
+              }
+              // right
+              if (i < hits_map_XY->GetXaxis()->GetNbins()) {
+                rndunif = fRndm->Uniform();
+                if (rndunif < 0.037) {
+                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i+1), hits_map_XY->GetYaxis()->GetBinCenter(j));
+                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i+1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                }
+              }
+              // top
+              if (j < hits_map_XY->GetYaxis()->GetNbins()) {
+                rndunif = fRndm->Uniform();
+                if (rndunif < 0.037) {
+                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j+1));
+                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j+1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                }
+              }
+              // bottom
+              if (j > 1) {
+                rndunif = fRndm->Uniform();
+                if (rndunif < 0.037) {
+                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j-1));
+                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j-1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                }
+              }
+              // forward
+              if (k < hits_map_XZ->GetYaxis()->GetNbins()) {
+                rndunif = fRndm->Uniform();
+                if (rndunif < 0.037) {
+                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j));
+                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k+1));
+                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k+1));
+                }
+              }
+              // backward
+              if (k > 1) {
+                rndunif = fRndm->Uniform();
+                if (rndunif < 0.037) {
+                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j));
+                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k-1));
+                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k-1));
+                }
+              }
+
+            }
+          }
+        }
+      }/*
+      cross talk simulation v2
+      destorts the l.y. spectrum shape. Maybe because of not clear understanding of the cross talk nature
+
+      for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
+          for (Int_t k = 1; k <= hits_map_XZ->GetYaxis()->GetNbins(); ++k) {
+            if (event_histo->GetBinContent(i, j, k) > 0) {
+              // add cross talk
+              Int_t phot = (int)(event_histo->GetBinContent(i, j, k) + 0.5);
+              // std::cout << "total photons  " << i << "   " << j << "    " << k  << "    " << event_histo->GetBinContent(i, j, k) << std::endl;
+              for (Int_t ph = 0; ph < phot; ++ph) {
+                double leave_prob = 1.;
+                double which_leave = 3.;
+                double which_surface = 6.;
+                double which_fiber = 3.;
+                leave_prob    = fRndm->Uniform();
+                which_leave   = fRndm->Uniform(3.);
+                which_surface = fRndm->Uniform(6.);
+                which_fiber   = fRndm->Uniform(3.);
+
+                if (leave_prob < 0.666) {
+                  // substract photon
+                  if (which_leave < 1) {
+                    hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) - 1);
+                  } else if (which_leave < 2) {
+                    hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) - 1);
+                  } else {
+                    hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) - 1);
+                  }
+                  // add photon
+                  if (which_surface < 1 && i > 1) {
+                    if (which_fiber < 1) {
+                      hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) + 1);
+                    } else if (which_fiber < 2) {
+                      hits_map_XZ->SetBinContent(i-1, k, hits_map_XZ->GetBinContent(i-1, k) + 1);
+                    } else if (which_fiber < 3) {
+                      hits_map_XY->SetBinContent(i-1, j, hits_map_XY->GetBinContent(i-1, j) + 1);
+                    }
+                  } else if (which_surface < 2 && i < hits_map_XY->GetXaxis()->GetNbins()) {
+                    if (which_fiber < 1) {
+                      hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) + 1);
+                    } else if (which_fiber < 2) {
+                      hits_map_XZ->SetBinContent(i+1, k, hits_map_XZ->GetBinContent(i+1, k) + 1);
+                    } else if (which_fiber < 3) {
+                      hits_map_XY->SetBinContent(i+1, j, hits_map_XY->GetBinContent(i+1, j) + 1);
+                    }
+                  } else if (which_surface < 3 && j > 1) {
+                    if (which_fiber < 1) {
+                      hits_map_YZ->SetBinContent(j-1, k, hits_map_YZ->GetBinContent(j-1, k) + 1);
+                    } else if (which_fiber < 2) {
+                      hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) + 1);
+                    } else if (which_fiber < 3) {
+                      hits_map_XY->SetBinContent(i, j-1, hits_map_XY->GetBinContent(i, j-1) + 1);
+                    }
+                  } else if (which_surface < 4 && j < hits_map_XY->GetYaxis()->GetNbins()) {
+                    if (which_fiber < 1) {
+                      hits_map_YZ->SetBinContent(j+1, k, hits_map_YZ->GetBinContent(j+1, k) + 1);
+                    } else if (which_fiber < 2) {
+                      hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) + 1);
+                    } else if (which_fiber < 3) {
+                      hits_map_XY->SetBinContent(i, j+1, hits_map_XY->GetBinContent(i, j+1) + 1);
+                    }
+                  } else if (which_surface < 5 && k > 1) {
+                    if (which_fiber < 1) {
+                      hits_map_YZ->SetBinContent(j, k-1, hits_map_YZ->GetBinContent(j, k-1) + 1);
+                    } else if (which_fiber < 2) {
+                      hits_map_XZ->SetBinContent(i, k-1, hits_map_XZ->GetBinContent(i, k-1) + 1);
+                    } else if (which_fiber < 3) {
+                      hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) + 1);
+                    }
+                  } else if (which_surface < 6 && k < hits_map_XZ->GetYaxis()->GetNbins()) {
+                    if (which_fiber < 1) {
+                      hits_map_YZ->SetBinContent(j, k-1, hits_map_YZ->GetBinContent(j, k-1) + 1);
+                    } else if (which_fiber < 2) {
+                      hits_map_XZ->SetBinContent(i, k-1, hits_map_XZ->GetBinContent(i, k-1) + 1);
+                    } else if (which_fiber < 3) {
+                      hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) + 1);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }*/
+    } // end of the cross talk simulation
+
+    delete event_histo;
+
+    // store several channels:
+#if PROTO == 1
+      if (hits_map_XZ->GetBinContent(1, 1) > 0);
+        LY_ch[0]->Fill(hits_map_XZ->GetBinContent(1, 1));
+      if (hits_map_XZ->GetBinContent(2, 1) > 0);
+        LY_ch[1]->Fill(hits_map_XZ->GetBinContent(2, 1));
+      if (hits_map_XZ->GetBinContent(3, 1) > 0);
+        LY_ch[2]->Fill(hits_map_XZ->GetBinContent(3, 1));
+
+      if (hits_map_YZ->GetBinContent(1, 1) > 0)
+        LY_ch[3]->Fill(hits_map_YZ->GetBinContent(1, 1));
+      if (hits_map_YZ->GetBinContent(2, 1) > 0)
+        LY_ch[4]->Fill(hits_map_YZ->GetBinContent(2, 1));
+      if (hits_map_YZ->GetBinContent(3, 1) > 0)
+        LY_ch[5]->Fill(hits_map_YZ->GetBinContent(3, 1));
+
+      if (hits_map_XZ->GetBinContent(1, 5) > 0)
+        LY_ch[6]->Fill(hits_map_XZ->GetBinContent(1, 5));
+      if (hits_map_XZ->GetBinContent(2, 5) > 0)
+        LY_ch[7]->Fill(hits_map_XZ->GetBinContent(2, 5));
+      if (hits_map_XZ->GetBinContent(3, 5) > 0)
+        LY_ch[8]->Fill(hits_map_XZ->GetBinContent(3, 5));
+
+      if (hits_map_YZ->GetBinContent(1, 5) > 0)
+        LY_ch[9]->Fill(hits_map_YZ->GetBinContent(1, 5));
+      if (hits_map_YZ->GetBinContent(2, 5) > 0)
+        LY_ch[10]->Fill(hits_map_YZ->GetBinContent(2, 5));
+      if (hits_map_YZ->GetBinContent(3, 5) > 0)
+        LY_ch[11]->Fill(hits_map_YZ->GetBinContent(3, 5));
+
+#elif PROTO == 2
+    // Fill Z fibers
+      Int_t counter = 0;
+      for (Int_t i = 1; i < 25; ++i) {
+        for (Int_t j = 1; j < 9; ++j) {
+          if (hits_map_XY->GetBinContent(i , j) > 0) {
+            LY_ch[counter]->Fill(hits_map_XY->GetBinContent(i , j));
+          }
+          ++counter;
+        }
+      }
+
+    // Fill Y fibers
+      for (Int_t i = 1; i < 49; ++i) {
+        for (Int_t j = 1; j < 25; ++j) {
+          if (hits_map_XZ->GetBinContent(j , i) > 0)
+            LY_ch[counter]->Fill(hits_map_XZ->GetBinContent(j , i));
+          ++counter;
+
+        }
+      }
+
+
+    // Fill X fibers
+      for (Int_t i = 1; i < 49; ++i) {
+        for (Int_t j = 1; j < 9; ++j) {
+          if (hits_map_YZ->GetBinContent(j , i) > 0)
+            LY_ch[counter]->Fill(hits_map_YZ->GetBinContent(j , i));
+          ++counter;
+        }
+      }
+#endif
+
+
+    // END OF FILLING HITS MAP
+
+    if(ievt<NEvtDisplTot){
+  //if(fRecoTrack_PDG[itrk] == 2112){
+  //if(fRecoTrack_ID[itrk] == 4){
+
+  //cout << "Track PDG = " << fRecoTrack_PDG[itrk] << endl;
+  //    for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
+  hMPPCHits_XY[ievt]->Add(hits_map_XY); // pe along Z
+  hMPPCHits_XZ[ievt]->Add(hits_map_XZ); // pe along Y
+  hMPPCHits_YZ[ievt]->Add(hits_map_YZ); // pe along X
+    for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
+  AddGraph(gMCHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z
+  AddGraph(gMCHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y
+  AddGraph(gMCHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X
+}
+  //}
+      }
+
+      // Draw the Canvas
+      if(ievt<NEvtDisplTot){
+  cMPPCHits_XY[ievt]->cd();
+  hMPPCHits_XY[ievt]->Draw("colz");
+  gMCHits_XY[ievt]->Draw("p same");
+  TargVtx_XY->Draw();
+
+  cMPPCHits_YZ[ievt]->cd();
+  hMPPCHits_YZ[ievt]->Draw("colz");
+  gMCHits_YZ[ievt]->Draw("p same");
+  TargVtx_YZ->Draw();
+
+  cMPPCHits_XZ[ievt]->cd();
+  hMPPCHits_XZ[ievt]->Draw("colz");
+  gMCHits_XZ[ievt]->Draw("p same");
+  TargVtx_XZ->Draw();
+      }
 
 
     //
@@ -1998,7 +2321,7 @@ int main(int argc,char** argv)
       //<< ", " << fND280UpRecoTrack->GetTruthPhi()
       //<< endl;
 
-      //fND280UpRecoTrack->SetRecoCosTheta(costh_true); // TODO!!!      
+      //fND280UpRecoTrack->SetRecoCosTheta(costh_true); // TODO!!!
 
       //fND280UpRecoTrack->SetMPPCHit_XY(fRecoTrack_MPPCHit_XY[itrk]); // NOT NEEDED!!! TOO HEAVY!!!
       //fND280UpRecoTrack->SetMPPCHit_XZ(fRecoTrack_MPPCHit_XZ[itrk]); // NOT NEEDED!!! TOO HEAVY!!!
@@ -2426,6 +2749,14 @@ int main(int argc,char** argv)
     
     }
   }
+
+#if PROTO == 1
+    for (Int_t i = 0; i < 12; ++i)
+      LY_ch[i]->Write();
+#elif PROTO == 2
+    for (Int_t i = 0; i < 1728; ++i)
+      LY_ch[i]->Write();
+#endif
 
   // Vertex distribution
   hVtx_XY->Write();
