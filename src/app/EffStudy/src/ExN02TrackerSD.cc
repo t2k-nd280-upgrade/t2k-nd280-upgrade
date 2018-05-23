@@ -110,6 +110,7 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 
   //return false;
 
+  // COMMENT this line to store all the hits
   if(aStep->GetTrack()->GetParentID()>0) return false; // Look only at Primary Tracks!!!
   
   //if(aStep->GetTrack()->GetParentID()==0){
