@@ -1,6 +1,9 @@
 # Check if cmake has the required version
 cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Set name of our project
 project(t2k-nd280-upgrade)
 
@@ -62,6 +65,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc/ecal) ### in
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc/p0d) ### include nd280mc/p0d class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/ToF) ### include ToF class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/SuperFGD) ### include SuperFGD class
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/HATPC) ### include SuperFGD class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/FGDlike) ### include FGDlike class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/WAGASCI) ### include WAGASCI class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/FGD3D) ### include FGD3D class

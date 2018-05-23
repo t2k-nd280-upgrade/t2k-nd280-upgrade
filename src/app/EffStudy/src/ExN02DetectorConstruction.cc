@@ -72,6 +72,8 @@
 #include "ND280ToFConstructor.hh"
 // SuperFGD
 #include "ND280SuperFGDConstructor.hh"
+// HATPC
+#include "ND280HATPCConstructor.hh"
 // SciFi
 #include "ND280SciFiConstructor.hh"
 // FGD-like (horizontal target)
@@ -1905,6 +1907,127 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
+
+  //
+  //------------------------------ 
+  // HATPCUp
+  //------------------------------ 
+  //
+
+  G4String cNameLogicHATPCUp = cParentNameTPC+"/HATPCUp";
+  ND280HATPCConstructor *fHATPCUpConstructor = new ND280HATPCConstructor(cNameLogicHATPCUp,this);
+  G4String nameHATPCUp = fHATPCUpConstructor->GetName();
+
+  if( ND280XMLInput->GetXMLUseHATPCUp() ){
+
+  double HATPCUpWidth = ND280XMLInput->GetXMLHATPCUpWidth();
+  double HATPCUpHeight = ND280XMLInput->GetXMLHATPCUpHeight();
+  double HATPCUpLength = ND280XMLInput->GetXMLHATPCUpLength();
+  double HATPCUpDriftWidth = ND280XMLInput->GetXMLHATPCUpDriftWidth();
+  double HATPCUpDriftHeight = ND280XMLInput->GetXMLHATPCUpDriftHeight();
+  double HATPCUpDriftLength = ND280XMLInput->GetXMLHATPCUpDriftLength();  
+  double HATPCUpCathodeThickness = ND280XMLInput->GetXMLHATPCUpCathodeThickness();
+  double HATPCUpInnerBoxWall = ND280XMLInput->GetXMLHATPCUpInnerBoxWall();
+  double HATPCUpOuterBoxWall = ND280XMLInput->GetXMLHATPCUpOuterBoxWall();
+  double HATPCUpSteppingLimit = ND280XMLInput->GetXMLHATPCUpSteppingLimit();
+  double ActiveHATPCUpVerticalOffset = ND280XMLInput->GetXMLActiveHATPCUpVerticalOffset();  
+
+  G4double x = ND280XMLInput->GetXMLHATPCUpPos_X();
+  G4double y = ND280XMLInput->GetXMLHATPCUpPos_Y();
+  G4double z = ND280XMLInput->GetXMLHATPCUpPos_Z();
+
+  fHATPCUpConstructor->SetHATPCParentName(cParentNameTPC);
+  fHATPCUpConstructor->SetHATPCName("HATPCUp");
+  fHATPCUpConstructor->SetHATPCWidth(HATPCUpWidth*CLHEP::mm);
+  fHATPCUpConstructor->SetHATPCHeight(HATPCUpHeight*CLHEP::mm);
+  fHATPCUpConstructor->SetHATPCLength(HATPCUpLength*CLHEP::mm);
+  fHATPCUpConstructor->SetHATPCDriftWidth(HATPCUpDriftWidth*CLHEP::mm);
+  fHATPCUpConstructor->SetHATPCDriftHeight(HATPCUpDriftHeight*CLHEP::mm); 
+  fHATPCUpConstructor->SetHATPCDriftLength(HATPCUpDriftLength*CLHEP::mm);
+  fHATPCUpConstructor->SetHATPCCathodeThickness(HATPCUpCathodeThickness*CLHEP::mm);
+  fHATPCUpConstructor->SetHATPCInnerBoxWall(HATPCUpInnerBoxWall*CLHEP::mm);
+  fHATPCUpConstructor->SetHATPCOuterBoxWall(HATPCUpOuterBoxWall*CLHEP::mm);
+  fHATPCUpConstructor->SetHATPCSteppingLimit(HATPCUpSteppingLimit*CLHEP::mm);
+  fHATPCUpConstructor->SetActiveHATPCVerticalOffset(ActiveHATPCUpVerticalOffset*CLHEP::mm);
+
+  SetHATPCUpPos(x,y,z);
+        
+  logicHATPCUp = fHATPCUpConstructor->GetPiece();
+ 
+  new G4PVPlacement(0,
+		    GetHATPCUpPos(),
+		    logicHATPCUp,
+		    logicHATPCUp->GetName(),
+		    logicBasket,
+		    false,
+		    0);
+
+  }
+
+
+
+
+
+
+
+
+
+
+  //
+  //------------------------------ 
+  // HATPCDown
+  //------------------------------ 
+  //
+
+  G4String cNameLogicHATPCDown = cParentNameTPC+"/HATPCDown";
+  ND280HATPCConstructor *fHATPCDownConstructor = new ND280HATPCConstructor(cNameLogicHATPCDown,this);
+  G4String nameHATPCDown = fHATPCDownConstructor->GetName();
+
+  if( ND280XMLInput->GetXMLUseHATPCDown() ){
+
+  double HATPCDownWidth = ND280XMLInput->GetXMLHATPCDownWidth();
+  double HATPCDownHeight = ND280XMLInput->GetXMLHATPCDownHeight();
+  double HATPCDownLength = ND280XMLInput->GetXMLHATPCDownLength();
+  double HATPCDownDriftWidth = ND280XMLInput->GetXMLHATPCDownDriftWidth();
+  double HATPCDownDriftHeight = ND280XMLInput->GetXMLHATPCDownDriftHeight();
+  double HATPCDownDriftLength = ND280XMLInput->GetXMLHATPCDownDriftLength();  
+  double HATPCDownCathodeThickness = ND280XMLInput->GetXMLHATPCDownCathodeThickness();
+  double HATPCDownInnerBoxWall = ND280XMLInput->GetXMLHATPCDownInnerBoxWall();
+  double HATPCDownOuterBoxWall = ND280XMLInput->GetXMLHATPCDownOuterBoxWall();
+  double HATPCDownSteppingLimit = ND280XMLInput->GetXMLHATPCDownSteppingLimit();
+  double ActiveHATPCDownVerticalOffset = ND280XMLInput->GetXMLActiveHATPCDownVerticalOffset();  
+
+  G4double x = ND280XMLInput->GetXMLHATPCDownPos_X();
+  G4double y = ND280XMLInput->GetXMLHATPCDownPos_Y();
+  G4double z = ND280XMLInput->GetXMLHATPCDownPos_Z();
+
+  fHATPCDownConstructor->SetHATPCParentName(cParentNameTPC);
+  fHATPCDownConstructor->SetHATPCName("HATPCDown");
+  fHATPCDownConstructor->SetHATPCWidth(HATPCDownWidth*CLHEP::mm);
+  fHATPCDownConstructor->SetHATPCHeight(HATPCDownHeight*CLHEP::mm);
+  fHATPCDownConstructor->SetHATPCLength(HATPCDownLength*CLHEP::mm);
+  fHATPCDownConstructor->SetHATPCDriftWidth(HATPCDownDriftWidth*CLHEP::mm);
+  fHATPCDownConstructor->SetHATPCDriftHeight(HATPCDownDriftHeight*CLHEP::mm); 
+  fHATPCDownConstructor->SetHATPCDriftLength(HATPCDownDriftLength*CLHEP::mm);
+  fHATPCDownConstructor->SetHATPCCathodeThickness(HATPCDownCathodeThickness*CLHEP::mm);
+  fHATPCDownConstructor->SetHATPCInnerBoxWall(HATPCDownInnerBoxWall*CLHEP::mm);
+  fHATPCDownConstructor->SetHATPCOuterBoxWall(HATPCDownOuterBoxWall*CLHEP::mm);
+  fHATPCDownConstructor->SetHATPCSteppingLimit(HATPCDownSteppingLimit*CLHEP::mm);
+  fHATPCDownConstructor->SetActiveHATPCVerticalOffset(ActiveHATPCDownVerticalOffset*CLHEP::mm);
+
+  SetHATPCDownPos(x,y,z);
+        
+  logicHATPCDown = fHATPCDownConstructor->GetPiece();
+ 
+  new G4PVPlacement(0,
+		    GetHATPCDownPos(),
+		    logicHATPCDown,
+		    logicHATPCDown->GetName(),
+		    logicBasket,
+		    false,
+		    0);
+
+  }
 
 
 
