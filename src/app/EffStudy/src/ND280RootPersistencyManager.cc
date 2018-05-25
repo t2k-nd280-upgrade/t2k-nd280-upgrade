@@ -714,16 +714,16 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       //
       nd280Vertex->SetReacMode(vInfo->GetReactionNum());
       nd280Vertex->SetReacModeString(vInfo->GetReaction());
-      
-      nd280Vertex->SetPosition(vtx->GetX0()/CLHEP::mm,
-			       vtx->GetY0()/CLHEP::mm,
-			       vtx->GetZ0()/CLHEP::mm);
-      nd280Vertex->SetTime(vtx->GetT0()/CLHEP::second);
-      
-      // Add the vertex to the event
-      fND280UpEvent->AddVertex(nd280Vertex);
-      
-    }
+    }  
+    nd280Vertex->SetPosition(vtx->GetX0()/CLHEP::mm,
+      vtx->GetY0()/CLHEP::mm,
+      vtx->GetZ0()/CLHEP::mm);
+    nd280Vertex->SetTime(vtx->GetT0()/CLHEP::second);
+
+    // Add the vertex to the event
+    fND280UpEvent->AddVertex(nd280Vertex);
+
+    
     
     ++vtxNumber;  
       
