@@ -470,7 +470,6 @@ int main(int argc,char** argv)
   TH1F *hPEVsTime_z[NEvtDisplTot];
 
   // L.Y. histoes
-  bool CrossTalk = true;
   TRandom3* fRndm = new TRandom3(0);
 
 
@@ -499,10 +498,10 @@ int main(int argc,char** argv)
       LY_ch[i] = new TH1F(Form("LY_ch_XY_%i_%i", int(i/8+1), int(i%8+1)),  "", ly_nbins_ext2,ly_first_ext2, ly_last_ext2);
 
     for (Int_t i = 192; i < 1344; ++i)
-      LY_ch[i] = new TH1F(Form("LY_ch_XZ_%i_%i", int((i-192)%8+1), int((i-192)/48+1)),  "", ly_nbins_ext1,ly_first_ext1, ly_last_ext1);
+      LY_ch[i] = new TH1F(Form("LY_ch_XZ_%i_%i", int((i-192)%8+1), int((i-192)/8+1)),  "", ly_nbins_ext1,ly_first_ext1, ly_last_ext1);
 
     for (Int_t i = 1344; i < 1728; ++i)
-      LY_ch[i] = new TH1F(Form("LY_ch_YZ_%i_%i", int((i-1344)%24+1), int((i-1344)/48+1)),  "", ly_nbins_ext1,ly_first_ext1, ly_last_ext1);
+      LY_ch[i] = new TH1F(Form("LY_ch_YZ_%i_%i", int((i-1344)%24+1), int((i-1344)/24+1)),  "", ly_nbins_ext1,ly_first_ext1, ly_last_ext1);
 #endif
 
 
@@ -1280,8 +1279,9 @@ int main(int argc,char** argv)
       Int_t MPPCx = h2d_xz->GetXaxis()->FindBin(poshitX);
       Int_t MPPCy = h2d_yz->GetXaxis()->FindBin(poshitY);
       Int_t MPPCz = h2d_yz->GetYaxis()->FindBin(poshitZ);
-
+#ifdef CROSSTALK
       event_histo->Fill(MPPCx, MPPCy, MPPCz, (pex+pey+pez) / 3.);
+#endif
       //cout << edep << ", " << endl;
       //cout << nd280UpHit->GetPEX() << ", " << pex << endl;
       //cout << nd280UpHit->GetPEY() << ", " << pey << endl;
@@ -1419,14 +1419,77 @@ int main(int argc,char** argv)
     TH2F* hits_map_XY = (TH2F*)h2d_xy->Clone("hits_map_XY");
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
+
+    // take into account the cross talk
+#ifdef CROSSTALK
+    TH2F* hits_map_temp[3];
+    hits_map_temp[0] = (TH2F*)hits_map_XY->Clone("hits_map_XY_temp");
+    hits_map_temp[1] = (TH2F*)hits_map_XZ->Clone("hits_map_XZ_temp");
+    hits_map_temp[2] = (TH2F*)hits_map_YZ->Clone("hits_map_YZ_temp");
+
     for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
+      hits_map_temp[0]->Add(fRecoTrack_MPPCHit_XY[itrk], 1.148); // pe along Z
+      hits_map_temp[1]->Add(fRecoTrack_MPPCHit_XZ[itrk], 1.148); // pe along Y
+      hits_map_temp[2]->Add(fRecoTrack_MPPCHit_YZ[itrk], 1.148); // pe along X
+    }
+
+    TH2F* hits_map_final[3];
+    hits_map_final[0] = hits_map_XY;
+    hits_map_final[1] = hits_map_XZ;
+    hits_map_final[2] = hits_map_YZ;
+
+    double prob = 1. - 1./1.148;
+
+    double leave_prob = 0.;
+    double dir_prob = 5.;
+    // for each of 3 projections
+    for (int proj = 0; proj < 3; ++proj) {
+      // 2D scan over channel map
+      for (int i = 1; i <= hits_map_temp[proj]->GetXaxis()->GetNbins(); ++i) {
+        for (int j = 1; j <= hits_map_temp[proj]->GetYaxis()->GetNbins(); ++j) {
+
+          if (hits_map_temp[proj]->GetBinContent(i, j) < 1.)
+            continue;
+
+          // set number of photons
+          hits_map_final[proj]->SetBinContent(i, j, hits_map_temp[proj]->GetBinContent(i, j));
+
+          int Nphot = int(hits_map_temp[proj]->GetBinContent(i, j) + 0.5);
+          for (int ph = 0; ph < Nphot; ++ph) {
+            leave_prob = fRndm->Uniform();
+            if (leave_prob > prob)
+              continue;
+            // subtract photon
+            hits_map_final[proj]->SetBinContent(i, j, hits_map_final[proj]->GetBinContent(i, j) - 1);
+
+            // add photon to neigbour channel
+            dir_prob = fRndm->Uniform(4.);
+            if (dir_prob < 1 && i > 1)
+              hits_map_final[proj]->Fill(i-1, j);
+            else if (dir_prob < 2 && j < hits_map_final[proj]->GetYaxis()->GetNbins())
+              hits_map_final[proj]->Fill(i, j+1);
+            else if (dir_prob < 3 && i < hits_map_final[proj]->GetXaxis()->GetNbins())
+              hits_map_final[proj]->Fill(i+1, j);
+            else if (dir_prob < 4 && j > 1)
+              hits_map_final[proj]->Fill(i, j-1);
+          }
+        }
+      }
+    }
+    delete hits_map_temp[0];
+    delete hits_map_temp[1];
+    delete hits_map_temp[2];
+
+#else
+  for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
       hits_map_XY->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z
       hits_map_XZ->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
       hits_map_YZ->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
     }
-
+#endif
+/*
     // take into account the cross talk
-    if (CrossTalk) {
+#ifdef CROSSTALK
 
       for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
         for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
@@ -1581,7 +1644,7 @@ int main(int argc,char** argv)
           }
         }
       }*/
-    } // end of the cross talk simulation
+//#endif
 
     delete event_histo;
 
