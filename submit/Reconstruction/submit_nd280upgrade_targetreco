@@ -44,7 +44,7 @@ foreach (@ARGV) {
 }
 
 # wheter you want to merge all files into one and delete all the other output
-$merge_output = 0;
+$merge_output = 1;
 
 $resource        = "interactive"                 unless defined $resource;
 

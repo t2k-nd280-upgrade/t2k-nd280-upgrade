@@ -1764,16 +1764,16 @@ int main(int argc,char** argv)
     // - fRecoTrack_true_length : true track length (sum of mc hit track lengths)
     // - fRecoTrack_true_edep : true track edep (sum of mc hit track edep)
     //
-    
+/*    
     fND280UpRecoEvent = new TND280UpRecoEvent();
     fND280UpRecoEvent->SetEventID(EvtID);
 
     if(DEBUG){
       cout << "# of tracks: " << fRecoTrack_ID.size() << endl;
     }
-
+*/
     for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
-
+/*
       NTOTALTRACKSALL_1stLOOP++;
 
       int pdg = fRecoTrack_PDG[itrk];
@@ -1791,7 +1791,7 @@ int main(int argc,char** argv)
       */
 
 
-      if(DEBUG){
+/*      if(DEBUG){
 	cout << endl;
 	cout << "Track id: " << trkid << ", ";
 	cout << "PDG: " << pdg << ", ";
@@ -2310,7 +2310,7 @@ int main(int argc,char** argv)
 	    
 	    ////////////
 	    
-	    */
+	    
 
 
 
@@ -2319,7 +2319,7 @@ int main(int argc,char** argv)
 	  } // if outfv
 	} // if separated
       } // if reco
-
+*/
 
 
 
@@ -2362,7 +2362,7 @@ int main(int argc,char** argv)
       }
 
 
-
+/*
       // Store the track info
       TND280UpRecoTrack *fND280UpRecoTrack = new TND280UpRecoTrack();
       fND280UpRecoTrack->SetTrackID(trkid);
@@ -2391,9 +2391,9 @@ int main(int argc,char** argv)
       //fND280UpRecoTrack->SetMPPCHit_YZ(fRecoTrack_MPPCHit_YZ[itrk]); // NOT NEEDED!!! TOO HEAVY!!!	
       
       fND280UpRecoEvent->AddTrack(fND280UpRecoTrack);	    
-
+*/
     } // end loop over tracks (fRecoTrack_ID)
-    
+ /*   
     if(DEBUG){
       cout << endl;
     }
@@ -2412,7 +2412,7 @@ int main(int argc,char** argv)
       delete (fTrueTrack_MCHit_XY[itrk]); 
       delete (fTrueTrack_MCHit_XZ[itrk]); 
     }
-    
+ */   
   } // end loop over events
  
 
@@ -2490,7 +2490,7 @@ int main(int argc,char** argv)
   nd280UpPID.SetPDF("Elec",hElec_Stopped_EdepOverLen);
   */
   
-  fOutEventTree->SetBranchAddress("RecoEvent",&fND280UpRecoEvent);  
+  /*fOutEventTree->SetBranchAddress("RecoEvent",&fND280UpRecoEvent);  
   int nrecoevents = fOutEventTree->GetEntries();
   
   cout << "# of reco events: " << nrecoevents << endl;
@@ -2743,8 +2743,8 @@ int main(int argc,char** argv)
       //nd280UpPID.SetMPPCHit_YZ(hMPPCHits_YZ[ievt]);
       //nd280UpPID.SetTrackID();
             
-    } // end loop reco tracks
-  } // end loop events
+//    } // end loop reco tracks
+//  } // end loop events
 
 
 
@@ -2820,7 +2820,7 @@ int main(int argc,char** argv)
     for (Int_t i = 0; i < 1728; ++i)
       LY_ch[i]->Write();
 #endif
-
+/*
   // Vertex distribution
   hVtx_XY->Write();
   hVtx_XZ->Write();
@@ -2939,7 +2939,7 @@ int main(int argc,char** argv)
     nd280UpPID.GetGraph("Pion")->Write();
     nd280UpPID.GetGraph("Prot")->Write();
     nd280UpPID.GetGraph("Elec")->Write();
-  */
+  
   
   hLikeRatio_MuProt_TrueMu->Write();
   hLikeRatio_MuProt_TrueProt->Write();
@@ -3025,6 +3025,7 @@ int main(int argc,char** argv)
   //
 
   fOutEventTree->Write();
+  */
   //
   fileout->Close();
   
