@@ -50,7 +50,8 @@ const int sideview = 0;
 
 // FGD Constants
 #ifdef ELECSIM
-  const double EdepToPhotConv_FGD = 120.323 / CLHEP::MeV;
+  const double EdepToPhotConv_FGD = 156.42 / CLHEP::MeV;
+  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
   const double FGDreflection = 0.4; // 0.4 - based on proto1 expectations
   const double LongCompFrac_FGD = 0.77;
   const double LongAtt_FGD = 4634.*CLHEP::mm;
@@ -60,6 +61,7 @@ const int sideview = 0;
   const double LongCompFrac_FGD = 0.816;
   const double LongAtt_FGD = 11926.*CLHEP::mm;
   const double ShortAtt_FGD = 312.*CLHEP::mm;
+  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD * 1.3;
 #endif
 
 #if PROTO == 1
@@ -72,8 +74,7 @@ const double DecayLength_FGD = 0.0858 / CLHEP::mm;
 const double Lbar_FGD = 1864.3 * CLHEP::mm;
 
 // SuperFGD constants
-const double MPPCEff_SuperFGD = 0.38;
-const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD * 1.3;
+const double MPPCEff_SuperFGD = 0.35;
 
 // SciFi constants
 const double EdepToPhotConv_SciFi_SingleClad_2mm = 23.7 / CLHEP::MeV; 
