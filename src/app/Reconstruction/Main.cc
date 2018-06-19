@@ -1279,7 +1279,6 @@ int main(int argc,char** argv)
       Int_t MPPCx = h2d_xz->GetXaxis()->FindBin(poshitX);
       Int_t MPPCy = h2d_yz->GetXaxis()->FindBin(poshitY);
       Int_t MPPCz = h2d_yz->GetYaxis()->FindBin(poshitZ);
-#ifdef CROSSTALK
 #if CROSSTALK > 0
       event_histo->Fill(MPPCx, MPPCy, MPPCz, (pex+pey+pez) / 3.);
 #endif
@@ -1421,8 +1420,6 @@ int main(int argc,char** argv)
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
 
-    // take into account the cross talk
-#ifdef CROSSTALK
     // channel - to - channel crosstalk
 #if CROSSTALK == 1
     TH2F* hits_map_temp[3];
@@ -1468,13 +1465,6 @@ int main(int argc,char** argv)
             // add photon to neigbour channel
             dir_prob = fRndm->Uniform(4.);
             if (dir_prob < 1 && i > 1)
-              hits_map_final[proj]->Fill(i-1, j);
-            else if (dir_prob < 2 && j < hits_map_final[proj]->GetYaxis()->GetNbins())
-              hits_map_final[proj]->Fill(i, j+1);
-            else if (dir_prob < 3 && i < hits_map_final[proj]->GetXaxis()->GetNbins())
-              hits_map_final[proj]->Fill(i+1, j);
-            else if (dir_prob < 4 && j > 1)
-              hits_map_final[proj]->Fill(i, j-1);
               hits_map_final[proj]->Fill(hits_map_final[proj]->GetXaxis()->GetBinCenter(i-1), 
                                          hits_map_final[proj]->GetXaxis()->GetBinCenter(j));
             else if (dir_prob < 2 && j < hits_map_final[proj]->GetYaxis()->GetNbins())
@@ -1501,19 +1491,6 @@ int main(int argc,char** argv)
       hits_map_YZ->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
     }
 #endif
-/*
-    // take into account the cross talk
-#ifdef CROSSTALK
-
-      for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
-        for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
-          for (Int_t k = 1; k <= hits_map_XZ->GetYaxis()->GetNbins(); ++k) {
-            if (event_histo->GetBinContent(i, j, k) < 0.5)
-              continue;
-            // add cross talk
-            Int_t phot = (int)(event_histo->GetBinContent(i, j, k) + 0.5);
-            for (Int_t ph = 0; ph < phot; ++ph) {
-              double rndunif = 1.;
 
     // artifitially add cross talk to neighbour cubes at known level.
 #if CROSSTALK == 2
@@ -1676,8 +1653,6 @@ int main(int argc,char** argv)
             }
           }
         }
-      }*/
-//#endif
       }
     }
 #endif
