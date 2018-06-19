@@ -1279,7 +1279,7 @@ int main(int argc,char** argv)
       Int_t MPPCx = h2d_xz->GetXaxis()->FindBin(poshitX);
       Int_t MPPCy = h2d_yz->GetXaxis()->FindBin(poshitY);
       Int_t MPPCz = h2d_yz->GetYaxis()->FindBin(poshitZ);
-#ifdef CROSSTALK
+#if CROSSTALK > 0
       event_histo->Fill(MPPCx, MPPCy, MPPCz, (pex+pey+pez) / 3.);
 #endif
       //cout << edep << ", " << endl;
@@ -1420,8 +1420,8 @@ int main(int argc,char** argv)
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
 
-    // take into account the cross talk
-#ifdef CROSSTALK
+    // channel - to - channel crosstalk
+#if CROSSTALK == 1
     TH2F* hits_map_temp[3];
     hits_map_temp[0] = (TH2F*)hits_map_XY->Clone("hits_map_XY_temp");
     hits_map_temp[1] = (TH2F*)hits_map_XZ->Clone("hits_map_XZ_temp");
@@ -1465,13 +1465,17 @@ int main(int argc,char** argv)
             // add photon to neigbour channel
             dir_prob = fRndm->Uniform(4.);
             if (dir_prob < 1 && i > 1)
-              hits_map_final[proj]->Fill(i-1, j);
+              hits_map_final[proj]->Fill(hits_map_final[proj]->GetXaxis()->GetBinCenter(i-1), 
+                                         hits_map_final[proj]->GetXaxis()->GetBinCenter(j));
             else if (dir_prob < 2 && j < hits_map_final[proj]->GetYaxis()->GetNbins())
-              hits_map_final[proj]->Fill(i, j+1);
+              hits_map_final[proj]->Fill(hits_map_final[proj]->GetXaxis()->GetBinCenter(i),   
+                                         hits_map_final[proj]->GetXaxis()->GetBinCenter(j+1));
             else if (dir_prob < 3 && i < hits_map_final[proj]->GetXaxis()->GetNbins())
-              hits_map_final[proj]->Fill(i+1, j);
+              hits_map_final[proj]->Fill(hits_map_final[proj]->GetXaxis()->GetBinCenter(i+1), 
+                                         hits_map_final[proj]->GetXaxis()->GetBinCenter(j));
             else if (dir_prob < 4 && j > 1)
-              hits_map_final[proj]->Fill(i, j-1);
+              hits_map_final[proj]->Fill(hits_map_final[proj]->GetXaxis()->GetBinCenter(i),   
+                                         hits_map_final[proj]->GetXaxis()->GetBinCenter(j-1));
           }
         }
       }
@@ -1487,164 +1491,171 @@ int main(int argc,char** argv)
       hits_map_YZ->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
     }
 #endif
-/*
-    // take into account the cross talk
-#ifdef CROSSTALK
 
-      for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
-        for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
-          for (Int_t k = 1; k <= hits_map_XZ->GetYaxis()->GetNbins(); ++k) {
-            if (event_histo->GetBinContent(i, j, k) < 0.5)
-              continue;
-            // add cross talk
-            Int_t phot = (int)(event_histo->GetBinContent(i, j, k) + 0.5);
-            for (Int_t ph = 0; ph < phot; ++ph) {
-              double rndunif = 1.;
+    // artifitially add cross talk to neighbour cubes at known level.
+#if CROSSTALK == 2
+    for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
+      for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
+        for (Int_t k = 1; k <= hits_map_XZ->GetYaxis()->GetNbins(); ++k) {
+          if (event_histo->GetBinContent(i, j, k) < 0.5)
+            continue;
+
+          Int_t phot = (int)(event_histo->GetBinContent(i, j, k) + 0.5);
+          for (Int_t ph = 0; ph < phot; ++ph) {
+            double rndunif = 1.;
               // left
-              if (i > 1) {
-                rndunif = fRndm->Uniform();
-                if (rndunif < 0.037) {
-                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i-1), hits_map_XY->GetYaxis()->GetBinCenter(j));
-                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i-1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
-                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k));
-                }
+            if (i > 1) {
+              rndunif = fRndm->Uniform();
+              if (rndunif < 0.037) {
+                hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i-1), hits_map_XY->GetYaxis()->GetBinCenter(j));
+                hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i-1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k));
               }
+            }
               // right
-              if (i < hits_map_XY->GetXaxis()->GetNbins()) {
-                rndunif = fRndm->Uniform();
-                if (rndunif < 0.037) {
-                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i+1), hits_map_XY->GetYaxis()->GetBinCenter(j));
-                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i+1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
-                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k));
-                }
+            if (i < hits_map_XY->GetXaxis()->GetNbins()) {
+              rndunif = fRndm->Uniform();
+              if (rndunif < 0.037) {
+                hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i+1), hits_map_XY->GetYaxis()->GetBinCenter(j));
+                hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i+1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k));
               }
+            }
               // top
-              if (j < hits_map_XY->GetYaxis()->GetNbins()) {
-                rndunif = fRndm->Uniform();
-                if (rndunif < 0.037) {
-                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j+1));
-                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k));
-                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j+1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
-                }
+            if (j < hits_map_XY->GetYaxis()->GetNbins()) {
+              rndunif = fRndm->Uniform();
+              if (rndunif < 0.037) {
+                hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j+1));
+                hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j+1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
               }
+            }
               // bottom
-              if (j > 1) {
-                rndunif = fRndm->Uniform();
-                if (rndunif < 0.037) {
-                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j-1));
-                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k));
-                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j-1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
-                }
+            if (j > 1) {
+              rndunif = fRndm->Uniform();
+              if (rndunif < 0.037) {
+                hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j-1));
+                hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k));
+                hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j-1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
               }
+            }
               // forward
-              if (k < hits_map_XZ->GetYaxis()->GetNbins()) {
-                rndunif = fRndm->Uniform();
-                if (rndunif < 0.037) {
-                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j));
-                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k+1));
-                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k+1));
-                }
+            if (k < hits_map_XZ->GetYaxis()->GetNbins()) {
+              rndunif = fRndm->Uniform();
+              if (rndunif < 0.037) {
+                hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j));
+                hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k+1));
+                hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k+1));
               }
+            }
               // backward
-              if (k > 1) {
-                rndunif = fRndm->Uniform();
-                if (rndunif < 0.037) {
-                  hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j));
-                  hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k-1));
-                  hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k-1));
-                }
+            if (k > 1) {
+              rndunif = fRndm->Uniform();
+              if (rndunif < 0.037) {
+                hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j));
+                hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k-1));
+                hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k-1));
               }
-
             }
+
           }
         }
-      }/*
-      cross talk simulation v2
-      destorts the l.y. spectrum shape. Maybe because of not clear understanding of the cross talk nature
+      }
+    }
+#endif
+#if CROSSTALK == 3
+    // the most physical cross talk simulation
+    // from random fiber to random fiber
 
-      for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
-        for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
-          for (Int_t k = 1; k <= hits_map_XZ->GetYaxis()->GetNbins(); ++k) {
-            if (event_histo->GetBinContent(i, j, k) > 0) {
+    for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
+      for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
+        for (Int_t k = 1; k <= hits_map_XZ->GetYaxis()->GetNbins(); ++k) {
+          if (event_histo->GetBinContent(i, j, k) > 0) {
               // add cross talk
-              Int_t phot = (int)(event_histo->GetBinContent(i, j, k) + 0.5);
-              // std::cout << "total photons  " << i << "   " << j << "    " << k  << "    " << event_histo->GetBinContent(i, j, k) << std::endl;
-              for (Int_t ph = 0; ph < phot; ++ph) {
-                double leave_prob = 1.;
-                double which_leave = 3.;
-                double which_surface = 6.;
-                double which_fiber = 3.;
-                leave_prob    = fRndm->Uniform();
-                which_leave   = fRndm->Uniform(3.);
-                which_surface = fRndm->Uniform(6.);
-                which_fiber   = fRndm->Uniform(3.);
+            Int_t phot = (int)(event_histo->GetBinContent(i, j, k)*1.222 + 0.5);
 
-                if (leave_prob < 0.666) {
+            hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) * 1.222);
+            hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) * 1.222);
+            hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) * 1.222);
+
+            for (Int_t ph = 0; ph < phot; ++ph) {
+              double leave_prob = 1.;
+              double which_leave = 3.;
+              double which_surface = 6.;
+              double which_fiber = 3.;
+              leave_prob    = fRndm->Uniform();
+              which_leave   = fRndm->Uniform(3.);
+              which_surface = fRndm->Uniform(6.);
+              which_fiber   = fRndm->Uniform(3.);
+
+              Float_t prob =  1. - 1./1.222;
+
+              if (leave_prob < prob) {
                   // substract photon
-                  if (which_leave < 1) {
-                    hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) - 1);
-                  } else if (which_leave < 2) {
-                    hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) - 1);
-                  } else {
-                    hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) - 1);
-                  }
+                if (which_leave < 1) {
+                  hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) - 1);
+                } else if (which_leave < 2) {
+                  hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) - 1);
+                } else {
+                  hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) - 1);
+                }
                   // add photon
-                  if (which_surface < 1 && i > 1) {
-                    if (which_fiber < 1) {
-                      hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) + 1);
-                    } else if (which_fiber < 2) {
-                      hits_map_XZ->SetBinContent(i-1, k, hits_map_XZ->GetBinContent(i-1, k) + 1);
-                    } else if (which_fiber < 3) {
-                      hits_map_XY->SetBinContent(i-1, j, hits_map_XY->GetBinContent(i-1, j) + 1);
-                    }
-                  } else if (which_surface < 2 && i < hits_map_XY->GetXaxis()->GetNbins()) {
-                    if (which_fiber < 1) {
-                      hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) + 1);
-                    } else if (which_fiber < 2) {
-                      hits_map_XZ->SetBinContent(i+1, k, hits_map_XZ->GetBinContent(i+1, k) + 1);
-                    } else if (which_fiber < 3) {
-                      hits_map_XY->SetBinContent(i+1, j, hits_map_XY->GetBinContent(i+1, j) + 1);
-                    }
-                  } else if (which_surface < 3 && j > 1) {
-                    if (which_fiber < 1) {
-                      hits_map_YZ->SetBinContent(j-1, k, hits_map_YZ->GetBinContent(j-1, k) + 1);
-                    } else if (which_fiber < 2) {
-                      hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) + 1);
-                    } else if (which_fiber < 3) {
-                      hits_map_XY->SetBinContent(i, j-1, hits_map_XY->GetBinContent(i, j-1) + 1);
-                    }
-                  } else if (which_surface < 4 && j < hits_map_XY->GetYaxis()->GetNbins()) {
-                    if (which_fiber < 1) {
-                      hits_map_YZ->SetBinContent(j+1, k, hits_map_YZ->GetBinContent(j+1, k) + 1);
-                    } else if (which_fiber < 2) {
-                      hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) + 1);
-                    } else if (which_fiber < 3) {
-                      hits_map_XY->SetBinContent(i, j+1, hits_map_XY->GetBinContent(i, j+1) + 1);
-                    }
-                  } else if (which_surface < 5 && k > 1) {
-                    if (which_fiber < 1) {
-                      hits_map_YZ->SetBinContent(j, k-1, hits_map_YZ->GetBinContent(j, k-1) + 1);
-                    } else if (which_fiber < 2) {
-                      hits_map_XZ->SetBinContent(i, k-1, hits_map_XZ->GetBinContent(i, k-1) + 1);
-                    } else if (which_fiber < 3) {
-                      hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) + 1);
-                    }
-                  } else if (which_surface < 6 && k < hits_map_XZ->GetYaxis()->GetNbins()) {
-                    if (which_fiber < 1) {
-                      hits_map_YZ->SetBinContent(j, k-1, hits_map_YZ->GetBinContent(j, k-1) + 1);
-                    } else if (which_fiber < 2) {
-                      hits_map_XZ->SetBinContent(i, k-1, hits_map_XZ->GetBinContent(i, k-1) + 1);
-                    } else if (which_fiber < 3) {
-                      hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) + 1);
-                    }
+                if (which_surface < 1 && i > 1) {
+                  if (which_fiber < 1) {
+                    hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) + 1);
+                  } else if (which_fiber < 2) {
+                    hits_map_XZ->SetBinContent(i-1, k, hits_map_XZ->GetBinContent(i-1, k) + 1);
+                  } else if (which_fiber < 3) {
+                    hits_map_XY->SetBinContent(i-1, j, hits_map_XY->GetBinContent(i-1, j) + 1);
+                  }
+                } else if (which_surface < 2 && i < hits_map_XY->GetXaxis()->GetNbins()) {
+                  if (which_fiber < 1) {
+                    hits_map_YZ->SetBinContent(j, k, hits_map_YZ->GetBinContent(j, k) + 1);
+                  } else if (which_fiber < 2) {
+                    hits_map_XZ->SetBinContent(i+1, k, hits_map_XZ->GetBinContent(i+1, k) + 1);
+                  } else if (which_fiber < 3) {
+                    hits_map_XY->SetBinContent(i+1, j, hits_map_XY->GetBinContent(i+1, j) + 1);
+                  }
+                } else if (which_surface < 3 && j > 1) {
+                  if (which_fiber < 1) {
+                    hits_map_YZ->SetBinContent(j-1, k, hits_map_YZ->GetBinContent(j-1, k) + 1);
+                  } else if (which_fiber < 2) {
+                    hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) + 1);
+                  } else if (which_fiber < 3) {
+                    hits_map_XY->SetBinContent(i, j-1, hits_map_XY->GetBinContent(i, j-1) + 1);
+                  }
+                } else if (which_surface < 4 && j < hits_map_XY->GetYaxis()->GetNbins()) {
+                  if (which_fiber < 1) {
+                    hits_map_YZ->SetBinContent(j+1, k, hits_map_YZ->GetBinContent(j+1, k) + 1);
+                  } else if (which_fiber < 2) {
+                    hits_map_XZ->SetBinContent(i, k, hits_map_XZ->GetBinContent(i, k) + 1);
+                  } else if (which_fiber < 3) {
+                    hits_map_XY->SetBinContent(i, j+1, hits_map_XY->GetBinContent(i, j+1) + 1);
+                  }
+                } else if (which_surface < 5 && k > 1) {
+                  if (which_fiber < 1) {
+                    hits_map_YZ->SetBinContent(j, k-1, hits_map_YZ->GetBinContent(j, k-1) + 1);
+                  } else if (which_fiber < 2) {
+                    hits_map_XZ->SetBinContent(i, k-1, hits_map_XZ->GetBinContent(i, k-1) + 1);
+                  } else if (which_fiber < 3) {
+                    hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) + 1);
+                  }
+                } else if (which_surface < 6 && k < hits_map_XZ->GetYaxis()->GetNbins()) {
+                  if (which_fiber < 1) {
+                    hits_map_YZ->SetBinContent(j, k-1, hits_map_YZ->GetBinContent(j, k-1) + 1);
+                  } else if (which_fiber < 2) {
+                    hits_map_XZ->SetBinContent(i, k-1, hits_map_XZ->GetBinContent(i, k-1) + 1);
+                  } else if (which_fiber < 3) {
+                    hits_map_XY->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j) + 1);
                   }
                 }
               }
             }
           }
         }
-      }*/
-//#endif
+      }
+    }
+#endif
 
     delete event_histo;
 
