@@ -52,7 +52,7 @@ void MIEle(Int_t first_entry, Int_t Nentries, Int_t run) {
   cout << "First      " << first_entry << endl;
   cout << "Nentries   " << Nentries << endl;
 
-  cout << "[          ] Nev="<<evtlasttree - first_entry <<"\r[";
+  cout << "[          ] Nev = " << first_entry << "...." << evtlasttree << " From " << NTreeEntries <<"\r[";
   for(int ievt = first_entry; ievt < evtlasttree; ++ievt) {
 
     if ((ievt - first_entry) * 10 % (evtlasttree - first_entry) == 0)
