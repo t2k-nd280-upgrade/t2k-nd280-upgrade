@@ -7,7 +7,6 @@
 #include "ND280TrajectoryPoint.hh"
 #include "ExN02VertexInfo.hh"
 #include "ExN02Constants.hh"
-#include "ExN02ApplyResponse.hh"
 
 #include "ExN02TrackerHit.hh"
 

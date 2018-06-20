@@ -44,15 +44,9 @@
 
 #include "ND280RootPersistencyManager.hh"
 
-#include "ExN02TargReadOut.hh"
-
 #include <TH2F.h>
 
-#include "ExN02ApplyResponse.hh"
-
 //#define DEBUG
-
-using namespace conv;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -65,13 +59,11 @@ ExN02TrackerSD::ExN02TrackerSD(G4String name)
   G4String HCname;
   collectionName.insert(HCname="trackerCollection");
 
-  trackerResponse = new ExN02TrackerResponse(); // B.Q used for WAGASCI only 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ExN02TrackerSD::~ExN02TrackerSD(){ 
-  if(trackerResponse!=NULL) delete trackerResponse; // B.Q
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
