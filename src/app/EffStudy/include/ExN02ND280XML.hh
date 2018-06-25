@@ -49,6 +49,8 @@ public :
   G4double GetXMLForwTPCPos3_Y()  {return fForwTPCPos3_Y;};
   G4double GetXMLForwTPCPos3_Z()  {return fForwTPCPos3_Z;};
 
+  G4String GetXMLHATPCFCName()   {return fHATPCFCName;};
+
   G4double GetXMLHATPCUpPos_X()  {return fHATPCUpPos_X;};
   G4double GetXMLHATPCUpPos_Y()  {return fHATPCUpPos_Y;};
   G4double GetXMLHATPCUpPos_Z()  {return fHATPCUpPos_Z;};
@@ -485,6 +487,8 @@ private :
   G4double fForwTPCPos3_X;
   G4double fForwTPCPos3_Y;
   G4double fForwTPCPos3_Z;
+
+  G4String fHATPCFCName;
 
   G4double fHATPCUpPos_X;
   G4double fHATPCUpPos_Y;

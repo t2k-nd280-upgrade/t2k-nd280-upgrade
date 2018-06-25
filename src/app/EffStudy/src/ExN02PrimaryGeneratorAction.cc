@@ -136,8 +136,21 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		  "MyCode0002",FatalException, msg);
     } 
     */
-  
+
+    G4double aMomAmp = fParticleGun->GetParticleMomentum();
+    G4double aEAmp = fParticleGun->GetParticleEnergy();  
     
+    if (fTypeMomentum=="Wide")
+      {
+        G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+        aMomAmp = (G4UniformRand()*(2000.) );
+        fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+        cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
+        aEAmp = fParticleGun->GetParticleEnergy();
+
+      }
+
+
     if(fTypeDirection=="Uniform"){      
       G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
       G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi/2]
@@ -151,6 +164,43 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	     << G4endl;
       fParticleGun->SetParticleMomentumDirection(dir);
       //B.Q end
+    }
+
+    if(fTypeGun=="FCTest"){
+
+    //Initial Momentum
+
+    G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+    aMomAmp = (G4UniformRand()*(500.) );
+    fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+    cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
+    aEAmp = fParticleGun->GetParticleEnergy();
+
+    //Initial Direction
+
+    G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
+    G4double cosTheta = G4UniformRand();
+    G4double phi = 15*CLHEP::deg+G4UniformRand()*150*CLHEP::deg;
+    G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
+    G4ThreeVector dir(0,sinTheta*std::sin(phi),sinTheta*std::cos(phi));
+    G4cout << "Direction of the gun: " 
+           << dir[0] << ", " << dir[1] << ", " << dir[2] 
+	   << G4endl;
+    fParticleGun->SetParticleMomentumDirection(dir);
+
+    //Particle Type
+
+    G4double particlerandom = 4*G4UniformRand();
+    G4String particlename;
+  
+    if(particlerandom < 1) particlename = "e-"; 
+    if(particlerandom >=1 && particlerandom <2) particlename = "mu-"; 
+    if(particlerandom >=2 && particlerandom <3) particlename = "pi-";
+    if(particlerandom >=3 && particlerandom <=4) particlename = "proton";
+
+    G4ParticleDefinition* particleDefinition 
+    = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
+    fParticleGun->SetParticleDefinition(particleDefinition);
     }
     
     fParticleGun->GeneratePrimaryVertex(anEvent);
@@ -198,4 +248,5 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 

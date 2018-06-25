@@ -123,6 +123,8 @@ public:
   void SetFGDFullHeight2(G4double height)  {fFGDHeight2 = height;};
   void SetFGDPos2(G4double x,G4double y,G4double z) {fFGDPos2 = G4ThreeVector(x,y,z);};
 
+  void SetHATPCFCName(G4String FCName)  {fHATPCFCName = FCName;};
+
   void SetForwTPCPos1(G4double x,G4double y,G4double z) {fForwTPCPos1 = G4ThreeVector(x,y,z);};
   void SetForwTPCPos2(G4double x,G4double y,G4double z) {fForwTPCPos2 = G4ThreeVector(x,y,z);};
   void SetForwTPCPos3(G4double x,G4double y,G4double z) {fForwTPCPos3 = G4ThreeVector(x,y,z);};
@@ -547,6 +549,8 @@ private:
   G4ThreeVector fForwTPCPos1;       // Position of Forward TPC 1
   G4ThreeVector fForwTPCPos2;       // Position of Forward TPC 2
   G4ThreeVector fForwTPCPos3;       // Position of Forward TPC 3
+
+  G4String fHATPCFCName;
 
   G4ThreeVector fHATPCUpPos;           // Position of High Angle TPC Up
   G4ThreeVector fHATPCDownPos;           // Position of High Angle TPC Down

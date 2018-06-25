@@ -29,6 +29,11 @@ public:
   /// the Z axis.
   virtual G4LogicalVolume* GetPiece(void);
 
+  //Set the name that fixes the FC model
+  void SetHATPCFCName(G4String w) {fHATPCFCName = w;}
+  // Get the name of the FC model
+  G4String GetHATPCFCName(void) {return fHATPCFCName;}
+
   /// Set the ParentName of the HATPC detector   
   void SetHATPCParentName(G4String w) {fHATPCParentName = w;}
   /// Get the Width of the HATPC detector
@@ -105,7 +110,7 @@ public:
   double GetActiveHATPCVerticalOffset(void) {return fActiveHATPCVerticalOffset;}
 
   /// Method to build the TPC Central Cathode.
-  void BuildHATPCCentralCathode(G4LogicalVolume* v);
+  void BuildHATPCCentralCathode(G4LogicalVolume* v, double t);
   /// Method to build the HATPC Cages.
   void BuildHATPCCages(G4LogicalVolume* v);
 
@@ -113,7 +118,8 @@ private:
 
   G4String fHATPCParentName;
   G4String fHATPCName;
-  
+  G4String fHATPCFCName;
+
   //Size of the HATPC
   double fHATPCWidth;
   double fHATPCHeight;

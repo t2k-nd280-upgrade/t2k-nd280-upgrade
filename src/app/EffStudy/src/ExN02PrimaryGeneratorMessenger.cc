@@ -47,7 +47,8 @@ ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGener
     myPrimaryGenerator(myPrimGen),
     fPrimgenDir(0),
     fGeneratorCmd(0),
-    fTypeDirCmd(0)
+    fTypeDirCmd(0),
+    fTypeGunCmd(0)
 {   
   fPrimgenDir = new G4UIdirectory("/generator/");
   fPrimgenDir->SetGuidance("Primary Generator");
@@ -62,6 +63,15 @@ ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGener
   fTypeDirCmd->SetParameterName("Type Direction",false);
   fTypeDirCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
 
+  fTypeMomCmd = new G4UIcmdWithAString("/generator/typemom",this);
+  fTypeMomCmd->SetGuidance("Choose how to generated the momentum: fixed or uniformly randomized");
+  fTypeMomCmd->SetParameterName("Type Momentum",false);
+  fTypeMomCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  fTypeGunCmd = new G4UIcmdWithAString("/generator/typegun",this);
+  fTypeGunCmd->SetGuidance("Choose a specific configuration of pgun for HATPC FC studies");
+  fTypeGunCmd->SetParameterName("Type FC Gun",false);
+  fTypeGunCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -70,7 +80,10 @@ ExN02PrimaryGeneratorMessenger::~ExN02PrimaryGeneratorMessenger()
 {
   delete fGeneratorCmd;
   delete fTypeDirCmd;
+  delete fTypeMomCmd;
+  delete fTypeGunCmd;
   delete fPrimgenDir;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -83,7 +96,12 @@ void ExN02PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String n
   else if( command == fTypeDirCmd ){
     myPrimaryGenerator->SetTypeDirection(newValue);
   }  
-
+  else if( command == fTypeMomCmd ){
+    myPrimaryGenerator->SetTypeMomentum(newValue);
+  }
+  else if( command == fTypeGunCmd ){
+    myPrimaryGenerator->SetTypeGun(newValue);
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -42,6 +42,9 @@
 #include "G4NistManager.hh"
 #include "G4UserLimits.hh"
 //#include "G4VisAttributes.hh"
+#include "G4NistManager.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
 #include "G4Colour.hh"
 #include "G4ios.hh"
 #include "G4AutoDelete.hh"
@@ -1930,12 +1933,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   double HATPCUpInnerBoxWall = ND280XMLInput->GetXMLHATPCUpInnerBoxWall();
   double HATPCUpOuterBoxWall = ND280XMLInput->GetXMLHATPCUpOuterBoxWall();
   double HATPCUpSteppingLimit = ND280XMLInput->GetXMLHATPCUpSteppingLimit();
-  double ActiveHATPCUpVerticalOffset = ND280XMLInput->GetXMLActiveHATPCUpVerticalOffset();  
+  double ActiveHATPCUpVerticalOffset = ND280XMLInput->GetXMLActiveHATPCUpVerticalOffset(); 
+
+  G4String FCNameUp = ND280XMLInput->GetXMLHATPCFCName(); 
 
   G4double x = ND280XMLInput->GetXMLHATPCUpPos_X();
   G4double y = ND280XMLInput->GetXMLHATPCUpPos_Y();
   G4double z = ND280XMLInput->GetXMLHATPCUpPos_Z();
 
+  fHATPCUpConstructor->SetHATPCFCName(FCNameUp);
   fHATPCUpConstructor->SetHATPCParentName(cParentNameTPC);
   fHATPCUpConstructor->SetHATPCName("HATPCUp");
   fHATPCUpConstructor->SetHATPCWidth(HATPCUpWidth*CLHEP::mm);
@@ -1997,10 +2003,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   double HATPCDownSteppingLimit = ND280XMLInput->GetXMLHATPCDownSteppingLimit();
   double ActiveHATPCDownVerticalOffset = ND280XMLInput->GetXMLActiveHATPCDownVerticalOffset();  
 
+  G4String FCNameDown = ND280XMLInput->GetXMLHATPCFCName();
+
   G4double x = ND280XMLInput->GetXMLHATPCDownPos_X();
   G4double y = ND280XMLInput->GetXMLHATPCDownPos_Y();
   G4double z = ND280XMLInput->GetXMLHATPCDownPos_Z();
 
+  fHATPCDownConstructor->SetHATPCFCName(FCNameDown);
   fHATPCDownConstructor->SetHATPCParentName(cParentNameTPC);
   fHATPCDownConstructor->SetHATPCName("HATPCDown");
   fHATPCDownConstructor->SetHATPCWidth(HATPCDownWidth*CLHEP::mm);
@@ -2777,6 +2786,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     if( ND280XMLInput->GetXMLUseTarget2() )  SDRegion->AddRootLogicalVolume(logicTarget2);
     if( ND280XMLInput->GetXMLUseFGD1() )     SDRegion->AddRootLogicalVolume(logicFGD1);
     if( ND280XMLInput->GetXMLUseFGD2() )     SDRegion->AddRootLogicalVolume(logicFGD2);
+    if( ND280XMLInput->GetXMLUseHATPCUp() )     SDRegion->AddRootLogicalVolume(logicHATPCUp);
+    if( ND280XMLInput->GetXMLUseHATPCDown() )     SDRegion->AddRootLogicalVolume(logicHATPCDown);
+
   } else {
     G4ExceptionDescription msg;
     msg << "The SD region does not exist" << G4endl;
@@ -3696,6 +3708,48 @@ void ExN02DetectorConstruction::DefineMaterials() {
   WAGASCIScint_Empty->AddElement(elC, 9);
   WAGASCIScint_Empty->AddElement(elH, 10);
   gMan->SetDrawAtt(WAGASCIScint_Empty,kGreen);//ND280 class
+
+// HATPC
+
+  G4NistManager* nistManager = G4NistManager::Instance();
+  nistManager->FindOrBuildMaterial("G4_KAPTON");
+  nistManager->FindOrBuildMaterial("G4_KEVLAR");
+  nistManager->FindOrBuildMaterial("G4_POLYVINYL_ACETATE");
+
+  //Epoxy -- For making CarbonFiber and GlassFiber
+  density = 1.2*g/cm3;
+  G4Material* Epoxy = new G4Material("Epoxy" , density, ncomponents=2);
+  Epoxy->AddElement(elH, natoms=2);
+  Epoxy->AddElement(elC, natoms=2);
+
+  //SiO2 -- For making GlassFiber
+  G4Material* SiO2 = new G4Material("SiO2",density= 2.200*g/cm3, ncomponents=2);
+  SiO2->AddElement(elSi, natoms=1);
+  SiO2->AddElement(elO, natoms=2);
+  
+  //GlassFiber
+  density = 1.96*g/cm3;
+  G4Material* GlassFiber = new G4Material("GlassFiber"  , density, ncomponents=2);
+  GlassFiber->AddMaterial(SiO2, fractionmass=0.7);
+  GlassFiber->AddMaterial(Epoxy, fractionmass=0.3);
+ 
+  //CarbonFiber
+  density = 1.82*g/cm3;
+  G4Material* CarbonFiber = new G4Material("CarbonFiber",density, ncomponents=2);
+  CarbonFiber->AddElement(elC,fractionmass=0.7);
+  CarbonFiber->AddMaterial(Epoxy, fractionmass=0.3);
+
+  // Galactic
+  density     = universe_mean_density;
+  pressure    = 3.e-18*CLHEP::pascal;
+  temperature = 2.73*CLHEP::kelvin;
+  G4Material* galactic = new G4Material(name="Galactic", 1., 1.01*g/mole,
+			  density,kStateGas,temperature,pressure);
+
+  //AramidHoneyComb
+  G4Material* AramidHoneycombFillerMaterial = new G4Material("AramidHoneycomb", 39.95 * kg/m3, 2);
+  AramidHoneycombFillerMaterial->AddMaterial(G4Material::GetMaterial("Galactic"), 73 *perCent);
+  AramidHoneycombFillerMaterial->AddMaterial(G4Material::GetMaterial("G4_KEVLAR"), 27 *perCent); 
   
 }
 

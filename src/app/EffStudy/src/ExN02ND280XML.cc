@@ -117,6 +117,8 @@ ExN02ND280XML::~ExN02ND280XML(){
  fSuperFGDPos2_Y = 0.;
  fSuperFGDPos2_Z = 0.;
 
+ fHATPCFCName = "";
+
  fHATPCUpPos_X = 0.;
  fHATPCUpPos_Y = 0.;
  fHATPCUpPos_Z = 0.;
@@ -922,14 +924,6 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("forwTPCPos3_Y" ,fForwTPCPos3_Y);
     XML2Double("forwTPCPos3_Z" ,fForwTPCPos3_Z);
 
-    XML2Double("HATPCUpPos_X" ,fHATPCUpPos_X);
-    XML2Double("HATPCUpPos_Y" ,fHATPCUpPos_Y);
-    XML2Double("HATPCUpPos_Z" ,fHATPCUpPos_Z);
-
-    XML2Double("HATPCDownPos_X" ,fHATPCDownPos_X);
-    XML2Double("HATPCDownPos_Y" ,fHATPCDownPos_Y);
-    XML2Double("HATPCDownPos_Z" ,fHATPCDownPos_Z);
-
     // Side TPCs 1
     XML2Bool("sideTPCdefault1" ,fSideTPCdefault1);
     XML2Double("sideTPClength1",fSideTPClength1);
@@ -1012,6 +1006,16 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("SuperFGDPos2_Z"    ,fSuperFGDPos2_Z);
 
     //HATPC Up
+
+    XML2String("HATPCFCName",fHATPCFCName);
+
+    XML2Double("HATPCUpPos_X" ,fHATPCUpPos_X);
+    XML2Double("HATPCUpPos_Y" ,fHATPCUpPos_Y);
+    XML2Double("HATPCUpPos_Z" ,fHATPCUpPos_Z);
+    XML2Double("HATPCDownPos_X" ,fHATPCDownPos_X);
+    XML2Double("HATPCDownPos_Y" ,fHATPCDownPos_Y);
+    XML2Double("HATPCDownPos_Z" ,fHATPCDownPos_Z);
+
     XML2Double("HATPCUpWidth", fHATPCUpWidth);
     XML2Double("HATPCUpHeight", fHATPCUpHeight);
     XML2Double("HATPCUpLength", fHATPCUpLength);
