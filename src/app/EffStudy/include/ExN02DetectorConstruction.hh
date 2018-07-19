@@ -65,6 +65,7 @@ class ND280Constructor;
 #include "ND280Constructor.hh"
 /////////////////////////
 
+#define PROTO
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -420,6 +421,10 @@ private:
   G4Box*             solidWAGASCIWater;  
   G4LogicalVolume*   logicWAGASCIWater;
   G4VPhysicalVolume* physiWAGASCIWater;
+
+  G4Box*             degraderBox;
+  G4LogicalVolume*   logicDegrader;
+  G4VPhysicalVolume* physiDegrader;
 
   G4Box*             solidTracker;  // pointer to the solid Tracker
   G4LogicalVolume*   logicTracker;  // pointer to the logical Tracker

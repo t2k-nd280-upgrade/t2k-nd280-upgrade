@@ -2512,6 +2512,60 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
 
 
+#ifdef PROTO 
+  //
+  //------------------------------ 
+  // Degrader for the prototype
+  // Simple lead bar
+  //------------------------------
+  // 
+
+  G4String cParentName = logicBasket->GetName();
+  G4String cNameDegrader = cParentName + "/Degrader";
+
+
+  if( ND280XMLInput->GetXMLUseDegrader() ){
+    G4double degraderlength = ND280XMLInput->GetXMLDegraderlength() * CLHEP::mm;
+    G4double degraderwidth  = ND280XMLInput->GetXMLDegraderwidth() * CLHEP::mm;
+    G4double degraderheight = ND280XMLInput->GetXMLDegraderheight() * CLHEP::mm;
+
+    G4double x = ND280XMLInput->GetXMLDegraderPos_X();
+    G4double y = ND280XMLInput->GetXMLDegraderPos_Y();
+    G4double z = ND280XMLInput->GetXMLDegraderPos_Z();
+
+    G4Material* lead = FindMaterial("Steel");
+
+    degraderBox = new G4Box(cNameDegrader, degraderwidth/2., degraderheight/2., degraderlength/2.); 
+    logicDegrader = new G4LogicalVolume(degraderBox, lead, cNameDegrader, 0, 0, 0);
+
+    physiDegrader = new G4PVPlacement(0,                   // no rotation
+          G4ThreeVector(x, y, z),   // at (x,y,z)
+          logicDegrader,      // its logical volume 
+          cNameDegrader, // its name
+          //logicTracker,        // its mother  volume
+          //logicND280MC,        // its mother  volume
+          logicBasket,
+          false,               // no boolean operations
+          0);                   // copy number 
+
+    G4cout << "Degrader: " << G4endl
+     << " - dimensions: "
+     << degraderwidth/CLHEP::mm  << " (width) x " 
+     << degraderheight/CLHEP::mm << " (height) x " 
+     << degraderlength/CLHEP::mm << " (length) mm^3" 
+     << " of " << lead->GetName() << G4endl; 
+    G4cout << " mass="<<logicDegrader->GetMass()/CLHEP::kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicDegrader->GetName() << G4endl;
+    G4cout << " - position: ( " 
+     << x/CLHEP::mm << ", "
+     << y/CLHEP::mm << ", "
+     << z/CLHEP::mm << " ) mm"  
+     << G4endl << G4endl;
+  }
+
+#endif
+
+
 
 
 

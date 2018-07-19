@@ -964,6 +964,24 @@
      -512
    </ToFPosZ_FrontUp>
 
+   <DegraderLength>
+    230
+  </DegraderLength>
+  <DegraderWidth>
+    240
+  </DegraderWidth>
+  <DegraderHeight>
+    80
+  </DegraderHeight>
+  <DegraderPositionX>
+    0
+  </DegraderPositionX>
+  <DegraderPositionY>
+    16
+  </DegraderPositionY>
+  <DegraderPositionZ>
+    -355
+  </DegraderPositionZ>
 
 
    <!-- Include detectors -->
@@ -1027,6 +1045,10 @@
    <UseFGDlike>
      false
    </UseFGDlike>
+
+   <UseDegrader>
+     false
+   </UseDegrader>
 
    <UseToF_TopDown>
      false
