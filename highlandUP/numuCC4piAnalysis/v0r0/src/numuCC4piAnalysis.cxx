@@ -164,6 +164,9 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
   AddVarF(output(),   selmu_ecal_EneOnL,    "");
   AddVarI(output(),   selmu_ecal_stopping,  "");
 
+  //--- Protons information
+  AddVarF(output(),   selp_mom,             "");
+
   //--- Pion multiplicity
 
   AddVarVI(output(),  sel_TruePiPlus_reco,  "", sel_nTruePiPlus);
@@ -181,6 +184,32 @@ void numuCC4piAnalysis::DefineMicroTrees(bool addBase){
 
   AddVarI(output(),   sel_nTPCProtons,  "");
   AddVarI(output(),   sel_nTargetProtons,  "");
+
+
+  if ((bool)ND::params().GetParameterI("numuCC4piAnalysis.StoreAll")) {
+    AddVarVI(output(), all_ID, "track ID", all_NTracks);
+    AddVarVI(output(), all_parentID, "track parent ID", all_NTracks);
+    AddVarVI(output(), all_true_pdg, "true pdg", all_NTracks);
+    AddVarVF(output(), all_true_mom, "true start momentum", all_NTracks);
+    AddVarVF(output(), all_true_stop_mom, "true stop momentum", all_NTracks);
+    AddVarVF(output(), all_reco_mom, "reco momentum (for TPC)", all_NTracks);
+    AddVarVF(output(), all_true_dirX, "true direction (X)", all_NTracks);
+    AddVarVF(output(), all_true_dirY, "true direction (Y)", all_NTracks);
+    AddVarVF(output(), all_true_dirZ, "true direction (Z)", all_NTracks);
+    AddVarVF(output(), all_true_posX, "true position (X)", all_NTracks);
+    AddVarVF(output(), all_true_posY, "true position (Y)", all_NTracks);
+    AddVarVF(output(), all_true_posZ, "true position (Z)", all_NTracks);
+    AddVarVF(output(), all_true_target_length, "true length in target", all_NTracks);
+    AddVarVF(output(), all_true_total_length, "true total length", all_NTracks);
+    AddVarVF(output(), all_TPClkl_mu, "reco PID likelihood (mu hypo)", all_NTracks);
+    AddVarVF(output(), all_TPClkl_pi, "reco PID likelihood (pi hypo)", all_NTracks);
+    AddVarVF(output(), all_TPClkl_p, "reco PID likelihood (p hypo)", all_NTracks);
+    AddVarVF(output(), all_TPClkl_ele, "reco PID likelihood (ele hypo)", all_NTracks);
+    AddVarVI(output(), all_reco_inTPC, "is it reco in TPC", all_NTracks);
+    AddVarVI(output(), all_reco_inTarget, "is it reco in target", all_NTracks);
+    AddVarVI(output(), all_reco_target_asproton, "is it reco as proton in target", all_NTracks);
+  }
+    
 
 }
 
@@ -280,6 +309,8 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
 
     output().FillVar(sel_nTPCProtons,    cc4pibox().nProtonTPCtracks);
     output().FillVar(sel_nTargetProtons, cc4pibox().nIsoTargetProtontracks);
+
+    output().FillVar(selp_mom,           cc4pibox().HMProton_mom);
 
     if (track->TrueObject)
       output().FillVar(selmu_ToF_true_mass,    anaUtils::ComputeToFMass(track->GetTrueParticle()->Momentum, 
@@ -409,6 +440,56 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
    
     //--
   }
+
+
+  if ((bool)ND::params().GetParameterI("numuCC4piAnalysis.StoreAll")) {
+
+    AnaEventB& eventB = *static_cast<AnaEventB*>(_event);
+    for (unsigned i=0; i<eventB.nParticles; i++) {
+
+      AnaTrackB* track = static_cast<AnaTrackB*>(eventB.Particles[i]);
+      if (!track) continue;
+      if (!track->TrueObject) continue;
+
+      output().FillVectorVar(all_ID, track->GetTrueParticle()->ID);
+      output().FillVectorVar(all_parentID, track->GetTrueParticle()->ParentID);
+      output().FillVectorVar(all_true_pdg, track->GetTrueParticle()->PDG);
+      output().FillVectorVar(all_true_mom, track->Momentum);
+      output().FillVectorVar(all_true_stop_mom, track->MomentumEnd);
+      output().FillVectorVar(all_reco_mom, track->SmearedMomentum);
+      output().FillVectorVar(all_true_dirX, track->DirectionStart[0]);
+      output().FillVectorVar(all_true_dirY, track->DirectionStart[1]);
+      output().FillVectorVar(all_true_dirZ, track->DirectionStart[2]);
+      output().FillVectorVar(all_true_posX, track->PositionStart[0]);
+      output().FillVectorVar(all_true_posY, track->PositionStart[1]);
+      output().FillVectorVar(all_true_posZ, track->PositionStart[2]);
+
+      Float_t target_length=-999.;
+      if (track->nTargetSegments>0 && track->TargetSegments[0])
+	target_length = track->TargetSegments[0]->SegLength;
+      output().FillVectorVar(all_true_target_length, target_length);
+
+      output().FillVectorVar(all_true_total_length, (float)(-999.));
+      output().FillVectorVar(all_TPClkl_mu, anaUtils::GetPIDLikelihood( *track, 0));
+      output().FillVectorVar(all_TPClkl_ele, anaUtils::GetPIDLikelihood( *track, 1));
+      output().FillVectorVar(all_TPClkl_p, anaUtils::GetPIDLikelihood( *track, 2));
+      output().FillVectorVar(all_TPClkl_pi, anaUtils::GetPIDLikelihood( *track, 3));
+
+      output().FillVectorVar(all_reco_inTPC, cutUtils::DeltaLYZTPCCut(*track));
+      Bool_t target_reco = false, target_asproton = false;
+      if (track->nTargetSegments>0 && track->TargetSegments[0]) {
+	target_reco = track->TargetSegments[0]->IsReconstructed;
+	target_asproton = track->TargetSegments[0]->IdAsProton;
+      }
+      output().FillVectorVar(all_reco_inTarget, target_reco);
+      output().FillVectorVar(all_reco_target_asproton, target_asproton);
+
+      output().IncrementCounter(all_NTracks);
+
+    }
+
+  }
+  
   
 }
 
@@ -438,7 +519,7 @@ void numuCC4piAnalysis::FillToyVarsInMicroTrees(bool addBase){
     //output().FillToyVar(selmu_end_ecal,      cutUtils::StoppingBrECALorSMRDCut(track->PositionEnd));
 
   }
-  
+
 
 }
 

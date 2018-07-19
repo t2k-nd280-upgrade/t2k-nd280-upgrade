@@ -45,27 +45,32 @@ void numuCC4piSelection::DefineSteps(){
   AddStep(StepBase::kAction, "find pions",          new numuCC4piUtils::FindPionsAction());
   AddStep(StepBase::kAction, "find protons",        new numuCC4piUtils::FindProtonsAction());
 	
-  AddSplit(8);
+  AddSplit(9);
 	
-  AddStep(0, StepBase::kCut, "CC0pi topology",    new numuCC4piUtils::CC0pi());
-  AddStep(1, StepBase::kCut, "CC1pi topology",    new numuCC4piUtils::CC1pi());
-  AddStep(2, StepBase::kCut, "CCoth topology",    new numuCC4piUtils::CCoth());
+  AddStep(0, StepBase::kCut, "CC-0pi topology",    new numuCC4piUtils::CC0pi());
+  AddStep(1, StepBase::kCut, "CC-1pi topology",    new numuCC4piUtils::CC1pi());
+  AddStep(2, StepBase::kCut, "CC-oth topology",    new numuCC4piUtils::CCoth());
 	
   AddStep(3, StepBase::kCut, "CC-inc FWD",        new numuCC4piUtils::FWD());
   AddStep(4, StepBase::kCut, "CC-inc BWD",        new numuCC4piUtils::BWD());
   AddStep(5, StepBase::kCut, "CC-inc HA",         new numuCC4piUtils::HA());
   AddStep(6, StepBase::kCut, "CC-inc Target",     new numuCC4piUtils::Target());
   AddStep(7, StepBase::kCut, "CC-inc ECal",       new numuCC4piUtils::ECal());
+
+  AddStep(8, StepBase::kCut, "CC-0pi+1p",         new numuCC4piUtils::CC0pi1p());
 	
-  SetBranchAlias(0, "CC0pi", 0);
-  SetBranchAlias(1, "CC1pi", 1);
-  SetBranchAlias(2, "CCoth", 2);
+  SetBranchAlias(0, "CC-0pi", 0);
+  SetBranchAlias(1, "CC-1pi", 1);
+  SetBranchAlias(2, "CC-oth", 2);
 	
   SetBranchAlias(3, "CC-inc FWD", 3);
   SetBranchAlias(4, "CC-inc BWD", 4);	
   SetBranchAlias(5, "CC-inc HA", 5);	
   SetBranchAlias(6, "CC-inc Target", 6);	
   SetBranchAlias(7, "CC-inc ECal", 7);
+
+  SetBranchAlias(8, "CC-0pi1p", 8);
+
 	
   SetPreSelectionAccumLevel(0);
 	
@@ -154,12 +159,27 @@ namespace numuCC4piUtils{
     (void)event;
 		
     // Cast the ToyBox to the appropriate type
-    ToyBoxNDUP& box = *dynamic_cast<ToyBoxNDUP*>(&boxB);
+    ToyBoxCC4pi& box = *dynamic_cast<ToyBoxCC4pi*>(&boxB);
 		
-    return ( (useTarget1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1)) ||
-	     (useTarget2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget2)) ||
-	     (useFGD1    && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD1   )) ||
-	     (useFGD2    && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD2   )));
+    bool foundVertex;
+    if (useTarget1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget1)) {
+      foundVertex = true;
+      box.Target_det = SubDetId::kTarget1;
+    }
+    if (useTarget2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kTarget2)) {
+      foundVertex = true;
+      box.Target_det = SubDetId::kTarget2;
+    }
+    if (useFGD1 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD1)) {
+      foundVertex = true;
+      box.Target_det = SubDetId::kFGD1;
+    }
+    if (useFGD2 && cutUtils::FiducialCut(box.Vertex->Position, SubDetId::kFGD2)) {
+      foundVertex = true;
+      box.Target_det = SubDetId::kFGD2;
+    }
+
+    return foundVertex;
 		
   }
 	
@@ -309,12 +329,15 @@ namespace numuCC4piUtils{
 	    TPC == SubDetId::kTPCDown1 || 
 	    TPC == SubDetId::kTPCDown2) ) {
 	// FWD category
-	if (numuCC4pi_utils::IsForward(*track) &&
-	    numuCC4pi_utils::MuonPIDCut(*track, true) ) 
-	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::FwdTPC;}
+	if ( (cc4pibox->Target_det == SubDetId::kTarget1 && TPC >= SubDetId::kForwTPC1) ||
+	     (cc4pibox->Target_det == SubDetId::kTarget2 && TPC >= SubDetId::kForwTPC3) ||
+	     (cc4pibox->Target_det == SubDetId::kFGD1    && TPC >= SubDetId::kForwTPC2) ||
+	     (cc4pibox->Target_det == SubDetId::kFGD2    && TPC >= SubDetId::kForwTPC3) ) {
+	    if( numuCC4pi_utils::MuonPIDCut(*track, true) ) 
+	      {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::FwdTPC;}
+	}
 	// BWD category
-	else if (!numuCC4pi_utils::IsForward(*track) &&
-		 numuCC4pi_utils::MuonPIDCut(*track, false) ) 
+	else if ( numuCC4pi_utils::MuonPIDCut(*track, false) ) 
 	  {cc4pibox->MainTrack = track; cc4pibox->categMuon = MuonCategory::BwdTPC;}
       }
       else {
@@ -517,7 +540,11 @@ namespace numuCC4piUtils{
 		
     numuCC4pi_utils::FindTPCProtons(event, boxB, det);
     numuCC4pi_utils::FindIsoTargetProtons(event, boxB, det);
-		
+	
+    // loop sur les vecteurs box->ProtonTPCtracks et box->IsoTargetProtontracks
+    // trouver le proton de plus haute impulsion
+    // stocker son impulsion et la mettre dans box->HMProton_mom
+	
     box->nProtons = box->nProtonTPCtracks + box->nIsoTargetProtontracks;		
     return true;
   }
@@ -564,12 +591,22 @@ namespace numuCC4piUtils{
 		
     (void)event;
     ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
-    ToyBoxCC4pi* cc4pibox = static_cast<ToyBoxCC4pi*>(&boxB);
 	/*
     if (cc4pibox->categMuon == MuonCategory::Target)
       return (box->nPosPions == 0 && box->nNegPions == 0 && box->nOtherPions == 0 && box->nProtonTPCtracks > 0);
 	*/
     return (box->nPosPions == 0 && box->nNegPions == 0 && box->nOtherPions == 0);
+		
+  }
+
+  //**************************************************
+  bool CC0pi1p::Apply(AnaEventC& event, ToyBoxB& boxB) const{
+    //**************************************************
+		
+    (void)event;
+    ToyBoxCC4pi *box = static_cast<ToyBoxCC4pi*>(&boxB);
+
+    return (box->nPosPions == 0 && box->nNegPions == 0 && box->nOtherPions == 0 && box->nProtons==1);
 		
   }
 	

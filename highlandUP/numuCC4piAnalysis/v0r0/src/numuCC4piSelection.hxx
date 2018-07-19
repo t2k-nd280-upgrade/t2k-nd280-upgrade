@@ -56,7 +56,7 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     categMuon = -1;
-    TPCTracks.clear();       ECalTracks.clear();    TargetTracks.clear();
+    TPCTracks.clear();   ECalTracks.clear();    TargetTracks.clear();
     TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
     NegativePionTPCtracks.clear();
     PositivePionTPCtracks.clear();
@@ -64,7 +64,9 @@ public:
     PosPi0TPCtracks.clear();
     ElPi0TPCtracks.clear();
     MichelElectrons.clear();
+    Target_det = SubDetId::kInvalid;
     TPC_det = SubDetId::kInvalid;
+    HMProton_mom = -0xABCDEF;
   }
 
   virtual void Reset(){
@@ -73,7 +75,7 @@ public:
     track_ECal_EneOnL = -0xABCDEF;
     MainTrack = NULL;
     categMuon = -1;
-    TPCTracks.clear();       ECalTracks.clear();    TargetTracks.clear();
+    TPCTracks.clear();   ECalTracks.clear(); TargetTracks.clear();
     TruePiPlus.clear(); TruePiMinus.clear(); TruePiZero.clear();
     NegativePionTPCtracks.clear();
     PositivePionTPCtracks.clear();
@@ -81,7 +83,9 @@ public:
     PosPi0TPCtracks.clear();
     ElPi0TPCtracks.clear();
     MichelElectrons.clear();
+    Target_det = SubDetId::kInvalid;
     TPC_det = SubDetId::kInvalid;
+    HMProton_mom = -0xABCDEF;
   }
 
   virtual ~ToyBoxCC4pi(){}
@@ -90,6 +94,7 @@ public:
   float track_ECal_MipEM, track_ECal_EneOnL;
   AnaTrackB* MainTrack;
   std::vector<AnaTrackB*> TPCTracks, ECalTracks, TargetTracks;
+  SubDetId::SubDetEnum Target_det;
   SubDetId::SubDetEnum TPC_det;
   int categMuon;
 
@@ -117,6 +122,8 @@ public:
   int nNegPions;
   int nOtherPions;
   int nProtons;
+
+  Float_t HMProton_mom;
   
 };
 
@@ -249,6 +256,13 @@ namespace numuCC4piUtils{
     using StepBase::Apply;
     bool Apply(AnaEventC& event, ToyBoxB& box) const;
     StepBase* MakeClone(){return new CC0pi();}
+  };
+
+  class CC0pi1p: public StepBase{
+  public:
+    using StepBase::Apply;
+    bool Apply(AnaEventC& event, ToyBoxB& box) const;
+    StepBase* MakeClone(){return new CC0pi1p();}
   };
 
   class CC1pi: public StepBase{
