@@ -60,6 +60,7 @@ public:
   void SetGeneratorType(G4String name){fGeneratorType=name;};
   void SetTypeDirection(G4String name){fTypeDirection=name;};
   void SetTypeMomentum(G4String name){fTypeMomentum=name;};
+  void SetTypePosition(G4String name){fTypePosition=name;};
 
 private:
   G4ParticleGun*  fParticleGun; // G4 particle gun
@@ -71,6 +72,7 @@ private:
   G4String fGeneratorType;
   G4String fTypeDirection;
   G4String fTypeMomentum;
+  G4String fTypePosition;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

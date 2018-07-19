@@ -167,6 +167,36 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
     
     fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    if (fTypePosition=="Gaus") {
+      G4double x = anEvent->GetPrimaryVertex()->GetX0();
+      G4double y = anEvent->GetPrimaryVertex()->GetY0();
+      G4double z = anEvent->GetPrimaryVertex()->GetZ0();
+
+      std::cout << "Old vertex position  " << x << "  " << y << "   " << z << std::endl;
+      G4RandGauss* gaus_rand = new G4RandGauss(G4Random::getTheEngine(), 0, 40);
+      x = x + gaus_rand->fire();
+      y = y + gaus_rand->fire();
+
+      std::cout << "New vertex position  " << x << "  " << y << "   " << z << std::endl;
+      anEvent->GetPrimaryVertex()->SetPosition(x, y, z);
+    }
+
+    if (fTypeMomentum=="Gaus" && aEAmp != 0) {  
+      G4double mass = fParticleGun->GetParticleDefinition()->GetPDGMass(); 
+      G4double e_full = aEAmp + mass;
+      aMomAmp = sqrt(e_full*e_full - mass*mass);
+      std::cout << "Old momentum: " << aMomAmp << "  old energy " << aEAmp << "   mass " << mass << std::endl;
+      
+      G4RandGauss* gaus_rand = new G4RandGauss(G4Random::getTheEngine(), aMomAmp, 0.07 * aMomAmp);
+      aMomAmp = gaus_rand->fire();
+      aEAmp = sqrt(aMomAmp*aMomAmp + mass*mass) - mass;
+      std::cout << "New momentum: " << aMomAmp << "    Energy: " << aEAmp << std::endl;
+      if (anEvent->GetPrimaryVertex()->GetNumberOfParticle() != 1)
+        std::cout << "CAUTION!!!! More then 1 particle" << std::endl;
+      anEvent->GetPrimaryVertex()->GetPrimary()->SetKineticEnergy(aEAmp);
+      //fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+    }
   }
   
   else if(fGeneratorType=="Generator"){ // Read NEUT or GENIE output (same format)

@@ -60,6 +60,7 @@ private:
   G4UIcmdWithAString*        fGeneratorCmd;
   G4UIcmdWithAString*        fTypeDirCmd;
   G4UIcmdWithAString*        fTypeMomCmd;
+  G4UIcmdWithAString*				 fTypePosCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
