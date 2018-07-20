@@ -206,6 +206,14 @@ public :
   G4double GetXMLFGDlikePos_X()    {return fFGDlikePos_X;};
   G4double GetXMLFGDlikePos_Y()    {return fFGDlikePos_Y;};
   G4double GetXMLFGDlikePos_Z()    {return fFGDlikePos_Z;};
+
+  G4double GetXMLDegraderlength() {return fDegraderlength;};
+  G4double GetXMLDegraderwidth()  {return fDegraderwidth;};
+  G4double GetXMLDegraderheight() {return fDegraderheight;};
+
+  G4double GetXMLDegraderPos_X() {return fDegraderPos_X;};
+  G4double GetXMLDegraderPos_Y() {return fDegraderPos_Y;};
+  G4double GetXMLDegraderPos_Z() {return fDegraderPos_Z;};
  
   // ToF Downstream
   
@@ -417,6 +425,8 @@ public :
   G4bool   GetXMLUseToF_LeftUp()       {return fUseToF_LeftUp;};
   G4bool   GetXMLUseToF_BackUp()       {return fUseToF_BackUp;};
   G4bool   GetXMLUseToF_FrontUp()       {return fUseToF_FrontUp;};
+
+  G4bool   GetXMLUseDegrader()  {return fUseDegrader;};
   //
   G4bool   GetXMLUseMagnet()     {return fUseMagnet;};
   //G4bool   GetXMLUseSMRD()       {return fUseSMRD;};
@@ -881,6 +891,13 @@ private :
   G4bool fUseToF_LeftUp;
   G4bool fUseToF_BackUp;
   G4bool fUseToF_FrontUp;
+  G4bool fUseDegrader;
+  G4double fDegraderlength;
+  G4double fDegraderwidth;
+  G4double fDegraderheight;
+  G4double fDegraderPos_X;
+  G4double fDegraderPos_Y;
+  G4double fDegraderPos_Z;
   //G4bool fUseSMRD;
   G4bool fUseBasket;
   G4bool fUseDsECal;

@@ -1,2 +1,0 @@
-/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/EffStudy-build/CMakeFiles/EffStudy.dir
-/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/EffStudy-build/CMakeFiles/bin/effstudy.exe.dir

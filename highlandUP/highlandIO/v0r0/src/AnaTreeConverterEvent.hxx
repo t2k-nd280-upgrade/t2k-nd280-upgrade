@@ -134,7 +134,7 @@ protected:
   TSpline3 *pionspline;
   TSpline3 *protspline;
 
-  BinnedParams *_ECal_FGDmatch_eff, *_TPC_ECal_eff;
+  BinnedParams *_ECal_FGDmatch_eff, *_ECal_reco_eff, *_TPC_ECal_eff;
   
   // Header's
   Int_t EventTime;

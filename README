@@ -1,6 +1,4 @@
-First of all make sure that ND280 Software is installed and the environment is loaded (source Run_At_Start_T2K.sh and nd280upgrade.sh)
-
-go to t2k-nd280-upgrade-master and do:
+go to t2k-nd280-upgrade and do:
 
 0.) Set the environment
 

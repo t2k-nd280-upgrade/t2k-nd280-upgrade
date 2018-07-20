@@ -70,7 +70,7 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   if(edep==0.) return;
 
 
-  // //G4cout << "edep = " << edep << G4endl;
+  //G4cout << "edep = " << edep << G4endl;
   // G4cout << "ParentID = " << step->GetTrack()->GetParentID() << G4endl;
   // return;
 
@@ -114,14 +114,14 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   // G4double newtrkMomZ   = prestep->GetMomentum().z();
   // G4double newtrkMomMag = prestep->GetMomentum().mag();
   
-  // std::cout << "Track ID: = " << newtrkid 
-  //  	    << " - Parent ID: = " << newparentid
-  //  	    << " - Track PDG: = " << newtrkpdg   
-  //  	    << " - Track E: = " << newtrkEtotVtx  
-  //  	    << " - Track Mom: = " << newtrkMomMag   
-  //   //<< " - PreStep Mom: = " << prestep->GetMomentum().mag()
-  //   //<< " - PostStep Mom: = " << poststep->GetMomentum().mag()
-  //  	    << std::endl;  
+  //std::cout << "Track ID: = " << newtrkid 
+  //<< " - Parent ID: = " << newparentid
+  //	    << " - Track PDG: = " << newtrkpdg   
+  //	    << " - Track E: = " << newtrkEtotVtx  
+  //	    << " - Track Mom: = " << newtrkMomMag   
+    //<< " - PreStep Mom: = " << prestep->GetMomentum().mag()
+    //<< " - PostStep Mom: = " << poststep->GetMomentum().mag()
+  //	    << std::endl;  
 
 
   G4ThreeVector Pos = prestep->GetPosition();

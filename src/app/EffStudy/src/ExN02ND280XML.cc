@@ -185,6 +185,14 @@ ExN02ND280XML::~ExN02ND280XML(){
   fFGDlikePos_Y = 0.;
   fFGDlikePos_Z = 0.;
 
+  fUseDegrader    = 0.;
+  fDegraderlength = 0.;
+  fDegraderwidth  = 0.;
+  fDegraderheight = 0.;
+  fDegraderPos_X  = 0.;
+  fDegraderPos_Y  = 0.;
+  fDegraderPos_Z  = 0.;
+
 
   // ToF Downstream
 
@@ -1278,10 +1286,6 @@ void ExN02ND280XML::SetInputs(){
     //
     // Set detectors used in the simulation
     //
-
-    // Use HATPCs
-    XML2Bool("UseHATPCUp" ,fUseHATPCUp);
-    XML2Bool("UseHATPCDown" ,fUseHATPCDown);
     // Use forward TPCs
     XML2Bool("UseForwTPC1" ,fUseForwTPC1);
     XML2Bool("UseForwTPC2" ,fUseForwTPC2);
@@ -1339,6 +1343,14 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseP0DECal",fUseP0DECal);
     // Use P0D
     XML2Bool("UseP0D",fUseP0D);
+
+    XML2Bool("UseDegrader",fUseDegrader);
+    XML2Double("DegraderLength", fDegraderlength);
+    XML2Double("DegraderWidth", fDegraderwidth);
+    XML2Double("DegraderHeight", fDegraderheight);
+    XML2Double("DegraderPositionX", fDegraderPos_X);
+    XML2Double("DegraderPositionY", fDegraderPos_Y);
+    XML2Double("DegraderPositionZ", fDegraderPos_Z);
     
     // Set invisible detectors 
     XML2Bool("InvisForwTPC1"  ,fInvisForwTPC1);

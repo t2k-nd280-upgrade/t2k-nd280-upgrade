@@ -52,14 +52,14 @@ $resource        = "interactive"               unless defined $resource;
 #$tag             = "test" unless defined $tag;
 #$tag             = "g4ND280Up_NoNorm_Alternative_Targ_TPC_ECal_ToF_oofv"                 unless defined $tag;  
 #$tag             = "g4ND280Up_1E21_Reference_ECal_RHC_numu"                 unless defined $tag;
-#$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
+$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
 #$tag             = "g4ND280Up_1E22_Reference_ECal_nue"               unless defined $tag;
 #$tag             = "g4ND280Up_1E22_Alternative_Targ_TPC_ECal_ToF_nue"               unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF_RHC_numu"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_TPC_Targ_ECal_ToF_RHC_numu"    unless defined $tag;
 #$tag             = "g4ND280Up_AltTargTPC_Only_SuperFGD"    unless defined $tag;
-$tag             = "g4ND280Up_1E21_FGDXZ_NuMu"    unless defined $tag;
+#$tag             = "g4ND280Up_1E21_SuperFGD_NuMu"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu_NEUT"    unless defined $tag;
 
 
@@ -91,7 +91,7 @@ $tag             = "g4ND280Up_1E21_FGDXZ_NuMu"    unless defined $tag;
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster   
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
+$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster

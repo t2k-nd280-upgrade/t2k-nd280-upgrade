@@ -62,8 +62,8 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
   //fPhysVolName = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
   //}
   else {
-    fPhysVolName == "OutOfWorld";
-    fLogVolName == "OutOfWorld";
+    fPhysVolName = "OutOfWorld";
+    fLogVolName = "OutOfWorld";
   }
   
   if(aStep->GetPostStepPoint()->GetStepStatus()==fGeomBoundary)
@@ -95,8 +95,8 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Track* aTrack)
       fLogVolName = aTrack->GetVolume()->GetLogicalVolume()->GetName();
     }
     else{
-      fPhysVolName == "OutOfWorld";
-      fLogVolName == "OutOfWorld";
+      fPhysVolName = "OutOfWorld";
+      fLogVolName = "OutOfWorld";
     }
     
     fPrevPosition = aTrack->GetPosition();

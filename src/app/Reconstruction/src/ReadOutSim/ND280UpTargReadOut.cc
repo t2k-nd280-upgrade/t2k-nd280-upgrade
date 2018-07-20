@@ -49,17 +49,32 @@ const int topview = 1;
 const int sideview = 0;
 
 // FGD Constants
-const double EdepToPhotConv_FGD = 70.8 / CLHEP::MeV; // contains both collection in fiber and edep->gamma conversion 
-const double DistMPPCscint_FGD = 41*CLHEP::mm;
-const double LongCompFrac_FGD = 0.816;
-const double LongAtt_FGD = 11926.*CLHEP::mm;
-const double ShortAtt_FGD = 312.*CLHEP::mm;
+#ifdef ELECSIM
+  const double EdepToPhotConv_FGD = 156.42 / CLHEP::MeV;
+  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
+  const double FGDreflection = 0.4; // 0.4 - based on proto1 expectations
+  const double LongCompFrac_FGD = 0.77;
+  const double LongAtt_FGD = 4634.*CLHEP::mm;
+  const double ShortAtt_FGD = 332.*CLHEP::mm;
+#else
+  const double EdepToPhotConv_FGD = 70.8 / CLHEP::MeV; // contains both collection in fiber and edep->gamma conversion
+  const double LongCompFrac_FGD = 0.816;
+  const double LongAtt_FGD = 11926.*CLHEP::mm;
+  const double ShortAtt_FGD = 312.*CLHEP::mm;
+  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD * 1.3;
+#endif
+
+#if PROTO == 1
+  const double DistMPPCscint_FGD = 1250.*CLHEP::mm;
+#else
+  const double DistMPPCscint_FGD = 41*CLHEP::mm;
+#endif
+
 const double DecayLength_FGD = 0.0858 / CLHEP::mm;
 const double Lbar_FGD = 1864.3 * CLHEP::mm;
 
 // SuperFGD constants
-const double MPPCEff_SuperFGD = 0.38;
-const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD * 1.3;
+const double MPPCEff_SuperFGD = 0.35;
 
 // SciFi constants
 const double EdepToPhotConv_SciFi_SingleClad_2mm = 23.7 / CLHEP::MeV; 
@@ -72,6 +87,7 @@ const double CollFactor_DoubleClad = 0.10;
 
 ND280UpTargReadOut::ND280UpTargReadOut()
 {
+  fRndm = new TRandom3(0);
 }
 
 ND280UpTargReadOut::~ND280UpTargReadOut()
@@ -140,10 +156,10 @@ double ND280UpTargReadOut::EdepToPhot(double edep)
 }
 ////////
 
-void ND280UpTargReadOut::ApplyFiberResponse(double &nphot, double &time, double x)
+void ND280UpTargReadOut::ApplyFiberResponse(double &nphot, double &time, double x, double DetSize)
 {
   // Apply the light attenuation to the collected photons
-  ApplyFiberAttenuation(nphot,x);
+  ApplyFiberAttenuation(nphot,x, DetSize);
 
   // Get the time when the photons reach the MPPC
   ApplyFiberTime(time,x);
@@ -151,12 +167,12 @@ void ND280UpTargReadOut::ApplyFiberResponse(double &nphot, double &time, double 
   return;
 }
 
-void ND280UpTargReadOut::ApplyFiberAttenuation(double &nphot, double x)
+void ND280UpTargReadOut::ApplyFiberAttenuation(double &nphot, double x, double DetSize)
 {
   if(GetTargType() == nd280upconv::kSuperFGD ||
      GetTargType() == nd280upconv::kFGDlike
      ){
-    nphot = GetPhotAtt_FGD(nphot,x);
+    nphot = GetPhotAtt_FGD(nphot,x, DetSize);
   }
   else if(GetTargType() == nd280upconv::kSciFi){    
     //nphot = GetPhotAtt_SciFi(nphot,x); // not available yet
@@ -170,7 +186,7 @@ void ND280UpTargReadOut::ApplyFiberAttenuation(double &nphot, double x)
   return;
 }
 
-double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x){
+double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize){
   
   // Used for official FGD reconstruction: Eq. (4) in TN-103
   
@@ -187,14 +203,33 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x){
   ShortAtt = ShortAtt_FGD;  
   Ldecay= DecayLength_FGD;
   Lbar = Lbar_FGD;
-  
-  double Nphot = Nphot0;
-  Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
-  
-  // Add fall-off in light intensity in end of bars 
+
+  double Nphot;
+
+#ifdef ELECSIM
+    if (!DetSize){
+      std::cout << "ERROR: ND280UpTargReadOut::GetPhotAtt_FGD(): Detector size is not defined." << std::endl;
+      exit(1);
+    }
+
+    Nphot = Nphot0 / 2.;
+    Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+
+    x += 2. * (2 * DetSize - x);
+    for (int i = 0; i < int(Nphot0/2. + 0.5); ++i) {
+      double rndunif = fRndm->Uniform();
+      if (rndunif < FGDreflection)
+        Nphot += ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+    }
+#else
+    Nphot = Nphot0;
+    Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+#endif
+
+  // Add fall-off in light intensity in end of bars
   // where the scint light doesn't make it into the fibers
-  // Nphot *= (1 - 0.5*(exp(-Ldecay*x) + exp(-Ldecay*(Lbar-x)))); 
-  
+  // Nphot *= (1 - 0.5*(exp(-Ldecay*x) + exp(-Ldecay*(Lbar-x))));
+
   return Nphot;
 }
 
@@ -257,10 +292,13 @@ void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
   }
   
   for (int i=0;i<npe_integer;i++){
-    rndunif = G4UniformRand();
+    //rndunif = G4UniformRand();
+    rndunif = fRndm->Uniform();
     if (rndunif < MPPCEff_SuperFGD) npe_passed++;
   }
   
+  //cout << npe << ", " << rndunif << endl;
+
   //cout << "npe = " << npe << " - npe_passed = " << npe_passed << endl;
   
   npe = npe_passed;

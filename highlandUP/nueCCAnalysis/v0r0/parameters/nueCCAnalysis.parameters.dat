@@ -7,7 +7,7 @@
  < nueCCAnalysis.EnableFGD1 = 1 >
  < nueCCAnalysis.EnableFGD2 = 1 >
 
- < nueCCAnalysis.MinAccumLevelToSave = 7 >
+ < nueCCAnalysis.MinAccumLevelToSave = 0 >
 
  < nueCCAnalysis.TPCPID.Cut.Lmip  = 0.80 >
  < nueCCAnalysis.TPCPID.Cut.Lmu   = 0.03 >
@@ -28,7 +28,7 @@
 
  < nueCCAnalysis.SelectCharge = -1 >
  Run the Inclusive selection (1) or separate CC0pi, CC1pi CCOther (0)
- < nueCCAnalysis.Inclusive    = 0 >
+ < nueCCAnalysis.Inclusive    = 1 >
 
  < nueCCAnalysis.IsoTargetPi.EfficiencyPID_FGD    = 0.7  >
  < nueCCAnalysis.IsoTargetPi.ContaminationPID_FGD = 0.08 >
