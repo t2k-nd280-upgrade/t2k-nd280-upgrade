@@ -106,6 +106,7 @@ void ExN02PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String n
   }
   else if( command == fTypeGunCmd ){
     myPrimaryGenerator->SetTypeGun(newValue);
+  }
   else if( command == fTypePosCmd ){
     myPrimaryGenerator->SetTypePosition(newValue);
   }
