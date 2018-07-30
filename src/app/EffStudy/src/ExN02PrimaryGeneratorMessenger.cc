@@ -72,6 +72,11 @@ ExN02PrimaryGeneratorMessenger::ExN02PrimaryGeneratorMessenger(ExN02PrimaryGener
   fTypeGunCmd->SetGuidance("Choose a specific configuration of pgun for HATPC FC studies");
   fTypeGunCmd->SetParameterName("Type FC Gun",false);
   fTypeGunCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
+
+  fTypePosCmd = new G4UIcmdWithAString("/generator/typepos",this);
+  fTypePosCmd->SetGuidance("Choose how to generated the position: fixed or gaussian randomized");
+  fTypePosCmd->SetParameterName("Type Position",false);
+  fTypePosCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -83,7 +88,7 @@ ExN02PrimaryGeneratorMessenger::~ExN02PrimaryGeneratorMessenger()
   delete fTypeMomCmd;
   delete fTypeGunCmd;
   delete fPrimgenDir;
-
+  delete fTypePosCmd;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -101,6 +106,9 @@ void ExN02PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String n
   }
   else if( command == fTypeGunCmd ){
     myPrimaryGenerator->SetTypeGun(newValue);
+  }
+  else if( command == fTypePosCmd ){
+    myPrimaryGenerator->SetTypePosition(newValue);
   }
 }
 

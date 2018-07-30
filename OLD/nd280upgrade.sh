@@ -1,2 +1,0 @@
-
-export ND280UPGRADEPATH=$1

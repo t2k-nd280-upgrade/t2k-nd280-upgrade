@@ -20,8 +20,11 @@
     GENIE  
   </Generator>
 
+  <!-- /neutrino/data7/davide/files/ND280Upgrade/ -->
+  <!-- /beegfs/users/dsgalabe/ -->
+
   <Path2file>
-    /neutrino/data7/davide/files/ND280Upgrade/ 
+    /beegfs/users/dsgalabe/
   </Path2file>
 
   <filename>
@@ -1026,7 +1029,7 @@
    </UseFGDlike>
 
    <UseToF_TopDown>
-     fasle
+     false
    </UseToF_TopDown>
    <UseToF_BotDown>
      false

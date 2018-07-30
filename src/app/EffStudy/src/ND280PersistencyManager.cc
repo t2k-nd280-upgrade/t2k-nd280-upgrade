@@ -113,6 +113,17 @@ bool ND280PersistencyManager::SaveTrajectoryBoundary(G4VTrajectory* g4Traj,
 
 void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
   
+  G4String detname_curr = ndPoint->GetLogVolName();
+
+  // uncomment this to store all points in the target
+  /*
+  if (detname_curr.contains("/t2k/OA/Magnet/Basket/target1")) {
+    ndPoint->MarkPoint();
+    return;
+  } else
+    return;
+    */
+
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
   int NSDRootVolumes =  SDRegion->GetNumberOfRootVolumes();
@@ -120,7 +131,6 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
     SDRegion->GetRootLogicalVolumeIterator();
 
   //G4String detname_curr = ndPoint->GetPhysVolName();
-  G4String detname_curr = ndPoint->GetLogVolName();
 
   // G4cout << "Point in Phys Vol: " << detname_curr 
   // 	 << " --> Log Vol: " << ndPoint->GetLogVolName()
@@ -150,6 +160,12 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
 void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Event *event) {
   
   //G4cout << "ND280PersistencyManager::MarkTrajectory" << G4endl;
+
+  // Uncomment this to store all trajectories 
+  /*
+  ndTraj->MarkTrajectory();
+  return;
+  */
   
   // Go through all of the trajectories and save:
   //

@@ -168,12 +168,17 @@ Float_t anaUtils::ComputeInversePT(AnaTPCParticleB& track){
 //***************************************************************
 Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticleB*& seg2, Float_t& sigma, bool UseSmearing){
 //***************************************************************
+  
   if (!track) return -999.;
 
   Float_t ToF_time_resolution = ND::params().GetParameterD("psycheNDUPUtils.ToF.TimeResolution");
   Int_t add_ToF_on_targets    = ND::params().GetParameterI("psycheNDUPUtils.Geometry.AddToFOnTargets");
+  Int_t add_Fake_P0D          = ND::params().GetParameterI("psycheNDUPUtils.Geometry.AddFakeP0D");
+  Int_t detector_config       = ND::params().GetParameterI("psycheNDUPUtils.Geometry.nd280upConfiguration");
+
   std::vector< std::pair<AnaParticleB*, std::vector<Float_t> > > detTiming;
   
+
   // find timing information in Targets
   for (int i=0; i<track->nTargetSegments; i++){
     if (track->TargetSegments[i]->IsReconstructed) {
@@ -187,93 +192,73 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
     }
   }
 
-  // Target ToF is over target. 
-  // As it's not simulated check the target usage to avoid horisontal TPC tracks w/o target ToF
-  if (add_ToF_on_targets && anaUtils::TrackUsesDet(*track, SubDetId::kTarget)) {
-    // find timing information in additionnal ToF
-    // find the point with minimum Y for TPC up and with maximum Y for TPC down
+  
+  if (detector_config==0 && add_Fake_P0D) {
 
-    Float_t Ymin = 9999.;
-    Float_t Ymax = -9999.;
+    // find timing in the pseudo P0D by using a TPC 1 segment
+    Float_t Z_min = 9999.;
+    AnaTPCParticleB* mostFwdSeg = NULL;
+    for (Int_t i = 0; i < track->nTPCSegments; i++) {
+      AnaTPCParticleB* seg = track->TPCSegments[i];
+      if (!seg)
+	continue;
+      if (SubDetId::GetSubdetectorEnum(seg->Detectors) != SubDetId::kForwTPC1) 
+	continue;
 
-    // clones of the segment
-    // cloning is necessary as we can flip them.  
-    AnaParticleB* TPCupSeg   = NULL; 
-    AnaParticleB* TPCdownSeg = NULL;
-
-    for (Int_t i = 0; i < track->nTPCSegments; ++i) {
-
-      if (!track->TPCSegments[i])
-        continue;
-
-      // Target ToF is over target. 
-      // As it's not simulated check the target usage to avoid horisontal TPC tracks w/o target ToF
-      if (!anaUtils::TrackUsesDet(*track, SubDetId::kTarget))
-        continue;
-
-      // look at the TPC up segments
-      if (SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp1   ||
-          SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCUp2) {         
-
-        // minimum Y for TPC up
-        if (std::min(track->TPCSegments[i]->PositionStart[1], track->TPCSegments[i]->PositionEnd[1]) < Ymin) {
-          Ymin = std::min(track->TPCSegments[i]->PositionStart[1], track->TPCSegments[i]->PositionEnd[1]);
-          if (TPCupSeg) delete TPCupSeg;
-          TPCupSeg = track->TPCSegments[i]->Clone();
-        }
-      } 
-
-      if (SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown1 ||
-          SubDetId::GetSubdetectorEnum(track->TPCSegments[0]->Detectors) == SubDetId::kTPCDown2 ) {
-
-        // maximum Y for TPC down
-        if (std::max(track->TPCSegments[i]->PositionStart[1], track->TPCSegments[i]->PositionEnd[1]) > Ymax) {
-          Ymax = std::max(track->TPCSegments[i]->PositionStart[1], track->TPCSegments[i]->PositionEnd[1]);
-          if (TPCdownSeg) delete TPCdownSeg;
-          TPCdownSeg = track->TPCSegments[i]->Clone();
-        }
+      // minimum Z
+      if (std::min(seg->PositionStart[2], seg->PositionEnd[2]) < Z_min) {
+	Z_min = std::min(seg->PositionStart[2], seg->PositionEnd[2]);
+	if (mostFwdSeg) delete mostFwdSeg;
+	mostFwdSeg = (AnaTPCParticleB*)seg->Clone();
       }
     }
-
+  
     // invert the segment as we use start position for ToF calculations
-    if (TPCupSeg && TPCupSeg->PositionStart[1] > TPCupSeg->PositionEnd[1]) 
-      anaUtils::FlipTrack(TPCupSeg);
+    if (mostFwdSeg && mostFwdSeg->PositionStart[2] > mostFwdSeg->PositionEnd[2]) 
+      anaUtils::FlipTrack(mostFwdSeg);
 
-    if (TPCdownSeg && TPCdownSeg->PositionStart[1] < TPCdownSeg->PositionEnd[1]) 
-      anaUtils::FlipTrack(TPCdownSeg);
+    bool RecoP0DTrack = false;
+    if (mostFwdSeg) {
+ 
+      Float_t pos[3] = {mostFwdSeg->PositionStart[0], 
+			mostFwdSeg->PositionStart[1], 
+			mostFwdSeg->PositionStart[2]};
+      Float_t mom = mostFwdSeg->Momentum;      
+      Float_t eff;
+      if (mom<150)	 eff = 0.021;
+      else if (mom<200)	 eff = 0.311;
+      else if (mom<220)	 eff = 0.900;
+      else if (mom<260)	 eff = 0.944;
+      else if (mom<300)	 eff = 0.991;
+      else if (mom<500)	 eff = 0.989;
+      else if (mom<700)	 eff = 0.942;
+      else if (mom<1000) eff = 0.978;
+      else if (mom<1400) eff = 0.991;
+      else               eff = 0.997;
 
-    Float_t true_time;
-    Float_t     sigma;
-    Float_t      time;
-    std::vector<Float_t> vec;
-    sigma     = ToF_time_resolution;
-
-    // store information about TPC up segment
-    if (TPCupSeg) {
-      true_time = TPCupSeg->PositionStart[3];
-      time      = gRandom->Gaus(true_time, sigma);
-      
-      vec.clear();
-      vec.push_back(time); vec.push_back(sigma);
-      detTiming.push_back(std::make_pair(TPCupSeg, vec));
+      Float_t r = gRandom->Rndm();
+      if (r < eff && fabs(pos[0])<800 && fabs(pos[1]+10)<800 && pos[2]<-550)
+	RecoP0DTrack = true;
     }
 
-    // store information about TPC down segment
-    if (TPCdownSeg) {
-      true_time = TPCdownSeg->PositionStart[3];
-      time      = gRandom->Gaus(true_time, sigma);
-      
-      vec.clear();
+    if (RecoP0DTrack) {
+      Float_t true_time = mostFwdSeg->PositionStart[3];
+      Float_t     sigma = 1; // 1ns
+      Float_t      time = gRandom->Gaus(true_time, sigma);
+
+      std::vector<Float_t> vec;
       vec.push_back(time); vec.push_back(sigma);
-      detTiming.push_back(std::make_pair(TPCdownSeg, vec));
-    }
+      detTiming.push_back(std::make_pair(mostFwdSeg, vec));
+    }  
+
   }
+  
 
   // find timing information in FGDs
   for (int i=0; i<track->nFGDSegments; i++){
     if (track->FGDSegments[i]->IsReconstructed) {
       Float_t true_time = track->FGDSegments[i]->PositionStart[3];
-      Float_t     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->SegLength/25),2)+0.6+0.6); // 3ns/sqrt(NHits)
+      Float_t     sigma = sqrt(pow(3/sqrt(track->FGDSegments[i]->SegLength/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
       Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
@@ -284,9 +269,9 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
 
   // find timing information in ECal
   for (int i=0; i<track->nECalSegments; i++) {
-    if (track->ECalSegments[i]->IsReconstructed) {
+    if (track->ECalSegments[i]->IsReconstructedForTiming) {      
       Float_t true_time = track->ECalSegments[i]->PositionStart[3];
-      Float_t     sigma = 5; // 5ns
+      Float_t     sigma = 1; // 1ns
       Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
@@ -347,6 +332,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
     return ToF;
 
   return seg2->PositionStart[3]-seg1->PositionStart[3];
+
 }
 
 //*********************************************************************
@@ -634,5 +620,5 @@ void anaUtils::FlipTrack(AnaParticleB* track){
   anaUtils::CopyArray(track->DirectionStart, temp_dir,              3); //temp_dir = dir_start
   anaUtils::CopyArray(track->DirectionEnd,   track->DirectionStart, 3); //dir_start = dir_end
   anaUtils::CopyArray(temp_dir,              track->DirectionEnd,   3); //dir_end = temp_dir
-
+  
 }

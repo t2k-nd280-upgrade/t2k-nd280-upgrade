@@ -239,6 +239,35 @@ void ND280UpRecoTrack::DefineRecoTrack(){
   if(fDetType == nd280upconv::kSuperFGD){
     NHitViewMin = 3;
     NHitTotMin = 6; 
+
+    // NEW SUPERFGDXZ
+
+    double cut_length = 20.; // mm                                                                                                                            
+    double length_layer = 0.;
+    bool doCutLayer = false;
+    
+    if     ( !fUseView_xy ){
+      length_layer = fTrkLengthStraightZ;
+      doCutLayer = true;
+    }
+    else if( !fUseView_xz ){
+      length_layer = fTrkLengthStraightY;
+      doCutLayer = true;
+    }
+    else if( !fUseView_yz ){
+      length_layer = fTrkLengthStraightX;
+      doCutLayer = true;
+    }
+    else{
+      doCutLayer = false;
+    }
+    
+    if( doCutLayer && (length_layer < cut_length) ){
+      SetIsReco(false);
+      return;
+    }
+    //////////////
+
   }
   else if(fDetType == nd280upconv::kFGDlike){
     
@@ -280,11 +309,11 @@ void ND280UpRecoTrack::DefineRecoTrack(){
     // if no XZ or YZ view --> |sintheta|<0.3
     else if( ( !fUseView_xz || !fUseView_yz )
 	     && TMath::Abs(recosintheta) < 0.3){
-
-       SetIsReco(false);
+      
+      SetIsReco(false);
       return;
     }
-        
+          
     NHitViewMin = 3;
     NHitTotMin = 6; 
   }

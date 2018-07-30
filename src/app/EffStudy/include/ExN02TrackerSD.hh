@@ -36,8 +36,6 @@
 #include "G4VSensitiveDetector.hh"
 #include "ExN02TrackerHit.hh"
 
-#include "ExN02TrackerResponse.hh" // B.Q
-
 #include "ExN02ND280XML.hh"
 
 class G4Step;
@@ -89,7 +87,6 @@ private:
 
   ////////
 
-  ExN02TrackerResponse * trackerResponse;
   
   G4int NSteps_;
   

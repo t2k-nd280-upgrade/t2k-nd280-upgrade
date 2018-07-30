@@ -61,6 +61,7 @@ public:
   void SetTypeDirection(G4String name){fTypeDirection=name;};
   void SetTypeMomentum(G4String name){fTypeMomentum=name;};
   void SetTypeGun(G4String name){fTypeGun=name;};
+  void SetTypePosition(G4String name){fTypePosition=name;};
 
 private:
   G4ParticleGun*  fParticleGun; // G4 particle gun
@@ -73,6 +74,7 @@ private:
   G4String fTypeDirection;
   G4String fTypeMomentum;
   G4String fTypeGun;
+  G4String fTypePosition;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -94,7 +94,7 @@ ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator()
 
 void ExN02RooTrackerKinematicsGenerator::ReadNEUT(G4String filename)
 { 
-  fneutfile = TFile::Open(filename,"OLD");
+  fneutfile = TFile::Open(filename,"READ");
   if (!fneutfile->IsOpen()) {
     const char *msg = "NEUT file is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadNEUT";
@@ -159,7 +159,7 @@ void ExN02RooTrackerKinematicsGenerator::ReadGENIE(G4String filename)
   // --> GeneratePrimaryVertexGENIE() cannot be used!!!
   //
 
-  fneutfile = TFile::Open(filename,"OLD");
+  fneutfile = TFile::Open(filename,"READ");
   if (!fneutfile->IsOpen()) {
     const char *msg = "GENIE file is not open!";
     const char *origin = "ExN02RooTrackerKinematicsGenerator::ReadGENIE";
@@ -297,6 +297,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   G4cout << "Set G4 event ID to input Tree event ID: " << anEvent->GetEventID() << G4endl;
   G4cout << G4endl;
 
+
   //
   // NB: The following code to add the vertex is taken from nd280mc code
   //     except a few minor differences (e.g. ND280LOG, the interaction vertex index, different G4 version...)
@@ -365,6 +366,15 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4IonTable     * ionTable      = G4IonTable::GetIonTable();
   for (G4int cnt = 0; cnt < fStdHepN; ++cnt) {
+
+    // cout << endl;
+    // cout << "fStdHepP4 = " 
+    // 	 << fStdHepP4[cnt][0]*CLHEP::GeV << ", "
+    // 	 << fStdHepP4[cnt][1]*CLHEP::GeV << ", "
+    // 	 << fStdHepP4[cnt][2]*CLHEP::GeV << ", "
+    // 	 << fStdHepP4[cnt][3]*CLHEP::GeV << ", "
+    // 	 << endl;
+
     G4ParticleDefinition* particleDef
       = particleTable->FindParticle(fStdHepPdg[cnt]);
     if (!particleDef) {

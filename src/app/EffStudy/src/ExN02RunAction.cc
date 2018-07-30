@@ -30,6 +30,11 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+
+#include <ctime>
+#include <sys/time.h>
+
+
 #include "ExN02RunAction.hh"
 #include "ExN02EventAction.hh"
 #include "ExN02Analysis.hh" // TODO
@@ -53,7 +58,7 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
     fEventAction(eventAction)
 {
   //set the seed engine
-  CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
+  //CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine); // NEW SEED
 
   // set printing event number per each event
   G4RunManager::GetRunManager()->SetPrintProgress(1);
@@ -403,11 +408,23 @@ void ExN02RunAction::EndOfRunAction(const G4Run*)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02RunAction::SetSeed() {
+
   //set random seed with system time
-  G4long seed = time(NULL);
-  if (seed<0) seed = -seed;
-  G4cout << "### Random seed number set to: " << seed<< G4endl;
-  CLHEP::HepRandom::setTheSeed(seed);
+  
+  //G4long seed = time(NULL); 
+  //if (seed<0) seed = -seed;
+  //G4cout << "### Random seed number set to: " << seed<< G4endl;
+  //CLHEP::HepRandom::setTheSeed(seed);
+  
+  // As used in nd280mc
+  long seed = 0.;
+  struct timeval buffer;
+  gettimeofday(&buffer,NULL);
+  //ND280Log("### Set seed from local time: " << ctime(&buffer.tv_sec));
+  //ND280Log("###      Micro-second offset: " << buffer.tv_usec);
+  seed = long(buffer.tv_sec + buffer.tv_usec);
+  SetSeed(long(seed));
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......  

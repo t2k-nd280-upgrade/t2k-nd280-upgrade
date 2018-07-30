@@ -20,7 +20,7 @@
 # Set the magnetic field
 /field/setStepperType 4
 /field/setMinStep 0.1 mm
-/field/setFieldX 0.2 tesla
+/field/setField 0.2 0 0 tesla
 /field/update
 
 
