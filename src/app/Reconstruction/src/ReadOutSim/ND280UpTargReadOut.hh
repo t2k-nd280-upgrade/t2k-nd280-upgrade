@@ -7,9 +7,9 @@
 #include <TRandom3.h>
 
 // 0 - Full size SuperFGD 1 - 5x5x5 2 - 24x8x48
-#define PROTO 1
+#define PROTO 0
 #define ELECSIM
-#define CROSSTALK 3
+#define CROSSTALK 0
 
 using namespace nd280upconv;
 
