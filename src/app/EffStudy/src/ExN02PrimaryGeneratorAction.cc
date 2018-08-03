@@ -143,7 +143,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     if (fTypeMomentum=="Wide")
       {
         G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
-        aMomAmp = (G4UniformRand()*(2000.) );
+        aMomAmp = (G4UniformRand()*(1000.) );
         fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
         cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
         aEAmp = fParticleGun->GetParticleEnergy();
@@ -153,7 +153,10 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
     if(fTypeDirection=="Uniform"){      
       G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
-      G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi/2]
+      // Ko uses for angles [0,pi/2]
+      // G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi/2]
+      // full phase spase coverage [0,pi]
+      G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi]
       G4double phi = G4UniformRand()*360*CLHEP::deg; //flat in [0,2pi]
       G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
       G4ThreeVector dir(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);
