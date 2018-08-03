@@ -99,6 +99,15 @@ int LightYield(int argc,char** argv)
   
   const int NEvtDisplTot = 50; //atoi(argv[5]); // max # of evt. displays
 
+  std::cout << "Run for prototype " << PROTO << std::endl;
+  std::cout << "0 - Full size SuperFGD 1 - 5x5x5 2 - 24x8x48" << std::endl;
+#ifdef ELECSIM
+  std::cout << "ELECSIM is on" << std::endl;
+#else
+  std::cout << "ELECSIM is off. Work with effective reflection" << std::endl;
+#endif
+  std::cout << "Crosstalk algorithm is " << CROSSTALK << std::endl;
+
   //
   // Declare histograms
   //
