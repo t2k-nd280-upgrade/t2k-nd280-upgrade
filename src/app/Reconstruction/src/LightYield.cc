@@ -73,11 +73,14 @@ int LightYield(int argc,char** argv)
     cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << endl;
     exit(1);
   }
+
+  std::string prefix = "_ly";
   
   string rootfilename = argv[1];
   const int evtfirst = atoi(argv[2]);
   const int nevents = atoi(argv[3]);
-  string tag = argv[4] + ("_ly").c_str();
+  string tag = argv[4];
+  tag += prefix;
   const int detectorID = atoi(argv[5]);
   const int DEBUG = atoi(argv[6]);
   const int DEBUGPLOT = atoi(argv[7]);
@@ -268,29 +271,9 @@ int LightYield(int argc,char** argv)
     TString name;
 
     if(ievt<NEvtDisplTot){
-
-      name = TString::Format("gMCHits_XY_%d",ievt);
-      gMCHits_XY[ievt] = new TGraph(); 
-      gMCHits_XY[ievt]->SetName(name);
-      gMCHits_XY[ievt]->SetTitle(name);
-      gMCHits_XY[ievt]->SetMarkerSize(1);
-      gMCHits_XY[ievt]->SetMarkerStyle(20);
-      name = TString::Format("gMCHits_XZ_%d",ievt);
-      gMCHits_XZ[ievt] = new TGraph(); 
-      gMCHits_XZ[ievt]->SetName(name);
-      gMCHits_XZ[ievt]->SetTitle(name);
-      gMCHits_XZ[ievt]->SetMarkerSize(1);
-      gMCHits_XZ[ievt]->SetMarkerStyle(20);
-      name = TString::Format("gMCHits_YZ_%d",ievt);
-      gMCHits_YZ[ievt] = new TGraph();
-      gMCHits_YZ[ievt]->SetName(name);
-      gMCHits_YZ[ievt]->SetTitle(name);
-      gMCHits_YZ[ievt]->SetMarkerSize(1);
-      gMCHits_YZ[ievt]->SetMarkerStyle(20);
-
       name = TString::Format("hMPPCHits_XY_%d",ievt);
       hMPPCHits_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
-      name = TString::Format("hMPPCHits_XZ_%d",ievt);
+      name = TString::Format("hMPPCHits_XZ_%ыd",ievt);
       hMPPCHits_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
       name = TString::Format("hMPPCHits_YZ_%d",ievt);
       hMPPCHits_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
@@ -300,15 +283,7 @@ int LightYield(int argc,char** argv)
       name = TString::Format("hPEVsTime_y_%d",ievt);
       hPEVsTime_y[ievt] = new TH1F(name,name,100,0,10000);
       name = TString::Format("hPEVsTime_z_%d",ievt);
-      hPEVsTime_z[ievt] = new TH1F(name,name,100,0,10000);    
-      
-      // Initialize canvases
-      name = TString::Format("cMPPCHits_XY_%d",ievt);
-      cMPPCHits_XY[ievt] = new TCanvas(name,name);
-      name = TString::Format("cMPPCHits_XZ_%d",ievt);
-      cMPPCHits_XZ[ievt] = new TCanvas(name,name);
-      name = TString::Format("cMPPCHits_YZ_%d",ievt);
-      cMPPCHits_YZ[ievt] = new TCanvas(name,name);
+      hPEVsTime_z[ievt] = new TH1F(name,name,100,0,10000);
     }
     
     // Loop over the hits
@@ -357,6 +332,8 @@ int LightYield(int argc,char** argv)
       double deltaY = posY - posY_prev; 
       double deltaZ = posZ - posZ_prev;
 
+      double edep = nd280UpHit->GetEnergyDeposit(); 
+
       double steplength = nd280UpHit->GetTrackLength(); // check how it's calculated in geant4
 
       string detname = nd280UpHit->GetDetName();
@@ -366,7 +343,7 @@ int LightYield(int argc,char** argv)
       //
      	
       ApplyResponse.SetTargetID(DetType);
-      ApplyResponse.CalcResponse(lightPos,trkid,parentid,charge,time,steplength,edep,detname);
+      ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);
       
       double pex = ApplyResponse.GetHitPE().x();
       double pey = ApplyResponse.GetHitPE().y();
@@ -383,9 +360,7 @@ int LightYield(int argc,char** argv)
       double poshitX = ApplyResponse.GetHitPos().x();
       double poshitY = ApplyResponse.GetHitPos().y();
       double poshitZ = ApplyResponse.GetHitPos().z();
-      
-      trkid = ApplyResponse.GetHitTrkID();            
-      
+            
       if(ievt<NEvtDisplTot){
         hPEVsTime_x[ievt]->Fill(timepex,pex);
         hPEVsTime_y[ievt]->Fill(timepey,pey);

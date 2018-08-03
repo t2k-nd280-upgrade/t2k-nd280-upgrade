@@ -387,11 +387,14 @@ int TrackReconstruction(int argc,char** argv)
     cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << endl;
     exit(1);
   }
+
+  std::string prefix = "_tr";
   
   string rootfilename = argv[1];
   const int evtfirst = atoi(argv[2]);
   const int nevents = atoi(argv[3]);
-  string tag = argv[4] + ("_tr").c_str();
+  string tag = argv[4];
+  tag += prefix;
   const int detectorID = atoi(argv[5]);
   const int DEBUG = atoi(argv[6]);
   const int DEBUGPLOT = atoi(argv[7]);
