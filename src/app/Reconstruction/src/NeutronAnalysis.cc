@@ -21,7 +21,7 @@
 #include <TRandom3.h>
 
 #include "ND280UpConst.hh"
-#include "ND280UpApplyResponse.hh"
+#include <ND280UpApplyResponse.hh>
 #include "ND280UpRecoTrack.hh"
 #include "ND280UpPID.hh"
 
@@ -35,7 +35,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int NeutronAnalysis(int argc,char** argv) {
-  if (argc!=13){   // batch mode                                        
+  if (argc!=14){   // batch mode                                        
     cout << "You need to provide the following arguments:" << endl;
     cout << " 1) input ROOT file name (from GEANT4 simulation) " << endl;
     cout << " 2) first event number to run" << endl;
@@ -49,10 +49,12 @@ int NeutronAnalysis(int argc,char** argv) {
     cout << " 10) use view YZ (0 or 1)" << endl;
     cout << " 11) Minimum track distance (if <=0 use default)" << endl;
     cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << endl;
+    cout << " 13) Output file name. In iteractive run it can be first event, but for parallel need separate param" << endl;
     exit(1);
   }
 
   std::string prefix = "_na";
+
   
   string rootfilename = argv[1];
   const int evtfirst = atoi(argv[2]);
@@ -61,12 +63,10 @@ int NeutronAnalysis(int argc,char** argv) {
   tag += prefix;
   const int detectorID = atoi(argv[5]);
   const int DEBUG = atoi(argv[6]);
-  const int DEBUGPLOT = atoi(argv[7]);
   const int UseViewXY = atoi(argv[8]);
   const int UseViewXZ = atoi(argv[9]);
   const int UseViewYZ = atoi(argv[10]);
-  const double MinSeparation = atof(argv[11]); // if <0 --> use the default one
-  const int UseTruthFV = atoi(argv[12]);
+  const int outname = atoi (argv[13]);
 
 
   // Set the inputs
@@ -75,7 +75,7 @@ int NeutronAnalysis(int argc,char** argv) {
   if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
   else if(detectorID == 1) DetType = nd280upconv::kFGDlike;
   
-  const int NEvtDisplTot = 50; //atoi(argv[5]); // max # of evt. displays
+  const int NEvtDisplTot = 5; //atoi(argv[5]); // max # of evt. displays
 
   // Declare canvases
   TCanvas *cMPPCHits_XY[NEvtDisplTot]; 
@@ -85,6 +85,16 @@ int NeutronAnalysis(int argc,char** argv) {
   //
   // Declare histograms
   //
+
+  // number of hits
+  TH1F* hits_number = new TH1F("hitsN", "Number of hits", 50, 0., 50.);
+  // hits versus energy
+  TH2F* hits_energy = new TH2F("hitsE", "Hits vs Energy", 250, 0., 500., 50, 0., 50.);
+
+  // initial energy versus cos theta
+  TH2F* init_e_cos  = new TH2F("ini_ET", "Initial", 10, -1., 1., 250, 0., 500);
+  TH2F* eff_e_cos   = new TH2F("eff_ET", "Efficiency", 10, -1., 1., 250, 0., 500);
+  TH2F* pe_e_cos    = new TH2F("pe_ET", "PE from 1st hit", 10, -1., 1., 250, 0., 500);
 
   // Event displays
 
@@ -102,7 +112,7 @@ int NeutronAnalysis(int argc,char** argv) {
 
    // Set outputs
   
-  TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
+  TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),outname,nevents);
   TFile *fileout = new TFile(outfilename.Data(),"RECREATE"); 
 
   /////////////////////////////
@@ -119,6 +129,23 @@ int NeutronAnalysis(int argc,char** argv) {
   h2d_xy = (TH2F*)finput->Get("OutMPPCProj2D_XY");
   h2d_xz = (TH2F*)finput->Get("OutMPPCProj2D_XZ");
   h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
+
+  Int_t binX = h2d_xy->GetXaxis()->GetNbins();
+  Int_t binY = h2d_xy->GetYaxis()->GetNbins();
+  Int_t binZ = h2d_xz->GetYaxis()->GetNbins();
+
+  Float_t X_min = h2d_xy->GetXaxis()->GetBinLowEdge(0);
+  Float_t X_max = h2d_xy->GetXaxis()->GetBinUpEdge(binX);
+  Float_t Y_min = h2d_xy->GetYaxis()->GetBinLowEdge(0);
+  Float_t Y_max = h2d_xy->GetYaxis()->GetBinUpEdge(binX);
+  Float_t Z_min = h2d_xz->GetYaxis()->GetBinLowEdge(0);
+  Float_t Z_max = h2d_xz->GetYaxis()->GetBinUpEdge(binX);
+
+  TH2F* first_bin_XY = (TH2F*)h2d_xy->Clone("fb_XY");
+  TH2F* first_bin_XZ = (TH2F*)h2d_xy->Clone("fb_XZ");
+  TH2F* first_bin_YZ = (TH2F*)h2d_xy->Clone("fb_YZ");
+
+  TH3F* h3d = new TH3F("3d", "", binX, X_min, X_max, binY, Y_min, Y_max, binZ, Z_min, Z_max);
 
   // Take the World origin position in the target (local) reference system
   TPolyMarker3D *WorldOrigInLocal = (TPolyMarker3D*)finput->Get("WorldOrigInLocal");
@@ -219,6 +246,8 @@ int NeutronAnalysis(int argc,char** argv) {
       sw_event.Start(0);
       cout << " --> CPU time = " << CPUtime << endl;
     }
+
+    h3d->Reset();
     
    // Initialize histograms
     
@@ -279,6 +308,10 @@ int NeutronAnalysis(int argc,char** argv) {
       cout << "# of hits = " << nd280UpEvent->GetNHits() << endl;
     }
 
+    double first_hit_time = 1.e9;
+
+    Int_t first_binX, first_binY, first_binZ;
+
     // DEFINE HITS MAP
     TH2F* hits_map_XY = (TH2F*)h2d_xy->Clone("hits_map_XY");
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
@@ -293,12 +326,6 @@ int NeutronAnalysis(int argc,char** argv) {
       double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y 
       double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
       TVector3 lightPos(posX,posY,posZ); // already in local position
-
-      // True costheta defined by the direction wrt first and last MC hit position
-      double lenX = nd280UpHit->GetStopX() - nd280UpHit->GetStartX(); 
-      double lenY = nd280UpHit->GetStopY() - nd280UpHit->GetStartY(); 
-      double lenZ = nd280UpHit->GetStopZ() - nd280UpHit->GetStartZ(); 
-
 
       double edep = nd280UpHit->GetEnergyDeposit(); 
 
@@ -329,14 +356,20 @@ int NeutronAnalysis(int argc,char** argv) {
       double poshitY = ApplyResponse.GetHitPos().y();
       double poshitZ = ApplyResponse.GetHitPos().z();
 
-      // store light yield
-      Int_t MPPCx = h2d_xz->GetXaxis()->FindBin(poshitX);
-      Int_t MPPCy = h2d_yz->GetXaxis()->FindBin(poshitY);
-      Int_t MPPCz = h2d_yz->GetYaxis()->FindBin(poshitZ);
-
       hits_map_XY->Fill(poshitX,poshitY,pez);  // pe along Z
       hits_map_XZ->Fill(poshitX,poshitZ,pey); // pe along Y
       hits_map_YZ->Fill(poshitY,poshitZ,pex); // pe along X
+
+      if (pex + pey + pez > 0 && time < first_hit_time) {
+        first_binX = hits_map_XY->GetXaxis()->FindBin(poshitX);
+        first_binY = hits_map_XY->GetYaxis()->FindBin(poshitY);
+        first_binZ = hits_map_YZ->GetYaxis()->FindBin(poshitZ);
+      }
+
+      Int_t bin = h3d->FindBin(poshitX, poshitY, poshitZ);
+      if (!h3d->GetBinContent(bin)) {
+        h3d->Fill(poshitX, poshitY, poshitZ);
+      }
 
       if(ievt<NEvtDisplTot){
         gMCHits_XY[ievt]->SetPoint(gMCHits_XY[ievt]->GetN(), poshitX, poshitY);
@@ -353,6 +386,8 @@ int NeutronAnalysis(int argc,char** argv) {
       }
     } // end loop over the hits
 
+    hits_number->Fill(h3d->Integral());
+
     // take the vertex point
     if (nd280UpEvent->GetNVertices() < 1) {
       std::cout << "WARNING! no vertices in the event! The event will be skipped" << std::endl;
@@ -366,9 +401,23 @@ int NeutronAnalysis(int argc,char** argv) {
     if (DEBUG)
       std::cout << "Vertex placed in cubes X Y Z " << vertexX << "\t" << vertexY << "\t" << vertexZ << std::endl;
 
-    // start the analysis
+    // take for the neutron vars
+    // TODO loop over trajs looking for neutron
+    if (nd280UpEvent->GetNTracks() < 1) {
+      std::cout << "WARNING! no tracks in the event! The event will be skipped" << std::endl;
+      continue;
+    }
+    TND280UpTrack* track = nd280UpEvent->GetTrack(0);
+    if (track->GetPDG() != 2112) {
+      std::cout << "WARNING! First track is not neutron! The event will be skipped" << std::endl;
+      continue;
+    }
 
-    // TODO the analysis
+    Float_t ekin      = track->GetInitKinEnergy();
+    Float_t costheta  = track->GetInitCosTheta();
+
+    hits_energy->Fill(ekin, h3d->Integral());
+    init_e_cos->Fill(costheta, ekin);
 
     // END OF FILLING HITS MAP
 
@@ -389,9 +438,76 @@ int NeutronAnalysis(int argc,char** argv) {
       gMCHits_XZ[ievt]->Draw("p same");
       //TargVtx_XZ->Draw();
     }
+
+    // The analysis
+
+    // at least one hit should exists
+    if (first_hit_time == 1.e9)
+      continue;
+
+    // map the first hit
+    first_bin_XY->Fill(first_binX, first_binY);
+    first_bin_YZ->Fill(first_binY, first_binZ);
+    first_bin_XZ->Fill(first_binX, first_binZ);
+
+    // check that we have exactly one hit
+    // hit cube should be isolated in at least 2 projections
+    Int_t PE_around1 =  hits_map_XY->GetBinContent(first_binX + 1,  first_binY) + 
+                        hits_map_XY->GetBinContent(first_binX + 1,  first_binY + 1) +
+                        hits_map_XY->GetBinContent(first_binX,      first_binY + 1) +
+                        hits_map_XY->GetBinContent(first_binX - 1,  first_binY + 1) +
+                        hits_map_XY->GetBinContent(first_binX - 1,  first_binY) +
+                        hits_map_XY->GetBinContent(first_binX - 1,  first_binY - 1) +
+                        hits_map_XY->GetBinContent(first_binX,      first_binY - 1) +
+                        hits_map_XY->GetBinContent(first_binX + 1,  first_binY - 1);
+
+    Int_t PE_around2 =  hits_map_XZ->GetBinContent(first_binX + 1,  first_binZ) + 
+                        hits_map_XZ->GetBinContent(first_binX + 1,  first_binZ + 1) +
+                        hits_map_XZ->GetBinContent(first_binX,      first_binZ + 1) +
+                        hits_map_XZ->GetBinContent(first_binX - 1,  first_binZ + 1) +
+                        hits_map_XZ->GetBinContent(first_binX - 1,  first_binZ) +
+                        hits_map_XZ->GetBinContent(first_binX - 1,  first_binZ - 1) +
+                        hits_map_XZ->GetBinContent(first_binX,      first_binZ - 1) +
+                        hits_map_XZ->GetBinContent(first_binX + 1,  first_binZ - 1);
+
+    Int_t PE_around3 =  hits_map_YZ->GetBinContent(first_binY + 1,  first_binZ) + 
+                        hits_map_YZ->GetBinContent(first_binY + 1,  first_binZ + 1) +
+                        hits_map_YZ->GetBinContent(first_binY,      first_binZ + 1) +
+                        hits_map_YZ->GetBinContent(first_binY - 1,  first_binZ + 1) +
+                        hits_map_YZ->GetBinContent(first_binY - 1,  first_binZ) +
+                        hits_map_YZ->GetBinContent(first_binY - 1,  first_binZ - 1) +
+                        hits_map_YZ->GetBinContent(first_binY,      first_binZ - 1) +
+                        hits_map_YZ->GetBinContent(first_binY + 1,  first_binZ - 1);
+
+    if (PE_around1 + PE_around2 > 0 && PE_around1 + PE_around3 > 0 && PE_around2 + PE_around3 > 0)
+      continue;
+
+    // SELECTION IS DONE 
+    // filling histoes
+
+    eff_e_cos->Fill(costheta, ekin);
+    pe_e_cos->Fill( costheta, ekin,
+                    hits_map_XY->GetBinContent(first_binX, first_binY) +
+                    hits_map_XZ->GetBinContent(first_binX, first_binZ) +
+                    hits_map_YZ->GetBinContent(first_binY, first_binZ));
   } // loop over events
 
   fileout->cd();
+
+  hits_number->Write();
+  hits_energy->Write();
+
+  first_bin_XY->Write();
+  first_bin_YZ->Write();
+  first_bin_XZ->Write();
+
+  pe_e_cos->Scale(eff_e_cos->GetEntries());
+  pe_e_cos->Write();
+
+  eff_e_cos->Divide(init_e_cos);
+
+  init_e_cos->Write();
+  eff_e_cos->Write();
 
   int last = evtfirst+Nentries-1;
   for(int ievtdispl=evtfirst;ievtdispl<=last ;ievtdispl++){ 
