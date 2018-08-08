@@ -57,7 +57,7 @@
 int LightYield(int argc,char** argv)
 {   
   
-  if (argc!=13){   // batch mode                                        
+  if (argc!=14){   // batch mode                                        
     cout << "You need to provide the following arguments:" << endl;
     cout << " 1) input ROOT file name (from GEANT4 simulation) " << endl;
     cout << " 2) first event number to run" << endl;
@@ -71,6 +71,7 @@ int LightYield(int argc,char** argv)
     cout << " 10) use view YZ (0 or 1)" << endl;
     cout << " 11) Minimum track distance (if <=0 use default)" << endl;
     cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << endl;
+    cout << " 13) Output file name. In iteractive run it can be first event, but for parallel need separate param" << endl;
     exit(1);
   }
 
