@@ -79,6 +79,10 @@ $debug_plot      = 0   unless defined $debug_plot; # flag for debugging plots: 0
 $cut_truthfv     = 1   unless defined $cut_truthfv;
   
 ##################################
+$temp_dir="";
+if($resource eq "parallel"){
+    open(par_file, ">$job_dir/commands.sh") or die("Can not create the sbatch script");
+}
 
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
@@ -140,15 +144,32 @@ while($irun < $nruns) { # loop over the jobs
     if($resource eq "interactive") {
 	system($command);
     }
+    if($resource eq "parallel") {
+        $inputfile_new = "$inputfile-Exp$evt_first-Nexpt$nexpts.root";
+        $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile_new 0 $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
+        print par_file "#!/bin/bash -l  \n";
+        print par_file "$arguments; echo \"job $irun from $nruns done\" \n";
+        print "Parallel\n";
+        print "$arguments\n";
+    }
     
     $irun=$irun+1; # increment job id
     
 } # loop over jobs
 
+if($resource eq "parallel") {
+    close(par_file);
+    $run_command = "parallel -j 10 -a $job_dir/commands.sh";
+    print "running parallel \n";
+    system($run_command);
+    unlink "$job_dir/commands.sh";
+}
+
 # output file: $job_dir/$newtag
 if($merge_output eq 1) {
 	$events = $nexpts * $nruns;
-	$command = "rm $job_dir/$newtag\_$events.root; hadd $job_dir/$newtag\_$events.root $job_dir/$newtag\_Evt*; rm $job_dir/$newtag\_Evt*";
+    $newtag = "$newtag\_na";
+	$command = "rm $job_dir/$newtag\_$events.root; hadd -f $job_dir/$newtag\_$events.root $job_dir/$newtag\_Evt*; rm $job_dir/$newtag\_Evt*";
 	print "$command \n";
 	system($command);
 }
