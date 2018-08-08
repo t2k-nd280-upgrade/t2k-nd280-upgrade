@@ -1,23 +1,3 @@
-
-// Davide Sgalaberna 10/7/17
-
-//////////////////////////////////////////////////////////////////
-//                                                              //
-// TODO GENERAL:                                                //
-// - use floats instead of doubles                              //
-// - other TODOs along the code --> DONE                        // 
-// - apply cut on track length --> DONE                         // 
-// - apply cut on FV --> DONE                                   //
-// - use TSpline3 instead of TF1 --> DONE                       //
-// - don't use Birk for neutrons? --> DONE                      // 
-// - Add Poisson fluct to response --> DONE                     //
-// - Ereco and momentum                                         //
-// - Fill the TND280UpRecoTrack class w/ MPPC hits (NOT NEEDED) //
-// - Store ND280UpRecoEvent object Tree in output file          //
-// - Take the ND280UpRecoEvent objects Tree from input file     //
-//                                                              //
-//////////////////////////////////////////////////////////////////
-
 #include <TFile.h>
 #include <TH2F.h>
 #include <TH1F.h>
@@ -84,12 +64,9 @@ int LightYield(int argc,char** argv)
   tag += prefix;
   const int detectorID = atoi(argv[5]);
   const int DEBUG = atoi(argv[6]);
-  const int DEBUGPLOT = atoi(argv[7]);
   const int UseViewXY = atoi(argv[8]);
   const int UseViewXZ = atoi(argv[9]);
   const int UseViewYZ = atoi(argv[10]);
-  const double MinSeparation = atof(argv[11]); // if <0 --> use the default one
-  const int UseTruthFV = atoi(argv[12]);
 
 
   // Set the inputs
@@ -306,11 +283,6 @@ int LightYield(int argc,char** argv)
       cout << "Event: " << ievt << endl;
       cout << "# of hits = " << nd280UpEvent->GetNHits() << endl;
     }
-    
-    double posX_prev = 0.;
-    double posY_prev = 0.;
-    double posZ_prev = 0.;
-    int trkid_prev = 0.;
 
     Int_t binsX = h2d_xy->GetXaxis()->GetNbins();
     Int_t binsY = h2d_xy->GetYaxis()->GetNbins();
@@ -332,15 +304,6 @@ int LightYield(int argc,char** argv)
       double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y 
       double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
       TVector3 lightPos(posX,posY,posZ); // already in local position
-
-      // True costheta defined by the direction wrt first and last MC hit position
-      double lenX = nd280UpHit->GetStopX() - nd280UpHit->GetStartX(); 
-      double lenY = nd280UpHit->GetStopY() - nd280UpHit->GetStartY(); 
-      double lenZ = nd280UpHit->GetStopZ() - nd280UpHit->GetStartZ(); 
-
-      double deltaX = posX - posX_prev;
-      double deltaY = posY - posY_prev; 
-      double deltaZ = posZ - posZ_prev;
 
       double edep = nd280UpHit->GetEnergyDeposit(); 
 
@@ -396,12 +359,6 @@ int LightYield(int argc,char** argv)
     hits_map_temp[0] = (TH2F*)hits_map_XY->Clone("hits_map_XY_temp");
     hits_map_temp[1] = (TH2F*)hits_map_XZ->Clone("hits_map_XZ_temp");
     hits_map_temp[2] = (TH2F*)hits_map_YZ->Clone("hits_map_YZ_temp");
-
-    for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
-      hits_map_temp[0]->Add(fRecoTrack_MPPCHit_XY[itrk], 1.148); // pe along Z
-      hits_map_temp[1]->Add(fRecoTrack_MPPCHit_XZ[itrk], 1.148); // pe along Y
-      hits_map_temp[2]->Add(fRecoTrack_MPPCHit_YZ[itrk], 1.148); // pe along X
-    }
 
     TH2F* hits_map_final[3];
     hits_map_final[0] = hits_map_XY;
