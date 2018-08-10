@@ -32,6 +32,8 @@
 
 #include "LightYield.hh"
 
+const int VERTEX_ACTIVITY = 5;
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int NeutronAnalysis(int argc,char** argv) {
@@ -94,7 +96,10 @@ int NeutronAnalysis(int argc,char** argv) {
   // initial energy versus cos theta
   TH2F* init_e_cos  = new TH2F("ini_ET", "Initial", 10, -1., 1., 250, 0., 500);
   TH2F* eff_e_cos   = new TH2F("eff_ET", "Efficiency", 10, -1., 1., 250, 0., 500);
+  // p.e. vs theta and energy
   TH2F* pe_e_cos    = new TH2F("pe_ET", "PE from 1st hit", 10, -1., 1., 250, 0., 500);
+  // distance from born position towards 1st hit
+  TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 250, 0., 500., 300, 0., 3000);
 
   // Event displays
 
@@ -296,6 +301,38 @@ int NeutronAnalysis(int argc,char** argv) {
       name = TString::Format("cMPPCHits_YZ_%d",ievt);
       cMPPCHits_YZ[ievt] = new TCanvas(name,name);
     }
+
+    // take the vertex point
+    if (nd280UpEvent->GetNVertices() < 1) {
+      std::cout << "WARNING! no vertices in the event! The event will be skipped" << std::endl;
+      continue;
+    }
+
+    Int_t vertex_binX = h2d_xz->GetXaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().X());
+    Int_t vertex_binY = h2d_yz->GetXaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().Y());
+    Int_t vertex_binZ = h2d_yz->GetYaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().Z());
+
+    Double_t vertex_x = nd280UpEvent->GetVertex(0)->GetPosition().X();
+    Double_t vertex_y = nd280UpEvent->GetVertex(0)->GetPosition().Y();
+    Double_t vertex_z = nd280UpEvent->GetVertex(0)->GetPosition().Z();
+
+    if (DEBUG)
+      std::cout << "Vertex placed in cubes X Y Z " << vertex_binX << "\t" << vertex_binY << "\t" << vertex_binZ << std::endl;
+
+    // take for the neutron vars
+    // TODO loop over trajs looking for neutron
+    if (nd280UpEvent->GetNTracks() < 1) {
+      std::cout << "WARNING! no tracks in the event! The event will be skipped" << std::endl;
+      continue;
+    }
+    TND280UpTrack* track = nd280UpEvent->GetTrack(0);
+    if (track->GetPDG() != 2112) {
+      std::cout << "WARNING! First track is not neutron! The event will be skipped" << std::endl;
+      continue;
+    }
+
+    Float_t ekin      = track->GetInitKinEnergy();
+    Float_t costheta  = track->GetInitCosTheta();
     
     // Loop over the hits
     
@@ -309,6 +346,7 @@ int NeutronAnalysis(int argc,char** argv) {
     }
 
     double first_hit_time = 1.e9;
+    double dist = -2.;
 
     Int_t first_binX, first_binY, first_binZ;
 
@@ -316,6 +354,15 @@ int NeutronAnalysis(int argc,char** argv) {
     TH2F* hits_map_XY = (TH2F*)h2d_xy->Clone("hits_map_XY");
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
+
+    // artificially fill the vertex activity region considering the worst case
+    for (Int_t i = -VERTEX_ACTIVITY/2; i < VERTEX_ACTIVITY/2+2; ++i) {
+      for (Int_t j = -VERTEX_ACTIVITY/2; j < VERTEX_ACTIVITY/2+2; ++j) {
+        hits_map_XY->Fill(vertex_binX + i, vertex_binY + j, 100.);
+        hits_map_XZ->Fill(vertex_binX + i, vertex_binZ + j, 100.);
+        hits_map_YZ->Fill(vertex_binY + i, vertex_binZ + j, 100.);
+      }
+    }
 
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
@@ -332,6 +379,16 @@ int NeutronAnalysis(int argc,char** argv) {
       double steplength = nd280UpHit->GetTrackLength(); // check how it's calculated in geant4
 
       string detname = nd280UpHit->GetDetName();
+
+      Int_t hit_binX = h2d_xz->GetXaxis()->FindBin(posX);
+      Int_t hit_binY = h2d_yz->GetXaxis()->FindBin(posY);
+      Int_t hit_binZ = h2d_yz->GetYaxis()->FindBin(posZ);
+
+      // ommit the vertex activity in VERTEX_ACTIVITY
+      if (abs(hit_binX - vertex_binX) < VERTEX_ACTIVITY / 2 + 1 &&
+          abs(hit_binY - vertex_binY) < VERTEX_ACTIVITY / 2 + 1 &&
+          abs(hit_binZ - vertex_binZ) < VERTEX_ACTIVITY / 2 + 1)
+        continue;
 
       //
       // Compute the detector response for each hit
@@ -364,6 +421,10 @@ int NeutronAnalysis(int argc,char** argv) {
         first_binX = hits_map_XY->GetXaxis()->FindBin(poshitX);
         first_binY = hits_map_XY->GetYaxis()->FindBin(poshitY);
         first_binZ = hits_map_YZ->GetYaxis()->FindBin(poshitZ);
+        first_hit_time = time;
+        dist = sqrt(  (posX - vertex_x) * (posX - vertex_x) + 
+                      (posY - vertex_y) * (posY - vertex_y) +
+                      (posZ - vertex_z) * (posZ - vertex_z));
       }
 
       Int_t bin = h3d->FindBin(poshitX, poshitY, poshitZ);
@@ -388,36 +449,9 @@ int NeutronAnalysis(int argc,char** argv) {
 
     hits_number->Fill(h3d->Integral());
 
-    // take the vertex point
-    if (nd280UpEvent->GetNVertices() < 1) {
-      std::cout << "WARNING! no vertices in the event! The event will be skipped" << std::endl;
-      continue;
-    }
-
-    Int_t vertexX = h2d_xz->GetXaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().X());
-    Int_t vertexY = h2d_yz->GetXaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().Y());
-    Int_t vertexZ = h2d_yz->GetYaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().Z());
-
-    if (DEBUG)
-      std::cout << "Vertex placed in cubes X Y Z " << vertexX << "\t" << vertexY << "\t" << vertexZ << std::endl;
-
-    // take for the neutron vars
-    // TODO loop over trajs looking for neutron
-    if (nd280UpEvent->GetNTracks() < 1) {
-      std::cout << "WARNING! no tracks in the event! The event will be skipped" << std::endl;
-      continue;
-    }
-    TND280UpTrack* track = nd280UpEvent->GetTrack(0);
-    if (track->GetPDG() != 2112) {
-      std::cout << "WARNING! First track is not neutron! The event will be skipped" << std::endl;
-      continue;
-    }
-
-    Float_t ekin      = track->GetInitKinEnergy();
-    Float_t costheta  = track->GetInitCosTheta();
-
     hits_energy->Fill(ekin, h3d->Integral());
     init_e_cos->Fill(costheta, ekin);
+    e_dist->Fill(dist, ekin);
 
     // END OF FILLING HITS MAP
 
@@ -446,9 +480,13 @@ int NeutronAnalysis(int argc,char** argv) {
       continue;
 
     // map the first hit
-    first_bin_XY->Fill(first_binX, first_binY);
-    first_bin_YZ->Fill(first_binY, first_binZ);
-    first_bin_XZ->Fill(first_binX, first_binZ);
+    Double_t x = hits_map_XY->GetXaxis()->GetBinCenter(first_binX);
+    Double_t y = hits_map_XY->GetYaxis()->GetBinCenter(first_binY);
+    Double_t z = hits_map_XZ->GetYaxis()->GetBinCenter(first_binZ);
+
+    first_bin_XY->Fill(x, y);
+    first_bin_YZ->Fill(y, z);
+    first_bin_XZ->Fill(x, z);
 
     // check that we have exactly one hit
     // hit cube should be isolated in at least 2 projections
@@ -479,7 +517,8 @@ int NeutronAnalysis(int argc,char** argv) {
                         hits_map_YZ->GetBinContent(first_binY,      first_binZ - 1) +
                         hits_map_YZ->GetBinContent(first_binY + 1,  first_binZ - 1);
 
-    if (PE_around1 + PE_around2 > 0 && PE_around1 + PE_around3 > 0 && PE_around2 + PE_around3 > 0)
+    // isolated in at least 2 views
+    if ((PE_around1 + PE_around2 > 0) + (PE_around1 + PE_around3 > 0) + (PE_around2 + PE_around3 > 0) > 1)
       continue;
 
     // SELECTION IS DONE 
@@ -496,18 +535,39 @@ int NeutronAnalysis(int argc,char** argv) {
 
   hits_number->Write();
   hits_energy->Write();
+  e_dist->Write();
 
   first_bin_XY->Write();
   first_bin_YZ->Write();
   first_bin_XZ->Write();
 
-  pe_e_cos->Scale(eff_e_cos->GetEntries());
+  for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
+    for (Int_t j = 1; j <= pe_e_cos->GetYaxis()->GetNbins(); ++j) {
+      Float_t pre = pe_e_cos->GetBinContent(i, j);
+      Float_t scale = eff_e_cos->GetBinContent(i, j);
+      pe_e_cos->SetBinContent(i, j, pre / scale);
+    }
+  }
+  // pe_e_cos->Scale(eff_e_cos->GetEntries());
   pe_e_cos->Write();
 
-  eff_e_cos->Divide(init_e_cos);
+  //eff_e_cos->Divide(init_e_cos);
 
   init_e_cos->Write();
   eff_e_cos->Write();
+
+  TH2F* eff_e_cos_2 = (TH2F*)eff_e_cos->Clone("eff_ecos2");
+
+  for (Int_t i = 1; i <= init_e_cos->GetXaxis()->GetNbins(); ++i) {
+    for (Int_t j = 1; j <= init_e_cos->GetYaxis()->GetNbins(); ++j) {
+      Float_t pre = eff_e_cos->GetBinContent(i, j);
+      Float_t scale = init_e_cos->GetBinContent(i, j);
+      eff_e_cos_2->SetBinContent(i, j, pre / scale);
+    }
+  }
+
+  eff_e_cos_2->Write();
+
 
   int last = evtfirst+Nentries-1;
   for(int ievtdispl=evtfirst;ievtdispl<=last ;ievtdispl++){ 
