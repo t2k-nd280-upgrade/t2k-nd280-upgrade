@@ -139,6 +139,11 @@ $first_expt      = 0                           unless defined $first_expt; # fir
 #$queue           = "veryshort"                unless defined $queue;
 $queue           = "rhel6-short"                unless defined $queue;
 
+if($resource eq "parallel"){
+    open(par_file, ">$job_dir/commands_sim.sh") or die("Can not create the sbatch script");
+    print par_file "#!/bin/bash -l  \n";
+}
+
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
     
@@ -222,8 +227,22 @@ while($irun < $nruns) { # loop over the jobs
 	system($command);
     }
 
+    if($resource eq "parallel") {
+        print par_file "#!/bin/bash -l  \n";
+        print par_file "$command; echo \"job $irun from $nruns done\" \n";
+        print "Parallel\n";
+        print "$command\n";
+    }
 
 
 
     $irun=$irun+1;
 } # end loop over jobs
+
+if($resource eq "parallel") {
+    close(par_file);
+    $run_command = "nice -n19 parallel -j 10 -a $job_dir/commands_sim.sh";
+    print "running parallel \n";
+    system($run_command);
+    unlink "$job_dir/commands_sim.sh";
+}
