@@ -99,7 +99,7 @@ int NeutronAnalysis(int argc,char** argv) {
   // p.e. vs theta and energy
   TH2F* pe_e_cos    = new TH2F("pe_ET", "PE from 1st hit", 10, -1., 1., 250, 0., 500);
   // distance from born position towards 1st hit
-  TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 250, 0., 500., 300, 0., 3000);
+  TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 300, 0., 1500, 250, 0., 500.);
 
   // Event displays
 
@@ -147,8 +147,8 @@ int NeutronAnalysis(int argc,char** argv) {
   Float_t Z_max = h2d_xz->GetYaxis()->GetBinUpEdge(binX);
 
   TH2F* first_bin_XY = (TH2F*)h2d_xy->Clone("fb_XY");
-  TH2F* first_bin_XZ = (TH2F*)h2d_xy->Clone("fb_XZ");
-  TH2F* first_bin_YZ = (TH2F*)h2d_xy->Clone("fb_YZ");
+  TH2F* first_bin_XZ = (TH2F*)h2d_xz->Clone("fb_XZ");
+  TH2F* first_bin_YZ = (TH2F*)h2d_yz->Clone("fb_YZ");
 
   TH3F* h3d = new TH3F("3d", "", binX, X_min, X_max, binY, Y_min, Y_max, binZ, Z_min, Z_max);
 
@@ -356,8 +356,8 @@ int NeutronAnalysis(int argc,char** argv) {
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
 
     // artificially fill the vertex activity region considering the worst case
-    for (Int_t i = -VERTEX_ACTIVITY/2; i < VERTEX_ACTIVITY/2+2; ++i) {
-      for (Int_t j = -VERTEX_ACTIVITY/2; j < VERTEX_ACTIVITY/2+2; ++j) {
+    for (Int_t i = -VERTEX_ACTIVITY/2; i < VERTEX_ACTIVITY/2; ++i) {
+      for (Int_t j = -VERTEX_ACTIVITY/2; j < VERTEX_ACTIVITY/2; ++j) {
         hits_map_XY->Fill(vertex_binX + i, vertex_binY + j, 100.);
         hits_map_XZ->Fill(vertex_binX + i, vertex_binZ + j, 100.);
         hits_map_YZ->Fill(vertex_binY + i, vertex_binZ + j, 100.);
@@ -518,7 +518,7 @@ int NeutronAnalysis(int argc,char** argv) {
                         hits_map_YZ->GetBinContent(first_binY + 1,  first_binZ - 1);
 
     // isolated in at least 2 views
-    if ((PE_around1 + PE_around2 > 0) + (PE_around1 + PE_around3 > 0) + (PE_around2 + PE_around3 > 0) > 1)
+    if ((PE_around1 > 0) + (PE_around2 > 0) + (PE_around3 > 0) > 1)
       continue;
 
     // SELECTION IS DONE 
@@ -541,33 +541,10 @@ int NeutronAnalysis(int argc,char** argv) {
   first_bin_YZ->Write();
   first_bin_XZ->Write();
 
-  for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
-    for (Int_t j = 1; j <= pe_e_cos->GetYaxis()->GetNbins(); ++j) {
-      Float_t pre = pe_e_cos->GetBinContent(i, j);
-      Float_t scale = eff_e_cos->GetBinContent(i, j);
-      pe_e_cos->SetBinContent(i, j, pre / scale);
-    }
-  }
-  // pe_e_cos->Scale(eff_e_cos->GetEntries());
   pe_e_cos->Write();
-
-  //eff_e_cos->Divide(init_e_cos);
 
   init_e_cos->Write();
   eff_e_cos->Write();
-
-  TH2F* eff_e_cos_2 = (TH2F*)eff_e_cos->Clone("eff_ecos2");
-
-  for (Int_t i = 1; i <= init_e_cos->GetXaxis()->GetNbins(); ++i) {
-    for (Int_t j = 1; j <= init_e_cos->GetYaxis()->GetNbins(); ++j) {
-      Float_t pre = eff_e_cos->GetBinContent(i, j);
-      Float_t scale = init_e_cos->GetBinContent(i, j);
-      eff_e_cos_2->SetBinContent(i, j, pre / scale);
-    }
-  }
-
-  eff_e_cos_2->Write();
-
 
   int last = evtfirst+Nentries-1;
   for(int ievtdispl=evtfirst;ievtdispl<=last ;ievtdispl++){ 
