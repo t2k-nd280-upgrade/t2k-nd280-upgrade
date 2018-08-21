@@ -101,6 +101,7 @@ ExN02ND280XML::~ExN02ND280XML(){
   fFGDPos2_Y = 0.;
   fFGDPos2_Z = 0.;
   
+
  fSuperFGDCubeEdge1 = 0.;
  fSuperFGDCubeNum1_X = 0;
  fSuperFGDCubeNum1_Y = 0;
@@ -117,6 +118,14 @@ ExN02ND280XML::~ExN02ND280XML(){
  fSuperFGDPos2_Y = 0.;
  fSuperFGDPos2_Z = 0.;
 
+
+ //CFBox parameters
+
+ fCFBoxCFRPThickness = 0;
+ fCFBoxAIREXThickness = 0;
+
+ //
+ 
  fHATPCFCName = "";
 
  fHATPCUpPos_X = 0.;
@@ -410,6 +419,7 @@ ExN02ND280XML::~ExN02ND280XML(){
   fUseFGD2 = false;
   fUseSuperFGD1 = false;
   fUseSuperFGD2 = false;
+
   fUseWAGASCI1 = false;
   fUseWAGASCI2 = false;
   fUseFGD3D1 = false;
@@ -436,7 +446,16 @@ ExN02ND280XML::~ExN02ND280XML(){
   fUseBrlECal = false;
   fUseP0DECal = false;
   fUseP0D = false;
-  
+
+  // CF Box
+  fUseCFBox = false;
+  //
+
+  // PCB
+  fUsePCB = false;
+  //
+
+
   fInvisForwTPC1 = false;
   fInvisForwTPC2 = false;
   fInvisForwTPC3 = false;
@@ -1013,6 +1032,12 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("SuperFGDPos2_Y"    ,fSuperFGDPos2_Y);
     XML2Double("SuperFGDPos2_Z"    ,fSuperFGDPos2_Z);
 
+
+    //CFBox
+    XML2Double("CFBoxCFRPThickness", fCFBoxCFRPThickness);
+    XML2Double("CFBoxAIREXThickness", fCFBoxAIREXThickness);
+    
+    
     //HATPC Up
 
     XML2String("HATPCFCName",fHATPCFCName);
@@ -1286,6 +1311,14 @@ void ExN02ND280XML::SetInputs(){
     //
     // Set detectors used in the simulation
     //
+
+
+    // Use CFBox
+    XML2Bool("UseCFBox" ,fUseCFBox);
+    
+    // Use PCB
+    XML2Bool("UsePCB", fUsePCB);
+
     // Use forward TPCs
     XML2Bool("UseForwTPC1" ,fUseForwTPC1);
     XML2Bool("UseForwTPC2" ,fUseForwTPC2);
