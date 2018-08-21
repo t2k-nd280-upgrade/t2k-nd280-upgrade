@@ -410,6 +410,35 @@ private:
   G4LogicalVolume*   logicHATPCUp;
   G4LogicalVolume*   logicHATPCDown;
 
+  //CF Box logical and physical volumes
+  G4LogicalVolume*   logicCFBox1;
+  G4VPhysicalVolume* physiCFBox1;
+
+  G4LogicalVolume*   logicCFBox2;
+  G4VPhysicalVolume* physiCFBox2;
+  //
+  //PCB logical and physical volumes
+
+  G4LogicalVolume*   logicPCB1_X;
+  G4VPhysicalVolume* physiPCB1_X;
+
+  G4LogicalVolume*   logicPCB1_Y;
+  G4VPhysicalVolume* physiPCB1_Y;
+
+  G4LogicalVolume*   logicPCB1_Z;
+  G4VPhysicalVolume* physiPCB1_Z;
+
+  G4LogicalVolume*   logicPCB2_X;
+  G4VPhysicalVolume* physiPCB2_X;
+
+  G4LogicalVolume*   logicPCB2_Y;
+  G4VPhysicalVolume* physiPCB2_Y;
+
+  G4LogicalVolume*   logicPCB2_Z;
+  G4VPhysicalVolume* physiPCB2_Z;
+  //
+
+  
   G4LogicalVolume*   logicSciFi1;
   G4VPhysicalVolume* physiSciFi1; 
 
