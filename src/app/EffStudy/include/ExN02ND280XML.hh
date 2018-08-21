@@ -129,6 +129,11 @@ public :
   G4double GetXMLSuperFGDPos1_Y()    {return fSuperFGDPos1_Y;};
   G4double GetXMLSuperFGDPos1_Z()    {return fSuperFGDPos1_Z;};
 
+  //CF Box
+  G4double GetXMLCFBoxCFRPThickness()   {return fCFBoxCFRPThickness;};
+  G4double GetXMLCFBoxAIREXThickness()  {return fCFBoxAIREXThickness;};
+  //
+  
   G4double GetXMLSuperFGDCubeEdge2() {return fSuperFGDCubeEdge2;};
   G4int    GetXMLSuperFGDCubeNum2_X(){return fSuperFGDCubeNum2_X;};
   G4int    GetXMLSuperFGDCubeNum2_Y(){return fSuperFGDCubeNum2_Y;};
@@ -389,6 +394,16 @@ public :
   G4double GetXMLToFPosX_FrontUp()         {return fToFPosX_FrontUp;};
   G4double GetXMLToFPosY_FrontUp()         {return fToFPosY_FrontUp;};
   G4double GetXMLToFPosZ_FrontUp()         {return fToFPosZ_FrontUp;};
+
+
+  //
+  // CF Box
+  G4bool   GetXMLUseCFBox()    {return fUseCFBox;};
+  //
+
+  // PCB
+  G4bool   GetXMLUsePCB()      {return fUsePCB;};
+  //
   
   //
   G4bool   GetXMLUseHATPCUp()    {return fUseHATPCUp;}; // Edited
@@ -574,6 +589,12 @@ private :
  G4double fSuperFGDPos1_Y;
  G4double fSuperFGDPos1_Z;
 
+  //CF Box Thickness
+
+  G4double fCFBoxCFRPThickness;
+  G4double fCFBoxAIREXThickness;
+
+  
  G4double fSuperFGDCubeEdge2;
  G4int    fSuperFGDCubeNum2_X;
  G4int    fSuperFGDCubeNum2_Y;
@@ -855,6 +876,12 @@ private :
   G4double fToFPosZ_FrontUp;
 
   //
+  //CF Box
+  G4bool fUseCFBox;
+  //
+
+  //PCB
+  G4bool fUsePCB;
   
   G4bool fUseHATPCUp;
   G4bool fUseHATPCDown;
