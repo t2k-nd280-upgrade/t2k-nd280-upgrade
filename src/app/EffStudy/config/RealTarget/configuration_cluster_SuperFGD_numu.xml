@@ -21,11 +21,11 @@
   </Generator>
 
   <Path2file>
-    /neutrino/data7/davide/files/ND280Upgrade/ 
+    /t2k/users/suvorov/data/ 
   </Path2file>
 
   <filename>
-    GENIE/29_9_17/GENIE_geometry_SuperFGD_1e21_numu.root
+    GENIE_geometry_SuperFGD_1e21_numu.root
   </filename>
 
   <treename>  
@@ -318,6 +318,132 @@
    <SuperFGDPos2_Z>
      0
    </SuperFGDPos2_Z>
+
+   <!-- HATPCFC -->
+
+   <HATPCFCName>
+   Solid
+   </HATPCFCName>
+
+   <!-- HATPCUp -->
+
+   <HATPCUpWidth>
+   1850
+   </HATPCUpWidth>
+
+   <HATPCUpHeight>
+   900
+   </HATPCUpHeight>
+
+   <HATPCUpLength>
+   1900
+   </HATPCUpLength>
+
+   <HATPCUpDriftWidth>
+   1700
+   </HATPCUpDriftWidth>
+
+   <HATPCUpDriftHeight>
+   700
+   </HATPCUpDriftHeight>
+
+   <HATPCUpDriftLength>
+   1700
+   </HATPCUpDriftLength>
+
+   <HATPCUpCathodeThickness>
+   13.2
+   </HATPCUpCathodeThickness>  
+
+   <HATPCUpInnerBoxWall>
+   100
+   </HATPCUpInnerBoxWall>
+
+   <HATPCUpOuterBoxWall>
+   100
+   </HATPCUpOuterBoxWall>
+
+   <HATPCUpSteppingLimit>
+   1.
+   </HATPCUpSteppingLimit>
+
+   <ActiveHATPCUpVerticalOffset>
+   25
+   </ActiveHATPCUpVerticalOffset>
+
+   <HATPCUpPos_X>
+     0  
+   </HATPCUpPos_X>
+   <HATPCUpPos_Y>
+     725.75
+   </HATPCUpPos_Y>
+   <HATPCUpPos_Z>
+     -1695
+   </HATPCUpPos_Z>
+
+   <!-- HATPCDown -->
+
+   <HATPCDownWidth>
+   1850
+   </HATPCDownWidth>
+
+   <HATPCDownHeight>
+   900
+   </HATPCDownHeight>
+
+   <HATPCDownLength>
+   1900
+   </HATPCDownLength>
+
+   <HATPCDownDriftWidth>
+   1700
+   </HATPCDownDriftWidth>
+
+   <HATPCDownDriftHeight>
+   700
+   </HATPCDownDriftHeight>
+
+   <HATPCDownDriftLength>
+   1700
+   </HATPCDownDriftLength>
+
+   <HATPCDownCathodeThickness>
+   13.2
+   </HATPCDownCathodeThickness>  
+
+   <HATPCDownCO2Top>
+   100
+   </HATPCDownCO2Top>  
+
+   <HATPCDownCO2Bottom>
+   100
+   </HATPCDownCO2Bottom>
+
+   <HATPCDownInnerBoxWall>
+   100
+   </HATPCDownInnerBoxWall>
+
+   <HATPCDownOuterBoxWall>
+   100
+   </HATPCDownOuterBoxWall>
+
+   <HATPCDownSteppingLimit>
+   1.
+   </HATPCDownSteppingLimit>
+
+   <ActiveHATPCDownVerticalOffset>
+   25
+   </ActiveHATPCDownVerticalOffset>
+
+   <HATPCDownPos_X>
+     0  
+   </HATPCDownPos_X>
+   <HATPCDownPos_Y>
+     -725.75
+   </HATPCDownPos_Y>
+   <HATPCDownPos_Z>
+     -1695
+   </HATPCDownPos_Z>
 
 
 
@@ -968,6 +1094,12 @@
 
    <!-- Include detectors -->
 
+  <UseHATPCUp>
+     false
+   </UseHATPCUp>
+   <UseHATPCDown>
+     false
+   </UseHATPCDown>
    <UseForwTPC1>
      false
    </UseForwTPC1>
@@ -1093,6 +1225,28 @@
    <UseP0D>
      false
    </UseP0D>
+
+  <UseDegrader>
+     false
+   </UseDegrader>
+   <DegraderLength>
+    230
+  </DegraderLength>
+  <DegraderWidth>
+    240
+  </DegraderWidth>
+  <DegraderHeight>
+    80
+  </DegraderHeight>
+  <DegraderPositionX>
+    0
+  </DegraderPositionX>
+  <DegraderPositionY>
+    16
+  </DegraderPositionY>
+  <DegraderPositionZ>
+    -355
+  </DegraderPositionZ>
 
    <!-- Invisible detectors -->
 
