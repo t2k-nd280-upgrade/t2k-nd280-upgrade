@@ -75,9 +75,10 @@
 #include "ND280ToFConstructor.hh"
 // SuperFGD
 #include "ND280SuperFGDConstructor.hh"
-// CFBox and PCBs
+// CFBox, PCBs, FlatCables
 #include "ND280CFBoxConstructor.hh"
 #include "ND280PCBConstructor.hh"
+#include "ND280FlatCableConstructor.hh"
 // HATPC
 #include "ND280HATPCConstructor.hh"
 // SciFi
@@ -1822,6 +1823,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   ND280PCBConstructor *fPCB1_Z_Constructor = new ND280PCBConstructor(cNameLogicPCB1_Z,this);
   G4String namePCB1_Z = fPCB1_Z_Constructor->GetName();
 
+  G4String cNameLogicPCB1_FlatCable = cNameSolidTarget1+"/PCB1_FlatCables";
+  ND280FlatCableConstructor *fPCB1_FlatCable_Constructor = new ND280FlatCableConstructor(cNameLogicPCB1_FlatCable,this);
+  G4String namePCB1_FlatCable = fPCB1_FlatCable_Constructor->GetName();
+
+
   if( ND280XMLInput->GetXMLUseSuperFGD1() && ND280XMLInput->GetXMLUseCFBox() ){
 
     double edge = ND280XMLInput->GetXMLSuperFGDCubeEdge1();
@@ -1895,7 +1901,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fPCB1_Z_Constructor->SetPCBHeight(1.57*CLHEP::mm);
     
     logicPCB1_Z = fPCB1_Z_Constructor->GetPiece();
-    
+
+    fPCB1_FlatCable_Constructor->SetFlatCableLength(CFwidth);
+
+    fPCB1_FlatCable_Constructor->SetCableRegionWidth(CFlength);
+    fPCB1_FlatCable_Constructor->SetCableRegionHeight(CFheight);
+    fPCB1_FlatCable_Constructor->SetCableRegionLength(CFwidth);
+
+    logicPCB1_FlatCable = fPCB1_FlatCable_Constructor->GetPiece();
+
   }
 
   double PCB_X_width = fPCB1_X_Constructor->GetPCBWidth();
@@ -1923,7 +1937,22 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   cout << "PCB1_Z_length = " << PCB_Z_length << endl;
   cout << "PCB1_Z_height = " << PCB_Z_height << endl;
 
-    
+  double FlatCable_width = fPCB1_FlatCable_Constructor->GetFlatCableWidth();
+  double FlatCable_length = fPCB1_FlatCable_Constructor->GetFlatCableLength();
+  double FlatCable_height = fPCB1_FlatCable_Constructor->GetFlatCableHeight();
+
+  cout << "PCB1_FlatCable_width = " << FlatCable_width << endl;
+  cout << "PCB1_FlatCable_length = " << FlatCable_length << endl;
+  cout << "PCB1_FlatCable_height = " << FlatCable_height << endl;
+
+  double CableRegion_width = fPCB1_FlatCable_Constructor->GetCableRegionWidth();
+  double CableRegion_length = fPCB1_FlatCable_Constructor->GetCableRegionLength();
+  double CableRegion_height = fPCB1_FlatCable_Constructor->GetCableRegionHeight();
+
+  cout << "PCB1_CableRegion_width = " << CableRegion_width << endl;
+  cout << "PCB1_CableRegion_length = " << CableRegion_length << endl;
+  cout << "PCB1_CableRegion_height = " << CableRegion_height << endl;
+
     solidTarget1 = new G4Box(cNameSolidTarget1,CFwidth/2,CFheight/2,CFlength/2);
     logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
     physiTarget1 = new G4PVPlacement(0,                 // no rotation
@@ -1950,7 +1979,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     // The MPPC size is the same as for the SuperFGD cube
     // Same reference system as the Navigator!!!
     //
-    InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true);
+      InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true,1);
     //
 
     physiCFBox1= new G4PVPlacement(
@@ -2010,6 +2039,18 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
                                    logicBasket,
                                    false,             // no boolean operations
                                    0);                 // copy number
+
+    G4RotationMatrix rotFlatCable;
+    rotFlatCable.rotateX(90.0*CLHEP::deg);
+    rotFlatCable.rotateY(-90.0*CLHEP::deg);
+
+    physiPCB1_FlatCable = new G4PVPlacement( 
+					    G4Transform3D(rotFlatCable,G4ThreeVector(xPCB[1],yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+					    logicPCB1_FlatCable,       // its logical volume
+					    namePCB1_FlatCable,  // its name
+					    logicBasket,
+					    false,             // no boolean operations
+					    0);                 // copy number
 
     cout << "three pcb1s placed" <<endl;    
 
@@ -2072,6 +2113,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4String cNameLogicPCB2_Z = cNameSolidTarget2+"/PCB2_Z";
   ND280PCBConstructor *fPCB2_Z_Constructor = new ND280PCBConstructor(cNameLogicPCB2_Z,this);
   G4String namePCB2_Z = fPCB2_Z_Constructor->GetName();
+
+  G4String cNameLogicPCB2_FlatCable = cNameSolidTarget2+"/PCB2_FlatCables";
+  ND280FlatCableConstructor *fPCB2_FlatCable_Constructor = new ND280FlatCableConstructor(cNameLogicPCB2_FlatCable,this);
+  G4String namePCB2_FlatCable = fPCB2_FlatCable_Constructor->GetName();
+
 
   if( ND280XMLInput->GetXMLUseSuperFGD2() && ND280XMLInput->GetXMLUseCFBox() ){
 
@@ -2148,6 +2194,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     logicPCB2_Z = fPCB2_Z_Constructor->GetPiece();
     
+    fPCB2_FlatCable_Constructor->SetFlatCableLength(CFwidth);
+
+    fPCB2_FlatCable_Constructor->SetCableRegionWidth(CFlength);
+    fPCB2_FlatCable_Constructor->SetCableRegionHeight(CFheight);
+    fPCB2_FlatCable_Constructor->SetCableRegionLength(CFwidth);
+
+    logicPCB2_FlatCable = fPCB2_FlatCable_Constructor->GetPiece();
+
   }
 
   double PCB_X_width = fPCB2_X_Constructor->GetPCBWidth();
@@ -2175,6 +2229,21 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   cout << "PCB2_Z_length = " << PCB_Z_length << endl;
   cout << "PCB2_Z_height = " << PCB_Z_height << endl;
 
+  double FlatCable_width = fPCB2_FlatCable_Constructor->GetFlatCableWidth();
+  double FlatCable_length = fPCB2_FlatCable_Constructor->GetFlatCableLength();
+  double FlatCable_height = fPCB2_FlatCable_Constructor->GetFlatCableHeight();
+
+  cout << "PCB2_FlatCable_width = " << FlatCable_width << endl;
+  cout << "PCB2_FlatCable_length = " << FlatCable_length << endl;
+  cout << "PCB2_FlatCable_height = " << FlatCable_height << endl;
+
+  double CableRegion_width = fPCB2_FlatCable_Constructor->GetCableRegionWidth();
+  double CableRegion_length = fPCB2_FlatCable_Constructor->GetCableRegionLength();
+  double CableRegion_height = fPCB2_FlatCable_Constructor->GetCableRegionHeight();
+
+  cout << "PCB2_CableRegion_width = " << CableRegion_width << endl;
+  cout << "PCB2_CableRegion_length = " << CableRegion_length << endl;
+  cout << "PCB2_CableRegion_height = " << CableRegion_height << endl;
     
     solidTarget2 = new G4Box(cNameSolidTarget2,CFwidth/2,CFheight/2,CFlength/2);
     logicTarget2 = new G4LogicalVolume(solidTarget2,FindMaterial("Air"),cNameLogicTarget2,0,0,0);
@@ -2202,7 +2271,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     // The MPPC size is the same as for the SuperFGD cube
     // Same reference system as the Navigator!!!
     //
-    InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true);
+    InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true,2);
     //
 
     physiCFBox2 = new G4PVPlacement(
@@ -2263,6 +2332,19 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
                                    logicBasket,
                                    false,             // no boolean operations
                                    0);                 // copy number
+
+
+    G4RotationMatrix rotFlatCable;
+    rotFlatCable.rotateX(90.0*CLHEP::deg);
+    rotFlatCable.rotateY(90.0*CLHEP::deg);
+
+    physiPCB2_FlatCable = new G4PVPlacement( 
+					    G4Transform3D(rotFlatCable,G4ThreeVector(xPCB[1],yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+					    logicPCB2_FlatCable,  // its logical volume
+					    namePCB2_FlatCable,  // its name
+					    logicBasket,
+					    false,             // no boolean operations
+					    0);                 // copy number
 
     cout << "three pcb2s placed" <<endl;    
 
@@ -2356,7 +2438,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     // The MPPC size is the same as for the SuperFGD cube
     // Same reference system as the Navigator!!!
     //
-    InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true);
+    InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true,1);
     //
     
     physiSuperFGD1 = new G4PVPlacement(
@@ -2635,7 +2717,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     bool IsProjXY=true; 
     bool IsProjXZ=true; // I have all the projections!!!
     bool IsProjYZ=true;
-    InputPersistencyManager->InitMPPCProj2D(width,height,length,binNumX,binNumY,binNumZ,IsProjXY,IsProjXZ,IsProjYZ);
+    InputPersistencyManager->InitMPPCProj2D(width,height,length,binNumX,binNumY,binNumZ,IsProjXY,IsProjXZ,IsProjYZ,1);
     //
     // Set the detector name to define the direction where the light is collected
     // Convention for names is "Vert" (along Y w/o rotation) or "Horiz" (along X w/o rotation)
@@ -2798,7 +2880,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     bool IsProjXY=true; 
     bool IsProjXZ=true; // I have all the projections!!!
     bool IsProjYZ=true;
-    InputPersistencyManager->InitMPPCProj2D(width,height,length,binNumX,binNumY,binNumZ,IsProjXY,IsProjXZ,IsProjYZ);
+    InputPersistencyManager->InitMPPCProj2D(width,height,length,binNumX,binNumY,binNumZ,IsProjXY,IsProjXZ,IsProjYZ,1);
     //
     // Set the detector name to define the direction where the light is collected
     // Convention for names is "Vert" (along Y w/o rotation) or "Horiz" (along X w/o rotation)

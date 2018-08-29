@@ -26,6 +26,8 @@
 #include <G4SubtractionSolid.hh>
 #include <G4UnionSolid.hh>
 #include <G4ExtrudedSolid.hh>
+#include <G4GenericTrap.hh>
+
 
 #include <TROOT.h>
 #include <TMath.h>
@@ -240,96 +242,96 @@ void ND280RootGeometryManager::Update(const G4VPhysicalVolume* aWorld,
 		  "Geometry has Overlaps");
     }
   }
-  
+
 }
 
 TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid, 
                                                  TGeoMatrix **returnMatrix) {
-    const G4String geometryType = theSolid->GetEntityType();
-    TGeoShape* theShape = NULL;
-    if (geometryType == "G4Box") {
-        // Create a box
-        const G4Box* box = dynamic_cast<const G4Box*>(theSolid);
-        theShape = new TGeoBBox(box->GetXHalfLength()/CLHEP::mm,
-                                box->GetYHalfLength()/CLHEP::mm,
-                                box->GetZHalfLength()/CLHEP::mm);
+  const G4String geometryType = theSolid->GetEntityType();
+  TGeoShape* theShape = NULL;
+  if (geometryType == "G4Box") {
+    // Create a box
+    const G4Box* box = dynamic_cast<const G4Box*>(theSolid);
+    theShape = new TGeoBBox(box->GetXHalfLength()/CLHEP::mm,
+			    box->GetYHalfLength()/CLHEP::mm,
+			    box->GetZHalfLength()/CLHEP::mm);
+  }
+  else if (geometryType == "G4Tubs") {
+    const G4Tubs* tube = dynamic_cast<const G4Tubs*>(theSolid);
+    // Root takes the angles in degrees so there is no extra
+    // conversion.
+    double zhalf = tube->GetZHalfLength()/CLHEP::mm;
+    double rmin = tube->GetInnerRadius()/CLHEP::mm;
+    double rmax = tube->GetOuterRadius()/CLHEP::mm;
+    double minPhiDeg = tube->GetStartPhiAngle()/CLHEP::degree;
+    double maxPhiDeg = minPhiDeg + tube->GetDeltaPhiAngle()/CLHEP::degree;
+    theShape = new TGeoTubeSeg(rmin, rmax,
+			       zhalf,
+			       minPhiDeg, maxPhiDeg);
+  }
+  else if (geometryType == "G4Sphere") {
+    const G4Sphere* sphere = dynamic_cast<const G4Sphere*>(theSolid);
+    // Root takes the angles in degrees so there is no extra
+    // conversion.
+    double minPhiDeg = sphere->GetStartPhiAngle()/CLHEP::degree;
+    double maxPhiDeg = minPhiDeg + sphere->GetDeltaPhiAngle()/CLHEP::degree;
+    double minThetaDeg = sphere->GetStartThetaAngle()/CLHEP::degree;
+    double maxThetaDeg = minThetaDeg + sphere->GetDeltaThetaAngle()/CLHEP::degree;
+    theShape = new TGeoSphere(sphere->GetInsideRadius()/CLHEP::mm,
+			      sphere->GetOuterRadius()/CLHEP::mm,
+			      minThetaDeg, maxThetaDeg,
+			      minPhiDeg, maxPhiDeg);
+  }
+  else if (geometryType == "G4Polyhedra") {
+    const G4Polyhedra* polyhedra 
+      = dynamic_cast<const G4Polyhedra*>(theSolid);
+    double phi = polyhedra->GetStartPhi();
+    double dPhi = polyhedra->GetEndPhi() - phi;
+    if (dPhi>2*M_PI) dPhi -= 2*M_PI;
+    if (dPhi<0) dPhi += 2*M_PI;
+    int sides = polyhedra->GetNumSide();
+    int numZ = polyhedra->GetNumRZCorner()/2;
+    double g4Factor = std::cos(0.5*dPhi/sides);
+    TGeoPgon* pgon = new TGeoPgon(phi/CLHEP::degree, dPhi/CLHEP::degree, sides, numZ);
+    for (int i = 0; i< numZ; ++i) {
+      pgon->DefineSection(i,
+			  polyhedra->GetCorner(numZ-i-1).z/CLHEP::mm,
+			  g4Factor*polyhedra->GetCorner(numZ-i-1).r/CLHEP::mm,
+			  g4Factor*polyhedra->GetCorner(numZ+i).r/CLHEP::mm);
     }
-    else if (geometryType == "G4Tubs") {
-        const G4Tubs* tube = dynamic_cast<const G4Tubs*>(theSolid);
-        // Root takes the angles in degrees so there is no extra
-        // conversion.
-        double zhalf = tube->GetZHalfLength()/CLHEP::mm;
-        double rmin = tube->GetInnerRadius()/CLHEP::mm;
-        double rmax = tube->GetOuterRadius()/CLHEP::mm;
-        double minPhiDeg = tube->GetStartPhiAngle()/CLHEP::degree;
-        double maxPhiDeg = minPhiDeg + tube->GetDeltaPhiAngle()/CLHEP::degree;
-        theShape = new TGeoTubeSeg(rmin, rmax,
-                                   zhalf,
-                                   minPhiDeg, maxPhiDeg);
-    }
-    else if (geometryType == "G4Sphere") {
-        const G4Sphere* sphere = dynamic_cast<const G4Sphere*>(theSolid);
-        // Root takes the angles in degrees so there is no extra
-        // conversion.
-        double minPhiDeg = sphere->GetStartPhiAngle()/CLHEP::degree;
-        double maxPhiDeg = minPhiDeg + sphere->GetDeltaPhiAngle()/CLHEP::degree;
-        double minThetaDeg = sphere->GetStartThetaAngle()/CLHEP::degree;
-        double maxThetaDeg = minThetaDeg + sphere->GetDeltaThetaAngle()/CLHEP::degree;
-        theShape = new TGeoSphere(sphere->GetInsideRadius()/CLHEP::mm,
-                                  sphere->GetOuterRadius()/CLHEP::mm,
-                                  minThetaDeg, maxThetaDeg,
-                                  minPhiDeg, maxPhiDeg);
-    }
-    else if (geometryType == "G4Polyhedra") {
-        const G4Polyhedra* polyhedra 
-            = dynamic_cast<const G4Polyhedra*>(theSolid);
-        double phi = polyhedra->GetStartPhi();
-        double dPhi = polyhedra->GetEndPhi() - phi;
-        if (dPhi>2*M_PI) dPhi -= 2*M_PI;
-        if (dPhi<0) dPhi += 2*M_PI;
-        int sides = polyhedra->GetNumSide();
-        int numZ = polyhedra->GetNumRZCorner()/2;
-        double g4Factor = std::cos(0.5*dPhi/sides);
-        TGeoPgon* pgon = new TGeoPgon(phi/CLHEP::degree, dPhi/CLHEP::degree, sides, numZ);
-        for (int i = 0; i< numZ; ++i) {
-            pgon->DefineSection(i,
-                                polyhedra->GetCorner(numZ-i-1).z/CLHEP::mm,
-                                g4Factor*polyhedra->GetCorner(numZ-i-1).r/CLHEP::mm,
-                                g4Factor*polyhedra->GetCorner(numZ+i).r/CLHEP::mm);
-        }
-        theShape = pgon;
-    }
-    else if (geometryType == "G4Trap") {
-        const G4Trap* trap
-            = dynamic_cast<const G4Trap*>(theSolid);
-        double dz = trap->GetZHalfLength()/CLHEP::mm;
-        double theta = 0;
-        double phi = 0;
-        double h1 = trap->GetYHalfLength1()/CLHEP::mm;
-        double bl1 = trap->GetXHalfLength1()/CLHEP::mm;
-        double tl1 = trap->GetXHalfLength2()/CLHEP::mm;
-        double alpha1 = std::atan(trap->GetTanAlpha1())/CLHEP::degree;
-        double h2 = trap->GetYHalfLength2()/CLHEP::mm;
-        double bl2 = trap->GetXHalfLength3()/CLHEP::mm;
-        double tl2 = trap->GetXHalfLength4()/CLHEP::mm;
-        double alpha2 = std::atan(trap->GetTanAlpha2())/CLHEP::degree;
-        theShape = new TGeoTrap(dz, theta, phi,
-                                h1, bl1, tl1, alpha1,
-                                h2, bl2, tl2, alpha2);
-    }
-    else if (geometryType == "G4Trd") {
-        const G4Trd* trd
-            = dynamic_cast<const G4Trd*>(theSolid);
-        double dz = trd->GetZHalfLength()/CLHEP::mm;
-        double dx1 = trd->GetXHalfLength1()/CLHEP::mm;
-        double dx2 = trd->GetXHalfLength2()/CLHEP::mm;
-        double dy1 = trd->GetYHalfLength1()/CLHEP::mm;
-        double dy2 = trd->GetYHalfLength2()/CLHEP::mm;
-        theShape = new TGeoTrd2(dx1,dx2,dy1,dy2,dz);
-    }
-    else if (geometryType == "G4SubtractionSolid") {
+    theShape = pgon;
+  }
+  else if (geometryType == "G4Trap") {
+    const G4Trap* trap
+      = dynamic_cast<const G4Trap*>(theSolid);
+    double dz = trap->GetZHalfLength()/CLHEP::mm;
+    double theta = 0;
+    double phi = 0;
+    double h1 = trap->GetYHalfLength1()/CLHEP::mm;
+    double bl1 = trap->GetXHalfLength1()/CLHEP::mm;
+    double tl1 = trap->GetXHalfLength2()/CLHEP::mm;
+    double alpha1 = std::atan(trap->GetTanAlpha1())/CLHEP::degree;
+    double h2 = trap->GetYHalfLength2()/CLHEP::mm;
+    double bl2 = trap->GetXHalfLength3()/CLHEP::mm;
+    double tl2 = trap->GetXHalfLength4()/CLHEP::mm;
+    double alpha2 = std::atan(trap->GetTanAlpha2())/CLHEP::degree;
+    theShape = new TGeoTrap(dz, theta, phi,
+			    h1, bl1, tl1, alpha1,
+			    h2, bl2, tl2, alpha2);
+  }
+  else if (geometryType == "G4Trd") {
+    const G4Trd* trd
+      = dynamic_cast<const G4Trd*>(theSolid);
+    double dz = trd->GetZHalfLength()/CLHEP::mm;
+    double dx1 = trd->GetXHalfLength1()/CLHEP::mm;
+    double dx2 = trd->GetXHalfLength2()/CLHEP::mm;
+    double dy1 = trd->GetYHalfLength1()/CLHEP::mm;
+    double dy2 = trd->GetYHalfLength2()/CLHEP::mm;
+    theShape = new TGeoTrd2(dx1,dx2,dy1,dy2,dz);
+  }
+  else if (geometryType == "G4SubtractionSolid") {
         const G4SubtractionSolid* sub
-            = dynamic_cast<const G4SubtractionSolid*>(theSolid);
+	  = dynamic_cast<const G4SubtractionSolid*>(theSolid);
         const G4VSolid* solidA = sub->GetConstituentSolid(0);
         const G4VSolid* solidB = sub->GetConstituentSolid(1);
         // solidA - solidB
@@ -340,87 +342,118 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
         TGeoSubtraction* subtractNode = new TGeoSubtraction(shapeA,shapeB,
                                                             matrixA, matrixB);
         theShape = new TGeoCompositeShape("name",subtractNode);
+  }
+  else if (geometryType == "G4DisplacedSolid") {
+    const G4DisplacedSolid* disp
+      = dynamic_cast<const G4DisplacedSolid*>(theSolid);
+    const G4VSolid* movedSolid = disp->GetConstituentMovedSolid();
+    G4RotationMatrix rotation = disp->GetObjectRotation();
+    G4ThreeVector displacement = disp->GetObjectTranslation();
+    theShape = CreateShape(movedSolid);
+    if (returnMatrix) {
+      TGeoRotation* rotate
+	= new TGeoRotation("rot",
+			   TMath::RadToDeg()*rotation.thetaX(),
+			   TMath::RadToDeg()*rotation.phiX(),
+			   TMath::RadToDeg()*rotation.thetaY(),
+			   TMath::RadToDeg()*rotation.phiY(),
+			   TMath::RadToDeg()*rotation.thetaZ(),
+			   TMath::RadToDeg()*rotation.phiZ());
+      *returnMatrix = new TGeoCombiTrans(displacement.x()/CLHEP::mm,
+					 displacement.y()/CLHEP::mm,
+					 displacement.z()/CLHEP::mm,
+					 rotate);
     }
-    else if (geometryType == "G4DisplacedSolid") {
-        const G4DisplacedSolid* disp
-            = dynamic_cast<const G4DisplacedSolid*>(theSolid);
-        const G4VSolid* movedSolid = disp->GetConstituentMovedSolid();
-        G4RotationMatrix rotation = disp->GetObjectRotation();
-        G4ThreeVector displacement = disp->GetObjectTranslation();
-        theShape = CreateShape(movedSolid);
-        if (returnMatrix) {
-            TGeoRotation* rotate
-                = new TGeoRotation("rot",
-                                   TMath::RadToDeg()*rotation.thetaX(),
-                                   TMath::RadToDeg()*rotation.phiX(),
-                                   TMath::RadToDeg()*rotation.thetaY(),
-                                   TMath::RadToDeg()*rotation.phiY(),
-                                   TMath::RadToDeg()*rotation.thetaZ(),
-                                   TMath::RadToDeg()*rotation.phiZ());
-            *returnMatrix = new TGeoCombiTrans(displacement.x()/CLHEP::mm,
-                                               displacement.y()/CLHEP::mm,
-                                               displacement.z()/CLHEP::mm,
-                                               rotate);
-        }
+  }
+  else if (geometryType == "G4UnionSolid") {
+    const G4UnionSolid* sub
+      = dynamic_cast<const G4UnionSolid*>(theSolid);
+    const G4VSolid* solidA = sub->GetConstituentSolid(0);
+    const G4VSolid* solidB = sub->GetConstituentSolid(1);
+    // solidA - solidB
+    TGeoMatrix* matrixA = NULL;
+    TGeoShape* shapeA = CreateShape(solidA, &matrixA);
+    TGeoMatrix* matrixB = NULL;
+    TGeoShape* shapeB = CreateShape(solidB, &matrixB);
+    TGeoUnion* unionNode = new TGeoUnion(shapeA,  shapeB,
+					 matrixA, matrixB);
+    theShape = new TGeoCompositeShape("name",unionNode);
+  }
+  else if (geometryType == "G4ExtrudedSolid"){
+    //This following only works when using the 'standard'
+    //G4ExtrudedSolid Constructor.
+    
+    const G4ExtrudedSolid* extr
+      = dynamic_cast<const G4ExtrudedSolid*>(theSolid);
+    
+    //number of z planes
+    const G4int nZ = extr->GetNofZSections();
+    //number of vertices in the polygon
+    const G4int nV = extr->GetNofVertices();
+        
+    //define and pointers
+    double vertices_x[nV];
+    double vertices_y[nV];
+    
+    //define an intermediate extrusion constructor with nZ z planes.
+    TGeoXtru *xtru = new TGeoXtru(nZ);
+    
+    //Get the polygons points.
+    std::vector<G4TwoVector> polyPoints = extr->GetPolygon();
+    
+    //fill the vertices arrays
+    for(int i = 0 ; i < nV ; i++){
+      vertices_x[i]= polyPoints[i].x();
+      vertices_y[i]= polyPoints[i].y();
     }
-    else if (geometryType == "G4UnionSolid") {
-        const G4UnionSolid* sub
-            = dynamic_cast<const G4UnionSolid*>(theSolid);
-        const G4VSolid* solidA = sub->GetConstituentSolid(0);
-        const G4VSolid* solidB = sub->GetConstituentSolid(1);
-        // solidA - solidB
-        TGeoMatrix* matrixA = NULL;
-        TGeoShape* shapeA = CreateShape(solidA, &matrixA);
-        TGeoMatrix* matrixB = NULL;
-        TGeoShape* shapeB = CreateShape(solidB, &matrixB);
-        TGeoUnion* unionNode = new TGeoUnion(shapeA,  shapeB,
-                                             matrixA, matrixB);
-        theShape = new TGeoCompositeShape("name",unionNode);
+        
+    //Define the polygon
+    xtru->DefinePolygon(nV, vertices_x, vertices_y);
+        
+    double z_pos, x_off, y_off, scale;
+    
+    //fill the parameters to define the Root extruded solid
+    for(int i = 0 ; i < nZ ; i++){
+      z_pos = extr->GetZSection(i).fZ;
+      x_off = extr->GetZSection(i).fOffset.x() ;
+      y_off = extr->GetZSection(i).fOffset.y();
+      scale = extr->GetZSection(i).fScale;
+      xtru->DefineSection(i, z_pos, x_off, y_off, scale);
     }
-    else if (geometryType == "G4ExtrudedSolid"){
-        //This following only works when using the 'standard'
-        //G4ExtrudedSolid Constructor.
+    //now assign 'theShape' to this complete extruded object.
+    theShape = xtru;
+  }
 
-      const G4ExtrudedSolid* extr
-	= dynamic_cast<const G4ExtrudedSolid*>(theSolid);
-      
-        //number of z planes
-        const G4int nZ = extr->GetNofZSections();
-        //number of vertices in the polygon
-        const G4int nV = extr->GetNofVertices();
-        
-        //define and pointers
-        double vertices_x[nV];
-        double vertices_y[nV];
-        
-        //define an intermediate extrusion constructor with nZ z planes.
-        TGeoXtru *xtru = new TGeoXtru(nZ);
-        
-        //Get the polygons points.
-        std::vector<G4TwoVector> polyPoints = extr->GetPolygon();
-        
-        //fill the vertices arrays
-        for(int i = 0 ; i < nV ; i++){
-            vertices_x[i]= polyPoints[i].x();
-            vertices_y[i]= polyPoints[i].y();
-        }
-        
-        //Define the polygon
-        xtru->DefinePolygon(nV, vertices_x, vertices_y);
-        
-        double z_pos, x_off, y_off, scale;
-        
-        //fill the parameters to define the Root extruded solid
-        for(int i = 0 ; i < nZ ; i++){
-            z_pos = extr->GetZSection(i).fZ;
-            x_off = extr->GetZSection(i).fOffset.x() ;
-            y_off = extr->GetZSection(i).fOffset.y();
-            scale = extr->GetZSection(i).fScale;
-            xtru->DefineSection(i, z_pos, x_off, y_off, scale);
-        }
-        //now assign 'theShape' to this complete extruded object.
-        theShape = xtru;
+  //
+  else if (geometryType == "G4GenericTrap"){
+    //This following only works when using the 'standard'
+    //G4GenericTrap Constructor
+    
+    const G4GenericTrap* gtrp = dynamic_cast<const G4GenericTrap*>(theSolid);
+    double z = gtrp->GetZHalfLength()/CLHEP::mm;        
+    
+    //Get the polygons points
+    std::vector<G4TwoVector> polyPoints = gtrp->GetVertices();
+    
+
+    //define and pointers
+    double vertices_xy[8][2];
+    
+    G4cout << "z = " << z << G4endl;
+    //fill the vertices arrays
+    for(int i = 0 ; i < 8 ; i++){
+      vertices_xy[i][0]= polyPoints[i].x();
+      vertices_xy[i][1]= polyPoints[i].y();
+      G4cout << "vertex #" <<i << ": " << vertices_xy[i][0] << ", " << vertices_xy[i][1] << G4endl;      
     }
+
+    theShape = new TGeoArb8(
+			    z,
+			    (Double_t*) vertices_xy
+			    );
+
+  }
+   
     else {
       //G4Exception("shape not implemented");
       //G4cout << "shape not implemented" << G4endl;

@@ -13,6 +13,7 @@ AUX_SOURCE_DIRECTORY(EffStudy/src/SuperFGD sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/HATPC sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/CFBox sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/PCB sourcefile) ###
+AUX_SOURCE_DIRECTORY(EffStudy/src/FlatCable sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/FGDlike sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/WAGASCI sourcefile) ###
 AUX_SOURCE_DIRECTORY(EffStudy/src/FGD3D sourcefile) ###

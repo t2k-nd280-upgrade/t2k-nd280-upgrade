@@ -67,6 +67,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/ToF) ### include
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/SuperFGD) ### include SuperFGD class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/CFBox) ### include CFBox class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/PCB) ### include PCB class
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/FlatCable) ### include FlatCable class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/HATPC) ### include SuperFGD class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/FGDlike) ### include FGDlike class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/WAGASCI) ### include WAGASCI class
