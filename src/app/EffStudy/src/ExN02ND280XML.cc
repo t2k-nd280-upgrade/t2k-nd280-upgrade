@@ -1312,7 +1312,8 @@ void ExN02ND280XML::SetInputs(){
     // Set detectors used in the simulation
     //
 
-
+    XML2Bool("UseHATPCUp",fUseHATPCUp);
+    XML2Bool("UseHATPCDown",fUseHATPCDown);
     // Use CFBox
     XML2Bool("UseCFBox" ,fUseCFBox);
     
@@ -1376,7 +1377,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseP0DECal",fUseP0DECal);
     // Use P0D
     XML2Bool("UseP0D",fUseP0D);
-
+    
     XML2Bool("UseDegrader",fUseDegrader);
     XML2Double("DegraderLength", fDegraderlength);
     XML2Double("DegraderWidth", fDegraderwidth);
