@@ -120,11 +120,17 @@ ExN02ND280XML::~ExN02ND280XML(){
 
 
  //CFBox parameters
-
  fCFBoxCFRPThickness = 0;
  fCFBoxAIREXThickness = 0;
-
  //
+
+ //FlatCable parameters
+ fFlatCableThickness = 0;
+ fFlatCableWidth = 0;
+ fFlatCableX = 0;
+ fFlatCableZ = 0;
+ //
+
  
  fHATPCFCName = "";
 
@@ -453,6 +459,10 @@ ExN02ND280XML::~ExN02ND280XML(){
 
   // PCB
   fUsePCB = false;
+  //
+
+  // PCB
+  fUseFlatCable = false;
   //
 
 
@@ -1036,6 +1046,12 @@ void ExN02ND280XML::SetInputs(){
     //CFBox
     XML2Double("CFBoxCFRPThickness", fCFBoxCFRPThickness);
     XML2Double("CFBoxAIREXThickness", fCFBoxAIREXThickness);
+    //
+    //FlatCable
+    XML2Double("FlatCableThickness", fFlatCableThickness);
+    XML2Double("FlatCableWidth", fFlatCableWidth);
+    XML2Int("FlatCableX", fFlatCableX);
+    XML2Int("FlatCableZ", fFlatCableZ);
     
     
     //HATPC Up
@@ -1316,9 +1332,13 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseHATPCDown",fUseHATPCDown);
     // Use CFBox
     XML2Bool("UseCFBox" ,fUseCFBox);
-    
-    // Use PCB
+   
+     // Use PCB
     XML2Bool("UsePCB", fUsePCB);
+
+    // Use PCB
+    XML2Bool("UseFlatCable", fUseFlatCable);
+
 
     // Use forward TPCs
     XML2Bool("UseForwTPC1" ,fUseForwTPC1);

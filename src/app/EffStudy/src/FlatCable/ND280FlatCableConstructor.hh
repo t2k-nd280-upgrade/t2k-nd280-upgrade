@@ -44,6 +44,14 @@ public:
   /// Get the length of the SuperFGD FlatCable
   double GetFlatCableLength(void) {return fFlatCableLength;}
 
+
+  /// Set the thickness of the individual SuperFGD FlatCable
+  void SetFlatCableThickness(double w) {fFlatCableThickness = w;}
+  /// Get the thickness of the individual SuperFGD FlatCable
+  double GetFlatCableThickness(void) {return fFlatCableThickness;}
+
+
+
   /// Set the width of the SuperFGD FlatCable Region
   void SetCableRegionWidth(double w) {fCableRegionWidth = w;}
   /// Get the width of the SuperFGD FlatCable Region
@@ -79,19 +87,22 @@ private:
   double fFlatCableWidth;
   double fFlatCableHeight;
   double fFlatCableLength;
+  double fFlatCableThickness;
+
 
   // Size of the FlatCable
   double fCableRegionWidth;
   double fCableRegionHeight;
   double fCableRegionLength;
 
+  // Quantity of the FlatCable
+  int fFlatCableX;
+  int fFlatCableZ;
+
+
   // FlatCable Names
   G4String fFlatCableParentName;
   G4String fFlatCableName;
-
-  //FlatCable Quantities
-  int fFlatCableX; //how many layers of cables
-  int fFlatCableZ; //homany of them to be placed 
 
   void Init(void);
 

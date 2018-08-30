@@ -439,12 +439,12 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
     //define and pointers
     double vertices_xy[8][2];
     
-    G4cout << "z = " << z << G4endl;
+    //    G4cout << "z = " << z << G4endl;
     //fill the vertices arrays
     for(int i = 0 ; i < 8 ; i++){
       vertices_xy[i][0]= polyPoints[i].x();
       vertices_xy[i][1]= polyPoints[i].y();
-      G4cout << "vertex #" <<i << ": " << vertices_xy[i][0] << ", " << vertices_xy[i][1] << G4endl;      
+      //      G4cout << "vertex #" <<i << ": " << vertices_xy[i][0] << ", " << vertices_xy[i][1] << G4endl;      
     }
 
     theShape = new TGeoArb8(

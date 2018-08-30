@@ -46,7 +46,7 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void) {
 // Specifications and definitions
 
   G4bool DebugHATPCMass = true;
-  G4bool Vis = false;
+  G4bool Vis = true;
 
   G4String parentname = GetHATPCParentName();
   G4String name = GetHATPCName();

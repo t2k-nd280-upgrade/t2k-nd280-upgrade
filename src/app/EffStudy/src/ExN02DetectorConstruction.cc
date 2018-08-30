@@ -1823,9 +1823,13 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   ND280PCBConstructor *fPCB1_Z_Constructor = new ND280PCBConstructor(cNameLogicPCB1_Z,this);
   G4String namePCB1_Z = fPCB1_Z_Constructor->GetName();
 
-  G4String cNameLogicPCB1_FlatCable = cNameSolidTarget1+"/PCB1_FlatCables";
-  ND280FlatCableConstructor *fPCB1_FlatCable_Constructor = new ND280FlatCableConstructor(cNameLogicPCB1_FlatCable,this);
-  G4String namePCB1_FlatCable = fPCB1_FlatCable_Constructor->GetName();
+  G4String cNameLogicFlatCable1 = cNameSolidTarget1+"/FlatCable1";
+  ND280FlatCableConstructor *fFlatCable1_Constructor = new ND280FlatCableConstructor(cNameLogicFlatCable1,this);
+  G4String nameFlatCable1 = fFlatCable1_Constructor->GetName();
+
+  G4String cNameLogicFlatCable2 = cNameSolidTarget2+"/FlatCable2";
+  ND280FlatCableConstructor *fFlatCable2_Constructor = new ND280FlatCableConstructor(cNameLogicFlatCable2,this);
+  G4String nameFlatCable2 = fFlatCable2_Constructor->GetName();
 
 
   if( ND280XMLInput->GetXMLUseSuperFGD1() && ND280XMLInput->GetXMLUseCFBox() ){
@@ -1884,6 +1888,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   if (ND280XMLInput->GetXMLUsePCB() ){
 
+
     fPCB1_X_Constructor->SetPCBWidth(CFheight);
     fPCB1_X_Constructor->SetPCBLength(CFlength);
     fPCB1_X_Constructor->SetPCBHeight(1.57*CLHEP::mm);
@@ -1901,15 +1906,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fPCB1_Z_Constructor->SetPCBHeight(1.57*CLHEP::mm);
     
     logicPCB1_Z = fPCB1_Z_Constructor->GetPiece();
-
-    fPCB1_FlatCable_Constructor->SetFlatCableLength(CFwidth);
-
-    fPCB1_FlatCable_Constructor->SetCableRegionWidth(CFlength);
-    fPCB1_FlatCable_Constructor->SetCableRegionHeight(CFheight);
-    fPCB1_FlatCable_Constructor->SetCableRegionLength(CFwidth);
-
-    logicPCB1_FlatCable = fPCB1_FlatCable_Constructor->GetPiece();
-
   }
 
   double PCB_X_width = fPCB1_X_Constructor->GetPCBWidth();
@@ -1928,7 +1924,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   cout << "PCB1_Y_length = " << PCB_Y_length << endl;
   cout << "PCB1_Y_height = " << PCB_Y_height << endl;
 
-
   double PCB_Z_width = fPCB1_Z_Constructor->GetPCBWidth();
   double PCB_Z_length = fPCB1_Z_Constructor->GetPCBLength();
   double PCB_Z_height = fPCB1_Z_Constructor->GetPCBHeight();
@@ -1937,21 +1932,78 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   cout << "PCB1_Z_length = " << PCB_Z_length << endl;
   cout << "PCB1_Z_height = " << PCB_Z_height << endl;
 
-  double FlatCable_width = fPCB1_FlatCable_Constructor->GetFlatCableWidth();
-  double FlatCable_length = fPCB1_FlatCable_Constructor->GetFlatCableLength();
-  double FlatCable_height = fPCB1_FlatCable_Constructor->GetFlatCableHeight();
 
-  cout << "PCB1_FlatCable_width = " << FlatCable_width << endl;
-  cout << "PCB1_FlatCable_length = " << FlatCable_length << endl;
-  cout << "PCB1_FlatCable_height = " << FlatCable_height << endl;
+  if (ND280XMLInput->GetXMLUseFlatCable()){
+    
+    G4double flatcable_thickness = ND280XMLInput->GetXMLFlatCableThickness();
+    G4double flatcable_width = ND280XMLInput->GetXMLFlatCableWidth();
+    
+    G4int flatcable_nx = ND280XMLInput->GetXMLFlatCableX();
+    G4int flatcable_nz = ND280XMLInput->GetXMLFlatCableZ();
+    
+    if (!(ND280XMLInput->GetXMLUseSuperFGD2())){
 
-  double CableRegion_width = fPCB1_FlatCable_Constructor->GetCableRegionWidth();
-  double CableRegion_length = fPCB1_FlatCable_Constructor->GetCableRegionLength();
-  double CableRegion_height = fPCB1_FlatCable_Constructor->GetCableRegionHeight();
+      fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable1_Constructor->SetFlatCableLength(CFwidth/2.);
 
-  cout << "PCB1_CableRegion_width = " << CableRegion_width << endl;
-  cout << "PCB1_CableRegion_length = " << CableRegion_length << endl;
-  cout << "PCB1_CableRegion_height = " << CableRegion_height << endl;
+
+      fFlatCable1_Constructor->SetCableRegionLength(CFwidth/2.);
+      fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable1_Constructor->SetCableRegionHeight(CFheight); 
+
+      fFlatCable2_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable2_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable2_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable2_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable2_Constructor->SetFlatCableLength(CFwidth/2.);
+
+      fFlatCable2_Constructor->SetCableRegionLength(CFwidth/2.);
+      fFlatCable2_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable2_Constructor->SetCableRegionHeight(CFheight); 
+  
+      logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+      logicFlatCable2 = fFlatCable2_Constructor->GetPiece();
+    }
+
+    else {
+      fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable1_Constructor->SetFlatCableLength(CFwidth);
+
+      fFlatCable1_Constructor->SetCableRegionLength(CFwidth);
+      fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable1_Constructor->SetCableRegionHeight(CFheight);
+
+      logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+    
+    }
+    
+
+  }
+
+
+
+
+  double FlatCable_width = fFlatCable1_Constructor->GetFlatCableWidth();
+  double FlatCable_length = fFlatCable1_Constructor->GetFlatCableLength();
+  double FlatCable_height = fFlatCable1_Constructor->GetFlatCableHeight();
+
+  cout << "FlatCable_width = " << FlatCable_width << endl;
+  cout << "FlatCable_length = " << FlatCable_length << endl;
+  cout << "FlatCable_height = " << FlatCable_height << endl;
+
+  double CableRegion_width = fFlatCable1_Constructor->GetCableRegionWidth();
+  double CableRegion_length = fFlatCable1_Constructor->GetCableRegionLength();
+  double CableRegion_height = fFlatCable1_Constructor->GetCableRegionHeight();
+
+  cout << "CableRegion_width = " << CableRegion_width << endl;
+  cout << "CableRegion_length = " << CableRegion_length << endl;
+  cout << "CableRegion_height = " << CableRegion_height << endl;
 
     solidTarget1 = new G4Box(cNameSolidTarget1,CFwidth/2,CFheight/2,CFlength/2);
     logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
@@ -2040,17 +2092,40 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
                                    false,             // no boolean operations
                                    0);                 // copy number
 
-    G4RotationMatrix rotFlatCable;
-    rotFlatCable.rotateX(90.0*CLHEP::deg);
-    rotFlatCable.rotateY(-90.0*CLHEP::deg);
+    G4RotationMatrix rotFlatCable[2];
+    rotFlatCable[0].rotateX(90.0*CLHEP::deg);
+    rotFlatCable[0].rotateY(-90.0*CLHEP::deg);
+    rotFlatCable[1].rotateX(90.0*CLHEP::deg);
+    rotFlatCable[1].rotateY(90.0*CLHEP::deg);
 
-    physiPCB1_FlatCable = new G4PVPlacement( 
-					    G4Transform3D(rotFlatCable,G4ThreeVector(xPCB[1],yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
-					    logicPCB1_FlatCable,       // its logical volume
-					    namePCB1_FlatCable,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+    if (!(ND280XMLInput->GetXMLUseSuperFGD2())){
+
+      physiFlatCable1 = new G4PVPlacement( 
+					  G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[1]-CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+					  logicFlatCable1,       // its logical volume
+					  nameFlatCable1,  // its name
+					  logicBasket,
+					  false,             // no boolean operations
+					  0);                 // copy number
+
+      physiFlatCable2 = new G4PVPlacement( 
+					  G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1]+CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+					  logicFlatCable2,       // its logical volume
+					  nameFlatCable2,  // its name
+					  logicBasket,
+					  false,             // no boolean operations
+					  0);                 // copy number
+    }
+
+    else {
+      physiFlatCable1 = new G4PVPlacement( 
+					  G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[1],yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+					  logicFlatCable1,       // its logical volume
+					  nameFlatCable1,  // its name
+					  logicBasket,
+					  false,             // no boolean operations
+					  0);                 // copy number
+    }
 
     cout << "three pcb1s placed" <<endl;    
 
@@ -2113,10 +2188,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4String cNameLogicPCB2_Z = cNameSolidTarget2+"/PCB2_Z";
   ND280PCBConstructor *fPCB2_Z_Constructor = new ND280PCBConstructor(cNameLogicPCB2_Z,this);
   G4String namePCB2_Z = fPCB2_Z_Constructor->GetName();
-
-  G4String cNameLogicPCB2_FlatCable = cNameSolidTarget2+"/PCB2_FlatCables";
-  ND280FlatCableConstructor *fPCB2_FlatCable_Constructor = new ND280FlatCableConstructor(cNameLogicPCB2_FlatCable,this);
-  G4String namePCB2_FlatCable = fPCB2_FlatCable_Constructor->GetName();
 
 
   if( ND280XMLInput->GetXMLUseSuperFGD2() && ND280XMLInput->GetXMLUseCFBox() ){
@@ -2193,15 +2264,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fPCB2_Z_Constructor->SetPCBHeight(1.57*CLHEP::mm);
     
     logicPCB2_Z = fPCB2_Z_Constructor->GetPiece();
-    
-    fPCB2_FlatCable_Constructor->SetFlatCableLength(CFwidth);
-
-    fPCB2_FlatCable_Constructor->SetCableRegionWidth(CFlength);
-    fPCB2_FlatCable_Constructor->SetCableRegionHeight(CFheight);
-    fPCB2_FlatCable_Constructor->SetCableRegionLength(CFwidth);
-
-    logicPCB2_FlatCable = fPCB2_FlatCable_Constructor->GetPiece();
-
   }
 
   double PCB_X_width = fPCB2_X_Constructor->GetPCBWidth();
@@ -2229,21 +2291,78 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   cout << "PCB2_Z_length = " << PCB_Z_length << endl;
   cout << "PCB2_Z_height = " << PCB_Z_height << endl;
 
-  double FlatCable_width = fPCB2_FlatCable_Constructor->GetFlatCableWidth();
-  double FlatCable_length = fPCB2_FlatCable_Constructor->GetFlatCableLength();
-  double FlatCable_height = fPCB2_FlatCable_Constructor->GetFlatCableHeight();
 
-  cout << "PCB2_FlatCable_width = " << FlatCable_width << endl;
-  cout << "PCB2_FlatCable_length = " << FlatCable_length << endl;
-  cout << "PCB2_FlatCable_height = " << FlatCable_height << endl;
 
-  double CableRegion_width = fPCB2_FlatCable_Constructor->GetCableRegionWidth();
-  double CableRegion_length = fPCB2_FlatCable_Constructor->GetCableRegionLength();
-  double CableRegion_height = fPCB2_FlatCable_Constructor->GetCableRegionHeight();
+  if (ND280XMLInput->GetXMLUseFlatCable()){
 
-  cout << "PCB2_CableRegion_width = " << CableRegion_width << endl;
-  cout << "PCB2_CableRegion_length = " << CableRegion_length << endl;
-  cout << "PCB2_CableRegion_height = " << CableRegion_height << endl;
+
+    G4double flatcable_thickness = ND280XMLInput->GetXMLFlatCableThickness();
+    G4double flatcable_width = ND280XMLInput->GetXMLFlatCableWidth();
+    
+    G4int flatcable_nx = ND280XMLInput->GetXMLFlatCableX();
+    G4int flatcable_nz = ND280XMLInput->GetXMLFlatCableZ();
+    
+    if (!(ND280XMLInput->GetXMLUseSuperFGD1())){
+
+      fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable1_Constructor->SetFlatCableLength(CFwidth/2.);
+
+      fFlatCable1_Constructor->SetCableRegionLength(CFwidth/2.);
+      fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable1_Constructor->SetCableRegionHeight(CFheight);
+
+      fFlatCable2_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable2_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable2_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable2_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable2_Constructor->SetFlatCableLength(CFwidth/2.);
+
+      fFlatCable2_Constructor->SetCableRegionLength(CFwidth/2.);
+      fFlatCable2_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable2_Constructor->SetCableRegionHeight(CFheight);
+
+      logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+      logicFlatCable2 = fFlatCable2_Constructor->GetPiece();
+    }
+
+    else {
+
+      fFlatCable2_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable2_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable2_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable2_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable2_Constructor->SetFlatCableLength(CFwidth);
+
+      fFlatCable2_Constructor->SetCableRegionLength(CFwidth);
+      fFlatCable2_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable2_Constructor->SetCableRegionHeight(CFheight);
+
+      logicFlatCable2 = fFlatCable1_Constructor->GetPiece();
+
+    }
+
+
+  }
+
+
+  double FlatCable_width = fFlatCable2_Constructor->GetFlatCableWidth();
+  double FlatCable_length = fFlatCable2_Constructor->GetFlatCableLength();
+  double FlatCable_height = fFlatCable2_Constructor->GetFlatCableHeight();
+
+  cout << "FlatCable_width = " << FlatCable_width << endl;
+  cout << "FlatCable_length = " << FlatCable_length << endl;
+  cout << "FlatCable_height = " << FlatCable_height << endl;
+
+  double CableRegion_width = fFlatCable2_Constructor->GetCableRegionWidth();
+  double CableRegion_length = fFlatCable2_Constructor->GetCableRegionLength();
+  double CableRegion_height = fFlatCable2_Constructor->GetCableRegionHeight();
+
+  cout << "CableRegion_width = " << CableRegion_width << endl;
+  cout << "CableRegion_length = " << CableRegion_length << endl;
+  cout << "CableRegion_height = " << CableRegion_height << endl;
     
     solidTarget2 = new G4Box(cNameSolidTarget2,CFwidth/2,CFheight/2,CFlength/2);
     logicTarget2 = new G4LogicalVolume(solidTarget2,FindMaterial("Air"),cNameLogicTarget2,0,0,0);
@@ -2334,18 +2453,42 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
                                    0);                 // copy number
 
 
-    G4RotationMatrix rotFlatCable;
-    rotFlatCable.rotateX(90.0*CLHEP::deg);
-    rotFlatCable.rotateY(90.0*CLHEP::deg);
+    G4RotationMatrix rotFlatCable[2];
+    rotFlatCable[0].rotateX(90.0*CLHEP::deg);
+    rotFlatCable[0].rotateY(-90.0*CLHEP::deg);
+    rotFlatCable[1].rotateX(90.0*CLHEP::deg);
+    rotFlatCable[1].rotateY(90.0*CLHEP::deg);
 
-    physiPCB2_FlatCable = new G4PVPlacement( 
-					    G4Transform3D(rotFlatCable,G4ThreeVector(xPCB[1],yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
-					    logicPCB2_FlatCable,  // its logical volume
-					    namePCB2_FlatCable,  // its name
+    if (!(ND280XMLInput->GetXMLUseSuperFGD1())){
+
+      physiFlatCable1 = new G4PVPlacement(
+                                          G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[1]-CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+                                          logicFlatCable1,       // its logical volume
+                                          nameFlatCable1,  // its name
+                                          logicBasket,
+                                          false,             // no boolean operations
+                                          0);                 // copy number
+
+      physiFlatCable2 = new G4PVPlacement(
+                                          G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1]+CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+                                          logicFlatCable2,       // its logical volume
+                                          nameFlatCable2,  // its name
+                                          logicBasket,
+                                          false,             // no boolean operations
+                                          0);                 // copy number
+    }
+
+    else {
+    
+      physiFlatCable2 = new G4PVPlacement( 
+					    G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1],yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+					    logicFlatCable2,  // its logical volume
+					    nameFlatCable2,  // its name
 					    logicBasket,
 					    false,             // no boolean operations
 					    0);                 // copy number
-
+    }
+    
     cout << "three pcb2s placed" <<endl;    
 
     G4cout << "Target 2: " << G4endl;

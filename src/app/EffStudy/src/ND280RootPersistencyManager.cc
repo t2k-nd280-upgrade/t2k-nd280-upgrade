@@ -60,7 +60,7 @@ ND280RootPersistencyManager::ND280RootPersistencyManager()
       fNavigTarg1(NULL),fIsHistoMovedTarg1(false),fNavigDetExist(false),
       fMPPCProj2D_XY(NULL),fMPPCProj2D_XZ(NULL),fMPPCProj2D_YZ(NULL),
       fIsMPPCProjXY(false),fIsMPPCProjXZ(false),fIsMPPCProjYZ(false),
-      fDetNameAlongX(""),fDetNameAlongY(""),fDetNameAlongZ("")
+      fDetNameAlongX(""),fDetNameAlongY(""),fDetNameAlongZ(""),fModNum(0)
 {}
 
 ND280RootPersistencyManager* ND280RootPersistencyManager::GetInstance() {
@@ -218,7 +218,7 @@ G4ThreeVector ND280RootPersistencyManager::GetLocalPosition(G4ThreeVector WorldP
 /////////////////////////////////////
 
 
-void ND280RootPersistencyManager::InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY=true, bool IsProjXZ=true, bool IsProjYZ=true){
+void ND280RootPersistencyManager::InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY=true, bool IsProjXZ=true, bool IsProjYZ=true, int modnum=1){
   
   SetIsMPPCProjXY(IsProjXY);
   SetIsMPPCProjXZ(IsProjXZ);
@@ -230,18 +230,25 @@ void ND280RootPersistencyManager::InitMPPCProj2D(double width, double height, do
   double maxY = +height/2.;
   double minZ = -length/2.;
   double maxZ = +length/2.;
- 
+
+  SetModNum(modnum);
+
+  TString name;
+  
   if(GetIsMPPCProjXY()){
+    name = TString::Format("fMPPCProj2D_XY_mod_%02d",fModNum);
     fMPPCProj2D_XY 
-      = new TH2F("fMPPCProj2D_XY","fMPPCProj2D_XY",numX,minX,maxX,numY,minY,maxY);
+      = new TH2F(name,name,numX,minX,maxX,numY,minY,maxY);
   }
   if(GetIsMPPCProjXZ()){
+    name = TString::Format("fMPPCProj2D_XZ_mod_%02d",fModNum);
     fMPPCProj2D_XZ 
-      = new TH2F("fMPPCProj2D_XZ","fMPPCProj2D_XZ",numX,minX,maxX,numZ,minZ,maxZ);
+      = new TH2F(name,name,numX,minX,maxX,numZ,minZ,maxZ);
   }
   if(GetIsMPPCProjYZ()){
-    fMPPCProj2D_YZ 
-      = new TH2F("fMPPCProj2D_YZ","fMPPCProj2D_YZ",numY,minY,maxY,numZ,minZ,maxZ);
+    name = TString::Format("fMPPCProj2D_YZ_mod_%02d",fModNum);
+     fMPPCProj2D_YZ 
+      = new TH2F(name,name,numY,minY,maxY,numZ,minZ,maxZ);
   }
 }
 
@@ -1220,22 +1227,27 @@ bool ND280RootPersistencyManager::Store(const G4Run* aRun) {
   TH2F *OutMPPCProj2D_XZ;
   TH2F *OutMPPCProj2D_YZ;
   
+  //  TString name;
+
   if( GetIsMPPCProjXY() ){
     OutMPPCProj2D_XY = new TH2F(*fMPPCProj2D_XY);
-    OutMPPCProj2D_XY->SetName("OutMPPCProj2D_XY");
-    OutMPPCProj2D_XY->SetTitle("OutMPPCProj2D_XY");
+    // name = TString::Format("OutMPPCProj2D_XY_mod_%02d",fModNum);
+    // OutMPPCProj2D_XY->SetName(name);
+    // OutMPPCProj2D_XY->SetTitle(name);
     OutMPPCProj2D_XY->Write();
   }
   if( GetIsMPPCProjXZ() ){
     OutMPPCProj2D_XZ = new TH2F(*fMPPCProj2D_XZ);
-    OutMPPCProj2D_XZ->SetName("OutMPPCProj2D_XZ");
-    OutMPPCProj2D_XZ->SetTitle("OutMPPCProj2D_XZ");  
+    // name = TString::Format("OutMPPCProj2D_XZ_mod_%02d",fModNum);
+    // OutMPPCProj2D_XZ->SetName(name);
+    // OutMPPCProj2D_XZ->SetTitle(name);  
     OutMPPCProj2D_XZ->Write();
   }
   if( GetIsMPPCProjYZ() ){  
     OutMPPCProj2D_YZ = new TH2F(*fMPPCProj2D_YZ);
-    OutMPPCProj2D_YZ->SetName("OutMPPCProj2D_YZ");
-    OutMPPCProj2D_YZ->SetTitle("OutMPPCProj2D_YZ");
+    // name = TString::Format("OutMPPCProj2D_YZ_mod_%02d",fModNum);
+    // OutMPPCProj2D_YZ->SetName(name);
+    // OutMPPCProj2D_YZ->SetTitle(name);
     OutMPPCProj2D_YZ->Write();
   }
   

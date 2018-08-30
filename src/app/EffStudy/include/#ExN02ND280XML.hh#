@@ -138,7 +138,7 @@ public :
   G4double GetXMLFlatCableThickness()   {return fFlatCableThickness;};
   G4double GetXMLFlatCableWidth()       {return fFlatCableWidth;};
   G4int    GetXMLFlatCableX()           {return fFlatCableX;};
-  G4int    GetXMLFlatCableZ()           {return fFlatCableZ;};
+  G4int    GetXMLFlatCableZ()          {return fFlatCableZ;};
 
   //
 

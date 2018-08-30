@@ -120,7 +120,7 @@ public:
   G4double GetMPPCPosY();
   G4double GetMPPCPosZ();
 
-  void InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY, bool IsProjXZ, bool IsProjYZ); 
+  void InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY, bool IsProjXZ, bool IsProjYZ, int modnum); 
 
   G4bool fIsMPPCProjXY;  
   void SetIsMPPCProjXY(bool isproj){fIsMPPCProjXY=isproj;}
@@ -148,6 +148,11 @@ public:
   G4String GetDetNameAlongX(){return fDetNameAlongX;};
   G4String GetDetNameAlongY(){return fDetNameAlongY;};
   G4String GetDetNameAlongZ(){return fDetNameAlongZ;};
+
+
+  G4int fModNum;
+  void SetModNum(int mnum){fModNum=mnum;}
+  G4int GetModNum(){return fModNum;}
 
   //B.Q
   ND280PhysicalVolumeInformation * PVInfo;
