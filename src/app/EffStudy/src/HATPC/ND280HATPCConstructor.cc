@@ -58,8 +58,8 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void) {
   double HATPClength = GetHATPCLength();
 
   cout << "HATPCwidht is: " << HATPCwidth << endl;
-  cout << "HATPCheight is: " << HATPCwidth << endl;
-  cout << "HATPClength is: " << HATPCwidth << endl;
+  cout << "HATPCheight is: " << HATPCheight << endl;
+  cout << "HATPClength is: " << HATPClength << endl;
 
   double thickness;
   double FCthickness;
