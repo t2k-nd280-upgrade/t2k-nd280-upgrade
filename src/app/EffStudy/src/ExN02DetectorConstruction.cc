@@ -1677,132 +1677,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   const G4String cNameLogicTarget2     = cParentNameTarget+"/Target2";
   const G4String cNamePhysiTarget2     = cParentNameTarget+"/Target2";
 
- 
-  //------------------------------ 
-  // Target 1 - Upstream - Carbon 
-  //------------------------------
-  
-  //const G4String cTargetMater1  = "ActiveWater";     //fgd active water  
-  //const G4String cTargetMater1 = "Water"; // WAGASCI water
-  //const G4String cTargetMater1 = "FGDScintillator"; 
-  const G4String cTargetMater1 = ND280XMLInput->GetXMLTargetMaterial1();
-  TargetMater1  = FindMaterial(cTargetMater1);  
-  
-  G4double targetSizeLength1  = 0.5 * GetTargetFullLength1();    // Half length of the Target 1
-  G4double targetSizeWidth1   = 0.5 * GetTargetFullWidth1();     // Half width of the Target 1
-  G4double targetSizeHeight1  = 0.5 * GetTargetFullHeight1();    // Half height of the Target 1
-  
-  G4double HalfTargetHeight1  = 0.5 * GetTargetFullHeight1();
-  
-  if( ND280XMLInput->GetXMLUseTarget1() ){ 
-    
-    if( ND280XMLInput->GetXMLTargetdefault1() ){ // default
-      
-      G4double Target1_Z = 0.;    
-      if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
-	Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.);
-      }
-      else{
-	Target1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1()/2.); // Fix for when also FGDs are used!!!
-      }
-      SetTargetPos1(0,0,Target1_Z);
-    }
-    else { // from XML file
-      G4double x = ND280XMLInput->GetXMLTargetPos1_X();
-      G4double y = ND280XMLInput->GetXMLTargetPos1_Y();
-      G4double z = ND280XMLInput->GetXMLTargetPos1_Z();
-      SetTargetPos1(x,y,z);
-    }
-    
-    solidTarget1 = new G4Box(cNameSolidTarget1,targetSizeWidth1,targetSizeHeight1,targetSizeLength1);
-    logicTarget1 = new G4LogicalVolume(solidTarget1,TargetMater1,cNameLogicTarget1,0,0,0);
-    physiTarget1 = new G4PVPlacement(0,                 // no rotation
-				     GetTargetPos1(),    // at (x,y,z)
-				     logicTarget1,       // its logical volume  	  
-				     cNamePhysiTarget1,  // its name
-				     //logicTracker,      // its mother  volume
-				     //logicND280MC,      // its mother  volume
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number 
-    //fCheckOverlaps); 		          
-  }
-
-
-  //------------------------------ 
-  // Target 2 - Upstream - Water 
-  //------------------------------
-  
-  //const G4String cTargetMater2  = "FGDScintillator";  
-  //const G4String cTargetMater2 = "WAGASCIScintillatorEmpty"; 
-  //const G4String cTargetMater2 = "Water";  
-  //const G4String cTargetMater2 = "FGD2Uniform";  
-  const G4String cTargetMater2 = ND280XMLInput->GetXMLTargetMaterial2(); 
-  TargetMater2  = FindMaterial(cTargetMater2);  
-  
-  G4double targetSizeLength2  = 0.5 * GetTargetFullLength2();    // Half length of the Target 1
-  G4double targetSizeWidth2   = 0.5 * GetTargetFullWidth2();     // Half width of the Target 1
-  G4double targetSizeHeight2  = 0.5 * GetTargetFullHeight2();    // Half height of the Target 1
-
-  G4double HalfTargetHeight2  = 0.5 * GetTargetFullHeight2();
-  
-  if( ND280XMLInput->GetXMLUseTarget2() ){ 
-    
-    if( ND280XMLInput->GetXMLTargetdefault2() ){ // default
-      //G4double Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
-      //SetTargetPos2(0,0,Target2_Z);
-      G4double Target2_Z = 0.;    
-      if( !ND280XMLInput->GetXMLUseFGD1() || !ND280XMLInput->GetXMLUseFGD2() ){
-	Target2_Z = GetLengthForwTPC()/2. + GetTargetFullLength2()/2.;
-      }
-      else{
-	Target2_Z = + (GetLengthForwTPC()/2. + GetFGDFullLength2() + GetTargetFullLength2()/2.);
-      }
-      SetTargetPos2(0,0,Target2_Z);
-    }
-    else { // from XML file
-      G4double x = ND280XMLInput->GetXMLTargetPos2_X();
-      G4double y = ND280XMLInput->GetXMLTargetPos2_Y();
-      G4double z = ND280XMLInput->GetXMLTargetPos2_Z();
-      SetTargetPos2(x,y,z);
-    }
-    
-    solidTarget2 = new G4Box(cNameSolidTarget2,targetSizeWidth2,targetSizeHeight2,targetSizeLength2);
-    logicTarget2 = new G4LogicalVolume(solidTarget2,TargetMater2,cNameLogicTarget2,0,0,0);    
-    physiTarget2 = new G4PVPlacement(0,                 // no rotation
-				     GetTargetPos2(),    // at (x,y,z)
-				     logicTarget2,       // its logical volume  
-				     cNamePhysiTarget2,  // its name
-				     //logicTracker,      // its mother  volume
-				     //logicND280MC,      // its mother  volume
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number 
-    //fCheckOverlaps);   
-    
-    G4cout << "Target 2: " << G4endl
-	   << " - dimensions: "
-	   << GetTargetFullWidth2()/CLHEP::mm  << " (width) x " 
-	   << GetTargetFullHeight2()/CLHEP::mm << " (height) x " 
-	   << GetTargetFullLength2()/CLHEP::mm << " (length) mm^3" 
-	   << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicTarget2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicTarget2->GetName() << G4endl;
-    G4cout << " - position: ( " 
-	   << GetTargetPos2().x()/CLHEP::mm << ", "
-	   << GetTargetPos2().y()/CLHEP::mm << ", "
-	   << GetTargetPos2().z()/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
-  }
-
-
-
-  //
-  //------------------------------
-  // SuperFGD1 and CFBox w/ PCB
-  //------------------------------
-  //
-
   G4String cNameLogicSuperFGD1 = cNameSolidTarget1+"/SuperFGD1";
   ND280SuperFGDConstructor *fSuperFGDConstructor1 = new ND280SuperFGDConstructor(cNameLogicSuperFGD1,this);
   G4String nameSuperFGD1 = fSuperFGDConstructor1->GetName();
@@ -1830,6 +1704,326 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4String cNameLogicFlatCable2 = cNameSolidTarget2+"/FlatCable2";
   ND280FlatCableConstructor *fFlatCable2_Constructor = new ND280FlatCableConstructor(cNameLogicFlatCable2,this);
   G4String nameFlatCable2 = fFlatCable2_Constructor->GetName();
+
+ 
+  //------------------------------ 
+  // Target 1 - Upstream - Carbon 
+  //------------------------------
+  
+  //const G4String cTargetMater1  = "ActiveWater";     //fgd active water  
+  //const G4String cTargetMater1 = "Water"; // WAGASCI water
+  //const G4String cTargetMater1 = "FGDScintillator"; 
+  const G4String cTargetMater1 = ND280XMLInput->GetXMLTargetMaterial1();
+  TargetMater1  = FindMaterial(cTargetMater1);  
+  
+  G4double targetSizeLength1  = 0.5 * GetTargetFullLength1();    // Half length of the Target 1
+  G4double targetSizeWidth1   = 0.5 * GetTargetFullWidth1();     // Half width of the Target 1
+  G4double targetSizeHeight1  = 0.5 * GetTargetFullHeight1();    // Half height of the Target 1
+  
+  G4double HalfTargetHeight1  = 0.5 * GetTargetFullHeight1();
+  
+  if( ND280XMLInput->GetXMLUseTarget1()  && ND280XMLInput->GetXMLUseCFBox()){ 
+    
+
+    G4double x = ND280XMLInput->GetXMLTargetPos1_X();
+    G4double y = ND280XMLInput->GetXMLTargetPos1_Y();
+    G4double z = ND280XMLInput->GetXMLTargetPos1_Z();
+    SetTargetPos1(x,y,z);
+
+
+    G4String cNameSolidTargetUniform  = cNameSolidTarget1 + "/tarfetUniform";
+    G4String cNameLogicTarget1Uniform = cNameSolidTarget1 + "/TarfetUniform";
+    G4String cNamePhysiTargetUniform  = cNameSolidTarget1 + "/TarfetUniform";
+    solidTarget1Uniform = new G4Box(cNameSolidTargetUniform,targetSizeWidth1,targetSizeHeight1,targetSizeLength1);
+    logicTarget1Uniform = new G4LogicalVolume(solidTarget1Uniform,TargetMater1,cNameLogicTarget1Uniform,0,0,0);
+    /*physiTarget1 = new G4PVPlacement(0,                 // no rotation
+				     GetTargetPos1(),    // at (x,y,z)
+				     logicTarget1,       // its logical volume  	  
+				     cNamePhysiTarget1,  // its name
+				     //logicTracker,      // its mother  volume
+				     //logicND280MC,      // its mother  volume
+				     logicBasket,
+				     false,             // no boolean operations
+				     0);                 // copy number 
+    //fCheckOverlaps); */	
+
+    double width  = targetSizeWidth1* 2.;
+    double length = targetSizeLength1 * 2.;
+    double height = targetSizeHeight1 * 2.;
+
+    // Use target1 dimensions to obtain CF box dimensions
+
+    fCFBox1Constructor->SetCFBoxWidth(width);
+    fCFBox1Constructor->SetCFBoxLength(length);
+    fCFBox1Constructor->SetCFBoxHeight(height);
+
+    G4double CFRPthickness = ND280XMLInput->GetXMLCFBoxCFRPThickness();
+    G4double AIREXthickness = ND280XMLInput->GetXMLCFBoxAIREXThickness();
+
+    fCFBox1Constructor->SetCFBoxCFRPThickness(CFRPthickness);
+    fCFBox1Constructor->SetCFBoxAIREXThickness(AIREXthickness);
+
+    //
+    logicCFBox1 = fCFBox1Constructor->GetPiece(); // CFBox logical volume (size based on the SuperFGD size)
+
+    double CFwidth = fCFBox1Constructor->GetCFBoxWidth();
+    double CFlength = fCFBox1Constructor->GetCFBoxLength();
+    double CFheight = fCFBox1Constructor->GetCFBoxHeight();
+
+
+    cout << "CF1width = " << CFwidth << endl;
+    cout << "CF1length = " << CFlength << endl;
+    cout << "CF1height = " << CFheight << endl;
+
+  //
+  //------------------------------ 
+  // PCB1
+  //------------------------------ 
+  //
+
+  if (ND280XMLInput->GetXMLUsePCB() ){
+
+
+    fPCB1_X_Constructor->SetPCBWidth(CFheight);
+    fPCB1_X_Constructor->SetPCBLength(CFlength);
+    fPCB1_X_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+    
+    logicPCB1_X = fPCB1_X_Constructor->GetPiece();
+
+    fPCB1_Y_Constructor->SetPCBWidth(CFwidth);
+    fPCB1_Y_Constructor->SetPCBLength(CFlength);
+    fPCB1_Y_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+    
+    logicPCB1_Y = fPCB1_Y_Constructor->GetPiece();
+
+    fPCB1_Z_Constructor->SetPCBWidth(CFwidth);
+    fPCB1_Z_Constructor->SetPCBLength(CFheight);
+    fPCB1_Z_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+    
+    logicPCB1_Z = fPCB1_Z_Constructor->GetPiece();
+  }
+
+  double PCB_X_width = fPCB1_X_Constructor->GetPCBWidth();
+  double PCB_X_length = fPCB1_X_Constructor->GetPCBLength();
+  double PCB_X_height = fPCB1_X_Constructor->GetPCBHeight();
+
+  cout << "PCB1_X_width = " << PCB_X_width << endl;
+  cout << "PCB1_X_length = " << PCB_X_length << endl;
+  cout << "PCB1_X_height = " << PCB_X_height << endl;
+
+  double PCB_Y_width = fPCB1_Y_Constructor->GetPCBWidth();
+  double PCB_Y_length = fPCB1_Y_Constructor->GetPCBLength();
+  double PCB_Y_height = fPCB1_Y_Constructor->GetPCBHeight();
+
+  cout << "PCB1_Y_width = " << PCB_Y_width << endl;
+  cout << "PCB1_Y_length = " << PCB_Y_length << endl;
+  cout << "PCB1_Y_height = " << PCB_Y_height << endl;
+
+  double PCB_Z_width = fPCB1_Z_Constructor->GetPCBWidth();
+  double PCB_Z_length = fPCB1_Z_Constructor->GetPCBLength();
+  double PCB_Z_height = fPCB1_Z_Constructor->GetPCBHeight();
+
+  cout << "PCB1_Z_width = " << PCB_Z_width << endl;
+  cout << "PCB1_Z_length = " << PCB_Z_length << endl;
+  cout << "PCB1_Z_height = " << PCB_Z_height << endl;
+
+
+  if (ND280XMLInput->GetXMLUseFlatCable()){
+    
+    G4double flatcable_thickness = ND280XMLInput->GetXMLFlatCableThickness();
+    G4double flatcable_width = ND280XMLInput->GetXMLFlatCableWidth();
+    
+    G4int flatcable_nx = ND280XMLInput->GetXMLFlatCableX();
+    G4int flatcable_nz = ND280XMLInput->GetXMLFlatCableZ();
+    
+    if (!(ND280XMLInput->GetXMLUseSuperFGD2())){
+
+      fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable1_Constructor->SetFlatCableLength(CFwidth/2.);
+
+
+      fFlatCable1_Constructor->SetCableRegionLength(CFwidth/2.);
+      fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable1_Constructor->SetCableRegionHeight(CFheight); 
+
+      fFlatCable2_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable2_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable2_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable2_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable2_Constructor->SetFlatCableLength(CFwidth/2.);
+
+      fFlatCable2_Constructor->SetCableRegionLength(CFwidth/2.);
+      fFlatCable2_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable2_Constructor->SetCableRegionHeight(CFheight); 
+  
+      logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+      logicFlatCable2 = fFlatCable2_Constructor->GetPiece();
+    }
+
+    else {
+      fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
+      fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
+      fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
+      fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
+      fFlatCable1_Constructor->SetFlatCableLength(CFwidth);
+
+      fFlatCable1_Constructor->SetCableRegionLength(CFwidth);
+      fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
+      fFlatCable1_Constructor->SetCableRegionHeight(CFheight);
+
+      logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+    
+    }
+    
+
+  }
+
+
+
+
+  double FlatCable_width = fFlatCable1_Constructor->GetFlatCableWidth();
+  double FlatCable_length = fFlatCable1_Constructor->GetFlatCableLength();
+  double FlatCable_height = fFlatCable1_Constructor->GetFlatCableHeight();
+
+  cout << "FlatCable_width = " << FlatCable_width << endl;
+  cout << "FlatCable_length = " << FlatCable_length << endl;
+  cout << "FlatCable_height = " << FlatCable_height << endl;
+
+  double CableRegion_width = fFlatCable1_Constructor->GetCableRegionWidth();
+  double CableRegion_length = fFlatCable1_Constructor->GetCableRegionLength();
+  double CableRegion_height = fFlatCable1_Constructor->GetCableRegionHeight();
+
+  cout << "CableRegion_width = " << CableRegion_width << endl;
+  cout << "CableRegion_length = " << CableRegion_length << endl;
+  cout << "CableRegion_height = " << CableRegion_height << endl;
+
+    solidTarget1 = new G4Box(cNameSolidTarget1,CFwidth/2,CFheight/2,CFlength/2);
+    logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
+    physiTarget1 = new G4PVPlacement(0,                 // no rotation
+             G4ThreeVector(x,y,z),
+             logicTarget1,       // its logical volume
+             cNamePhysiTarget1,  // its name
+             logicBasket,
+             false,             // no boolean operations
+             0);                 // copy number
+
+    physiCFBox1= new G4PVPlacement(
+           0, // no rotation
+           G4ThreeVector(0,0,0), // same origin as Target1
+           logicCFBox1,       // its logical volume
+           nameCFBox1,  // its name
+           logicTarget1,
+           false,             // no boolean operations
+           0);                 // copy number
+
+
+
+    physiSuperFGD1 = new G4PVPlacement(
+               0, // no rotation
+               G4ThreeVector(0,0,0), // same origin as Target1
+               logicTarget1Uniform,       // its logical volume
+               cNamePhysiTargetUniform,  // its name
+               logicCFBox1,
+               false,             // no boolean operations
+               0);                 // copy number
+
+
+    double xPCB[3] = {x-CFwidth/2-PCB_X_height/2., x, x};
+    double yPCB[3] = {y, y+CFheight/2. + PCB_Y_height/2., y};
+    double zPCB[3] = {z, z ,z+CFlength/2. + PCB_Z_height/2.};
+
+    G4RotationMatrix rot[3];
+
+
+    rot[0].rotateZ(90.0*CLHEP::deg);
+    rot[1].rotateY(0.0*CLHEP::deg);
+    rot[2].rotateX(90.0*CLHEP::deg);
+
+
+    cout << "placing pcb1 x" <<endl;
+    physiPCB1_X = new G4PVPlacement(
+                                   G4Transform3D(rot[0],G4ThreeVector(xPCB[0],yPCB[0],zPCB[0])),
+                                   logicPCB1_X,       // its logical volume
+                                   namePCB1_X,  // its name
+                                   logicBasket,
+                                   false,             // no boolean operations
+                                   0);                 // copy number
+    cout << "placing pcb1 y" <<endl;
+    physiPCB1_Y = new G4PVPlacement(
+                                   G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
+                                   logicPCB1_Y,       // its logical volume
+                                   namePCB1_Y,  // its name
+                                   logicBasket,
+                                   false,             // no boolean operations
+                                   0);                 // copy number
+    cout << "placing pcb1 z" <<endl;    
+    physiPCB1_Z = new G4PVPlacement(
+                                   G4Transform3D(rot[2],G4ThreeVector(xPCB[2],yPCB[2],zPCB[2])),
+                                   logicPCB1_Z,       // its logical volume
+                                   namePCB1_Z,  // its name
+                                   logicBasket,
+                                   false,             // no boolean operations
+                                   0);                 // copy number
+
+    G4RotationMatrix rotFlatCable[2];
+    rotFlatCable[0].rotateX(90.0*CLHEP::deg);
+    rotFlatCable[0].rotateY(-90.0*CLHEP::deg);
+    rotFlatCable[1].rotateX(90.0*CLHEP::deg);
+    rotFlatCable[1].rotateY(90.0*CLHEP::deg);
+
+      physiFlatCable1 = new G4PVPlacement( 
+            G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[1]-CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+            logicFlatCable1,       // its logical volume
+            nameFlatCable1,  // its name
+            logicBasket,
+            false,             // no boolean operations
+            0);                 // copy number
+
+      physiFlatCable2 = new G4PVPlacement( 
+            G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1]+CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+            logicFlatCable2,       // its logical volume
+            nameFlatCable2,  // its name
+            logicBasket,
+            false,             // no boolean operations
+            0);                 // copy number
+
+      InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);
+  
+
+    cout << "three pcb1s placed" <<endl;    
+
+    G4cout << "Target 1: " << G4endl;
+    G4cout << " - Total size (mm^3): "
+     << width / CLHEP::mm << " (width) x "
+     << height / CLHEP::mm << " (height) x "
+     << length / CLHEP::mm << " (length) x "
+     << G4endl;
+    G4cout << " mass="<<logicTarget1Uniform->GetMass()/CLHEP::kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicTarget1Uniform->GetName() << G4endl;
+    G4cout << "CFBox: " << G4endl;
+    G4cout << " - Total size (mm^3): "
+     << CFwidth / CLHEP::mm << " (width) x "
+     << CFheight / CLHEP::mm << " (height) x "
+     << CFlength / CLHEP::mm << " (length) x "
+     << G4endl;
+
+    //G4cout << " - position inside the Basket: ( "
+    //<< fSuperFGDConstructor1->GetPosX()/CLHEP::mm << ", "
+    //<< fSuperFGDConstructor1->GetPosY()/CLHEP::mm << ", "
+    //<< fSuperFGDConstructor1->GetPosZ()/CLHEP::mm << ") "
+    //<< G4endl << G4endl;
+
+  }	          
+
+
+  //
+  //------------------------------
+  // SuperFGD1 and CFBox w/ PCB
+  //------------------------------
+  //
 
 
   if( ND280XMLInput->GetXMLUseSuperFGD1() && ND280XMLInput->GetXMLUseCFBox() ){
@@ -3418,108 +3612,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl << G4endl;
   }
   
-  // TPC Up 2
-
-  if( ND280XMLInput->GetXMLUseTPCUp2() ){ // default
-
-    const G4String cNameSolidSideTPCUp2   = cParentNameTPC+"/tpcup2";
-    const G4String cNameLogicSideTPCUp2   = cParentNameTPC+"/TPCUp2";
-    const G4String cNamePhysiSideTPCUp2   = cParentNameTPC+"/TPCUp2";
-    
-    solidSideTPCUp2 = new G4Box(cNameSolidSideTPCUp2, HalfSideTPCWidth2, HalfSideTPCHeight2, HalfSideTPCLength2); 
-    logicSideTPCUp2 = new G4LogicalVolume(solidSideTPCUp2,SideTPCMater,cNameLogicSideTPCUp2,0,0,0);
-    
-    if( ND280XMLInput->GetXMLSideTPCdefault2() ){ // default
-      SetSideTPCUpPos2(0,
-		       HalfSideTPCHeight2 + HalfTargetHeight2,
-		       GetTargetPos2().z()
-		       );
-    }
-    else { // from XML file
-      G4double x = ND280XMLInput->GetXMLSideTPCUpPos2_X();
-      G4double y = ND280XMLInput->GetXMLSideTPCUpPos2_Y();
-      G4double z = ND280XMLInput->GetXMLSideTPCUpPos2_Z();
-      SetSideTPCUpPos2(x,y,z);
-    }
-    
-    physiSideTPCUp2 = new G4PVPlacement(0,                   // no rotation
-					GetSideTPCUpPos2(),   // at (x,y,z)
-					logicSideTPCUp2,      // its logical volume
-					cNamePhysiSideTPCUp2, // its name
-					//logicTracker,        // its mother  volume
-					//logicND280MC,        // its mother  volume
-					logicBasket,
-					false,               // no boolean operations
-					0);                   // copy number 
-    
-    G4cout << "Side TPC Up 2: " << G4endl
-	   << " - dimensions: "
-	   << GetSideTPCFullWidth2()/CLHEP::mm  << " (width) x " 
-	   << GetSideTPCFullHeight2()/CLHEP::mm << " (height) x " 
-	   << GetSideTPCFullLength2()/CLHEP::mm << " (length) mm^3" 
-	   << " of " << logicSideTPCUp2->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicSideTPCUp2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicSideTPCUp2->GetName() << G4endl;
-    G4cout << " - position: ( " 
-	   << GetSideTPCUpPos2().x()/CLHEP::mm << ", "
-	   << GetSideTPCUpPos2().y()/CLHEP::mm << ", "
-	   << GetSideTPCUpPos2().z()/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
-
-  }
-  
-  // TPC Down 2
-  
-  if( ND280XMLInput->GetXMLUseTPCDown2() ){ // default
-
-    const G4String cNameSolidSideTPCDown2 = cParentNameTPC+"/tpcdown2";
-    const G4String cNameLogicSideTPCDown2 = cParentNameTPC+"/TPCDown2";
-    const G4String cNamePhysiSideTPCDown2 = cParentNameTPC+"/TPCDown2";
-    
-    solidSideTPCDown2 = new G4Box(cNameSolidSideTPCDown2,HalfSideTPCWidth2,HalfSideTPCHeight2,HalfSideTPCLength2); 
-    logicSideTPCDown2 = new G4LogicalVolume(solidSideTPCDown2,SideTPCMater,cNameLogicSideTPCDown2,0,0,0);
-    
-    if( ND280XMLInput->GetXMLSideTPCdefault2() ){ // default
-      SetSideTPCDownPos2(0,
-			 -(HalfSideTPCHeight2 + HalfTargetHeight2),
-			 GetTargetPos2().z()
-			 );
-    }
-    else { // from XML file
-      G4double x = ND280XMLInput->GetXMLSideTPCDownPos2_X();
-      G4double y = ND280XMLInput->GetXMLSideTPCDownPos2_Y();
-      G4double z = ND280XMLInput->GetXMLSideTPCDownPos2_Z();
-      SetSideTPCDownPos2(x,y,z);
-    }
-    
-    physiSideTPCDown2 = new G4PVPlacement(0,              // no rotation
-					  GetSideTPCDownPos2(), // at (x,y,z)
-					  logicSideTPCDown2,    // its logical volume
-					  cNamePhysiSideTPCDown2,       // its name
-					  //logicTracker,      // its mother  volume
-					  //logicND280MC,      // its mother  volume
-					  logicBasket,
-					  false,           // no boolean operations
-					  0);              // copy number 
-    
-    G4cout << "Side TPC Down 2: " << G4endl
-	   << " - dimensions: "
-	   << GetSideTPCFullWidth2()/CLHEP::mm  << " (width) x " 
-	   << GetSideTPCFullHeight2()/CLHEP::mm << " (height) x " 
-	   << GetSideTPCFullLength2()/CLHEP::mm << " (length) mm^3" 
-	   << " of " << logicSideTPCDown2->GetMaterial()->GetName() << G4endl;
-    G4cout << " mass="<<logicSideTPCDown2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicSideTPCDown2->GetName() << G4endl;
-    G4cout << " - position: ( " 
-	   << GetSideTPCDownPos2().x()/CLHEP::mm << ", "
-	   << GetSideTPCDownPos2().y()/CLHEP::mm << ", "
-	   << GetSideTPCDownPos2().z()/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
-  }
-
-
-
-    
   //------------------------------------------------ 
   // Set regions
   //------------------------------------------------ 

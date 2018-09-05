@@ -389,6 +389,9 @@ private:
   G4LogicalVolume*   logicTarget1;   // pointer to the logical Target      
   G4VPhysicalVolume* physiTarget1;   // pointer to the physical Target
 
+  G4Box*             solidTarget1Uniform;
+  G4LogicalVolume*   logicTarget1Uniform;
+
   G4Box*             solidTarget2;   // pointer to the solid Target 
   G4LogicalVolume*   logicTarget2;   // pointer to the logical Target 
   G4VPhysicalVolume* physiTarget2;   // pointer to the physical Target 

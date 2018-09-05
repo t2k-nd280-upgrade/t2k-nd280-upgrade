@@ -155,17 +155,17 @@
    </Targetdefault1>
    
    <TargetMaterial1>
-     Water
+     FGDScintillator
    </TargetMaterial1>
 
    <Targetlength1>
-     1894
+     1880
    </Targetlength1>
    <Targetwidth1>  
-     1864
+     2040
    </Targetwidth1>
    <Targetheight1> 
-     600
+     520
    </Targetheight1>
  
    <TargetPos1_X>
@@ -175,7 +175,7 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     0
+     -1707
    </TargetPos1_Z>
 
    
@@ -1163,7 +1163,7 @@
    </UseForwTPC3>
 
    <UseTarget1>
-     false
+     true
    </UseTarget1>
    <UseTarget2>
      false
@@ -1189,7 +1189,7 @@
    </UseFGD2>
 
    <UseSuperFGD1>
-     true
+     false
    </UseSuperFGD1>
 
    <UseSuperFGD2>
