@@ -145,43 +145,6 @@ public:
   void SetSideTPCUpPos2(G4double x,G4double y,G4double z) {fSideTPCUpPos2 = G4ThreeVector(x,y,z);};
   void SetSideTPCDownPos2(G4double x,G4double y,G4double z) {fSideTPCDownPos2 = G4ThreeVector(x,y,z);};
 
-  // ToF Downstream
-
-  void SetToFFullLength_TopDown(G4double length)  {fToFLength_TopDown = length;};
-  void SetToFFullWidth_TopDown(G4double width)   {fToFWidth_TopDown = width;};
-  void SetToFFullHeight_TopDown(G4double height)  {fToFHeight_TopDown = height;};
-  void SetToFPos_TopDown(G4double x,G4double y,G4double z) {fToFPos_TopDown = G4ThreeVector(x,y,z);};
-
-  void SetToFFullLength_BotDown(G4double length)  {fToFLength_BotDown = length;};
-  void SetToFFullWidth_BotDown(G4double width)   {fToFWidth_BotDown = width;};
-  void SetToFFullHeight_BotDown(G4double height)  {fToFHeight_BotDown = height;};
-  void SetToFPos_BotDown(G4double x,G4double y,G4double z) {fToFPos_BotDown = G4ThreeVector(x,y,z);};
-
-  void SetToFFullLength_RightDown(G4double length)  {fToFLength_RightDown = length;};
-  void SetToFFullWidth_RightDown(G4double width)   {fToFWidth_RightDown = width;};
-  void SetToFFullHeight_RightDown(G4double height)  {fToFHeight_RightDown = height;};
-  void SetToFPos_RightDown(G4double x,G4double y,G4double z) {fToFPos_RightDown = G4ThreeVector(x,y,z);};
-
-  void SetToFFullLength_LeftDown(G4double length)  {fToFLength_LeftDown = length;};
-  void SetToFFullWidth_LeftDown(G4double width)   {fToFWidth_LeftDown = width;};
-  void SetToFFullHeight_LeftDown(G4double height)  {fToFHeight_LeftDown = height;};
-  void SetToFPos_LeftDown(G4double x,G4double y,G4double z) {fToFPos_LeftDown = G4ThreeVector(x,y,z);};
-
-  void SetToFFullLength_BackDown(G4double length)  {fToFLength_BackDown = length;};
-  void SetToFFullWidth_BackDown(G4double width)   {fToFWidth_BackDown = width;};
-  void SetToFFullHeight_BackDown(G4double height)  {fToFHeight_BackDown = height;};
-  void SetToFPos_BackDown(G4double x,G4double y,G4double z) {fToFPos_BackDown = G4ThreeVector(x,y,z);};
-
-  void SetToFFullLength_FrontDown(G4double length)  {fToFLength_FrontDown = length;};
-  void SetToFFullWidth_FrontDown(G4double width)   {fToFWidth_FrontDown = width;};
-  void SetToFFullHeight_FrontDown(G4double height)  {fToFHeight_FrontDown = height;};
-  void SetToFPos_FrontDown(G4double x,G4double y,G4double z) {fToFPos_FrontDown = G4ThreeVector(x,y,z);};
-
-  void SetToFFullLength_ECalP0D(G4double length)  {fToFLength_ECalP0D = length;};
-  void SetToFFullWidth_ECalP0D(G4double width)   {fToFWidth_ECalP0D = width;};
-  void SetToFFullHeight_ECalP0D(G4double height)  {fToFHeight_ECalP0D = height;};
-  void SetToFPos_ECalP0D(G4double x,G4double y,G4double z) {fToFPos_ECalP0D = G4ThreeVector(x,y,z);};
-
   // ToF Upstream
 
   void SetToFFullLength_TopUp(G4double length)  {fToFLength_TopUp = length;};
@@ -267,43 +230,6 @@ public:
   G4double GetSideTPCFullHeight2()  {return fSideTPCHeight2;};
   G4ThreeVector GetSideTPCUpPos2()  {return fSideTPCUpPos2;};
   G4ThreeVector GetSideTPCDownPos2(){return fSideTPCDownPos2;};
-  
-  // ToF Downstream
-
-  G4double GetToFFullLength_TopDown()  {return fToFLength_TopDown;};
-  G4double GetToFFullWidth_TopDown()   {return fToFWidth_TopDown;};
-  G4double GetToFFullHeight_TopDown()  {return fToFHeight_TopDown;};
-  G4ThreeVector GetToFPos_TopDown()  {return fToFPos_TopDown;};
-
-  G4double GetToFFullLength_BotDown()  {return fToFLength_BotDown;};
-  G4double GetToFFullWidth_BotDown()   {return fToFWidth_BotDown;};
-  G4double GetToFFullHeight_BotDown()  {return fToFHeight_BotDown;};
-  G4ThreeVector GetToFPos_BotDown()  {return fToFPos_BotDown;};
-
-  G4double GetToFFullLength_RightDown()  {return fToFLength_RightDown;};
-  G4double GetToFFullWidth_RightDown()   {return fToFWidth_RightDown;};
-  G4double GetToFFullHeight_RightDown()  {return fToFHeight_RightDown;};
-  G4ThreeVector GetToFPos_RightDown()  {return fToFPos_RightDown;};
-
-  G4double GetToFFullLength_LeftDown()  {return fToFLength_LeftDown;};
-  G4double GetToFFullWidth_LeftDown()   {return fToFWidth_LeftDown;};
-  G4double GetToFFullHeight_LeftDown()  {return fToFHeight_LeftDown;};
-  G4ThreeVector GetToFPos_LeftDown()  {return fToFPos_LeftDown;};
-
-  G4double GetToFFullLength_BackDown()  {return fToFLength_BackDown;};
-  G4double GetToFFullWidth_BackDown()   {return fToFWidth_BackDown;};
-  G4double GetToFFullHeight_BackDown()  {return fToFHeight_BackDown;};
-  G4ThreeVector GetToFPos_BackDown()  {return fToFPos_BackDown;};
-
-  G4double GetToFFullLength_FrontDown()  {return fToFLength_FrontDown;};
-  G4double GetToFFullWidth_FrontDown()   {return fToFWidth_FrontDown;};
-  G4double GetToFFullHeight_FrontDown()  {return fToFHeight_FrontDown;};
-  G4ThreeVector GetToFPos_FrontDown()  {return fToFPos_FrontDown;};
-
-  G4double GetToFFullLength_ECalP0D()  {return fToFLength_ECalP0D;};
-  G4double GetToFFullWidth_ECalP0D()   {return fToFWidth_ECalP0D;};
-  G4double GetToFFullHeight_ECalP0D()  {return fToFHeight_ECalP0D;};
-  G4ThreeVector GetToFPos_ECalP0D()  {return fToFPos_ECalP0D;};
 
   // ToF Upstream
 
@@ -344,11 +270,8 @@ public:
   G4double GetWorldFullHeight()   {return fWorldHeight;}; 
      
   void setMaterial_Target (G4String);
-  void setMaterial_Target1 (G4String);
-  void setMaterial_Target2 (G4String);
   void setMaterial_FGD1 (G4String);
   void setMaterial_FGD2 (G4String);
-  void setMaterial_SideTPC(G4String);
   void SetMagField(G4double);
   void SetMaxStep (G4double);     
   
@@ -390,7 +313,6 @@ private:
   G4VPhysicalVolume* physiTarget1;   // pointer to the physical Target
 
   G4Box*             solidTarget1Uniform;
-  G4LogicalVolume*   logicTarget1Uniform;
 
   G4Box*             solidTarget2;   // pointer to the solid Target 
   G4LogicalVolume*   logicTarget2;   // pointer to the logical Target 

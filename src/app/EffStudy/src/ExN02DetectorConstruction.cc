@@ -81,12 +81,8 @@
 #include "ND280FlatCableConstructor.hh"
 // HATPC
 #include "ND280HATPCConstructor.hh"
-// SciFi
-#include "ND280SciFiConstructor.hh"
 // FGD-like (horizontal target)
 #include "ND280FGDlikeConstructor.hh"
-// WAGASCI 
-#include "ND280WAGASCIActiveConstructor.hh"
 // FGD3D
 #include "ND280WaffleActiveConstructor.hh"
 
@@ -100,7 +96,6 @@
 
 #include "ExN02DetectorConstruction.hh"
 #include "ExN02DetectorMessenger.hh"
-#include "ExN02ChamberParameterisation.hh"
 //#include "ExN02MagneticField.hh" // OLD
 #include "ExN02TrackerSD.hh"
 #include "ExN02Constants.hh"
@@ -280,6 +275,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   			false,           // no boolean operations
   			0);
 
+    (void)physiND280MC;
+
   
   //
   //---------------------------------------------------------------
@@ -329,463 +326,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //
   //------------------------------------------   
    
-  // ToF Top Downstream - along X (horizontal layer) and Z (vertical layer)
-  
-  G4String cParentNameToF = logicBasket->GetName();
-  ND280ToFConstructor *fToFConstructor_TopDown = new ND280ToFConstructor(cParentNameToF+"/ToF/TopDown",this);
-  G4String nameToF_TopDown = fToFConstructor_TopDown->GetName();
-  G4RotationMatrix* rotation_tof_TopDown = new G4RotationMatrix();
-  double rotX=0,rotY=0,rotZ=0;
-  
-  if( ND280XMLInput->GetXMLUseToF_TopDown() ){
-    G4double x = ND280XMLInput->GetXMLToFPosX_TopDown() * CLHEP::mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_TopDown() * CLHEP::mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_TopDown() * CLHEP::mm;
-    SetToFPos_TopDown(x,y,z);
-    
-    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_TopDown();
-    fToFConstructor_TopDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer 
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_TopDown() * CLHEP::mm;
-    fToFConstructor_TopDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_TopDown() * CLHEP::mm;
-    fToFConstructor_TopDown->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_TopDown();
-    fToFConstructor_TopDown->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_TopDown();
-    fToFConstructor_TopDown->SetLayerVertNBar(NBarVert); 
-
-    rotX = ND280XMLInput->GetXMLToFRotX_TopDown() * CLHEP::degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_TopDown() * CLHEP::degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_TopDown() * CLHEP::degree;
-    rotation_tof_TopDown->rotateX(rotX); 
-    rotation_tof_TopDown->rotateY(rotY); 
-    rotation_tof_TopDown->rotateZ(rotZ);      
-    
-    logicToF_TopDown = fToFConstructor_TopDown->GetPiece();
-    physiToF_TopDown = new G4PVPlacement(
-					 rotation_tof_TopDown, // rotation
-					 GetToFPos_TopDown(),
-					 logicToF_TopDown,// logical volume
-					 nameToF_TopDown, // name   
-					 logicBasket,    // mother  volume  
-					 false,        // no boolean operations
-					 0);
-    
-    G4cout << " - name: " << logicToF_TopDown->GetName() << G4endl;
-    G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_TopDown->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_TopDown->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_TopDown->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Rotation ToF TopDown: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " - position: ( "
-	   << GetToFPos_TopDown().x()/CLHEP::mm << ", "
-	   << GetToFPos_TopDown().y()/CLHEP::mm << ", "
-	   << GetToFPos_TopDown().z()/CLHEP::mm << " ) mm" << G4endl;
-    G4cout << " - # of planes XY = " << fToFConstructor_TopDown->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_TopDown->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
-    G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_TopDown->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_TopDown->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_TopDown->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_TopDown->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
-    G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_TopDown->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_TopDown->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;
-  }
-
-   
-  // ToF Bottom Downstream - along X (horizontal layer) and Z (vertical layer)
-  
-  ND280ToFConstructor *fToFConstructor_BotDown = new ND280ToFConstructor(cParentNameToF+"/ToF/BotDown",this);
-  G4String nameToF_BotDown = fToFConstructor_BotDown->GetName();
-  G4RotationMatrix* rotation_tof_BotDown = new G4RotationMatrix();
-  
-  rotX=0,rotY=0,rotZ=0;
-  
-  if( ND280XMLInput->GetXMLUseToF_BotDown() ){
-
-    G4double x = ND280XMLInput->GetXMLToFPosX_BotDown() * CLHEP::mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_BotDown() * CLHEP::mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_BotDown() * CLHEP::mm;
-    SetToFPos_BotDown(x,y,z);
-    
-    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_BotDown();
-    fToFConstructor_BotDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BotDown() * CLHEP::mm;
-    fToFConstructor_BotDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BotDown() * CLHEP::mm;
-    fToFConstructor_BotDown->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BotDown();
-    fToFConstructor_BotDown->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BotDown();
-    fToFConstructor_BotDown->SetLayerVertNBar(NBarVert); 
-
-    rotX = ND280XMLInput->GetXMLToFRotX_BotDown() * CLHEP::degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_BotDown() * CLHEP::degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_BotDown() * CLHEP::degree;
-    rotation_tof_BotDown->rotateX(rotX); 
-    rotation_tof_BotDown->rotateY(rotY); 
-    rotation_tof_BotDown->rotateZ(rotZ);      
- 
-    logicToF_BotDown = fToFConstructor_BotDown->GetPiece();
-    physiToF_BotDown = new G4PVPlacement(
-					 rotation_tof_BotDown,               // rotation
-					 GetToFPos_BotDown(),
-					 logicToF_BotDown,// logical volume
-					 nameToF_BotDown, // name   
-					 logicBasket,    // mother  volume  
-					 false,        // no boolean operations
-					 0);
-    
-    G4cout << " - name: " << logicToF_BotDown->GetName() << G4endl;
-    G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_BotDown->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_BotDown->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_BotDown->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Rotation ToF BotDown: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " - position: ( "
-	   << GetToFPos_BotDown().x()/CLHEP::mm << ", "
-	   << GetToFPos_BotDown().y()/CLHEP::mm << ", "
-	   << GetToFPos_BotDown().z()/CLHEP::mm << " ) mm" << G4endl;
-    G4cout << " - # of planes XY = " << fToFConstructor_BotDown->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_BotDown->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
-    G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_BotDown->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_BotDown->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_BotDown->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_BotDown->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
-    G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_BotDown->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_BotDown->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;
-  }
-
-  // ToF Right Downstream - along Z (horizontal layer) and Y (vertical layer)
-  
-  ND280ToFConstructor *fToFConstructor_RightDown = new ND280ToFConstructor(cParentNameToF+"/ToF/RightDown",this);
-  G4String nameToF_RightDown = fToFConstructor_RightDown->GetName();
-  G4RotationMatrix* rotation_tof_RightDown = new G4RotationMatrix();
-  
-  rotX=0,rotY=0,rotZ=0;
-  
-  if( ND280XMLInput->GetXMLUseToF_RightDown() ){
-
-    G4double x = ND280XMLInput->GetXMLToFPosX_RightDown() * CLHEP::mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_RightDown() * CLHEP::mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_RightDown() * CLHEP::mm;
-    SetToFPos_RightDown(x,y,z);
-    
-    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_RightDown();
-    fToFConstructor_RightDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_RightDown() * CLHEP::mm;
-    fToFConstructor_RightDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_RightDown() * CLHEP::mm;
-    fToFConstructor_RightDown->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_RightDown();
-    fToFConstructor_RightDown->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_RightDown();
-    fToFConstructor_RightDown->SetLayerVertNBar(NBarVert); 
-
-    rotX = ND280XMLInput->GetXMLToFRotX_RightDown() * CLHEP::degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_RightDown() * CLHEP::degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_RightDown() * CLHEP::degree;
-    rotation_tof_RightDown->rotateX(rotX); 
-    rotation_tof_RightDown->rotateY(rotY); 
-    rotation_tof_RightDown->rotateZ(rotZ);      
-     
-    logicToF_RightDown = fToFConstructor_RightDown->GetPiece();
-    physiToF_RightDown = new G4PVPlacement(
-				       rotation_tof_RightDown,               // rotation
-				       GetToFPos_RightDown(),
-				       logicToF_RightDown,// logical volume
-				       nameToF_RightDown, // name   
-				       logicBasket,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
-    
-    G4cout << " - name: " << logicToF_RightDown->GetName() << G4endl;
-    G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_RightDown->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_RightDown->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_RightDown->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Rotation ToF RightDown: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " - position: ( "
-	   << GetToFPos_RightDown().x()/CLHEP::mm << ", "
-	   << GetToFPos_RightDown().y()/CLHEP::mm << ", "
-	   << GetToFPos_RightDown().z()/CLHEP::mm << " ) mm" << G4endl;
-    G4cout << " - # of planes XY = " << fToFConstructor_RightDown->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_RightDown->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
-    G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_RightDown->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_RightDown->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_RightDown->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_RightDown->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
-    G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_RightDown->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_RightDown->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;
-    
-  }
-
-
-  // ToF Left Downstream - along Z (horizontal layer) and Y (vertical layer)
-  
-  ND280ToFConstructor *fToFConstructor_LeftDown = new ND280ToFConstructor(cParentNameToF+"/ToF/LeftDown",this);
-  G4String nameToF_LeftDown = fToFConstructor_LeftDown->GetName();
-  G4RotationMatrix* rotation_tof_LeftDown = new G4RotationMatrix();
-  
-  rotX=0,rotY=0,rotZ=0;
-  
-  if( ND280XMLInput->GetXMLUseToF_LeftDown() ){
-
-    G4double x = ND280XMLInput->GetXMLToFPosX_LeftDown() * CLHEP::mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_LeftDown() * CLHEP::mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_LeftDown() * CLHEP::mm;
-    SetToFPos_LeftDown(x,y,z);
-    
-    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_LeftDown();
-    fToFConstructor_LeftDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_LeftDown() * CLHEP::mm;
-    fToFConstructor_LeftDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_LeftDown() * CLHEP::mm;
-    fToFConstructor_LeftDown->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_LeftDown();
-    fToFConstructor_LeftDown->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_LeftDown();
-    fToFConstructor_LeftDown->SetLayerVertNBar(NBarVert); 
-
-    rotX = ND280XMLInput->GetXMLToFRotX_LeftDown() * CLHEP::degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_LeftDown() * CLHEP::degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_LeftDown() * CLHEP::degree;
-    rotation_tof_LeftDown->rotateX(rotX); 
-    rotation_tof_LeftDown->rotateY(rotY); 
-    rotation_tof_LeftDown->rotateZ(rotZ);      
-    
-    logicToF_LeftDown = fToFConstructor_LeftDown->GetPiece();
-    physiToF_LeftDown = new G4PVPlacement(
-				       rotation_tof_LeftDown,               // rotation
-				       GetToFPos_LeftDown(),
-				       logicToF_LeftDown,// logical volume
-				       nameToF_LeftDown, // name   
-				       logicBasket,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
-    
-    G4cout << " - name: " << logicToF_LeftDown->GetName() << G4endl;
-    G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_LeftDown->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_LeftDown->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_LeftDown->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Rotation ToF LeftDown: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " - position: ( "
-	   << GetToFPos_LeftDown().x()/CLHEP::mm << ", "
-	   << GetToFPos_LeftDown().y()/CLHEP::mm << ", "
-	   << GetToFPos_LeftDown().z()/CLHEP::mm << " ) mm" << G4endl;
-    G4cout << " - # of planes XY = " << fToFConstructor_LeftDown->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_LeftDown->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
-    G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_LeftDown->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_LeftDown->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_LeftDown->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_LeftDown->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
-    G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_LeftDown->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_LeftDown->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;    
-  }
-
-
-  // ToF Back Downstream - along X (horizontal layer) and Y (vertical layer)
-  
-  ND280ToFConstructor *fToFConstructor_BackDown = new ND280ToFConstructor(cParentNameToF+"/ToF/BackDown",this);
-  G4String nameToF_BackDown = fToFConstructor_BackDown->GetName();
-  G4RotationMatrix* rotation_tof_BackDown = new G4RotationMatrix();
-  
-  rotX=0,rotY=0,rotZ=0;
-  
-  if( ND280XMLInput->GetXMLUseToF_BackDown() ){
-
-    G4double x = ND280XMLInput->GetXMLToFPosX_BackDown() * CLHEP::mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_BackDown() * CLHEP::mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_BackDown() * CLHEP::mm;
-    SetToFPos_BackDown(x,y,z);
-    
-    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_BackDown();
-    fToFConstructor_BackDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_BackDown() * CLHEP::mm;
-    fToFConstructor_BackDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_BackDown() * CLHEP::mm;
-    fToFConstructor_BackDown->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BackDown();
-    fToFConstructor_BackDown->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BackDown();
-    fToFConstructor_BackDown->SetLayerVertNBar(NBarVert); 
-
-    rotX = ND280XMLInput->GetXMLToFRotX_BackDown() * CLHEP::degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_BackDown() * CLHEP::degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_BackDown() * CLHEP::degree;
-    rotation_tof_BackDown->rotateX(rotX); 
-    rotation_tof_BackDown->rotateY(rotY); 
-    rotation_tof_BackDown->rotateZ(rotZ);      
-    
-    logicToF_BackDown = fToFConstructor_BackDown->GetPiece();
-    physiToF_BackDown = new G4PVPlacement(
-				       rotation_tof_BackDown,               // rotation
-				       GetToFPos_BackDown(),
-				       logicToF_BackDown,// logical volume
-				       nameToF_BackDown, // name   
-				       logicBasket,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
-    
-    G4cout << " - name: " << logicToF_BackDown->GetName() << G4endl;
-    G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_BackDown->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_BackDown->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_BackDown->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Rotation ToF BackDown: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " - position: ( "
-	   << GetToFPos_BackDown().x()/CLHEP::mm << ", "
-	   << GetToFPos_BackDown().y()/CLHEP::mm << ", "
-	   << GetToFPos_BackDown().z()/CLHEP::mm << " ) mm" << G4endl;
-    G4cout << " - # of planes XY = " << fToFConstructor_BackDown->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_BackDown->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
-    G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_BackDown->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_BackDown->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_BackDown->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_BackDown->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
-    G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_BackDown->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_BackDown->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;    
-  }
-
-
-  // ToF Front Downstream - along X (horizontal layer) and Y (vertical layer)
-  
-  ND280ToFConstructor *fToFConstructor_FrontDown = new ND280ToFConstructor(cParentNameToF+"/ToF/FrontDown",this);
-  G4String nameToF_FrontDown = fToFConstructor_FrontDown->GetName();
-  G4RotationMatrix* rotation_tof_FrontDown = new G4RotationMatrix();
-  
-  rotX=0,rotY=0,rotZ=0;
-  
-  if( ND280XMLInput->GetXMLUseToF_FrontDown() ){
-
-    G4double x = ND280XMLInput->GetXMLToFPosX_FrontDown() * CLHEP::mm; 
-    G4double y = ND280XMLInput->GetXMLToFPosY_FrontDown() * CLHEP::mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_FrontDown() * CLHEP::mm;
-    SetToFPos_FrontDown(x,y,z);
-    
-    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_FrontDown();
-    fToFConstructor_FrontDown->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_FrontDown() * CLHEP::mm;
-    fToFConstructor_FrontDown->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontDown() * CLHEP::mm;
-    fToFConstructor_FrontDown->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_FrontDown();
-    fToFConstructor_FrontDown->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_FrontDown();
-    fToFConstructor_FrontDown->SetLayerVertNBar(NBarVert); 
-
-    rotX = ND280XMLInput->GetXMLToFRotX_FrontDown() * CLHEP::degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_FrontDown() * CLHEP::degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_FrontDown() * CLHEP::degree;
-    rotation_tof_FrontDown->rotateX(rotX); 
-    rotation_tof_FrontDown->rotateY(rotY); 
-    rotation_tof_FrontDown->rotateZ(rotZ);      
-    
-    logicToF_FrontDown = fToFConstructor_FrontDown->GetPiece();
-    physiToF_FrontDown = new G4PVPlacement(
-				       rotation_tof_FrontDown,               // rotation
-				       GetToFPos_FrontDown(),
-				       logicToF_FrontDown,// logical volume
-				       nameToF_FrontDown, // name   
-				       logicBasket,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
-    
-    G4cout << " - name: " << logicToF_FrontDown->GetName() << G4endl;
-    G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_FrontDown->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_FrontDown->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_FrontDown->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Rotation ToF FrontDown: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " - position: ( "
-	   << GetToFPos_FrontDown().x()/CLHEP::mm << ", "
-	   << GetToFPos_FrontDown().y()/CLHEP::mm << ", "
-	   << GetToFPos_FrontDown().z()/CLHEP::mm << " ) mm" << G4endl;
-    G4cout << " - # of planes XY = " << fToFConstructor_FrontDown->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_FrontDown->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
-    G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_FrontDown->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_FrontDown->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_FrontDown->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_FrontDown->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
-    G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_FrontDown->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_FrontDown->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;
-    
-  }
-
-
   // ToF Top Upstream - along X (horizontal layer) and Z (vertical layer)
+
+  G4String cParentNameToF = logicBasket->GetName();
   
   ND280ToFConstructor *fToFConstructor_TopUp = new ND280ToFConstructor(cParentNameToF+"/ToF/TopUp",this);
   G4String nameToF_TopUp = fToFConstructor_TopUp->GetName();
   G4RotationMatrix* rotation_tof_TopUp = new G4RotationMatrix();
   
-  rotX=0,rotY=0,rotZ=0;
+  double rotX=0,rotY=0,rotZ=0;
   
   if( ND280XMLInput->GetXMLUseToF_TopUp() ){
 
@@ -1229,186 +778,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
   }
 
-
-
-
-
-  // ToF ECalP0D - along X (horizontal layer) and Y (vertical layer)
-  
-  ND280ToFConstructor *fToFConstructor_ECalP0D = new ND280ToFConstructor(cParentNameToF+"/ToF/ECalP0D",this);
-  G4String nameToF_ECalP0D = fToFConstructor_ECalP0D->GetName();
-  G4RotationMatrix* rotation_tof_ECalP0D = new G4RotationMatrix();
-  
-  rotX=0,rotY=0,rotZ=0;
-  
-  if( ND280XMLInput->GetXMLUseToF_ECalP0D() ){
-
-    G4double x = ND280XMLInput->GetXMLToFPosX_ECalP0D() * CLHEP::mm;                        
-    G4double y = ND280XMLInput->GetXMLToFPosY_ECalP0D() * CLHEP::mm;
-    G4double z = ND280XMLInput->GetXMLToFPosZ_ECalP0D() * CLHEP::mm;
-    SetToFPos_ECalP0D(x,y,z);
-    
-    int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_ECalP0D();
-    fToFConstructor_ECalP0D->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-    double BarWidth = ND280XMLInput->GetXMLToFBarwidth_ECalP0D() * CLHEP::mm;
-    fToFConstructor_ECalP0D->SetBarWidth(BarWidth);
-    double BarHeight = ND280XMLInput->GetXMLToFBarheight_ECalP0D() * CLHEP::mm;
-    fToFConstructor_ECalP0D->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_ECalP0D();
-    fToFConstructor_ECalP0D->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_ECalP0D();
-    fToFConstructor_ECalP0D->SetLayerVertNBar(NBarVert); 
-
-    rotX = ND280XMLInput->GetXMLToFRotX_ECalP0D() * CLHEP::degree;
-    rotY = ND280XMLInput->GetXMLToFRotY_ECalP0D() * CLHEP::degree;
-    rotZ = ND280XMLInput->GetXMLToFRotZ_ECalP0D() * CLHEP::degree;
-    rotation_tof_ECalP0D->rotateX(rotX); 
-    rotation_tof_ECalP0D->rotateY(rotY); 
-    rotation_tof_ECalP0D->rotateZ(rotZ);      
-    
-    logicToF_ECalP0D = fToFConstructor_ECalP0D->GetPiece();
-    physiToF_ECalP0D = new G4PVPlacement(
-				       rotation_tof_ECalP0D,               // rotation
-				       GetToFPos_ECalP0D(),
-				       logicToF_ECalP0D,// logical volume
-				       nameToF_ECalP0D, // name   
-				       logicBasket,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
-    
-    G4cout << " - name: " << logicToF_ECalP0D->GetName() << G4endl;
-    G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_ECalP0D->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_ECalP0D->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_ECalP0D->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Rotation ToF ECalP0D: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " - position: ( "
-	   << GetToFPos_ECalP0D().x()/CLHEP::mm << ", "
-	   << GetToFPos_ECalP0D().y()/CLHEP::mm << ", "
-	   << GetToFPos_ECalP0D().z()/CLHEP::mm << " ) mm" << G4endl;
-    G4cout << " - # of planes XY = " << fToFConstructor_ECalP0D->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_ECalP0D->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
-    G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_ECalP0D->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_ECalP0D->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_ECalP0D->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_ECalP0D->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
-    G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_ECalP0D->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_ECalP0D->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;
-    
-  }
-
-
-  
-  /*
-    
-  //------------------------------ 
-  // Horizontal Target Box 
-  //------------------------------
-
-  // define Box LogicalVolume
-  G4LogicalVolume *logVolume
-    = new G4LogicalVolume(new G4Box(GetName(),
-				    GetWidth()/2.0,  
-				    GetHeight()/2.0,
-				    GetLength()/2.0),
-			  FindMaterial("Air"),
-			  GetName());
-  
-  // define the 6 ToF constructors that make the box
-  
-  ND280ToFConstructor *fToFConstructor_FrontUp = new ND280ToFConstructor(cParentNameToF+"/ToF/FrontUp",this);
-  G4String nameToF_FrontUp = fToFConstructor_FrontUp->GetName();
-  G4RotationMatrix* rotation_tof_FrontUp = new G4RotationMatrix();
-  
-  rotX=0,rotY=0,rotZ=0;
-  
-  G4double x = ND280XMLInput->GetXMLToFPosX_FrontUp() * CLHEP::mm;                        
-  G4double y = ND280XMLInput->GetXMLToFPosY_FrontUp() * CLHEP::mm;
-  G4double z = ND280XMLInput->GetXMLToFPosZ_FrontUp() * CLHEP::mm;
-  SetToFPos_FrontUp(x,y,z);
-  
-  int PlaneXYNum = ND280XMLInput->GetXMLToFPlaneXYNum_FrontUp();
-  fToFConstructor_FrontUp->SetPlaneXYNum(PlaneXYNum); // 1 x + 1 y layer
-  double BarWidth = ND280XMLInput->GetXMLToFBarwidth_FrontUp() * CLHEP::mm;
-  fToFConstructor_FrontUp->SetBarWidth(BarWidth);
-  double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontUp() * CLHEP::mm;
-  fToFConstructor_FrontUp->SetBarHeight(BarHeight);
-  int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_FrontUp();
-  fToFConstructor_FrontUp->SetLayerHorizNBar(NBarHoriz); 
-  int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_FrontUp();
-  fToFConstructor_FrontUp->SetLayerVertNBar(NBarVert); 
-  
-  rotX = ND280XMLInput->GetXMLToFRotX_FrontUp() * CLHEP::degree;
-  rotY = ND280XMLInput->GetXMLToFRotY_FrontUp() * CLHEP::degree;
-  rotZ = ND280XMLInput->GetXMLToFRotZ_FrontUp() * CLHEP::degree;
-  rotation_tof_FrontUp->rotateX(rotX); 
-  rotation_tof_FrontUp->rotateY(rotY); 
-  rotation_tof_FrontUp->rotateZ(rotZ);      
-  
-  logicToF_FrontUp = fToFConstructor_FrontUp->GetPiece();
-
-  // define the G4VPlacement of the box
-  
-  physiToF_FrontUp = new G4PVPlacement(
-				       rotation_tof_FrontUp,               // rotation
-				       GetToFPos_FrontUp(),
-				       logicToF_FrontUp,// logical volume
-				       nameToF_FrontUp, // name   
-				       logicBasket,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
-  
-  
-    G4cout << " - name: " << logicToF_FrontUp->GetName() << G4endl;
-    G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_FrontUp->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_FrontUp->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_FrontUp->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Rotation ToF FrontUp: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " - position: ( "
-	   << GetToFPos_FrontUp().x()/CLHEP::mm << ", "
-	   << GetToFPos_FrontUp().y()/CLHEP::mm << ", "
-	   << GetToFPos_FrontUp().z()/CLHEP::mm << " ) mm" << G4endl;
-    G4cout << " - # of planes XY = " << fToFConstructor_FrontUp->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_FrontUp->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
-    G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_FrontUp->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_FrontUp->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_FrontUp->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_FrontUp->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
-    G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_FrontUp->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_FrontUp->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;	   
-  */
-
-
-
-
-
-
-
-
-
   //------------------------------ 
   // Forward TPC 1
   //------------------------------
@@ -1556,9 +925,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4double FGDSizeLength1  = 0.5 * GetFGDFullLength1();    // Half length of the FGD 1
     G4double FGDSizeWidth1   = 0.5 * GetFGDFullWidth1();     // Half width of the FGD 1
     G4double FGDSizeHeight1  = 0.5 * GetFGDFullHeight1();    // Half height of the FGD 1
-    
-    G4double HalfFGDHeight1  = 0.5 * GetFGDFullHeight1();
-    
+        
     if( ND280XMLInput->GetXMLFGDdefault1() ){ // default
       G4double FGD1_Z = - (GetLengthForwTPC()/2. + GetTargetFullLength1() + GetFGDFullLength1()/2.);
       SetFGDPos1(0,0,FGD1_Z);
@@ -1615,9 +982,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4double FGDSizeLength2  = 0.5 * GetFGDFullLength2();    // Half length of the FGD 1
     G4double FGDSizeWidth2   = 0.5 * GetFGDFullWidth2();     // Half width of the FGD 1
     G4double FGDSizeHeight2  = 0.5 * GetFGDFullHeight2();    // Half height of the FGD 1
-    
-    G4double HalfFGDHeight2  = 0.5 * GetFGDFullHeight2();
-    
+        
     if( ND280XMLInput->GetXMLFGDdefault2() ){ // default
       G4double FGD2_Z = + (GetLengthForwTPC()/2. + GetFGDFullLength1()/2.);
       SetFGDPos2(0,0,FGD2_Z);
@@ -1656,13 +1021,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   	   << GetFGDPos2().z()/CLHEP::mm << " ) mm"  
   	   << G4endl << G4endl;
   }
-
-
-
-
-
-
-
 
 
   //
@@ -1705,14 +1063,33 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   ND280FlatCableConstructor *fFlatCable2_Constructor = new ND280FlatCableConstructor(cNameLogicFlatCable2,this);
   G4String nameFlatCable2 = fFlatCable2_Constructor->GetName();
 
+  // perform some checks i.e. target should be enabled if target box is enabled
+  if ( (ND280XMLInput->GetXMLUseCFBox() || ND280XMLInput->GetXMLUsePCB() || ND280XMLInput->GetXMLUseFlatCable())
+    && !ND280XMLInput->GetXMLUseTarget1() && !ND280XMLInput->GetXMLUseSuperFGD1() )
+    G4Exception("ExN02DetectorConstruction::Construct",
+      "Wrong config",FatalException,
+      "Neither target1 nor SuperFGD1 is enabled but CFbox or PCBs or Cables are enabled. Check your config");
+
+  if (ND280XMLInput->GetXMLUseTarget1() && ND280XMLInput->GetXMLUseSuperFGD1() )
+    G4Exception("ExN02DetectorConstruction::Construct",
+      "Wrong config",FatalException,
+      "Target1 and SuperFGD1 are enabled at the same moment. Check your config");
+
+
+  if (!ND280XMLInput->GetXMLUseCFBox() && (ND280XMLInput->GetXMLUsePCB() || ND280XMLInput->GetXMLUseFlatCable()))
+    G4Exception("ExN02DetectorConstruction::Construct",
+      "Wrong config",FatalException,
+      "PCB and cables are not available w/o CF box. Check your config");
+
+  // 1) Define logic volume for target1 or SFGD
+  // 2) Define logic and physical volume for CFbox
+  // 3) Define physical volume for target1 or SFGD
+  // 4) Define physical volume for PCBs and cables
  
   //------------------------------ 
-  // Target 1 - Upstream - Carbon 
+  // Target 1 - Upstream - SuperFGD 
   //------------------------------
   
-  //const G4String cTargetMater1  = "ActiveWater";     //fgd active water  
-  //const G4String cTargetMater1 = "Water"; // WAGASCI water
-  //const G4String cTargetMater1 = "FGDScintillator"; 
   const G4String cTargetMater1 = ND280XMLInput->GetXMLTargetMaterial1();
   TargetMater1  = FindMaterial(cTargetMater1);  
   
@@ -1720,37 +1097,58 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4double targetSizeWidth1   = 0.5 * GetTargetFullWidth1();     // Half width of the Target 1
   G4double targetSizeHeight1  = 0.5 * GetTargetFullHeight1();    // Half height of the Target 1
   
-  G4double HalfTargetHeight1  = 0.5 * GetTargetFullHeight1();
-  
-  if( ND280XMLInput->GetXMLUseTarget1()  && ND280XMLInput->GetXMLUseCFBox()){ 
-    
+  double width  = targetSizeWidth1* 2.;
+  double length = targetSizeLength1 * 2.;
+  double height = targetSizeHeight1 * 2.;
 
-    G4double x = ND280XMLInput->GetXMLTargetPos1_X();
-    G4double y = ND280XMLInput->GetXMLTargetPos1_Y();
-    G4double z = ND280XMLInput->GetXMLTargetPos1_Z();
+  G4double x, y, z;
+
+  int cubenumX,cubenumY,cubenumZ;
+  
+  if( ND280XMLInput->GetXMLUseTarget1()){ 
+
+    x = ND280XMLInput->GetXMLTargetPos1_X();
+    y = ND280XMLInput->GetXMLTargetPos1_Y();
+    z = ND280XMLInput->GetXMLTargetPos1_Z();
     SetTargetPos1(x,y,z);
 
-
     G4String cNameSolidTargetUniform  = cNameSolidTarget1 + "/tarfetUniform";
-    G4String cNameLogicTarget1Uniform = cNameSolidTarget1 + "/TarfetUniform";
-    G4String cNamePhysiTargetUniform  = cNameSolidTarget1 + "/TarfetUniform";
+    nameSuperFGD1 = "TargetUniform";
+
     solidTarget1Uniform = new G4Box(cNameSolidTargetUniform,targetSizeWidth1,targetSizeHeight1,targetSizeLength1);
-    logicTarget1Uniform = new G4LogicalVolume(solidTarget1Uniform,TargetMater1,cNameLogicTarget1Uniform,0,0,0);
-    /*physiTarget1 = new G4PVPlacement(0,                 // no rotation
-				     GetTargetPos1(),    // at (x,y,z)
-				     logicTarget1,       // its logical volume  	  
-				     cNamePhysiTarget1,  // its name
-				     //logicTracker,      // its mother  volume
-				     //logicND280MC,      // its mother  volume
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number 
-    //fCheckOverlaps); */	
+    logicSuperFGD1      = new G4LogicalVolume(solidTarget1Uniform,TargetMater1,nameSuperFGD1,0,0,0);
+  }
 
-    double width  = targetSizeWidth1* 2.;
-    double length = targetSizeLength1 * 2.;
-    double height = targetSizeHeight1 * 2.;
+  if( ND280XMLInput->GetXMLUseSuperFGD1()){
 
+    double edge = ND280XMLInput->GetXMLSuperFGDCubeEdge1();
+    cubenumX = ND280XMLInput->GetXMLSuperFGDCubeNum1_X();
+    cubenumY = ND280XMLInput->GetXMLSuperFGDCubeNum1_Y();
+    cubenumZ = ND280XMLInput->GetXMLSuperFGDCubeNum1_Z();
+
+    x = ND280XMLInput->GetXMLSuperFGDPos1_X();
+    y = ND280XMLInput->GetXMLSuperFGDPos1_Y();
+    z = ND280XMLInput->GetXMLSuperFGDPos1_Z();
+
+    fSuperFGDConstructor1->SetEdge(edge*CLHEP::mm);
+    fSuperFGDConstructor1->SetCubeNumX(cubenumX);
+    fSuperFGDConstructor1->SetCubeNumY(cubenumY);
+    fSuperFGDConstructor1->SetCubeNumZ(cubenumZ);
+
+    logicSuperFGD1 = fSuperFGDConstructor1->GetPiece(); // SuperFGD logical volume (define the real size here!!!)
+
+    // Target mother volume --> use it in TrackerSD to calculate the distance from the hit to the MPPC plane
+
+    width  = fSuperFGDConstructor1->GetWidth(); // dimensions set inside ND280SuperFGDConstructor based on the # of cubes and its size
+    length = fSuperFGDConstructor1->GetLength();
+    height = fSuperFGDConstructor1->GetHeight();
+  }
+
+  if (ND280XMLInput->GetXMLUseCFBox()) { 
+    if (!logicSuperFGD1)
+      G4Exception("ExN02DetectorConstruction::Construct",
+        "NULL pointer",FatalException,
+        "Logic volume for SuperFGD is not defined.");
     // Use target1 dimensions to obtain CF box dimensions
 
     fCFBox1Constructor->SetCFBoxWidth(width);
@@ -1775,130 +1173,124 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     cout << "CF1length = " << CFlength << endl;
     cout << "CF1height = " << CFheight << endl;
 
-  //
-  //------------------------------ 
-  // PCB1
-  //------------------------------ 
-  //
-
-  if (ND280XMLInput->GetXMLUsePCB() ){
-
-
-    fPCB1_X_Constructor->SetPCBWidth(CFheight);
-    fPCB1_X_Constructor->SetPCBLength(CFlength);
-    fPCB1_X_Constructor->SetPCBHeight(1.57*CLHEP::mm);
-    
-    logicPCB1_X = fPCB1_X_Constructor->GetPiece();
-
-    fPCB1_Y_Constructor->SetPCBWidth(CFwidth);
-    fPCB1_Y_Constructor->SetPCBLength(CFlength);
-    fPCB1_Y_Constructor->SetPCBHeight(1.57*CLHEP::mm);
-    
-    logicPCB1_Y = fPCB1_Y_Constructor->GetPiece();
-
-    fPCB1_Z_Constructor->SetPCBWidth(CFwidth);
-    fPCB1_Z_Constructor->SetPCBLength(CFheight);
-    fPCB1_Z_Constructor->SetPCBHeight(1.57*CLHEP::mm);
-    
-    logicPCB1_Z = fPCB1_Z_Constructor->GetPiece();
-  }
-
-  double PCB_X_width = fPCB1_X_Constructor->GetPCBWidth();
-  double PCB_X_length = fPCB1_X_Constructor->GetPCBLength();
-  double PCB_X_height = fPCB1_X_Constructor->GetPCBHeight();
-
-  cout << "PCB1_X_width = " << PCB_X_width << endl;
-  cout << "PCB1_X_length = " << PCB_X_length << endl;
-  cout << "PCB1_X_height = " << PCB_X_height << endl;
-
-  double PCB_Y_width = fPCB1_Y_Constructor->GetPCBWidth();
-  double PCB_Y_length = fPCB1_Y_Constructor->GetPCBLength();
-  double PCB_Y_height = fPCB1_Y_Constructor->GetPCBHeight();
-
-  cout << "PCB1_Y_width = " << PCB_Y_width << endl;
-  cout << "PCB1_Y_length = " << PCB_Y_length << endl;
-  cout << "PCB1_Y_height = " << PCB_Y_height << endl;
-
-  double PCB_Z_width = fPCB1_Z_Constructor->GetPCBWidth();
-  double PCB_Z_length = fPCB1_Z_Constructor->GetPCBLength();
-  double PCB_Z_height = fPCB1_Z_Constructor->GetPCBHeight();
-
-  cout << "PCB1_Z_width = " << PCB_Z_width << endl;
-  cout << "PCB1_Z_length = " << PCB_Z_length << endl;
-  cout << "PCB1_Z_height = " << PCB_Z_height << endl;
-
-
-  if (ND280XMLInput->GetXMLUseFlatCable()){
-    
-    G4double flatcable_thickness = ND280XMLInput->GetXMLFlatCableThickness();
-    G4double flatcable_width = ND280XMLInput->GetXMLFlatCableWidth();
-    
-    G4int flatcable_nx = ND280XMLInput->GetXMLFlatCableX();
-    G4int flatcable_nz = ND280XMLInput->GetXMLFlatCableZ();
-    
-    if (!(ND280XMLInput->GetXMLUseSuperFGD2())){
-
-      fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
-      fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
-      fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
-      fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
-      fFlatCable1_Constructor->SetFlatCableLength(CFwidth/2.);
-
-
-      fFlatCable1_Constructor->SetCableRegionLength(CFwidth/2.);
-      fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
-      fFlatCable1_Constructor->SetCableRegionHeight(CFheight); 
-
-      fFlatCable2_Constructor->SetFlatCableWidth(flatcable_width);
-      fFlatCable2_Constructor->SetFlatCableThickness(flatcable_thickness);
-      fFlatCable2_Constructor->SetFlatCableX(flatcable_nx);
-      fFlatCable2_Constructor->SetFlatCableZ(flatcable_nz);
-      fFlatCable2_Constructor->SetFlatCableLength(CFwidth/2.);
-
-      fFlatCable2_Constructor->SetCableRegionLength(CFwidth/2.);
-      fFlatCable2_Constructor->SetCableRegionWidth(CFlength);
-      fFlatCable2_Constructor->SetCableRegionHeight(CFheight); 
+    //
+    //------------------------------ 
+    // PCB1
+    //------------------------------ 
+    //
   
-      logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
-      logicFlatCable2 = fFlatCable2_Constructor->GetPiece();
+    if (ND280XMLInput->GetXMLUsePCB() ){
+  
+  
+      fPCB1_X_Constructor->SetPCBWidth(CFheight);
+      fPCB1_X_Constructor->SetPCBLength(CFlength);
+      fPCB1_X_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+      
+      logicPCB1_X = fPCB1_X_Constructor->GetPiece();
+  
+      fPCB1_Y_Constructor->SetPCBWidth(CFwidth);
+      fPCB1_Y_Constructor->SetPCBLength(CFlength);
+      fPCB1_Y_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+      
+      logicPCB1_Y = fPCB1_Y_Constructor->GetPiece();
+  
+      fPCB1_Z_Constructor->SetPCBWidth(CFwidth);
+      fPCB1_Z_Constructor->SetPCBLength(CFheight);
+      fPCB1_Z_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+      
+      logicPCB1_Z = fPCB1_Z_Constructor->GetPiece();
+    }
+  
+    double PCB_X_width = fPCB1_X_Constructor->GetPCBWidth();
+    double PCB_X_length = fPCB1_X_Constructor->GetPCBLength();
+    double PCB_X_height = fPCB1_X_Constructor->GetPCBHeight();
+  
+    cout << "PCB1_X_width = " << PCB_X_width << endl;
+    cout << "PCB1_X_length = " << PCB_X_length << endl;
+    cout << "PCB1_X_height = " << PCB_X_height << endl;
+  
+    double PCB_Y_width = fPCB1_Y_Constructor->GetPCBWidth();
+    double PCB_Y_length = fPCB1_Y_Constructor->GetPCBLength();
+    double PCB_Y_height = fPCB1_Y_Constructor->GetPCBHeight();
+  
+    cout << "PCB1_Y_width = " << PCB_Y_width << endl;
+    cout << "PCB1_Y_length = " << PCB_Y_length << endl;
+    cout << "PCB1_Y_height = " << PCB_Y_height << endl;
+  
+    double PCB_Z_width = fPCB1_Z_Constructor->GetPCBWidth();
+    double PCB_Z_length = fPCB1_Z_Constructor->GetPCBLength();
+    double PCB_Z_height = fPCB1_Z_Constructor->GetPCBHeight();
+  
+    cout << "PCB1_Z_width = " << PCB_Z_width << endl;
+    cout << "PCB1_Z_length = " << PCB_Z_length << endl;
+    cout << "PCB1_Z_height = " << PCB_Z_height << endl;
+  
+  
+    if (ND280XMLInput->GetXMLUseFlatCable()){
+      
+      G4double flatcable_thickness = ND280XMLInput->GetXMLFlatCableThickness();
+      G4double flatcable_width = ND280XMLInput->GetXMLFlatCableWidth();
+      
+      G4int flatcable_nx = ND280XMLInput->GetXMLFlatCableX();
+      G4int flatcable_nz = ND280XMLInput->GetXMLFlatCableZ();
+      
+      if (!(ND280XMLInput->GetXMLUseSuperFGD2())){
+  
+        fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
+        fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
+        fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
+        fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
+        fFlatCable1_Constructor->SetFlatCableLength(CFwidth/2.);
+  
+  
+        fFlatCable1_Constructor->SetCableRegionLength(CFwidth/2.);
+        fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
+        fFlatCable1_Constructor->SetCableRegionHeight(CFheight); 
+  
+        fFlatCable2_Constructor->SetFlatCableWidth(flatcable_width);
+        fFlatCable2_Constructor->SetFlatCableThickness(flatcable_thickness);
+        fFlatCable2_Constructor->SetFlatCableX(flatcable_nx);
+        fFlatCable2_Constructor->SetFlatCableZ(flatcable_nz);
+        fFlatCable2_Constructor->SetFlatCableLength(CFwidth/2.);
+  
+        fFlatCable2_Constructor->SetCableRegionLength(CFwidth/2.);
+        fFlatCable2_Constructor->SetCableRegionWidth(CFlength);
+        fFlatCable2_Constructor->SetCableRegionHeight(CFheight); 
+    
+        logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+        logicFlatCable2 = fFlatCable2_Constructor->GetPiece();
+      }
+  
+      else {
+        fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
+        fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
+        fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
+        fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
+        fFlatCable1_Constructor->SetFlatCableLength(CFwidth);
+  
+        fFlatCable1_Constructor->SetCableRegionLength(CFwidth);
+        fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
+        fFlatCable1_Constructor->SetCableRegionHeight(CFheight);
+  
+        logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+      }  
     }
 
-    else {
-      fFlatCable1_Constructor->SetFlatCableWidth(flatcable_width);
-      fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
-      fFlatCable1_Constructor->SetFlatCableX(flatcable_nx);
-      fFlatCable1_Constructor->SetFlatCableZ(flatcable_nz);
-      fFlatCable1_Constructor->SetFlatCableLength(CFwidth);
-
-      fFlatCable1_Constructor->SetCableRegionLength(CFwidth);
-      fFlatCable1_Constructor->SetCableRegionWidth(CFlength);
-      fFlatCable1_Constructor->SetCableRegionHeight(CFheight);
-
-      logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
-    
-    }
-    
-
-  }
-
-
-
-
-  double FlatCable_width = fFlatCable1_Constructor->GetFlatCableWidth();
-  double FlatCable_length = fFlatCable1_Constructor->GetFlatCableLength();
-  double FlatCable_height = fFlatCable1_Constructor->GetFlatCableHeight();
-
-  cout << "FlatCable_width = " << FlatCable_width << endl;
-  cout << "FlatCable_length = " << FlatCable_length << endl;
-  cout << "FlatCable_height = " << FlatCable_height << endl;
-
-  double CableRegion_width = fFlatCable1_Constructor->GetCableRegionWidth();
-  double CableRegion_length = fFlatCable1_Constructor->GetCableRegionLength();
-  double CableRegion_height = fFlatCable1_Constructor->GetCableRegionHeight();
-
-  cout << "CableRegion_width = " << CableRegion_width << endl;
-  cout << "CableRegion_length = " << CableRegion_length << endl;
-  cout << "CableRegion_height = " << CableRegion_height << endl;
+    double FlatCable_width = fFlatCable1_Constructor->GetFlatCableWidth();
+    double FlatCable_length = fFlatCable1_Constructor->GetFlatCableLength();
+    double FlatCable_height = fFlatCable1_Constructor->GetFlatCableHeight();
+  
+    cout << "FlatCable_width = " << FlatCable_width << endl;
+    cout << "FlatCable_length = " << FlatCable_length << endl;
+    cout << "FlatCable_height = " << FlatCable_height << endl;
+  
+    double CableRegion_width = fFlatCable1_Constructor->GetCableRegionWidth();
+    double CableRegion_length = fFlatCable1_Constructor->GetCableRegionLength();
+    double CableRegion_height = fFlatCable1_Constructor->GetCableRegionHeight();
+  
+    cout << "CableRegion_width = " << CableRegion_width << endl;
+    cout << "CableRegion_length = " << CableRegion_length << endl;
+    cout << "CableRegion_height = " << CableRegion_height << endl;
 
     solidTarget1 = new G4Box(cNameSolidTarget1,CFwidth/2,CFheight/2,CFlength/2);
     logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
@@ -1909,6 +1301,24 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
              logicBasket,
              false,             // no boolean operations
              0);                 // copy number
+
+    // Set the detector name where the hit distance in target
+    // is calculated with the PersistencyManager G4Navigator
+    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
+    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);
+    //
+    // Set histogram for MPPC positions
+    // The MPPC size is the same as for the SuperFGD cube
+    // Same reference system as the Navigator!!!
+    //
+
+    // if uniform target is used consider 10 mm for cube size
+    if (cubenumX == 0 && cubenumY == 0 && cubenumZ == 0) {
+      cubenumX = (int)width/10.;
+      cubenumY = (int)height/10.;
+      cubenumZ = (int)length/10.;
+    }
+    InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true,1);
 
     physiCFBox1= new G4PVPlacement(
            0, // no rotation
@@ -1924,8 +1334,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     physiSuperFGD1 = new G4PVPlacement(
                0, // no rotation
                G4ThreeVector(0,0,0), // same origin as Target1
-               logicTarget1Uniform,       // its logical volume
-               cNamePhysiTargetUniform,  // its name
+               logicSuperFGD1,       // its logical volume
+               nameSuperFGD1,  // its name
                logicCFBox1,
                false,             // no boolean operations
                0);                 // copy number
@@ -1942,56 +1352,58 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     rot[1].rotateY(0.0*CLHEP::deg);
     rot[2].rotateX(90.0*CLHEP::deg);
 
+    if (ND280XMLInput->GetXMLUsePCB()) {
 
     cout << "placing pcb1 x" <<endl;
-    physiPCB1_X = new G4PVPlacement(
-                                   G4Transform3D(rot[0],G4ThreeVector(xPCB[0],yPCB[0],zPCB[0])),
-                                   logicPCB1_X,       // its logical volume
-                                   namePCB1_X,  // its name
-                                   logicBasket,
-                                   false,             // no boolean operations
-                                   0);                 // copy number
-    cout << "placing pcb1 y" <<endl;
-    physiPCB1_Y = new G4PVPlacement(
-                                   G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
-                                   logicPCB1_Y,       // its logical volume
-                                   namePCB1_Y,  // its name
-                                   logicBasket,
-                                   false,             // no boolean operations
-                                   0);                 // copy number
-    cout << "placing pcb1 z" <<endl;    
-    physiPCB1_Z = new G4PVPlacement(
-                                   G4Transform3D(rot[2],G4ThreeVector(xPCB[2],yPCB[2],zPCB[2])),
-                                   logicPCB1_Z,       // its logical volume
-                                   namePCB1_Z,  // its name
-                                   logicBasket,
-                                   false,             // no boolean operations
-                                   0);                 // copy number
+      physiPCB1_X = new G4PVPlacement(
+                                     G4Transform3D(rot[0],G4ThreeVector(xPCB[0],yPCB[0],zPCB[0])),
+                                     logicPCB1_X,       // its logical volume
+                                     namePCB1_X,  // its name
+                                     logicBasket,
+                                     false,             // no boolean operations
+                                     0);                 // copy number
+      cout << "placing pcb1 y" <<endl;
+      physiPCB1_Y = new G4PVPlacement(
+                                     G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
+                                     logicPCB1_Y,       // its logical volume
+                                     namePCB1_Y,  // its name
+                                     logicBasket,
+                                     false,             // no boolean operations
+                                     0);                 // copy number
+      cout << "placing pcb1 z" <<endl;    
+      physiPCB1_Z = new G4PVPlacement(
+                                     G4Transform3D(rot[2],G4ThreeVector(xPCB[2],yPCB[2],zPCB[2])),
+                                     logicPCB1_Z,       // its logical volume
+                                     namePCB1_Z,  // its name
+                                     logicBasket,
+                                     false,             // no boolean operations
+                                     0);                 // copy number
+    }
 
-    G4RotationMatrix rotFlatCable[2];
-    rotFlatCable[0].rotateX(90.0*CLHEP::deg);
-    rotFlatCable[0].rotateY(-90.0*CLHEP::deg);
-    rotFlatCable[1].rotateX(90.0*CLHEP::deg);
-    rotFlatCable[1].rotateY(90.0*CLHEP::deg);
+    if (ND280XMLInput->GetXMLUseFlatCable()) {
 
-      physiFlatCable1 = new G4PVPlacement( 
-            G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[1]-CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
-            logicFlatCable1,       // its logical volume
-            nameFlatCable1,  // its name
-            logicBasket,
-            false,             // no boolean operations
-            0);                 // copy number
-
-      physiFlatCable2 = new G4PVPlacement( 
-            G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1]+CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
-            logicFlatCable2,       // its logical volume
-            nameFlatCable2,  // its name
-            logicBasket,
-            false,             // no boolean operations
-            0);                 // copy number
-
-      InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);
+      G4RotationMatrix rotFlatCable[2];
+      rotFlatCable[0].rotateX(90.0*CLHEP::deg);
+      rotFlatCable[0].rotateY(-90.0*CLHEP::deg);
+      rotFlatCable[1].rotateX(90.0*CLHEP::deg);
+      rotFlatCable[1].rotateY(90.0*CLHEP::deg);
   
+        physiFlatCable1 = new G4PVPlacement( 
+              G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[1]-CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+              logicFlatCable1,       // its logical volume
+              nameFlatCable1,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
+  
+        physiFlatCable2 = new G4PVPlacement( 
+              G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1]+CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+              logicFlatCable2,       // its logical volume
+              nameFlatCable2,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
+    }
 
     cout << "three pcb1s placed" <<endl;    
 
@@ -2001,21 +1413,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
      << height / CLHEP::mm << " (height) x "
      << length / CLHEP::mm << " (length) x "
      << G4endl;
-    G4cout << " mass="<<logicTarget1Uniform->GetMass()/CLHEP::kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicTarget1Uniform->GetName() << G4endl;
+    G4cout << " mass="<<logicSuperFGD1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
+    G4cout << " name: " << logicSuperFGD1->GetName() << G4endl;
     G4cout << "CFBox: " << G4endl;
     G4cout << " - Total size (mm^3): "
      << CFwidth / CLHEP::mm << " (width) x "
      << CFheight / CLHEP::mm << " (height) x "
      << CFlength / CLHEP::mm << " (length) x "
      << G4endl;
-
-    //G4cout << " - position inside the Basket: ( "
-    //<< fSuperFGDConstructor1->GetPosX()/CLHEP::mm << ", "
-    //<< fSuperFGDConstructor1->GetPosY()/CLHEP::mm << ", "
-    //<< fSuperFGDConstructor1->GetPosZ()/CLHEP::mm << ") "
-    //<< G4endl << G4endl;
-
   }	          
 
 
@@ -2024,7 +1429,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   // SuperFGD1 and CFBox w/ PCB
   //------------------------------
   //
-
+/*
 
   if( ND280XMLInput->GetXMLUseSuperFGD1() && ND280XMLInput->GetXMLUseCFBox() ){
 
@@ -2355,7 +1760,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   }
   ///End of SuperFGD1 /w CFBox
 
-
+*/
 
   //
   //------------------------------
@@ -2619,68 +2024,75 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     rot[0].rotateZ(90.0*CLHEP::deg);
     rot[1].rotateY(0.0*CLHEP::deg);
     rot[2].rotateX(90.0*CLHEP::deg);
+
+
+    if (ND280XMLInput->GetXMLUsePCB()) {
+
+      cout << "placing pcb2 x" <<endl;
+      physiPCB2_X = new G4PVPlacement(
+                                     G4Transform3D(rot[0],G4ThreeVector(xPCB[0],yPCB[0],zPCB[0])),
+                                     logicPCB2_X,       // its logical volume
+                                     namePCB2_X,  // its name
+                                     logicBasket,
+                                     false,             // no boolean operations
+                                     0);                 // copy number
+      cout << "placing pcb2 y" <<endl;
+      physiPCB2_Y = new G4PVPlacement(
+                                     G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
+                                     logicPCB2_Y,       // its logical volume
+                                     namePCB2_Y,  // its name
+                                     logicBasket,
+                                     false,             // no boolean operations
+                                     0);                 // copy number
+      cout << "placing pcb2 z" <<endl;    
+      physiPCB2_Z = new G4PVPlacement(
+                                     G4Transform3D(rot[2],G4ThreeVector(xPCB[2],yPCB[2],zPCB[2])),
+                                     logicPCB2_Z,       // its logical volume
+                                     namePCB2_Z,  // its name
+                                     logicBasket,
+                                     false,             // no boolean operations
+                                     0);                 // copy number
   
-
-    cout << "placing pcb2 x" <<endl;
-    physiPCB2_X = new G4PVPlacement(
-                                   G4Transform3D(rot[0],G4ThreeVector(xPCB[0],yPCB[0],zPCB[0])),
-                                   logicPCB2_X,       // its logical volume
-                                   namePCB2_X,  // its name
-                                   logicBasket,
-                                   false,             // no boolean operations
-                                   0);                 // copy number
-    cout << "placing pcb2 y" <<endl;
-    physiPCB2_Y = new G4PVPlacement(
-                                   G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
-                                   logicPCB2_Y,       // its logical volume
-                                   namePCB2_Y,  // its name
-                                   logicBasket,
-                                   false,             // no boolean operations
-                                   0);                 // copy number
-    cout << "placing pcb2 z" <<endl;    
-    physiPCB2_Z = new G4PVPlacement(
-                                   G4Transform3D(rot[2],G4ThreeVector(xPCB[2],yPCB[2],zPCB[2])),
-                                   logicPCB2_Z,       // its logical volume
-                                   namePCB2_Z,  // its name
-                                   logicBasket,
-                                   false,             // no boolean operations
-                                   0);                 // copy number
-
-
+    }
+    
     G4RotationMatrix rotFlatCable[2];
     rotFlatCable[0].rotateX(90.0*CLHEP::deg);
     rotFlatCable[0].rotateY(-90.0*CLHEP::deg);
     rotFlatCable[1].rotateX(90.0*CLHEP::deg);
     rotFlatCable[1].rotateY(90.0*CLHEP::deg);
 
-    if (!(ND280XMLInput->GetXMLUseSuperFGD1())){
 
-      physiFlatCable1 = new G4PVPlacement(
-                                          G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[1]-CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
-                                          logicFlatCable1,       // its logical volume
-                                          nameFlatCable1,  // its name
-                                          logicBasket,
-                                          false,             // no boolean operations
-                                          0);                 // copy number
+    if (ND280XMLInput->GetXMLUseFlatCable()) {
 
-      physiFlatCable2 = new G4PVPlacement(
-                                          G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1]+CFwidth/4,yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
-                                          logicFlatCable2,       // its logical volume
-                                          nameFlatCable2,  // its name
-                                          logicBasket,
-                                          false,             // no boolean operations
-                                          0);                 // copy number
-    }
-
-    else {
-    
-      physiFlatCable2 = new G4PVPlacement( 
-					    G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1],yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
-					    logicFlatCable2,  // its logical volume
-					    nameFlatCable2,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+      if (!(ND280XMLInput->GetXMLUseSuperFGD1())){
+  
+        physiFlatCable1 = new G4PVPlacement(
+                                            G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[1]-CFwidth/4,yPCB[1]+PCB_Y_height/2.+  FlatCable_height/2.,zPCB[1])),
+                                            logicFlatCable1,       // its logical volume
+                                            nameFlatCable1,  // its name
+                                            logicBasket,
+                                            false,             // no boolean operations
+                                            0);                 // copy number
+  
+        physiFlatCable2 = new G4PVPlacement(
+                                            G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1]+CFwidth/4,yPCB[1]+PCB_Y_height/2.+  FlatCable_height/2.,zPCB[1])),
+                                            logicFlatCable2,       // its logical volume
+                                            nameFlatCable2,  // its name
+                                            logicBasket,
+                                            false,             // no boolean operations
+                                            0);                 // copy number
+      }
+  
+      else {
+      
+        physiFlatCable2 = new G4PVPlacement( 
+		  			    G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[1],yPCB[1]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[1])),
+		  			    logicFlatCable2,  // its logical volume
+		  			    nameFlatCable2,  // its name
+		  			    logicBasket,
+		  			    false,             // no boolean operations
+		  			    0);                 // copy number
+      }
     }
     
     cout << "three pcb2s placed" <<endl;    
@@ -2728,27 +2140,10 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   if( ND280XMLInput->GetXMLUseSuperFGD1() && !(ND280XMLInput->GetXMLUseSuperFGD2()) && !(ND280XMLInput->GetXMLUseCFBox())){
         
-    double edge = ND280XMLInput->GetXMLSuperFGDCubeEdge1();
-    int cubenumX = ND280XMLInput->GetXMLSuperFGDCubeNum1_X();
-    int cubenumY = ND280XMLInput->GetXMLSuperFGDCubeNum1_Y();
-    int cubenumZ = ND280XMLInput->GetXMLSuperFGDCubeNum1_Z();
-    
-    G4double x = ND280XMLInput->GetXMLSuperFGDPos1_X();
-    G4double y = ND280XMLInput->GetXMLSuperFGDPos1_Y();
-    G4double z = ND280XMLInput->GetXMLSuperFGDPos1_Z();
-
-    fSuperFGDConstructor1->SetEdge(edge*CLHEP::mm);
-    fSuperFGDConstructor1->SetCubeNumX(cubenumX);
-    fSuperFGDConstructor1->SetCubeNumY(cubenumY);
-    fSuperFGDConstructor1->SetCubeNumZ(cubenumZ);
-
-    logicSuperFGD1 = fSuperFGDConstructor1->GetPiece(); // SuperFGD logical volume (define the real size here!!!)
-
-    // Target mother volume --> use it in TrackerSD to calculate the distance from the hit to the MPPC plane
-    
-    double width  = fSuperFGDConstructor1->GetWidth(); // dimensions set inside ND280SuperFGDConstructor based on the # of cubes and its size
-    double length = fSuperFGDConstructor1->GetLength();
-    double height = fSuperFGDConstructor1->GetHeight();
+    if (!logicSuperFGD1)
+      G4Exception("ExN02DetectorConstruction::Construct",
+        "NULL pointer",FatalException,
+        "Logic volume for SuperFGD is not defined.");
 
     solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
     logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
@@ -2777,7 +2172,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     //
     InputPersistencyManager->InitMPPCProj2D(width,height,length,cubenumX,cubenumY,cubenumZ,true,true,true,1);
     //
-    
     physiSuperFGD1 = new G4PVPlacement(
 				       0, // no rotation
 				       G4ThreeVector(0,0,0), // same origin as Target1
@@ -2808,13 +2202,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     //<< fSuperFGDConstructor1->GetPosY()/CLHEP::mm << ", "
     //<< fSuperFGDConstructor1->GetPosZ()/CLHEP::mm << ") "
     //<< G4endl << G4endl;   
-
   }
-
-
-
-
-  
 
 
   //
@@ -2876,15 +2264,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   }
 
-
-
-
-
-
-
-
-
-
   //
   //------------------------------ 
   // HATPCDown
@@ -2944,175 +2323,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   }
 
-
-
-
-
-
-
-
-
-
-
-  //
-  //------------------------------ 
-  // SciFi 1
-  //------------------------------ 
-  //
-  
-  //
-  // SciFi - along X (horizontal layer) and Z (vertical layer)
-  //
-  // The convention is a target of perpendicular fibers (vertical and horizontal)
-  // Horizontal fibers are built along X
-  // Vertical fibers are built along Y
-  // You get a vertical-like XY target, then rotate to obtain a horizontal target XZ
-  //
-  G4String cNameLogicSciFi1 = cNameSolidTarget1+"/SciFi1";
-  ND280SciFiConstructor *fSciFiConstructor1 = new ND280SciFiConstructor(cNameLogicSciFi1,this);
-  G4String nameSciFi1 = fSciFiConstructor1->GetName();
-  
-  G4RotationMatrix* rotation_SciFi = new G4RotationMatrix();
-  
-  rotX=0,rotY=0,rotZ=0;
-
-  // Build the target with fibers along X and Y, then rotate 
-
-  if( ND280XMLInput->GetXMLUseSciFi() ){
-
-    // Fibers length are defined by # of fibers in the other direction
-    
-    double edge = ND280XMLInput->GetXMLSciFiFiberEdge();
-    int fiberhoriznum = ND280XMLInput->GetXMLSciFiNum_AlongX();
-    int fibervertnum = ND280XMLInput->GetXMLSciFiNum_AlongZ();
-    G4double x = ND280XMLInput->GetXMLSciFiPos_X();
-    G4double y = ND280XMLInput->GetXMLSciFiPos_Y();
-    G4double z = ND280XMLInput->GetXMLSciFiPos_Z();
-    int Nlayer = ND280XMLInput->GetXMLSciFiNum_Layer();
-    
-    fSciFiConstructor1->SetLayerNum(Nlayer); // # of layers along Y (fiberX + fiberZ)
-    fSciFiConstructor1->SetEdge(edge);
-    fSciFiConstructor1->SetFiberVertNum(fibervertnum); // # of vertical fibers (along x)
-    fSciFiConstructor1->SetFiberHorizNum(fiberhoriznum); // # of horizontal fibers (along y)
-    logicSciFi1 = fSciFiConstructor1->GetPiece(); // SciFi logical volume (define the real size here!!!)
-    
-    //
-    // Target mother volume --> use it in TrackerSD to calculate the distance from the hit to the MPPC plane
-    //
-    // - dimensions set inside ND280SciFiConstructor based on the # of fibers and its size
-    // - height and length are inverted because physiSciFi1 is rotated by 90deg on X axis
-    //
-    double width  = fSciFiConstructor1->GetWidth(); 
-    double height = fSciFiConstructor1->GetLength();
-    double length = fSciFiConstructor1->GetHeight();
-    
-    solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
-    logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
-    
-    rotX = 90*CLHEP::deg; // vertical bars are along Z
-    rotY = 0.;
-    rotZ = 0.;
-    G4RotationMatrix* rotation_scifi = new G4RotationMatrix();
-    rotation_scifi->rotateX(rotX);
-    rotation_scifi->rotateY(rotY);
-    rotation_scifi->rotateZ(rotZ);
-
-    physiSciFi1 = new G4PVPlacement(
-				    rotation_scifi, // no rotation
-				    G4ThreeVector(0,0,0), // same origin as Target1
-				    logicSciFi1,       // its logical volume    
-				    nameSciFi1,  // its name
-				    logicTarget1,
-				    false,             // no boolean operations
-				    0);                 // copy number     
-
-    physiTarget1 = new G4PVPlacement(0,      // no rotation
-				     G4ThreeVector(x,y,z),
-				     logicTarget1,       // its logical volume 
-				     cNamePhysiTarget1,  // its name
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number 
-    
-    // 
-    // Set the detector name where the hit distance in target 
-    // is calculated with the PersistencyManager G4Navigator
-    //    
-    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
-    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
-    //
-    // Set histogram for MPPC positions
-    // The MPPC size is the same as for the SciFi fiber
-    // Same reference system as the Navigator!!!
-    //
-    // Be careful about the target rotation!!!
-    // Be careful about the # of fibers in the missing projection!!!
-    //
-    double binNumX = fibervertnum; // given by fiber position in layer  
-    double binNumY = Nlayer*2;        // given by layer position in target
-    double binNumZ = fiberhoriznum;  // given by fiber position in layer
-    bool IsProjXY=true; 
-    bool IsProjXZ=true; // I have all the projections!!!
-    bool IsProjYZ=true;
-    InputPersistencyManager->InitMPPCProj2D(width,height,length,binNumX,binNumY,binNumZ,IsProjXY,IsProjXZ,IsProjYZ,1);
-    //
-    // Set the detector name to define the direction where the light is collected
-    // Convention for names is "Vert" (along Y w/o rotation) or "Horiz" (along X w/o rotation)
-    // Detector names are defined for SciFi detector in ND280SciFiConstructor.cc
-    // Under rotation on X axis: "Vert"-->Along Z, "Horiz"-->Along X
-    //
-    InputPersistencyManager->SetDetNameAlongX("/FiberScintHoriz"); 
-    InputPersistencyManager->SetDetNameAlongY(""); 
-    InputPersistencyManager->SetDetNameAlongZ("/FiberScintVert"); 
-    
-    //G4cout << "Nbins MPPC X = " << InputPersistencyManager->GetMPPCProj2D_XZ()->GetXaxis()->GetNbins() << G4endl;
-    //G4cout << "Nbins MPPC Y = " << InputPersistencyManager->GetMPPCProj2D_YZ()->GetXaxis()->GetNbins() << G4endl;
-    //G4cout << "Nbins MPPC Z = " << InputPersistencyManager->GetMPPCProj2D_XZ()->GetYaxis()->GetNbins() << G4endl;
-
-    //
-    
-    G4cout << "Target 1: " << G4endl;
-    G4cout << " - Total size (mm^3): " 
-	   << width / CLHEP::mm << " (width) x " 
-	   << height / CLHEP::mm << " (height) x " 
-	   << length / CLHEP::mm << " (length) x " 
-	   << G4endl;
-    G4cout << "SciFi 1: " << G4endl;
-    G4cout << " - Total size before rotation (mm^3): "
-	   << fSciFiConstructor1->GetWidth() / CLHEP::mm << " (width) x "
-	   << fSciFiConstructor1->GetHeight() / CLHEP::mm << " (height) x "
-	   << fSciFiConstructor1->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
-    G4cout << " - Fiber edge: "
-	   << fSciFiConstructor1->GetEdge() / CLHEP::mm << " mm" << G4endl;
-    G4cout << " - # of fibers: " << G4endl
-	   << "   " << fSciFiConstructor1->GetFiberHorizNum() << " horizontal (along X) "
-	   << "   " << fSciFiConstructor1->GetFiberVertNum() << " vertical (along Y) "
-	   << G4endl;
-    G4cout << " - # of layers (XY each): " << G4endl
-	   << "   " << fSciFiConstructor1->GetLayerNum() << G4endl; 
-    G4cout << " - Rotation SciFi: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
-    G4cout << " mass="<<logicSciFi1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
-    G4cout << " name: " << logicSciFi1->GetName() << G4endl;
-    G4cout << " - position inside the Basket: ( " 
-	   << fSciFiConstructor1->GetPosX()/CLHEP::mm << ", "
-	   << fSciFiConstructor1->GetPosY()/CLHEP::mm << ", "
-	   << fSciFiConstructor1->GetPosZ()/CLHEP::mm << ") "
-	   << G4endl << G4endl;    
-  }
-  
-
-
-
-
-
-
-
-
   //
   //------------------------------ 
   // FGDlike 1
@@ -3131,9 +2341,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4String cNameLogicFGDlike1 = cNameSolidTarget1+"/FGDlike1";
   ND280FGDlikeConstructor *fFGDlikeConstructor1 = new ND280FGDlikeConstructor(cNameLogicFGDlike1,this);
   G4String nameFGDlike1 = fFGDlikeConstructor1->GetName();
-  
-  G4RotationMatrix* rotation_FGDlike = new G4RotationMatrix();
-  
+    
   rotX=0,rotY=0,rotZ=0;
 
   // Build the target with bars along X and Y, then rotate 
@@ -3268,96 +2476,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl << G4endl;    
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ////// B.Q
-
-  //
-  //------------------------------ 
-  // WAGASCI 1
-  //------------------------------ 
-  //
-
-  G4String cNameLogicWAGASCI1 = cNameSolidTarget1+"/WAGASCI1";
-
-  ND280WAGASCIActiveConstructor * WAGASCI1 = new ND280WAGASCIActiveConstructor(cNameLogicWAGASCI1,this); // D.S
-  
-  if( ND280XMLInput->GetXMLUseWAGASCI1() ){
-
-    //    
-    // D.S
-    //
-    // Try to make it similar to other target detectors
-    // but use still use the WAGASCI-structure methods
-    //
-
-    double width  = ND280XMLInput->GetXMLWAGASCIwidth1();
-    double height = ND280XMLInput->GetXMLWAGASCIheight1();
-    double length = ND280XMLInput->GetXMLWAGASCIlength1();
-    G4ThreeVector ModuleSize1 (width,height,length);
-
-    G4double x = ND280XMLInput->GetXMLWAGASCIPos1_X();
-    G4double y = ND280XMLInput->GetXMLWAGASCIPos1_Y();
-    G4double z = ND280XMLInput->GetXMLWAGASCIPos1_Z();
-
-    G4String material = ND280XMLInput->GetXMLWAGASCIInactMaterial1();
-
-    solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
-    logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial(material),cNameLogicTarget1,0,0,0);
-    physiTarget1 = new G4PVPlacement(0,                 // no rotation
-				     G4ThreeVector(x,y,z),
-				     logicTarget1,       // its logical volume 
-				     cNamePhysiTarget1,  // its name
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number 
-
-    WAGASCI1->ND280WAGASCIActiveConstructor::Construct(logicTarget1,GetTargetPos1(),ModuleSize1,cNamePhysiTarget1); 
-    
-    //ND280WaffleActiveConstructor * Waffle = new ND280WaffleActiveConstructor();
-    //Waffle->ND280WaffleActiveConstructor::Construct(logicTarget1,GetTargetPos1(),ModuleSize1,cNamePhysiTarget1);
-    
-    InputPersistencyManager->SetHistoMovedTarg1(false); // useless because already set to false as default set it true later once initialized
-    InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
-    
-    G4cout << "Target 1: " << G4endl
-	   << " - dimensions: "
-	   << width/CLHEP::mm  << " (width) x " 
-	   << height/CLHEP::mm << " (height) x " 
-	   << length/CLHEP::mm << " (length) mm^3" 
-	   << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicTarget1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicTarget1->GetName() << G4endl;
-    G4cout << " - position: ( " 
-	   << x/CLHEP::mm << ", "
-	   << y/CLHEP::mm << ", "
-	   << z/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
-  }
-
-  ///////////
-
-
-
-
   //
   //------------------------------ 
   // FGD3D 1
@@ -3420,13 +2538,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   }
 
 
-
-
-
-
-
-
-
 #ifdef PROTO 
   //
   //------------------------------ 
@@ -3481,137 +2592,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 #endif
 
 
-
-
-
-  
-  
-  
-
-
-
-
-
-
-
-
-
-
-  //
-  //------------------------------ 
-  // Side TPCs 
-  //------------------------------
-  // 
-      
-  const G4String cSideTPCMater = "GasMixtureTPC"; // gas mixture of ND280 TPCs
-  SideTPCMater = FindMaterial(cSideTPCMater);
-  
-  G4double HalfSideTPCLength1 = 0.5 * GetSideTPCFullLength1(); 
-  G4double HalfSideTPCWidth1  = 0.5 * GetSideTPCFullWidth1(); 
-  G4double HalfSideTPCHeight1 = 0.5 * GetSideTPCFullHeight1(); 
-  
-  G4double HalfSideTPCLength2 = 0.5 * GetSideTPCFullLength2(); 
-  G4double HalfSideTPCWidth2  = 0.5 * GetSideTPCFullWidth2(); 
-  G4double HalfSideTPCHeight2 = 0.5 * GetSideTPCFullHeight2(); 
-    
-  // TPC Up 1
-  
-  if( ND280XMLInput->GetXMLUseTPCUp1() ){ // default
-    
-    const G4String cNameSolidSideTPCUp1   = cParentNameTPC+"/tpcup1";
-    const G4String cNameLogicSideTPCUp1   = cParentNameTPC+"/TPCUp1";
-    const G4String cNamePhysiSideTPCUp1   = cParentNameTPC+"/TPCUp1";
-    
-    solidSideTPCUp1 = new G4Box(cNameSolidSideTPCUp1, HalfSideTPCWidth1, HalfSideTPCHeight1, HalfSideTPCLength1); 
-    logicSideTPCUp1 = new G4LogicalVolume(solidSideTPCUp1,SideTPCMater,cNameLogicSideTPCUp1,0,0,0);
-    
-    if( ND280XMLInput->GetXMLSideTPCdefault1() ){ // default
-      SetSideTPCUpPos1(0,
-		       HalfSideTPCHeight1 + HalfTargetHeight1,
-		       GetTargetPos1().z()
-		       );
-    }
-    else { // from XML file
-      G4double x = ND280XMLInput->GetXMLSideTPCUpPos1_X();
-      G4double y = ND280XMLInput->GetXMLSideTPCUpPos1_Y();
-      G4double z = ND280XMLInput->GetXMLSideTPCUpPos1_Z();
-      SetSideTPCUpPos1(x,y,z);
-    }
-    
-    physiSideTPCUp1 = new G4PVPlacement(0,                   // no rotation
-					GetSideTPCUpPos1(),   // at (x,y,z)
-					logicSideTPCUp1,      // its logical volume 
-					cNamePhysiSideTPCUp1, // its name
-					//logicTracker,        // its mother  volume
-					//logicND280MC,        // its mother  volume
-					logicBasket,
-					false,               // no boolean operations
-					0);                   // copy number 
-    
-    G4cout << "Side TPC Up 1: " << G4endl
-	   << " - dimensions: "
-	   << GetSideTPCFullWidth1()/CLHEP::mm  << " (width) x " 
-	   << GetSideTPCFullHeight1()/CLHEP::mm << " (height) x " 
-	   << GetSideTPCFullLength1()/CLHEP::mm << " (length) mm^3" 
-	   << " of " << logicSideTPCUp1->GetMaterial()->GetName() << G4endl; 
-    G4cout << " mass="<<logicSideTPCUp1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicSideTPCUp1->GetName() << G4endl;
-    G4cout << " - position: ( " 
-	   << GetSideTPCUpPos1().x()/CLHEP::mm << ", "
-	   << GetSideTPCUpPos1().y()/CLHEP::mm << ", "
-	   << GetSideTPCUpPos1().z()/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
-  }
-  
-  // TPC Down 1
-  
-  if( ND280XMLInput->GetXMLUseTPCDown1() ){ // defaul
-
-    const G4String cNameSolidSideTPCDown1 = cParentNameTPC+"/tpcdown1";
-    const G4String cNameLogicSideTPCDown1 = cParentNameTPC+"/TPCDown1";
-    const G4String cNamePhysiSideTPCDown1 = cParentNameTPC+"/TPCDown1";
-    
-    solidSideTPCDown1 = new G4Box(cNameSolidSideTPCDown1,HalfSideTPCWidth1,HalfSideTPCHeight1,HalfSideTPCLength1); 
-    logicSideTPCDown1 = new G4LogicalVolume(solidSideTPCDown1,SideTPCMater,cNameLogicSideTPCDown1,0,0,0);
-    
-    if( ND280XMLInput->GetXMLSideTPCdefault1() ){ // default
-      SetSideTPCDownPos1(0,
-			 -(HalfSideTPCHeight1 + HalfTargetHeight1),
-			 GetTargetPos1().z()
-			 );
-    }
-    else { // from XML file
-      G4double x = ND280XMLInput->GetXMLSideTPCDownPos1_X();
-      G4double y = ND280XMLInput->GetXMLSideTPCDownPos1_Y();
-      G4double z = ND280XMLInput->GetXMLSideTPCDownPos1_Z();
-      SetSideTPCDownPos1(x,y,z);
-    }
-    
-    physiSideTPCDown1 = new G4PVPlacement(0,              // no rotation
-					  GetSideTPCDownPos1(),   // at (x,y,z)
-					  logicSideTPCDown1,      // its logical volume
-					  cNamePhysiSideTPCDown1, // its name
-					  //logicTracker,      // its mother  volume
-					  //logicND280MC,      // its mother  volume
-					  logicBasket,
-					  false,           // no boolean operations
-					  0);              // copy number 
-    
-    G4cout << "Side TPC Down 1: " << G4endl
-	   << " - dimensions: "
-	   << GetSideTPCFullWidth1()/CLHEP::mm  << " (width) x " 
-	   << GetSideTPCFullHeight1()/CLHEP::mm << " (height) x " 
-	   << GetSideTPCFullLength1()/CLHEP::mm << " (length) mm^3" 
-	   << " of " << logicSideTPCDown1->GetMaterial()->GetName() << G4endl;
-    G4cout << " mass="<<logicSideTPCDown1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicSideTPCDown1->GetName() << G4endl;
-    G4cout << " - position: ( " 
-	   << GetSideTPCDownPos1().x()/CLHEP::mm << ", "
-	   << GetSideTPCDownPos1().y()/CLHEP::mm << ", "
-	   << GetSideTPCDownPos1().z()/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
-  }
-  
   //------------------------------------------------ 
   // Set regions
   //------------------------------------------------ 
@@ -3636,10 +2616,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
   if (SDRegion) {
-    if( ND280XMLInput->GetXMLUseTPCUp1() )   SDRegion->AddRootLogicalVolume(logicSideTPCUp1);
-    if( ND280XMLInput->GetXMLUseTPCUp2() )   SDRegion->AddRootLogicalVolume(logicSideTPCUp2);
-    if( ND280XMLInput->GetXMLUseTPCDown1() ) SDRegion->AddRootLogicalVolume(logicSideTPCDown1);
-    if( ND280XMLInput->GetXMLUseTPCDown2() ) SDRegion->AddRootLogicalVolume(logicSideTPCDown2);
     if( ND280XMLInput->GetXMLUseTarget1() )  SDRegion->AddRootLogicalVolume(logicTarget1);
     if( ND280XMLInput->GetXMLUseTarget2() )  SDRegion->AddRootLogicalVolume(logicTarget2);
     if( ND280XMLInput->GetXMLUseFGD1() )     SDRegion->AddRootLogicalVolume(logicFGD1);
@@ -3687,21 +2663,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   }
   G4cout << G4endl;
 
-  //------------------------------------------------ 
-  // Sensitive detectors
-  //------------------------------------------------ 
-  
-  //if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetSensitiveDetector( GetSensitiveDetector() );
-  //if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetSensitiveDetector( GetSensitiveDetector() );
-  // //if( ND280XMLInput->GetXMLUseTarget1() )  logicTarget1->SetSensitiveDetector( GetSensitiveDetector() );
-  // //if( ND280XMLInput->GetXMLUseTarget2() )  logicTarget2->SetSensitiveDetector( GetSensitiveDetector() );
-  // //if( ND280XMLInput->GetXMLUseFGD1() )     logicFGD1->SetSensitiveDetector( GetSensitiveDetector() );
-  // //if( ND280XMLInput->GetXMLUseFGD2() )     logicFGD2->SetSensitiveDetector( GetSensitiveDetector() );  
-  // //if( ND280XMLInput->GetXMLUseSuperFGD1() )logicSuperFGD1->SetSensitiveDetector( GetSensitiveDetector() );
-  // //if( ND280XMLInput->GetXMLUseSuperFGD2() )logicSuperFGD2->SetSensitiveDetector( GetSensitiveDetector() );
-
   // Construct the field creator - this will register the field it creates
   if (!fEmFieldSetup.Get()) {
     ExN02FieldSetup* fieldSetup
@@ -3719,10 +2680,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //logicTracker->SetVisAttributes(BoxVisAtt);
   //logicBasket ->SetVisAttributes(BoxVisAtt);
   //logicND280MC ->SetVisAttributes(G4VisAttributes::Invisible);
-  if( ND280XMLInput->GetXMLUseTPCUp1() )    logicSideTPCUp1->SetVisAttributes(TPCVisAtt);
-  if( ND280XMLInput->GetXMLUseTPCUp2() )    logicSideTPCUp2->SetVisAttributes(TPCVisAtt);
-  if( ND280XMLInput->GetXMLUseTPCDown1() )  logicSideTPCDown1->SetVisAttributes(TPCVisAtt);
-  if( ND280XMLInput->GetXMLUseTPCDown2() )  logicSideTPCDown2->SetVisAttributes(TPCVisAtt);
   //if( ND280XMLInput->GetXMLUseTarget1() )   logicTarget1 ->SetVisAttributes(TargetScintVisAtt);
   //if( ND280XMLInput->GetXMLUseTarget2() )   logicTarget2 ->SetVisAttributes(TargetWaterVisAtt);
   if( ND280XMLInput->GetXMLUseFGD1() )      logicFGD1->SetVisAttributes(FGDScintVisAtt);
@@ -3809,88 +2766,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
- 
-void ExN02DetectorConstruction::setMaterial_Target1(G4String materialName)
-{
-  if( !ND280XMLInput->GetXMLUseTarget1() ){
-    G4ExceptionDescription msg;
-    msg << "Target1 is not used" << G4endl;
-    G4Exception("ExN02DetectorConstruction::setMaterial_Target1",
-		"MyCode0002",FatalException, msg);
-  }
-
-  // search the material by its name 
-  G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
-  if (pttoMaterial)
-    {TargetMater1 = pttoMaterial;
-      logicTarget1->SetMaterial(pttoMaterial); 
-      
-      //G4cout << "\n----> The target 1 is " << GetTargetFullLength1()/CLHEP::mm << " mm of "
-      //<< materialName << G4endl;
-      
-      G4cout << "Target 1: " << G4endl
-	     << " - dimensions: "
-	     << GetTargetFullWidth1()/CLHEP::mm  << " (width) x " 
-	     << GetTargetFullHeight1()/CLHEP::mm << " (height) x " 
-	     << GetTargetFullLength1()/CLHEP::mm << " (length) mm^3" 
-	     << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
-      G4cout << " mass="<<logicTarget1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
-      G4cout << " name: " << logicTarget1->GetName() << G4endl;
-      G4cout << " - position: ( " 
-	     << GetTargetPos1().x()/CLHEP::mm << ", "
-	     << GetTargetPos1().y()/CLHEP::mm << ", "
-	     << GetTargetPos1().z()/CLHEP::mm << " ) mm"  
-	     << G4endl << G4endl;
-      
-    }             
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void ExN02DetectorConstruction::setMaterial_Target2(G4String materialName)
-{
-  if( !ND280XMLInput->GetXMLUseTarget2() ){
-    G4ExceptionDescription msg;
-    msg << "Target2 is not used" << G4endl;
-    G4Exception("ExN02DetectorConstruction::setMaterial_Target2",
-		"MyCode0002",FatalException, msg);
-  }
-
-  // search the material by its name 
-  G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
-  if (pttoMaterial)
-    {TargetMater2 = pttoMaterial;
-      logicTarget2->SetMaterial(pttoMaterial); 
-      
-      //G4cout << "\n----> The target 2 is " << GetTargetFullLength2()/CLHEP::mm << " CLHEP::mm of "
-      //<< materialName << G4endl;
-
-      G4cout << "Target 2: " << G4endl
-	     << " - dimensions: "
-	     << GetTargetFullWidth2()/CLHEP::mm  << " (width) x " 
-	     << GetTargetFullHeight2()/CLHEP::mm << " (height) x " 
-	     << GetTargetFullLength2()/CLHEP::mm << " (length) mm^3" 
-	     << " of " << logicTarget2->GetMaterial()->GetName() << G4endl; 
-      G4cout << " mass="<<logicTarget2->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
-      G4cout << " name: " << logicTarget2->GetName() << G4endl;
-      G4cout << " - position: ( " 
-	     << GetTargetPos2().x()/CLHEP::mm << ", "
-	     << GetTargetPos2().y()/CLHEP::mm << ", "
-	     << GetTargetPos2().z()/CLHEP::mm << " ) mm"  
-	     << G4endl << G4endl;
-    }             
-}
- 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-
-
-
-
-
-
-
-
 
 void ExN02DetectorConstruction::setMaterial_FGD1(G4String materialName)
 {
@@ -3948,48 +2823,6 @@ void ExN02DetectorConstruction::setMaterial_FGD2(G4String materialName)
 	     << G4endl << G4endl;
     }             
 }
- 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-
-
-
-
-
-
-void ExN02DetectorConstruction::setMaterial_SideTPC(G4String materialName)
-{
-  if( !ND280XMLInput->GetXMLUseTPCUp1() &&
-      !ND280XMLInput->GetXMLUseTPCUp2() &&
-      !ND280XMLInput->GetXMLUseTPCDown1() &&
-      !ND280XMLInput->GetXMLUseTPCDown2() ){
-    G4ExceptionDescription msg;
-    msg << "Side TPCs are not used" << G4endl;
-    G4Exception("ExN02DetectorConstruction::Construct",
-		"MyCode0002",FatalException, msg);
-  }
-
-  // search the material by its name 
-  G4Material* pttoMaterial = G4Material::GetMaterial(materialName);  
-  if (pttoMaterial){
-    SideTPCMater = pttoMaterial;
-    if( ND280XMLInput->GetXMLUseTPCUp1() )   logicSideTPCUp1->SetMaterial(pttoMaterial); 
-    if( ND280XMLInput->GetXMLUseTPCUp2() )   logicSideTPCUp2->SetMaterial(pttoMaterial); 
-    if( ND280XMLInput->GetXMLUseTPCDown1() ) logicSideTPCDown1->SetMaterial(pttoMaterial); 
-    if( ND280XMLInput->GetXMLUseTPCDown2() ) logicSideTPCDown2->SetMaterial(pttoMaterial); 
-    G4cout << "\n----> The side TPCs are " << GetSideTPCFullWidth1()/CLHEP::mm << " mm of "
-	   << materialName << G4endl;
-    G4cout << "\n---->              and " << GetSideTPCFullWidth2()/CLHEP::mm << " mm of "
-	   << materialName << G4endl;
-  }
-}
-  
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
- 
-//void ExN02DetectorConstruction::SetMagField(G4double fieldValue) // OLD
-//{
-//fpMagField->SetMagFieldValue(fieldValue);  
-//}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -4643,6 +3476,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   temperature = 2.73*CLHEP::kelvin;
   G4Material* galactic = new G4Material(name="Galactic", 1., 1.01*g/mole,
 			  density,kStateGas,temperature,pressure);
+  (void)galactic;
 
   //AramidHoneyComb
   G4Material* AramidHoneycombFillerMaterial = new G4Material("AramidHoneycomb", 39.95 * kg/m3, 2);
@@ -4823,12 +3657,8 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
 
 
   // Now do all envelope volume placements
-  
-  double CO2Top = 67.8*CLHEP::mm;
-  double CO2Bottom = 117.8*CLHEP::mm;
-  
+    
   fActiveTPCVerticalOffset = (GetCO2Bottom() - GetCO2Top())/2;
-  //fActiveTPCVerticalOffset = (CO2Bottom - CO2Top)/2;
   
   new G4PVPlacement(0,
   		    G4ThreeVector(0,fActiveTPCVerticalOffset,0),
@@ -5104,7 +3934,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     //middleG10RoPlate.SetMaterialName("G10Roha");
     middleG10RoPlate.SetMaterial(FindMaterial("G10Roha"));
 
-    double width  = middleG10RoPlate.GetWidth();
+    //double width  = middleG10RoPlate.GetWidth();
     double height = middleG10RoPlate.GetHeight();
     double length = middleG10RoPlate.GetLength();
 
@@ -5141,7 +3971,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     //frbaCon1.SetMaterialName("G10");
     frbaCon1.SetMaterial(FindMaterial("G10"));
 
-    width  = frbaCon1.GetWidth();
+    //width  = frbaCon1.GetWidth();
     height = frbaCon1.GetHeight();
     length = frbaCon1.GetLength();
 
@@ -5181,7 +4011,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
     //toboCon1.SetMaterialName("G10");
     toboCon1.SetMaterial(FindMaterial("G10"));
 
-    width  = toboCon1.GetWidth();
+    //width  = toboCon1.GetWidth();
     height = toboCon1.GetHeight();
     length = toboCon1.GetLength();
 
@@ -6502,12 +5332,12 @@ void ExN02DetectorConstruction::DefineDimensions(){
   // - don't include the P0D
   // - use same size variables 
   
-  G4double cBasketInnerWidth    = 2320.0 * CLHEP::mm;
+  /*G4double cBasketInnerWidth    = 2320.0 * CLHEP::mm;
   G4double cBasketSideThickness = 100.0  * CLHEP::mm;
   G4double cBasketOuterWidth    = 
     cBasketInnerWidth + 
     cBasketSideThickness * 2.;
-  
+  */
   G4double cBasketOuterHeight   = 2480.0 * CLHEP::mm;
   
   G4double cBasketInnerLength         = 6650.0 * CLHEP::mm;
@@ -6519,7 +5349,7 @@ void ExN02DetectorConstruction::DefineDimensions(){
     cBasketDownStreamThickness;
   
   G4double cBasketLength = cBasketOuterLength;
-  G4double cBasketWidth  = cBasketOuterWidth;
+  //G4double cBasketWidth  = cBasketOuterWidth;
   G4double cBasketHeight = cBasketOuterHeight;
   // SetBasketFullLength(cBasketLength);
   // SetBasketFullWidth(cBasketWidth);
@@ -6603,40 +5433,5 @@ void ExN02DetectorConstruction::DefineDimensions(){
     SetFGDFullLength2(0.);
     SetFGDFullWidth2(0.);
     SetFGDFullHeight2(0.);
-  }
-
-  // Side TPCs 1
-  
-  G4double sidetpclength1 = ND280XMLInput->GetXMLSideTPClength1() * CLHEP::mm;
-  G4double sidetpcwidth1  = ND280XMLInput->GetXMLSideTPCwidth1() * CLHEP::mm;
-  G4double sidetpcheight1 = ND280XMLInput->GetXMLSideTPCheight1() * CLHEP::mm;
-  if( ND280XMLInput->GetXMLUseTPCDown1() ||
-      ND280XMLInput->GetXMLUseTPCUp1()
-      ){
-    SetSideTPCFullLength1(sidetpclength1);
-    SetSideTPCFullWidth1(sidetpcwidth1);
-    SetSideTPCFullHeight1(sidetpcheight1);
-  }
-  else{
-    SetSideTPCFullLength1(0.);
-    SetSideTPCFullWidth1(0.);
-    SetSideTPCFullHeight1(0.);
-  }
-
-  // Side TPCs 2
-  G4double sidetpclength2 = ND280XMLInput->GetXMLSideTPClength2() * CLHEP::mm;
-  G4double sidetpcwidth2  = ND280XMLInput->GetXMLSideTPCwidth2() * CLHEP::mm;
-  G4double sidetpcheight2 = ND280XMLInput->GetXMLSideTPCheight2() * CLHEP::mm;
-  if( ND280XMLInput->GetXMLUseTPCDown2() ||
-      ND280XMLInput->GetXMLUseTPCUp2()
-      ){
-    SetSideTPCFullLength2(sidetpclength2);
-    SetSideTPCFullWidth2(sidetpcwidth2);
-    SetSideTPCFullHeight2(sidetpcheight2);
-  }
-  else{
-    SetSideTPCFullLength2(0.);
-    SetSideTPCFullWidth2(0.);
-    SetSideTPCFullHeight2(0.);
   }
 }
