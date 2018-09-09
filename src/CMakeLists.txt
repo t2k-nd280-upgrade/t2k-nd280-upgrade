@@ -10,18 +10,18 @@ project(t2k-nd280-upgrade)
 set(LIBRARY_OUTPUT_PATH    "${CMAKE_BINARY_DIR}/../lib")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/../bin")
 
+option(RECO_ONLY "Build only reconstruction pcages, omit G4" OFF)
+
 # Load some basic macros which are needed later on
 include(${CMAKE_BINARY_DIR}/FindROOT.cmake)
 include(${CMAKE_BINARY_DIR}/FindCLHEP.cmake)
 include(${CMAKE_BINARY_DIR}/FindGEANT4.cmake)
-#include(${CMAKE_BINARY_DIR}/FindND280MC.cmake)
-#include(${CMAKE_BINARY_DIR}/FindOAEVENT.cmake)
 #include(${CMAKE_BINARY_DIR}/FindINGRIDUTILS.cmake)
 #include(${CMAKE_BINARY_DIR}/FindXERCESC.cmake)
 #include(${CMAKE_BINARY_DIR}/FindVGM.cmake)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -DG4VIS_USE -DWITHOUT_INGRID")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DG4VIS_USE")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-shadow -Wno-overloaded-virtual -DG4VIS_USE")
 
 if    (_USE_CPP11 MATCHES "ON")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
@@ -58,8 +58,6 @@ endif (ROOT_FOUND)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/include) ### include GEANT4 simulation
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/BlineTracer/include) ### include GEANT4 package to visualize magnetic field
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/nd280UpEvent) ### include nd280UpEvent class
-#INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/nd280UpEvent/Truth) ### include nd280UpEvent/Truth class
-#INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/nd280UpEvent/Reco) ### include nd280UpEvent/Reco class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc) ### include nd280mc class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc/ecal) ### include nd280mc/ecal class
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc/p0d) ### include nd280mc/p0d class
