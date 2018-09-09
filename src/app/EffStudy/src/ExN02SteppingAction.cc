@@ -62,7 +62,9 @@ ExN02SteppingAction::~ExN02SteppingAction()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
-{
+{ 
+(void)step;
+/*
   // Collect energy and track length step by step
 
   // energy deposit
@@ -79,19 +81,18 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   
   G4StepPoint* prestep  = step->GetPreStepPoint();
   G4StepPoint* poststep = step->GetPostStepPoint();
-  G4Track *track = step->GetTrack(); // it's PostStepPoint!!!
+  //G4Track *track = step->GetTrack(); // it's PostStepPoint!!!
   
   // get volume of the current step
   //G4VPhysicalVolume* volume = prestep->GetTouchableHandle()->GetVolume();
 
-  // step length                                                    
+  // step length 
   G4double stepLength = 0.;
   if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
     stepLength = step->GetStepLength();
-  }
 
     
-  G4String namedet = prestep->GetTouchableHandle()->GetVolume()->GetName();        
+  //G4String namedet = prestep->GetTouchableHandle()->GetVolume()->GetName();        
   //fEventAction->AddAbsTot(edep,stepLength);    
 
   //fEventAction->SetTrack(step); // IT CRASHES
@@ -124,8 +125,8 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   //	    << std::endl;  
 
 
-  G4ThreeVector Pos = prestep->GetPosition();
-  G4ThreeVector PosPost = poststep->GetPosition();
+  //G4ThreeVector Pos = prestep->GetPosition();
+  //G4ThreeVector PosPost = poststep->GetPosition();
   //G4String namedet = theTouchable->GetVolume()->GetLogicalVolume()->GetName(); 
   //if(namedet.contains("FGDlike1")){
   //G4cout << namedet << ": " << G4endl 
@@ -136,7 +137,6 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   //}
 
 
-  /*
   if(track->GetParentID()==0){
     
     //G4cout << " Edep:" << step->GetTotalEnergyDeposit()

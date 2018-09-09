@@ -49,16 +49,6 @@ ExN02DetectorMessenger::ExN02DetectorMessenger(ExN02DetectorConstruction* myDet)
   
   detDir = new G4UIdirectory("/N02/det/");
   detDir->SetGuidance("detector control.");
-  
-  Targ1MatCmd = new G4UIcmdWithAString("/N02/det/setTargetMate1",this);
-  Targ1MatCmd->SetGuidance("Select Material of the Target 1.");
-  Targ1MatCmd->SetParameterName("choice",false);
-  Targ1MatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  Targ2MatCmd = new G4UIcmdWithAString("/N02/det/setTargetMate2",this);
-  Targ2MatCmd->SetGuidance("Select Material of the Target 2.");
-  Targ2MatCmd->SetParameterName("choice",false);
-  Targ2MatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   FGD1MatCmd = new G4UIcmdWithAString("/N02/det/setFGDMate1",this);
   FGD1MatCmd->SetGuidance("Select Material of the FGD 1.");
@@ -69,18 +59,6 @@ ExN02DetectorMessenger::ExN02DetectorMessenger(ExN02DetectorConstruction* myDet)
   FGD2MatCmd->SetGuidance("Select Material of the FGD 2.");
   FGD2MatCmd->SetParameterName("choice",false);
   FGD2MatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-  
-  SideTPCMatCmd = new G4UIcmdWithAString("/N02/det/setSideTPCMate",this);
-  SideTPCMatCmd->SetGuidance("Select Material of the Side TPCs.");
-  SideTPCMatCmd->SetParameterName("choice",false);
-  SideTPCMatCmd->AvailableForStates(G4State_PreInit,G4State_Idle);  
-  
-  //FieldCmd = new G4UIcmdWithADoubleAndUnit("/N02/det/setField",this);  
-  //FieldCmd->SetGuidance("Define magnetic field.");
-  //FieldCmd->SetGuidance("Magnetic field will be in X direction.");
-  //FieldCmd->SetParameterName("Bx",false);
-  //FieldCmd->SetUnitCategory("Magnetic flux density");
-  //FieldCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
         
   StepMaxCmd = new G4UIcmdWithADoubleAndUnit("/N02/det/stepMax",this);  
   StepMaxCmd->SetGuidance("Define a step max");
@@ -93,9 +71,6 @@ ExN02DetectorMessenger::ExN02DetectorMessenger(ExN02DetectorConstruction* myDet)
 
 ExN02DetectorMessenger::~ExN02DetectorMessenger()
 {
-  delete Targ1MatCmd;
-  delete Targ2MatCmd;
-  delete SideTPCMatCmd;
   //delete FieldCmd;
   delete StepMaxCmd;  
   delete detDir;
@@ -106,20 +81,12 @@ ExN02DetectorMessenger::~ExN02DetectorMessenger()
 
 void ExN02DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 { 
-  if( command == Targ1MatCmd )
-    { myDetector->setMaterial_Target1(newValue); }
- 
-  if( command == Targ2MatCmd )
-    { myDetector->setMaterial_Target2(newValue);}
-
   if( command == FGD1MatCmd )
     { myDetector->setMaterial_FGD1(newValue); }
  
   if( command == FGD2MatCmd )
     { myDetector->setMaterial_FGD2(newValue);}
-  
-  if( command == SideTPCMatCmd )
-    { myDetector->setMaterial_SideTPC(newValue);}  
+
   
   //if( command == FieldCmd )
   //{ myDetector->SetMagField(FieldCmd->GetNewDoubleValue(newValue));}

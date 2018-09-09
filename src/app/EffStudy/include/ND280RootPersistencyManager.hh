@@ -59,9 +59,9 @@ public:
   virtual G4bool Store(const G4VPhysicalVolume* aWorld);
 
   /// Retrieve information from a file.  This is not implemented.
-  virtual G4bool Retrieve(G4Event *&aEvent) {return false;}
-  virtual G4bool Retrieve(G4Run* &aRun) {return false;}
-  virtual G4bool Retrieve(G4VPhysicalVolume* &aWorld) {return false;};
+  virtual G4bool Retrieve(G4Event *&aEvent) {(void)aEvent; return false;}
+  virtual G4bool Retrieve(G4Run* &aRun) {(void)aRun; return false;}
+  virtual G4bool Retrieve(G4VPhysicalVolume* &aWorld) {(void)aWorld; return false;};
   
   /// Interface with PersistencyMessenger (open and close the
   /// database).
@@ -81,7 +81,6 @@ public:
   //
   void InitNavigator(G4VPhysicalVolume *logvolume,G4ThreeVector position);
 
-  G4Navigator *fNavigTarg1;
   G4Navigator *GetNavigTarg1(){return fNavigTarg1;};  
 
   const G4NavigationHistory *fNavigHistoTarg1;
@@ -89,14 +88,12 @@ public:
 
   G4String GetNavigHistoVolName();
   
-  G4bool fIsHistoMovedTarg1;
   void   SetHistoMovedTarg1(bool val){fIsHistoMovedTarg1=val;};
   G4bool GetHistoMovedTarg1(){return fIsHistoMovedTarg1;};
   
   G4String fNavigDetName_Targ1;
   void SetNavigDetName_Targ1(G4String name);
   G4String GetNavigDetName_Targ1(){return fNavigDetName_Targ1;};
-  G4bool fNavigDetExist;
   G4bool doNavigDetExist(){return fNavigDetExist;};
 
   G4ThreeVector GetLocalPosition(G4ThreeVector WorldPos);
@@ -105,10 +102,6 @@ public:
   // Same reference system as the navigator 
   // i.e. set in DetectorConstruction
   //
-
-  TH2F *fMPPCProj2D_XY;
-  TH2F *fMPPCProj2D_XZ;
-  TH2F *fMPPCProj2D_YZ;
 
   TH2F *GetMPPCProj2D_XY();
   TH2F *GetMPPCProj2D_XZ();
@@ -121,16 +114,13 @@ public:
   G4double GetMPPCPosZ();
 
   void InitMPPCProj2D(double width, double height, double length, double numX, double numY, double numZ, bool IsProjXY, bool IsProjXZ, bool IsProjYZ, int modnum); 
-
-  G4bool fIsMPPCProjXY;  
+ 
   void SetIsMPPCProjXY(bool isproj){fIsMPPCProjXY=isproj;}
   G4bool GetIsMPPCProjXY(){return fIsMPPCProjXY;}
 
-  G4bool fIsMPPCProjXZ;  
   void SetIsMPPCProjXZ(bool isproj){fIsMPPCProjXZ=isproj;}
   G4bool GetIsMPPCProjXZ(){return fIsMPPCProjXZ;}
 
-  G4bool fIsMPPCProjYZ;  
   void SetIsMPPCProjYZ(bool isproj){fIsMPPCProjYZ=isproj;}
   G4bool GetIsMPPCProjYZ(){return fIsMPPCProjYZ;}
 
@@ -139,9 +129,6 @@ public:
   void GetHitPosXZ(double lightX, double lightZ, double &mppcX, double &mppcZ);
   void GetHitPosYZ(double lightY, double lightZ, double &mppcY, double &mppcZ);
   
-  G4String fDetNameAlongX;
-  G4String fDetNameAlongY;
-  G4String fDetNameAlongZ;
   void SetDetNameAlongX(G4String name){fDetNameAlongX=name;};
   void SetDetNameAlongY(G4String name){fDetNameAlongY=name;};
   void SetDetNameAlongZ(G4String name){fDetNameAlongZ=name;};
@@ -149,8 +136,6 @@ public:
   G4String GetDetNameAlongY(){return fDetNameAlongY;};
   G4String GetDetNameAlongZ(){return fDetNameAlongZ;};
 
-
-  G4int fModNum;
   void SetModNum(int mnum){fModNum=mnum;}
   G4int GetModNum(){return fModNum;}
 
@@ -167,12 +152,44 @@ public:
   void SetNEvents(int num){fNEvents=num;};
 
   int GetEventFirst(){return fEventFirst;};
-  int GetNEvents(){return fNEvents;};
+  int GetNEvents(){return fNEvents;};  
+
+private:
+  /// The ROOT output file that events are saved into.
+  TFile *fOutput;
+  
+  /// The event tree that contains the output events.
+  TTree *fEventTree;
+  /// The TTree branches
+  TND280UpEvent *fND280UpEvent; // The ND280 Upgrade Event class
+
+public:
 
   ExN02ND280XML *fND280XMLInput;
-
   G4int fEventFirst;
   G4int fNEvents;
+private:
+  /// The number of events saved to the output file since the last write.
+  int fEventsNotSaved;
+
+  G4Navigator *fNavigTarg1;
+  G4bool fIsHistoMovedTarg1;
+  G4bool fNavigDetExist;
+
+public:
+  TH2F *fMPPCProj2D_XY;
+  TH2F *fMPPCProj2D_XZ;
+  TH2F *fMPPCProj2D_YZ;
+
+  G4bool fIsMPPCProjXY;
+  G4bool fIsMPPCProjXZ;
+  G4bool fIsMPPCProjYZ;
+
+  G4String fDetNameAlongX;
+  G4String fDetNameAlongY;
+  G4String fDetNameAlongZ;
+
+  G4int fModNum;
 
   /////
 
@@ -248,19 +265,8 @@ protected:
   //void MakeMCHeader(ND::TND280Event& dest, const G4Event* src);
 
 private:
-  /// The ROOT output file that events are saved into.
-  TFile *fOutput;
-  
-  /// The event tree that contains the output events.
-  TTree *fEventTree;
-  
-  /// The TTree branches
-  TND280UpEvent *fND280UpEvent; // The ND280 Upgrade Event class
 
   G4int fEventID; 
-  
-  /// The number of events saved to the output file since the last write.
-  int fEventsNotSaved;
   
 };
 #endif

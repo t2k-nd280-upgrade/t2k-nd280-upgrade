@@ -269,6 +269,8 @@ int ExN02TrackerHit::FindPrimaryId(G4Track *theTrack) {
 }
 
 void ExN02TrackerHit::AddStep(G4Step* theStep, double start, double end) {
+  (void)start;
+  (void)end;
   
   //G4cout << "ExN02TrackerHit::AddStep" << G4endl;
 

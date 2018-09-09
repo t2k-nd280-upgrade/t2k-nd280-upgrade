@@ -50,9 +50,9 @@ G4LogicalVolume *ND280CFBoxConstructor::GetPiece(void) {
   double CFBoxHeight = GetCFBoxHeight();
   double CFBoxLength = GetCFBoxLength();
 
-  double SuperFGDWidth = CFBoxWidth;
-  double SuperFGDHeight = CFBoxHeight;
-  double SuperFGDLength = CFBoxLength;
+  //double SuperFGDWidth = CFBoxWidth;
+  //double SuperFGDHeight = CFBoxHeight;
+  //double SuperFGDLength = CFBoxLength;
 
   CFBoxWidth  +=  (2. * CFRPThickness) + AIREXThickness; 
   CFBoxHeight +=  (2. * CFRPThickness) + AIREXThickness; 

@@ -558,7 +558,7 @@ void ExN02PhysicsList::AddStepMax(){
     G4ProcessManager* pmanager = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
     G4String particleType = particle->GetParticleType();
-    G4double charge = particle->GetPDGCharge();
+    //G4double charge = particle->GetPDGCharge();
 
     if (fStepMaxProcess->IsApplicable(*particle) && pmanager)
       {

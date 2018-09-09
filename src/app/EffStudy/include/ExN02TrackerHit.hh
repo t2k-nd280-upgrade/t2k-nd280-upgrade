@@ -115,7 +115,7 @@ public:
   inline void SetParticle(G4int p) { fParticle = p; }
   inline G4int GetParticle() { return fParticle; }
 
-  inline void AddEdep(G4double e, G4double eq) { fEdep += e;}
+  inline void AddEdep(G4double e, G4double eq) { (void) eq; fEdep += e;}
   inline void SetEdep(G4double e) { fEdep = e; }
   inline G4double GetEdep() { return fEdep; }
 

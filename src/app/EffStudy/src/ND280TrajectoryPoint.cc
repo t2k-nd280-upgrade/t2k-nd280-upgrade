@@ -41,10 +41,10 @@ ND280TrajectoryPoint::ND280TrajectoryPoint(const G4Step* aStep)
   
   G4ThreeVector prestepPos = aStep->GetPreStepPoint()->GetPosition();
   G4ThreeVector poststepPos = aStep->GetPostStepPoint()->GetPosition();
-  G4double prestep_x = prestepPos.x() / CLHEP::mm;
+  //G4double prestep_x = prestepPos.x() / CLHEP::mm;
   G4double prestep_y = prestepPos.y() / CLHEP::mm;
   G4double prestep_z = prestepPos.z() / CLHEP::mm;
-  G4double poststep_x = poststepPos.x() / CLHEP::mm;
+  //G4double poststep_x = poststepPos.x() / CLHEP::mm;
   G4double poststep_y = poststepPos.y() / CLHEP::mm;
   G4double poststep_z = poststepPos.z() / CLHEP::mm;  
   G4double stepdeltalyz = sqrt( (prestep_y - poststep_y)*(prestep_y - poststep_y) +

@@ -52,7 +52,11 @@ const int sideview = 0;
 #ifdef ELECSIM
   const double EdepToPhotConv_FGD = 156.42 / CLHEP::MeV;
   const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
+#if PROTO == 2
+  const double FGDreflection = 0.; // 0.4 - based on proto1 expectations
+#else
   const double FGDreflection = 0.4; // 0.4 - based on proto1 expectations
+#endif
   const double LongCompFrac_FGD = 0.77;
   const double LongAtt_FGD = 4634.*CLHEP::mm;
   const double ShortAtt_FGD = 332.*CLHEP::mm;
@@ -194,17 +198,13 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize
   double d=0.;        // distance MPPC-scint outside the bar
   double LongAtt=0.;  // long attenuation length
   double ShortAtt=0.; // short attenuation length
-  double Ldecay=0.;   // decay length
-  double Lbar=0.;     // bar length
 
   a = LongCompFrac_FGD;
   d = DistMPPCscint_FGD; 
   LongAtt = LongAtt_FGD;
   ShortAtt = ShortAtt_FGD;  
-  Ldecay= DecayLength_FGD;
-  Lbar = Lbar_FGD;
 
-  double Nphot;
+  double Nphot = Nphot0;
 
 #ifdef ELECSIM
     if (!DetSize){
@@ -212,7 +212,7 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize
       exit(1);
     }
 
-    Nphot = Nphot0 / 2.;
+    Nphot *= 1. / 2.;
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 
     x += 2. * (2 * DetSize - x);
@@ -222,21 +222,10 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize
         Nphot += ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
     }
 #else
-    Nphot = Nphot0;
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 #endif
 
-  // Add fall-off in light intensity in end of bars
-  // where the scint light doesn't make it into the fibers
-  // Nphot *= (1 - 0.5*(exp(-Ldecay*x) + exp(-Ldecay*(Lbar-x))));
-
   return Nphot;
-}
-
-double ND280UpTargReadOut::GetPhotAtt_SciFi(double Nphot0,double x){
-  cout << "ND280UpTargReadOut::GetPhotAtt_SciFi" << endl;
-  cout << "This method has not been implemented yet!!!" << endl;
-  return nd280upconv::kUndefined;
 }
 
 void ND280UpTargReadOut::ApplyFiberTime(double &time, double x)
@@ -245,61 +234,18 @@ void ND280UpTargReadOut::ApplyFiberTime(double &time, double x)
 }
 
 
-
-
-/*
-
-// No Stat fluctuations
-
-void ND280UpTargReadOut::ApplyMPPCResponse(double &npe)
-{
-  if(GetTargType() == nd280upconv::kSuperFGD ||
-     GetTargType() == nd280upconv::kFGDlike
-     ){
-    npe *= MPPCEff_SuperFGD;
-  }
-  else if(GetTargType() == nd280upconv::kSciFi){
-    npe *= MPPCEff_SciFi;
-  }
-  else{
-    cout << "ND280UpTargReadOut::ApplyMPPCResponse" << endl;
-    cout << "The selected Target type does not exist!!!" << endl;
-    exit(1);
-  }
-*/
-
-
 void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
 {
 
   double rndunif =0.;
   double npe_passed = 0.;
-  double mppc_eff = 0.;
   
   int npe_integer = (int) (npe+0.5);
   
-  if(GetTargType() == nd280upconv::kSuperFGD ||
-     GetTargType() == nd280upconv::kFGDlike){
-    mppc_eff = MPPCEff_SuperFGD;
-  }
-  else if(GetTargType() == nd280upconv::kSciFi){
-    mppc_eff = MPPCEff_SciFi;
-  }
-  else{
-    G4Exception("ExN02TargReadOut::ApplyMPPCResponse",
-		"MyCode0002",FatalException,
-		"The selected Target type does not exist!!!");
-  }
-  
   for (int i=0;i<npe_integer;i++){
-    //rndunif = G4UniformRand();
     rndunif = fRndm->Uniform();
     if (rndunif < MPPCEff_SuperFGD) npe_passed++;
   }
-  
-  //cout << npe << ", " << rndunif << endl;
-
-  //cout << "npe = " << npe << " - npe_passed = " << npe_passed << endl;
   
   npe = npe_passed;
   

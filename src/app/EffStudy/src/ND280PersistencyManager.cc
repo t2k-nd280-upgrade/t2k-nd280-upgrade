@@ -51,18 +51,21 @@ ND280PersistencyManager::~ND280PersistencyManager() {
 }
 
 G4bool ND280PersistencyManager::Store(const G4Event* anEvent) {
+  (void)anEvent;
   //ND280Severe(" -- Event store called without a save method " 
   //<< GetFilename());
   return false;
 }
 
 G4bool ND280PersistencyManager::Store(const G4Run* aRun) {
+  (void)aRun;
   //ND280Severe(" -- Run store called without a save method " 
   //<< GetFilename());
   return false;
 }
 
 G4bool ND280PersistencyManager::Store(const G4VPhysicalVolume* aWorld) {
+  (void)aWorld;
   //ND280Severe(" -- Geometry store called without a save method " 
   //<< GetFilename());
   return false;
@@ -116,13 +119,13 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
   G4String detname_curr = ndPoint->GetLogVolName();
 
   // uncomment this to store all points in the target
-  /*
+  
   if (detname_curr.contains("/t2k/OA/Magnet/Basket/target1")) {
     ndPoint->MarkPoint();
     return;
   } else
     return;
-    */
+    
 
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
@@ -158,7 +161,7 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
 
 
 void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Event *event) {
-  
+  (void)event;
   //G4cout << "ND280PersistencyManager::MarkTrajectory" << G4endl;
 
   // Uncomment this to store all trajectories 

@@ -240,12 +240,6 @@ private:
     /// The name of the material to use for the scintillator.
     std::string fScintillatorMaterial;
 
-    /// Flag if we want to use FGD scintillator material for this bar.
-    bool fUseFGDScint;
-
-    /// The sensitive detector for this extruded bar.
-    G4VSensitiveDetector* fSensitiveDetector;
-
   /// The WLS fiber material
   std::string fFiberMaterial;
 

@@ -27,14 +27,12 @@ private:
     
   ND280CubeScintConstructor *fConstructor;
   
-  G4UIcmdWithAString*        fShapeCMD;
   G4UIcmdWithADoubleAndUnit* fLengthCMD;
   G4UIcmdWithADoubleAndUnit* fBaseCMD;
   G4UIcmdWithADoubleAndUnit* fHeightCMD;
   G4UIcmdWithADoubleAndUnit* fFiberRadiusCMD;
   G4UIcmdWithADoubleAndUnit* fHoleRadiusCMD;
   G4UIcmdWithADoubleAndUnit* fCoatingThicknessCMD;
-  G4UIcmdWithADoubleAndUnit* fCoatingRadiusCMD;
   G4UIcmdWithADoubleAndUnit* fGapCMD;
   G4UIcmdWithABool*          fVisibleCMD;
 
@@ -204,8 +202,8 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void) {
   G4VSolid* cube = NULL;
   G4VSolid* extrusion = NULL;
   G4VSolid* scintillator = NULL;
-  G4VSolid* scintside = NULL;
-  G4VSolid* scintcrnr = NULL;
+  //G4VSolid* scintside = NULL;
+  //G4VSolid* scintcrnr = NULL;
   G4VSolid* fiberHole = NULL;
   G4VSolid* scintWithHole = NULL;
   G4VSolid* extrusionWithHole = NULL;

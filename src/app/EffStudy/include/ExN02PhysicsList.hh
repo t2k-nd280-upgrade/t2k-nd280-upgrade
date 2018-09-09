@@ -87,18 +87,26 @@ public:
   void SetHadronicPhysList(G4String in) {fSetHadronicPhysList = in;G4cout<<"Hadronic physics list: " << fSetHadronicPhysList <<G4endl;};
 
   ExN02StepMax* GetStepMaxProcess() {return fStepMaxProcess;};
+
+private:
+  G4VPhysicsConstructor*               fDecPhysicsList;
+  std::vector<G4VPhysicsConstructor*>  fEMPhys;
+  std::vector<G4VPhysicsConstructor*>  fHadronPhys;  
+
+protected: 
+  G4bool   fUsePAIModel;
+  G4String fSetHadronicPhysList;
   
-  private:
+private:
     
   G4double fCutForGamma;
   G4double fCutForElectron;
   G4double fCutForPositron;
 
+  
   G4String                             fEmName;
-  G4VPhysicsConstructor*               fDecPhysicsList;
   //G4VPhysicsConstructor*               fEmPhysicsList;
-  std::vector<G4VPhysicsConstructor*>  fEMPhys;
-  std::vector<G4VPhysicsConstructor*>  fHadronPhys;
+  
           
   //PhysicsListMessenger*  fMessenger;
 
@@ -118,11 +126,6 @@ public:
   ExN02PhysicsListMessenger* fPhysicsListMessenger;
 
   ExN02StepMax* fStepMaxProcess;
-
-  protected:
-  
-  G4bool   fUsePAIModel;
-  G4String fSetHadronicPhysList;
 };
 
 

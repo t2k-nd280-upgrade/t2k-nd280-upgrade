@@ -145,22 +145,20 @@ void ND280UpTrackerResponse::BirksSaturation2(G4double* edep, G4double* length, 
 {
   //const G4double CBIRKS = sbcard->Birks;
   
-  G4double              kineticE = aTrack->GetKineticEnergy();
   G4ParticleDefinition* particle = aTrack->GetDefinition();
-  G4Material*           material = aTrack->GetMaterial();
 
   if(particle->GetPDGCharge()==0) return;
 
-  //Modified by B. Quilain - see Quilain doctor thesis
-  G4double dedx = (*edep)/(*length);//emcal.GetDEDX(kineticE, particle, material)/(MeV/cm);
-  //G4double dedx2 = emcal.GetDEDX(kineticE, particle, material)/(MeV/cm);
-  //G4cout << "de/dx " << dedx << " " << dedx2 << " " << dedx-dedx2 << G4endl;
+  G4double dedx = (*edep)/(*length);
 
   (*edep) = (*edep)/(1. + CBIRKS*dedx);
   return;
 }
 
 void ND280UpTrackerResponse::ApplyLightCollection(G4double* edep, G4int mod, G4int view, G4int pln, G4int ch, TVector3 pos){
+
+  (void) pln;
+  (void) pos;
   
   G4double x = 0.;
   G4int i = 0.;
@@ -168,18 +166,15 @@ void ND280UpTrackerResponse::ApplyLightCollection(G4double* edep, G4int mod, G4i
   if( view==topview ) x = fabs(scilen/2. + pos[0]/CLHEP::cm);
   else if( view==sideview ) x = fabs(scilen/2. + pos[1]/CLHEP::cm);
 
-  
-  if(mod<15){
+ if(mod<15){
     i=x/5;
     x=fabs(x-i*5-2.5);
     //*edep *= exp(-1.*x/sciattleng)*INGRIDFactor*peratio[mod][view][pln][ch];
     *edep *= exp(-1.*x/sciattleng)*INGRIDFactor;
   }
   else if(mod==15){
-    double scposx,scposy,scposz;
-    int grid,gridch;
-    //fdim -> get_pos_WAGASCI( mod, view, pln, ch, &scposx, &scposy, &scposz); //mod view pln ch
-    //fdim -> get_grid_WAGASCI( mod, view, pln, ch, &grid, &gridch );
+    double scposx(0),scposy(0),scposz(0);
+    int grid = 0;
 
     if( view==topview ){
 	if(grid==0){
@@ -197,8 +192,6 @@ void ND280UpTrackerResponse::ApplyLightCollection(G4double* edep, G4int mod, G4i
 	  x = fabs(pos[2]/CLHEP::cm - (scposz-0.39) ); //0.39 is glue shift
 	}
     }
-    //*edep *= exp(-1.*x/sciattleng_WAGASCI)*WAGASCIFactor;
-    //*edep *= exp(-1.*x/sciattleng_WAGASCI);
     *edep *= exp(-1.*x/sciattleng_WAGASCI)*peratio[mod][view][pln][ch];
   }
   else if(mod==16){
@@ -246,14 +239,8 @@ void ND280UpTrackerResponse::ApplyFiberResponseV(G4double* edep, G4double* time,
 {
   G4double x = 0.;
 
-  /*
-    if( pln==11 ) x = fabs(longlen/2. - (pos[1]/cm + 3.7) );
-    if( pln==12 ) x = fabs(longlen/2. + (pos[1]/cm - 0.3) );
-    if( pln==13 ) x = fabs(shortlen/2. - (pos[0]/cm + 0.9) );
-    if( pln==14 ) x = fabs(longlen/2. + (pos[0]/cm - 5.9) );
-  */
-  
-
+  (void)pln;
+  (void)pos;
   
   // attenuation
   *edep *= exp(-1.*x/attleng);
@@ -371,38 +358,6 @@ void ND280UpTrackerResponse::ApplyADCResponse(G4double *pe, G4double *lope, G4in
   //ADC to PE
   *pe = (float)((*adc) - Pedestal)/Gain;
   *lope = (float)((*loadc) - Pedestal)/LowGain;
-
-
-
-/*
-  const G4double VA_NOISE = 1.6;
-  const G4double VA_OVERFLOW = 2048.0;
-
-  G4double adc_tmp;
-
-  IngridMap* sbmap= sbdb->GetSciBarMap();
-
-  for (G4int view=0;view<2;view++) {
-    for (G4int layer=0;layer<64;layer++) {
-      for (G4int strip=2;strip<114;strip++) {
-
-	G4int isci = sbmap->sbisci(view,layer,strip);
-
-	// pe -> ADC conversion
-	SciBarCalibration* sbcal= sbdb->GetSciBarCalibrationInfo();
-	adc_tmp = pe[isci]/sbcal->pe[isci];
-
-	// VA noise
-	adc_tmp += CLHEP::RandGaussQ::shoot(0.0,VA_NOISE);
-
-	// overflow
-	if (adc_tmp>VA_OVERFLOW) adc_tmp = VA_OVERFLOW;
-
-	adc[isci] = (int)adc_tmp;
-      }
-    }
-  }
-*/
 }
 
 
@@ -411,5 +366,6 @@ void ND280UpTrackerResponse::ApplyADCResponse(G4double *pe, G4double *lope, G4in
 //
 void ND280UpTrackerResponse::ApplyTDCResponse(G4double time, G4int* tdc)
 {
+  (void) time;
   *tdc = 0;
 }

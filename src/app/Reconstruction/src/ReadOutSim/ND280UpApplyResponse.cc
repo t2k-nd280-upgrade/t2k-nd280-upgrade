@@ -50,6 +50,8 @@ void ND280UpApplyResponse::Delete(){
 
 void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,double charge,double prestepTime,double steplength, double edep,TString touch_namedet){
 
+  (void)parid;
+
   if(ftargetid==nd280upconv::kUndefined){
     cout << "The Target ID is not defined!" << endl;
     exit(1);

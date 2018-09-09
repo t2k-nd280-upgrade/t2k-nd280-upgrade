@@ -45,7 +45,7 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void) {
 
 // Specifications and definitions
 
-  G4bool DebugHATPCMass = true;
+  //G4bool DebugHATPCMass = true;
   G4bool Vis = true;
 
   G4String parentname = GetHATPCParentName();
@@ -945,10 +945,10 @@ return logVolume;
 
 void ND280HATPCConstructor::BuildHATPCCentralCathode(G4LogicalVolume* logVolume, double FCthickness) {
 
-    G4bool DebugHATPCMass = true;
-    G4bool Vis = false;
+    //G4bool DebugHATPCMass = true;
+    //G4bool Vis = false;
 
-    double y, z;
+    //double y, z;
 
     G4String parentname = logVolume->GetName();
 
@@ -958,9 +958,9 @@ void ND280HATPCConstructor::BuildHATPCCentralCathode(G4LogicalVolume* logVolume,
     middleG10RoPlate.SetLength(GetHATPCLength()-2.*FCthickness);
     middleG10RoPlate.SetMaterial(FindMaterial("G10Roha"));
 
-    double width  = middleG10RoPlate.GetWidth();
-    double height = middleG10RoPlate.GetHeight();
-    double length = middleG10RoPlate.GetLength();
+    //double width  = middleG10RoPlate.GetWidth();
+    //double height = middleG10RoPlate.GetHeight();
+    //double length = middleG10RoPlate.GetLength();
 
     G4LogicalVolume* log_middleG10RoPlate = middleG10RoPlate.GetPiece();
     

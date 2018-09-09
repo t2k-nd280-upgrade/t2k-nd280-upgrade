@@ -392,8 +392,8 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
     const G4int nV = extr->GetNofVertices();
         
     //define and pointers
-    double vertices_x[nV];
-    double vertices_y[nV];
+    double *vertices_x = new double[nV];
+    double *vertices_y = new double[nV];
     
     //define an intermediate extrusion constructor with nZ z planes.
     TGeoXtru *xtru = new TGeoXtru(nZ);
@@ -422,6 +422,9 @@ TGeoShape* ND280RootGeometryManager::CreateShape(const G4VSolid* theSolid,
     }
     //now assign 'theShape' to this complete extruded object.
     theShape = xtru;
+
+    delete[] vertices_x;
+    delete[] vertices_y;
   }
 
   //
@@ -469,6 +472,7 @@ TGeoVolume* ND280RootGeometryManager::CreateVolume(TGeoManager* theEnvelope,
                                                    const G4VSolid* theSolid, 
                                                    std::string theName,
                                                    TGeoMedium* theMedium) {
+  (void)theEnvelope;
     TGeoShape* theShape = CreateShape(theSolid);
     TGeoVolume* theVolume = new TGeoVolume(theName.c_str(),
                                            theShape,
@@ -755,9 +759,9 @@ bool ND280RootGeometryManager::CreateEnvelope(
     // needs to be adjusted.
     if (missingMass > 0.0) {
         // The correction of the material needs to be implemented.
-        double totalMass = theLog->GetMass(true);
-        double totalVolume = theLog->GetSolid()->GetCubicVolume();
-        double totalDensity = totalMass/totalVolume;
+        //double totalMass = theLog->GetMass(true);
+        //double totalVolume = theLog->GetSolid()->GetCubicVolume();
+        //double totalDensity = totalMass/totalVolume;
         //ND280NamedDebug("ROOTGeom", "Skipping sub-volumes. Correct "
 	//<< theMedium->GetName() << " density "
 	//<< theMedium->GetMaterial()->GetDensity()/(g/cm3)
@@ -844,6 +848,7 @@ void ND280RootGeometryManager::SetDrawAtt(G4Material* material,
 }
                                           
 int ND280RootGeometryManager::GetFill(const G4VPhysicalVolume* vol) {
+  (void)vol;
 #ifdef USE_FILL
     const G4LogicalVolume* log = vol->GetLogicalVolume();
     G4String materialName = log->GetMaterial()->GetName();

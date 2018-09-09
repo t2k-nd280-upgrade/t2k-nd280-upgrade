@@ -427,9 +427,6 @@ void ND280UpRecoTrack::CalcLengthStraight(){
   // - if 1 hit not possible to track --> length = 0!!!
   // 
   
-  double pos1 = nd280upconv::kBadNum; double pos2 = nd280upconv::kBadNum;
-  bool istrkstart = false;
-  TH1F *hX;
   double lengthX = 0.;
   double lengthY = 0.;
   double lengthZ = 0.;
@@ -700,9 +697,7 @@ bool ND280UpRecoTrack::CalcOutFVView(TH2F *h2D){
   hY = (TH1F*) h2D->ProjectionY();
   
   double bincontX_first = hX->GetBinContent(1);
-  double bincontX_second = hX->GetBinContent(2);
   double bincontX_last  = hX->GetBinContent(hX->GetNbinsX());
-  double bincontX_secondlast  = hX->GetBinContent(hX->GetNbinsX()-1);
 
   if(bincontX_first>0. || bincontX_last>0.){
     // || bincontX_second>0. || bincontX_secondlast>0.){
@@ -710,9 +705,7 @@ bool ND280UpRecoTrack::CalcOutFVView(TH2F *h2D){
   }
 
   double bincontY_first = hY->GetBinContent(1);
-  double bincontY_second = hY->GetBinContent(2);
   double bincontY_last  = hY->GetBinContent(hY->GetNbinsX());
-  double bincontY_secondlast  = hY->GetBinContent(hY->GetNbinsX()-1);
   if(bincontY_first>0. || bincontY_last>0.){
     // || bincontY_second>0. || bincontY_secondlast>0.){
     return true;

@@ -27,7 +27,6 @@ private:
     
   ND280BarScintConstructor *fConstructor;
   
-  G4UIcmdWithAString*        fShapeCMD;
   G4UIcmdWithADoubleAndUnit* fLengthCMD;
   G4UIcmdWithADoubleAndUnit* fHeightCMD;
   G4UIcmdWithADoubleAndUnit* fCoatingThicknessCMD;
@@ -146,11 +145,11 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
     = ND280RootPersistencyManager::GetInstance();
   fND280XMLInput = InputPersistencyManager->GetXMLInput();
 
-  G4VSolid* bar = NULL;
+  //G4VSolid* bar = NULL;
   G4VSolid* extrusion = NULL;
   G4VSolid* scintillator = NULL;
-  G4VSolid* scintside = NULL;
-  G4VSolid* scintcrnr = NULL;
+  //G4VSolid* scintside = NULL;
+  //G4VSolid* scintcrnr = NULL;
   G4VSolid* fiberHole = NULL;
   G4VSolid* scintWithHole = NULL;
   G4VSolid* extrusionWithHole = NULL;
@@ -176,7 +175,7 @@ G4LogicalVolume* ND280BarScintConstructor::GetPiece(void) {
   double height=0;
   double length=0;
  
-  double cladThickFrac = 0.02 * 2.; // 2% on both sides
+  //double cladThickFrac = 0.02 * 2.; // 2% on both sides
   double scintWidth=0;
   double scintHeight=0;
   double scintLength=0;

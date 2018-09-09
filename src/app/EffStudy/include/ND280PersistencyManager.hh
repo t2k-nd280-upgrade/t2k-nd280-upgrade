@@ -32,9 +32,9 @@ public:
   virtual G4bool Store(const G4Run* aRun);
   virtual G4bool Store(const G4VPhysicalVolume* aWorld);
   
-  virtual G4bool Retrieve(G4Event *&aEvent) {return false;}
-  virtual G4bool Retrieve(G4Run*& aRun) {return false;}
-  virtual G4bool Retrieve(G4VPhysicalVolume*& aWorld) {return false;};
+  virtual G4bool Retrieve(G4Event *&aEvent) {(void)aEvent; return false;}
+  virtual G4bool Retrieve(G4Run*& aRun) {(void) aRun; return false;}
+  virtual G4bool Retrieve(G4VPhysicalVolume*& aWorld) {(void) aWorld; return false;};
   
   /// Open the output (ie database) file.
   virtual G4bool Open(G4String filename) = 0;

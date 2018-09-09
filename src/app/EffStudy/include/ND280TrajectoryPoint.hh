@@ -85,10 +85,10 @@ private:
   G4double fStepLength;
   G4double fStepDeltaLyz;
   G4StepStatus fStepStatus;
+  G4bool fIsOnBoundary;
   G4String fPhysVolName;
   G4String fLogVolName;
   G4ThreeVector fPrevPosition;
-  G4bool fIsOnBoundary;
 
   // MY MEMBERS
   G4ThreeVector fPostPosition;

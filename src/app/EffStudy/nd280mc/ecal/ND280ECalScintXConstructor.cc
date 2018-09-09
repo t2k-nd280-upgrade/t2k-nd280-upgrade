@@ -29,6 +29,8 @@ void ND280ECalScintXConstructor::SetUp(int n_bars,
     SetBarNumber( n_bars );
     SetHeight( bar_length ); // length of an x-bar
     SetWidth(n_bars * ND280ECal::BarWidth + 0.001*CLHEP::mm);
+
+    (void)detector;
     
     //switch (detector) {
     //case ND280ECal::kP0D:

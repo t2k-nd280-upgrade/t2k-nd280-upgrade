@@ -7,7 +7,7 @@
 #include <TRandom3.h>
 
 // 0 - Full size SuperFGD 1 - 5x5x5 2 - 24x8x48
-#define PROTO 0
+#define PROTO 2
 #define ELECSIM
 #define CROSSTALK 0
 
@@ -34,7 +34,6 @@ private:
   void ApplyFiberAttenuation(double &nphot,double x, double DetSize = 0.);
   void ApplyFiberTime(double &time,double x);
   double GetPhotAtt_FGD(double Nphot0,double x, double DetSize = 0.);
-  double GetPhotAtt_SciFi(double Nphot0,double x);
 
   double fAttLength;
   TargetType_t fTargetID;

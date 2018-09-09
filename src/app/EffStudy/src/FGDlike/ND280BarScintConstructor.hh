@@ -216,9 +216,6 @@ private:
   /// The WLS fiber radius
   double fFiberRadius;
 
-  /// The sensitive detector for this extruded bar.
-    G4VSensitiveDetector* fSensitiveDetector;
-
   ExN02ND280XML *fND280XMLInput;
 
   BarDir_t fBarDir;

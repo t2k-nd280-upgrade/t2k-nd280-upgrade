@@ -22,6 +22,7 @@ void ND280WaffleActiveConstructor::Init() {
 
 G4LogicalVolume *ND280WaffleActiveConstructor::GetPiece(void) {
   // If not initialized it doesn't compile (abstract class)
+  return NULL;
 } // D.S
 
 void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4ThreeVector ModulePosition, G4ThreeVector ModuleSize, const G4String RepositoryName){
@@ -89,14 +90,14 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
   const double InitialLayerHeightPlanFirstScintiOffset = 0.0 * CLHEP::mm;
 
   //Offset of the first transvserse scintillator of the longitudinal (along z direction) layer in one layer / in the target
-  const double InitialLayerThicknessPlanFirstScintiOffset = 0.0 * CLHEP::mm;
+  // const double InitialLayerThicknessPlanFirstScintiOffset = 0.0 * CLHEP::mm;
 
 
   //Offset of the first scintillator of the grid horizontal layer in one layer / in the target
-  const double InitialLayerWidthGridFirstScintiOffset = 0.0 * CLHEP::mm;
+  // const double InitialLayerWidthGridFirstScintiOffset = 0.0 * CLHEP::mm;
 
   //Offset of the first scintillator of the grid vertical layer in one layer / in the target
-  const double InitialLayerHeightGridFirstScintiOffset = 0.0 * CLHEP::mm;
+  //const double InitialLayerHeightGridFirstScintiOffset = 0.0 * CLHEP::mm;
 
   
   //Spacing between grid scintillators (consecutive scintillators in the same layer)
@@ -113,7 +114,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
 
   //Deduced from the gap between plan chosen
   //Spacing between plan scintillators (consecutive scintillators in the same layer)
-  const double ScintiPlanGap = CellSizeWidth - ScintiPlanWidth;
+  //const double ScintiPlanGap = CellSizeWidth - ScintiPlanWidth;
 
 
   //const double CellSize = 10.0 * mm;
@@ -162,7 +163,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
   //
   //LayerGridHeight = ScintiGridThickness + (LayerGridNumberOfScintiHorizontal-1)*(ScintiGridThickness + ScintiGridGap);
   //LayerGridWidth = ScintiGridThickness + (LayerGridNumberOfScintiVertical-1)*(ScintiGridThickness + ScintiGridGap);
-  double LayerWidthGridFirstScintiOffset = LayerGridOffset;//(TargetWidth - LayerGridWidth)/2.;
+  //double LayerWidthGridFirstScintiOffset = LayerGridOffset;//(TargetWidth - LayerGridWidth)/2.;
   //double LayerHeightGridFirstScintiOffset = (TargetHeight - LayerGridHeight)/2.;
   
 #ifdef DEBUG
@@ -181,7 +182,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
   //double ModuleThickness = TargetThickness - 2*LayerOffset;
   //int ModuleNumberOfLayers;
   //To define
-  int NumberOfLayers = 0.;
+  //int NumberOfLayers = 0.;
 
   //This is absolutely not the number of plans. Just a maximal bound that is used to set the number ID of every scintillator without any overlap.
   const int MaxNumberOfLayerPlanVertical=500;
@@ -242,7 +243,7 @@ void ND280WaffleActiveConstructor::Construct(G4LogicalVolume * TargetLV, G4Three
 #ifdef DEBUG
   G4cout << "From target to global = (" << FromTargettoGlobal[0] << ", "<< FromTargettoGlobal[1] << ", "<<  FromTargettoGlobal[2] << ")" << G4endl;
   G4cout << "Number of modules =" << NumberOfModules << G4endl;
-  G4cout << "Number of layers =" << NumberOfLayers << G4endl;
+  //G4cout << "Number of layers =" << NumberOfLayers << G4endl;
 #endif
 
  for(int m=0;m<NumberOfModules;m++){//Loop over the number of modules (water/air etc...)

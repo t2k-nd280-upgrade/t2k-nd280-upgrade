@@ -1441,7 +1441,7 @@ G4LogicalVolume *ND280BasketConstructor::GetPiece(void) {
 	     << " to " 
 	     << (fP0DPosition + p0d.GetLength()/2)/CLHEP::mm << " mm" << G4endl;
       
-      double p0dDownstreamEnd = fP0DPosition + p0d.GetLength()/2;
+      //double p0dDownstreamEnd = fP0DPosition + p0d.GetLength()/2;
       
       //////////////////////////////////////////
       // CONSTRUCT THE PI-ZERO DETECTOR SUPPORT

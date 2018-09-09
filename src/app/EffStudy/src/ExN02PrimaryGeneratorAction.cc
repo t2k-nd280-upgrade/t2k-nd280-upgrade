@@ -100,17 +100,17 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     // on DetectorConstruction class we get world volume
     // from G4LogicalVolumeStore
     //
-    G4double worldZHalfLength = 0;
-    G4double targetYHalfLength = 0;
+    //G4double worldZHalfLength = 0;
+    //G4double targetYHalfLength = 0;
     
     G4LogicalVolume* worlLV
       = G4LogicalVolumeStore::GetInstance()->GetVolume("/t2k");
     G4Box* worldBox = 0;
     if ( worlLV) worldBox = dynamic_cast< G4Box*>(worlLV->GetSolid()); 
-    if ( worldBox ) {
+    /*if ( worldBox ) {
       worldZHalfLength = worldBox->GetZHalfLength();  
-    }
-    else  {
+    }*/
+    if (!worldBox)  {
       G4ExceptionDescription msg;
       msg << "World volume of box not found." << G4endl;
       msg << "Perhaps you have changed geometry." << G4endl;
@@ -236,35 +236,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
   }
   
-  else if(fGeneratorType=="Generator"){ // Read NEUT or GENIE output (same format)
-
-    //
-    // Check that the # of G4 envents is <= # of NEUT events
-    // It must be done here because in order to get the tot # of events
-    // the G4Run object is needed, but it's initialized only at the beginning of the first event
-    // (see http://hypernews.slac.stanford.edu/HyperNews/geant4/get/runmanage/175/1.html)
-    //
-    // Also use current event ID from NEUT tree object, since the event is not initialized yet
-    //
-    
-    // G4int CurrNEUTEvtID = RooTrackerNEUT.GetCurrNEUTevent();
-    // if(CurrNEUTEvtID==0){      
-    //   G4int TotG4events = G4RunManager::GetRunManager()->GetCurrentRun()->GetNumberOfEventToBeProcessed(); // Number passed to BeamOn in vis.mac
-    //   G4int TotNEUTevents = RooTrackerNEUT.GetTotNEUTevents();      
-    //   if(TotG4events > TotNEUTevents){	
-    // 	G4cerr << G4endl;
-    // 	G4cerr << "The total # of G4 events exceeds the # of available NEUT events" << G4endl;
-    // 	G4cerr << " - # G4 events = " << TotG4events << G4endl; 
-    // 	G4cerr << " - # NEUT events = " << TotNEUTevents << G4endl;
-    // 	G4cerr << G4endl;	
-    // 	const char *msg = "The # of G4 events is larger than # of available NEUT events!";
-    // 	const char *origin = "ExN02PrimaryGeneratorAction::GeneratePrimaries";
-    // 	const char *code = "if(CurrNEUTEvtID==0){";
-    // 	G4Exception(origin,code,FatalException,msg);   
-    //   }  
-    // }
-
-    
+  else if(fGeneratorType=="Generator"){ // Read NEUT or GENIE output (same format)    
     // Generate the primary vertex
     RooTrackerNEUT.GeneratePrimaryVertex(anEvent);   
   }  
