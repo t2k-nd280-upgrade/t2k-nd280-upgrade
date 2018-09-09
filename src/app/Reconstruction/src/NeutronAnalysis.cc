@@ -32,7 +32,7 @@
 
 #include "LightYield.hh"
 
-const int VERTEX_ACTIVITY = 5;
+const int VERTEX_ACTIVITY = 3;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -84,6 +84,8 @@ int NeutronAnalysis(int argc,char** argv) {
   TCanvas *cMPPCHits_XZ[NEvtDisplTot]; 
   TCanvas *cMPPCHits_YZ[NEvtDisplTot];
 
+  TRandom3* gen = new TRandom3();
+
   //
   // Declare histograms
   //
@@ -100,6 +102,23 @@ int NeutronAnalysis(int argc,char** argv) {
   TH2F* pe_e_cos    = new TH2F("pe_ET", "PE from 1st hit", 10, -1., 1., 250, 0., 500);
   // distance from born position towards 1st hit
   TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 300, 0., 1500, 250, 0., 500.);
+  // momentum for forward going
+  TH1F* mom_forward = new TH1F("mom",   "Momentum", 500, 0., 1000.);
+  TH1F* mom_norm    = new TH1F("mom1",   "Momentum1", 500, 0., 1000.);
+
+  TH2F* vertexXZ    = new TH2F("vertexA", "Average vertex activity", 5, -2., 3., 5, -2., 3.);
+
+  TH2F* energy_resol1 = new TH2F("energy_resol1", "energy resolution", 250, 0., 500, 250, 0., 500);
+  TH2F* energy_resol2 = new TH2F("energy_resol2", "energy resolution", 250, 0., 500, 250, 0., 500);
+  TH2F* energy_resol3 = new TH2F("energy_resol3", "energy resolution", 250, 0., 500, 250, 0., 500);
+  TH2F* energy_resol4 = new TH2F("energy_resol4", "energy resolution", 250, 0., 500, 250, 0., 500);
+  TH2F* energy_resol5 = new TH2F("energy_resol5", "energy resolution", 250, 0., 500, 250, 0., 500);
+  TH2F* energy_resol6 = new TH2F("energy_resol6", "energy resolution", 250, 0., 500, 250, 0., 500);
+
+  TH2F* beta_ekin     = new TH2F("beta_ekin", "energy resolution", 250, 0., 500, 250, 0., 1.);
+  TH2F* beta_ekin_sm  = new TH2F("beta_ekin_sm", "energy resolution", 250, 0., 500, 250, 0., 1.);
+
+  int vertex_norm = 0;
 
   // Event displays
 
@@ -310,11 +329,13 @@ int NeutronAnalysis(int argc,char** argv) {
 
     Int_t vertex_binX = h2d_xz->GetXaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().X());
     Int_t vertex_binY = h2d_yz->GetXaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().Y());
+    //Int_t vertex_binZ = h2d_yz->GetYaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().Z() + 1695);
     Int_t vertex_binZ = h2d_yz->GetYaxis()->FindBin(nd280UpEvent->GetVertex(0)->GetPosition().Z());
 
     Double_t vertex_x = nd280UpEvent->GetVertex(0)->GetPosition().X();
     Double_t vertex_y = nd280UpEvent->GetVertex(0)->GetPosition().Y();
     Double_t vertex_z = nd280UpEvent->GetVertex(0)->GetPosition().Z();
+    Double_t vertex_time = nd280UpEvent->GetVertex(0)->GetTime();
 
     if (DEBUG)
       std::cout << "Vertex placed in cubes X Y Z " << vertex_binX << "\t" << vertex_binY << "\t" << vertex_binZ << std::endl;
@@ -326,7 +347,7 @@ int NeutronAnalysis(int argc,char** argv) {
       continue;
     }
     TND280UpTrack* track = nd280UpEvent->GetTrack(0);
-    if (track->GetPDG() != 2112) {
+    if (track->GetPDG() != 22) {
       std::cout << "WARNING! First track is not neutron! The event will be skipped" << std::endl;
       continue;
     }
@@ -347,6 +368,7 @@ int NeutronAnalysis(int argc,char** argv) {
 
     double first_hit_time = 1.e9;
     double dist = -2.;
+    double dist_cubes = -2.;
 
     Int_t first_binX, first_binY, first_binZ;
 
@@ -354,6 +376,13 @@ int NeutronAnalysis(int argc,char** argv) {
     TH2F* hits_map_XY = (TH2F*)h2d_xy->Clone("hits_map_XY");
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
+
+
+    bool far_away = false;
+    if (vertex_binX < VERTEX_ACTIVITY || vertex_binX > binX - VERTEX_ACTIVITY ||
+        vertex_binY < VERTEX_ACTIVITY || vertex_binY > binY - VERTEX_ACTIVITY ||
+        vertex_binZ < VERTEX_ACTIVITY || vertex_binZ > binZ - VERTEX_ACTIVITY)
+      far_away = true;
 
     // artificially fill the vertex activity region considering the worst case
     for (Int_t i = -VERTEX_ACTIVITY/2; i < VERTEX_ACTIVITY/2; ++i) {
@@ -384,12 +413,6 @@ int NeutronAnalysis(int argc,char** argv) {
       Int_t hit_binY = h2d_yz->GetXaxis()->FindBin(posY);
       Int_t hit_binZ = h2d_yz->GetYaxis()->FindBin(posZ);
 
-      // ommit the vertex activity in VERTEX_ACTIVITY
-      if (abs(hit_binX - vertex_binX) < VERTEX_ACTIVITY / 2 + 1 &&
-          abs(hit_binY - vertex_binY) < VERTEX_ACTIVITY / 2 + 1 &&
-          abs(hit_binZ - vertex_binZ) < VERTEX_ACTIVITY / 2 + 1)
-        continue;
-
       //
       // Compute the detector response for each hit
       //
@@ -400,6 +423,17 @@ int NeutronAnalysis(int argc,char** argv) {
       double pex = ApplyResponse.GetHitPE().x();
       double pey = ApplyResponse.GetHitPE().y();
       double pez = ApplyResponse.GetHitPE().z();
+
+
+      // ommit the vertex activity in VERTEX_ACTIVITY
+      if (abs(hit_binX - vertex_binX) < VERTEX_ACTIVITY / 2 + 1 &&
+          abs(hit_binY - vertex_binY) < VERTEX_ACTIVITY / 2 + 1 &&
+          abs(hit_binZ - vertex_binZ) < VERTEX_ACTIVITY / 2 + 1) {
+        if (!far_away){
+          vertexXZ->Fill(hit_binX - vertex_binX, hit_binZ - vertex_binZ, pey);
+        }
+        continue;
+      }
       
       if(!UseViewXY) pez = 0;
       if(!UseViewYZ) pex = 0;
@@ -425,6 +459,9 @@ int NeutronAnalysis(int argc,char** argv) {
         dist = sqrt(  (posX - vertex_x) * (posX - vertex_x) + 
                       (posY - vertex_y) * (posY - vertex_y) +
                       (posZ - vertex_z) * (posZ - vertex_z));
+        dist_cubes = sqrt(  (first_binX - vertex_binX) * (first_binX - vertex_binX) +
+                            (first_binY - vertex_binY) * (first_binY - vertex_binY) +
+                            (first_binZ - vertex_binZ) * (first_binZ - vertex_binZ) );
       }
 
       Int_t bin = h3d->FindBin(poshitX, poshitY, poshitZ);
@@ -447,11 +484,17 @@ int NeutronAnalysis(int argc,char** argv) {
       }
     } // end loop over the hits
 
+    if (!far_away)
+      ++vertex_norm;
+
     hits_number->Fill(h3d->Integral());
 
     hits_energy->Fill(ekin, h3d->Integral());
     init_e_cos->Fill(costheta, ekin);
     e_dist->Fill(dist, ekin);
+    float mom = sqrt((939.565379 + ekin)*(939.565379 + ekin) - 939.565379*939.565379);
+    if (costheta > 0.9)
+      mom_norm->Fill(mom);
 
     // END OF FILLING HITS MAP
 
@@ -488,9 +531,10 @@ int NeutronAnalysis(int argc,char** argv) {
     first_bin_YZ->Fill(y, z);
     first_bin_XZ->Fill(x, z);
 
+    // DUMMY AT THE MOMENT
     // check that we have exactly one hit
     // hit cube should be isolated in at least 2 projections
-    Int_t PE_around1 =  hits_map_XY->GetBinContent(first_binX + 1,  first_binY) + 
+    /*Int_t PE_around1 =  hits_map_XY->GetBinContent(first_binX + 1,  first_binY) + 
                         hits_map_XY->GetBinContent(first_binX + 1,  first_binY + 1) +
                         hits_map_XY->GetBinContent(first_binX,      first_binY + 1) +
                         hits_map_XY->GetBinContent(first_binX - 1,  first_binY + 1) +
@@ -519,6 +563,12 @@ int NeutronAnalysis(int argc,char** argv) {
 
     // isolated in at least 2 views
     if ((PE_around1 > 0) + (PE_around2 > 0) + (PE_around3 > 0) > 1)
+      continue;*/
+
+    // separated  at least with a 1 hit from the vertex activity
+    if (abs(first_binX - vertex_binX) < VERTEX_ACTIVITY + 1 &&
+        abs(first_binY - vertex_binY) < VERTEX_ACTIVITY + 1 &&
+        abs(first_binZ - vertex_binZ) < VERTEX_ACTIVITY + 1 )
       continue;
 
     // SELECTION IS DONE 
@@ -529,6 +579,48 @@ int NeutronAnalysis(int argc,char** argv) {
                     hits_map_XY->GetBinContent(first_binX, first_binY) +
                     hits_map_XZ->GetBinContent(first_binX, first_binZ) +
                     hits_map_YZ->GetBinContent(first_binY, first_binZ));
+    if (costheta > 0.9)
+      mom_forward->Fill(mom);
+
+    float beta = dist_cubes / (first_hit_time * 30.);
+    beta_ekin->Fill(ekin, beta);
+
+    float time = gen->Gaus(first_hit_time - vertex_time, 0.9);
+
+    // c = 30 cm/ns
+    beta = dist_cubes / (time * 30.);
+
+    float ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
+
+    energy_resol1->Fill(ekin, ekin2);
+
+    time = gen->Gaus(first_hit_time - vertex_time, 0.9/sqrt(2));
+    beta = dist_cubes / (time * 30.);
+    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta))  - 939.565379;
+    energy_resol2->Fill(ekin, ekin2);
+
+    time = gen->Gaus(first_hit_time - vertex_time, 0.9/sqrt(3));
+    beta = dist_cubes / (time * 30.);
+    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
+    energy_resol3->Fill(ekin, ekin2);
+
+
+    beta_ekin_sm->Fill(ekin, beta);
+
+    time = gen->Gaus(first_hit_time - vertex_time, 0.6);
+    beta = dist_cubes / (time * 30.);
+    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
+    energy_resol4->Fill(ekin, ekin2);
+
+    time = gen->Gaus(first_hit_time - vertex_time, 0.6/sqrt(2));
+    beta = dist_cubes / (time * 30.);
+    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
+    energy_resol5->Fill(ekin, ekin2);
+
+    time = gen->Gaus(first_hit_time - vertex_time, 0.6/sqrt(3));
+    beta = dist_cubes / (time * 30.);
+    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
+    energy_resol6->Fill(ekin, ekin2);
   } // loop over events
 
   fileout->cd();
@@ -545,6 +637,22 @@ int NeutronAnalysis(int argc,char** argv) {
 
   init_e_cos->Write();
   eff_e_cos->Write();
+
+  vertexXZ->Scale(1./vertex_norm);
+  vertexXZ->Write();
+
+  energy_resol1->Write();
+  energy_resol2->Write();
+  energy_resol3->Write();
+  energy_resol4->Write();
+  energy_resol5->Write();
+  energy_resol6->Write();
+
+  beta_ekin->Write();
+  beta_ekin_sm->Write();
+
+  mom_forward->Write();
+  mom_norm->Write();
 
   int last = evtfirst+Nentries-1;
   for(int ievtdispl=evtfirst;ievtdispl<=last ;ievtdispl++){ 

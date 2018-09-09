@@ -104,11 +104,8 @@ inline void PrintDaughters(TND280UpEvent *event,int mytrkid){
     int trkID = nd280UpTrack->GetTrackID();
     int parentID = nd280UpTrack->GetParentID();
     int pdg = nd280UpTrack->GetPDG();
-    double charge = nd280UpTrack->GetCharge();
     double ekin = nd280UpTrack->GetInitKinEnergy();
     double mom = nd280UpTrack->GetInitMom().Mag();
-    double dirX = nd280UpTrack->GetInitMom().X() / mom;
-    double dirY = nd280UpTrack->GetInitMom().Y() / mom;
     double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
     double costheta = dirZ;
     
@@ -174,11 +171,8 @@ inline void PrintTruth(TND280UpEvent *event,int mytrkid){
     int trkID = nd280UpTrack->GetTrackID();
     int parentID = nd280UpTrack->GetParentID();
     int pdg = nd280UpTrack->GetPDG();
-    double charge = nd280UpTrack->GetCharge();
     double ekin = nd280UpTrack->GetInitKinEnergy();
     double mom = nd280UpTrack->GetInitMom().Mag();
-    double dirX = nd280UpTrack->GetInitMom().X() / mom;
-    double dirY = nd280UpTrack->GetInitMom().Y() / mom;
     double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
     double costheta = dirZ;
     
@@ -258,10 +252,6 @@ inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &myc
     //cout << "itrk " << itrk << endl;
     TND280UpTrack *nd280UpTrack = event->GetTrack(itrk);
     int trkID = nd280UpTrack->GetTrackID();
-    int parentID = nd280UpTrack->GetParentID();
-    int pdg = nd280UpTrack->GetPDG();
-    double charge = nd280UpTrack->GetCharge();
-    double ekin = nd280UpTrack->GetInitKinEnergy();
     double mom = nd280UpTrack->GetInitMom().Mag();
     double dirX = nd280UpTrack->GetInitMom().X() / mom;
     double dirY = nd280UpTrack->GetInitMom().Y() / mom;
@@ -276,26 +266,10 @@ inline void FindTruth(TND280UpEvent *event,int mytrkid,double &mymom,double &myc
       cerr << endl;
       exit(1);
     }
-    
-    int NPoints = nd280UpTrack->GetNPoints();
-    
-    //cout << "trkid: " << trkID
-    //<< ",pdg: " << pdg 
-    //<< ", ekin: " << ekin
-    //<< ", costheta_track = " << costheta 
-    //<< ", mom_track = " << mom
-    //<< ", detname = " <<  nd280UpTrackPoint->GetLogVolName()
-    //<< endl;
 
     if(mytrkid==trkID){
 
       double length = 0.;
-      //for(int ipt=0;ipt<NPoints;ipt++){
-      //TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);
-      //string detname = nd280UpTrackPoint->GetLogVolName();
-      //cout << detname << " --> " << nd280UpTrackPoint->GetStepLength() << endl;
-      //length += nd280UpTrackPoint->GetStepLength();
-      //}
       
       mymom = mom;
       mycosth = costheta;
@@ -329,7 +303,6 @@ inline bool IsLastPtMomZero(TND280UpEvent *event,int mytrkid){
     TND280UpTrack *nd280UpTrack = event->GetTrack(itrk);
     int trkID = nd280UpTrack->GetTrackID();
     int pdg = nd280UpTrack->GetPDG();
-    double mom = nd280UpTrack->GetInitMom().Mag();
     int NPoints = nd280UpTrack->GetNPoints();
     
     if(mytrkid==trkID){
@@ -408,7 +381,7 @@ int TrackReconstruction(int argc,char** argv)
 
   // Set the inputs
 
-  nd280upconv::TargetType_t DetType;
+  nd280upconv::TargetType_t DetType = nd280upconv::kUndefined;
   if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
   else if(detectorID == 1) DetType = nd280upconv::kFGDlike;
    
@@ -1144,10 +1117,6 @@ int TrackReconstruction(int argc,char** argv)
     double posZ_prev = 0.;
     int trkid_prev = 0.;
 
-    Int_t binsX = h2d_xy->GetXaxis()->GetNbins();
-    Int_t binsY = h2d_xy->GetYaxis()->GetNbins();
-    Int_t binsZ = h2d_xz->GetYaxis()->GetNbins();
-
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
 
@@ -1163,11 +1132,6 @@ int TrackReconstruction(int argc,char** argv)
       double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y 
       double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
       TVector3 lightPos(posX,posY,posZ); // already in local position
-
-      // True costheta defined by the direction wrt first and last MC hit position
-      double lenX = nd280UpHit->GetStopX() - nd280UpHit->GetStartX(); 
-      double lenY = nd280UpHit->GetStopY() - nd280UpHit->GetStartY(); 
-      double lenZ = nd280UpHit->GetStopZ() - nd280UpHit->GetStartZ(); 
      
       //double length_true_mchit = sqrt(lenX*lenX + lenY*lenY + lenZ*lenZ);      
       double length_true_mchit = 0.;
@@ -1237,69 +1201,6 @@ int TrackReconstruction(int argc,char** argv)
 	hPEVsTime_y[ievt]->Fill(timepey,pey);
 	hPEVsTime_z[ievt]->Fill(timepez,pez);
       }
-
-      
-      // store light yield
-      Int_t MPPCx = h2d_xz->GetXaxis()->FindBin(poshitX);
-      Int_t MPPCy = h2d_yz->GetXaxis()->FindBin(poshitY);
-      Int_t MPPCz = h2d_yz->GetYaxis()->FindBin(poshitZ);
-      //cout << edep << ", " << endl;
-      //cout << nd280UpHit->GetPEX() << ", " << pex << endl;
-      //cout << nd280UpHit->GetPEY() << ", " << pey << endl;
-      //cout << nd280UpHit->GetPEZ() << ", " << pez << endl;
-      //cout << endl;      
-
-
-
-
-
-
-
-      /*
-
-      /////////////
-
-      //B.Q
-
-      if(pdg==13){
-	hMuon_Edep_Raw->Fill(edep);
-	if(pex>0)      hMuon_Edep_Calibrated->Fill(pex);
-	else if(pey>0) hMuon_Edep_Calibrated->Fill(pey);
-	else if(pez>0) hMuon_Edep_Calibrated->Fill(pez);
-      }
-      else if(pdg==211){
-	hPion_Edep_Raw->Fill(edep);
-	if(pex>0)      hPion_Edep_Calibrated->Fill(pex);
-	else if(pey>0) hPion_Edep_Calibrated->Fill(pey);
-	else if(pez>0) hPion_Edep_Calibrated->Fill(pez);
-      }
-      else if(pdg==2212){
-	hProt_Edep_Raw->Fill(edep);
-	if(pex>0)      hProt_Edep_Calibrated->Fill(pex);
-	else if(pey>0) hProt_Edep_Calibrated->Fill(pey);
-	else if(pez>0) hProt_Edep_Calibrated->Fill(pez);
-      }
-      else if(pdg==11){
-	hElec_Edep_Raw->Fill(edep);
-	if(pex>0)      hElec_Edep_Calibrated->Fill(pex);
-	else if(pey>0) hElec_Edep_Calibrated->Fill(pey);
-	else if(pez>0) hElec_Edep_Calibrated->Fill(pez);
-      }
-
-      //////////////
-
-      */
-
-
-
-
-    
-
-
-
-
-
-
 
       //////////////////////////////////////////////////
       //                                              //
@@ -2207,12 +2108,6 @@ int TrackReconstruction(int argc,char** argv)
       
       double costheta_true = fND280UpRecoTrack->GetTruthCosTheta();
       double phi_true = fND280UpRecoTrack->GetTruthPhi();
-      
-      //cout << "mom_true = " << mom_true << endl;
-      //cout << "costheta_true = " << costheta_true << endl;
-      //cout << "phi_true = " << phi_true << endl;
-      
-      double edepoverrange = edep / range;
       
       NTOTALTRACKSALL_2ndLOOP++;
       

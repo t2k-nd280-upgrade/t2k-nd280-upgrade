@@ -71,7 +71,7 @@ int LightYield(int argc,char** argv)
 
   // Set the inputs
 
-  nd280upconv::TargetType_t DetType;
+  nd280upconv::TargetType_t DetType = nd280upconv::kUndefined;
   if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
   else if(detectorID == 1) DetType = nd280upconv::kFGDlike;
   
@@ -100,6 +100,7 @@ int LightYield(int argc,char** argv)
   TH1F *hPEVsTime_y[NEvtDisplTot];
   TH1F *hPEVsTime_z[NEvtDisplTot];
 
+#if PROTO
   // L.Y. histoes
   TRandom3* fRndm = new TRandom3(0);
 
@@ -120,6 +121,7 @@ int LightYield(int argc,char** argv)
   Float_t ly_last_ext2   = 5000.;
 
   TH1F* LY_ch[1728];
+#endif
 #if PROTO == 1
     for (Int_t i = 0; i < 12; ++i)
       LY_ch[i]    = new TH1F(Form("LY_ch%i", i),  "", ly_nbins_short,ly_first_short, ly_last_short);
@@ -260,7 +262,7 @@ int LightYield(int argc,char** argv)
     if(ievt<NEvtDisplTot){
       name = TString::Format("hMPPCHits_XY_%d",ievt);
       hMPPCHits_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
-      name = TString::Format("hMPPCHits_XZ_%ыd",ievt);
+      name = TString::Format("hMPPCHits_XZ_%d",ievt);
       hMPPCHits_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
       name = TString::Format("hMPPCHits_YZ_%d",ievt);
       hMPPCHits_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
@@ -340,11 +342,12 @@ int LightYield(int argc,char** argv)
         hPEVsTime_z[ievt]->Fill(timepez,pez);
       }
 
+#if CROSSTALK > 0
       // store light yield
       Int_t MPPCx = h2d_xz->GetXaxis()->FindBin(poshitX);
       Int_t MPPCy = h2d_yz->GetXaxis()->FindBin(poshitY);
       Int_t MPPCz = h2d_yz->GetYaxis()->FindBin(poshitZ);
-#if CROSSTALK > 0
+
       event_histo->Fill(MPPCx, MPPCy, MPPCz, (pex+pey+pez) / 3.);
 #endif    
 
