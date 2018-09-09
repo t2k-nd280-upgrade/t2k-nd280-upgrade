@@ -1,3 +1,6 @@
 *cleanup*
 *Makefile*
 *dict*
+setup.sh
+setup.csh
+vis_cluster_*
