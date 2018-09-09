@@ -4,3 +4,7 @@
 setup.sh
 setup.csh
 vis_cluster_*
+*.a
+*.so
+*.dylib
+*.exe
