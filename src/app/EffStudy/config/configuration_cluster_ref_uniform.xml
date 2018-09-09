@@ -74,80 +74,6 @@
      +2343
    </forwTPCPos3_Z>
 
-   
-   
-   <!-- Side TPCs 1 -->
-
-   <sideTPCdefault1>
-     false
-   </sideTPCdefault1>
-
-   <sideTPClength1>
-     1894
-   </sideTPClength1>
-   <sideTPCwidth1>  
-     2200
-   </sideTPCwidth1>
-   <sideTPCheight1> 
-     851.5 
-   </sideTPCheight1>
-
-   <sideTPCUpPos1_X>
-     0 
-   </sideTPCUpPos1_X>
-   <sideTPCUpPos1_Y>
-     725.75
-   </sideTPCUpPos1_Y>
-   <sideTPCUpPos1_Z>
-     -1695
-   </sideTPCUpPos1_Z>
-   
-   <sideTPCDownPos1_X>
-     0
-   </sideTPCDownPos1_X>
-   <sideTPCDownPos1_Y>
-     -725.75
-   </sideTPCDownPos1_Y>
-   <sideTPCDownPos1_Z>
-     -1695
-   </sideTPCDownPos1_Z>
-
-   <!-- Side TPCs 2 -->
-
-   <sideTPCdefault2>
-     false
-   </sideTPCdefault2>
-   <sideTPClength2>
-     1300
-   </sideTPClength2>
-   <sideTPCwidth2>  
-     2300
-   </sideTPCwidth2>
-   <sideTPCheight2> 
-     851.5
-   </sideTPCheight2>
-
-   <sideTPCUpPos2_X>
-     0
-   </sideTPCUpPos2_X>
-   <sideTPCUpPos2_Y>
-     725.75
-   </sideTPCUpPos2_Y>
-   <sideTPCUpPos2_Z>
-     +1206
-   </sideTPCUpPos2_Z>
-   
-   <sideTPCDownPos2_X>
-     0 
-   </sideTPCDownPos2_X>
-   <sideTPCDownPos2_Y>
-     -725.75
-   </sideTPCDownPos2_Y>
-   <sideTPCDownPos2_Z>
-     +1206
-   </sideTPCDownPos2_Z>
-
-
    <!-- Target 1 -->
 
    <Targetdefault1>
@@ -477,60 +403,6 @@
      -1707
    </HATPCDownPos_Z>
 
-   <!-- WAGASCI 1 -->
-   
-   <WAGASCIInactMaterial1>
-     Air
-   </WAGASCIInactMaterial1>
-   
-   <WAGASCIlength1>
-     70
-   </WAGASCIlength1>
-   <WAGASCIwidth1>  
-     600
-   </WAGASCIwidth1>
-   <WAGASCIheight1> 
-     600
-   </WAGASCIheight1>
-
-   <WAGASCIPos1_X>
-     0
-   </WAGASCIPos1_X>
-   <WAGASCIPos1_Y>
-     0
-   </WAGASCIPos1_Y>
-   <WAGASCIPos1_Z>
-     0
-   </WAGASCIPos1_Z>
-
-   <!-- WAGASCI 2 -->
-
-   <WAGASCIInactMaterial2>
-     Water
-   </WAGASCIInactMaterial2>
-
-   <WAGASCIlength2>
-     13
-   </WAGASCIlength2>
-   <WAGASCIwidth2>  
-     18
-   </WAGASCIwidth2>
-   <WAGASCIheight2> 
-     6
-   </WAGASCIheight2>
-
-   <WAGASCIPos2_X>
-     0
-   </WAGASCIPos2_X>
-   <WAGASCIPos2_Y>
-     0
-   </WAGASCIPos2_Y>
-   <WAGASCIPos2_Z>
-     0
-   </WAGASCIPos2_Z>
-
-
-
    <!-- FGD3D 1 -->
    
    <FGD3Dlength1>
@@ -576,31 +448,6 @@
    </FGD3DPos2_Z>
 
 
-   <!-- SciFi XZ -->
-   <SciFiFiberEdge>
-     2
-   </SciFiFiberEdge>
-   <SciFiNum_AlongX>
-     650
-   </SciFiNum_AlongX>
-   <SciFiNum_AlongZ>
-     900
-   </SciFiNum_AlongZ>
-   <SciFiNum_Layer>
-     150
-   </SciFiNum_Layer>
-   <SciFiPos_X>
-     0
-   </SciFiPos_X>
-   <SciFiPos_Y>
-     0
-   </SciFiPos_Y>
-   <SciFiPos_Z>
-     -1487
-   </SciFiPos_Z>
-   <!-- -1487 -->
-
-
    <!-- FGDlike XZ -->
    <FGDlikeBarEdge>
      10
@@ -624,274 +471,6 @@
      0
    </FGDlikePos_Z>
    <!-- -1487 -->
-
-
-   <!-- ToF Top Downstream -->    
-   <ToFdefault_TopDown>
-     false
-   </ToFdefault_TopDown>
-   <ToFPlaneXYNum_TopDown>
-     1
-   </ToFPlaneXYNum_TopDown>
-   <ToFLayerHorizNBar_TopDown>
-     52
-   </ToFLayerHorizNBar_TopDown>
-   <ToFLayerVertNBar_TopDown>
-     92
-   </ToFLayerVertNBar_TopDown>   
-   <ToFBarwidth_TopDown>
-     25
-   </ToFBarwidth_TopDown>
-   <ToFBarheight_TopDown>
-     25
-   </ToFBarheight_TopDown>
-   <ToFRotX_TopDown>
-     -90
-   </ToFRotX_TopDown>
-   <ToFRotY_TopDown>
-     0
-   </ToFRotY_TopDown>
-   <ToFRotZ_TopDown>
-     0
-   </ToFRotZ_TopDown>
-   <ToFPosX_TopDown>
-     0
-   </ToFPosX_TopDown>
-   <ToFPosY_TopDown>
-     +1200
-   </ToFPosY_TopDown>
-   <ToFPosZ_TopDown>
-     +1137
-   </ToFPosZ_TopDown>
-
-   <!-- ToF Bottom Downstream -->    
-   <ToFdefault_BotDown>
-     false
-   </ToFdefault_BotDown>
-   <ToFPlaneXYNum_BotDown>
-     1
-   </ToFPlaneXYNum_BotDown>
-   <ToFLayerHorizNBar_BotDown>
-     52
-   </ToFLayerHorizNBar_BotDown>
-   <ToFLayerVertNBar_BotDown>
-     92
-   </ToFLayerVertNBar_BotDown>
-   <ToFBarwidth_BotDown>
-     25
-   </ToFBarwidth_BotDown>
-   <ToFBarheight_BotDown>
-     25
-   </ToFBarheight_BotDown>
-   <ToFRotX_BotDown>
-     -90
-   </ToFRotX_BotDown>
-   <ToFRotY_BotDown>
-     0
-   </ToFRotY_BotDown>
-   <ToFRotZ_BotDown>
-     0
-   </ToFRotZ_BotDown>
-   <ToFPosX_BotDown>
-     0
-   </ToFPosX_BotDown>
-   <ToFPosY_BotDown>
-     -1200
-   </ToFPosY_BotDown>
-   <ToFPosZ_BotDown>
-     +1137
-   </ToFPosZ_BotDown>
-
-   <!-- ToF Right Downstream -->
-   <ToFdefault_RightDown>
-     false
-   </ToFdefault_RightDown>
-   <ToFPlaneXYNum_RightDown>
-     1
-   </ToFPlaneXYNum_RightDown>
-   <ToFLayerHorizNBar_RightDown>
-     91
-   </ToFLayerHorizNBar_RightDown>   
-   <ToFLayerVertNBar_RightDown>
-     52
-   </ToFLayerVertNBar_RightDown>
-   <ToFBarwidth_RightDown>
-     25
-   </ToFBarwidth_RightDown>
-   <ToFBarheight_RightDown>
-     25
-   </ToFBarheight_RightDown>
-   <ToFRotX_RightDown>
-     0
-   </ToFRotX_RightDown>
-   <ToFRotY_RightDown>
-     90
-   </ToFRotY_RightDown>
-   <ToFRotZ_RightDown>
-     0
-   </ToFRotZ_RightDown>
-   <ToFPosX_RightDown>
-     -1125
-   </ToFPosX_RightDown>
-   <ToFPosY_RightDown>
-     0
-   </ToFPosY_RightDown>
-   <ToFPosZ_RightDown>
-     +1137
-   </ToFPosZ_RightDown>
-
-   <!-- ToF Left Downstream -->
-   <ToFdefault_LeftDown>
-     false
-   </ToFdefault_LeftDown>
-   <ToFPlaneXYNum_LeftDown>
-     1
-   </ToFPlaneXYNum_LeftDown>
-   <ToFLayerHorizNBar_LeftDown>
-     91
-   </ToFLayerHorizNBar_LeftDown>   
-   <ToFLayerVertNBar_LeftDown>
-     52
-   </ToFLayerVertNBar_LeftDown>
-   <ToFBarwidth_LeftDown>
-     25
-   </ToFBarwidth_LeftDown>
-   <ToFBarheight_LeftDown>
-     25
-   </ToFBarheight_LeftDown>
-   <ToFRotX_LeftDown>
-     0
-   </ToFRotX_LeftDown>
-   <ToFRotY_LeftDown>
-     90
-   </ToFRotY_LeftDown>
-   <ToFRotZ_LeftDown>
-     0
-   </ToFRotZ_LeftDown>
-   <ToFPosX_LeftDown>
-     +1125
-   </ToFPosX_LeftDown>
-   <ToFPosY_LeftDown>
-     0
-   </ToFPosY_LeftDown>
-   <ToFPosZ_LeftDown>
-     +1137
-   </ToFPosZ_LeftDown>
-
-   <!-- ToF Back Downstream -->
-   <ToFdefault_BackDown>
-     false
-   </ToFdefault_BackDown>
-   <ToFPlaneXYNum_BackDown>
-     1
-   </ToFPlaneXYNum_BackDown>
-   <ToFLayerHorizNBar_BackDown>
-     91
-   </ToFLayerHorizNBar_BackDown>   
-   <ToFLayerVertNBar_BackDown>
-     88
-   </ToFLayerVertNBar_BackDown>
-   <ToFBarwidth_BackDown>
-     25
-   </ToFBarwidth_BackDown>
-   <ToFBarheight_BackDown>
-     25
-   </ToFBarheight_BackDown>
-   <ToFRotX_BackDown>
-     0
-   </ToFRotX_BackDown>
-   <ToFRotY_BackDown>
-     0
-   </ToFRotY_BackDown>
-   <ToFRotZ_BackDown>
-     0
-   </ToFRotZ_BackDown>
-   <ToFPosX_BackDown>
-     0
-   </ToFPosX_BackDown>
-   <ToFPosY_BackDown>
-     0
-   </ToFPosY_BackDown>
-   <ToFPosZ_BackDown>
-     +1762
-   </ToFPosZ_BackDown>
-
-   <!-- ToF Front Downstream -->
-   <ToFdefault_FrontDown>
-     false
-   </ToFdefault_FrontDown>
-   <ToFPlaneXYNum_FrontDown>
-     1
-   </ToFPlaneXYNum_FrontDown>
-   <ToFLayerHorizNBar_FrontDown>
-     91
-   </ToFLayerHorizNBar_FrontDown>   
-   <ToFLayerVertNBar_FrontDown>
-     88
-   </ToFLayerVertNBar_FrontDown>
-   <ToFBarwidth_FrontDown>
-     25
-   </ToFBarwidth_FrontDown>
-   <ToFBarheight_FrontDown>
-     25
-   </ToFBarheight_FrontDown>
-   <ToFRotX_FrontDown>
-     0
-   </ToFRotX_FrontDown>
-   <ToFRotY_FrontDown>
-     0
-   </ToFRotY_FrontDown>
-   <ToFRotZ_FrontDown>
-     0
-   </ToFRotZ_FrontDown>
-   <ToFPosX_FrontDown>
-     0
-   </ToFPosX_FrontDown>
-   <ToFPosY_FrontDown>
-     0
-   </ToFPosY_FrontDown>
-   <ToFPosZ_FrontDown>
-     +512
-   </ToFPosZ_FrontDown>
-
-  <!-- ToF ECalP0D -->
-   <ToFdefault_ECalP0D>
-     false
-   </ToFdefault_ECalP0D>
-   <ToFPlaneXYNum_ECalP0D>
-     1
-   </ToFPlaneXYNum_ECalP0D>
-   <ToFLayerHorizNBar_ECalP0D>
-     91
-   </ToFLayerHorizNBar_ECalP0D>   
-   <ToFLayerVertNBar_ECalP0D>
-     88
-   </ToFLayerVertNBar_ECalP0D>
-   <ToFBarwidth_ECalP0D>
-     25
-   </ToFBarwidth_ECalP0D>
-   <ToFBarheight_ECalP0D>
-     25
-   </ToFBarheight_ECalP0D>
-   <ToFRotX_ECalP0D>
-     0
-   </ToFRotX_ECalP0D>
-   <ToFRotY_ECalP0D>
-     0
-   </ToFRotY_ECalP0D>
-   <ToFRotZ_ECalP0D>
-     0
-   </ToFRotZ_ECalP0D>
-   <ToFPosX_ECalP0D>
-     0
-   </ToFPosX_ECalP0D>
-   <ToFPosY_ECalP0D>
-     0
-   </ToFPosY_ECalP0D>
-   <ToFPosZ_ECalP0D>
-     -2950
-   </ToFPosZ_ECalP0D>
-
 
    <!-- ToF Top Upstream -->
    <ToFdefault_TopUp>
@@ -1169,18 +748,6 @@
      false
    </UseTarget2>
 
-   <UseTPCDown1>
-     false
-   </UseTPCDown1>
-   <UseTPCDown2>
-     false
-   </UseTPCDown2>
-   <UseTPCUp1>
-     false
-   </UseTPCUp1>
-   <UseTPCUp2>
-     false
-   </UseTPCUp2>
    <UseFGD1>
     true
    </UseFGD1>
@@ -1208,21 +775,12 @@
      true
    </UseFlatCable>
 
-   <UseWAGASCI1>
-     false
-   </UseWAGASCI1>
-   <UseWAGASCI2>
-     false
-   </UseWAGASCI2>
    <UseFGD3D1>
      false
    </UseFGD3D1>
    <UseFGD3D2>
      false
    </UseFGD3D2>
-   <UseSciFi>
-     false
-   </UseSciFi>
    <UseFGDlike>
      false
    </UseFGDlike>
@@ -1231,29 +789,6 @@
      false
    </UseDegrader>
    
-   <UseToF_TopDown>
-     false
-   </UseToF_TopDown>
-   <UseToF_BotDown>
-     false
-   </UseToF_BotDown>
-   <UseToF_RightDown>
-     false
-   </UseToF_RightDown>
-   <UseToF_LeftDown>
-     false
-   </UseToF_LeftDown>
-   <UseToF_BackDown>
-     false
-   </UseToF_BackDown>
-   <UseToF_FrontDown>
-     false
-   </UseToF_FrontDown>
-
-  <UseToF_ECalP0D>
-     false
-   </UseToF_ECalP0D>
-
    <UseToF_TopUp>
      true
    </UseToF_TopUp>
@@ -1316,18 +851,6 @@
      false
    </InvisTarget2>
 
-   <InvisTPCDown1>
-     false
-   </InvisTPCDown1>
-   <InvisTPCDown2>
-     false
-   </InvisTPCDown2>
-   <InvisTPCUp1>
-     false
-   </InvisTPCUp1>
-   <InvisTPCUp2>
-     false
-   </InvisTPCUp2>
    <InvisFGD1>
      false
    </InvisFGD1>
@@ -1338,42 +861,13 @@
    <InvisSuperFGD>
      true
    </InvisSuperFGD>
-   <InvisWAGASCI>
-     true
-   </InvisWAGASCI>
    <InvisFGD3D>
      true
    </InvisFGD3D> 
-  <InvisSciFi>
-     true
-   </InvisSciFi>
    <InvisFGDlike>
      true
    </InvisFGDlike>
    
-   <InvisToF_TopDown>
-     false
-   </InvisToF_TopDown>
-   <InvisToF_BotDown>
-     false
-   </InvisToF_BotDown>
-   <InvisToF_RightDown>
-     false
-   </InvisToF_RightDown>
-   <InvisToF_LeftDown>
-     false
-   </InvisToF_LeftDown>
-   <InvisToF_BackDown>
-     false
-   </InvisToF_BackDown>
-   <InvisToF_FrontDown>
-     false
-   </InvisToF_FrontDown>
-
-   <InvisToF_ECalP0D>
-     false
-   </InvisToF_ECalP0D>
-
    <InvisToF_TopUp>
      false
    </InvisToF_TopUp>

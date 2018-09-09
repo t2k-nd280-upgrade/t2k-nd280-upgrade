@@ -294,6 +294,16 @@
    </SuperFGDPos1_Z>
    <!-- -1695 -->
 
+    <!-- SuperFGD CF Box -->
+   
+   <CFBoxCFRPThickness>
+     2
+   </CFBoxCFRPThickness>
+   
+   <CFBoxAIREXThickness>
+     30
+   </CFBoxAIREXThickness>
+
    <!-- SuperFGD 2 -->
    <SuperFGDCubeEdge2>
      10
@@ -318,6 +328,161 @@
    <SuperFGDPos2_Z>
      0
    </SuperFGDPos2_Z>
+
+    <!-- SuperFGD CF Box -->
+   
+   <CFBoxCFRPThickness>
+     2
+   </CFBoxCFRPThickness>
+   
+   <CFBoxAIREXThickness>
+     30
+   </CFBoxAIREXThickness>
+
+   <!-- SuperFGD Flat Cable -->
+   
+   <FlatCableThickness>
+     0.117
+   </FlatCableThickness>
+ 
+   <FlatCableWidth>
+     27.85
+   </FlatCableWidth>
+
+   <FlatCableX>
+     18
+   </FlatCableX>
+
+   <FlatCableZ>
+     32
+   </FlatCableZ>
+
+   <!-- HATPCFC -->
+
+   <HATPCFCName>
+   Solid
+   </HATPCFCName>
+
+   <!-- HATPCUp -->
+
+   <HATPCUpWidth>
+   1850
+   </HATPCUpWidth>
+
+   <HATPCUpHeight>
+   900
+   </HATPCUpHeight>
+
+   <HATPCUpLength>
+   1900
+   </HATPCUpLength>
+
+   <HATPCUpDriftWidth>
+   1700
+   </HATPCUpDriftWidth>
+
+   <HATPCUpDriftHeight>
+   700
+   </HATPCUpDriftHeight>
+
+   <HATPCUpDriftLength>
+   1700
+   </HATPCUpDriftLength>
+
+   <HATPCUpCathodeThickness>
+   13.2
+   </HATPCUpCathodeThickness>  
+
+   <HATPCUpInnerBoxWall>
+   100
+   </HATPCUpInnerBoxWall>
+
+   <HATPCUpOuterBoxWall>
+   100
+   </HATPCUpOuterBoxWall>
+
+   <HATPCUpSteppingLimit>
+   1.
+   </HATPCUpSteppingLimit>
+
+   <ActiveHATPCUpVerticalOffset>
+   25
+   </ActiveHATPCUpVerticalOffset>
+
+   <HATPCUpPos_X>
+     0  
+   </HATPCUpPos_X>
+   <HATPCUpPos_Y>
+     725.75
+   </HATPCUpPos_Y>
+   <HATPCUpPos_Z>
+     -1695
+   </HATPCUpPos_Z>
+
+   <!-- HATPCDown -->
+
+   <HATPCDownWidth>
+   1850
+   </HATPCDownWidth>
+
+   <HATPCDownHeight>
+   900
+   </HATPCDownHeight>
+
+   <HATPCDownLength>
+   1900
+   </HATPCDownLength>
+
+   <HATPCDownDriftWidth>
+   1700
+   </HATPCDownDriftWidth>
+
+   <HATPCDownDriftHeight>
+   700
+   </HATPCDownDriftHeight>
+
+   <HATPCDownDriftLength>
+   1700
+   </HATPCDownDriftLength>
+
+   <HATPCDownCathodeThickness>
+   13.2
+   </HATPCDownCathodeThickness>  
+
+   <HATPCDownCO2Top>
+   100
+   </HATPCDownCO2Top>  
+
+   <HATPCDownCO2Bottom>
+   100
+   </HATPCDownCO2Bottom>
+
+   <HATPCDownInnerBoxWall>
+   100
+   </HATPCDownInnerBoxWall>
+
+   <HATPCDownOuterBoxWall>
+   100
+   </HATPCDownOuterBoxWall>
+
+   <HATPCDownSteppingLimit>
+   1.
+   </HATPCDownSteppingLimit>
+
+   <ActiveHATPCDownVerticalOffset>
+   25
+   </ActiveHATPCDownVerticalOffset>
+
+   <HATPCDownPos_X>
+     0  
+   </HATPCDownPos_X>
+   <HATPCDownPos_Y>
+     -725.75
+   </HATPCDownPos_Y>
+   <HATPCDownPos_Z>
+     -1695
+   </HATPCDownPos_Z>
+
 
 
 
@@ -965,7 +1130,7 @@
    </ToFPosZ_FrontUp>
 
    <DegraderLength>
-    230
+    240
   </DegraderLength>
   <DegraderWidth>
     240
@@ -980,11 +1145,18 @@
     16
   </DegraderPositionY>
   <DegraderPositionZ>
-    -355
+    -410
   </DegraderPositionZ>
 
 
    <!-- Include detectors -->
+
+   <UseHATPCUp>
+     false
+   </UseHATPCUp>
+   <UseHATPCDown>
+     false
+   </UseHATPCDown>
 
    <UseForwTPC1>
      false
@@ -1024,6 +1196,17 @@
    <UseSuperFGD1>
      true
    </UseSuperFGD1>
+   <UseCFBox>
+     false
+   </UseCFBox>
+
+   <UsePCB>
+     false
+   </UsePCB>
+
+   <UseFlatCable>
+     false
+   </UseFlatCable>
    <UseSuperFGD2>
      false
    </UseSuperFGD2>
@@ -1047,7 +1230,7 @@
    </UseFGDlike>
 
    <UseDegrader>
-     false
+     true
    </UseDegrader>
 
    <UseToF_TopDown>

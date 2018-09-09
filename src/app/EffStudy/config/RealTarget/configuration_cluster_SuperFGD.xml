@@ -270,27 +270,27 @@
      +2648.5
    </FGDPos2_Z>
 
-   <!-- SuperFGD 1 -->
+  <!-- SuperFGD 1 -->
    <SuperFGDCubeEdge1>
      10
    </SuperFGDCubeEdge1>
    <SuperFGDCubeNum1_X>
-     190
+     204
    </SuperFGDCubeNum1_X>
    <SuperFGDCubeNum1_Y>
-     60
+     52
    </SuperFGDCubeNum1_Y>
    <SuperFGDCubeNum1_Z>
-     190
+     188
    </SuperFGDCubeNum1_Z>
    <SuperFGDPos1_X>
      0
    </SuperFGDPos1_X>
    <SuperFGDPos1_Y>
-     0
+     16
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     -1695
+     0
    </SuperFGDPos1_Z>
    <!-- -1695 -->
    
@@ -318,6 +318,34 @@
    <SuperFGDPos2_Z>
      0
    </SuperFGDPos2_Z>
+
+   <!-- SuperFGD CF Box -->
+   
+   <CFBoxCFRPThickness>
+     2
+   </CFBoxCFRPThickness>
+   
+   <CFBoxAIREXThickness>
+     30
+   </CFBoxAIREXThickness>
+
+   <!-- SuperFGD Flat Cable -->
+   
+   <FlatCableThickness>
+     0.117
+   </FlatCableThickness>
+ 
+   <FlatCableWidth>
+     27.85
+   </FlatCableWidth>
+
+   <FlatCableX>
+     18
+   </FlatCableX>
+
+   <FlatCableZ>
+     32
+   </FlatCableZ>
 
    <!-- HATPCFC -->
 
@@ -446,61 +474,6 @@
    </HATPCDownPos_Z>
 
 
-
-   <!-- WAGASCI 1 -->
-   
-   <WAGASCIInactMaterial1>
-     Air
-   </WAGASCIInactMaterial1>
-   
-   <WAGASCIlength1>
-     70
-   </WAGASCIlength1>
-   <WAGASCIwidth1>  
-     600
-   </WAGASCIwidth1>
-   <WAGASCIheight1> 
-     600
-   </WAGASCIheight1>
-
-   <WAGASCIPos1_X>
-     0
-   </WAGASCIPos1_X>
-   <WAGASCIPos1_Y>
-     0
-   </WAGASCIPos1_Y>
-   <WAGASCIPos1_Z>
-     0
-   </WAGASCIPos1_Z>
-
-   <!-- WAGASCI 2 -->
-
-   <WAGASCIInactMaterial2>
-     Water
-   </WAGASCIInactMaterial2>
-
-   <WAGASCIlength2>
-     13
-   </WAGASCIlength2>
-   <WAGASCIwidth2>  
-     18
-   </WAGASCIwidth2>
-   <WAGASCIheight2> 
-     6
-   </WAGASCIheight2>
-
-   <WAGASCIPos2_X>
-     0
-   </WAGASCIPos2_X>
-   <WAGASCIPos2_Y>
-     0
-   </WAGASCIPos2_Y>
-   <WAGASCIPos2_Z>
-     0
-   </WAGASCIPos2_Z>
-
-
-
    <!-- FGD3D 1 -->
    
    <FGD3Dlength1>
@@ -545,32 +518,6 @@
      0
    </FGD3DPos2_Z>
 
-
-   <!-- SciFi XZ -->
-   <SciFiFiberEdge>
-     2
-   </SciFiFiberEdge>
-   <SciFiNum_AlongX>
-     650
-   </SciFiNum_AlongX>
-   <SciFiNum_AlongZ>
-     900
-   </SciFiNum_AlongZ>
-   <SciFiNum_Layer>
-     150
-   </SciFiNum_Layer>
-   <SciFiPos_X>
-     0
-   </SciFiPos_X>
-   <SciFiPos_Y>
-     0
-   </SciFiPos_Y>
-   <SciFiPos_Z>
-     -1487
-   </SciFiPos_Z>
-   <!-- -1487 -->
-
-
    <!-- FGDlike XZ -->
    <FGDlikeBarEdge>
      10
@@ -594,273 +541,6 @@
      -1695
    </FGDlikePos_Z>
    <!-- -1695 -->
-
-
-   <!-- ToF Top Downstream -->    
-   <ToFdefault_TopDown>
-     false
-   </ToFdefault_TopDown>
-   <ToFPlaneXYNum_TopDown>
-     1
-   </ToFPlaneXYNum_TopDown>
-   <ToFLayerHorizNBar_TopDown>
-     52
-   </ToFLayerHorizNBar_TopDown>
-   <ToFLayerVertNBar_TopDown>
-     92
-   </ToFLayerVertNBar_TopDown>   
-   <ToFBarwidth_TopDown>
-     25
-   </ToFBarwidth_TopDown>
-   <ToFBarheight_TopDown>
-     25
-   </ToFBarheight_TopDown>
-   <ToFRotX_TopDown>
-     -90
-   </ToFRotX_TopDown>
-   <ToFRotY_TopDown>
-     0
-   </ToFRotY_TopDown>
-   <ToFRotZ_TopDown>
-     0
-   </ToFRotZ_TopDown>
-   <ToFPosX_TopDown>
-     0
-   </ToFPosX_TopDown>
-   <ToFPosY_TopDown>
-     +1200
-   </ToFPosY_TopDown>
-   <ToFPosZ_TopDown>
-     +1137
-   </ToFPosZ_TopDown>
-
-   <!-- ToF Bottom Downstream -->    
-   <ToFdefault_BotDown>
-     false
-   </ToFdefault_BotDown>
-   <ToFPlaneXYNum_BotDown>
-     1
-   </ToFPlaneXYNum_BotDown>
-   <ToFLayerHorizNBar_BotDown>
-     52
-   </ToFLayerHorizNBar_BotDown>
-   <ToFLayerVertNBar_BotDown>
-     92
-   </ToFLayerVertNBar_BotDown>
-   <ToFBarwidth_BotDown>
-     25
-   </ToFBarwidth_BotDown>
-   <ToFBarheight_BotDown>
-     25
-   </ToFBarheight_BotDown>
-   <ToFRotX_BotDown>
-     -90
-   </ToFRotX_BotDown>
-   <ToFRotY_BotDown>
-     0
-   </ToFRotY_BotDown>
-   <ToFRotZ_BotDown>
-     0
-   </ToFRotZ_BotDown>
-   <ToFPosX_BotDown>
-     0
-   </ToFPosX_BotDown>
-   <ToFPosY_BotDown>
-     -1200
-   </ToFPosY_BotDown>
-   <ToFPosZ_BotDown>
-     +1137
-   </ToFPosZ_BotDown>
-
-   <!-- ToF Right Downstream -->
-   <ToFdefault_RightDown>
-     false
-   </ToFdefault_RightDown>
-   <ToFPlaneXYNum_RightDown>
-     1
-   </ToFPlaneXYNum_RightDown>
-   <ToFLayerHorizNBar_RightDown>
-     91
-   </ToFLayerHorizNBar_RightDown>   
-   <ToFLayerVertNBar_RightDown>
-     52
-   </ToFLayerVertNBar_RightDown>
-   <ToFBarwidth_RightDown>
-     25
-   </ToFBarwidth_RightDown>
-   <ToFBarheight_RightDown>
-     25
-   </ToFBarheight_RightDown>
-   <ToFRotX_RightDown>
-     0
-   </ToFRotX_RightDown>
-   <ToFRotY_RightDown>
-     90
-   </ToFRotY_RightDown>
-   <ToFRotZ_RightDown>
-     0
-   </ToFRotZ_RightDown>
-   <ToFPosX_RightDown>
-     -1125
-   </ToFPosX_RightDown>
-   <ToFPosY_RightDown>
-     0
-   </ToFPosY_RightDown>
-   <ToFPosZ_RightDown>
-     +1137
-   </ToFPosZ_RightDown>
-
-   <!-- ToF Left Downstream -->
-   <ToFdefault_LeftDown>
-     false
-   </ToFdefault_LeftDown>
-   <ToFPlaneXYNum_LeftDown>
-     1
-   </ToFPlaneXYNum_LeftDown>
-   <ToFLayerHorizNBar_LeftDown>
-     91
-   </ToFLayerHorizNBar_LeftDown>   
-   <ToFLayerVertNBar_LeftDown>
-     52
-   </ToFLayerVertNBar_LeftDown>
-   <ToFBarwidth_LeftDown>
-     25
-   </ToFBarwidth_LeftDown>
-   <ToFBarheight_LeftDown>
-     25
-   </ToFBarheight_LeftDown>
-   <ToFRotX_LeftDown>
-     0
-   </ToFRotX_LeftDown>
-   <ToFRotY_LeftDown>
-     90
-   </ToFRotY_LeftDown>
-   <ToFRotZ_LeftDown>
-     0
-   </ToFRotZ_LeftDown>
-   <ToFPosX_LeftDown>
-     +1125
-   </ToFPosX_LeftDown>
-   <ToFPosY_LeftDown>
-     0
-   </ToFPosY_LeftDown>
-   <ToFPosZ_LeftDown>
-     +1137
-   </ToFPosZ_LeftDown>
-
-   <!-- ToF Back Downstream -->
-   <ToFdefault_BackDown>
-     false
-   </ToFdefault_BackDown>
-   <ToFPlaneXYNum_BackDown>
-     1
-   </ToFPlaneXYNum_BackDown>
-   <ToFLayerHorizNBar_BackDown>
-     91
-   </ToFLayerHorizNBar_BackDown>   
-   <ToFLayerVertNBar_BackDown>
-     88
-   </ToFLayerVertNBar_BackDown>
-   <ToFBarwidth_BackDown>
-     25
-   </ToFBarwidth_BackDown>
-   <ToFBarheight_BackDown>
-     25
-   </ToFBarheight_BackDown>
-   <ToFRotX_BackDown>
-     0
-   </ToFRotX_BackDown>
-   <ToFRotY_BackDown>
-     0
-   </ToFRotY_BackDown>
-   <ToFRotZ_BackDown>
-     0
-   </ToFRotZ_BackDown>
-   <ToFPosX_BackDown>
-     0
-   </ToFPosX_BackDown>
-   <ToFPosY_BackDown>
-     0
-   </ToFPosY_BackDown>
-   <ToFPosZ_BackDown>
-     +512 
-   </ToFPosZ_BackDown>
-
-   <!-- ToF Front Downstream -->
-   <ToFdefault_FrontDown>
-     false
-   </ToFdefault_FrontDown>
-   <ToFPlaneXYNum_FrontDown>
-     1
-   </ToFPlaneXYNum_FrontDown>
-   <ToFLayerHorizNBar_FrontDown>
-     91
-   </ToFLayerHorizNBar_FrontDown>   
-   <ToFLayerVertNBar_FrontDown>
-     88
-   </ToFLayerVertNBar_FrontDown>
-   <ToFBarwidth_FrontDown>
-     25
-   </ToFBarwidth_FrontDown>
-   <ToFBarheight_FrontDown>
-     25
-   </ToFBarheight_FrontDown>
-   <ToFRotX_FrontDown>
-     0
-   </ToFRotX_FrontDown>
-   <ToFRotY_FrontDown>
-     0
-   </ToFRotY_FrontDown>
-   <ToFRotZ_FrontDown>
-     0
-   </ToFRotZ_FrontDown>
-   <ToFPosX_FrontDown>
-     0
-   </ToFPosX_FrontDown>
-   <ToFPosY_FrontDown>
-     0
-   </ToFPosY_FrontDown>
-   <ToFPosZ_FrontDown>
-     +1762
-   </ToFPosZ_FrontDown>
-
-  <!-- ToF ECalP0D -->
-   <ToFdefault_ECalP0D>
-     false
-   </ToFdefault_ECalP0D>
-   <ToFPlaneXYNum_ECalP0D>
-     1
-   </ToFPlaneXYNum_ECalP0D>
-   <ToFLayerHorizNBar_ECalP0D>
-     91
-   </ToFLayerHorizNBar_ECalP0D>   
-   <ToFLayerVertNBar_ECalP0D>
-     88
-   </ToFLayerVertNBar_ECalP0D>
-   <ToFBarwidth_ECalP0D>
-     25
-   </ToFBarwidth_ECalP0D>
-   <ToFBarheight_ECalP0D>
-     25
-   </ToFBarheight_ECalP0D>
-   <ToFRotX_ECalP0D>
-     0
-   </ToFRotX_ECalP0D>
-   <ToFRotY_ECalP0D>
-     0
-   </ToFRotY_ECalP0D>
-   <ToFRotZ_ECalP0D>
-     0
-   </ToFRotZ_ECalP0D>
-   <ToFPosX_ECalP0D>
-     0
-   </ToFPosX_ECalP0D>
-   <ToFPosY_ECalP0D>
-     0
-   </ToFPosY_ECalP0D>
-   <ToFPosZ_ECalP0D>
-     -2800
-   </ToFPosZ_ECalP0D>
 
    <!-- ToF Top Upstream -->
    <ToFdefault_TopUp>
@@ -1138,6 +818,18 @@
    <UseSuperFGD1>
      true
    </UseSuperFGD1>
+
+   <UseCFBox>
+     false
+   </UseCFBox>
+
+   <UsePCB>
+     false
+   </UsePCB>
+
+   <UseFlatCable>
+     false
+   </UseFlatCable>
    <UseSuperFGD2>
      false
    </UseSuperFGD2>
