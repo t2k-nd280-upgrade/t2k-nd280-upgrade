@@ -1,12 +1,12 @@
 back=$PWD
 prefix=/t2k/users/suvorov/figure/ndUP/Michel/
-out_name="out_test"
-in_name_def="/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/proto2/degrader_4_mu_500-Exp"
+out_name="deg20"
+in_name_def="/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/proto2/proto2_deg23_mu500-Exp"
 
 
 first=0
-last=25000
-segm=10
+last=30000
+segm=30
 
 step=$(((last-first) / segm))
 
@@ -38,13 +38,13 @@ do
 done
 
 echo "Running parallel"
-parallel -j 10 -a $bars/tmp/$name_dir/command.sh
+nice -n15 parallel -j 50 -a $bars/tmp/$name_dir/command.sh
 rm -r $bars/tmp/$name_dir
 
 echo "done"
 
-#hadd -f "$prefix/${out_name}.root" "$prefix/${out_name)}_*"
-#rm "$prefix/${out_name}_"*
+hadd -f "${prefix}/${out_name}.root" "${prefix}/${out_name}_"*
+rm "$prefix/${out_name}_"*
 
 cd $back
 

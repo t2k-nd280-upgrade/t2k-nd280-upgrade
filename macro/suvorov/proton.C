@@ -1,3 +1,13 @@
+#include "TChain.h"
+#include "TFile.h"
+#include "TCanvas.h"
+#include "TH2F.h"
+#include "TND280UpEvent.hh"
+
+#include <iostream>
+
+using namespace std;
+
 void proton(){
   // Chaining input files
   TChain* chain = new TChain("ND280upEvents");
@@ -24,11 +34,11 @@ void proton(){
   h2d_xz = (TH2F*)finput->Get("OutMPPCProj2D_XZ");
   h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
 
-  TH2F* stop_xy = h2d_xy->Clone("stop_XY");
+  TH2F* stop_xy = (TH2F*)h2d_xy->Clone("stop_XY");
 
   // define output histos
-  TH2F* stop_xz = h2d_xz->Clone("stop_xz");
-  TH2F* stop_yz = h2d_yz->Clone("stop_yz");
+  TH2F* stop_xz = (TH2F*)h2d_xz->Clone("stop_xz");
+  TH2F* stop_yz = (TH2F*)h2d_yz->Clone("stop_yz");
 
   TH1F* E_dep = new TH1F("edep", "Deposited energy", 24, 0., 24.);
 
