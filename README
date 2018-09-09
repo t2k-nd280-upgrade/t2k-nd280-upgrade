@@ -7,7 +7,6 @@ source T2KND280Up_CLHEP.sh $PWD --> for external CLHEP
 1.) To build the code do:
 
 cd build
-source cmake_clean.sh
 source cmake_compile.sh
 
 2.) To run the code do:
