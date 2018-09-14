@@ -119,13 +119,13 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
   G4String detname_curr = ndPoint->GetLogVolName();
 
   // uncomment this to store all points in the target
-  
+  /*
   if (detname_curr.contains("/t2k/OA/Magnet/Basket/target1")) {
     ndPoint->MarkPoint();
     return;
   } else
     return;
-    
+  */  
 
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
@@ -166,8 +166,8 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
 
   // Uncomment this to store all trajectories 
   
-  ndTraj->MarkTrajectory();
-  return;
+  //ndTraj->MarkTrajectory();
+  //return;
   
   
   // Go through all of the trajectories and save:
