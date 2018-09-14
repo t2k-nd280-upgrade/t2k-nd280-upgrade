@@ -72,7 +72,8 @@ ND280RootPersistencyManager* ND280RootPersistencyManager::GetInstance() {
 }
 
 ND280RootPersistencyManager::~ND280RootPersistencyManager() {
-    if (fOutput) delete fOutput; fOutput = NULL;
+    if (fOutput) delete fOutput; 
+    fOutput = NULL;
     delete fND280XMLInput; fND280XMLInput = NULL;
 }
 

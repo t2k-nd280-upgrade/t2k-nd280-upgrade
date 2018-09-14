@@ -57,9 +57,12 @@ TND280UpRecoTrack::~TND280UpRecoTrack()
   fIsReco        = false;
   fIsSeparated   = false;
   
-  if(fMPPCHit_XY) delete fMPPCHit_XY; fMPPCHit_XY=0; 
-  if(fMPPCHit_XZ) delete fMPPCHit_XZ; fMPPCHit_XZ=0; 
-  if(fMPPCHit_YZ) delete fMPPCHit_YZ; fMPPCHit_YZ=0; 
+  if(fMPPCHit_XY) delete fMPPCHit_XY;  
+  if(fMPPCHit_XZ) delete fMPPCHit_XZ;  
+  if(fMPPCHit_YZ) delete fMPPCHit_YZ;
+  fMPPCHit_XY=0;
+  fMPPCHit_XZ=0;
+  fMPPCHit_YZ=0; 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......   

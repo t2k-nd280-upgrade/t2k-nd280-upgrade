@@ -55,20 +55,32 @@ void ND280UpPID::Init(){
 
 void ND280UpPID::Delete(){
 
-  if(fPDF_Muon) fPDF_Muon->Delete(); fPDF_Muon=0;
-  if(fPDF_Pion) fPDF_Pion->Delete(); fPDF_Pion=0;
-  if(fPDF_Prot) fPDF_Prot->Delete(); fPDF_Prot=0;
-  if(fPDF_Elec) fPDF_Elec->Delete(); fPDF_Elec=0;  
+  if(fPDF_Muon) fPDF_Muon->Delete(); 
+  if(fPDF_Pion) fPDF_Pion->Delete(); 
+  if(fPDF_Prot) fPDF_Prot->Delete(); 
+  if(fPDF_Elec) fPDF_Elec->Delete();
+  fPDF_Muon=0;
+  fPDF_Pion=0;
+  fPDF_Prot=0;
+  fPDF_Elec=0;   
 
-  if(fGraph_Muon) fGraph_Muon->Delete(); fGraph_Muon=0;
-  if(fGraph_Pion) fGraph_Pion->Delete(); fGraph_Pion=0;
-  if(fGraph_Prot) fGraph_Prot->Delete(); fGraph_Prot=0;
-  if(fGraph_Elec) fGraph_Elec->Delete(); fGraph_Elec=0;
+  if(fGraph_Muon) fGraph_Muon->Delete(); 
+  if(fGraph_Pion) fGraph_Pion->Delete(); 
+  if(fGraph_Prot) fGraph_Prot->Delete(); 
+  if(fGraph_Elec) fGraph_Elec->Delete(); 
+  fGraph_Muon=0;
+  fGraph_Pion=0;
+  fGraph_Prot=0;
+  fGraph_Elec=0;
 
-  if(fSpline_Muon) fSpline_Muon->Delete(); fSpline_Muon=0;
-  if(fSpline_Pion) fSpline_Pion->Delete(); fSpline_Pion=0;
-  if(fSpline_Prot) fSpline_Prot->Delete(); fSpline_Prot=0;
-  if(fSpline_Elec) fSpline_Elec->Delete(); fSpline_Elec=0;
+  if(fSpline_Muon) fSpline_Muon->Delete(); 
+  if(fSpline_Pion) fSpline_Pion->Delete(); 
+  if(fSpline_Prot) fSpline_Prot->Delete(); 
+  if(fSpline_Elec) fSpline_Elec->Delete(); 
+  fSpline_Muon=0;
+  fSpline_Pion=0;
+  fSpline_Prot=0;
+  fSpline_Elec=0;
 
   fIntegral_Muon=0;
   fIntegral_Pion=0;
