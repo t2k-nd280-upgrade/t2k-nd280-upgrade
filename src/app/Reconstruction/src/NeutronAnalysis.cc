@@ -100,6 +100,8 @@ int NeutronAnalysis(int argc,char** argv) {
   TH2F* eff_e_cos   = new TH2F("eff_ET", "Efficiency", 10, -1., 1., 250, 0., 500);
   // p.e. vs theta and energy
   TH2F* pe_e_cos    = new TH2F("pe_ET", "PE from 1st hit", 10, -1., 1., 250, 0., 500);
+  // p.e. vs energy
+  TH2F* pe_e        = new TH2F("pe_E", "PE from 1st hit", 250., 0., 500, 250, 0., 500.);
   // distance from born position towards 1st hit
   TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 300, 0., 1500, 250, 0., 500.);
   // momentum for forward going
@@ -119,7 +121,7 @@ int NeutronAnalysis(int argc,char** argv) {
   TH2F* beta_ekin     = new TH2F("beta_ekin", "energy resolution", 250, 0., 500, 250, 0., 1.);
   TH2F* beta_ekin_sm  = new TH2F("beta_ekin_sm", "energy resolution", 250, 0., 500, 250, 0., 1.);
 
-  TH1F* diff = new TH1F("diff", "", 400, -20., 20);
+  //TH1F* diff = new TH1F("diff", "", 400, -20., 20);
 
   int vertex_norm = 0;
 
@@ -173,7 +175,6 @@ int NeutronAnalysis(int argc,char** argv) {
   TH2F* first_bin_YZ = (TH2F*)h2d_yz->Clone("fb_YZ");
 
   TH3F* h3d = new TH3F("3d", "", binX, X_min, X_max, binY, Y_min, Y_max, binZ, Z_min, Z_max);
-  TH3F* h3dt = new TH3F("3d", "", binX, X_min, X_max, binY, Y_min, Y_max, binZ, Z_min, Z_max);
 
   // Take the World origin position in the target (local) reference system
   TPolyMarker3D *WorldOrigInLocal = (TPolyMarker3D*)finput->Get("WorldOrigInLocal");
@@ -276,7 +277,6 @@ int NeutronAnalysis(int argc,char** argv) {
     }
 
     h3d->Reset();
-    h3dt->Reset();
     
    // Initialize histograms
     
@@ -624,7 +624,7 @@ int NeutronAnalysis(int argc,char** argv) {
       if (DEBUG)
         cout << "       # point " << pointID << "  pos " <<  point_binX << "\t" << point_binY << "\t" << point_binZ << "\t\t" << pointT <<endl;
 
-      if (point_binX == first_binX && point_binY == first_binY && point_binZ == point_binZ)
+      if (point_binX == first_binX && point_binY == first_binY && point_binZ == first_binZ)
         neutron_time = pointT;
     }
 
@@ -643,16 +643,20 @@ int NeutronAnalysis(int argc,char** argv) {
                                         hits_map_YZ->GetBinContent(Last_true_binY, Last_true_binZ) << endl;
     }
 
+    /*
     if (neutron_time == -1)
       diff->Fill(-20.);  
     else
       diff->Fill(first_hit_time - neutron_time);
+    */
 
     eff_e_cos->Fill(costheta, ekin);
-    pe_e_cos->Fill( costheta, ekin,
-                    hits_map_XY->GetBinContent(first_binX, first_binY) +
+    Float_t light = hits_map_XY->GetBinContent(first_binX, first_binY) +
                     hits_map_XZ->GetBinContent(first_binX, first_binZ) +
-                    hits_map_YZ->GetBinContent(first_binY, first_binZ));
+                    hits_map_YZ->GetBinContent(first_binY, first_binZ);
+    pe_e_cos->Fill( costheta, ekin, light);
+
+    pe_e->Fill(ekin, light);
     if (costheta > 0.9)
       mom_forward->Fill(mom);
 
@@ -707,13 +711,14 @@ int NeutronAnalysis(int argc,char** argv) {
   hits_energy->Write();
   e_dist->Write();
 
-  diff->Write();
+  //diff->Write();
 
   first_bin_XY->Write();
   first_bin_YZ->Write();
   first_bin_XZ->Write();
 
   pe_e_cos->Write();
+  pe_e->Write();
 
   init_e_cos->Write();
   eff_e_cos->Write();

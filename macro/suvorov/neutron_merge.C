@@ -4,11 +4,12 @@
 #include "TStyle.h"
 #include "TPad.h"
 #include "TGraphAsymmErrors.h"
+#include "TCanvas.h"
 
 #include <iostream>
 
 void neutron_merge() {
-	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-gamma_VA3-UseXY-UseXZ-UseYZ-Separate10_na_200000.root", "READ");
+	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v3-UseXY-UseXZ-UseYZ-Separate10_na_200000.root", "READ");
 
 	TH2F* init_e_cos  = (TH2F*)file->Get("ini_ET");
 	TH2F* eff_e_cos   = (TH2F*)file->Get("eff_ET");
@@ -21,6 +22,8 @@ void neutron_merge() {
 
   TH1F* mom_forward = (TH1F*)file->Get("mom");
   TH1F* mom_norm    = (TH1F*)file->Get("mom1");
+
+  TH2F* pe_e        = (TH2F*)file->Get("pe_E");
 
   Int_t rebin_Y = 5;
 
@@ -56,6 +59,7 @@ void neutron_merge() {
   f1->SetParName(1, "Mean");
   f1->SetParName(2, "Left sigma");
   f1->SetParName(3, "Right sigma");
+  /*
 
   for (Int_t resID = 1; resID <= 6; ++resID ) {
     TH1D* fitted_histo[Nbins];
@@ -103,6 +107,7 @@ void neutron_merge() {
     gPad->Update();
     graph[resID-1]->Write(Form("graph%i", resID));
   }
+  */
 
 	// do rebinning
 	
@@ -133,12 +138,64 @@ void neutron_merge() {
     }
   }
 
+  // energy distance study
+  // TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 300, 0., 1500, 250, 0., 500.);
+  TH2F* e_d_c = (TH2F*)e_dist->Clone("e_d_c");
+  TH1D* dist = e_d_c->ProjectionX("dist", 13, -1);
+  dist->Rebin(5);
+  dist->SetTitle("First hit distance. Ekin > 26 MeV");
+  dist->Write();
+  TH1D* dist_eff = (TH1D*)dist->Clone("Energy distance");
+  dist_eff->SetTitle("Efficiency vs distance cut");
+  for (Int_t i = 1; i <= dist->GetNbinsX(); ++i) {
+    dist_eff->SetBinContent(i, dist->Integral(i, -1));
+  }
+  dist_eff->Scale(1./dist->Integral());
+  dist_eff->Write();
+
   mom_forward->Divide(mom_norm);
+
+  TF1* beta = new TF1("beta", "sqrt(x*x + 2*x*939)/(x+939)", 0., 500.);
+  (void)beta;
+  TCanvas* c1 = new TCanvas("canva","",50,50,1000,800);
+  TF1* resol_100_05 = new TF1("resol_100_09", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/100*0.5*30", 0., 500.);
+  resol_100_05->Draw();
+  c1->Write();
+  TF1* resol_20_09 = new TF1("resol_20_09", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/20*0.9*30", 0., 500.);
+  resol_20_09->Draw();
+  c1->Write();
+
+  TF1* resol_50_09 = new TF1("resol_50_09", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/50*0.9*30", 0., 500.);
+  TF1* resol_50_07 = new TF1("resol_50_07", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/50*0.7*30", 0., 500.);
+  resol_50_07->SetLineColor(kGreen);
+  TF1* resol_50_05 = new TF1("resol_50_05", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/50*0.5*30", 0., 500.);
+  resol_50_05->SetLineColor(kBlue);
+  TF1* resol_50_03 = new TF1("resol_50_03", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/50*0.3*30", 0., 500.);
+  resol_50_03->SetLineColor(kYellow);
+  resol_50_09->Draw();
+  resol_50_07->Draw("same");
+  resol_50_05->Draw("same");
+  resol_50_03->Draw("same");
+  c1->Write();
+
+  //TF1* resol_20_09 = new TF1("resol_20_09", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/20*0.9*30", 0., 500.);
+  TF1* resol_20_07 = new TF1("resol_20_07", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/20*0.7*30", 0., 500.);
+  resol_20_07->SetLineColor(kGreen);
+  TF1* resol_20_05 = new TF1("resol_20_05", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/20*0.5*30", 0., 500.);
+  resol_20_05->SetLineColor(kBlue);
+  TF1* resol_20_03 = new TF1("resol_20_03", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/20*0.3*30", 0., 500.);
+  resol_20_03->SetLineColor(kYellow);
+  resol_20_09->Draw();
+  resol_20_07->Draw("same");
+  resol_20_05->Draw("same");
+  resol_20_03->Draw("same");
+  c1->Write();
 
   init_e_cos->Write();
   eff_e_cos->Write();
   eff_e_cos_2->Write();
   pe_e_cos->Write();
+  pe_e->Write();
   hits_energy->Write();
   hits_number->Write();
   e_dist->Write();
