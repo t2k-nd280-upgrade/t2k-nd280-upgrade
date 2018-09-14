@@ -1,5 +1,11 @@
 MESSAGE(" Looking for Geant4...")
 
+if (UNIX AND NOT APPLE)
+  set(libname  libG4event.so)
+elseif (APPLE)
+  set(libname  libG4event.dylib)
+endif (UNIX AND NOT APPLE)
+
 FIND_PATH(GEANT4_INCLUDE_DIR NAMES G4PVPlacement.hh          PATHS
                                                              $ENV{G4INCLUDE}/
                                                              #/afs/cern.ch/user/d/dsgalabe/GEANT4/v10r1p03/geant4.10.01.p03-install/include/Geant4/
@@ -8,7 +14,7 @@ FIND_PATH(GEANT4_INCLUDE_DIR NAMES G4PVPlacement.hh          PATHS
 
 message("GEANT4_INCLUDE_DIRS : ${GEANT4_INCLUDE_DIR}")
 
-FIND_PATH(GEANT4_LIBRARY_DIR NAMES libG4event.so             PATHS
+FIND_PATH(GEANT4_LIBRARY_DIR NAMES ${libname}                PATHS
                                                              $ENV{G4LIB}/$ENV{G4SYSTEM}/
 							     $ENV{GEANT4_LIBRARY}
 							     NO_DEFAULT_PATH)
