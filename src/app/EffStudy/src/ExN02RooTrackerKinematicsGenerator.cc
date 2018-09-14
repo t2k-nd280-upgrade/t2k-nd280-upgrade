@@ -304,12 +304,30 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   //
 
   // Add primary vertex
-  
-  G4PrimaryVertex* theVertex 
-    = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*CLHEP::m,
-   					fEvtVtx[1]*CLHEP::m,
-   					fEvtVtx[2]*CLHEP::m),
-   			  fEvtVtx[3]*CLHEP::second);
+  G4PrimaryVertex* theVertex;
+  // WARNING hardcoded to the upstream uniform target
+  float x, y, z;
+  if (inxml->GetXMLGenerTypeName()=="NEUT"){
+    float targetWidth   = inxml->GetXMLTargetwidth1(); // width along X
+    float targetLength  = inxml->GetXMLTargetlength1(); // length along Z
+    float targetHeight  = inxml->GetXMLTargetheight1(); // height along Y
+
+    x = G4UniformRand() * targetWidth  - targetWidth*0.5  + inxml->GetXMLTargetPos1_X();
+    y = G4UniformRand() * targetHeight - targetHeight*0.5 + inxml->GetXMLTargetPos1_Y();
+    z = G4UniformRand() * targetLength - targetLength*0.5 + inxml->GetXMLTargetPos1_Z();
+
+    // WARNING millimiters here instead of
+    theVertex = new G4PrimaryVertex(G4ThreeVector(x*CLHEP::mm,
+                                                  y*CLHEP::mm,
+                                                  z*CLHEP::mm),
+                                                  fEvtVtx[3]*CLHEP::second);
+  } else {
+    theVertex = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*CLHEP::m,
+   					                                      fEvtVtx[1]*CLHEP::m,
+   					                                      fEvtVtx[2]*CLHEP::m),
+   			                                          fEvtVtx[3]*CLHEP::second);
+  }
+
   anEvent->AddPrimaryVertex(theVertex);
 
   // Add an information field to the vertex.
@@ -326,6 +344,7 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
     vertexInfo->SetReactionNum(fEvtCodeNum);
   }
   else if(inxml->GetXMLGenerTypeName()=="NEUT"){
+    vertexInfo->SetReactionNum(fEvtCodeNum);
   }
 
   // Set the file name for this event.
@@ -343,11 +362,18 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   
   // Add an informational vertex for storing the incoming 
   // neutrino particle and target nucleus.
-  G4PrimaryVertex* theIncomingVertex 
-    = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*CLHEP::m,
-					fEvtVtx[1]*CLHEP::m,
-					fEvtVtx[2]*CLHEP::m),
-			  fEvtVtx[3]*CLHEP::second);
+  G4PrimaryVertex* theIncomingVertex;
+  if (inxml->GetXMLGenerTypeName()=="NEUT"){
+    theIncomingVertex = new G4PrimaryVertex(G4ThreeVector( x*CLHEP::mm,
+                                                           y*CLHEP::mm,
+                                                           z*CLHEP::mm),
+                                                           fEvtVtx[3]*CLHEP::second);
+  } else {
+    theIncomingVertex = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*CLHEP::m,
+                                                          fEvtVtx[1]*CLHEP::m,
+                                                          fEvtVtx[2]*CLHEP::m),
+                                                          fEvtVtx[3]*CLHEP::second);
+  }
   vertexInfo->AddInformationalVertex(theIncomingVertex);
   
   // Add an information field to the vertex.
@@ -397,10 +423,18 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
       particleDef ? particleDef->GetParticleName(): "unknown";
     
     // Get the momentum.
-    G4LorentzVector momentum(fStdHepP4[cnt][0]*CLHEP::GeV,
-			     fStdHepP4[cnt][1]*CLHEP::GeV,
-			     fStdHepP4[cnt][2]*CLHEP::GeV,
-			     fStdHepP4[cnt][3]*CLHEP::GeV);
+    G4LorentzVector momentum;
+    if (inxml->GetXMLGenerTypeName()=="NEUT"){
+      momentum = G4LorentzVector(fStdHepP4[cnt][0]*CLHEP::MeV,
+                                 fStdHepP4[cnt][1]*CLHEP::MeV,
+                                 fStdHepP4[cnt][2]*CLHEP::MeV,
+                                 fStdHepP4[cnt][3]*CLHEP::MeV);
+    } else {
+      momentum = G4LorentzVector(fStdHepP4[cnt][0]*CLHEP::GeV,
+			                           fStdHepP4[cnt][1]*CLHEP::GeV,
+			                           fStdHepP4[cnt][2]*CLHEP::GeV,
+			                           fStdHepP4[cnt][3]*CLHEP::GeV);
+    }
     
     if (fStdHepStatus[cnt] != 1) {
       G4cout << "Untracked particle: " << cnt 
