@@ -1,10 +1,27 @@
-*cleanup*
-*Makefile*
-*dict*
+# CMake files
+Makefile
+build/app/*
+build/CMakeFiles
+
+# root dictionaries
+*Dict.cxx
+*Dict.h
+*.rootcint
+dict.rfict.pcm
+
+# highland setup files
 setup.sh
 setup.csh
-vis_cluster_*
+cleanup.sh
+cleanup.csh
+rootmap_setup.sh
+
+# compiller libs
 *.a
 *.so
 *.dylib
 *.exe
+*.o
+
+# personal mac files
+vis_cluster_*
