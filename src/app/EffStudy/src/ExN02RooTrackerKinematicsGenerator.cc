@@ -56,7 +56,7 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
   G4String inputfile = inxml->GetXMLPathFiles();
   inputfile.append(inxml->GetXMLGenerFileName());
 
-  if(inxml->GetXMLGenerTypeName()=="NEUT"){
+  /*if(inxml->GetXMLGenerTypeName()=="NEUT"){
     this->ReadNEUT(inputfile);
     
     //
@@ -67,15 +67,15 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
     G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
                 "MyCode0002",FatalException, msg);
   }
-  else if(inxml->GetXMLGenerTypeName()=="GENIE"){
+  else if(inxml->GetXMLGenerTypeName()=="GENIE"){*/
     this->ReadGENIE(inputfile);
-  }
+  /*}
   else{
     G4ExceptionDescription msg;
     msg << "The generator type "<< inxml->GetXMLGenerTypeName() << " is not available";
     G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
                 "MyCode0002",FatalException, msg);
-  }
+  }*/
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -316,10 +316,14 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
     y = G4UniformRand() * targetHeight - targetHeight*0.5 + inxml->GetXMLTargetPos1_Y();
     z = G4UniformRand() * targetLength - targetLength*0.5 + inxml->GetXMLTargetPos1_Z();
 
+    x *= 0.001;
+    y *= 0.001;
+    z *= 0.001;
+
     // WARNING millimiters here instead of
-    theVertex = new G4PrimaryVertex(G4ThreeVector(x*CLHEP::mm,
-                                                  y*CLHEP::mm,
-                                                  z*CLHEP::mm),
+    theVertex = new G4PrimaryVertex(G4ThreeVector(x*CLHEP::m,
+                                                  y*CLHEP::m,
+                                                  z*CLHEP::m),
                                                   fEvtVtx[3]*CLHEP::second);
   } else {
     theVertex = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*CLHEP::m,
@@ -364,9 +368,9 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   // neutrino particle and target nucleus.
   G4PrimaryVertex* theIncomingVertex;
   if (inxml->GetXMLGenerTypeName()=="NEUT"){
-    theIncomingVertex = new G4PrimaryVertex(G4ThreeVector( x*CLHEP::mm,
-                                                           y*CLHEP::mm,
-                                                           z*CLHEP::mm),
+    theIncomingVertex = new G4PrimaryVertex(G4ThreeVector( x*CLHEP::m,
+                                                           y*CLHEP::m,
+                                                           z*CLHEP::m),
                                                            fEvtVtx[3]*CLHEP::second);
   } else {
     theIncomingVertex = new G4PrimaryVertex(G4ThreeVector(fEvtVtx[0]*CLHEP::m,
@@ -425,10 +429,10 @@ void ExN02RooTrackerKinematicsGenerator::GeneratePrimaryVertex(G4Event* anEvent)
     // Get the momentum.
     G4LorentzVector momentum;
     if (inxml->GetXMLGenerTypeName()=="NEUT"){
-      momentum = G4LorentzVector(fStdHepP4[cnt][0]*CLHEP::MeV,
-                                 fStdHepP4[cnt][1]*CLHEP::MeV,
-                                 fStdHepP4[cnt][2]*CLHEP::MeV,
-                                 fStdHepP4[cnt][3]*CLHEP::MeV);
+      momentum = G4LorentzVector(0.001 * fStdHepP4[cnt][0]*CLHEP::GeV,
+                                 0.001 * fStdHepP4[cnt][1]*CLHEP::GeV,
+                                 0.001 * fStdHepP4[cnt][2]*CLHEP::GeV,
+                                 0.001 * fStdHepP4[cnt][3]*CLHEP::GeV);
     } else {
       momentum = G4LorentzVector(fStdHepP4[cnt][0]*CLHEP::GeV,
 			                           fStdHepP4[cnt][1]*CLHEP::GeV,
