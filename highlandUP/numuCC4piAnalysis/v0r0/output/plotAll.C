@@ -37,7 +37,7 @@ double BinEdges_Q2[NBins_Q2+1] = {0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0
 const int NBins_Enu = 14;
 double BinEdges_Enu[NBins_Enu+1] = {0, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 2000, 3000, 5000};
  
-
+TCanvas *c = new TCanvas("c");
 
 TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_level,
 		    TString varX, TString var_titleX, TString varY, TString var_titleY, 
@@ -48,8 +48,9 @@ TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_l
   gStyle->SetTitleAlign(23);
   TH1::AddDirectory(kFALSE);
 
-  TFile f(TString::Format("jobs/files/config%i_Target%i%s.root",
-			  config, target, suffix.Data()));
+  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()));
+  //  f.ls();
+  cout << "Reading the file in: " << TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()) << endl;
   TTree* t = (TTree*)f.Get("truth");
 
   TString targetName="";
@@ -140,17 +141,16 @@ void plot2D(TString suffix, int config, int categ, int cut_level,
 
   vector<TH2F*> histos;
 
-  for (int t=1; t<=NTargets[config]; t++) 
-    histos.push_back(compute2D_Dis(suffix, config, t, categ, cut_level,
+  for (int targ=1; targ<=NTargets[config]; targ++){
+    histos.push_back(compute2D_Dis(suffix, config, targ, categ, cut_level,
 				   varX, var_titleX, varY, var_titleY, 
 				   nbinsX, xbinsX, nbinsY, xbinsY));
-
+ 
   TH2F *h = (TH2F*)histos[0]->Clone();
   for (UInt_t i=1; i<histos.size(); i++) 
-    h->Add(histos[i]);
+  h->Add(histos[i]);
   h->SetTitle("");
 
-  TCanvas *c = new TCanvas("c");
   if (log) {
     c->SetLogz();
     h->GetZaxis()->SetRangeUser(0.5, 3000);
@@ -158,24 +158,24 @@ void plot2D(TString suffix, int config, int categ, int cut_level,
   h->SetContour(100);
   h->Draw("colz");
 
-  c->SaveAs(TString::Format("%s/fig/dis/2D/2D_%s_%s_config%i_%s%s%s.eps", 
-			    getenv("WORKDIR"), varX.Data(), varY.Data(), config, categName.Data(), suffixName.Data(), log ? "_log":""));
+   c->SaveAs(TString::Format("%s/2D_%s_%s_config%i_target%i_%s%s%s.eps", 
+  			    "/nfs/neutrinos/cjesus/work/jobs/plots", varX.Data(), varY.Data(), config, targ, categName.Data(), suffixName.Data(), log ? "_log":""));
 
+}
 }
 
 
 void plotAll() {
 
-  TString suffixes[3] = {"", "_antinu", "_nubkg_antinu"};
+  TString suffixes[2] = {"_RHC_numu_antinu","_FHC_numu"};
   int conf[2] = {0,2};
-
-  for (int c=-2; c<8; c++)
-    for (int s=0; s<3; s++)
+  for (int c=-2; c<-1; c++)
+    for (int s=0; s<2; s++)
       for (int cc=0; cc<2; cc++) {
 	plot2D(suffixes[s], conf[cc], c, 4, 
 	       "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
 	       NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, false);
-	plot2D(suffixes[s], conf[cc], c, 4, 
+      	plot2D(suffixes[s], conf[cc], c, 4, 
 	       "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
 	       NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
       }

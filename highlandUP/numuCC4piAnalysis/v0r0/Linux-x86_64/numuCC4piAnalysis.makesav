@@ -1,0 +1,282 @@
+#-- start of make_header -----------------
+
+#====================================
+#  Library numuCC4piAnalysis
+#
+#   Generated Sun Sep 16 16:37:20 2018  by cjesus
+#
+#====================================
+
+include ${CMTROOT}/src/Makefile.core
+
+ifdef tag
+CMTEXTRATAGS = $(tag)
+else
+tag       = $(CMTCONFIG)
+endif
+
+cmt_numuCC4piAnalysis_has_no_target_tag = 1
+
+#--------------------------------------------------------
+
+ifdef cmt_numuCC4piAnalysis_has_target_tag
+
+tags      = $(tag),$(CMTEXTRATAGS),target_numuCC4piAnalysis
+
+numuCC4piAnalysis_tag = $(tag)
+
+ifdef READONLY
+cmt_local_tagfile_numuCC4piAnalysis = /tmp/CMT_$(numuCC4piAnalysis_tag)_numuCC4piAnalysis.make$(cmt_lock_pid)
+else
+#cmt_local_tagfile_numuCC4piAnalysis = $(numuCC4piAnalysis_tag)_numuCC4piAnalysis.make
+cmt_local_tagfile_numuCC4piAnalysis = $(bin)$(numuCC4piAnalysis_tag)_numuCC4piAnalysis.make
+endif
+
+else
+
+tags      = $(tag),$(CMTEXTRATAGS)
+
+numuCC4piAnalysis_tag = $(tag)
+
+ifdef READONLY
+cmt_local_tagfile_numuCC4piAnalysis = /tmp/CMT_$(numuCC4piAnalysis_tag).make$(cmt_lock_pid)
+else
+#cmt_local_tagfile_numuCC4piAnalysis = $(numuCC4piAnalysis_tag).make
+cmt_local_tagfile_numuCC4piAnalysis = $(bin)$(numuCC4piAnalysis_tag).make
+endif
+
+endif
+
+-include $(cmt_local_tagfile_numuCC4piAnalysis)
+
+ifdef cmt_numuCC4piAnalysis_has_target_tag
+
+ifdef READONLY
+cmt_final_setup_numuCC4piAnalysis = /tmp/CMT_numuCC4piAnalysis_numuCC4piAnalysissetup.make
+cmt_local_numuCC4piAnalysis_makefile = /tmp/CMT_numuCC4piAnalysis$(cmt_lock_pid).make
+else
+cmt_final_setup_numuCC4piAnalysis = $(bin)numuCC4piAnalysis_numuCC4piAnalysissetup.make
+cmt_local_numuCC4piAnalysis_makefile = $(bin)numuCC4piAnalysis.make
+endif
+
+else
+
+ifdef READONLY
+cmt_final_setup_numuCC4piAnalysis = /tmp/CMT_numuCC4piAnalysissetup.make
+cmt_local_numuCC4piAnalysis_makefile = /tmp/CMT_numuCC4piAnalysis$(cmt_lock_pid).make
+else
+cmt_final_setup_numuCC4piAnalysis = $(bin)numuCC4piAnalysissetup.make
+cmt_local_numuCC4piAnalysis_makefile = $(bin)numuCC4piAnalysis.make
+endif
+
+endif
+
+ifdef READONLY
+cmt_final_setup = /tmp/CMT_numuCC4piAnalysissetup.make
+else
+cmt_final_setup = $(bin)numuCC4piAnalysissetup.make
+endif
+
+numuCC4piAnalysis ::
+
+
+ifdef READONLY
+numuCC4piAnalysis ::
+	@echo tags=$(tags)
+	@echo cmt_local_tagfile=$(cmt_local_tagfile)
+endif
+
+
+dirs ::
+	@if test ! -r requirements ; then echo "No requirements file" ; fi; \
+	  if test ! -d $(bin) ; then $(mkdir) -p $(bin) ; fi
+
+javadirs ::
+	@if test ! -d $(javabin) ; then $(mkdir) -p $(javabin) ; fi
+
+srcdirs ::
+	@if test ! -d $(src) ; then $(mkdir) -p $(src) ; fi
+
+help ::
+	$(echo) 'numuCC4piAnalysis'
+
+binobj = 
+ifdef STRUCTURED_OUTPUT
+binobj = numuCC4piAnalysis/
+numuCC4piAnalysis::
+	@if test ! -d $(bin)$(binobj) ; then $(mkdir) -p $(bin)$(binobj) ; fi
+	$(echo) "STRUCTURED_OUTPUT="$(bin)$(binobj)
+endif
+
+#-- end of make_header ------------------
+
+#-- start of libary_header ---------------
+
+numuCC4piAnalysislibname   = $(bin)$(library_prefix)numuCC4piAnalysis$(library_suffix)
+numuCC4piAnalysislib       = $(numuCC4piAnalysislibname).a
+numuCC4piAnalysisstamp     = $(bin)numuCC4piAnalysis.stamp
+numuCC4piAnalysisshstamp   = $(bin)numuCC4piAnalysis.shstamp
+
+numuCC4piAnalysis :: dirs  numuCC4piAnalysisLIB
+	$(echo) "numuCC4piAnalysis ok"
+
+#-- end of libary_header ----------------
+#-- start of libary ----------------------
+
+numuCC4piAnalysisLIB :: $(numuCC4piAnalysislib) $(numuCC4piAnalysisshstamp)
+	$(echo) "numuCC4piAnalysis : library ok"
+
+$(numuCC4piAnalysislib) :: $(bin)numuCC4piSelection.o $(bin)numuCC4piAnalysis.o $(bin)numuCC4piUtils.o
+	$(lib_echo) "static library $@"
+	$(lib_silent) $(ar) $(numuCC4piAnalysislib) $?
+	$(lib_silent) $(ranlib) $(numuCC4piAnalysislib)
+	$(lib_silent) cat /dev/null >$(numuCC4piAnalysisstamp)
+
+#------------------------------------------------------------------
+#  Future improvement? to empty the object files after
+#  storing in the library
+#
+##	  for f in $?; do \
+##	    rm $${f}; touch $${f}; \
+##	  done
+#------------------------------------------------------------------
+
+#
+# We add one level of dependency upon the true shared library 
+# (rather than simply upon the stamp file)
+# this is for cases where the shared library has not been built
+# while the stamp was created (error??) 
+#
+
+$(numuCC4piAnalysislibname).$(shlibsuffix) :: $(numuCC4piAnalysislib) requirements $(use_requirements) $(numuCC4piAnalysisstamps)
+	$(lib_echo) "shared library $@"
+	$(lib_silent) if test "$(makecmd)"; then QUIET=; else QUIET=1; fi; QUIET=$${QUIET} bin=$(bin) $(make_shlib) "$(tags)" numuCC4piAnalysis $(numuCC4piAnalysis_shlibflags)
+
+$(numuCC4piAnalysisshstamp) :: $(numuCC4piAnalysislibname).$(shlibsuffix)
+	$(lib_silent) if test -f $(numuCC4piAnalysislibname).$(shlibsuffix) ; then cat /dev/null >$(numuCC4piAnalysisshstamp) ; fi
+
+numuCC4piAnalysisclean ::
+	$(cleanup_echo) objects
+	$(cleanup_silent) /bin/rm -f $(bin)numuCC4piSelection.o $(bin)numuCC4piAnalysis.o $(bin)numuCC4piUtils.o
+	$(cleanup_silent) cd $(bin); /bin/rm -rf numuCC4piAnalysis_deps numuCC4piAnalysis_dependencies.make
+
+#-----------------------------------------------------------------
+#
+#  New section for automatic installation
+#
+#-----------------------------------------------------------------
+
+install_dir = ${CMTINSTALLAREA}/$(tag)/lib
+numuCC4piAnalysisinstallname = $(library_prefix)numuCC4piAnalysis$(library_suffix).$(shlibsuffix)
+
+numuCC4piAnalysis :: numuCC4piAnalysisinstall
+
+install :: numuCC4piAnalysisinstall
+
+numuCC4piAnalysisinstall :: $(install_dir)/$(numuCC4piAnalysisinstallname)
+ifdef CMTINSTALLAREA
+	$(echo) "installation done"
+endif
+
+$(install_dir)/$(numuCC4piAnalysisinstallname) :: $(bin)$(numuCC4piAnalysisinstallname)
+ifdef CMTINSTALLAREA
+	$(install_silent) $(cmt_install_action) \
+	    -source "`(cd $(bin); pwd)`" \
+	    -name "$(numuCC4piAnalysisinstallname)" \
+	    -out "$(install_dir)" \
+	    -cmd "$(cmt_installarea_command)" \
+	    -cmtpath "$($(package)_cmtpath)"
+endif
+
+##numuCC4piAnalysisclean :: numuCC4piAnalysisuninstall
+
+uninstall :: numuCC4piAnalysisuninstall
+
+numuCC4piAnalysisuninstall ::
+ifdef CMTINSTALLAREA
+	$(cleanup_silent) $(cmt_uninstall_action) \
+	    -source "`(cd $(bin); pwd)`" \
+	    -name "$(numuCC4piAnalysisinstallname)" \
+	    -out "$(install_dir)" \
+	    -cmtpath "$($(package)_cmtpath)"
+endif
+
+#-- end of libary -----------------------
+#-- start of dependency ------------------
+ifneq ($(MAKECMDGOALS),numuCC4piAnalysisclean)
+
+#$(bin)numuCC4piAnalysis_dependencies.make :: dirs
+
+ifndef QUICK
+$(bin)numuCC4piAnalysis_dependencies.make : ../src/numuCC4piSelection.cxx ../src/numuCC4piAnalysis.cxx ../src/numuCC4piUtils.cxx $(use_requirements) $(cmt_final_setup_numuCC4piAnalysis)
+	$(echo) "(numuCC4piAnalysis.make) Rebuilding $@"; \
+	  $(build_dependencies) numuCC4piAnalysis -all_sources -out=$@ ../src/numuCC4piSelection.cxx ../src/numuCC4piAnalysis.cxx ../src/numuCC4piUtils.cxx
+endif
+
+#$(numuCC4piAnalysis_dependencies)
+
+-include $(bin)numuCC4piAnalysis_dependencies.make
+
+endif
+#-- end of dependency -------------------
+#-- start of cpp_library -----------------
+
+$(bin)numuCC4piAnalysis_dependencies.make : $(numuCC4piSelection_cxx_dependencies)
+
+$(bin)$(binobj)numuCC4piSelection.o : $(numuCC4piSelection_cxx_dependencies)
+	$(cpp_echo) $(src)numuCC4piSelection.cxx
+	$(cpp_silent) $(cppcomp) -o $(@) $(use_pp_cppflags) $(numuCC4piAnalysis_pp_cppflags) $(lib_numuCC4piAnalysis_pp_cppflags) $(numuCC4piSelection_pp_cppflags) $(use_cppflags) $(numuCC4piAnalysis_cppflags) $(lib_numuCC4piAnalysis_cppflags) $(numuCC4piSelection_cppflags) $(numuCC4piSelection_cxx_cppflags)  $(src)numuCC4piSelection.cxx
+
+#-- end of cpp_library ------------------
+#-- start of cpp_library -----------------
+
+$(bin)numuCC4piAnalysis_dependencies.make : $(numuCC4piAnalysis_cxx_dependencies)
+
+$(bin)$(binobj)numuCC4piAnalysis.o : $(numuCC4piAnalysis_cxx_dependencies)
+	$(cpp_echo) $(src)numuCC4piAnalysis.cxx
+	$(cpp_silent) $(cppcomp) -o $(@) $(use_pp_cppflags) $(numuCC4piAnalysis_pp_cppflags) $(lib_numuCC4piAnalysis_pp_cppflags) $(numuCC4piAnalysis_pp_cppflags) $(use_cppflags) $(numuCC4piAnalysis_cppflags) $(lib_numuCC4piAnalysis_cppflags) $(numuCC4piAnalysis_cppflags) $(numuCC4piAnalysis_cxx_cppflags)  $(src)numuCC4piAnalysis.cxx
+
+#-- end of cpp_library ------------------
+#-- start of cpp_library -----------------
+
+$(bin)numuCC4piAnalysis_dependencies.make : $(numuCC4piUtils_cxx_dependencies)
+
+$(bin)$(binobj)numuCC4piUtils.o : $(numuCC4piUtils_cxx_dependencies)
+	$(cpp_echo) $(src)numuCC4piUtils.cxx
+	$(cpp_silent) $(cppcomp) -o $(@) $(use_pp_cppflags) $(numuCC4piAnalysis_pp_cppflags) $(lib_numuCC4piAnalysis_pp_cppflags) $(numuCC4piUtils_pp_cppflags) $(use_cppflags) $(numuCC4piAnalysis_cppflags) $(lib_numuCC4piAnalysis_cppflags) $(numuCC4piUtils_cppflags) $(numuCC4piUtils_cxx_cppflags)  $(src)numuCC4piUtils.cxx
+
+#-- end of cpp_library ------------------
+#-- start of cleanup_header --------------
+
+clean :: numuCC4piAnalysisclean
+	@cd .
+
+ifndef PEDANTIC
+.DEFAULT::
+	$(echo) "(numuCC4piAnalysis.make) $@: No rule for such target" >&2
+#	@echo "#CMT> Warning: $@: No rule for such target" >&2; exit
+else
+.DEFAULT::
+	$(echo) "(numuCC4piAnalysis.make) PEDANTIC: $@: No rule for such target" >&2
+	if test $@ = "$(cmt_final_setup)" -o\
+	 $@ = "$(cmt_final_setup_numuCC4piAnalysis)" ; then\
+	 found=n; for s in 1 2 3 4 5; do\
+	 sleep $$s; test ! -f $@ || { found=y; break; }\
+	 done; if test $$found = n; then\
+	 test -z "$(cmtmsg)" ||\
+	 echo "$(CMTMSGPREFIX)" "(numuCC4piAnalysis.make) PEDANTIC: $@: Seems to be missing. Ignore it for now" >&2; exit 0 ; fi;\
+	 elif test `expr index $@ '/'` -ne 0 ; then\
+	 test -z "$(cmtmsg)" ||\
+	 echo "$(CMTMSGPREFIX)" "(numuCC4piAnalysis.make) PEDANTIC: $@: Seems to be a missing file. Please check" >&2; exit 2 ; \
+	 else\
+	 test -z "$(cmtmsg)" ||\
+	 echo "$(CMTMSGPREFIX)" "(numuCC4piAnalysis.make) PEDANTIC: $@: Seems to be a fake target due to some pattern. Just ignore it" >&2 ; exit 0; fi
+endif
+
+numuCC4piAnalysisclean ::
+#-- end of cleanup_header ---------------
+#-- start of cleanup_library -------------
+	$(cleanup_echo) library
+	-$(cleanup_silent) cd $(bin); /bin/rm -f $(binobj)$(library_prefix)numuCC4piAnalysis$(library_suffix).a $(binobj)$(library_prefix)numuCC4piAnalysis$(library_suffix).s? $(binobj)numuCC4piAnalysis.stamp $(binobj)numuCC4piAnalysis.shstamp
+#-- end of cleanup_library ---------------
+
