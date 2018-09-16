@@ -17,11 +17,22 @@ cleanup.csh
 rootmap_setup.sh
 
 # compiller libs
+*.d
 *.a
 *.so
 *.dylib
 *.exe
 *.o
+*.make
+*.stamp
+*.shstamp
 
 # personal mac files
 vis_cluster_*
+
+#personal settings
+*.json
+*.DS_Store
+
+#personal environment
+mypath.sh

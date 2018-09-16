@@ -1,13 +1,15 @@
 #! /bin/csh -f
 
-set file_dir = /sps/t2k/mlamoure/dev/Upgrade/t2k-nd280-upgrade/files 
-set code_dir = /sps/t2k/mlamoure/dev/Upgrade/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
+set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/
+set code_dir = /software/neutrinos/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
 set original_parfile = ${code_dir}/parameters/numuCC4piAnalysis.parameters.dat
 
 set par_dir = ${code_dir}/output/jobs/parameters
-set log_dir = ${code_dir}/output/jobs/logs
+#set log_dir = ${code_dir}/output/jobs/logs
+set log_dir = /nfs/neutrinos/cjesus/work/jobs/logs
 set job_dir = ${code_dir}/output/jobs/jobs
-set out_dir = ${code_dir}/output/jobs/files
+set out_dir = /nfs/neutrinos/cjesus/work/jobs/files
+#set out_dir = ${code_dir}/output/jobs/files
 
 set launcher = launchJobs
 
@@ -26,23 +28,17 @@ set j=`ls ${job_dir} | wc -l`
 set max_job=100 # maximum of simultaneous job
 cd ${code_dir}/output/jobs
 
-
-
 set i_nu=0
 # loop on the beam configuration
-while ($i_nu < 3)
+while ($i_nu < 2)
 
     if ($i_nu == 0) then
 	set folder = "FHC_numu"
-	set numode = ""
+	set numode = "FHC_numu"
     endif
     if ($i_nu == 1) then
 	set folder = "RHC"
-	set numode = "_antinu"
-    endif
-    if ($i_nu == 2) then
-	set folder = "RHC"
-	set numode = "_nubkg_antinu"
+	set numode = "RHC_numu_antinu"
     endif
 
     set i_conf=0
@@ -72,7 +68,7 @@ while ($i_nu < 3)
 	    set parfile = ${par_dir}/par_$j.dat
 	    cp -f $original_parfile $parfile
 
-	    set name = "config${i_conf}_Target${i_target}${numode}${ext}"
+	    set name = "config${i_conf}_Target${i_target}_${numode}${ext}"
 	    set job  = "${job_dir}/job_${name}.sh"
 			
 	    if ($i_nu == 1) then
@@ -109,10 +105,12 @@ while ($i_nu < 3)
 	    sed -i "/Configuration =/c\ < psycheNDUPUtils.Geometry.nd280upConfiguration = ${conf} >" $parfile
 
 	    touch ${job}
+#	    echo ${job}
+#	    echo ${file_dir}/${folder}/config${i_conf}
 	    # split the job in subfiles
 	    set f=0
-	    foreach input_file (`ls ${file_dir}/${folder}/config${i_conf}/*.root | sed -r 's/^.+\///'`)
-		echo "${code_dir}/output/jobs/jobBase $parfile ${out_dir}/${name}_split_$f.root ${file_dir}/${folder}/config${i_conf}/${input_file}" >> ${job}			    
+	    foreach input_file (`ls  ${file_dir}/${folder}/config${i_conf}/*.root | sed -r 's/^.+\///'`)
+		echo "${code_dir}/output/jobs/jobBase $parfile ${out_dir}/${name}_split_$f.root ${file_dir}/${folder}/config${i_conf}/${input_file}" >> ${job}
 		@ f = $f + 1
 	    end
 
@@ -124,10 +122,9 @@ while ($i_nu < 3)
 	    @ k = $k - $max_job
 	    set prev_job_name = "${dq}hUP_$k${dq}"
 
-	    if ($j < $max_job) then
-		echo "qsub -N $job_name -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=24:00:00,s_fsize=8G,s_rss=8G,sps=1 ${job}" >> $launcher
-	    else
-		echo "qsub -N $job_name -hold_jid $prev_job_name -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=24:00:00,s_fsize=8G,s_rss=8G,sps=1 ${job}" >> $launcher
+	    if ($j < $max_job) then 
+	    echo "qsub -N $job_name -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -q long -l nodes=1 ${job}" >> $launcher
+	    #echo "qsub -N $job_name -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=24:00:00,s_fsize=8G,s_rss=8G,sps=1 ${job}" >> $launcher
 	    endif
 			
 	    if ($f != 0) then

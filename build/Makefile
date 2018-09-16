@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src
+CMAKE_SOURCE_DIR = /software/neutrinos/t2k-nd280-upgrade/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build
+CMAKE_BINARY_DIR = /software/neutrinos/t2k-nd280-upgrade/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,9 +72,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /software/neutrinos/t2k-nd280-upgrade/build/CMakeFiles /software/neutrinos/t2k-nd280-upgrade/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /software/neutrinos/t2k-nd280-upgrade/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -114,6 +114,32 @@ EffStudy.exe/fast:
 	$(MAKE) -f app/CMakeFiles/EffStudy.exe.dir/build.make app/CMakeFiles/EffStudy.exe.dir/build
 .PHONY : EffStudy.exe/fast
 
+#=============================================================================
+# Target rules for targets named ND280UPEVENT_LIB
+
+# Build rule for target.
+ND280UPEVENT_LIB: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ND280UPEVENT_LIB
+.PHONY : ND280UPEVENT_LIB
+
+# fast build rule for target.
+ND280UPEVENT_LIB/fast:
+	$(MAKE) -f app/CMakeFiles/ND280UPEVENT_LIB.dir/build.make app/CMakeFiles/ND280UPEVENT_LIB.dir/build
+.PHONY : ND280UPEVENT_LIB/fast
+
+#=============================================================================
+# Target rules for targets named Reconstruction.exe
+
+# Build rule for target.
+Reconstruction.exe: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Reconstruction.exe
+.PHONY : Reconstruction.exe
+
+# fast build rule for target.
+Reconstruction.exe/fast:
+	$(MAKE) -f app/CMakeFiles/Reconstruction.exe.dir/build.make app/CMakeFiles/Reconstruction.exe.dir/build
+.PHONY : Reconstruction.exe/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -123,6 +149,8 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... EffStudy.exe"
+	@echo "... ND280UPEVENT_LIB"
+	@echo "... Reconstruction.exe"
 .PHONY : help
 
 

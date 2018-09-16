@@ -1,4 +1,4 @@
-# Install script for directory: /afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/src/app
+# Install script for directory: /software/neutrinos/t2k-nd280-upgrade/src/app
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)

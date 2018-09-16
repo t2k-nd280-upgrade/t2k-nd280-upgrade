@@ -1,1 +1,3 @@
-/afs/cern.ch/user/d/dsgalabe/T2K/work/t2k-nd280-upgrade/build/app/CMakeFiles/EffStudy.exe.dir
+/software/neutrinos/t2k-nd280-upgrade/build/app/CMakeFiles/EffStudy.exe.dir
+/software/neutrinos/t2k-nd280-upgrade/build/app/CMakeFiles/ND280UPEVENT_LIB.dir
+/software/neutrinos/t2k-nd280-upgrade/build/app/CMakeFiles/Reconstruction.exe.dir

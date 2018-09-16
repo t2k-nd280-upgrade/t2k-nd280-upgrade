@@ -1,10 +1,12 @@
 #! /bin/csh -f
 
-set code_dir = /sps/t2k/mlamoure/dev/Upgrade/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
+set code_dir = /software/neutrinos/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
 set par_dir = ${code_dir}/output/jobs/parameters
-set log_dir = ${code_dir}/output/jobs/logs
+#set log_dir = ${code_dir}/output/jobs/logs
+set log_dir = /nfs/neutrinos/cjesus/work/jobs/logs
 set job_dir = ${code_dir}/output/jobs/jobs
-set out_dir = ${code_dir}/output/jobs/files
+#set out_dir = ${code_dir}/output/jobs/files
+set out_dir = /nfs/neutrinos/cjesus/work/jobs/files
 
 set launcher = launchJobs
 set conc = ${out_dir}/concatenate
