@@ -910,40 +910,16 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	  LengthFGD2 += steplength;	
 	  EdepFGD2   += stepedep;	
 	}
-//	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCUp1")){
-  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCUp")){    
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCUp/Drift")){    
 	  LengthTPCUp1 += steplength;	
 	  LyzTPCUp1    += stepdeltalyz;
 	  EdepTPCUp1   += stepedep;
 	}
-//  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCUp2")){
-  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCUp/Drift")){  
-	  LengthTPCUp2 += steplength;	
-	  LyzTPCUp2    += stepdeltalyz;
-	  EdepTPCUp2   += stepedep;
-	}
-  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCUp/Drift")){
-    LengthHATPCUp += steplength; 
-    LyzHATPCUp    += stepdeltalyz;
-    EdepHATPCUp   += stepedep;
-  }
-//	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCDown1")){
   else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCDown/Drift")){
     LengthTPCDown1 += steplength;	
 	  LyzTPCDown1    += stepdeltalyz;
 	  EdepTPCDown1   += stepedep;
 	}
-//  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCDown2")){
-  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCDown/Drift")){
-	  LengthTPCDown2 += steplength;	
-	  LyzTPCDown2    += stepdeltalyz;
-	  EdepTPCDown2   += stepedep;
-	}
-  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCDown/Drift")){
-    LengthHATPCDown += steplength; 
-    LyzHATPCDown    += stepdeltalyz;
-    EdepHATPCDown   += stepedep;
-  }
 	else if( detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/Half") ||
 		 //detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/Drift") ||
 		 detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/MM")
