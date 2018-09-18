@@ -1035,7 +1035,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   const G4String cNameLogicTarget2     = cParentNameTarget+"/Target2";
   const G4String cNamePhysiTarget2     = cParentNameTarget+"/Target2";
 
-  G4String cNameLogicSuperFGD1 = cNameSolidTarget1+"/SuperFGD1";
+  G4String cNameLogicSuperFGD1;
+  if (!ND280XMLInput->GetXMLUseCFBox())
+    cNameLogicSuperFGD1 = cNameSolidTarget1+"/SuperFGD1";
+  else 
+    cNameLogicSuperFGD1 = cNameSolidTarget1+"/CFBox1/SuperFGD1";
   ND280SuperFGDConstructor *fSuperFGDConstructor1 = new ND280SuperFGDConstructor(cNameLogicSuperFGD1,this);
   G4String nameSuperFGD1 = fSuperFGDConstructor1->GetName();
 
@@ -1109,8 +1113,15 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     z = ND280XMLInput->GetXMLTargetPos1_Z();
     SetTargetPos1(x,y,z);
 
-    G4String cNameSolidTargetUniform  = cNameSolidTarget1 + "/targetUniform";
-    nameSuperFGD1 = cNamePhysiTarget1 + "/TargetUniform";
+    G4String cNameSolidTargetUniform;
+    G4String nameSuperFGD1;
+    if (!ND280XMLInput->GetXMLUseCFBox()) {
+      cNameSolidTargetUniform = cNameSolidTarget1+"/targetUniform";
+      nameSuperFGD1 = cNameSolidTarget1+"/TargetUniform";
+    } else {
+      cNameSolidTargetUniform = cNameSolidTarget1+"/CFBox1/targetUniform";
+      nameSuperFGD1 = cNameSolidTarget1+"/CFBox1/TargetUniform";
+    }
 
     solidTarget1Uniform = new G4Box(cNameSolidTargetUniform,Target_width/2.,Target_height/2.,Target_length/2.);
     logicSuperFGD1      = new G4LogicalVolume(solidTarget1Uniform,TargetMater1,nameSuperFGD1,0,0,0);
