@@ -77,7 +77,7 @@ int NeutronAnalysis(int argc,char** argv) {
   if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
   else if(detectorID == 1) DetType = nd280upconv::kFGDlike;
   
-  const int NEvtDisplTot = 5; //atoi(argv[5]); // max # of evt. displays
+  const int NEvtDisplTot = 0; //atoi(argv[5]); // max # of evt. displays
 
   // Declare canvases
   TCanvas *cMPPCHits_XY[NEvtDisplTot]; 
@@ -143,6 +143,18 @@ int NeutronAnalysis(int argc,char** argv) {
   
   TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),outname,nevents);
   TFile *fileout = new TFile(outfilename.Data(),"RECREATE"); 
+  TTree* outtree = new TTree("neutron", "");
+
+  Double_t ekin, costheta, light, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
+  ekin = costheta = light = dist_cubes = dist = first_hit_time = neutron_time = neutron_dist_true = -1.;
+  outtree->Branch("KinEnergy_true",     &ekin);
+  outtree->Branch("CosTheta_true",      &costheta);
+  outtree->Branch("Light",              &light);
+  outtree->Branch("Distance_cubes",     &dist_cubes);
+  outtree->Branch("Distance_hit_true",  &dist);
+  outtree->Branch("First_hit_time",     &first_hit_time);
+  outtree->Branch("Neutron_time",       &neutron_time);
+  outtree->Branch("Neutron_dist",       &neutron_dist_true);
 
   /////////////////////////////
   //                         //
@@ -355,8 +367,8 @@ int NeutronAnalysis(int argc,char** argv) {
       continue;
     }
 
-    Float_t ekin      = track->GetInitKinEnergy();
-    Float_t costheta  = track->GetInitCosTheta();
+    ekin      = track->GetInitKinEnergy();
+    costheta  = track->GetInitCosTheta();
     
     // Loop over the hits
     
@@ -372,10 +384,9 @@ int NeutronAnalysis(int argc,char** argv) {
       cout << "neutron cos = " << costheta << endl;
     }
 
-    double first_hit_time = 1.e9;
-    double dist = -2.;
-    double dist_cubes = -2.;
-    double dist_cubes_true = -2.;
+    first_hit_time = 1.e9;
+    dist = -2.;
+    dist_cubes = -2.;
 
     Int_t first_binX, first_binY, first_binZ;
 
@@ -384,11 +395,12 @@ int NeutronAnalysis(int argc,char** argv) {
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
 
-    TND280UpTrackPoint* point = track->GetPoint(track->GetNPoints()-1);
+    /*TND280UpTrackPoint* point = track->GetPoint(track->GetNPoints()-1);
     Int_t Last_true_binX = hits_map_XY->GetXaxis()->FindBin(point->GetPostPosition().X());
     Int_t Last_true_binY = hits_map_XY->GetYaxis()->FindBin(point->GetPostPosition().Y());
     Int_t Last_true_binZ = hits_map_YZ->GetYaxis()->FindBin(point->GetPostPosition().Z());
     Float_t Last_true_t  = point->GetTime();
+    */
 
     bool far_away = false;
     if (vertex_binX < VERTEX_ACTIVITY || vertex_binX > binX - VERTEX_ACTIVITY ||
@@ -482,9 +494,9 @@ int NeutronAnalysis(int argc,char** argv) {
                             (first_binY - vertex_binY) * (first_binY - vertex_binY) +
                             (first_binZ - vertex_binZ) * (first_binZ - vertex_binZ) );
     
-        dist_cubes_true = sqrt( (Last_true_binX - vertex_binX) * (Last_true_binX - vertex_binX) +
+        /*dist_cubes_true = sqrt( (Last_true_binX - vertex_binX) * (Last_true_binX - vertex_binX) +
                                       (Last_true_binY - vertex_binY) * (Last_true_binY - vertex_binY) +
-                                      (Last_true_binZ - vertex_binZ) * (Last_true_binZ - vertex_binZ) );
+                                      (Last_true_binZ - vertex_binZ) * (Last_true_binZ - vertex_binZ) );*/
       }
 
       Int_t bin = h3d->FindBin(poshitX, poshitY, poshitZ);
@@ -594,10 +606,15 @@ int NeutronAnalysis(int argc,char** argv) {
         abs(first_binZ - vertex_binZ) < VERTEX_ACTIVITY + 1 )
       continue;
 
+    // look only at high distance for better resolution
+    //if (dist_cubes < 50)
+    //  continue;
+
     // SELECTION IS DONE 
     // filling histoes
     Int_t NPoints = track->GetNPoints();
-    Float_t neutron_time = -1.;
+    neutron_time = -1.;
+    neutron_dist_true = -1.;
     Int_t pre_X = -1; Int_t pre_Y = -1; Int_t pre_Z = -1;
     for (Int_t pointID = 0; pointID < NPoints; ++pointID) {
       TND280UpTrackPoint* point = track->GetPoint(pointID);
@@ -624,8 +641,12 @@ int NeutronAnalysis(int argc,char** argv) {
       if (DEBUG)
         cout << "       # point " << pointID << "  pos " <<  point_binX << "\t" << point_binY << "\t" << point_binZ << "\t\t" << pointT <<endl;
 
-      if (point_binX == first_binX && point_binY == first_binY && point_binZ == first_binZ)
+      if (point_binX == first_binX && point_binY == first_binY && point_binZ == first_binZ) {
         neutron_time = pointT;
+        neutron_dist_true = sqrt( (first_binX - vertex_x) * (first_binX - vertex_x) + 
+                                  (point_binY - vertex_y) * (point_binY - vertex_y) +
+                                  (point_binZ - vertex_z) * (point_binZ - vertex_z));
+      }
     }
 
     if (DEBUG) {
@@ -634,26 +655,23 @@ int NeutronAnalysis(int argc,char** argv) {
                                             first_binZ << "\t" <<
                                             first_hit_time << endl;
       cout << "Neutron was there at " << neutron_time << endl;
-      cout << "Neutron end at " <<  Last_true_binX << "\t" << 
+      /*cout << "Neutron end at " <<  Last_true_binX << "\t" << 
                                     Last_true_binY << "\t" << 
                                     Last_true_binZ << "\t" << 
                                     Last_true_t << std::endl;
       cout << "Light in this cube " <<  hits_map_XY->GetBinContent(Last_true_binX, Last_true_binY) << "\t" <<
                                         hits_map_XZ->GetBinContent(Last_true_binX, Last_true_binZ) << "\t" <<
-                                        hits_map_YZ->GetBinContent(Last_true_binY, Last_true_binZ) << endl;
+                                        hits_map_YZ->GetBinContent(Last_true_binY, Last_true_binZ) << endl;*/
     }
 
-    /*
-    if (neutron_time == -1)
-      diff->Fill(-20.);  
-    else
-      diff->Fill(first_hit_time - neutron_time);
-    */
-
-    eff_e_cos->Fill(costheta, ekin);
-    Float_t light = hits_map_XY->GetBinContent(first_binX, first_binY) +
+    light = hits_map_XY->GetBinContent(first_binX, first_binY) +
                     hits_map_XZ->GetBinContent(first_binX, first_binZ) +
                     hits_map_YZ->GetBinContent(first_binY, first_binZ);
+
+    outtree->Fill();
+
+    eff_e_cos->Fill(costheta, ekin);
+    
     pe_e_cos->Fill( costheta, ekin, light);
 
     pe_e->Fill(ekin, light);
@@ -663,8 +681,8 @@ int NeutronAnalysis(int argc,char** argv) {
     float beta = dist_cubes / (first_hit_time * 30.);
     beta_ekin->Fill(ekin, beta);
 
-    beta = dist_cubes_true / (Last_true_t * 30.);
-    float time = gen->Gaus(Last_true_t - vertex_time, 0.9);
+    beta = neutron_dist_true / (neutron_time * 30.);
+    float time = gen->Gaus(neutron_time - vertex_time, 0.9);
     float ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
     energy_resol0->Fill(ekin, ekin2);
 
@@ -706,6 +724,8 @@ int NeutronAnalysis(int argc,char** argv) {
   } // loop over events
 
   fileout->cd();
+
+  outtree->Write("", TObject::kOverwrite);
 
   hits_number->Write();
   hits_energy->Write();

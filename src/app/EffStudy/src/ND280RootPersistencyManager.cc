@@ -890,7 +890,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       /////////////////////////////////////////
       
       if(steplength>0.){
-  	if     (detname_curr.contains("/t2k/OA/Magnet/Basket/Target1")){
+        // make possible work with all configurations and pay attention only to the SFGD volume
+  	if     (detname_curr.contains("/t2k/OA/Magnet/Basket/Target1/TargetUniform") ||
+            detname_curr.contains("/t2k/OA/Magnet/Basket/Target1/SuperFGD1") || 
+            detname_curr.contains("/t2k/OA/Magnet/Basket/Target1/CFBox1/TargetUniform") ||
+            detname_curr.contains("/t2k/OA/Magnet/Basket/Target1/CFBox1/SuperFGD1")){
 	  LengthTarget1 += steplength;
 	  EdepTarget1   += stepedep;
 	}
