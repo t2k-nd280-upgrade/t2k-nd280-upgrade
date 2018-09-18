@@ -1110,7 +1110,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     SetTargetPos1(x,y,z);
 
     G4String cNameSolidTargetUniform  = cNameSolidTarget1 + "/targetUniform";
-    nameSuperFGD1 = "TargetUniform";
+    nameSuperFGD1 = cNamePhysiTarget1 + "/TargetUniform";
 
     solidTarget1Uniform = new G4Box(cNameSolidTargetUniform,Target_width/2.,Target_height/2.,Target_length/2.);
     logicSuperFGD1      = new G4LogicalVolume(solidTarget1Uniform,TargetMater1,nameSuperFGD1,0,0,0);
