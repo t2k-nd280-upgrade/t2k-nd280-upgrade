@@ -808,8 +808,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double LengthFGD2 = 0.;
     double LengthTPCUp1     = 0.;
     double LengthTPCUp2     = 0.;
+    double LengthHATPCUp    = 0.;
     double LengthTPCDown1   = 0.;
     double LengthTPCDown2   = 0.;
+    double LengthHATPCDown  = 0.;
     double LengthForwTPC1   = 0.;
     double LengthForwTPC2   = 0.;
     double LengthForwTPC3   = 0.;
@@ -820,11 +822,14 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
     double LyzTPCUp1     = 0.;
     double LyzTPCUp2     = 0.;
+    double LyzHATPCUp    = 0.;
     double LyzTPCDown1   = 0.;
     double LyzTPCDown2   = 0.;
+    double LyzHATPCDown  = 0.;  
     double LyzForwTPC1   = 0.;
     double LyzForwTPC2   = 0.;
     double LyzForwTPC3   = 0.;
+
 
     double EdepTarget1 = 0.;
     double EdepTarget2 = 0.;
@@ -832,8 +837,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double EdepFGD2 = 0.;
     double EdepTPCUp1     = 0.;
     double EdepTPCUp2     = 0.;
+    double EdepHATPCUp    = 0.;
     double EdepTPCDown1   = 0.;
     double EdepTPCDown2   = 0.;
+    double EdepHATPCDown   = 0.;
     double EdepForwTPC1   = 0.;
     double EdepForwTPC2   = 0.;
     double EdepForwTPC3   = 0.;
@@ -899,26 +906,40 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	  LengthFGD2 += steplength;	
 	  EdepFGD2   += stepedep;	
 	}
-	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCUp1")){
+//	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCUp1")){
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCUp")){    
 	  LengthTPCUp1 += steplength;	
 	  LyzTPCUp1    += stepdeltalyz;
 	  EdepTPCUp1   += stepedep;
 	}
-	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCUp2")){
+//  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCUp2")){
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCUp")){  
 	  LengthTPCUp2 += steplength;	
 	  LyzTPCUp2    += stepdeltalyz;
 	  EdepTPCUp2   += stepedep;
 	}
-	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCDown1")){
-	  LengthTPCDown1 += steplength;	
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCUp")){
+    LengthHATPCUp += steplength; 
+    LyzHATPCUp    += stepdeltalyz;
+    EdepHATPCUp   += stepedep;
+  }
+//	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCDown1")){
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCDown")){
+    LengthTPCDown1 += steplength;	
 	  LyzTPCDown1    += stepdeltalyz;
 	  EdepTPCDown1   += stepedep;
 	}
-	else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCDown2")){
+//  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/TPCDown2")){
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCDown")){
 	  LengthTPCDown2 += steplength;	
 	  LyzTPCDown2    += stepdeltalyz;
 	  EdepTPCDown2   += stepedep;
 	}
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCDown")){
+    LengthHATPCDown += steplength; 
+    LyzHATPCDown    += stepdeltalyz;
+    EdepHATPCDown   += stepedep;
+  }
 	else if( detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/Half") ||
 		 //detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/Drift") ||
 		 detname_curr.contains("/t2k/OA/Magnet/Basket/ForwTPC1/MM")
@@ -1092,8 +1113,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetLengthFGD2(LengthFGD2); 
     nd280Track->SetLengthTPCUp1(LengthTPCUp1);
     nd280Track->SetLengthTPCUp2(LengthTPCUp2);
+//    nd280Track->SetLengthHATPCUp(LengthHATPCUp);
     nd280Track->SetLengthTPCDown1(LengthTPCDown1);
     nd280Track->SetLengthTPCDown2(LengthTPCDown2);
+//    nd280Track->SetLengthHATPCDown(LengthHATPCDown);
     nd280Track->SetLengthForwTPC1(LengthForwTPC1);
     nd280Track->SetLengthForwTPC2(LengthForwTPC2);
     nd280Track->SetLengthForwTPC3(LengthForwTPC3);
@@ -1101,11 +1124,14 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetLengthBrlECal(LengthBrlECal);
     nd280Track->SetLengthP0DECal(LengthP0DECal);
     nd280Track->SetLengthUSECalP0D(LengthUSECalP0D);
+
     
     nd280Track->SetLyzTPCUp1(LyzTPCUp1);
     nd280Track->SetLyzTPCUp2(LyzTPCUp2);
+//    nd280Track->SetLyzHATPCUp(LyzHATPCUp);
     nd280Track->SetLyzTPCDown1(LyzTPCDown1);
     nd280Track->SetLyzTPCDown2(LyzTPCDown2);
+//    nd280Track->SetLyzHATPCDown(LyzHATPCDown);
     nd280Track->SetLyzForwTPC1(LyzForwTPC1);
     nd280Track->SetLyzForwTPC2(LyzForwTPC2);
     nd280Track->SetLyzForwTPC3(LyzForwTPC3);
@@ -1116,8 +1142,10 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetEdepFGD2(EdepFGD2);    
     nd280Track->SetEdepTPCUp1(EdepTPCUp1);
     nd280Track->SetEdepTPCUp2(EdepTPCUp2);
+//    nd280Track->SetEdepHATPCUp(EdepHATPCUp);    
     nd280Track->SetEdepTPCDown1(EdepTPCDown1);
     nd280Track->SetEdepTPCDown2(EdepTPCDown2);
+//    nd280Track->SetEdepHATPCDown(EdepHATPCDown); 
     nd280Track->SetEdepForwTPC1(EdepForwTPC1);
     nd280Track->SetEdepForwTPC2(EdepForwTPC2);
     nd280Track->SetEdepForwTPC3(EdepForwTPC3);

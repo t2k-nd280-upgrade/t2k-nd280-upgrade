@@ -58,8 +58,10 @@ public :
   void SetLengthFGD2(double length)    {fLengthFGD2=length;};
   void SetLengthTPCUp1(double length)  {fLengthTPCUp1=length;};
   void SetLengthTPCUp2(double length)  {fLengthTPCUp2=length;};
+  void SetLengthHATPCUp(double length)  {fLengthHATPCUp=length;};  
   void SetLengthTPCDown1(double length){fLengthTPCDown1=length;};
   void SetLengthTPCDown2(double length){fLengthTPCDown2=length;};
+  void SetLengthHATPCDown(double length)  {fLengthHATPCDown=length;};   
   void SetLengthForwTPC1(double length){fLengthForwTPC1=length;};
   void SetLengthForwTPC2(double length){fLengthForwTPC2=length;};
   void SetLengthForwTPC3(double length){fLengthForwTPC3=length;};
@@ -69,8 +71,10 @@ public :
 
   void SetLyzTPCUp1(double length)    {fLyzTPCUp1=length;};
   void SetLyzTPCUp2(double length)    {fLyzTPCUp2=length;};
+  void SetLyzHATPCUp(double length)    {fLyzHATPCUp=length;};
   void SetLyzTPCDown1(double length)  {fLyzTPCDown1=length;};
   void SetLyzTPCDown2(double length)  {fLyzTPCDown2=length;};
+  void SetLyzHATPCDown(double length)    {fLyzHATPCDown=length;};
   void SetLyzForwTPC1(double length)  {fLyzForwTPC1=length;};
   void SetLyzForwTPC2(double length)  {fLyzForwTPC2=length;};
   void SetLyzForwTPC3(double length)  {fLyzForwTPC3=length;};
@@ -81,8 +85,10 @@ public :
   void SetEdepFGD2(double edep)     {fEdepFGD2=edep;};
   void SetEdepTPCUp1(double edep)   {fEdepTPCUp1=edep;};
   void SetEdepTPCUp2(double edep)   {fEdepTPCUp2=edep;};
+  void SetEdepHATPCUp(double edep)   {fEdepHATPCUp=edep;};
   void SetEdepTPCDown1(double edep) {fEdepTPCDown1=edep;};
   void SetEdepTPCDown2(double edep) {fEdepTPCDown2=edep;};
+  void SetEdepHATPCDown(double edep)   {fEdepHATPCDown=edep;};
   void SetEdepForwTPC1(double edep) {fEdepForwTPC1=edep;};
   void SetEdepForwTPC2(double edep) {fEdepForwTPC2=edep;};
   void SetEdepForwTPC3(double edep) {fEdepForwTPC3=edep;};
@@ -167,8 +173,10 @@ private :
   double fLengthFGD2;
   double fLengthTPCUp1;
   double fLengthTPCUp2;
+  double fLengthHATPCUp;
   double fLengthTPCDown1;
-  double fLengthTPCDown2 ;
+  double fLengthTPCDown2;
+  double fLengthHATPCDown;
   double fLengthForwTPC1;
   double fLengthForwTPC2;
   double fLengthForwTPC3;
@@ -177,8 +185,10 @@ private :
   double fLengthP0DECal;
   double fLyzTPCUp1;
   double fLyzTPCUp2;
+  double fLyzHATPCUp;
   double fLyzTPCDown1;
-  double fLyzTPCDown2 ;
+  double fLyzTPCDown2;
+  double fLyzHATPCDown;
   double fLyzForwTPC1;
   double fLyzForwTPC2;
   double fLyzForwTPC3;
@@ -188,8 +198,10 @@ private :
   double fEdepFGD2;
   double fEdepTPCUp1;
   double fEdepTPCUp2;
+  double fEdepHATPCUp;  
   double fEdepTPCDown1;
-  double fEdepTPCDown2 ;
+  double fEdepTPCDown2;
+  double fEdepHATPCDown;
   double fEdepForwTPC1;
   double fEdepForwTPC2;
   double fEdepForwTPC3;

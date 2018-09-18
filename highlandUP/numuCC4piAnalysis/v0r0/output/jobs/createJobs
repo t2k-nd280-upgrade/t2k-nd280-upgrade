@@ -1,6 +1,7 @@
 #! /bin/csh -f
 
-set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/
+#set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/FHC_nu_mu_1e21POT_UniTarget_WholeDetector
+set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/FHC_numu/config2
 set code_dir = /software/neutrinos/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
 set original_parfile = ${code_dir}/parameters/numuCC4piAnalysis.parameters.dat
 
@@ -25,12 +26,12 @@ endif
 # where to start for job numbering
 set j=`ls ${job_dir} | wc -l`
 
-set max_job=100 # maximum of simultaneous job
+set max_job=10000 # maximum of simultaneous job
 cd ${code_dir}/output/jobs
 
 set i_nu=0
 # loop on the beam configuration
-while ($i_nu < 2)
+while ($i_nu < 1)                   #originally < 2 (with FHC & RHC)
 
     if ($i_nu == 0) then
 	set folder = "FHC_numu"
@@ -41,25 +42,35 @@ while ($i_nu < 2)
 	set numode = "RHC_numu_antinu"
     endif
 
-    set i_conf=0
-    # loop on the detector configuration
-    foreach i_conf (0 2)
+#    set i_conf=0
+#    # loop on the detector configuration
+#    foreach i_conf (0 2)                    
 
-	set conf = $i_conf
-	if ($conf == 4) then
-	    set conf = 0
-	endif
-	if ($conf == 5) then
-	    set conf = 2
+#	set conf = $i_conf
+#	if ($conf == 4) then
+#	    set conf = 0
+#	endif
+#	if ($conf == 5) then
+#	    set conf = 2
+#	endif
+
+#	set i_target = 1
+#	# number of targets (Super-FGD + FGD)
+#	set N_targets = 2
+#	if ($conf == 2) then
+#	    set N_targets = 3
+#	endif
+
+    set i_conf = 0
+
+    foreach i_conf (2)
+    
+    if($i_nu == 0) then
+    	set conf = $i_conf
+    	set N_targets = 3
+    	set i_target = 3
 	endif
 
-	set i_target = 1
-	# number of targets (Super-FGD + FGD)
-	set N_targets = 2
-	if ($conf == 2) then
-	    set N_targets = 3
-	endif
-		
 	# loop on targets
 	while ($i_target <= $N_targets)
 
@@ -104,35 +115,35 @@ while ($i_nu < 2)
 
 	    sed -i "/Configuration =/c\ < psycheNDUPUtils.Geometry.nd280upConfiguration = ${conf} >" $parfile
 
-	    touch ${job}
-#	    echo ${job}
-#	    echo ${file_dir}/${folder}/config${i_conf}
-	    # split the job in subfiles
 	    set f=0
-	    foreach input_file (`ls  ${file_dir}/${folder}/config${i_conf}/*.root | sed -r 's/^.+\///'`)
-		echo "${code_dir}/output/jobs/jobBase $parfile ${out_dir}/${name}_split_$f.root ${file_dir}/${folder}/config${i_conf}/${input_file}" >> ${job}
-		@ f = $f + 1
+	    foreach input_file (`ls  ${file_dir}/*.root | sed -r 's/^.+\///'`)
+		    set job  = "${job_dir}/job_${name}_$f.sh"
+		    touch ${job}
+		    # split the job in subfiles
+			echo "${code_dir}/output/jobs/jobBase $parfile ${out_dir}/${name}_split_$f.root	${file_dir}/${input_file}" >> ${job}
+			@ f = $f + 1
+
+		    chmod +x ${job}
+
+		    set dq = '"'
+		    set job_name = "${dq}hUP_$j${dq}"
+		    set k = $j
+		    @ k = $k - $max_job
+		    set prev_job_name = "${dq}hUP_$k${dq}"
+
+		    if ($j < $max_job) then 
+		    echo "qsub -N $job_name -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -q long -l nodes=1 ${job}" >> $launcher
+		    #echo "qsub -N $job_name -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=24:00:00,s_fsize=8G,s_rss=8G,sps=1 ${job}" >> $launcher
+		    endif
+
+		    if ($f != 0) then
+			echo "hadd -f ${name}.root ${name}_split_$f.root" >> ${conc}
+			echo "rm -f ${name}_split_$f.root" >> ${conc}
+		    endif
+
+	    	@ j = $j + 1
 	    end
 
-	    chmod +x ${job}
-
-	    set dq = '"'
-	    set job_name = "${dq}hUP_$j${dq}"
-	    set k = $j
-	    @ k = $k - $max_job
-	    set prev_job_name = "${dq}hUP_$k${dq}"
-
-	    if ($j < $max_job) then 
-	    echo "qsub -N $job_name -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -q long -l nodes=1 ${job}" >> $launcher
-	    #echo "qsub -N $job_name -P P_t2k -o ${log_dir}/output_$j.txt -e ${log_dir}/outerr_$j.txt -l ct=24:00:00,s_fsize=8G,s_rss=8G,sps=1 ${job}" >> $launcher
-	    endif
-			
-	    if ($f != 0) then
-		echo "hadd -f ${name}.root ${name}_split_*.root" >> ${conc}
-		echo "rm -f ${name}_split_*.root" >> ${conc}
-	    endif
-
-	    @ j = $j + 1
 	    @ i_target = $i_target + 1
 	end
 

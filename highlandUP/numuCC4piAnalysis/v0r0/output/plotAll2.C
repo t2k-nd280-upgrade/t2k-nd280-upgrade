@@ -49,9 +49,14 @@ TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_l
   TH1::AddDirectory(kFALSE);
 
 //  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()));
-  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()));
+  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/18_09_2018/config2_Target3_FHC_numu.root"));
+//  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/Mathieu_config/config2_Target3_FHC_numu.root"));
+
+
   //  f.ls();
-  cout << "Reading the file in: " << TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config2_Target3_FHC_numu_split_%i%s.root", config, target, suffix.Data()) << endl;
+  cout << "Reading the file in: " << TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/18_09_2018/config2_Target3_FHC_numu.root") << endl;
+//  cout << "Reading the file in: " << TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/Mathieu_config/config2_Target3_FHC_numu.root") << endl;
+
   TTree* t = (TTree*)f.Get("truth");
 
   TString targetName="";
@@ -66,14 +71,18 @@ TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_l
   else if (categ == -2)
     categName = "woTarget";
   else
-    categName = branchNames[categ];
 
-  TString title = TString::Format("%s, %s, %s", 
+ /* TString title = TString::Format("%s, %s, %s", 
 				  config==0 ? "Current":"Upgrade",
 				  targetName.Data(),
 				  categName.Data());
 
-  TH2F* h = new TH2F(title, title, nbinsX, xbinsX, nbinsY, xbinsY);
+*/
+
+  // TString title = "histo_conf2_targ3"
+  // cout << "title is: " << title << endl;
+
+  TH2F* h = new TH2F("histo_conf2_targ3", "histo_conf2_targ3", nbinsX, xbinsX, nbinsY, xbinsY);
 
   Int_t accum_level[8];
   Float_t variableX, variableY;
@@ -96,6 +105,12 @@ TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_l
     branches.push_back(categ);
 
   for (Int_t ient=0; ient < t->GetEntries(); ient++) {
+  //for (Int_t ient=0; ient < 5000; ient++) {
+
+
+  if(ient == 0) cout << "entries: " << t->GetEntries() << " | conf: " << config << " | target: " << target << " suffixes:" << suffix << endl;
+  if(ient%20000 == 0) cout << "ient: " << ient << endl;
+
 
     t->GetEntry(ient);
     bool sel = false;
@@ -142,7 +157,8 @@ void plot2D(TString suffix, int config, int categ, int cut_level,
 
   vector<TH2F*> histos;
 
-  for (int targ=1; targ<=NTargets[config]; targ++){
+ // for (int targ=1; targ<=NTargets[config]; targ++){
+  for (int targ=3; targ<=NTargets[config]; targ++){ 
     histos.push_back(compute2D_Dis(suffix, config, targ, categ, cut_level,
 				   varX, var_titleX, varY, var_titleY, 
 				   nbinsX, xbinsX, nbinsY, xbinsY));
@@ -159,24 +175,26 @@ void plot2D(TString suffix, int config, int categ, int cut_level,
   h->SetContour(100);
   h->Draw("colz");
 
-   c->SaveAs(TString::Format("%s/TDR_2D_%s_%s_config%i_target%i_%s%s%s.eps", 
-  			    "/nfs/neutrinos/cjesus/work/jobs/plots", varX.Data(), varY.Data(), config, targ, categName.Data(), suffixName.Data(), log ? "_log":""));
+if (log)
+   c->SaveAs(TString::Format("%s/NEW_TDR_2D_config2_target3_log.eps", "/nfs/neutrinos/cjesus/work/jobs/plots"));
+else
+   c->SaveAs(TString::Format("%s/NEW_TDR_2D_config2_target3.eps", "/nfs/neutrinos/cjesus/work/jobs/plots"));   
 
 }
 }
 
 
-void plotAll() {
+void plotAll2() {
 
   TString suffixes[2] = {"_RHC_numu_antinu","_FHC_numu"};
-  int conf[2] = {0,2};
+  int conf[2] = {2,2};
   for (int c=-2; c<-1; c++)
-    for (int s=0; s<2; s++)
-      for (int cc=0; cc<2; cc++) {
-	plot2D(suffixes[s], conf[cc], c, 4, 
+    for (int s=1; s<2; s++)
+      for (int cc=0; cc<1; cc++) {
+	      plot2D(suffixes[s], conf[cc], 3, 4, 
 	       "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
 	       NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, false);
-      	plot2D(suffixes[s], conf[cc], c, 4, 
+      	plot2D(suffixes[s], conf[cc], 3, 4, 
 	       "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
 	       NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
       }

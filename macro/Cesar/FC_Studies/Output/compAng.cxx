@@ -25,7 +25,7 @@
    c1->Divide(4,3);
    c2->Divide(4,3);
 
-   TFile f1("AnalysisOutput_Nexus_Evt0_NEvt400000.root");
+   TFile f1("Histos_Solid.root");
    NAngEl3DProj = new TProfile2D;
    NAngEl3DProj = hAngEl3D_pxy;
    NAngMu3DProj = new TProfile2D;
@@ -62,7 +62,7 @@
    NAngPr60Proj = new TProfile;
    NAngPr60Proj = hAngPr60Proj;
 
-   TFile f2("AnalysisOutput_GF_Evt0_NEvt400000.root");
+   TFile f2("AnalysisOutput_Solid_Evt0_NEvt400000.root");
    GAngEl3DProj = new TProfile2D;
    GAngEl3DProj = hAngEl3D_pxy;
    GAngMu3DProj = new TProfile2D;
@@ -187,8 +187,8 @@
    NAngMu0Proj->SetLineColor(kBlue);
    GAngMu0Proj->SetLineColor(kGreen);
    SAngMu0Proj->SetLineColor(kRed);
-   GAngMu0Proj->Draw("HIST E1");
-   NAngMu0Proj->Draw("HIST E1 SAME");
+   NAngMu0Proj->Draw("HIST E1");
+   GAngMu0Proj->Draw("HIST E1 SAME");
    SAngMu0Proj->Draw("HIST E1 SAME");
    TPaveText *t2 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t2->AddText("Muons at 0 deg");
@@ -271,9 +271,9 @@
    NAngMu30Proj->SetLineColor(kBlue);
    GAngMu30Proj->SetLineColor(kGreen);
    SAngMu30Proj->SetLineColor(kRed);
-   SAngMu30Proj->Draw("HIST E1");
+   NAngMu30Proj->Draw("HIST E1");
    GAngMu30Proj->Draw("HIST E1 SAME");
-   NAngMu30Proj->Draw("HIST E1 SAME");
+   SAngMu30Proj->Draw("HIST E1 SAME");
    TPaveText *t6 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t6->AddText("Muons at 30 deg");
    t6->SetTextFont(22);
@@ -437,6 +437,6 @@
    cout << endl;
 
 //c1->Print("~/Desktop/FCStudies/Plots/AllAng.pdf");
-c2->Print("~/Desktop/FCStudies/Plots/NewProfilesAng.pdf");
+c2->Print("/nfs/neutrinos/cjesus/work/jobs/plots/18_07_2018/compAng.pdf");
 
 }

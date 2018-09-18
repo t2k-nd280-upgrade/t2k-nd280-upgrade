@@ -25,7 +25,7 @@
    c1->Divide(4,3);
  //  c2->Divide(4,3);
 
-   TFile f1("AnalysisOutput_Nexus_Evt0_NEvt400000.root");
+   TFile f1("Histos_Solid.root");
    
    NStopGrEl0 = new TGraphAsymmErrors;
    NStopGrEl0 =grStopEl0;
@@ -79,7 +79,7 @@
    NStopHPr60 = new TH1F;
    NStopHPr60 = hStopPr60;
 
-   TFile f2("AnalysisOutput_GF_Evt0_NEvt400000.root");
+   TFile f2("AnalysisOutput_Solid_Evt0_NEvt400000.root");
 
    GStopGrEl0 = new TGraphAsymmErrors;
    GStopGrEl0 =grStopEl0;
@@ -227,11 +227,11 @@
    SStopGrMu0->SetLineColor(kRed);
 
    NStopHMu0->Draw("HIST");
-   NStopGrMu0->Draw("P SAME");
+   //NStopGrMu0->Draw("P SAME");
    GStopHMu0->Draw("HIST SAME");
-   GStopGrMu0->Draw("P SAME");
+   //GStopGrMu0->Draw("P SAME");
    SStopHMu0->Draw("HIST SAME");
-   SStopGrMu0->Draw("P SAME");
+   //SStopGrMu0->Draw("P SAME");
 
    TPaveText *t2 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t2->AddText("Muons at 0 deg");
@@ -489,6 +489,6 @@
    cout << "--------------------------------------------------" << endl;
    cout << endl;
 
-c1->Print("~/Desktop/FCStudies/Plots/NewProfilesStop.pdf");
+c1->Print("/nfs/neutrinos/cjesus/work/jobs/plots/18_07_2018/compStop.pdf");
 
 }

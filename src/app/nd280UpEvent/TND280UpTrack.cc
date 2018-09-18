@@ -40,8 +40,10 @@ TND280UpTrack::TND280UpTrack()
   fLengthFGD2  = kUndefTrack;
   fLengthTPCUp1   = kUndefTrack;
   fLengthTPCUp2   = kUndefTrack;
+//  fLengthHATPCUp  = kUndefTrack;
   fLengthTPCDown1 = kUndefTrack;
   fLengthTPCDown2 = kUndefTrack;
+//  fLengthHATPCDown  = kUndefTrack;
   fLengthForwTPC1 = kUndefTrack;
   fLengthForwTPC2 = kUndefTrack;
   fLengthForwTPC3 = kUndefTrack;
@@ -52,8 +54,10 @@ TND280UpTrack::TND280UpTrack()
 
   fLyzTPCUp1     = kUndefTrack;
   fLyzTPCUp2     = kUndefTrack;
+//  fLyzHATPCUp    = kUndefTrack;  
   fLyzTPCDown1   = kUndefTrack;
   fLyzTPCDown2   = kUndefTrack;
+//  fLyzHATPCDown    = kUndefTrack;  
   fLyzForwTPC1   = kUndefTrack;
   fLyzForwTPC2   = kUndefTrack;
   fLyzForwTPC3   = kUndefTrack;
@@ -64,8 +68,10 @@ TND280UpTrack::TND280UpTrack()
   fEdepFGD2      = kUndefTrack;
   fEdepTPCUp1     = kUndefTrack;
   fEdepTPCUp2     = kUndefTrack;
+//  fEdepHATPCUp    = kUndefTrack;
   fEdepTPCDown1   = kUndefTrack;
   fEdepTPCDown2   = kUndefTrack;
+//  fEdepHATPCDown   = kUndefTrack;
   fEdepForwTPC1   = kUndefTrack;
   fEdepForwTPC2   = kUndefTrack;
   fEdepForwTPC3   = kUndefTrack;

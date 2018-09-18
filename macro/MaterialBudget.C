@@ -27,7 +27,7 @@
   #include "/software/neutrinos/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
   #include "/software/neutrinos/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
 
-  void FieldCageWalls
+  void MaterialBudget
   (
   //Initialize the variables fixed in the submit script
    const int evtfirst = 0,
@@ -186,12 +186,16 @@
     cout << "Event " << ievt << endl; // Message for large files: Print the analysis status every 10000 analyzed events.    
   }
 
-  cout << endl << "NEW EVENT" << endl << endl;
+  //cout << endl << endl << "NEW EVENT" << endl << endl;
 
   //Loop over Tracks (per each events).
   int NTracks = nd280UpEvent->GetNTracks();
   for(int itrk=0;itrk<NTracks;itrk++)
   {
+
+  //cout << endl << "NEW Track" << endl << endl;  
+
+
     TND280UpTrack *nd280UpTrack = nd280UpEvent->GetTrack(itrk);
     
     int trkID = nd280UpTrack->GetTrackID();
@@ -228,7 +232,11 @@
     double phi2=atan2(MomVec[2],MomVec[1]);
     string volname = nd280UpTrackPoint->GetLogVolName();
 
-    cout << "volname is: " << volname << endl;
+    if(ipt==0 && volname != "TargetUniform") break;
+    if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer1"){
+    if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCDown/FCSolid/layer1") break;
+    }
+    //cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
    
   // Conditions to select the plot's .pdf file names.
      if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FC/layer8") {FCname = "old"; break;}
@@ -284,28 +292,28 @@
           {
           if(pdg ==11) EffEl0->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu0->Fill(bPassed,MomIni);
-          if(pdg ==-211) EffPi0->Fill(bPassed,MomIni);
+          if(pdg ==-211 || pdg ==211)  EffPi0->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr0->Fill(bPassed,MomIni);
           }
           if(phi*360/(2*3.141592) >= (30-3.5) && phi*360/(2*3.141592) <= (30+3.5))
           {
           if(pdg ==11) EffEl30->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu30->Fill(bPassed,MomIni);
-          if(pdg ==-211) EffPi30->Fill(bPassed,MomIni);
+          if(pdg ==-211 || pdg ==211)  EffPi30->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr30->Fill(bPassed,MomIni);
           }
           if(phi*360/(2*3.141592) >= (60-3.5) && phi*360/(2*3.141592) <= (60+3.5))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
-          if(pdg ==-211) EffPi60->Fill(bPassed,MomIni);
+          if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
           if(phi*360/(2*3.141592) >= (75-3.5) && phi*360/(2*3.141592) <= (75+3.5))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
-          if(pdg ==-211) EffPi60->Fill(bPassed,MomIni);
+          if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
         }
@@ -317,28 +325,28 @@
           {
           if(pdg ==11) EffEl0->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu0->Fill(bPassed,MomIni);
-          if(pdg ==-211) EffPi0->Fill(bPassed,MomIni);
+          if(pdg ==-211 || pdg ==211)  EffPi0->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr0->Fill(bPassed,MomIni);
           }
           if(phi*360/(2*3.141592) >= (30-3.5) && phi*360/(2*3.141592) <= (30+3.5))
           {
           if(pdg ==11) EffEl30->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu30->Fill(bPassed,MomIni);
-          if(pdg ==-211) EffPi30->Fill(bPassed,MomIni);
+          if(pdg ==-211 || pdg ==211)  EffPi30->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr30->Fill(bPassed,MomIni);
           }
           if(phi*360/(2*3.141592) >= (60-3.5) && phi*360/(2*3.141592) <= (60+3.5))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
-          if(pdg ==-211) EffPi60->Fill(bPassed,MomIni);
+          if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
           if(phi*360/(2*3.141592) >= (75-3.5) && phi*360/(2*3.141592) <= (75+3.5))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
-          if(pdg ==-211) EffPi60->Fill(bPassed,MomIni);
+          if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
         }
@@ -894,8 +902,6 @@
   eyhEl0[i-1] = 100*(EffEl0->GetEfficiencyErrorUp(i));
   XbinEl0[i-1] = ElIni+((ElFin-ElIni)/ElY)*(i-0.5);
   YbinEl0[i-1] = 100*(EffEl0->GetEfficiency(i));
-  cout << "XbinEl0 " << XbinEl0[i-1] << endl;
-  cout << "YbinEl0 " << YbinEl0[i-1] << endl;
   }
   hStopEl0->GetYaxis()->SetRangeUser(0,105);
   hStopEl0->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -929,8 +935,6 @@
   eyhMu0[i-1] = 100*(EffMu0->GetEfficiencyErrorUp(i));
   XbinMu0[i-1] = MuIni+((MuFin-MuIni)/MuY)*(i-0.5);
   YbinMu0[i-1] = 100*(EffMu0->GetEfficiency(i));
-  cout << "XbinMu0 " << XbinMu0[i-1] << endl;
-  cout << "YbinMu0 " << YbinMu0[i-1] << endl;
   }
   hStopMu0->GetYaxis()->SetRangeUser(0,105);
   hStopMu0->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -964,8 +968,6 @@
   eyhPi0[i-1] = 100*(EffPi0->GetEfficiencyErrorUp(i));
   XbinPi0[i-1] = PiIni+((PiFin-PiIni)/PiY)*(i-0.5);
   YbinPi0[i-1] = 100*(EffPi0->GetEfficiency(i));
-  cout << "XbinPi0 " << XbinPi0[i-1] << endl;
-  cout << "YbinPi0 " << YbinPi0[i-1] << endl;
   }
   hStopPi0->GetYaxis()->SetRangeUser(0,105);
   hStopPi0->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -999,8 +1001,6 @@
   eyhPr0[i-1] = 100*(EffPr0->GetEfficiencyErrorUp(i));
   XbinPr0[i-1] = PrIni+((PrFin-PrIni)/PrY)*(i-0.5);
   YbinPr0[i-1] = 100*(EffPr0->GetEfficiency(i));
-  cout << "XbinPr0 " << XbinPr0[i-1] << endl;
-  cout << "YbinPr0 " << YbinPr0[i-1] << endl;
   }
   hStopPr0->GetYaxis()->SetRangeUser(0,105);
   hStopPr0->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1034,8 +1034,6 @@
   eyhEl30[i-1] = 100*(EffEl30->GetEfficiencyErrorUp(i));
   XbinEl30[i-1] = ElIni+((ElFin-ElIni)/ElY)*(i-0.5);
   YbinEl30[i-1] = 100*(EffEl30->GetEfficiency(i));
-  cout << "XbinEl30 " << XbinEl30[i-1] << endl;
-  cout << "YbinEl30 " << YbinEl30[i-1] << endl;
   }
   hStopEl30->GetYaxis()->SetRangeUser(0,105);
   hStopEl30->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1069,8 +1067,6 @@
   eyhMu30[i-1] = 100*(EffMu30->GetEfficiencyErrorUp(i));
   XbinMu30[i-1] = MuIni+((MuFin-MuIni)/MuY)*(i-0.5);
   YbinMu30[i-1] = 100*(EffMu30->GetEfficiency(i));
-  cout << "XbinMu30 " << XbinMu30[i-1] << endl;
-  cout << "YbinMu30 " << YbinMu30[i-1] << endl;
   }
   hStopMu30->GetYaxis()->SetRangeUser(0,105);
   hStopMu30->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1104,8 +1100,6 @@
   eyhPi30[i-1] = 100*(EffPi30->GetEfficiencyErrorUp(i));
   XbinPi30[i-1] = PiIni+((PiFin-PiIni)/PiY)*(i-0.5);
   YbinPi30[i-1] = 100*(EffPi30->GetEfficiency(i));
-  cout << "XbinPi30 " << XbinPi30[i-1] << endl;
-  cout << "YbinPi30 " << YbinPi30[i-1] << endl;
   }
   hStopPi30->GetYaxis()->SetRangeUser(0,105);
   hStopPi30->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1139,8 +1133,6 @@
   eyhPr30[i-1] = 100*(EffPr30->GetEfficiencyErrorUp(i));
   XbinPr30[i-1] = PrIni+((PrFin-PrIni)/PrY)*(i-0.5);
   YbinPr30[i-1] = 100*(EffPr30->GetEfficiency(i));
-  cout << "XbinPr30 " << XbinPr30[i-1] << endl;
-  cout << "YbinPr30 " << YbinPr30[i-1] << endl;
   }
   hStopPr30->GetYaxis()->SetRangeUser(0,105);
   hStopPr30->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1174,8 +1166,6 @@
   eyhEl60[i-1] = 100*(EffEl60->GetEfficiencyErrorUp(i));
   XbinEl60[i-1] = ElIni+((ElFin-ElIni)/ElY)*(i-0.5);
   YbinEl60[i-1] = 100*(EffEl60->GetEfficiency(i));
-  cout << "XbinEl60 " << XbinEl60[i-1] << endl;
-  cout << "YbinEl60 " << YbinEl60[i-1] << endl;
   } 
   hStopEl60->GetYaxis()->SetRangeUser(0,105);
   hStopEl60->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1209,8 +1199,6 @@
   eyhMu60[i-1] = 100*(EffMu60->GetEfficiencyErrorUp(i));
   XbinMu60[i-1] = MuIni+((MuFin-MuIni)/MuY)*(i-0.5);
   YbinMu60[i-1] = 100*(EffMu60->GetEfficiency(i));
-  cout << "XbinMu60 " << XbinMu60[i-1] << endl;
-  cout << "YbinMu60 " << YbinMu60[i-1] << endl;
   }
   hStopMu60->GetYaxis()->SetRangeUser(0,105);
   hStopMu60->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1244,8 +1232,6 @@
   eyhPi60[i-1] = 100*(EffPi60->GetEfficiencyErrorUp(i));
   XbinPi60[i-1] = PiIni+((PiFin-PiIni)/PiY)*(i-0.5);
   YbinPi60[i-1] = 100*(EffPi60->GetEfficiency(i));
-  cout << "XbinPi60 " << XbinPi60[i-1] << endl;
-  cout << "YbinPi60 " << YbinPi60[i-1] << endl;
   }
   hStopPi60->GetYaxis()->SetRangeUser(0,105);
   hStopPi60->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1279,8 +1265,6 @@
   eyhPr60[i-1] = 100*(EffPr60->GetEfficiencyErrorUp(i));
   XbinPr60[i-1] = PrIni+((PrFin-PrIni)/PrY)*(i-0.5);
   YbinPr60[i-1] = 100*(EffPr60->GetEfficiency(i));
-  cout << "XbinPr60 " << XbinPr60[i-1] << endl;
-  cout << "YbinPr60 " << YbinPr60[i-1] << endl;
   }
   hStopPr60->GetYaxis()->SetRangeUser(0,105);
   hStopPr60->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -1408,13 +1392,15 @@
 
     out->Close();
 
-    cout << outfilename << endl;
+  TString filename = "";
 
-  if(FCname == "old") c1->Print("~/Desktop/FCStudies/Plots/old.pdf");
-  if(FCname == "Nexus") c1->Print("~/Desktop/FCStudies/Plots/Nexus.pdf");
-  if(FCname == "GF") c1->Print("~/Desktop/FCStudies/Plots/GF.pdf");
-  if(FCname == "Solid") c1->Print("~/Desktop/FCStudies/Plots/Solid.pdf");
+  if(FCname == "Nexus") filename = TString::Format("%s_Nexus.pdf",outfilename.Data());
+  if(FCname == "GF") filename = TString::Format("%s_GF.pdf",outfilename.Data());
+  if(FCname == "Solid") filename = TString::Format("%s_Solid.pdf",outfilename.Data());
 
+  c1->Print(filename);
+
+  cout << "File created in: " << outfilename << endl;
 
   }
 

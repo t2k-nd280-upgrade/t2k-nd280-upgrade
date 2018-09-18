@@ -25,7 +25,7 @@
    c1->Divide(4,3);
    c2->Divide(4,3);
 
-   TFile f1("AnalysisOutput_Nexus_Evt0_NEvt400000.root");
+   TFile f1("Histos_Solid.root");
    NMomEl3DProj = new TProfile2D;
    NMomEl3DProj = hMomEl3D_pxy;
    NMomMu3DProj = new TProfile2D;
@@ -62,7 +62,7 @@
    NMomPr60Proj = new TProfile;
    NMomPr60Proj = hMomPr60Proj;
 
-   TFile f2("AnalysisOutput_GF_Evt0_NEvt400000.root");
+   TFile f2("AnalysisOutput_Solid_Evt0_NEvt400000.root");
    GMomEl3DProj = new TProfile2D;
    GMomEl3DProj = hMomEl3D_pxy;
    GMomMu3DProj = new TProfile2D;
@@ -437,6 +437,6 @@
    cout << endl;
 
 //c1->Print("~/Desktop/FCStudies/Plots/AllMom.pdf");
-c2->Print("~/Desktop/FCStudies/Plots/NewProfilesMom.pdf");
+c2->Print("/nfs/neutrinos/cjesus/work/jobs/plots/18_07_2018/compMom.pdf");
 
 }
