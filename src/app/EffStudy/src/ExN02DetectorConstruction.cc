@@ -1114,7 +1114,6 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     SetTargetPos1(x,y,z);
 
     G4String cNameSolidTargetUniform;
-    G4String nameSuperFGD1;
     if (!ND280XMLInput->GetXMLUseCFBox()) {
       cNameSolidTargetUniform = cNameSolidTarget1+"/targetUniform";
       nameSuperFGD1 = cNameSolidTarget1+"/TargetUniform";
@@ -1441,7 +1440,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
     
     G4cout << " mass="<<logicSuperFGD1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
-    G4cout << " name: " << logicSuperFGD1->GetName() << G4endl;
+    G4cout << " Log name : " << logicSuperFGD1->GetName() << G4endl;
+    G4cout << " Phys name: " << physiSuperFGD1->GetName() << G4endl;
     G4cout << "Target 1: " << G4endl;
     G4cout << " - Total size (mm^3): "
      << Target_width / CLHEP::mm << " (width) x "
