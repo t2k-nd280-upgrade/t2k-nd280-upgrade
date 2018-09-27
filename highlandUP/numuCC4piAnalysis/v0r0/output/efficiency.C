@@ -24,6 +24,11 @@
 
 using namespace std;
 
+//TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/CompEff";
+//TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots";
+TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/UniTarget-FGD12/config2";
+TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots";
+
 int NTargets[4] = {2, 2, 3, 3};
 TString branchNames[8] = {"CC0pi", "CC1pi", "CCoth", "FWD", "BWD", "HA", "Target", "ECal"};
 
@@ -42,6 +47,7 @@ double BinEdges_Enu[NBins_Enu+1] = {0, 200, 300, 400, 500, 600, 700, 800, 900, 1
 double PSRes_muonMom = 400;
 double PSRes_muonCos = 0.4;
 
+
 // plot the efficiency for a given file, configuration, target, event category
 //   config: 0 = Current detector ; 2 = Upgrade detector
 //   target: 1 = FGD-1 ; 2 = FGD-2 ; 3 = Super-FGD
@@ -52,12 +58,14 @@ TH1F* computeEff(TString suffix, int config, int target, int categ, int cut1, in
 		 TString var, TString var_title, 
 		 int nbins, double* xbins, bool PSRes=false) {
   
- 
   TH1::AddDirectory(kFALSE);
-  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()));
-  //  f.ls();                                                                                                           
-  cout << "Reading the file in: " << TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()) << endl;
-  TTree* t = (TTree*)f.Get("truth");
+
+ // config = 2;
+ // target = 3;
+
+  TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
+        INPDIR.Data(),target, config, target, suffix.Data()));
+  TTree* t = (TTree*)f.Get("truth");	
 
   TH1F* h_beforeCut = new TH1F(TString::Format("before_%s_%i_%i",var.Data(),config,target),
 			       TString::Format("before_%s_%i_%i",var.Data(),config,target),
@@ -92,6 +100,7 @@ TH1F* computeEff(TString suffix, int config, int target, int categ, int cut1, in
   else
     branches.push_back(categ);
     
+
   for (Int_t ient=0; ient < t->GetEntries(); ient++) {
 	  
     t->GetEntry(ient);
@@ -139,6 +148,7 @@ TH1F* computeEff(TString suffix, int config, int target, int categ, int cut1, in
 
 }
 
+
 // superimpose the efficiencies for a given set of files, category and variable
 void plotTotal(TString suffix, int categ, int cut1, int cut2, 
 	       TString var, TString var_title, 
@@ -164,13 +174,16 @@ void plotTotal(TString suffix, int categ, int cut1, int cut2,
   int configs[2] = {0,2};
   int linestyles[2] = {2,1};
   TString configNames[2] = {"current", "upgrade"};
+//  TString configNames[2] = {"OLD_G4", "NEW_G4"};
 
   int colors[3] = {kBlack, kRed, kBlue};
 
-  for (int ic=0; ic<2; ic++) {
+  for (int ic=0; ic<2; ic++) { //ALL
+//  for (int ic=1; ic<2; ic++) { //ONLY UPGRADE
+//  for (int ic=0; ic<1; ic++) { //ONLY BEFORE UPGRADE
 	  
-    for (int it=1; it<=NTargets[configs[ic]]; it++) {
-
+  for (int it=1; it<=NTargets[configs[ic]]; it++) {
+//		    for (int it=1; it<=2; it++) {
       TH1F* h = computeEff(suffix, configs[ic], it, categ, cut1, cut2, 
 			   var, var_title, nbins, xbins, PSRes);
       h->SetLineColor(colors[it-1]);
@@ -190,7 +203,7 @@ void plotTotal(TString suffix, int categ, int cut1, int cut2,
 
     if (ic==0)
       leg->AddEntry((TObject*)0, "#bf{Preliminary}", "");
-
+//      leg->AddEntry((TObject*)0, "#bf{NEW_hUp}", "");
   }
 
   leg->Draw("same");
@@ -210,8 +223,17 @@ void plotTotal(TString suffix, int categ, int cut1, int cut2,
 
   c->Update();
   c->SaveAs(TString::Format("%s/eff_total%s_%s_%s%s.eps", 
-			   "/nfs/neutrinos/cjesus/work/jobs/plots", suffixName.Data(), var.Data(), categName.Data(), PSRes ? "_PSRes":""));
+			    OUTDIR.Data(), suffixName.Data(), var.Data(), categName.Data(), PSRes ? "_PSRes":""));
 
+  TFile fW(TString::Format("%s/eff_total%s_%s_%s%s.root", 
+          OUTDIR.Data(), suffixName.Data(), var.Data(), categName.Data(), PSRes ? "_PSRes":""), "RECREATE");
+
+  cout << endl << "Writing: " << TString::Format("%s/eff_total%s_%s_%s%s.root", 
+          OUTDIR.Data(), suffixName.Data(), var.Data(), categName.Data(), PSRes ? "_PSRes":"") << endl;
+  
+  for(int w=0; w<histos.size(); w++){
+  histos[w]->Write();
+  }
 
 }
 
@@ -283,10 +305,11 @@ void plotTotalComp(TString suffix1, TString suffix2, int config, int categ, int 
     categName = branchNames[categ];
 
   c->Update();
+  c->SaveAs(TString::Format("%s/eff_total_%s_comp_config%i%s_VS%s_%s.eps", 
+			    OUTDIR.Data(), var.Data(), config, suffix1.Data(), suffix2.Data(), categName.Data()));
 
-  c->SaveAs(TString::Format("%s/PlotTotalComp_eff_total%s_%s_%s.eps",
-			    			    "/nfs/neutrinos/cjesus/work/jobs/plots", suffixName.Data(), var.Data(), categName.Data()));
- }
+
+}
 
 
 void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut2, 
@@ -298,10 +321,8 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
   gStyle->SetTitleAlign(23);
   TH1::AddDirectory(kFALSE);
 
-  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()));
-
-  cout << "Reading the file in: " << TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()) << endl;
-
+  TFile f(TString::Format("%s/config%i_Target%i%s.root",
+        INPDIR.Data(),config, target, suffix.Data()));
   TTree* t = (TTree*)f.Get("truth");
 
   TH2F* hSig    = new TH2F("h1", "h2", nbinsX, xbinsX, nbinsY, xbinsY);
@@ -391,11 +412,12 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
   
   h_eff->Draw("colz");
   c->Update();
-  c->SaveAs(TString::Format("%s/2D_eff_config%i_target%i_total_%s_%s_%s%s.eps",
-                            "/nfs/neutrinos/cjesus/work/jobs/plots", config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()));
+  c->SaveAs(TString::Format("%s/eff_config%i_target%i_total_%s_%s_%s%s.eps", 
+			    OUTDIR.Data(), config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()));
 
-  TFile fW(TString::Format("%s/2D_eff_config%i_target%i_total_%s_%s_%s%s.root", 
-			   "/nfs/neutrinos/cjesus/work/jobs/plots", config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()), "RECREATE");
+  TFile fW(TString::Format("%s/eff_config%i_target%i_total_%s_%s_%s%s.root", 
+			   OUTDIR.Data(), config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()), "RECREATE");
+
   h_eff->Write();
   h_pur->Write();
 
@@ -406,34 +428,68 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
 
 void efficiency() {
 
-  TString suffixes[2] = {"_FHC_numu", "_RHC_numu_antinu"};
+  TString suffixes[1] = {"_FHC_numu_OLD"};
   int conf[2] = {0,2};
 
-  for (int c=-2; c<=-1; c++) {
-    for (int s=0; s<2; s++) {
-      cout << "In plot total" << endl;
-       plotTotal(suffixes[s], c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
-       plotTotal(suffixes[s], c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
-       plotTotal(suffixes[s], c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+ //  for (int c=-2; c<8; c++) {
+ //    for (int s=0; s<3; s++) {
+ //      plotTotal(suffixes[s], c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+ //      plotTotal(suffixes[s], c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+ //      plotTotal(suffixes[s], c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
 
-      for (int cc=0; cc<2; cc++) {
-	for (int t=1; t<=NTargets[conf[cc]]; t++) {
-	  	  	  plot2D(suffixes[s], conf[cc], t, c, -1, 4, 
-	       "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-	   	 NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
-			  cout << "In plot 2D" << endl;
-	}
-      }
-    }
-  }
+ //      for (int cc=0; cc<2; cc++) {
+	// for (int t=1; t<=NTargets[conf[cc]]; t++) {
+	//   plot2D(suffixes[s], conf[cc], t, c, -1, 4, 
+	// 	 "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+	// 	 NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+	// }
+ //      }
+ //    }
+ //  }
 
-  for (int s=0; s<2; s++) {
-    cout << "In plot total true" << endl;
-       plotTotal(suffixes[s], -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, true);
-       plotTotal(suffixes[s], -2, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, true);
-  }
-  
-    //    plotTotalComp("", "_old", 0, -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
-    // plotTotalComp("", "_old", 2, -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+ //  for (int s=0; s<3; s++) {
+ //    plotTotal(suffixes[s], -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, true);
+ //    plotTotal(suffixes[s], -2, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom, true);
+ //  }
+
+ //  plotTotalComp("", "_old", 0, -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+ //  plotTotalComp("", "_old", 2, -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+
+     // plot2D("_FHC_numu_OLD", 2, 3, -2, -1, 4, 
+     // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+     // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+
+
+   // plotTotal("_FHC_numu_OLD", -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+   // plotTotal("_FHC_numu_NEW", -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+
+for (int c=-2; c<8; c++) {
+   plotTotal("_FHC_numu_NEW_hUp_OLD_G4", c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+ }
+
+ for (int c=-2; c<8; c++) {
+   plotTotal("_FHC_numu_NEW_hUp_OLD_G4", c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+ }
+
+ for (int c=-2; c<8; c++) {
+   plotTotal("_FHC_numu_NEW_hUp_OLD_G4", c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+ }
+
+//  for (int c=-2; c<8; c++) {
+//     plotTotalComp("_FHC_numu_NEW_hUp_OLD_G4", "_FHC_numu_NEW_hUp_NEW_G4", 2, 
+//           c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+//   }
+
+//  for (int c=-2; c<8; c++) {
+//     plotTotalComp("_FHC_numu_NEW_hUp_OLD_G4", "_FHC_numu_NEW_hUp_NEW_G4", 2, 
+//           c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+//   }
+
+//  for (int c=-2; c<8; c++) {
+//     plotTotalComp("_FHC_numu_NEW_hUp_OLD_G4", "_FHC_numu_NEW_hUp_NEW_G4", 2, 
+//           c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+
+// }
+
 
 }

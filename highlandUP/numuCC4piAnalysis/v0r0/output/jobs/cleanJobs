@@ -6,10 +6,9 @@ set par_dir = ${code_dir}/output/jobs/parameters
 set log_dir = /nfs/neutrinos/cjesus/work/jobs/logs
 set job_dir = ${code_dir}/output/jobs/jobs
 #set out_dir = ${code_dir}/output/jobs/files
-set out_dir = /nfs/neutrinos/cjesus/work/jobs/files
+set out_dir = /nfs/neutrinos/cjesus/work/jobs/files/UniTarget-FGD12/
 
 set launcher = launchJobs
-set conc = ${out_dir}/concatenate
 
 # clear all the directories
 rm -rf ${par_dir}/*
@@ -17,5 +16,11 @@ rm -rf ${log_dir}/*
 rm -rf ${job_dir}/*
 rm -f $launcher
 touch $launcher
+
+set conc = ${out_dir}/Target1/concatenate
+rm -f ${conc}
+touch ${conc}
+
+set conc = ${out_dir}/Target2/concatenate
 rm -f ${conc}
 touch ${conc}

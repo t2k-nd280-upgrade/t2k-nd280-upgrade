@@ -57,7 +57,12 @@
      c3->Divide(4,3); // Stop at 0,30,60 deg for e,mu,pi,pr
 
   // Basic Histograms to check the correct uniformity of the flat random pgun. Currently not used.
-    TH1D *hAng = new TH1D("hAng","hAng",200,-75,75);
+    TH1D *hAng = new TH1D("hAng","hAng",316,-3.15,3.15);
+
+    TH1D *hdirX = new TH1D("dirx","dirx",100,-1,1);
+    TH1D *hdirY = new TH1D("diry","diry",100,-1,1);
+    TH1D *hdirZ = new TH1D("dirz","dirz",100,-1,1);  
+
     TH1D *hAngDevMu = new TH1D("hAngDevMu","hAngDevMu",200,-3,3);
     TH1D *hAngDevEl = new TH1D("hAngDevEl","hAngDevEl",200,-3,3);
     TH1D *hAngDevPi = new TH1D("hAngDevPi","hAngDevPi",200,-3,3);
@@ -82,15 +87,20 @@
     int PrY = (PrFin-PrIni)/PixHeight;
 
   //Histograms definition. "Ang" are related with Angluar spreading. "Cnt" are counter for normalitzation. "Mom" are realted with Momentum.
-    TH3D *hMomEl3D = new TH3D("hMomEl3D","hMomEl3D",20,-75,75,ElY,ElIni,ElFin,50,0,100);
-    TH3D *hMomMu3D = new TH3D("hMomMu3D","hMomMu3D",20,-75,75,MuY,MuIni,MuFin,50,0,100);
-    TH3D *hMomPi3D = new TH3D("hMomPi3D","hMomPi3D",20,-75,75,PiY,PiIni,PiFin,50,0,100);
-    TH3D *hMomPr3D = new TH3D("hMomPr3D","hMomPr3D",20,-75,75,PrY,PrIni,PrFin,50,0,100);
+    // TH3D *hMomEl3D = new TH3D("hMomEl3D","hMomEl3D",20,-75,75,ElY,ElIni,ElFin,50,0,100);
+    // TH3D *hMomMu3D = new TH3D("hMomMu3D","hMomMu3D",20,-75,75,MuY,MuIni,MuFin,50,0,100);
+    // TH3D *hMomPi3D = new TH3D("hMomPi3D","hMomPi3D",20,-75,75,PiY,PiIni,PiFin,50,0,100);
+    // TH3D *hMomPr3D = new TH3D("hMomPr3D","hMomPr3D",20,-75,75,PrY,PrIni,PrFin,50,0,100);
 
-    TH3D *hAngEl3D = new TH3D("hAngEl3D","hAngEl3D",20,-75,75,ElY,ElIni,ElFin,50,0,100);
-    TH3D *hAngMu3D = new TH3D("hAngMu3D","hAngMu3D",20,-75,75,MuY,MuIni,MuFin,50,0,100);
-    TH3D *hAngPi3D = new TH3D("hAngPi3D","hAngPi3D",20,-75,75,PiY,PiIni,PiFin,50,0,100);
-    TH3D *hAngPr3D = new TH3D("hAngPr3D","hAngPr3D",20,-75,75,PrY,PrIni,PrFin,50,0,100);
+    TH3D *hMomEl3D = new TH3D("hMomEl3D","hMomEl3D",20,-1,1,ElY,ElIni,ElFin,50,0,100);
+    TH3D *hMomMu3D = new TH3D("hMomMu3D","hMomMu3D",20,-1,1,MuY,MuIni,MuFin,50,0,100);
+    TH3D *hMomPi3D = new TH3D("hMomPi3D","hMomPi3D",20,-1,1,PiY,PiIni,PiFin,50,0,100);
+    TH3D *hMomPr3D = new TH3D("hMomPr3D","hMomPr3D",20,-1,1,PrY,PrIni,PrFin,50,0,100);    
+
+    TH3D *hAngEl3D = new TH3D("hAngEl3D","hAngEl3D",20,-1,1,ElY,ElIni,ElFin,50,0,100);
+    TH3D *hAngMu3D = new TH3D("hAngMu3D","hAngMu3D",20,-1,1,MuY,MuIni,MuFin,50,0,100);
+    TH3D *hAngPi3D = new TH3D("hAngPi3D","hAngPi3D",20,-1,1,PiY,PiIni,PiFin,50,0,100);
+    TH3D *hAngPr3D = new TH3D("hAngPr3D","hAngPr3D",20,-1,1,PrY,PrIni,PrFin,50,0,100);
 
     TEfficiency* EffEl0 = new TEfficiency("EffEl0","EffEl0",ElY,ElIni,ElFin);
     TEfficiency* EffMu0 = new TEfficiency("EffMu0","EffMu0",MuY,MuIni,MuFin);
@@ -122,7 +132,7 @@
     TND280UpEvent *nd280UpEvent = new TND280UpEvent();  
     tinput->SetBranchAddress("Event",&nd280UpEvent);
     
-    int NTreeEntries = tinput->GetEntries();  
+    int NTreeEntries =  tinput->GetEntries();  
     int evtlasttree = NTreeEntries-1;
     int Nentries = -999;
 
@@ -179,21 +189,29 @@
 
   //Loop over events.
     for(int ievt=evtfirst;ievt<=EntryLast;ievt++)
-  { 
+  {
   cntTotal++;
-  tinput->GetEntry(ievt); 
+
+  TTree *linput = (TTree*) finput->Get("ND280upEvents");
+
+  linput->SetBranchAddress("Event",&nd280UpEvent);
+
+  linput->GetEntry(ievt);
+
+
+
   if(!(ievt%10000)){
     cout << "Event " << ievt << endl; // Message for large files: Print the analysis status every 10000 analyzed events.    
-  }
+ }
 
-  //cout << endl << endl << "NEW EVENT" << endl << endl;
+ //cout << endl << endl << "NEW EVENT" << endl << endl;
 
   //Loop over Tracks (per each events).
   int NTracks = nd280UpEvent->GetNTracks();
   for(int itrk=0;itrk<NTracks;itrk++)
   {
 
-  //cout << endl << "NEW Track" << endl << endl;  
+ //cout << endl << "NEW Track" << endl << endl;  
 
 
     TND280UpTrack *nd280UpTrack = nd280UpEvent->GetTrack(itrk);
@@ -208,10 +226,16 @@
     double dirX = nd280UpTrack->GetInitMom().X() / mom;
     double dirY = nd280UpTrack->GetInitMom().Y() / mom;
     double dirZ = nd280UpTrack->GetInitMom().Z() / mom;
-    double phi = atan2(dirZ,dirY);
+    double phi = atan2(dirY,dirZ);
+
     double cosphi = cos(phi);
 
-    hAng->Fill(phi*360/(2*3.141592));
+    hAng->Fill(phi);
+    hdirX->Fill(cosphi);
+    hdirY->Fill(dirY);
+    hdirZ->Fill(dirZ);      
+
+  //  phi = abs(phi);   
 
   // Note: (pdg) Electron (11) // Muon (13) // Pion- (-211) // proton (2212) 
   //Loop over points (per each track in each event).
@@ -223,20 +247,24 @@
 
   for(int ipt=0;ipt<NPoints;ipt++)
   {	
+
     TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
    	double MomX = nd280UpTrackPoint->GetMomentum().X();
    	double MomY = nd280UpTrackPoint->GetMomentum().Y();
    	double MomZ = nd280UpTrackPoint->GetMomentum().Z();     
     double MomMod = nd280UpTrackPoint->GetMomentum().Mag();  	
     double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
-    double phi2=atan2(MomVec[2],MomVec[1]);
+    double phi2=atan2(MomVec[1],MomVec[2]);
     string volname = nd280UpTrackPoint->GetLogVolName();
 
-    if(ipt==0 && volname != "TargetUniform") break;
+   // phi2 = abs(phi2);
+
+    if(ipt==0 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
     if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer1"){
     if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCDown/FCSolid/layer1") break;
     }
-    //cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
+
+ //  cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
    
   // Conditions to select the plot's .pdf file names.
      if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FC/layer8") {FCname = "old"; break;}
@@ -245,7 +273,8 @@
      if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer5") FCname = "Solid";
 
   // Condition to store information before entering in the FC
-     if(volname == "TargetUniform" && trkID ==1)
+//     if(volname == "TargetUniform" && trkID ==1)
+     if(volname == "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform" &&  ipt==0)
      {    
      if(cnt1 == 0) // Only enters the first time (per event) it is in "/t2k/OA/Magnet/Basket" to avoid double counting.
      {
@@ -255,61 +284,90 @@
      }
 
 // Condition to store information after entering in the FC
-     if(volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half1" && cnt1 == 1 && trkID ==1) // (cnt1 == 1) is important. It ensures that any event is stored if we don't have both inital and final information.
+//     if(volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half1" && cnt1 == 1 && trkID ==1) // (cnt1 == 1) is important. It ensures that any event is stored if we don't have both inital and final information.
+     if((volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half1" || volname == "/t2k/OA/Magnet/Basket/HATPCDown/Drift/Half1" || volname == "/t2k/OA/Magnet/Basket/HATPCDown/Drift/Half0" || volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half0")  && cnt1 == 1) 
      {
         MomFin = MomMod;
         if(cnt == 0)
           {
 
 // The idea is: EXPLANATION!!!!
+          // if(pdg ==11)
+          // {
+          // hMomEl3D->Fill(phi*360/(2*3.141592),MomIni,100*MomFin/MomIni);
+          // hAngEl3D->Fill(phi*360/(2*3.141592),MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          // }
+          // if(pdg ==13)
+          // {
+          // hMomMu3D->Fill(phi*360/(2*3.141592),MomIni,100*MomFin/MomIni);
+          // hAngMu3D->Fill(phi*360/(2*3.141592),MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          // hSpeMu200MeV0deg->Fill(MomIni-MomFin);
+          // }
+          // if(pdg == -211 || pdg == 211)
+          // {
+          // hMomPi3D->Fill(phi*360/(2*3.141592),MomIni,100*MomFin/MomIni);
+          // hAngPi3D->Fill(phi*360/(2*3.141592),MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          // }
+          // if(pdg ==2212)
+          // {
+          // hMomPr3D->Fill(phi*360/(2*3.141592),MomIni,100*MomFin/MomIni);
+          // hAngPr3D->Fill(phi*360/(2*3.141592),MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          // }
+
           if(pdg ==11)
           {
-          hMomEl3D->Fill(phi*360/(2*3.141592),MomIni,100*MomFin/MomIni);
-          hAngEl3D->Fill(phi*360/(2*3.141592),MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          hMomEl3D->Fill(cosphi,MomIni,100*MomFin/MomIni);
+          hAngEl3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
           }
           if(pdg ==13)
           {
-          hMomMu3D->Fill(phi*360/(2*3.141592),MomIni,100*MomFin/MomIni);
-          hAngMu3D->Fill(phi*360/(2*3.141592),MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          hMomMu3D->Fill(cosphi,MomIni,100*MomFin/MomIni);
+          hAngMu3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
           hSpeMu200MeV0deg->Fill(MomIni-MomFin);
           }
-          if(pdg == -211)
+          if(pdg == -211 || pdg == 211)
           {
-          hMomPi3D->Fill(phi*360/(2*3.141592),MomIni,100*MomFin/MomIni);
-          hAngPi3D->Fill(phi*360/(2*3.141592),MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          hMomPi3D->Fill(cosphi,MomIni,100*MomFin/MomIni);
+          hAngPi3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
           }
           if(pdg ==2212)
           {
-          hMomPr3D->Fill(phi*360/(2*3.141592),MomIni,100*MomFin/MomIni);
-          hAngPr3D->Fill(phi*360/(2*3.141592),MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          hMomPr3D->Fill(cosphi,MomIni,100*MomFin/MomIni);
+          hAngPr3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
           }
+
+
           }      
      cnt++;     //To avoid double counting, only 1 Fill in Half1 layer per event.
+     ipt = NPoints-1;
      }
-        if(ipt == NPoints-1 && trkID ==1 && cnt == 0){ 
+
+     int AngWindow = 5; //Actually the real window is 2 times this
+
+        if(ipt == NPoints-1 && cnt == 0){ 
           bPassed = false;
-          if(phi*360/(2*3.141592) >= -3.5 && phi*360/(2*3.141592) <= 3.5)
+          if( abs(phi*360/(2*3.141592)) >= 90-AngWindow && abs(phi*360/(2*3.141592)) <= 90+AngWindow)
           {
           if(pdg ==11) EffEl0->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu0->Fill(bPassed,MomIni);
           if(pdg ==-211 || pdg ==211)  EffPi0->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr0->Fill(bPassed,MomIni);
           }
-          if(phi*360/(2*3.141592) >= (30-3.5) && phi*360/(2*3.141592) <= (30+3.5))
+          if(abs(phi*360/(2*3.141592)) >= (90-30-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-30+AngWindow))
           {
           if(pdg ==11) EffEl30->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu30->Fill(bPassed,MomIni);
           if(pdg ==-211 || pdg ==211)  EffPi30->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr30->Fill(bPassed,MomIni);
           }
-          if(phi*360/(2*3.141592) >= (60-3.5) && phi*360/(2*3.141592) <= (60+3.5))
+          if(abs(phi*360/(2*3.141592)) >= (90-60-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-60+AngWindow))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
           if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
-          if(phi*360/(2*3.141592) >= (75-3.5) && phi*360/(2*3.141592) <= (75+3.5))
+          if(abs(phi*360/(2*3.141592)) >= (90-75-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-75+AngWindow))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
@@ -318,31 +376,31 @@
           }
         }
 
-        if(ipt == NPoints-1 && trkID ==1 && cnt >= 1)
+        if(ipt == NPoints-1 && cnt >= 1)
         { 
           bPassed = true;
-          if(phi*360/(2*3.141592) >= -3.5 && phi*360/(2*3.141592) <= 3.5)
+          if( abs(phi*360/(2*3.141592)) >= 90-AngWindow && abs(phi*360/(2*3.141592)) <= 90+AngWindow)
           {
           if(pdg ==11) EffEl0->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu0->Fill(bPassed,MomIni);
           if(pdg ==-211 || pdg ==211)  EffPi0->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr0->Fill(bPassed,MomIni);
           }
-          if(phi*360/(2*3.141592) >= (30-3.5) && phi*360/(2*3.141592) <= (30+3.5))
+          if(abs(phi*360/(2*3.141592)) >= (90-30-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-30+AngWindow))
           {
           if(pdg ==11) EffEl30->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu30->Fill(bPassed,MomIni);
           if(pdg ==-211 || pdg ==211)  EffPi30->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr30->Fill(bPassed,MomIni);
           }
-          if(phi*360/(2*3.141592) >= (60-3.5) && phi*360/(2*3.141592) <= (60+3.5))
+          if(abs(phi*360/(2*3.141592)) >= (90-60-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-60+AngWindow))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
           if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
-          if(phi*360/(2*3.141592) >= (75-3.5) && phi*360/(2*3.141592) <= (75+3.5))
+          if(abs(phi*360/(2*3.141592)) >= (90-75-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-75+AngWindow))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
@@ -350,8 +408,13 @@
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
         }
+
+      
+
       }
     }
+
+
   }
 
   //20 Ang bins form -75 to 75 deg: 150/20 each bin is 7.5 deg wide. 
@@ -900,6 +963,7 @@
   hStopEl0->SetBinContent(i, 100*(EffEl0->GetEfficiency(i)));
   eylEl0[i-1] = 100*(EffEl0->GetEfficiencyErrorLow(i)); 
   eyhEl0[i-1] = 100*(EffEl0->GetEfficiencyErrorUp(i));
+  if(eyhEl0[i-1] == 100) eyhEl0[i-1] = 0;
   XbinEl0[i-1] = ElIni+((ElFin-ElIni)/ElY)*(i-0.5);
   YbinEl0[i-1] = 100*(EffEl0->GetEfficiency(i));
   }
@@ -933,8 +997,10 @@
   hStopMu0->SetBinContent(i, 100*(EffMu0->GetEfficiency(i)));
   eylMu0[i-1] = 100*(EffMu0->GetEfficiencyErrorLow(i)); 
   eyhMu0[i-1] = 100*(EffMu0->GetEfficiencyErrorUp(i));
+  if(eyhMu0[i-1] == 100) eyhMu0[i-1] = 0;
   XbinMu0[i-1] = MuIni+((MuFin-MuIni)/MuY)*(i-0.5);
   YbinMu0[i-1] = 100*(EffMu0->GetEfficiency(i));
+
   }
   hStopMu0->GetYaxis()->SetRangeUser(0,105);
   hStopMu0->GetYaxis()->SetTitle("Crossing Efficiency [%]");
@@ -966,6 +1032,7 @@
   hStopPi0->SetBinContent(i, 100*(EffPi0->GetEfficiency(i)));
   eylPi0[i-1] = 100*(EffPi0->GetEfficiencyErrorLow(i)); 
   eyhPi0[i-1] = 100*(EffPi0->GetEfficiencyErrorUp(i));
+  if(eyhPi0[i-1] == 100) eyhPi0[i-1] = 0;
   XbinPi0[i-1] = PiIni+((PiFin-PiIni)/PiY)*(i-0.5);
   YbinPi0[i-1] = 100*(EffPi0->GetEfficiency(i));
   }
@@ -999,6 +1066,7 @@
   hStopPr0->SetBinContent(i, 100*(EffPr0->GetEfficiency(i)));
   eylPr0[i-1] = 100*(EffPr0->GetEfficiencyErrorLow(i)); 
   eyhPr0[i-1] = 100*(EffPr0->GetEfficiencyErrorUp(i));
+  if(eyhPr0[i-1] == 100) eyhPr0[i-1] = 0;
   XbinPr0[i-1] = PrIni+((PrFin-PrIni)/PrY)*(i-0.5);
   YbinPr0[i-1] = 100*(EffPr0->GetEfficiency(i));
   }
@@ -1032,6 +1100,7 @@
   hStopEl30->SetBinContent(i, 100*(EffEl30->GetEfficiency(i)));
   eylEl30[i-1] = 100*(EffEl30->GetEfficiencyErrorLow(i)); 
   eyhEl30[i-1] = 100*(EffEl30->GetEfficiencyErrorUp(i));
+  if(eyhEl30[i-1] == 100) eyhEl30[i-1] = 0;
   XbinEl30[i-1] = ElIni+((ElFin-ElIni)/ElY)*(i-0.5);
   YbinEl30[i-1] = 100*(EffEl30->GetEfficiency(i));
   }
@@ -1065,6 +1134,7 @@
   hStopMu30->SetBinContent(i, 100*(EffMu30->GetEfficiency(i)));
   eylMu30[i-1] = 100*(EffMu30->GetEfficiencyErrorLow(i)); 
   eyhMu30[i-1] = 100*(EffMu30->GetEfficiencyErrorUp(i));
+  if(eyhMu30[i-1] == 100) eyhMu30[i-1] = 0;
   XbinMu30[i-1] = MuIni+((MuFin-MuIni)/MuY)*(i-0.5);
   YbinMu30[i-1] = 100*(EffMu30->GetEfficiency(i));
   }
@@ -1098,6 +1168,7 @@
   hStopPi30->SetBinContent(i, 100*(EffPi30->GetEfficiency(i)));
   eylPi30[i-1] = 100*(EffPi30->GetEfficiencyErrorLow(i)); 
   eyhPi30[i-1] = 100*(EffPi30->GetEfficiencyErrorUp(i));
+  if(eyhPi30[i-1] == 100) eyhPi30[i-1] = 0;
   XbinPi30[i-1] = PiIni+((PiFin-PiIni)/PiY)*(i-0.5);
   YbinPi30[i-1] = 100*(EffPi30->GetEfficiency(i));
   }
@@ -1131,6 +1202,7 @@
   hStopPr30->SetBinContent(i, 100*(EffPr30->GetEfficiency(i)));
   eylPr30[i-1] = 100*(EffPr30->GetEfficiencyErrorLow(i)); 
   eyhPr30[i-1] = 100*(EffPr30->GetEfficiencyErrorUp(i));
+  if(eyhPr30[i-1] == 100) eyhPr30[i-1] = 0;
   XbinPr30[i-1] = PrIni+((PrFin-PrIni)/PrY)*(i-0.5);
   YbinPr30[i-1] = 100*(EffPr30->GetEfficiency(i));
   }
@@ -1164,6 +1236,7 @@
   hStopEl60->SetBinContent(i, 100*(EffEl60->GetEfficiency(i)));
   eylEl60[i-1] = 100*(EffEl60->GetEfficiencyErrorLow(i)); 
   eyhEl60[i-1] = 100*(EffEl60->GetEfficiencyErrorUp(i));
+  if(eyhEl60[i-1] == 100) eyhEl30[i-1] = 0;
   XbinEl60[i-1] = ElIni+((ElFin-ElIni)/ElY)*(i-0.5);
   YbinEl60[i-1] = 100*(EffEl60->GetEfficiency(i));
   } 
@@ -1197,6 +1270,7 @@
   hStopMu60->SetBinContent(i, 100*(EffMu60->GetEfficiency(i)));
   eylMu60[i-1] = 100*(EffMu60->GetEfficiencyErrorLow(i)); 
   eyhMu60[i-1] = 100*(EffMu60->GetEfficiencyErrorUp(i));
+  if(eyhMu60[i-1] == 100) eyhMu60[i-1] = 0;
   XbinMu60[i-1] = MuIni+((MuFin-MuIni)/MuY)*(i-0.5);
   YbinMu60[i-1] = 100*(EffMu60->GetEfficiency(i));
   }
@@ -1230,6 +1304,7 @@
   hStopPi60->SetBinContent(i, 100*(EffPi60->GetEfficiency(i)));
   eylPi60[i-1] = 100*(EffPi60->GetEfficiencyErrorLow(i)); 
   eyhPi60[i-1] = 100*(EffPi60->GetEfficiencyErrorUp(i));
+  if(eyhPi60[i-1] == 100) eyhPi60[i-1] = 0;
   XbinPi60[i-1] = PiIni+((PiFin-PiIni)/PiY)*(i-0.5);
   YbinPi60[i-1] = 100*(EffPi60->GetEfficiency(i));
   }
@@ -1263,6 +1338,7 @@
   hStopPr60->SetBinContent(i, 100*(EffPr60->GetEfficiency(i)));
   eylPr60[i-1] = 100*(EffPr60->GetEfficiencyErrorLow(i)); 
   eyhPr60[i-1] = 100*(EffPr60->GetEfficiencyErrorUp(i));
+  if(eyhPr60[i-1] == 100) eyhPr60[i-1] = 0;
   XbinPr60[i-1] = PrIni+((PrFin-PrIni)/PrY)*(i-0.5);
   YbinPr60[i-1] = 100*(EffPr60->GetEfficiency(i));
   }
@@ -1307,6 +1383,11 @@
     TFile *out = new TFile(outfilename.Data(),"RECREATE");
 
 //Mom
+
+    hAng->Write();
+    hdirX->Write();
+    hdirY->Write();
+    hdirZ->Write();
 
     hMomEl3DProj->Write();
     hMomEl0Proj->Write();
@@ -1392,6 +1473,8 @@
 
     out->Close();
 
+  cout << "File created in: " << outfilename << endl;
+  
   TString filename = "";
 
   if(FCname == "Nexus") filename = TString::Format("%s_Nexus.pdf",outfilename.Data());
@@ -1400,7 +1483,7 @@
 
   c1->Print(filename);
 
-  cout << "File created in: " << outfilename << endl;
+
 
   }
 

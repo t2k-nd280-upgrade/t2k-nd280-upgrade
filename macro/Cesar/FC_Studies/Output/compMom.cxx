@@ -25,7 +25,7 @@
    c1->Divide(4,3);
    c2->Divide(4,3);
 
-   TFile f1("Histos_Solid.root");
+   TFile f1("/software/neutrinos/t2k-nd280-upgrade/macro/Cesar/FC_Studies/Output/Histo0_Solid_Evt0_NEvt400000.root");
    NMomEl3DProj = new TProfile2D;
    NMomEl3DProj = hMomEl3D_pxy;
    NMomMu3DProj = new TProfile2D;
@@ -166,6 +166,9 @@
    NMomEl0Proj->SetLineColor(kBlue);
    GMomEl0Proj->SetLineColor(kGreen);
    SMomEl0Proj->SetLineColor(kRed);
+   NMomEl0Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomEl0Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomEl0Proj->GetYaxis()->SetRangeUser(0,100);
    NMomEl0Proj->Draw("HIST E1");
    GMomEl0Proj->Draw("HIST E1 SAME");
    SMomEl0Proj->Draw("HIST E1 SAME");
@@ -187,6 +190,9 @@
    NMomMu0Proj->SetLineColor(kBlue);
    GMomMu0Proj->SetLineColor(kGreen);
    SMomMu0Proj->SetLineColor(kRed);
+   NMomMu0Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomMu0Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomMu0Proj->GetYaxis()->SetRangeUser(0,100);
    NMomMu0Proj->Draw("HIST E1");
    GMomMu0Proj->Draw("HIST E1 SAME");
    SMomMu0Proj->Draw("HIST E1 SAME");
@@ -208,6 +214,9 @@
    NMomPi0Proj->SetLineColor(kBlue);
    GMomPi0Proj->SetLineColor(kGreen);
    SMomPi0Proj->SetLineColor(kRed);
+   NMomPi0Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomPi0Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomPi0Proj->GetYaxis()->SetRangeUser(0,100);
    NMomPi0Proj->Draw("HIST E1");
    GMomPi0Proj->Draw("HIST E1 SAME");
    SMomPi0Proj->Draw("HIST E1 SAME");
@@ -229,6 +238,9 @@
    NMomPr0Proj->SetLineColor(kBlue);
    GMomPr0Proj->SetLineColor(kGreen);
    SMomPr0Proj->SetLineColor(kRed);
+   NMomPi0Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomPi0Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomPi0Proj->GetYaxis()->SetRangeUser(0,100);
    NMomPr0Proj->Draw("HIST E1");
    GMomPr0Proj->Draw("HIST E1 SAME");
    SMomPr0Proj->Draw("HIST E1 SAME");
@@ -250,6 +262,9 @@
    NMomEl30Proj->SetLineColor(kBlue);
    GMomEl30Proj->SetLineColor(kGreen);
    SMomEl30Proj->SetLineColor(kRed);
+   NMomEl30Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomEl30Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomEl30Proj->GetYaxis()->SetRangeUser(0,100);
    NMomEl30Proj->Draw("HIST E1");
    GMomEl30Proj->Draw("HIST E1 SAME");
    SMomEl30Proj->Draw("HIST E1 SAME");
@@ -271,6 +286,9 @@
    NMomMu30Proj->SetLineColor(kBlue);
    GMomMu30Proj->SetLineColor(kGreen);
    SMomMu30Proj->SetLineColor(kRed);
+   NMomMu30Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomMu30Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomMu30Proj->GetYaxis()->SetRangeUser(0,100);
    NMomMu30Proj->Draw("HIST E1");
    GMomMu30Proj->Draw("HIST E1 SAME");
    SMomMu30Proj->Draw("HIST E1 SAME");
@@ -292,6 +310,9 @@
    NMomPi30Proj->SetLineColor(kBlue);
    GMomPi30Proj->SetLineColor(kGreen);
    SMomPi30Proj->SetLineColor(kRed);
+   NMomPi30Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomPi30Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomPi30Proj->GetYaxis()->SetRangeUser(0,100);
    NMomPi30Proj->Draw("HIST E1");
    GMomPi30Proj->Draw("HIST E1 SAME");
    SMomPi30Proj->Draw("HIST E1 SAME");
@@ -313,6 +334,9 @@
    NMomPr30Proj->SetLineColor(kBlue);
    GMomPr30Proj->SetLineColor(kGreen);
    SMomPr30Proj->SetLineColor(kRed);
+   NMomPr30Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomPr30Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomPr30Proj->GetYaxis()->SetRangeUser(0,100);
    NMomPr30Proj->Draw("HIST E1");
    GMomPr30Proj->Draw("HIST E1 SAME");
    SMomPr30Proj->Draw("HIST E1 SAME");
@@ -334,6 +358,9 @@
    NMomEl60Proj->SetLineColor(kBlue);
    GMomEl60Proj->SetLineColor(kGreen);
    SMomEl60Proj->SetLineColor(kRed);
+   NMomEl60Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomEl60Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomEl60Proj->GetYaxis()->SetRangeUser(0,100);
    NMomEl60Proj->Draw("HIST E1");
    GMomEl60Proj->Draw("HIST E1 SAME");
    SMomEl60Proj->Draw("HIST E1 SAME");
@@ -355,6 +382,9 @@
    NMomMu60Proj->SetLineColor(kBlue);
    GMomMu60Proj->SetLineColor(kGreen);
    SMomMu60Proj->SetLineColor(kRed);
+   NMomMu60Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomMu60Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomMu60Proj->GetYaxis()->SetRangeUser(0,100);
    NMomMu60Proj->Draw("HIST E1");
    GMomMu60Proj->Draw("HIST E1 SAME");
    SMomMu60Proj->Draw("HIST E1 SAME");
@@ -376,6 +406,9 @@
    NMomPi60Proj->SetLineColor(kBlue);
    GMomPi60Proj->SetLineColor(kGreen);
    SMomPi60Proj->SetLineColor(kRed);
+   NMomPi60Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomPi60Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomPi60Proj->GetYaxis()->SetRangeUser(0,100);
    NMomPi60Proj->Draw("HIST E1");
    GMomPi60Proj->Draw("HIST E1 SAME");
    SMomPi60Proj->Draw("HIST E1 SAME");
@@ -394,27 +427,30 @@
    legend11->Draw();
 
    c2->cd(12);
-   for(int i=1; i<=NMomPr60Proj->GetSize(); i++){
-   if(NMomPr60Proj->GetBinEntries(i) == 1) {
-   NMomPr60Proj->SetBinContent(i,0);  
-   NMomPr60Proj->SetBinError(i,0);  
-   }
-   }
-   for(int i=1; i<=GMomPr60Proj->GetSize(); i++){
-   if(GMomPr60Proj->GetBinEntries(i) == 1) {
-   GMomPr60Proj->SetBinContent(i,0);  
-   GMomPr60Proj->SetBinError(i,0);  
-   } 
-   }
-   for(int i=1; i<=SMomPr60Proj->GetSize(); i++){
-   if(SMomPr60Proj->GetBinEntries(i) == 1) {
-   SMomPr60Proj->SetBinContent(i,0);  
-   SMomPr60Proj->SetBinError(i,0);  
-   } 
-   }
+   // for(int i=1; i<=NMomPr60Proj->GetSize(); i++){
+   // if(NMomPr60Proj->GetBinEntries(i) == 1) {
+   // NMomPr60Proj->SetBinContent(i,0);  
+   // NMomPr60Proj->SetBinError(i,0);  
+   // }
+   // }
+   // for(int i=1; i<=GMomPr60Proj->GetSize(); i++){
+   // if(GMomPr60Proj->GetBinEntries(i) == 1) {
+   // GMomPr60Proj->SetBinContent(i,0);  
+   // GMomPr60Proj->SetBinError(i,0);  
+   // } 
+   // }
+   // for(int i=1; i<=SMomPr60Proj->GetSize(); i++){
+   // if(SMomPr60Proj->GetBinEntries(i) == 1) {
+   // SMomPr60Proj->SetBinContent(i,0);  
+   // SMomPr60Proj->SetBinError(i,0);  
+   // } 
+   // }
    NMomPr60Proj->SetLineColor(kBlue);
    GMomPr60Proj->SetLineColor(kGreen);
    SMomPr60Proj->SetLineColor(kRed);
+   NMomPr60Proj->GetYaxis()->SetRangeUser(0,100);
+   GMomPr60Proj->GetYaxis()->SetRangeUser(0,100);
+   SMomPr60Proj->GetYaxis()->SetRangeUser(0,100);
    NMomPr60Proj->Draw("HIST E1");
    GMomPr60Proj->Draw("HIST E1 SAME");
    SMomPr60Proj->Draw("HIST E1 SAME");
@@ -437,6 +473,6 @@
    cout << endl;
 
 //c1->Print("~/Desktop/FCStudies/Plots/AllMom.pdf");
-c2->Print("/nfs/neutrinos/cjesus/work/jobs/plots/18_07_2018/compMom.pdf");
+c2->Print("/software/neutrinos/t2k-nd280-upgrade/macro/Cesar/FC_Studies/Plots/compMom.pdf");
 
 }

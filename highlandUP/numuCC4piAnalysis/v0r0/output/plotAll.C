@@ -21,6 +21,9 @@
 
 using namespace std;
 
+TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/UniTarget-FGD12/config2";
+TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots";
+
 int NTargets[3] = {2, 2, 3};
 
 TString branchNames[8] = {"CC0pi", "CC1pi", "CCoth", "FWD", "BWD", "HA", "Target", "ECal"};
@@ -37,21 +40,21 @@ double BinEdges_Q2[NBins_Q2+1] = {0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0
 const int NBins_Enu = 14;
 double BinEdges_Enu[NBins_Enu+1] = {0, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 2000, 3000, 5000};
  
-TCanvas *c = new TCanvas("c");
 
 TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_level,
-		    TString varX, TString var_titleX, TString varY, TString var_titleY, 
-		    int nbinsX, double* xbinsX, int nbinsY, double* xbinsY) {
+        TString varX, TString var_titleX, TString varY, TString var_titleY, 
+        int nbinsX, double* xbinsX, int nbinsY, double* xbinsY) {
 
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(1);
   gStyle->SetTitleAlign(23);
   TH1::AddDirectory(kFALSE);
 
-//  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()));
-  TFile f(TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config%i_Target%i%s.root", config, target, suffix.Data()));
-  //  f.ls();
-  cout << "Reading the file in: " << TString::Format("/nfs/neutrinos/cjesus/work/jobs/files/config2_Target3_FHC_numu_split_%i%s.root", config, target, suffix.Data()) << endl;
+  // config = 2;
+  // target = 3;
+
+  TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
+        INPDIR.Data(),target, config, target, suffix.Data()));
   TTree* t = (TTree*)f.Get("truth");
 
   TString targetName="";
@@ -69,9 +72,9 @@ TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_l
     categName = branchNames[categ];
 
   TString title = TString::Format("%s, %s, %s", 
-				  config==0 ? "Current":"Upgrade",
-				  targetName.Data(),
-				  categName.Data());
+          config==0 ? "Current":"Upgrade",
+          targetName.Data(),
+          categName.Data());
 
   TH2F* h = new TH2F(title, title, nbinsX, xbinsX, nbinsY, xbinsY);
 
@@ -122,8 +125,8 @@ TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_l
 
 
 void plot2D(TString suffix, int config, int categ, int cut_level,
-	    TString varX, TString var_titleX, TString varY, TString var_titleY, 
-	    int nbinsX, double* xbinsX, int nbinsY, double* xbinsY, bool log=false) {
+      TString varX, TString var_titleX, TString varY, TString var_titleY, 
+      int nbinsX, double* xbinsX, int nbinsY, double* xbinsY, bool log=false) {
 
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -142,43 +145,62 @@ void plot2D(TString suffix, int config, int categ, int cut_level,
 
   vector<TH2F*> histos;
 
-  for (int targ=1; targ<=NTargets[config]; targ++){
-    histos.push_back(compute2D_Dis(suffix, config, targ, categ, cut_level,
-				   varX, var_titleX, varY, var_titleY, 
-				   nbinsX, xbinsX, nbinsY, xbinsY));
- 
+  for (int t=1; t<=NTargets[config]; t++) 
+    histos.push_back(compute2D_Dis(suffix, config, t, categ, cut_level,
+           varX, var_titleX, varY, var_titleY, 
+           nbinsX, xbinsX, nbinsY, xbinsY));
+
   TH2F *h = (TH2F*)histos[0]->Clone();
   for (UInt_t i=1; i<histos.size(); i++) 
   h->Add(histos[i]);
   h->SetTitle("");
 
+  gStyle->SetPalette(55);
+
+  TCanvas *c = new TCanvas("c");
   if (log) {
     c->SetLogz();
-    h->GetZaxis()->SetRangeUser(0.5, 3000);
+    h->GetZaxis()->SetRangeUser(0.1, 6000);
   }
-  h->SetContour(100);
-  h->Draw("colz");
+   h->SetContour(100);
+   h->Draw("colz");
 
-   c->SaveAs(TString::Format("%s/TDR_2D_%s_%s_config%i_target%i_%s%s%s.eps", 
-  			    "/nfs/neutrinos/cjesus/work/jobs/plots", varX.Data(), varY.Data(), config, targ, categName.Data(), suffixName.Data(), log ? "_log":""));
+  c->SaveAs(TString::Format("%s/2D_%s_%s_config%i_%s%s%s.eps", 
+          OUTDIR.Data(), varX.Data(), varY.Data(), config, categName.Data(), suffixName.Data(), log ? "_log":""));
 
-}
 }
 
 
 void plotAll() {
 
-  TString suffixes[2] = {"_RHC_numu_antinu","_FHC_numu"};
+  TString suffixes[3] = {"", "_antinu", "_nubkg_antinu"};
   int conf[2] = {0,2};
-  for (int c=-2; c<-1; c++)
-    for (int s=0; s<2; s++)
-      for (int cc=0; cc<2; cc++) {
-	plot2D(suffixes[s], conf[cc], c, 4, 
-	       "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-	       NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, false);
-      	plot2D(suffixes[s], conf[cc], c, 4, 
-	       "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-	       NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
-      }
+
+  // for (int c=-2; c<8; c++)
+  //   for (int s=0; s<3; s++)
+  //     for (int cc=0; cc<2; cc++) {
+  // plot2D(suffixes[s], conf[cc], c, 4, 
+  //        "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+  //        NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, false);
+  // plot2D(suffixes[s], conf[cc], c, 4, 
+  //        "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+  //        NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
+  //     }
+
+  // plot2D("_FHC_numu_NEW", 2, -2, 4, 
+  //    "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+  //    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, false);
+
+  // plot2D("_FHC_numu_OLD", 2, -2, 4, 
+  //    "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+  //    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, false);
+
+  plot2D("_FHC_numu_NEW_hUp_OLD_G4", 0, -1, 4, 
+     "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+     NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
+
+  // plot2D("_FHC_numu_NEW_hUp_NEW_G4", 2, -1, 4, 
+  //    "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+  //    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
 
 }

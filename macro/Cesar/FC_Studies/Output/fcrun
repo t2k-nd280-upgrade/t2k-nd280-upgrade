@@ -1,0 +1,19 @@
+#!/bin/csh -f                                                                                                                                                                                               
+
+#source compile.sh                                                                                                                                                                                          
+#source /software/neutrinos/t2k-nd280-upgrade/mypath.sh /software/neutrinos/t2k-nd280-upgrade/                                                                                                              
+
+
+
+set j=0
+set f=0
+set n=400000
+set s=1
+      while ($j < $s)
+      echo "      $T2KND280UP/submit/submit_nd280upgrade_fcw --softw-dir $T2KND280UP --job-dir $PWD --resource interactive --nexpts $n --nruns 1 --tag Histo${j}_"
+
+      $T2KND280UP/submit/submit_nd280upgrade_fcw --softw-dir $T2KND280UP --job-dir $PWD --resource interactive --nexpts $n --nruns 1 --tag Histo$j --first_expt $f
+
+      @ j = $j + 1
+      @ f = $f + $n
+      end

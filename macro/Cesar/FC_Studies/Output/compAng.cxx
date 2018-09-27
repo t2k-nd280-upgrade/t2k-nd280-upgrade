@@ -25,7 +25,7 @@
    c1->Divide(4,3);
    c2->Divide(4,3);
 
-   TFile f1("Histos_Solid.root");
+   TFile f1("/software/neutrinos/t2k-nd280-upgrade/macro/Cesar/FC_Studies/Output/Histo0_Solid_Evt0_NEvt400000.root");
    NAngEl3DProj = new TProfile2D;
    NAngEl3DProj = hAngEl3D_pxy;
    NAngMu3DProj = new TProfile2D;
@@ -166,9 +166,9 @@
    NAngEl0Proj->SetLineColor(kBlue);
    GAngEl0Proj->SetLineColor(kGreen);
    SAngEl0Proj->SetLineColor(kRed);
-   SAngEl0Proj->Draw("HIST E1");
-   NAngEl0Proj->Draw("HIST E1 SAME");
+   NAngEl0Proj->Draw("HIST E1");
    GAngEl0Proj->Draw("HIST E1 SAME");
+   SAngEl0Proj->Draw("HIST E1 SAME");
    TPaveText *t1 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t1->AddText("Electrons at 0 deg");
    t1->SetTextFont(22);
@@ -205,8 +205,8 @@
    legend2->Draw();
 
    c2->cd(3);
-   GAngPi0Proj->SetLineColor(kBlue);
-   NAngPi0Proj->SetLineColor(kGreen);
+   NAngPi0Proj->SetLineColor(kBlue);
+   GAngPi0Proj->SetLineColor(kGreen);
    SAngPi0Proj->SetLineColor(kRed);
    NAngPi0Proj->Draw("HIST E1");
    GAngPi0Proj->Draw("HIST E1 SAME");
@@ -229,8 +229,8 @@
    NAngPr0Proj->SetLineColor(kBlue);
    GAngPr0Proj->SetLineColor(kGreen);
    SAngPr0Proj->SetLineColor(kRed);
-   GAngPr0Proj->Draw("HIST E1");
-   NAngPr0Proj->Draw("HIST E1 SAME");
+   NAngPr0Proj->Draw("HIST E1");
+   GAngPr0Proj->Draw("HIST E1 SAME");
    SAngPr0Proj->Draw("HIST E1 SAME");
    TPaveText *t4 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t4->AddText("Protons at 0 deg");
@@ -250,8 +250,8 @@
    NAngEl30Proj->SetLineColor(kBlue);
    GAngEl30Proj->SetLineColor(kGreen);
    SAngEl30Proj->SetLineColor(kRed);
-   GAngEl30Proj->Draw("HIST E1");
-   NAngEl30Proj->Draw("HIST E1 SAME");
+   NAngEl30Proj->Draw("HIST E1");
+   GAngEl30Proj->Draw("HIST E1 SAME");
    SAngEl30Proj->Draw("HIST E1 SAME");
    TPaveText *t5 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t5->AddText("Electrons at 30 deg");
@@ -292,8 +292,8 @@
    NAngPi30Proj->SetLineColor(kBlue);
    GAngPi30Proj->SetLineColor(kGreen);
    SAngPi30Proj->SetLineColor(kRed);
-   GAngPi30Proj->Draw("HIST E1");
-   NAngPi30Proj->Draw("HIST E1 SAME");
+   NAngPi30Proj->Draw("HIST E1");
+   GAngPi30Proj->Draw("HIST E1 SAME");
    SAngPi30Proj->Draw("HIST E1 SAME");
    TPaveText *t7 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t7->AddText("Pions at 30 deg");
@@ -313,8 +313,8 @@
    NAngPr30Proj->SetLineColor(kBlue);
    GAngPr30Proj->SetLineColor(kGreen);
    SAngPr30Proj->SetLineColor(kRed);
-   GAngPr30Proj->Draw("HIST E1");
-   NAngPr30Proj->Draw("HIST E1 SAME");
+   NAngPr30Proj->Draw("HIST E1");
+   GAngPr30Proj->Draw("HIST E1 SAME");
    SAngPr30Proj->Draw("HIST E1 SAME");
    TPaveText *t8 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t8->AddText("Protons at 30 deg");
@@ -334,9 +334,9 @@
    NAngEl60Proj->SetLineColor(kBlue);
    GAngEl60Proj->SetLineColor(kGreen);
    SAngEl60Proj->SetLineColor(kRed);
-   SAngEl60Proj->Draw("HIST E1");
+   NAngEl60Proj->Draw("HIST E1");
    GAngEl60Proj->Draw("HIST E1 SAME");
-   NAngEl60Proj->Draw("HIST E1 SAME");
+   SAngEl60Proj->Draw("HIST E1 SAME");
    TPaveText *t9 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t9->AddText("Electrons at 60 deg");
    t9->SetTextFont(22);
@@ -376,8 +376,8 @@
    NAngPi60Proj->SetLineColor(kBlue);
    GAngPi60Proj->SetLineColor(kGreen);
    SAngPi60Proj->SetLineColor(kRed);
-   GAngPi60Proj->Draw("HIST E1");
-   NAngPi60Proj->Draw("HIST E1 SAME");
+   NAngPi60Proj->Draw("HIST E1");
+   GAngPi60Proj->Draw("HIST E1 SAME");
    SAngPi60Proj->Draw("HIST E1 SAME");
    TPaveText *t11 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t11->AddText("Pions at 60 deg");
@@ -394,29 +394,29 @@
    legend11->Draw();
 
    c2->cd(12);
-   for(int i=1; i<=NAngPr60Proj->GetSize(); i++){
-   if(NAngPr60Proj->GetBinEntries(i) == 1) {
-   NAngPr60Proj->SetBinContent(i,0);  
-   NAngPr60Proj->SetBinError(i,0);  
-   }
-   }
-   for(int i=1; i<=GAngPr60Proj->GetSize(); i++){
-   if(GAngPr60Proj->GetBinEntries(i) == 1) {
-   GAngPr60Proj->SetBinContent(i,0);  
-   GAngPr60Proj->SetBinError(i,0);  
-   } 
-   }
-   for(int i=1; i<=SAngPr60Proj->GetSize(); i++){
-   if(SAngPr60Proj->GetBinEntries(i) == 1) {
-   SAngPr60Proj->SetBinContent(i,0);  
-   SAngPr60Proj->SetBinError(i,0);  
-   } 
-   }
+   // for(int i=1; i<=NAngPr60Proj->GetSize(); i++){
+   // if(NAngPr60Proj->GetBinEntries(i) == 1) {
+   // NAngPr60Proj->SetBinContent(i,0);  
+   // NAngPr60Proj->SetBinError(i,0);  
+   // }
+   // }
+   // for(int i=1; i<=GAngPr60Proj->GetSize(); i++){
+   // if(GAngPr60Proj->GetBinEntries(i) == 1) {
+   // GAngPr60Proj->SetBinContent(i,0);  
+   // GAngPr60Proj->SetBinError(i,0);  
+   // } 
+   // }
+   // for(int i=1; i<=SAngPr60Proj->GetSize(); i++){
+   // if(SAngPr60Proj->GetBinEntries(i) == 1) {
+   // SAngPr60Proj->SetBinContent(i,0);  
+   // SAngPr60Proj->SetBinError(i,0);  
+   // } 
+   // }
    NAngPr60Proj->SetLineColor(kBlue);
    GAngPr60Proj->SetLineColor(kGreen);
    SAngPr60Proj->SetLineColor(kRed);
-   SAngPr60Proj->Draw("HIST E1");
-   GAngPr60Proj->Draw("HIST E1 SAME");
+   GAngPr60Proj->Draw("HIST E1");
+   SAngPr60Proj->Draw("HIST E1 SAME");
    NAngPr60Proj->Draw("HIST E1 SAME");
    TPaveText *t12 = new TPaveText(0.3, 0.95, 0.81, 1.0, "bINDC");
    t12->AddText("Protons at 60 deg");
@@ -437,6 +437,6 @@
    cout << endl;
 
 //c1->Print("~/Desktop/FCStudies/Plots/AllAng.pdf");
-c2->Print("/nfs/neutrinos/cjesus/work/jobs/plots/18_07_2018/compAng.pdf");
+c2->Print("/software/neutrinos/t2k-nd280-upgrade/macro/Cesar/FC_Studies/Plots/compAng.pdf");
 
 }

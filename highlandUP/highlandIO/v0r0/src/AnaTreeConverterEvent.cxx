@@ -2027,15 +2027,15 @@ bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, int PDG, TString det
   
     // select artificially only a fraction of the events, 
     // by applying the FGD-ECal match efficiencies
-    if (det.Contains("DsECal")) {
-      if (r_eff[0] < FGDmatch_eff_Ds && r_eff[1] < reco_eff_Ds)
-        return true;
-    }
-    else {
-      if (r_eff[0] < FGDmatch_eff_Brl && r_eff[1] < reco_eff_Brl)
-        return true;
-    }
-    return false;
+    // if (det.Contains("DsECal")) {
+    //   if (r_eff[0] < FGDmatch_eff_Ds && r_eff[1] < reco_eff_Ds)
+    //     return true;
+    // }
+    // else {
+    //   if (r_eff[0] < FGDmatch_eff_Brl && r_eff[1] < reco_eff_Brl)
+    //     return true;
+    // }
+    // return false;
 
   } 
 
