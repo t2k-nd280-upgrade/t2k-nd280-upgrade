@@ -1,6 +1,6 @@
 #! /bin/csh -f
 
-set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/OLD_TDR_Productions/FHC_numu/config0
+set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/OLD_TDR_Productions/FHC_numu/config2
 #set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/FHC_numu/config2
 set code_dir = /software/neutrinos/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
 set original_parfile = ${code_dir}/parameters/numuCC4piAnalysis.parameters.dat
@@ -62,11 +62,11 @@ while ($i_nu < 1)                   #originally < 2 (with FHC & RHC)
 
     set i_conf = 0
 
-    foreach i_conf (0)
+    foreach i_conf (2)
     
     if($i_nu == 0) then
     	set conf = $i_conf
-    	set N_targets = 2
+    	set N_targets = 3
     	set i_target = 1
 	endif
 
