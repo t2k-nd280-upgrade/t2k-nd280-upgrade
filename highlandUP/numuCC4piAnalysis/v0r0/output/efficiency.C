@@ -178,12 +178,13 @@ void plotTotal(TString suffix, int categ, int cut1, int cut2,
 
   int colors[3] = {kBlack, kRed, kBlue};
 
-//  for (int ic=0; ic<2; ic++) { //ALL
+  for (int ic=0; ic<2; ic++) { //ALL
 //  for (int ic=1; ic<2; ic++) { //ONLY UPGRADE
-  for (int ic=0; ic<1; ic++) { //ONLY BEFORE UPGRADE
+//  for (int ic=0; ic<1; ic++) { //ONLY BEFORE UPGRADE
 	  
   for (int it=1; it<=NTargets[configs[ic]]; it++) {
 //		    for (int it=1; it<=2; it++) {
+      cout << it << endl;
       TH1F* h = computeEff(suffix, configs[ic], it, categ, cut1, cut2, 
 			   var, var_title, nbins, xbins, PSRes);
       h->SetLineColor(colors[it-1]);
@@ -463,33 +464,45 @@ void efficiency() {
    // plotTotal("_FHC_numu_OLD", -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
    // plotTotal("_FHC_numu_NEW", -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
 
-for (int c=-2; c<0; c++) {
+for (int c=-2; c<8; c++) {
    plotTotal("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
  }
 
- // for (int c=-2; c<8; c++) {
- //   plotTotal("_FHC_numu_NEW_hUp_OLD_G4", c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
- // }
+ for (int c=-2; c<8; c++) {
+   plotTotal("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+ }
 
- // for (int c=-2; c<8; c++) {
- //   plotTotal("_FHC_numu_NEW_hUp_OLD_G4", c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
- // }
+ for (int c=-2; c<8; c++) {
+   plotTotal("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+ }
 
-//  for (int c=-2; c<8; c++) {
-//     plotTotalComp("_FHC_numu_NEW_hUp_OLD_G4", "_FHC_numu_NEW_hUp_NEW_G4", 2, 
-//           c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
-//   }
-
-//  for (int c=-2; c<8; c++) {
-//     plotTotalComp("_FHC_numu_NEW_hUp_OLD_G4", "_FHC_numu_NEW_hUp_NEW_G4", 2, 
-//           c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
-//   }
+// for (int c=-2; c<8; c++) {
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_NEW_G4", c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+//  }
 
 //  for (int c=-2; c<8; c++) {
-//     plotTotalComp("_FHC_numu_NEW_hUp_OLD_G4", "_FHC_numu_NEW_hUp_NEW_G4", 2, 
-//           c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_NEW_G4", c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+//  }
 
-// }
+//  for (int c=-2; c<8; c++) {
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_NEW_G4", c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+//  }
+
+
+// for (int c=-2; c<8; c++) {
+//      plotTotalComp("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", "_FHC_numu_EcalMod_NEW_hUp_NEW_G4", 2, 
+//            c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+//    }
+
+// for (int c=-2; c<8; c++) {
+//      plotTotalComp("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", "_FHC_numu_EcalMod_NEW_hUp_NEW_G4", 2, 
+//            c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+//    }
+
+//   for (int c=-2; c<8; c++) {
+//      plotTotalComp("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", "_FHC_numu_EcalMod_NEW_hUp_NEW_G4", 2, 
+//            c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+//  }
 
 
 }

@@ -204,14 +204,14 @@
     cout << "Event " << ievt << endl; // Message for large files: Print the analysis status every 10000 analyzed events.    
  }
 
- //cout << endl << endl << "NEW EVENT" << endl << endl;
+cout << endl << endl << "NEW EVENT" << endl << endl;
 
   //Loop over Tracks (per each events).
   int NTracks = nd280UpEvent->GetNTracks();
   for(int itrk=0;itrk<NTracks;itrk++)
   {
 
- //cout << endl << "NEW Track" << endl << endl;  
+ cout << endl << "NEW Track" << endl << endl;  
 
 
     TND280UpTrack *nd280UpTrack = nd280UpEvent->GetTrack(itrk);
@@ -258,19 +258,19 @@
     string volname = nd280UpTrackPoint->GetLogVolName();
 
    // phi2 = abs(phi2);
+  cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
+  //   if(ipt==0 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
+  //   if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer1"){
+  //   if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCDown/FCSolid/layer1") break;
+  //   }
 
-    if(ipt==0 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
-    if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer1"){
-    if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCDown/FCSolid/layer1") break;
-    }
-
- //  cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
+  //  //cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
    
-  // Conditions to select the plot's .pdf file names.
-     if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FC/layer8") {FCname = "old"; break;}
-     if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCNexus/layer8") FCname = "Nexus";
-     if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCGF/layer7") FCname = "GF";
-     if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer5") FCname = "Solid";
+  // // Conditions to select the plot's .pdf file names.
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FC/layer8") {FCname = "old"; break;}
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCNexus/layer8") FCname = "Nexus";
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCGF/layer7") FCname = "GF";
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer5") FCname = "Solid";
 
   // Condition to store information before entering in the FC
 //     if(volname == "TargetUniform" && trkID ==1)

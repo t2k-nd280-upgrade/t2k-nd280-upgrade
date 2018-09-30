@@ -796,7 +796,8 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
   for (int ip = 0; ip < upTrack->GetNPoints(); ip++) {
     TND280UpTrackPoint* Tpoint = upTrack->GetPoint(ip);
     //    std:;cout<<Tpoint->GetPhysVolName()<<std::endl;
-    if (Tpoint->GetPhysVolName().find("HATPCUp/Drift") != std::string::npos) {
+
+if (Tpoint->GetPhysVolName().find("HATPCUp/Drift") != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < TPCUp1Z) {
         lastTPCUp1 = Tpoint;
         TPCUp1Z = Tpoint->GetMomentum().Mag();
@@ -805,10 +806,19 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
         firstTPCUp1 = Tpoint;
         TPCUp1fZ = Tpoint->GetMomentum().Mag();
       }
-
     } 
-    if (Tpoint->GetPhysVolName().find("HATPCDown/Drift") != std::string::npos) {
-  
+
+if (Tpoint->GetPhysVolName().find("TPCUp1") != std::string::npos) {
+      if (Tpoint->GetMomentum().Mag() < TPCUp1Z) {
+        lastTPCUp1 = Tpoint;
+        TPCUp1Z = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > TPCUp1fZ) {
+        firstTPCUp1 = Tpoint;
+        TPCUp1fZ = Tpoint->GetMomentum().Mag();
+      }
+    } 
+    if (Tpoint->GetPhysVolName().find("TPCUp2") != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < TPCUp2Z) {
         lastTPCUp2 = Tpoint;
         TPCUp2Z = Tpoint->GetMomentum().Mag();
@@ -819,8 +829,7 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
       }
 
     }
-    if (Tpoint->GetPhysVolName().find("TPCDown1") != std::string::npos) {
-
+    if (Tpoint->GetPhysVolName().find("HATPCDown/Drift") != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < TPCDown1Z) {
         lastTPCDown1 = Tpoint;
         TPCDown1Z = Tpoint->GetMomentum().Mag();
@@ -829,8 +838,16 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
         firstTPCDown1 = Tpoint;
         TPCDown1fZ = Tpoint->GetMomentum().Mag();
       }
-
-
+    }
+    if (Tpoint->GetPhysVolName().find("TPCDown1") != std::string::npos) {
+      if (Tpoint->GetMomentum().Mag() < TPCDown1Z) {
+        lastTPCDown1 = Tpoint;
+        TPCDown1Z = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > TPCDown1fZ) {
+        firstTPCDown1 = Tpoint;
+        TPCDown1fZ = Tpoint->GetMomentum().Mag();
+      }
     } 
     if (Tpoint->GetPhysVolName().find("TPCDown2") != std::string::npos) {
 
@@ -845,6 +862,7 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
 
 
     }
+
     if (Tpoint->GetPhysVolName().find("ForwTPC1") != std::string::npos) {
 
       if (Tpoint->GetMomentum().Mag() < ForwTPC1Z) {
@@ -886,6 +904,7 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
     } 
     if (Tpoint->GetPhysVolName().find("TargetUniform") != std::string::npos ||
         Tpoint->GetPhysVolName().find("SuperFGD1") != std::string::npos) {
+
       if (Tpoint->GetMomentum().Mag() < Target1Z) {
         lastTarget1 = Tpoint;
         Target1Z = Tpoint->GetMomentum().Mag();
@@ -896,6 +915,18 @@ void AnaTreeConverterEvent::FindSegments(TND280UpTrack* upTrack,AnaTrueParticleB
       }
 
     } 
+    if (Tpoint->GetPhysVolName().find("Target1") != std::string::npos) {
+    
+      if (Tpoint->GetMomentum().Mag() < Target1Z) {
+        lastTarget1 = Tpoint;
+        Target1Z = Tpoint->GetMomentum().Mag();
+      }
+      if (Tpoint->GetMomentum().Mag() > Target1fZ) {
+        firstTarget1 = Tpoint;
+        Target1fZ = Tpoint->GetMomentum().Mag();
+      }
+
+    }
     if (Tpoint->GetPhysVolName().find("Target2") != std::string::npos) {
     
       if (Tpoint->GetMomentum().Mag() < Target2Z) {
