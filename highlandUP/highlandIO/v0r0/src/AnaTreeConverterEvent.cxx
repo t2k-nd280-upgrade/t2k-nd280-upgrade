@@ -96,6 +96,8 @@ bool AnaTreeConverterEvent::Initialize(){
   muonspline = (TSpline3*)_file_charge_confusion->Get("MuonSpline");
   pionspline = (TSpline3*)_file_charge_confusion->Get("PionSpline");
   protspline = (TSpline3*)_file_charge_confusion->Get("ProtSpline");
+
+  gRandom->SetSeed(0);
   
   return true;
 }
@@ -939,7 +941,7 @@ if (Tpoint->GetPhysVolName().find("TPCUp1") != std::string::npos) {
       }
 
     }
-    if (Tpoint->GetPhysVolName().find("FGD1") != std::string::npos) {
+    if (Tpoint->GetPhysVolName().find("/FGD1") != std::string::npos) {
       if (Tpoint->GetMomentum().Mag() < FGD1Z) {
         lastFGD1 = Tpoint;
         FGD1Z = Tpoint->GetMomentum().Mag();
@@ -1993,6 +1995,7 @@ bool AnaTreeConverterEvent::IsReconstructedTarget(int pdg, double mom, double co
   }
 
   double r = gRandom->Rndm();
+  std::cout << "rRecTarg is: " << r << std::endl;
   if (r<eff)
     return true;
   return false;
@@ -2087,7 +2090,7 @@ bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, int PDG, TString det
     }
 
     double r = gRandom->Rndm();
-    
+      std::cout << "rEcal is: " << r << std::endl;
     if (r < TPC_ECal_eff)
       return true;
     return false;
@@ -2118,6 +2121,7 @@ bool AnaTreeConverterEvent::IdAsProton(int pdg, double mom) {
   misid = h->GetBinContent(binX);
 
   double r = gRandom->Rndm();
+  std::cout << "rIdAsProton is: " << r << std::endl;
 
   if (abs(pdg)==13 || abs(pdg)==211){
     if (r<misid)
@@ -2158,7 +2162,7 @@ bool AnaTreeConverterEvent::ChargeConfused(AnaTrueParticleB* trueParticle) {
     
   if(prob <= 0.0) return false;    
   Double_t r = gRandom->Rndm();
-
+  std::cout << "rChargeConf is: " << r << std::endl;
   return (r<prob);
 
 }
