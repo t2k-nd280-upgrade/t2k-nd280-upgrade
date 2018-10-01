@@ -2228,7 +2228,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
   if (SDRegion) {
-    if( ND280XMLInput->GetXMLUseTarget1() )  SDRegion->AddRootLogicalVolume(logicTarget1);
+    if( ND280XMLInput->GetXMLUseTarget1() || ND280XMLInput->GetXMLUseSuperFGD1())
+      SDRegion->AddRootLogicalVolume(logicSuperFGD1);
     if( ND280XMLInput->GetXMLUseTarget2() )  SDRegion->AddRootLogicalVolume(logicTarget2);
     if( ND280XMLInput->GetXMLUseFGD1() )     SDRegion->AddRootLogicalVolume(logicFGD1);
     if( ND280XMLInput->GetXMLUseFGD2() )     SDRegion->AddRootLogicalVolume(logicFGD2);
