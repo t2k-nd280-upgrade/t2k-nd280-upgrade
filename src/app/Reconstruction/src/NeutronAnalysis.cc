@@ -34,6 +34,8 @@
 
 const int VERTEX_ACTIVITY = 3;
 
+#define NEvtDisplTot 0
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int NeutronAnalysis(int argc,char** argv) {
@@ -73,16 +75,17 @@ int NeutronAnalysis(int argc,char** argv) {
 
   // Set the inputs
 
-  nd280upconv::TargetType_t DetType;
+  nd280upconv::TargetType_t DetType = nd280upconv::kUndefined;
   if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
   else if(detectorID == 1) DetType = nd280upconv::kFGDlike;
   
-  const int NEvtDisplTot = 0; //atoi(argv[5]); // max # of evt. displays
 
   // Declare canvases
+#ifdef NEvtDisplTot
   TCanvas *cMPPCHits_XY[NEvtDisplTot]; 
   TCanvas *cMPPCHits_XZ[NEvtDisplTot]; 
   TCanvas *cMPPCHits_YZ[NEvtDisplTot];
+#endif
 
   TRandom3* gen = new TRandom3();
 
@@ -126,7 +129,7 @@ int NeutronAnalysis(int argc,char** argv) {
   int vertex_norm = 0;
 
   // Event displays
-
+#ifdef NEvtDisplTot
   TH2F *hMPPCHits_XY[NEvtDisplTot]; 
   TH2F *hMPPCHits_XZ[NEvtDisplTot]; 
   TH2F *hMPPCHits_YZ[NEvtDisplTot];
@@ -138,7 +141,7 @@ int NeutronAnalysis(int argc,char** argv) {
   TH1F *hPEVsTime_x[NEvtDisplTot];
   TH1F *hPEVsTime_y[NEvtDisplTot];
   TH1F *hPEVsTime_z[NEvtDisplTot];
-
+#endif
    // Set outputs
   
   TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),outname,nevents);
@@ -146,9 +149,12 @@ int NeutronAnalysis(int argc,char** argv) {
   TTree* outtree = new TTree("neutron", "");
 
   Double_t ekin, costheta, light, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
+  Double_t dir_true[3], dir_reco[3];
   ekin = costheta = light = dist_cubes = dist = first_hit_time = neutron_time = neutron_dist_true = -1.;
   outtree->Branch("KinEnergy_true",     &ekin);
   outtree->Branch("CosTheta_true",      &costheta);
+  outtree->Branch("Dir_True",           dir_true, "dir_true[3]/D");
+  outtree->Branch("Dir_Reco",           dir_reco, "dir_reco[3]/D");
   outtree->Branch("Light",              &light);
   outtree->Branch("Distance_cubes",     &dist_cubes);
   outtree->Branch("Distance_hit_true",  &dist);
@@ -170,6 +176,11 @@ int NeutronAnalysis(int argc,char** argv) {
   h2d_xy = (TH2F*)finput->Get("OutMPPCProj2D_XY");
   h2d_xz = (TH2F*)finput->Get("OutMPPCProj2D_XZ");
   h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
+  /*
+  h2d_xy = (TH2F*)finput->Get("fMPPCProj2D_XY_mod_01");
+  h2d_xz = (TH2F*)finput->Get("fMPPCProj2D_XZ_mod_01");
+  h2d_yz = (TH2F*)finput->Get("fMPPCProj2D_YZ_mod_01");
+  */
 
   Int_t binX = h2d_xy->GetXaxis()->GetNbins();
   Int_t binY = h2d_xy->GetYaxis()->GetNbins();
@@ -362,13 +373,18 @@ int NeutronAnalysis(int argc,char** argv) {
       continue;
     }
     TND280UpTrack* track = nd280UpEvent->GetTrack(0);
-    if (track->GetPDG() != 2112) {
+    if (track->GetPDG() != 22) {
       std::cout << "WARNING! First track is not neutron! The event will be skipped. PDG = " << track->GetPDG() << std::endl;
       continue;
     }
 
     ekin      = track->GetInitKinEnergy();
     costheta  = track->GetInitCosTheta();
+    TVector3 mom_vec = track->GetInitMom();
+    mom_vec = mom_vec.Unit();
+    dir_true[0]  = mom_vec.X();
+    dir_true[1]  = mom_vec.Y();
+    dir_true[2]  = mom_vec.Z();
     
     // Loop over the hits
     
@@ -566,49 +582,17 @@ int NeutronAnalysis(int argc,char** argv) {
     first_bin_YZ->Fill(y, z);
     first_bin_XZ->Fill(x, z);
 
-    // DUMMY AT THE MOMENT
-    // check that we have exactly one hit
-    // hit cube should be isolated in at least 2 projections
-    /*Int_t PE_around1 =  hits_map_XY->GetBinContent(first_binX + 1,  first_binY) + 
-                        hits_map_XY->GetBinContent(first_binX + 1,  first_binY + 1) +
-                        hits_map_XY->GetBinContent(first_binX,      first_binY + 1) +
-                        hits_map_XY->GetBinContent(first_binX - 1,  first_binY + 1) +
-                        hits_map_XY->GetBinContent(first_binX - 1,  first_binY) +
-                        hits_map_XY->GetBinContent(first_binX - 1,  first_binY - 1) +
-                        hits_map_XY->GetBinContent(first_binX,      first_binY - 1) +
-                        hits_map_XY->GetBinContent(first_binX + 1,  first_binY - 1);
-
-    Int_t PE_around2 =  hits_map_XZ->GetBinContent(first_binX + 1,  first_binZ) + 
-                        hits_map_XZ->GetBinContent(first_binX + 1,  first_binZ + 1) +
-                        hits_map_XZ->GetBinContent(first_binX,      first_binZ + 1) +
-                        hits_map_XZ->GetBinContent(first_binX - 1,  first_binZ + 1) +
-                        hits_map_XZ->GetBinContent(first_binX - 1,  first_binZ) +
-                        hits_map_XZ->GetBinContent(first_binX - 1,  first_binZ - 1) +
-                        hits_map_XZ->GetBinContent(first_binX,      first_binZ - 1) +
-                        hits_map_XZ->GetBinContent(first_binX + 1,  first_binZ - 1);
-
-    Int_t PE_around3 =  hits_map_YZ->GetBinContent(first_binY + 1,  first_binZ) + 
-                        hits_map_YZ->GetBinContent(first_binY + 1,  first_binZ + 1) +
-                        hits_map_YZ->GetBinContent(first_binY,      first_binZ + 1) +
-                        hits_map_YZ->GetBinContent(first_binY - 1,  first_binZ + 1) +
-                        hits_map_YZ->GetBinContent(first_binY - 1,  first_binZ) +
-                        hits_map_YZ->GetBinContent(first_binY - 1,  first_binZ - 1) +
-                        hits_map_YZ->GetBinContent(first_binY,      first_binZ - 1) +
-                        hits_map_YZ->GetBinContent(first_binY + 1,  first_binZ - 1);
-
-    // isolated in at least 2 views
-    if ((PE_around1 > 0) + (PE_around2 > 0) + (PE_around3 > 0) > 1)
-      continue;*/
-
     // separated  at least with a 1 hit from the vertex activity
     if (abs(first_binX - vertex_binX) < VERTEX_ACTIVITY + 1 &&
         abs(first_binY - vertex_binY) < VERTEX_ACTIVITY + 1 &&
         abs(first_binZ - vertex_binZ) < VERTEX_ACTIVITY + 1 )
       continue;
 
-    // look only at high distance for better resolution
-    //if (dist_cubes < 50)
-    //  continue;
+    TVector3 reco_vec(first_binX - vertex_binX, first_binY - vertex_binY, first_binZ - vertex_binZ);
+    reco_vec    = reco_vec.Unit();
+    dir_reco[0] = reco_vec.X();
+    dir_reco[1] = reco_vec.Y();
+    dir_reco[2] = reco_vec.Z();
 
     // SELECTION IS DONE 
     // filling histoes
