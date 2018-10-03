@@ -2,12 +2,16 @@
 Makefile
 build/app/*
 build/CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
 
 # root dictionaries
 *Dict.cxx
 *Dict.h
 *.rootcint
 dict.rfict.pcm
+dict_rdict.pcm
+dict.*
 
 # highland setup files
 setup.sh
@@ -36,3 +40,7 @@ vis_cluster_*
 
 #personal environment
 mypath.sh
+
+#output files
+*.wrl
+*.root
