@@ -52,7 +52,7 @@ $resource        = "interactive"               unless defined $resource;
 #$tag             = "test" unless defined $tag;
 #$tag             = "g4ND280Up_NoNorm_Alternative_Targ_TPC_ECal_ToF_oofv"                 unless defined $tag;  
 #$tag             = "g4ND280Up_1E21_Reference_ECal_RHC_numu"                 unless defined $tag;
-$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
+#$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
 #$tag             = "g4ND280Up_1E22_Reference_ECal_nue"               unless defined $tag;
 #$tag             = "g4ND280Up_1E22_Alternative_Targ_TPC_ECal_ToF_nue"               unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF"    unless defined $tag;
@@ -61,6 +61,7 @@ $tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defin
 #$tag             = "g4ND280Up_AltTargTPC_Only_SuperFGD"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu_NEUT"    unless defined $tag;
+$tag              = "g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector"               unless defined $tag;
 
 
 ######################################################################################################################################
@@ -91,7 +92,7 @@ $tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defin
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster   
-$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
+#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
 #$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster
@@ -100,7 +101,7 @@ $config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal.xml
 
 #with hatpc
 #$config_file     = "config/HATPC/configuration_cluster_targ_ftpc_2fgd_tof_ecal_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
-$config_file     = "config/HATPC/configuration_pgun_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
+#$config_file     = "config/HATPC/configuration_pgun_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
  
 
 # ECal, Basket, Magnet (no Tracker)
@@ -117,13 +118,14 @@ $config_file     = "config/HATPC/configuration_pgun_hatpc.xml" unless defined $c
 #$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_numu.xml" unless defined $config_file;
 #$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_numubar.xml" unless defined $config_file;
 #$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_nue.xml" unless defined $config_file;
+$config_file      = "config/configuration_cluster_ref_uniform.xml" unless defined $config_file;
 
 ######################################################################################################################################
 
 #$vis_file        = "mac/vis_test.mac"           unless defined $vis_file;  
-$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis.mac"           unless defined $vis_file;
-#$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
+$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
 
 #$nruns           = 80                          unless defined $nruns;      # number of jobs (current and reference)
 #$nruns           = 127                          unless defined $nruns;      # number of jobs (alternative)
@@ -189,6 +191,25 @@ while($irun < $nruns) { # loop over the jobs
 	print PBS "$command \n";
 	close(PBS);	
 	`qsub -q $queue -l mem=6000mb -l vmem=6000mb $sbatchfile`;	
+    }
+
+    if($resource eq "PIC") {
+
+    print "inside PIC \n";
+    $sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
+    $outfiledir = "$job_dir/";
+    $errfiledir = "$job_dir/";
+    open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+    print PBS "#!/bin/bash -l  \n";
+    print PBS "source $softw_dir/mypath.sh $softw_dir \n";
+    print PBS "\n";
+    print PBS "env \n";
+    print PBS "\n";
+    print PBS "uname -n \n";
+    print PBS "\n";
+    print PBS "$command \n";
+    close(PBS); 
+    `qsub -q short -l nodes=1 $sbatchfile`; 
     }
     
     if($resource eq "UNIGE-Atlas-Slurm") {

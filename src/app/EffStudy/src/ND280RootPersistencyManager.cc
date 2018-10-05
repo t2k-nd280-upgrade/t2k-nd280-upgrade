@@ -910,12 +910,12 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 	  LengthFGD2 += steplength;	
 	  EdepFGD2   += stepedep;	
 	}
-  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCUp/Drift")){    
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/FC/HATPCUp/Drift")){    
 	  LengthTPCUp1 += steplength;	
 	  LyzTPCUp1    += stepdeltalyz;
 	  EdepTPCUp1   += stepedep;
 	}
-  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/HATPCDown/Drift")){
+  else if(detname_curr.contains("/t2k/OA/Magnet/Basket/FC/HATPCDown/Drift")){
     LengthTPCDown1 += steplength;	
 	  LyzTPCDown1    += stepdeltalyz;
 	  EdepTPCDown1   += stepedep;

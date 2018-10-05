@@ -136,7 +136,7 @@
     int evtlasttree = NTreeEntries-1;
     int Nentries = -999;
 
-    string FCname = "";
+    string FCname = "Solid";
 
   // Message summarizing the TTree content.
     cout << endl;
@@ -258,13 +258,21 @@ cout << endl << endl << "NEW EVENT" << endl << endl;
     string volname = nd280UpTrackPoint->GetLogVolName();
 
    // phi2 = abs(phi2);
-  cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-  //   if(ipt==0 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
-  //   if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer1"){
-  //   if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/HATPCDown/FCSolid/layer1") break;
-  //   }
+  //cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
 
-  //  //cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
+    int b_cnt =0;
+
+    if(ipt==0 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
+    if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
+    if(ipt==2 && volname == "/t2k/OA/Magnet/Basket/FC/HATPCDown/Drift/Half0") b_cnt++;
+    if(ipt==2 && volname == "/t2k/OA/Magnet/Basket/FC/HATPCDown/Drift/Half1") b_cnt++;
+    if(ipt==2 && volname == "/t2k/OA/Magnet/Basket/FC/HATPCUp/Drift/Half0") b_cnt++;
+    if(ipt==2 && volname == "/t2k/OA/Magnet/Basket/FC/HATPCUp/Drift/Half1") b_cnt++;
+
+     if(ipt ==2 && b_cnt==0) break;
+
+
+    cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
    
   // // Conditions to select the plot's .pdf file names.
   //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FC/layer8") {FCname = "old"; break;}
@@ -274,7 +282,7 @@ cout << endl << endl << "NEW EVENT" << endl << endl;
 
   // Condition to store information before entering in the FC
 //     if(volname == "TargetUniform" && trkID ==1)
-     if(volname == "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform" &&  ipt==0)
+     if(volname == "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform" &&  ipt==1)
      {    
      if(cnt1 == 0) // Only enters the first time (per event) it is in "/t2k/OA/Magnet/Basket" to avoid double counting.
      {
@@ -285,7 +293,7 @@ cout << endl << endl << "NEW EVENT" << endl << endl;
 
 // Condition to store information after entering in the FC
 //     if(volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half1" && cnt1 == 1 && trkID ==1) // (cnt1 == 1) is important. It ensures that any event is stored if we don't have both inital and final information.
-     if((volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half1" || volname == "/t2k/OA/Magnet/Basket/HATPCDown/Drift/Half1" || volname == "/t2k/OA/Magnet/Basket/HATPCDown/Drift/Half0" || volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half0")  && cnt1 == 1) 
+     if((volname == "/t2k/OA/Magnet/Basket/FC/HATPCUp/Drift/Half1" || volname == "/t2k/OA/Magnet/Basket/FC/HATPCDown/Drift/Half1" || volname == "/t2k/OA/Magnet/Basket/FC/HATPCDown/Drift/Half0" || volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half0")  && cnt1 == 1) 
      {
         MomFin = MomMod;
         if(cnt == 0)

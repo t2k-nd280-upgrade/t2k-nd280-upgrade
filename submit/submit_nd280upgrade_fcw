@@ -112,7 +112,10 @@ $tag            = "Histos" unless defined $tag;
 #$inputfile        = "/home/cjesus/Desktop/prueba.root" unless defined $inputfile;
 #$inputfile        = "/home/cjesus/Desktop/pgun_low_hatpc-Exp0-Nexpt100000.root" unless defined $inputfile;
 #$inputfile         = "$softw_dir/" unless defined $inputfile;
-$inputfile         = "/nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/OLD_TDR_Productions/FHC_numu/config2/g4ND280Up_1E21_Current_ECal_numu-Exp0-Nexpt3000.root" unless defined $inputfile;
+$inputfile         = "/nfs/pic.es/user/c/cjesus/scripts/bash/g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector-Exp0-Nexpt1000.root" unless defined $inputfile;
+#$inputfile         = "/nfs/pic.es/user/c/cjesus/scripts/bash/g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector-Exp0-Nexpt100.root" unless defined $inputfile;
+#$inputfile         = "/nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/CesarProd/good_size_good_position/fullproduction/full_production.root" unless defined $inputfile;
+
 #$inputfile        = "/home/cjesus/Desktop/PhD/T2K/ND280/simulations/work/pgun_hatpc-Exp0-Nexpt10000.root" unless defined $inputfile;
 
 #$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/g4ND280Up_6E20_nd280current_numubar_0p2T-All.root" unless defined $inputfile;

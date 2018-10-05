@@ -1823,7 +1823,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //------------------------------ 
   //
 
-  G4String cNameLogicHATPCUp = cParentNameTPC+"/HATPCUp";
+  G4String cNameLogicHATPCUp = cParentNameTPC+"/FC/HATPCUp";
   ND280HATPCConstructor *fHATPCUpConstructor = new ND280HATPCConstructor(cNameLogicHATPCUp,this);
   G4String nameHATPCUp = fHATPCUpConstructor->GetName();
 
@@ -1874,6 +1874,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 		    false,
 		    0);
 
+  cout << "LOGIC NAME: " << logicHATPCUp->GetName() << endl;
   }
 
   //
@@ -1882,7 +1883,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   //------------------------------ 
   //
 
-  G4String cNameLogicHATPCDown = cParentNameTPC+"/HATPCDown";
+  G4String cNameLogicHATPCDown = cParentNameTPC+"/FC/HATPCDown";
   ND280HATPCConstructor *fHATPCDownConstructor = new ND280HATPCConstructor(cNameLogicHATPCDown,this);
   G4String nameHATPCDown = fHATPCDownConstructor->GetName();
 

@@ -1,7 +1,8 @@
 #! /bin/csh -f
 
-set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector
+#set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector
 #set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/OLD_TDR_Productions/FHC_numu/config2
+set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/CesarProd
 set code_dir = /software/neutrinos/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
 set original_parfile = ${code_dir}/parameters/numuCC4piAnalysis.parameters.dat
 

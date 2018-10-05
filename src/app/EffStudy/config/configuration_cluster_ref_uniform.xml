@@ -21,11 +21,11 @@
   </Generator>
 
   <Path2file>
-    /t2k/users/suvorov/data/GENIE/13_09_18/
+    /nfs/neutrinos/cjesus/work/iRODS_files/GENIE/13_09_18/
   </Path2file>
 
   <filename>
-    GENIE_geometry_uniform_target_1e21_numu.root
+    GENIE_geometry_uniform_target_FGD12_1e21_numu.root
   </filename>
 
  <!--GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root -->
@@ -280,21 +280,21 @@
    <!-- HATPCFC -->
 
    <HATPCFCName>
-     Solid
+     FC
    </HATPCFCName>
    
    <!-- HATPCUp -->
 
    <HATPCUpWidth>
-   1850
+   2200
    </HATPCUpWidth>
 
    <HATPCUpHeight>
-   900
+   840
    </HATPCUpHeight>
 
    <HATPCUpLength>
-   1900
+   1840
    </HATPCUpLength>
 
    <HATPCUpDriftWidth>
@@ -342,15 +342,15 @@
    <!-- HATPCDown -->
 
    <HATPCDownWidth>
-   1850
+   2200
    </HATPCDownWidth>
 
    <HATPCDownHeight>
-   900
+   840
    </HATPCDownHeight>
 
    <HATPCDownLength>
-   1900
+   1840
    </HATPCDownLength>
 
    <HATPCDownDriftWidth>
@@ -659,7 +659,7 @@
      0
    </ToFPosY_BackUp>
    <ToFPosZ_BackUp>
-     -2689
+     -2970
    </ToFPosZ_BackUp>
 
    <!-- ToF Front Upstream -->
@@ -829,7 +829,7 @@
    </UseP0DECal>
    
    <UseP0D>
-     false
+     true
    </UseP0D>
    
    <!-- Invisible detectors -->
@@ -920,5 +920,4 @@
 
 
   
-
 
