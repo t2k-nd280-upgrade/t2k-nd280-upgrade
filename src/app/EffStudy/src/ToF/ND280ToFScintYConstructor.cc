@@ -26,15 +26,17 @@ void ND280ToFScintYConstructor::Init() {
 
 void ND280ToFScintYConstructor::SetUp(int n_bars,
 				      double bar_length,
-				      double bar_base){
+				      double bar_base,
+              double bar_width){
 
   // NEW ND280 UPGRADE
   SetBarBase( bar_base*CLHEP::mm );
-  SetBarHeight( bar_base*CLHEP::mm );
+  SetBarHeight( bar_width*CLHEP::mm );
   //
 
   SetBarNumber( n_bars );
   SetWidth( bar_length );
   //SetHeight(n_bars * ND280ECal::BarWidth + 0.001*mm);
-  SetHeight( n_bars * bar_base); // + 0.001*mm ); // length of an x-bar
+  SetHeight(n_bars * bar_base); // + 0.001*mm ); // length of an x-bar
+  SetLength(bar_width);
 }

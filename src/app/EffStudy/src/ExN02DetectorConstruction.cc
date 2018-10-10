@@ -352,17 +352,11 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     double BarLength = ND280XMLInput->GetXMLToFBarlength_TopUp() * CLHEP::mm;
     fToFConstructor_TopUp->SetBarLength(BarLength);
 
-
-    /*int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_TopUp();
-    fToFConstructor_TopUp->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_TopUp();
-    fToFConstructor_TopUp->SetLayerVertNBar(NBarVert); */
-
     rotX = ND280XMLInput->GetXMLToFRotX_TopUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_TopUp() * CLHEP::degree;
     rotZ = ND280XMLInput->GetXMLToFRotZ_TopUp() * CLHEP::degree;
-    rotation_tof_TopUp->rotateX(rotX); 
     rotation_tof_TopUp->rotateY(rotY); 
+    rotation_tof_TopUp->rotateX(rotX); 
     rotation_tof_TopUp->rotateZ(rotZ);      
      
     logicToF_TopUp = fToFConstructor_TopUp->GetPiece();
@@ -371,7 +365,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				       GetToFPos_TopUp(),
 				       logicToF_TopUp,// logical volume
 				       nameToF_TopUp, // name   
-				       logicBasket,    // mother  volume  
+				       logicMagnet,    // mother  volume  
 				       false,        // no boolean operations
 				       0);
     
@@ -402,7 +396,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_TopUp->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_TopUp->GetLayerVertNBar() << " (vert)"
+	   //<< fToFConstructor_TopUp->GetLayerVertNBar() << " (vert)"
 	   << G4endl << G4endl;  
   }
   
@@ -435,8 +429,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     rotX = ND280XMLInput->GetXMLToFRotX_BotUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_BotUp() * CLHEP::degree;
     rotZ = ND280XMLInput->GetXMLToFRotZ_BotUp() * CLHEP::degree;
-    rotation_tof_BotUp->rotateX(rotX); 
     rotation_tof_BotUp->rotateY(rotY); 
+    rotation_tof_BotUp->rotateX(rotX); 
     rotation_tof_BotUp->rotateZ(rotZ);      
     
     logicToF_BotUp = fToFConstructor_BotUp->GetPiece();
@@ -445,7 +439,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				       GetToFPos_BotUp(),
 				       logicToF_BotUp,// logical volume
 				       nameToF_BotUp, // name   
-				       logicBasket,    // mother  volume  
+				       logicMagnet,    // mother  volume  
 				       false,        // no boolean operations
 				       0);
     
@@ -476,7 +470,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_BotUp->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_BotUp->GetLayerVertNBar() << " (vert)"
+	   //<< fToFConstructor_BotUp->GetLayerVertNBar() << " (vert)"
 	   << G4endl << G4endl;
     
   }
@@ -519,7 +513,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				       GetToFPos_RightUp(),
 				       logicToF_RightUp,// logical volume
 				       nameToF_RightUp, // name   
-				       logicBasket,    // mother  volume  
+				       logicMagnet,    // mother  volume  
 				       false,        // no boolean operations
 				       0);
     
@@ -550,7 +544,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_RightUp->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_RightUp->GetLayerVertNBar() << " (vert)"
+	   //<< fToFConstructor_RightUp->GetLayerVertNBar() << " (vert)"
 	   << G4endl << G4endl;
     
   }
@@ -577,7 +571,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     double BarHeight = ND280XMLInput->GetXMLToFBarheight_LeftUp() * CLHEP::mm;
     fToFConstructor_LeftUp->SetBarHeight(BarHeight);
     double BarLength = ND280XMLInput->GetXMLToFBarlength_LeftUp() * CLHEP::mm;
-    fToFConstructor_LeftUp->SetBarHeight(BarLength);
+    fToFConstructor_LeftUp->SetBarLength(BarLength);
 
     rotX = ND280XMLInput->GetXMLToFRotX_LeftUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_LeftUp() * CLHEP::degree;
@@ -592,7 +586,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 				       GetToFPos_LeftUp(),
 				       logicToF_LeftUp,// logical volume
 				       nameToF_LeftUp, // name   
-				       logicBasket,    // mother  volume  
+				       logicMagnet,    // mother  volume  
 				       false,        // no boolean operations
 				       0);
     
@@ -623,7 +617,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_LeftUp->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_LeftUp->GetLayerVertNBar() << " (vert)"
+	   //<< fToFConstructor_LeftUp->GetLayerVertNBar() << " (vert)"
 	   << G4endl << G4endl;    
   }
 
@@ -697,7 +691,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_BackUp->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_BackUp->GetLayerVertNBar() << " (vert)"
+	   //<< fToFConstructor_BackUp->GetLayerVertNBar() << " (vert)"
 	   << G4endl << G4endl;    
   }
 
@@ -771,7 +765,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 	   << G4endl;
     G4cout << " - number of bars / layer: " 
 	   << fToFConstructor_FrontUp->GetLayerHorizNBar() << " (horiz) - "
-	   << fToFConstructor_FrontUp->GetLayerVertNBar() << " (vert)"
+	   //<< fToFConstructor_FrontUp->GetLayerVertNBar() << " (vert)"
 	   << G4endl << G4endl;
     
   }

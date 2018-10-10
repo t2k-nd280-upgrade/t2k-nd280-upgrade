@@ -105,9 +105,9 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
 
   int NBars = GetPlaneXYNum();
   
-  double TotWidth = bar_width; 
+  double TotWidth = bar_length; 
   double TotHeight = bar_height * NBars;
-  double TotLength = bar_length;
+  double TotLength = bar_width;
 
   SetWidth(TotWidth);
   SetLength(TotLength);
@@ -126,9 +126,13 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
     = Get<ND280ToFScintYConstructor>("ScintHoriz");
   layer_horiz.SetUp(NBars,
   		    bar_length,
-  		    bar_width); // nBars, barLength, barWidth       
+  		    bar_height,
+          bar_width); // nBars, barLength, barWidth       
 
   G4LogicalVolume* layer_horiz_logical = layer_horiz.GetPiece();
+
+  SetLayerHorizNBar(layer_horiz.GetBarNumber());
+  SetBarHorizLength(bar_length);
 
   /*
   // Vertical Scintillator Layer (nd280mc convention)
@@ -161,8 +165,8 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
   new G4PVPlacement(
     0, // rotation
     G4ThreeVector(0.0,0.0,0.0), // position
-    layer_vert_logical, // logical volume      
-    layer_vert.GetName(), // name
+    layer_horiz_logical, // logical volume      
+    layer_horiz.GetName(), // name
     logVolume, // mother volume         
     false,   // no boolean operations
     0    // copy number

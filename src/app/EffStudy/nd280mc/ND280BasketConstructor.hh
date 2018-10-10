@@ -60,7 +60,7 @@ public:
     /// Get the outer height of the basket.  This is the outer height of the
     /// SS frame, and not the outer height of the MC volume.
     double GetOuterHeight(void) {
-      return 2480*CLHEP::mm;
+      return 2462*CLHEP::mm;
     }
 
     /// Get the outer length of the basket.  This is the outer length of the

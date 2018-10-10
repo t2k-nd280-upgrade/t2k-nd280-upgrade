@@ -19,7 +19,8 @@ public:
     /// state of the scintillator layer required
     void SetUp(int n_bars, 
                double bar_length,
-	       double bar_base);
+	           double bar_base,
+               double bar_width);
         
     
 private:

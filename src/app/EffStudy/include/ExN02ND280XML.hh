@@ -181,11 +181,10 @@ public :
   // ToF Upstream
 
   G4bool   GetXMLToFdefault_TopUp()       {return fToFdefault_TopUp;};
-  G4int    GetXMLToFLayerHorizNBar_TopUp()   {return fToFLayerHorizNBar_TopUp;};  
-  G4int    GetXMLToFLayerVertNBar_TopUp()    {return fToFLayerVertNBar_TopUp;};
   G4int    GetXMLToFPlaneXYNum_TopUp()       {return fToFPlaneXYNum_TopUp;};
   G4double GetXMLToFBarwidth_TopUp()      {return fToFBarwidth_TopUp;};
   G4double GetXMLToFBarheight_TopUp()     {return fToFBarheight_TopUp;};
+  G4double GetXMLToFBarlength_TopUp()     {return fToFBarlength_TopUp;};
   G4double GetXMLToFRotX_TopUp()          {return fToFRotX_TopUp;};
   G4double GetXMLToFRotY_TopUp()          {return fToFRotY_TopUp;};
   G4double GetXMLToFRotZ_TopUp()          {return fToFRotZ_TopUp;};
@@ -194,11 +193,10 @@ public :
   G4double GetXMLToFPosZ_TopUp()         {return fToFPosZ_TopUp;};
 
   G4bool   GetXMLToFdefault_BotUp()       {return fToFdefault_BotUp;};
-  G4int    GetXMLToFLayerHorizNBar_BotUp()   {return fToFLayerHorizNBar_BotUp;};  
-  G4int    GetXMLToFLayerVertNBar_BotUp()    {return fToFLayerVertNBar_BotUp;};
   G4int    GetXMLToFPlaneXYNum_BotUp()       {return fToFPlaneXYNum_BotUp;};
   G4double GetXMLToFBarwidth_BotUp()      {return fToFBarwidth_BotUp;};
   G4double GetXMLToFBarheight_BotUp()     {return fToFBarheight_BotUp;};
+  G4double GetXMLToFBarlength_BotUp()     {return fToFBarlength_BotUp;};
   G4double GetXMLToFRotX_BotUp()          {return fToFRotX_BotUp;};
   G4double GetXMLToFRotY_BotUp()          {return fToFRotY_BotUp;};
   G4double GetXMLToFRotZ_BotUp()          {return fToFRotZ_BotUp;};
@@ -207,11 +205,10 @@ public :
   G4double GetXMLToFPosZ_BotUp()         {return fToFPosZ_BotUp;};
 
   G4bool   GetXMLToFdefault_RightUp()       {return fToFdefault_RightUp;};
-  G4int    GetXMLToFLayerHorizNBar_RightUp()   {return fToFLayerHorizNBar_RightUp;};  
-  G4int    GetXMLToFLayerVertNBar_RightUp()    {return fToFLayerVertNBar_RightUp;};
   G4int    GetXMLToFPlaneXYNum_RightUp()       {return fToFPlaneXYNum_RightUp;};
   G4double GetXMLToFBarwidth_RightUp()      {return fToFBarwidth_RightUp;};
   G4double GetXMLToFBarheight_RightUp()     {return fToFBarheight_RightUp;};
+  G4double GetXMLToFBarlength_RightUp()     {return fToFBarlength_RightUp;};
   G4double GetXMLToFRotX_RightUp()          {return fToFRotX_RightUp;};
   G4double GetXMLToFRotY_RightUp()          {return fToFRotY_RightUp;};
   G4double GetXMLToFRotZ_RightUp()          {return fToFRotZ_RightUp;};
@@ -220,11 +217,10 @@ public :
   G4double GetXMLToFPosZ_RightUp()         {return fToFPosZ_RightUp;};
 
   G4bool   GetXMLToFdefault_LeftUp()       {return fToFdefault_LeftUp;};
-  G4int    GetXMLToFLayerHorizNBar_LeftUp()   {return fToFLayerHorizNBar_LeftUp;};  
-  G4int    GetXMLToFLayerVertNBar_LeftUp()    {return fToFLayerVertNBar_LeftUp;};
   G4int    GetXMLToFPlaneXYNum_LeftUp()       {return fToFPlaneXYNum_LeftUp;};
   G4double GetXMLToFBarwidth_LeftUp()      {return fToFBarwidth_LeftUp;};
   G4double GetXMLToFBarheight_LeftUp()     {return fToFBarheight_LeftUp;};
+  G4double GetXMLToFBarlength_LeftUp()     {return fToFBarlength_LeftUp;};
   G4double GetXMLToFRotX_LeftUp()          {return fToFRotX_LeftUp;};
   G4double GetXMLToFRotY_LeftUp()          {return fToFRotY_LeftUp;};
   G4double GetXMLToFRotZ_LeftUp()          {return fToFRotZ_LeftUp;};
@@ -233,11 +229,10 @@ public :
   G4double GetXMLToFPosZ_LeftUp()         {return fToFPosZ_LeftUp;};
 
   G4bool   GetXMLToFdefault_BackUp()       {return fToFdefault_BackUp;};
-  G4int    GetXMLToFLayerHorizNBar_BackUp()   {return fToFLayerHorizNBar_BackUp;};  
-  G4int    GetXMLToFLayerVertNBar_BackUp()    {return fToFLayerVertNBar_BackUp;};
   G4int    GetXMLToFPlaneXYNum_BackUp()       {return fToFPlaneXYNum_BackUp;};
   G4double GetXMLToFBarwidth_BackUp()      {return fToFBarwidth_BackUp;};
   G4double GetXMLToFBarheight_BackUp()     {return fToFBarheight_BackUp;};
+  G4double GetXMLToFBarlength_BackUp()     {return fToFBarlength_BackUp;};
   G4double GetXMLToFRotX_BackUp()          {return fToFRotX_BackUp;};
   G4double GetXMLToFRotY_BackUp()          {return fToFRotY_BackUp;};
   G4double GetXMLToFRotZ_BackUp()          {return fToFRotZ_BackUp;};
@@ -246,11 +241,10 @@ public :
   G4double GetXMLToFPosZ_BackUp()         {return fToFPosZ_BackUp;};
 
   G4bool   GetXMLToFdefault_FrontUp()       {return fToFdefault_FrontUp;};
-  G4int    GetXMLToFLayerHorizNBar_FrontUp()   {return fToFLayerHorizNBar_FrontUp;};  
-  G4int    GetXMLToFLayerVertNBar_FrontUp()    {return fToFLayerVertNBar_FrontUp;};
   G4int    GetXMLToFPlaneXYNum_FrontUp()       {return fToFPlaneXYNum_FrontUp;};
   G4double GetXMLToFBarwidth_FrontUp()      {return fToFBarwidth_FrontUp;};
   G4double GetXMLToFBarheight_FrontUp()     {return fToFBarheight_FrontUp;};
+  G4double GetXMLToFBarlength_FrontUp()     {return fToFBarlength_FrontUp;};
   G4double GetXMLToFRotX_FrontUp()          {return fToFRotX_FrontUp;};
   G4double GetXMLToFRotY_FrontUp()          {return fToFRotY_FrontUp;};
   G4double GetXMLToFRotZ_FrontUp()          {return fToFRotZ_FrontUp;};
@@ -476,13 +470,12 @@ private :
   // ToF Upstream
 
   G4bool   fToFdefault_TopUp;
-  G4int    fToFLayerHorizNBar_TopUp;
-  G4int    fToFLayerVertNBar_TopUp;
   G4int    fToFPlaneXYNum_TopUp;
   G4double fToFBarHorizlength_TopUp;
   G4double fToFBarVertlength_TopUp;
   G4double fToFBarwidth_TopUp;
   G4double fToFBarheight_TopUp;
+  G4double fToFBarlength_TopUp;
   G4double fToFRotX_TopUp;
   G4double fToFRotY_TopUp;
   G4double fToFRotZ_TopUp;
@@ -491,13 +484,12 @@ private :
   G4double fToFPosZ_TopUp;
 
   G4bool   fToFdefault_BotUp;
-  G4int    fToFLayerHorizNBar_BotUp;
-  G4int    fToFLayerVertNBar_BotUp;
   G4int    fToFPlaneXYNum_BotUp;
   G4double fToFBarHorizlength_BotUp;
   G4double fToFBarVertlength_BotUp;
   G4double fToFBarwidth_BotUp;
   G4double fToFBarheight_BotUp;
+  G4double fToFBarlength_BotUp;
   G4double fToFRotX_BotUp;
   G4double fToFRotY_BotUp;
   G4double fToFRotZ_BotUp;
@@ -506,13 +498,12 @@ private :
   G4double fToFPosZ_BotUp;
 
   G4bool   fToFdefault_RightUp;
-  G4int    fToFLayerHorizNBar_RightUp;
-  G4int    fToFLayerVertNBar_RightUp;
   G4int    fToFPlaneXYNum_RightUp;
   G4double fToFBarHorizlength_RightUp;
   G4double fToFBarVertlength_RightUp;
   G4double fToFBarwidth_RightUp;
   G4double fToFBarheight_RightUp;
+  G4double fToFBarlength_RightUp;
   G4double fToFRotX_RightUp;
   G4double fToFRotY_RightUp;
   G4double fToFRotZ_RightUp;
@@ -521,13 +512,12 @@ private :
   G4double fToFPosZ_RightUp;
 
   G4bool   fToFdefault_LeftUp;
-  G4int    fToFLayerHorizNBar_LeftUp;
-  G4int    fToFLayerVertNBar_LeftUp;
   G4int    fToFPlaneXYNum_LeftUp;
   G4double fToFBarHorizlength_LeftUp;
   G4double fToFBarVertlength_LeftUp;
   G4double fToFBarwidth_LeftUp;
   G4double fToFBarheight_LeftUp;
+  G4double fToFBarlength_LeftUp;
   G4double fToFRotX_LeftUp;
   G4double fToFRotY_LeftUp;
   G4double fToFRotZ_LeftUp;
@@ -536,13 +526,12 @@ private :
   G4double fToFPosZ_LeftUp;
 
   G4bool   fToFdefault_BackUp;
-  G4int    fToFLayerHorizNBar_BackUp;
-  G4int    fToFLayerVertNBar_BackUp;
   G4int    fToFPlaneXYNum_BackUp;
   G4double fToFBarHorizlength_BackUp;
   G4double fToFBarVertlength_BackUp;
   G4double fToFBarwidth_BackUp;
   G4double fToFBarheight_BackUp;
+  G4double fToFBarlength_BackUp;
   G4double fToFRotX_BackUp;
   G4double fToFRotY_BackUp;
   G4double fToFRotZ_BackUp;
@@ -551,13 +540,12 @@ private :
   G4double fToFPosZ_BackUp;
 
   G4bool   fToFdefault_FrontUp;
-  G4int    fToFLayerHorizNBar_FrontUp;
-  G4int    fToFLayerVertNBar_FrontUp;
   G4int    fToFPlaneXYNum_FrontUp;
   G4double fToFBarHorizlength_FrontUp;
   G4double fToFBarVertlength_FrontUp;
   G4double fToFBarwidth_FrontUp;
   G4double fToFBarheight_FrontUp;
+  G4double fToFBarlength_FrontUp;
   G4double fToFRotX_FrontUp;
   G4double fToFRotY_FrontUp;
   G4double fToFRotZ_FrontUp;

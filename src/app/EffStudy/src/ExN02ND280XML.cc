@@ -165,13 +165,12 @@ ExN02ND280XML::~ExN02ND280XML(){
   // ToF Upstream
 
   fToFdefault_TopUp = false;
-  fToFLayerHorizNBar_TopUp = 0;
-  fToFLayerVertNBar_TopUp = 0;
   fToFPlaneXYNum_TopUp = 0;
   fToFBarHorizlength_TopUp = 0.;
   fToFBarVertlength_TopUp = 0.;
   fToFBarwidth_TopUp = 0.;
   fToFBarheight_TopUp = 0.;
+  fToFBarlength_TopUp = 0.;
   fToFRotX_TopUp = 0.;
   fToFRotY_TopUp = 0.;
   fToFRotZ_TopUp = 0.;
@@ -180,13 +179,12 @@ ExN02ND280XML::~ExN02ND280XML(){
   fToFPosZ_TopUp = 0.;
 
   fToFdefault_BotUp = false;
-  fToFLayerHorizNBar_BotUp = 0;
-  fToFLayerVertNBar_BotUp = 0;
   fToFPlaneXYNum_BotUp = 0;
   fToFBarHorizlength_BotUp = 0.;
   fToFBarVertlength_BotUp = 0.;
   fToFBarwidth_BotUp = 0.;
   fToFBarheight_BotUp = 0.;
+  fToFBarlength_BotUp = 0.;
   fToFRotX_BotUp = 0.;
   fToFRotY_BotUp = 0.;
   fToFRotZ_BotUp = 0.;
@@ -195,13 +193,12 @@ ExN02ND280XML::~ExN02ND280XML(){
   fToFPosZ_BotUp = 0.;
 
   fToFdefault_RightUp = false;
-  fToFLayerHorizNBar_RightUp = 0;
-  fToFLayerVertNBar_RightUp = 0;
   fToFPlaneXYNum_RightUp = 0;
   fToFBarHorizlength_RightUp = 0.;
   fToFBarVertlength_RightUp = 0.;
   fToFBarwidth_RightUp = 0.;
   fToFBarheight_RightUp = 0.;
+  fToFBarlength_RightUp = 0.;
   fToFRotX_RightUp = 0.;
   fToFRotY_RightUp = 0.;
   fToFRotZ_RightUp = 0.;
@@ -210,13 +207,12 @@ ExN02ND280XML::~ExN02ND280XML(){
   fToFPosZ_RightUp = 0.;
 
   fToFdefault_LeftUp = false;
-  fToFLayerHorizNBar_LeftUp = 0;
-  fToFLayerVertNBar_LeftUp = 0;
   fToFPlaneXYNum_LeftUp = 0;
   fToFBarHorizlength_LeftUp = 0.;
   fToFBarVertlength_LeftUp = 0.;
   fToFBarwidth_LeftUp = 0.;
   fToFBarheight_LeftUp = 0.;
+  fToFBarlength_LeftUp = 0.;
   fToFRotX_LeftUp = 0.;
   fToFRotY_LeftUp = 0.;
   fToFRotZ_LeftUp = 0.;
@@ -225,13 +221,12 @@ ExN02ND280XML::~ExN02ND280XML(){
   fToFPosZ_LeftUp = 0.;
 
   fToFdefault_BackUp = false;
-  fToFLayerHorizNBar_BackUp = 0;
-  fToFLayerVertNBar_BackUp = 0;
   fToFPlaneXYNum_BackUp = 0;
   fToFBarHorizlength_BackUp = 0.;
   fToFBarVertlength_BackUp = 0.;
   fToFBarwidth_BackUp = 0.;
   fToFBarheight_BackUp = 0.;
+  fToFBarlength_BackUp = 0.;
   fToFRotX_BackUp = 0.;
   fToFRotY_BackUp = 0.;
   fToFRotZ_BackUp = 0.;
@@ -240,13 +235,12 @@ ExN02ND280XML::~ExN02ND280XML(){
   fToFPosZ_BackUp = 0.;
 
   fToFdefault_FrontUp = false;
-  fToFLayerHorizNBar_FrontUp = 0;
-  fToFLayerVertNBar_FrontUp = 0;
   fToFPlaneXYNum_FrontUp = 0;
   fToFBarHorizlength_FrontUp = 0.;
   fToFBarVertlength_FrontUp = 0.;
   fToFBarwidth_FrontUp = 0.;
   fToFBarheight_FrontUp = 0.;
+  fToFBarlength_FrontUp = 0.;
   fToFRotX_FrontUp = 0.;
   fToFRotY_FrontUp = 0.;
   fToFRotZ_FrontUp = 0.;
@@ -421,13 +415,12 @@ void ExN02ND280XML::SetInputs(){
   // ToF Upstream
 
   fToFdefault_TopUp = false;
-  fToFLayerHorizNBar_TopUp = 0;
-  fToFLayerVertNBar_TopUp = 0;
   fToFPlaneXYNum_TopUp = 0;
   fToFBarHorizlength_TopUp = 0.;
   fToFBarVertlength_TopUp = 0.;
   fToFBarwidth_TopUp = 0.;
   fToFBarheight_TopUp = 0.;
+  fToFBarlength_TopUp = 0.;
   fToFRotX_TopUp = 0.;
   fToFRotY_TopUp = 0.;
   fToFRotZ_TopUp = 0.;
@@ -436,13 +429,12 @@ void ExN02ND280XML::SetInputs(){
   fToFPosZ_TopUp = 0.;
 
   fToFdefault_BotUp = false;
-  fToFLayerHorizNBar_BotUp = 0;
-  fToFLayerVertNBar_BotUp = 0;
   fToFPlaneXYNum_BotUp = 0;
   fToFBarHorizlength_BotUp = 0.;
   fToFBarVertlength_BotUp = 0.;
   fToFBarwidth_BotUp = 0.;
   fToFBarheight_BotUp = 0.;
+  fToFBarlength_BotUp = 0.;
   fToFRotX_BotUp = 0.;
   fToFRotY_BotUp = 0.;
   fToFRotZ_BotUp = 0.;
@@ -451,13 +443,12 @@ void ExN02ND280XML::SetInputs(){
   fToFPosZ_BotUp = 0.;
 
   fToFdefault_RightUp = false;
-  fToFLayerHorizNBar_RightUp = 0;
-  fToFLayerVertNBar_RightUp = 0;
   fToFPlaneXYNum_RightUp = 0;
   fToFBarHorizlength_RightUp = 0.;
   fToFBarVertlength_RightUp = 0.;
   fToFBarwidth_RightUp = 0.;
   fToFBarheight_RightUp = 0.;
+  fToFBarlength_RightUp = 0.;
   fToFRotX_RightUp = 0.;
   fToFRotY_RightUp = 0.;
   fToFRotZ_RightUp = 0.;
@@ -466,13 +457,12 @@ void ExN02ND280XML::SetInputs(){
   fToFPosZ_RightUp = 0.;
 
   fToFdefault_LeftUp = false;
-  fToFLayerHorizNBar_LeftUp = 0;
-  fToFLayerVertNBar_LeftUp = 0;
   fToFPlaneXYNum_LeftUp = 0;
   fToFBarHorizlength_LeftUp = 0.;
   fToFBarVertlength_LeftUp = 0.;
   fToFBarwidth_LeftUp = 0.;
   fToFBarheight_LeftUp = 0.;
+  fToFBarlength_LeftUp = 0.;
   fToFRotX_LeftUp = 0.;
   fToFRotY_LeftUp = 0.;
   fToFRotZ_LeftUp = 0.;
@@ -481,13 +471,12 @@ void ExN02ND280XML::SetInputs(){
   fToFPosZ_LeftUp = 0.;
 
   fToFdefault_BackUp = false;
-  fToFLayerHorizNBar_BackUp = 0;
-  fToFLayerVertNBar_BackUp = 0;
   fToFPlaneXYNum_BackUp = 0;
   fToFBarHorizlength_BackUp = 0.;
   fToFBarVertlength_BackUp = 0.;
   fToFBarwidth_BackUp = 0.;
   fToFBarheight_BackUp = 0.;
+  fToFBarlength_BackUp = 0.;
   fToFRotX_BackUp = 0.;
   fToFRotY_BackUp = 0.;
   fToFRotZ_BackUp = 0.;
@@ -496,13 +485,12 @@ void ExN02ND280XML::SetInputs(){
   fToFPosZ_BackUp = 0.;
 
   fToFdefault_FrontUp = false;
-  fToFLayerHorizNBar_FrontUp = 0;
-  fToFLayerVertNBar_FrontUp = 0;
   fToFPlaneXYNum_FrontUp = 0;
   fToFBarHorizlength_FrontUp = 0.;
   fToFBarVertlength_FrontUp = 0.;
   fToFBarwidth_FrontUp = 0.;
   fToFBarheight_FrontUp = 0.;
+  fToFBarlength_FrontUp = 0.;
   fToFRotX_FrontUp = 0.;
   fToFRotY_FrontUp = 0.;
   fToFRotZ_FrontUp = 0.;
@@ -727,10 +715,9 @@ void ExN02ND280XML::SetInputs(){
     // ToF Top Upstream 
     XML2Bool("ToFdefault_TopUp"      ,fToFdefault_TopUp);
     XML2Int("ToFPlaneXYNum_TopUp"    ,fToFPlaneXYNum_TopUp);
-    XML2Int("ToFLayerHorizNBar_TopUp",fToFLayerHorizNBar_TopUp);
-    XML2Int("ToFLayerVertNBar_TopUp" ,fToFLayerVertNBar_TopUp);
     XML2Double("ToFBarwidth_TopUp"      ,fToFBarwidth_TopUp);
     XML2Double("ToFBarheight_TopUp"     ,fToFBarheight_TopUp);
+    XML2Double("ToFBarlength_TopUp"     ,fToFBarlength_TopUp);
     XML2Double("ToFRotX_TopUp"         ,fToFRotX_TopUp);
     XML2Double("ToFRotY_TopUp"         ,fToFRotY_TopUp);
     XML2Double("ToFRotZ_TopUp"         ,fToFRotZ_TopUp);
@@ -741,10 +728,9 @@ void ExN02ND280XML::SetInputs(){
     // ToF Bottom Upstream 
     XML2Bool("ToFdefault_BotUp"      ,fToFdefault_BotUp);
     XML2Int("ToFPlaneXYNum_BotUp"    ,fToFPlaneXYNum_BotUp);
-    XML2Int("ToFLayerHorizNBar_BotUp",fToFLayerHorizNBar_BotUp);
-    XML2Int("ToFLayerVertNBar_BotUp" ,fToFLayerVertNBar_BotUp);
     XML2Double("ToFBarwidth_BotUp"      ,fToFBarwidth_BotUp);
     XML2Double("ToFBarheight_BotUp"     ,fToFBarheight_BotUp);
+    XML2Double("ToFBarlength_BotUp"     ,fToFBarlength_BotUp);
     XML2Double("ToFRotX_BotUp"         ,fToFRotX_BotUp);
     XML2Double("ToFRotY_BotUp"         ,fToFRotY_BotUp);
     XML2Double("ToFRotZ_BotUp"         ,fToFRotZ_BotUp);
@@ -755,10 +741,9 @@ void ExN02ND280XML::SetInputs(){
     // ToF Right Upstream 
     XML2Bool("ToFdefault_RightUp"      ,fToFdefault_RightUp);
     XML2Int("ToFPlaneXYNum_RightUp"    ,fToFPlaneXYNum_RightUp);
-    XML2Int("ToFLayerHorizNBar_RightUp",fToFLayerHorizNBar_RightUp);
-    XML2Int("ToFLayerVertNBar_RightUp" ,fToFLayerVertNBar_RightUp);
     XML2Double("ToFBarwidth_RightUp"      ,fToFBarwidth_RightUp);
     XML2Double("ToFBarheight_RightUp"     ,fToFBarheight_RightUp);
+    XML2Double("ToFBarlength_RightUp"     ,fToFBarlength_RightUp);
     XML2Double("ToFRotX_RightUp"         ,fToFRotX_RightUp);
     XML2Double("ToFRotY_RightUp"         ,fToFRotY_RightUp);
     XML2Double("ToFRotZ_RightUp"         ,fToFRotZ_RightUp);
@@ -769,10 +754,9 @@ void ExN02ND280XML::SetInputs(){
     // ToF Left Upstream 
     XML2Bool("ToFdefault_LeftUp"      ,fToFdefault_LeftUp);
     XML2Int("ToFPlaneXYNum_LeftUp"    ,fToFPlaneXYNum_LeftUp);
-    XML2Int("ToFLayerHorizNBar_LeftUp",fToFLayerHorizNBar_LeftUp);
-    XML2Int("ToFLayerVertNBar_LeftUp" ,fToFLayerVertNBar_LeftUp);
     XML2Double("ToFBarwidth_LeftUp"      ,fToFBarwidth_LeftUp);
     XML2Double("ToFBarheight_LeftUp"     ,fToFBarheight_LeftUp);
+    XML2Double("ToFBarlength_LeftUp"     ,fToFBarlength_LeftUp);
     XML2Double("ToFRotX_LeftUp"         ,fToFRotX_LeftUp);
     XML2Double("ToFRotY_LeftUp"         ,fToFRotY_LeftUp);
     XML2Double("ToFRotZ_LeftUp"         ,fToFRotZ_LeftUp);
@@ -783,10 +767,9 @@ void ExN02ND280XML::SetInputs(){
     // ToF Back Upstream 
     XML2Bool("ToFdefault_BackUp"      ,fToFdefault_BackUp);
     XML2Int("ToFPlaneXYNum_BackUp"    ,fToFPlaneXYNum_BackUp);
-    XML2Int("ToFLayerHorizNBar_BackUp",fToFLayerHorizNBar_BackUp);
-    XML2Int("ToFLayerVertNBar_BackUp" ,fToFLayerVertNBar_BackUp);
     XML2Double("ToFBarwidth_BackUp"      ,fToFBarwidth_BackUp);
     XML2Double("ToFBarheight_BackUp"     ,fToFBarheight_BackUp);
+    XML2Double("ToFBarlength_BackUp"     ,fToFBarlength_BackUp);
     XML2Double("ToFRotX_BackUp"         ,fToFRotX_BackUp);
     XML2Double("ToFRotY_BackUp"         ,fToFRotY_BackUp);
     XML2Double("ToFRotZ_BackUp"         ,fToFRotZ_BackUp);
@@ -797,10 +780,9 @@ void ExN02ND280XML::SetInputs(){
     // ToF Front Upstream 
     XML2Bool("ToFdefault_FrontUp"      ,fToFdefault_FrontUp);
     XML2Int("ToFPlaneXYNum_FrontUp"    ,fToFPlaneXYNum_FrontUp);
-    XML2Int("ToFLayerHorizNBar_FrontUp",fToFLayerHorizNBar_FrontUp);
-    XML2Int("ToFLayerVertNBar_FrontUp" ,fToFLayerVertNBar_FrontUp);
     XML2Double("ToFBarwidth_FrontUp"      ,fToFBarwidth_FrontUp);
     XML2Double("ToFBarheight_FrontUp"     ,fToFBarheight_FrontUp);
+    XML2Double("ToFBarlength_FrontUp"     ,fToFBarlength_FrontUp);
     XML2Double("ToFRotX_FrontUp"         ,fToFRotX_FrontUp);
     XML2Double("ToFRotY_FrontUp"         ,fToFRotY_FrontUp);
     XML2Double("ToFRotZ_FrontUp"         ,fToFRotZ_FrontUp);

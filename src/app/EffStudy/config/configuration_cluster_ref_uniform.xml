@@ -477,14 +477,9 @@
      false
    </ToFdefault_TopUp>
    <ToFPlaneXYNum_TopUp>
-     19
+     21
    </ToFPlaneXYNum_TopUp>
    </ToFLayerHorizNBar_TopUp>   
-   <!--<ToFLayerHorizNBar_TopUp>
-     75
-   <ToFLayerVertNBar_TopUp>
-     92
-   </ToFLayerVertNBar_TopUp> -->
    <ToFBarwidth_TopUp>
      10
    </ToFBarwidth_TopUp>
@@ -492,13 +487,13 @@
      120
    </ToFBarheight_TopUp>
    <ToFBarlength_TopUp>
-     2300
+     2085
    </ToFBarlength_TopUp>
    <ToFRotX_TopUp>
-     0
+     90
    </ToFRotX_TopUp>
    <ToFRotY_TopUp>
-     0
+     90
    </ToFRotY_TopUp>
    <ToFRotZ_TopUp>
      0
@@ -507,7 +502,7 @@
      0
    </ToFPosX_TopUp>
    <ToFPosY_TopUp>
-     +1206
+     +1245
    </ToFPosY_TopUp>
    <ToFPosZ_TopUp>
      -1707
@@ -518,14 +513,8 @@
      false
    </ToFdefault_BotUp>
    <ToFPlaneXYNum_BotUp>
-     19
+     21
    </ToFPlaneXYNum_BotUp>
-   <!--<ToFLayerHorizNBar_BotUp>
-     75
-   </ToFLayerHorizNBar_BotUp>   
-   <ToFLayerVertNBar_BotUp>
-     92
-   </ToFLayerVertNBar_BotUp>-->
    <ToFBarwidth_BotUp>
      10
    </ToFBarwidth_BotUp>
@@ -533,13 +522,13 @@
      120
    </ToFBarheight_BotUp>
    <ToFBarlength_BotUp>
-     2300
+     2085
    </ToFBarlength_BotUp>
    <ToFRotX_BotUp>
-     -90
+     90
    </ToFRotX_BotUp>
    <ToFRotY_BotUp>
-     0
+     90
    </ToFRotY_BotUp>
    <ToFRotZ_BotUp>
      0
@@ -548,7 +537,7 @@
      0
    </ToFPosX_BotUp>
    <ToFPosY_BotUp>
-     -1202
+     -1265
    </ToFPosY_BotUp>
    <ToFPosZ_BotUp>
      -1707
@@ -559,14 +548,8 @@
      false
    </ToFdefault_RightUp>
    <ToFPlaneXYNum_RightUp>
-     19
+     20
    </ToFPlaneXYNum_RightUp>
-   <!--<ToFLayerHorizNBar_RightUp>
-     91
-   </ToFLayerHorizNBar_RightUp>   
-   <ToFLayerVertNBar_RightUp>
-     75
-   </ToFLayerVertNBar_RightUp>-->
    <ToFBarwidth_RightUp>
      10
    </ToFBarwidth_RightUp>
@@ -574,7 +557,7 @@
      120
    </ToFBarheight_RightUp>
    <ToFBarlength_RightUp>
-     2300
+     2085
    </ToFBarlength_RightUp>
    <ToFRotX_RightUp>
      0
@@ -586,7 +569,7 @@
      0
    </ToFRotZ_RightUp>
    <ToFPosX_RightUp>
-     -1125
+     -1270
    </ToFPosX_RightUp>
    <ToFPosY_RightUp>
      0
@@ -600,14 +583,8 @@
      false
    </ToFdefault_LeftUp>
    <ToFPlaneXYNum_LeftUp>
-     19
+     20
    </ToFPlaneXYNum_LeftUp>
-   <!--<ToFLayerHorizNBar_LeftUp>
-     91
-   </ToFLayerHorizNBar_LeftUp>   
-   <ToFLayerVertNBar_LeftUp>
-     75
-   </ToFLayerVertNBar_LeftUp>-->
    <ToFBarwidth_LeftUp>
      10
    </ToFBarwidth_LeftUp>
@@ -615,7 +592,7 @@
      120
    </ToFBarheight_LeftUp>
    <ToFBarlength_LeftUp>
-     2300
+     2085
    </ToFBarlength_LeftUp>
    <ToFRotX_LeftUp>
      0
@@ -627,7 +604,7 @@
      0
    </ToFRotZ_LeftUp>
    <ToFPosX_LeftUp>
-     +1125
+     +1270
    </ToFPosX_LeftUp>
    <ToFPosY_LeftUp>
      0
@@ -641,14 +618,8 @@
      false
    </ToFdefault_BackUp>
    <ToFPlaneXYNum_BackUp>
-     19
+     20
    </ToFPlaneXYNum_BackUp>
-   <!--<ToFLayerHorizNBar_BackUp>
-     91
-   </ToFLayerHorizNBar_BackUp>   
-   <ToFLayerVertNBar_BackUp>
-     88
-   </ToFLayerVertNBar_BackUp>-->
    <ToFBarwidth_BackUp>
      10
    </ToFBarwidth_BackUp>
@@ -674,7 +645,7 @@
      0
    </ToFPosY_BackUp>
    <ToFPosZ_BackUp>
-     -2970
+     -2800
    </ToFPosZ_BackUp>
 
    <!-- ToF Front Upstream -->
@@ -682,14 +653,8 @@
      false
    </ToFdefault_FrontUp>
    <ToFPlaneXYNum_FrontUp>
-     19
+     20
    </ToFPlaneXYNum_FrontUp>
-   <!--<ToFLayerHorizNBar_FrontUp>
-     91
-   </ToFLayerHorizNBar_FrontUp>   
-   <ToFLayerVertNBar_FrontUp>
-     88
-   </ToFLayerVertNBar_FrontUp>-->
    <ToFBarwidth_FrontUp>
      10
    </ToFBarwidth_FrontUp>
