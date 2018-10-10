@@ -35,5 +35,5 @@ void ND280ToFScintXConstructor::SetUp(int n_bars,
   SetBarNumber( n_bars );
   SetHeight( bar_length ); // length of an x-bar
   //SetHeight(n_bars * ND280ECal::BarWidth + 0.001*mm);
-  SetWidth(n_bars * bar_base); // + 0.001*mm);
+  SetWidth(bar_width); // + 0.001*mm);
 }

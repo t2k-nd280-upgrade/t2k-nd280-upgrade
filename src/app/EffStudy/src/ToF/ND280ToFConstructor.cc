@@ -93,21 +93,21 @@ void ND280ToFConstructor::Init(void) {
 
 G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
 
-  int  n_bars_horiz = GetLayerHorizNBar();
-  int  n_bars_vert = GetLayerVertNBar();
-
   double bar_width  = GetBarWidth();
-  double bar_height = GetBarWidth(); //GetBarHeight();
+  double bar_height = GetBarHeight();
+  double bar_length = GetBarLength();
   
-  double barvert_length = n_bars_horiz * bar_height;
-  SetBarVertLength(barvert_length);
+  //double barvert_length = n_bars_horiz * bar_height;
+  //SetBarVertLength(barvert_length);
 
-  double barhoriz_length = n_bars_vert * bar_width;
-  SetBarHorizLength(barhoriz_length);
+  //double barhoriz_length = n_bars_vert * bar_width;
+  //SetBarHorizLength(barhoriz_length);
+
+  int NBars = GetPlaneXYNum();
   
-  double TotWidth = TMath::Max(bar_width * n_bars_vert, barhoriz_length); 
-  double TotHeight = TMath::Max(bar_height * n_bars_horiz, barvert_length);
-  double TotLength = (bar_width + bar_height) * GetPlaneXYNum();
+  double TotWidth = bar_width; 
+  double TotHeight = bar_height * NBars;
+  double TotLength = bar_length;
 
   SetWidth(TotWidth);
   SetLength(TotLength);
@@ -124,13 +124,13 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
   // Horizontal Scintillator Layer (nd280mc convention)
   ND280ToFScintYConstructor& layer_horiz
     = Get<ND280ToFScintYConstructor>("ScintHoriz");
-  layer_horiz.SetUp(n_bars_horiz,
-  		    barhoriz_length,
+  layer_horiz.SetUp(NBars,
+  		    bar_length,
   		    bar_width); // nBars, barLength, barWidth       
 
   G4LogicalVolume* layer_horiz_logical = layer_horiz.GetPiece();
 
-  
+  /*
   // Vertical Scintillator Layer (nd280mc convention)
   ND280ToFScintXConstructor& layer_vert
     = Get<ND280ToFScintXConstructor>("ScintVert");
@@ -139,7 +139,7 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
                     barvert_length,
                     bar_width); // nBars, barLength, barWidth
   G4LogicalVolume* layer_vert_logical = layer_vert.GetPiece();
-  
+  */
   /*
   G4cout << "logVolume: " << GetWidth() << ", " << GetHeight() << ", " << GetLength() << G4endl;
   G4cout << "layer_vert.GetWidth() = " << layer_vert.GetWidth() << G4endl;
@@ -157,14 +157,24 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
 
   
   // Placements
+
+  new G4PVPlacement(
+    0, // rotation
+    G4ThreeVector(0.0,0.0,0.0), // position
+    layer_vert_logical, // logical volume      
+    layer_vert.GetName(), // name
+    logVolume, // mother volume         
+    false,   // no boolean operations
+    0    // copy number
+  );
   
   //double z_pos = -(GetLength() / 2.0) + (bar_width / 2.); // bars are in XY plane, i.e. width is along Z
-  double z_pos = -fPlaneXYNum * bar_width / 2.;
+  //double z_pos = -fPlaneXYNum * bar_width / 2.;
   //double delta_z1 = bar_height; 
   
-  int n_x = 0;
-  int n_y = 0;
-
+  //int n_x = 0;
+  //int n_y = 0;
+  /*
   for(int i = 0; i != fPlaneXYNum*2.; ++i) { // loop over the # of layers (i.e. # of planes / 2)
     
     G4cout << "z_pos = " << z_pos << G4endl;
@@ -198,6 +208,7 @@ G4LogicalVolume *ND280ToFConstructor::GetPiece(void) {
       z_pos += bar_width;
     }
   }
+  */
   
   /*
     if (GetVisible()) {

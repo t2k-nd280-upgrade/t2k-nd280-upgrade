@@ -55,6 +55,7 @@ public:
   // Set size of each scintillator bar
   void SetBarWidth(double w)  {fBarWidth = w;}
   void SetBarHeight(double w) {fBarHeight = w;}
+  void SetBarLength(double w) {fBarLength = w;}
   void SetBarHorizLength(double w) {fBarHorizLength = w;}
   void SetBarVertLength(double w)  {fBarVertLength = w;}
   
@@ -69,6 +70,7 @@ public:
   // Get size of each scintillator bar
   double GetBarWidth()  {return fBarWidth;}
   double GetBarHeight() {return fBarHeight;}
+  double GetBarLength() {return fBarLength;}
   double GetBarHorizLength() {return fBarHorizLength;}
   double GetBarVertLength()  {return fBarVertLength;}
 
@@ -119,6 +121,7 @@ private:
   // Single bar size
   double fBarWidth;
   double fBarHeight;
+  double fBarLength;
   double fBarHorizLength;
   double fBarVertLength;
 

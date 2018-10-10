@@ -349,10 +349,14 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fToFConstructor_TopUp->SetBarWidth(BarWidth);
     double BarHeight = ND280XMLInput->GetXMLToFBarheight_TopUp() * CLHEP::mm;
     fToFConstructor_TopUp->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_TopUp();
+    double BarLength = ND280XMLInput->GetXMLToFBarlength_TopUp() * CLHEP::mm;
+    fToFConstructor_TopUp->SetBarLength(BarLength);
+
+
+    /*int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_TopUp();
     fToFConstructor_TopUp->SetLayerHorizNBar(NBarHoriz); 
     int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_TopUp();
-    fToFConstructor_TopUp->SetLayerVertNBar(NBarVert); 
+    fToFConstructor_TopUp->SetLayerVertNBar(NBarVert); */
 
     rotX = ND280XMLInput->GetXMLToFRotX_TopUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_TopUp() * CLHEP::degree;
@@ -424,10 +428,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fToFConstructor_BotUp->SetBarWidth(BarWidth);
     double BarHeight = ND280XMLInput->GetXMLToFBarheight_BotUp() * CLHEP::mm;
     fToFConstructor_BotUp->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BotUp();
-    fToFConstructor_BotUp->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BotUp();
-    fToFConstructor_BotUp->SetLayerVertNBar(NBarVert); 
+    double BarLength = ND280XMLInput->GetXMLToFBarlength_BotUp() * CLHEP::mm;
+    fToFConstructor_BotUp->SetBarLength(BarLength);
+
 
     rotX = ND280XMLInput->GetXMLToFRotX_BotUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_BotUp() * CLHEP::degree;
@@ -499,10 +502,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fToFConstructor_RightUp->SetBarWidth(BarWidth);
     double BarHeight = ND280XMLInput->GetXMLToFBarheight_RightUp() * CLHEP::mm;
     fToFConstructor_RightUp->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_RightUp();
-    fToFConstructor_RightUp->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_RightUp();
-    fToFConstructor_RightUp->SetLayerVertNBar(NBarVert); 
+    double BarLength = ND280XMLInput->GetXMLToFBarlength_RightUp() * CLHEP::mm;
+    fToFConstructor_RightUp->SetBarLength(BarLength);
+
 
     rotX = ND280XMLInput->GetXMLToFRotX_RightUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_RightUp() * CLHEP::degree;
@@ -574,10 +576,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fToFConstructor_LeftUp->SetBarWidth(BarWidth);
     double BarHeight = ND280XMLInput->GetXMLToFBarheight_LeftUp() * CLHEP::mm;
     fToFConstructor_LeftUp->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_LeftUp();
-    fToFConstructor_LeftUp->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_LeftUp();
-    fToFConstructor_LeftUp->SetLayerVertNBar(NBarVert); 
+    double BarLength = ND280XMLInput->GetXMLToFBarlength_LeftUp() * CLHEP::mm;
+    fToFConstructor_LeftUp->SetBarHeight(BarLength);
 
     rotX = ND280XMLInput->GetXMLToFRotX_LeftUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_LeftUp() * CLHEP::degree;
@@ -649,10 +649,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fToFConstructor_BackUp->SetBarWidth(BarWidth);
     double BarHeight = ND280XMLInput->GetXMLToFBarheight_BackUp() * CLHEP::mm;
     fToFConstructor_BackUp->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_BackUp();
-    fToFConstructor_BackUp->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_BackUp();
-    fToFConstructor_BackUp->SetLayerVertNBar(NBarVert); 
+    double BarLength = ND280XMLInput->GetXMLToFBarlength_BackUp() * CLHEP::mm;
+    fToFConstructor_BackUp->SetBarLength(BarLength);
+ 
 
     rotX = ND280XMLInput->GetXMLToFRotX_BackUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_BackUp() * CLHEP::degree;
@@ -724,10 +723,9 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fToFConstructor_FrontUp->SetBarWidth(BarWidth);
     double BarHeight = ND280XMLInput->GetXMLToFBarheight_FrontUp() * CLHEP::mm;
     fToFConstructor_FrontUp->SetBarHeight(BarHeight);
-    int NBarHoriz = ND280XMLInput->GetXMLToFLayerHorizNBar_FrontUp();
-    fToFConstructor_FrontUp->SetLayerHorizNBar(NBarHoriz); 
-    int NBarVert = ND280XMLInput->GetXMLToFLayerVertNBar_FrontUp();
-    fToFConstructor_FrontUp->SetLayerVertNBar(NBarVert); 
+    double BarLength = ND280XMLInput->GetXMLToFBarlength_FrontUp() * CLHEP::mm;
+    fToFConstructor_FrontUp->SetBarLength(BarLength);
+
 
     rotX = ND280XMLInput->GetXMLToFRotX_FrontUp() * CLHEP::degree;
     rotY = ND280XMLInput->GetXMLToFRotY_FrontUp() * CLHEP::degree;
