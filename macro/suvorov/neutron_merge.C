@@ -13,7 +13,7 @@
 void neutron_merge() {
 	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v8-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
 
-  const Int_t Ndist = 7;
+  const Int_t Ndist = 8;
   float distance_cut[Ndist];
   distance_cut[0] = 10.;
   distance_cut[1] = 20.;
@@ -22,6 +22,7 @@ void neutron_merge() {
   distance_cut[4] = 50.;
   distance_cut[5] = 60.;
   distance_cut[6] = 70.;
+  distance_cut[7] = 0.;
 
   TTree* tree       = (TTree*)file->Get("neutron");
   Double_t ekin, costheta, light, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
@@ -67,22 +68,25 @@ void neutron_merge() {
   TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_VA3.root", "RECREATE");
   file_out->cd();
 
+  const Int_t time_size = 9;
+  Double_t time_sigma[time_size] = {0., 0.9, 0.9/sqrt(2), 0.9/sqrt(3), 0.6, 0.6/sqrt(2), 0.6/sqrt(3), 2/sqrt(3), 1.5/sqrt(3)};
+
   // read tree several times in order to check
   for (Int_t distID = 0; distID < Ndist; ++distID) {
 
-    TH2F* energy_resol[7];
-    TH2F* energy_resol_rebin[7];
+    TH2F* energy_resol[time_size];
+    TH2F* energy_resol_rebin[time_size];
 
-    TH1F* energy_acc[7];
+    TH1F* energy_acc[time_size];
 
-    TH2F* beta_ekin_sm[7];
+    TH2F* beta_ekin_sm[time_size];
 
     TH2F* angle_smearing = new TH2F("angle_smearing", "Angle smearing", 50, -1., 1., 50, -1., 1.);
   
     const Int_t Nbins = 28;
     Double_t bins[Nbins] = {0., 5., 10., 15., 20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 120., 130., 140., 150., 170.  , 190., 210., 230., 250., 300., 350., 400., 450., 500.};
   
-    for (Int_t i = 0; i < 7; ++i) {
+    for (Int_t i = 0; i < time_size; ++i) {
       energy_resol[i]       = new TH2F(Form("energy_smearng_%i", i), "energy smearing matrix", 250, 0., 500, 300, 0., 600);
       energy_resol_rebin[i] = new TH2F(Form("energy_resol_rebin_%i", i), "", Nbins-1, bins, 300, 0., 600.);
       energy_acc[i]         = new TH1F(Form("energy_acc_%i", i), "energy accuracy in the ROI", 120, -60., 60.);
@@ -103,8 +107,6 @@ void neutron_merge() {
         continue;
   
       eff_e_cos->Fill(costheta, ekin);
-
-      Double_t time_sigma[7] = {0., 0.9, 0.9/sqrt(2), 0.9/sqrt(3), 0.6, 0.6/sqrt(2), 0.6/sqrt(3)};
   
       //beta = neutron_dist_true / (neutron_time * 30.);
       beta = dist_cubes / (first_hit_time * 30.);
@@ -116,7 +118,7 @@ void neutron_merge() {
 
       angle_smearing->Fill(dir_true[2], dir_reco[2]);
 
-      for (Int_t resID = 1; resID < 7; ++resID ) {
+      for (Int_t resID = 1; resID < time_size; ++resID ) {
   
         time = gen->Gaus(first_hit_time, time_sigma[resID]);
         beta = dist_cubes / (time * 30.);
@@ -129,8 +131,8 @@ void neutron_merge() {
       }
     }
   
-    TGraphAsymmErrors* graph[6];
-    TGraphAsymmErrors* graph_resol[6];
+    TGraphAsymmErrors* graph[time_size];
+    TGraphAsymmErrors* graph_resol[time_size];
   
     TF1* f1 = new TF1("f1", "( (x < [1] ) ? [0] * TMath::Gaus(x, [1], [2]) : [0] * TMath::Gaus(x, [1], [3]))", 0, 700);
     f1->SetParName(0, "Const");
@@ -142,7 +144,7 @@ void neutron_merge() {
     dir->cd();
     
     // loop over projections to fit
-    for (Int_t resID = 0; resID < 7; ++resID ) {
+    for (Int_t resID = 0; resID < time_size; ++resID ) {
       TH1D* fitted_histo[Nbins+5];
 
       graph[resID] = new TGraphAsymmErrors();
@@ -216,7 +218,7 @@ void neutron_merge() {
     eff_e_cos_2->Write("efficiency_vs_Ekin_theta");
     angle_smearing->Write();
 
-    for (Int_t i = 0; i < 7; ++i) {
+    for (Int_t i = 0; i < time_size; ++i) {
       energy_resol[i]->Write();
       energy_acc[i]->Write();
       beta_ekin_sm[i]->Write();
