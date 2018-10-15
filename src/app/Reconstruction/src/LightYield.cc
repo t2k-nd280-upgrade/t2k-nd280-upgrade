@@ -125,6 +125,7 @@ int LightYield(int argc,char** argv)
 #if PROTO == 1
     for (Int_t i = 0; i < 12; ++i)
       LY_ch[i]    = new TH1F(Form("LY_ch%i", i),  "", ly_nbins_short,ly_first_short, ly_last_short);
+    LY_ch[12]     = new TH1F("LY_ch6_ch10",  "", 50 ,0., 250.);
 #elif PROTO == 2
     for (Int_t i = 0; i < 192; ++i)
       LY_ch[i] = new TH1F(Form("LY_ch_XY_%i_%i", int(i/8+1), int(i%8+1)),  "", ly_nbins_ext2,ly_first_ext2, ly_last_ext2);
@@ -135,6 +136,12 @@ int LightYield(int argc,char** argv)
     for (Int_t i = 1344; i < 1728; ++i)
       LY_ch[i] = new TH1F(Form("LY_ch_YZ_%i_%i", int((i-1344)%24+1), int((i-1344)/24+1)),  "", ly_nbins_ext1,ly_first_ext1, ly_last_ext1);
 #endif
+
+    TH1F* LY_x = new TH1F("LY_X", "", ly_nbins,ly_first, ly_last);
+    TH1F* LY_x_ele = new TH1F("LY_X_ele", "", ly_nbins,ly_first, ly_last);
+
+    TH1F* LY_y = new TH1F("LY_Y", "", ly_nbins,ly_first, ly_last);
+    TH1F* LY_y_ele = new TH1F("LY_Y_ele", "", ly_nbins,ly_first, ly_last);
 
 
   // Set outputs
@@ -297,6 +304,18 @@ int LightYield(int argc,char** argv)
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
 
+    TH2F* hits_map_XZ_mu = (TH2F*)h2d_xz->Clone("hits_map_XZ_mu");
+    TH2F* hits_map_XZ_mu_ele = (TH2F*)h2d_xz->Clone("hits_map_XZ_mu_ele");
+
+    TH2F* hits_map_YZ_mu = (TH2F*)h2d_yz->Clone("hits_map_YZ_mu");
+    TH2F* hits_map_YZ_mu_ele = (TH2F*)h2d_yz->Clone("hits_map_YZ_mu_ele");
+
+    std::vector<std::pair<int, int> > muon_y;
+    std::vector<std::pair<int, int> > ele_y;
+
+    std::vector<std::pair<int, int> > muon_x;
+    std::vector<std::pair<int, int> > ele_x;
+
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
 
@@ -342,6 +361,39 @@ int LightYield(int argc,char** argv)
         hPEVsTime_z[ievt]->Fill(timepez,pez);
       }
 
+      // find if the hits caused be the primary muon 
+      // if it was spoiled by delta electron
+
+      int binX = hits_map_XZ->GetXaxis()->FindBin(poshitX);
+      int binY = hits_map_XY->GetYaxis()->FindBin(poshitY);
+      int binZ = hits_map_XZ->GetYaxis()->FindBin(poshitZ);
+
+      //cout << "ini" << endl;
+      //cout << binX << "\t" << binZ << "\t" << pey << endl;
+
+      for (UInt_t i = 0; i < nd280UpHit->fContributors.size(); ++i) {
+        if (nd280UpHit->fContributors[i] == 1) {
+          // muon track
+          if (hits_map_XZ_mu->GetBinContent(binX, binZ) == 0) {
+            muon_y.push_back(make_pair(binX, binZ));
+            hits_map_XZ_mu->SetBinContent(binX, binZ, 1.);
+          }
+          if (hits_map_YZ_mu->GetBinContent(binY, binZ) == 0) {
+            muon_x.push_back(make_pair(binY, binZ));
+            hits_map_YZ_mu->SetBinContent(binY, binZ, 1.);
+          }
+        } else {
+          if (hits_map_XZ_mu_ele->GetBinContent(binX, binZ) == 0) {
+            ele_y.push_back(make_pair(binX, binZ));
+            hits_map_XZ_mu_ele->SetBinContent(binX, binZ, 1.);
+          }
+          if (hits_map_YZ_mu_ele->GetBinContent(binY, binZ) == 0) {
+            ele_x.push_back(make_pair(binY, binZ));
+            hits_map_YZ_mu_ele->SetBinContent(binY, binZ, 1.);
+          }
+        }
+      }
+
 #if CROSSTALK > 0
       // store light yield
       Int_t MPPCx = h2d_xz->GetXaxis()->FindBin(poshitX);
@@ -355,6 +407,22 @@ int LightYield(int argc,char** argv)
       hits_map_XZ->Fill(poshitX,poshitZ,pey); // pe along Y
       hits_map_YZ->Fill(poshitY,poshitZ,pex); // pe along X
     } // end loop over the hits
+
+    for (UInt_t i = 0; i < muon_y.size(); ++i) {
+      if (find(ele_y.begin(), ele_y.end(), make_pair(muon_y[i].first, muon_y[i].second)) == ele_y.end()) {
+        LY_y->Fill(hits_map_XZ->GetBinContent(muon_y[i].first, muon_y[i].second));
+      } else {
+        LY_y_ele->Fill(hits_map_XZ->GetBinContent(muon_y[i].first, muon_y[i].second));
+      }
+    }
+
+    for (UInt_t i = 0; i < muon_x.size(); ++i) {
+      if (find(ele_x.begin(), ele_x.end(), make_pair(muon_x[i].first, muon_x[i].second)) == ele_x.end()) {
+        LY_x->Fill(hits_map_YZ->GetBinContent(muon_x[i].first, muon_x[i].second));
+      } else {
+        LY_x_ele->Fill(hits_map_YZ->GetBinContent(muon_x[i].first, muon_x[i].second));
+      }
+    }
 
     // channel - to - channel crosstalk
 #if CROSSTALK == 1
@@ -612,6 +680,9 @@ int LightYield(int argc,char** argv)
       if (hits_map_YZ->GetBinContent(3, 5) > 0)
         LY_ch[11]->Fill(hits_map_YZ->GetBinContent(3, 5));
 
+      if (hits_map_XZ->GetBinContent(1, 5) + hits_map_YZ->GetBinContent(2, 5) > 0)
+        LY_ch[12]->Fill(hits_map_XZ->GetBinContent(1, 5) + hits_map_YZ->GetBinContent(2, 5));        
+
 #elif PROTO == 2
     // Fill Z fibers
       Int_t counter = 0;
@@ -680,9 +751,14 @@ int LightYield(int argc,char** argv)
 #if PROTO == 1
     for (Int_t i = 0; i < 12; ++i)
       LY_ch[i]->Write();
+    LY_ch[12]->Write();
 #elif PROTO == 2
     for (Int_t i = 0; i < 1728; ++i)
       LY_ch[i]->Write();
+    LY_x->Write();
+    LY_x_ele->Write();
+    LY_y->Write();
+    LY_y_ele->Write();
 #endif
 
   fileout->Close();
