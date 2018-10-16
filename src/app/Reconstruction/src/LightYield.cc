@@ -135,13 +135,15 @@ int LightYield(int argc,char** argv)
 
     for (Int_t i = 1344; i < 1728; ++i)
       LY_ch[i] = new TH1F(Form("LY_ch_YZ_%i_%i", int((i-1344)%24+1), int((i-1344)/24+1)),  "", ly_nbins_ext1,ly_first_ext1, ly_last_ext1);
-#endif
+
 
     TH1F* LY_x = new TH1F("LY_X", "", ly_nbins,ly_first, ly_last);
     TH1F* LY_x_ele = new TH1F("LY_X_ele", "", ly_nbins,ly_first, ly_last);
 
     TH1F* LY_y = new TH1F("LY_Y", "", ly_nbins,ly_first, ly_last);
     TH1F* LY_y_ele = new TH1F("LY_Y_ele", "", ly_nbins,ly_first, ly_last);
+#endif
+
 
 
   // Set outputs
@@ -408,6 +410,8 @@ int LightYield(int argc,char** argv)
       hits_map_YZ->Fill(poshitY,poshitZ,pex); // pe along X
     } // end loop over the hits
 
+#if PROTO == 2
+
     for (UInt_t i = 0; i < muon_y.size(); ++i) {
       if (find(ele_y.begin(), ele_y.end(), make_pair(muon_y[i].first, muon_y[i].second)) == ele_y.end()) {
         LY_y->Fill(hits_map_XZ->GetBinContent(muon_y[i].first, muon_y[i].second));
@@ -423,6 +427,8 @@ int LightYield(int argc,char** argv)
         LY_x_ele->Fill(hits_map_YZ->GetBinContent(muon_x[i].first, muon_x[i].second));
       }
     }
+
+#endif
 
     // channel - to - channel crosstalk
 #if CROSSTALK == 1
