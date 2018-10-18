@@ -344,8 +344,12 @@ private:
   //
   //PCB logical and physical volumes
 
-  G4LogicalVolume*   logicPCB1_X;
-  G4VPhysicalVolume* physiPCB1_X;
+  G4LogicalVolume*   logicPCB1_X0;
+  G4VPhysicalVolume* physiPCB1_X0;
+
+
+  G4LogicalVolume*   logicPCB1_X1;
+  G4VPhysicalVolume* physiPCB1_X1;
 
   G4LogicalVolume*   logicPCB1_Y;
   G4VPhysicalVolume* physiPCB1_Y;

@@ -54,6 +54,21 @@ public:
   /// Get the thickness of the AIREX
   double GetCFBoxAIREXThickness(void) {return fCFBoxAIREXThickness;}
 
+  /// Set the thickness of the Plastic
+  void SetCFBoxPlasticThickness(double w) {fCFBoxPlasticThickness = w;}
+  /// Get the thickness of the Plastic
+  double GetCFBoxPlasticThickness(void) {return fCFBoxPlasticThickness;}
+
+  /// Set the thickness of the Inner Clearance
+  void SetCFBoxInnerClearanceThickness(double w) {fCFBoxInnerClearanceThickness = w;}
+  /// Get the thickness of the Inner Clearance
+  double GetCFBoxInnerClearanceThickness(void) {return fCFBoxInnerClearanceThickness;}
+
+  /// Set the thickness of the Outer Clearance
+  void SetCFBoxOuterClearanceThickness(double w) {fCFBoxOuterClearanceThickness = w;}
+  /// Get the thickness of the Outer Clearance
+  double GetCFBoxOuterClearanceThickness(void) {return fCFBoxOuterClearanceThickness;}
+
   // Set and get the names
   virtual void SetCFBoxParentName  (G4String name){fCFBoxParentName = name;};
   virtual G4String GetCFBoxParentName  (){return fCFBoxParentName;};
@@ -72,6 +87,9 @@ private:
 
   double fCFBoxCFRPThickness;
   double fCFBoxAIREXThickness;
+  double fCFBoxPlasticThickness;
+  double fCFBoxInnerClearanceThickness;
+  double fCFBoxOuterClearanceThickness;
 
   // CF Box Names
   G4String fCFBoxParentName;

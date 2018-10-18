@@ -1039,10 +1039,16 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   ND280CFBoxConstructor *fCFBox1Constructor = new ND280CFBoxConstructor(cNameLogicCFBox1,this);
   G4String nameCFBox1 = fCFBox1Constructor->GetName();
 
-  G4String cNameLogicPCB1_X = cNameSolidTarget1+"/PCB1_X";
-  ND280PCBConstructor *fPCB1_X_Constructor = new ND280PCBConstructor(cNameLogicPCB1_X,this);
-  G4String namePCB1_X = fPCB1_X_Constructor->GetName();
+  // Added extra PCB on X axis to match the October WS geometry
+  G4String cNameLogicPCB1_X0 = cNameSolidTarget1+"/PCB1_X0";
+  ND280PCBConstructor *fPCB1_X0_Constructor = new ND280PCBConstructor(cNameLogicPCB1_X0,this);
+  G4String namePCB1_X0 = fPCB1_X0_Constructor->GetName();
 
+  G4String cNameLogicPCB1_X1 = cNameSolidTarget1+"/PCB1_X1";
+  ND280PCBConstructor *fPCB1_X1_Constructor = new ND280PCBConstructor(cNameLogicPCB1_X1,this);
+  G4String namePCB1_X1 = fPCB1_X1_Constructor->GetName();
+  //
+  
   G4String cNameLogicPCB1_Y = cNameSolidTarget1+"/PCB1_Y";
   ND280PCBConstructor *fPCB1_Y_Constructor = new ND280PCBConstructor(cNameLogicPCB1_Y,this);
   G4String namePCB1_Y = fPCB1_Y_Constructor->GetName();
@@ -1089,6 +1095,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   const G4String cTargetMater1 = ND280XMLInput->GetXMLTargetMaterial1();
   TargetMater1  = FindMaterial(cTargetMater1);  
 
+  double SurfaceClearance = 0.;
   
   double Target_width  = GetTargetFullWidth1();
   double Target_length = GetTargetFullLength1(); 
@@ -1162,7 +1169,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     InputPersistencyManager->InitMPPCProj2D(Target_width,Target_height,Target_length,cubenumX,cubenumY,cubenumZ,true,true,true,1);
   }
 
-  double PCB_X_width, PCB_X_length, PCB_X_height;
+  double PCB_X0_width, PCB_X0_length, PCB_X0_height;
+  double PCB_X1_width, PCB_X1_length, PCB_X1_height;
   double PCB_Y_width, PCB_Y_length, PCB_Y_height;
   double PCB_Z_width, PCB_Z_length, PCB_Z_height;
 
@@ -1181,11 +1189,29 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
     G4double CFRPthickness = ND280XMLInput->GetXMLCFBoxCFRPThickness();
     G4double AIREXthickness = ND280XMLInput->GetXMLCFBoxAIREXThickness();
+    G4double Plasticthickness = ND280XMLInput->GetXMLCFBoxPlasticThickness();
+    G4double InnerClearancethickness = ND280XMLInput->GetXMLCFBoxInnerClearanceThickness();
+    G4double OuterClearancethickness = ND280XMLInput->GetXMLCFBoxOuterClearanceThickness();
 
+    SurfaceClearance = OuterClearancethickness + Plasticthickness;
+    
     fCFBox1Constructor->SetCFBoxCFRPThickness(CFRPthickness);
     fCFBox1Constructor->SetCFBoxAIREXThickness(AIREXthickness);
-
+    fCFBox1Constructor->SetCFBoxPlasticThickness(Plasticthickness);
+    fCFBox1Constructor->SetCFBoxInnerClearanceThickness(InnerClearancethickness);
+    fCFBox1Constructor->SetCFBoxOuterClearanceThickness(OuterClearancethickness);
     //
+
+    cout << "CFRP:" <<CFRPthickness << endl;
+    cout << "AIREX:" <<AIREXthickness << endl;
+    cout << "Plastic:" <<Plasticthickness << endl;
+    cout << "InnerClearance:" <<InnerClearancethickness << endl;
+    cout << "OuterClearance:" <<OuterClearancethickness << endl;
+	    
+
+  
+
+	    
     logicCFBox1 = fCFBox1Constructor->GetPiece(); // CFBox logical volume (size based on the SuperFGD size)
 
     Target_width   = fCFBox1Constructor->GetCFBoxWidth();
@@ -1206,12 +1232,19 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     if (ND280XMLInput->GetXMLUsePCB() ){
   
   
-      fPCB1_X_Constructor->SetPCBWidth(Target_height);
-      fPCB1_X_Constructor->SetPCBLength(Target_length);
-      fPCB1_X_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+      fPCB1_X0_Constructor->SetPCBWidth(Target_height);
+      fPCB1_X0_Constructor->SetPCBLength(Target_length/2.);
+      fPCB1_X0_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+     
+      logicPCB1_X0 = fPCB1_X0_Constructor->GetPiece();
+
+      fPCB1_X1_Constructor->SetPCBWidth(Target_height);
+      fPCB1_X1_Constructor->SetPCBLength(Target_length/2.);
+      fPCB1_X1_Constructor->SetPCBHeight(1.57*CLHEP::mm);
+     
+      logicPCB1_X1 = fPCB1_X1_Constructor->GetPiece();
+
       
-      logicPCB1_X = fPCB1_X_Constructor->GetPiece();
-  
       fPCB1_Y_Constructor->SetPCBWidth(Target_width);
       fPCB1_Y_Constructor->SetPCBLength(Target_length);
       fPCB1_Y_Constructor->SetPCBHeight(1.57*CLHEP::mm);
@@ -1225,13 +1258,23 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
       logicPCB1_Z = fPCB1_Z_Constructor->GetPiece();
   
   
-      PCB_X_width = fPCB1_X_Constructor->GetPCBWidth();
-      PCB_X_length = fPCB1_X_Constructor->GetPCBLength();
-      PCB_X_height = fPCB1_X_Constructor->GetPCBHeight();
+      PCB_X0_width = fPCB1_X0_Constructor->GetPCBWidth();
+      PCB_X0_length = fPCB1_X0_Constructor->GetPCBLength();
+      PCB_X0_height = fPCB1_X0_Constructor->GetPCBHeight();
     
-      cout << "PCB1_X_width = " << PCB_X_width << endl;
-      cout << "PCB1_X_length = " << PCB_X_length << endl;
-      cout << "PCB1_X_height = " << PCB_X_height << endl;
+      cout << "PCB1_X0_width = " << PCB_X0_width << endl;
+      cout << "PCB1_X0_length = " << PCB_X0_length << endl;
+      cout << "PCB1_X0_height = " << PCB_X0_height << endl;
+
+
+      PCB_X1_width = fPCB1_X1_Constructor->GetPCBWidth();
+      PCB_X1_length = fPCB1_X1_Constructor->GetPCBLength();
+      PCB_X1_height = fPCB1_X1_Constructor->GetPCBHeight();
+    
+      cout << "PCB1_X1_width = " << PCB_X1_width << endl;
+      cout << "PCB1_X1_length = " << PCB_X1_length << endl;
+      cout << "PCB1_X1_height = " << PCB_X1_height << endl;
+      
     
       PCB_Y_width = fPCB1_Y_Constructor->GetPCBWidth();
       PCB_Y_length = fPCB1_Y_Constructor->GetPCBLength();
@@ -1319,7 +1362,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   if (ND280XMLInput->GetXMLUseTarget1() || ND280XMLInput->GetXMLUseSuperFGD1()) {
 
-    solidTarget1 = new G4Box(cNameSolidTarget1,Target_width/2,Target_height/2,Target_length/2);
+    solidTarget1 = new G4Box(cNameSolidTarget1,Target_width/2+SurfaceClearance,Target_height/2+SurfaceClearance,Target_length/2+SurfaceClearance);
     logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
     physiTarget1 = new G4PVPlacement(0,                 // no rotation
              G4ThreeVector(x,y,z),
@@ -1346,6 +1389,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
     } 
 
+    logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
+    
     physiSuperFGD1 = new G4PVPlacement(
                0, // no rotation
                G4ThreeVector(0,0,0), // same origin as Target1
@@ -1355,32 +1400,45 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
                false,             // no boolean operations
                0);                 // copy number
 
+  
+  
+
+    double xPCB[4] = {x-Target_width/2-PCB_X0_height/2.-SurfaceClearance, x+Target_width/2+PCB_X1_height/2.+SurfaceClearance, x, x};
+    double yPCB[4] = {y,y, y+Target_height/2. + PCB_Y_height/2.+SurfaceClearance, y};
+    double zPCB[4] = {z-Target_length/4.,z+Target_length/4., z ,z-Target_length/2. - PCB_Z_height/2.-SurfaceClearance};
+
+    G4RotationMatrix rot[4];
 
 
-    double xPCB[3] = {x-Target_width/2-PCB_X_height/2., x, x};
-    double yPCB[3] = {y, y+Target_height/2. + PCB_Y_height/2., y};
-    double zPCB[3] = {z, z ,z+Target_length/2. + PCB_Z_height/2.};
-
-    G4RotationMatrix rot[3];
-
-
-    rot[0].rotateZ(90.0*CLHEP::deg);
-    rot[1].rotateY(0.0*CLHEP::deg);
-    rot[2].rotateX(90.0*CLHEP::deg);
+    rot[0].rotateZ(-90.0*CLHEP::deg);
+    rot[1].rotateZ(90.0*CLHEP::deg);
+    rot[2].rotateY(0.0*CLHEP::deg);
+    rot[3].rotateX(90.0*CLHEP::deg);
 
     if (ND280XMLInput->GetXMLUsePCB()) {
 
-    cout << "placing pcb1 x" <<endl;
-      physiPCB1_X = new G4PVPlacement(
+    cout << "placing pcb1 x0" <<endl;
+      physiPCB1_X0 = new G4PVPlacement(
                                      G4Transform3D(rot[0],G4ThreeVector(xPCB[0],yPCB[0],zPCB[0])),
-                                     logicPCB1_X,       // its logical volume
-                                     namePCB1_X,  // its name
+                                     logicPCB1_X0,       // its logical volume
+                                     namePCB1_X0,  // its name
                                      logicBasket,
                                      false,             // no boolean operations
                                      0);                 // copy number
+
+      cout << "placing pcb1 x1" <<endl;
+      physiPCB1_X1 = new G4PVPlacement(
+                                     G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
+                                     logicPCB1_X1,       // its logical volume
+                                     namePCB1_X1,  // its name
+                                     logicBasket,
+                                     false,             // no boolean operations
+                                     0);                 // copy number
+
+
       cout << "placing pcb1 y" <<endl;
       physiPCB1_Y = new G4PVPlacement(
-                                     G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
+                                     G4Transform3D(rot[2],G4ThreeVector(xPCB[2],yPCB[2],zPCB[2])),
                                      logicPCB1_Y,       // its logical volume
                                      namePCB1_Y,  // its name
                                      logicBasket,
@@ -1388,7 +1446,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
                                      0);                 // copy number
       cout << "placing pcb1 z" <<endl;    
       physiPCB1_Z = new G4PVPlacement(
-                                     G4Transform3D(rot[2],G4ThreeVector(xPCB[2],yPCB[2],zPCB[2])),
+                                     G4Transform3D(rot[3],G4ThreeVector(xPCB[2],yPCB[3],zPCB[3])),
                                      logicPCB1_Z,       // its logical volume
                                      namePCB1_Z,  // its name
                                      logicBasket,
@@ -1440,6 +1498,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
      << Target_height / CLHEP::mm << " (height) x "
      << Target_length / CLHEP::mm << " (length) x "
      << G4endl;
+
 
   }
 
@@ -1504,9 +1563,17 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
     G4double CFRPthickness = ND280XMLInput->GetXMLCFBoxCFRPThickness();
     G4double AIREXthickness = ND280XMLInput->GetXMLCFBoxAIREXThickness();
+    G4double Plasticthickness = ND280XMLInput->GetXMLCFBoxPlasticThickness();
+    G4double InnerClearancethickness = ND280XMLInput->GetXMLCFBoxInnerClearanceThickness();
+    G4double OuterClearancethickness = ND280XMLInput->GetXMLCFBoxOuterClearanceThickness();
 
+    SurfaceClearance = OuterClearancethickness + Plasticthickness;
+    
     fCFBox2Constructor->SetCFBoxCFRPThickness(CFRPthickness);
     fCFBox2Constructor->SetCFBoxAIREXThickness(AIREXthickness);
+    fCFBox2Constructor->SetCFBoxPlasticThickness(Plasticthickness);
+    fCFBox2Constructor->SetCFBoxInnerClearanceThickness(InnerClearancethickness);
+    fCFBox2Constructor->SetCFBoxOuterClearanceThickness(OuterClearancethickness);
 
     //
     logicCFBox2 = fCFBox2Constructor->GetPiece(); // CFBox logical volume (size based on the SuperFGD size)

@@ -106,6 +106,9 @@ public :
   //CF Box
   G4double GetXMLCFBoxCFRPThickness()   {return fCFBoxCFRPThickness;};
   G4double GetXMLCFBoxAIREXThickness()  {return fCFBoxAIREXThickness;};
+  G4double GetXMLCFBoxPlasticThickness()  {return fCFBoxPlasticThickness;};
+  G4double GetXMLCFBoxInnerClearanceThickness()  {return fCFBoxInnerClearanceThickness;};
+  G4double GetXMLCFBoxOuterClearanceThickness()  {return fCFBoxOuterClearanceThickness;};
   //
 
   //FlatCable
@@ -404,6 +407,9 @@ private :
   //CF Box Thickness
   G4double fCFBoxCFRPThickness;
   G4double fCFBoxAIREXThickness;
+  G4double fCFBoxPlasticThickness;
+  G4double fCFBoxInnerClearanceThickness;
+  G4double fCFBoxOuterClearanceThickness;
   //
   //FlatCabl
   G4double fFlatCableThickness;

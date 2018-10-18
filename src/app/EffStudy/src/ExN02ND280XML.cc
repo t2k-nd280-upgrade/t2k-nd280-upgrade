@@ -100,6 +100,11 @@ ExN02ND280XML::~ExN02ND280XML(){
  //CFBox parameters
  fCFBoxCFRPThickness = 0;
  fCFBoxAIREXThickness = 0;
+ fCFBoxPlasticThickness = 0;
+ fCFBoxInnerClearanceThickness = 0;
+ fCFBoxOuterClearanceThickness = 0;
+
+
  //
 
  //FlatCable parameters
@@ -644,6 +649,9 @@ void ExN02ND280XML::SetInputs(){
     //CFBox
     XML2Double("CFBoxCFRPThickness", fCFBoxCFRPThickness);
     XML2Double("CFBoxAIREXThickness", fCFBoxAIREXThickness);
+    XML2Double("CFBoxPlasticThickness", fCFBoxPlasticThickness);
+    XML2Double("CFBoxInnerClearanceThickness", fCFBoxInnerClearanceThickness);
+    XML2Double("CFBoxOuterClearanceThickness", fCFBoxOuterClearanceThickness);
     //
     //FlatCable
     XML2Double("FlatCableThickness", fFlatCableThickness);

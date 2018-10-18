@@ -21,13 +21,12 @@
   </Generator>
 
   <Path2file>
-    /nfs/neutrinos/cjesus/work/iRODS_files/GENIE/13_09_18/
+    /gpfs/fs03/t2k/beam/work/kiwamoto/ND280Upgrade/Input/
   </Path2file>
 
   <filename>
-    GENIE_geometry_uniform_target_FGD12_1e21_numu.root
+    GENIE/13_09_18/GENIE_geometry_uniform_target_FGD12_1e21_numu.root
   </filename>
-
  <!--GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root -->
 
   <treename>  
@@ -229,6 +228,18 @@
    <CFBoxAIREXThickness>
      16
    </CFBoxAIREXThickness>
+
+   <CFBoxPlasticThickness>
+     4
+   </CFBoxPlasticThickness>
+
+   <CFBoxInnerClearanceThickness>
+     5
+   </CFBoxInnerClearanceThickness>
+
+   <CFBoxOuterClearanceThickness>
+     5
+   </CFBoxOuterClearanceThickness>
 
 
    <!-- SuperFGD Flat Cable -->
@@ -708,38 +719,38 @@
    <!-- Include detectors -->
 
    <UseHATPCUp>
-     true
+     false
    </UseHATPCUp>
    <UseHATPCDown>
-     true
+     false
    </UseHATPCDown>
 
    <UseForwTPC1>
-     true
+     false
    </UseForwTPC1>
    <UseForwTPC2>
-     true
+     false
    </UseForwTPC2>
    <UseForwTPC3>
-     true
+     false
    </UseForwTPC3>
 
    <UseTarget1>
-     true
+     false
    </UseTarget1>
    <UseTarget2>
      false
    </UseTarget2>
 
    <UseFGD1>
-    true
+    false
    </UseFGD1>
    <UseFGD2>
-    true
+    false
    </UseFGD2>
 
    <UseSuperFGD1>
-     false
+     true
    </UseSuperFGD1>
 
    <UseSuperFGD2>
@@ -755,7 +766,7 @@
    </UsePCB>
 
    <UseFlatCable>
-     true
+     false
    </UseFlatCable>
 
    <UseFGD3D1>
@@ -773,22 +784,22 @@
    </UseDegrader>
    
    <UseToF_TopUp>
-     true
+     false
    </UseToF_TopUp>
    <UseToF_BotUp>
-     true
+     false
    </UseToF_BotUp>
    <UseToF_RightUp>
-     true
+     false
    </UseToF_RightUp>
    <UseToF_LeftUp>
-     true
+     false
    </UseToF_LeftUp>
    <UseToF_BackUp>
-     true
+     false
    </UseToF_BackUp>
    <UseToF_FrontUp>
-     true
+     false
    </UseToF_FrontUp>
 
    <UseMagnet>
@@ -798,21 +809,21 @@
    <!-- true --> 
    <!-- </UseSMRD> -->
    <UseBasket>
-     true
+     false
    </UseBasket>
    
    <UseDsECal>
-     true
+     false
    </UseDsECal>
    <UseBrlECal>
-     true
+     false
    </UseBrlECal>
    <UseP0DECal>
-     true
+     false
    </UseP0DECal>
    
    <UseP0D>
-     true
+     false
    </UseP0D>
    
    <!-- Invisible detectors -->
@@ -842,7 +853,7 @@
    </InvisFGD2>
 
    <InvisSuperFGD>
-     false
+     true
    </InvisSuperFGD>
    <InvisFGD3D>
      true
@@ -871,11 +882,11 @@
    </InvisToF_FrontUp>
 
    <InvisMagnet>
-     false
+     true
    </InvisMagnet>
    
    <InvisBasket>
-     false
+     true
    </InvisBasket>
 
    <!-- To fix visualization for detectors below -->
