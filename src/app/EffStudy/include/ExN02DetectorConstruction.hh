@@ -357,8 +357,11 @@ private:
   G4LogicalVolume*   logicPCB1_Z;
   G4VPhysicalVolume* physiPCB1_Z;
 
-  G4LogicalVolume*   logicPCB2_X;
-  G4VPhysicalVolume* physiPCB2_X;
+  G4LogicalVolume*   logicPCB2_X0;
+  G4VPhysicalVolume* physiPCB2_X0;
+  
+  G4LogicalVolume*   logicPCB2_X1;
+  G4VPhysicalVolume* physiPCB2_X1;
 
   G4LogicalVolume*   logicPCB2_Y;
   G4VPhysicalVolume* physiPCB2_Y;
@@ -372,6 +375,20 @@ private:
 
   G4LogicalVolume*   logicFlatCable2;
   G4VPhysicalVolume* physiFlatCable2;
+
+
+  G4LogicalVolume*   logicFlatCable3;
+  G4VPhysicalVolume* physiFlatCable3;
+
+  G4LogicalVolume*   logicFlatCable4;
+  G4VPhysicalVolume* physiFlatCable4;
+
+
+  G4LogicalVolume*   logicFlatCable5;
+  G4VPhysicalVolume* physiFlatCable5;
+
+  G4LogicalVolume*   logicFlatCable6;
+  G4VPhysicalVolume* physiFlatCable6;
 
   //
 

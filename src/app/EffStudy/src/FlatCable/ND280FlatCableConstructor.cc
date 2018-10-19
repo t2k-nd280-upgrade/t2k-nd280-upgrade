@@ -30,10 +30,9 @@ void ND280FlatCableConstructor::Init(void) {
   fCableRegionHeight = 1*CLHEP::cm;
   fCableRegionLength = 1*CLHEP::cm;
 
-  fFlatCableX = 1;
-  fFlatCableZ = 1;
   fFlatCableThickness = 1*CLHEP::cm;
-
+  fFlatCableN = 6;
+  
   G4String nameFlatCableParent = "FlatCableParent";
   G4String nameFlatCable = "FlatCable";
   
@@ -45,28 +44,26 @@ G4LogicalVolume *ND280FlatCableConstructor::GetPiece(void) {
 
   G4String parentname = GetFlatCableParentName();
   G4String name = GetFlatCableName();
+
   
   //double cablethickness = 0.117 *CLHEP::mm; //Thickness of the FlatCable
   double cablethickness = GetFlatCableThickness(); //Thickness of the FlatCable
-  
-  //int ncableX = 18;
-  //int ncableZ = 32;
-
-  int ncableX = GetFlatCableX();
-  int ncableZ = GetFlatCableZ();
-
+  int nbundles = GetFlatCableNBundles();
+ 
   //  double FlatCableWidth = 27.85 *CLHEP::mm;
   double FlatCableWidth = GetFlatCableWidth();;
-  double FlatCableHeight = cablethickness * ncableX;
+  double FlatCableHeight = cablethickness;
+  double FlatCableTotalHeight = cablethickness * nbundles; 
+  double FlatCableBundleHeight = cablethickness * (nbundles-1);
   double FlatCableLength = GetFlatCableLength();
 
-  double CableRegionWidth = GetCableRegionWidth();
-  double CableRegionHeight = FlatCableHeight;
+  double CableRegionWidth = FlatCableWidth;
+  double CableRegionHeight = FlatCableTotalHeight;
   double CableRegionLength = FlatCableLength;
 
 
   SetFlatCableWidth(FlatCableWidth);
-  SetFlatCableHeight(FlatCableHeight);
+  SetFlatCableHeight(FlatCableTotalHeight);
   SetFlatCableLength(FlatCableLength);
 
   SetCableRegionWidth(CableRegionWidth);
@@ -74,58 +71,60 @@ G4LogicalVolume *ND280FlatCableConstructor::GetPiece(void) {
   SetCableRegionLength(CableRegionLength);
 
 
-   SetFlatCableX(ncableX);
-   SetFlatCableZ(ncableZ);
+  SetFlatCableNBundles(nbundles);
 
-
-   cout << "Flat Cable Thickness: " << cablethickness  << endl;
+   cout << "Flat Cable Thickness: " << cablethickness << endl;
    cout << "Flat Cable Width: " << FlatCableWidth  << endl;
-   cout << "Flat Cable nX: " << ncableX  << endl;
-   cout << "Flat Cable Height: " << FlatCableHeight  << endl;
-   cout << "Flat Cable nZ: " << ncableZ  << endl;
+   cout << "Flat Cable Bundle Thickness: " << FlatCableBundleHeight  << endl;
+   cout << "Flat Cable Total Height: " << FlatCableTotalHeight  << endl;
+   cout << "# of Bundles: " << nbundles  << endl;
 
   // 0) PCB logical volume
-
-   //  G4LogicalVolume *FlatCable_logical = new G4LogicalVolume(new G4Box(parentname+"/"+name,FlatCableWidth/2., FlatCableHeight/2., FlatCableLength/2.), FindMaterial("Air"), parentname+"/"+name);
-
-   //  G4LogicalVolume *FlatCable_logical = new G4LogicalVolume(new G4Box(parentname+"/"+name,CableRegionWidth/2., CableRegionHeight/2., CableRegionLength/2.), FindMaterial("Air"), parentname+"/"+name);
 
   G4LogicalVolume *FlatCable_logical = new G4LogicalVolume(new G4Box(parentname+"/"+name,CableRegionWidth/2., CableRegionLength/2., CableRegionHeight/2.), FindMaterial("Air"), parentname+"/"+name);
 
 
 
+  double level = CableRegionHeight/2.;
+
   //  cout << FlatCableWidth/2. << ", " << FlatCableHeight/2. << ", " << FlatCableLength/2. << endl;
 
+  G4VSolid *FlatCableSingleSolid = new G4Box("FlatCableSingle", CableRegionWidth/2.,CableRegionLength/2.,FlatCableHeight/2.);
 
-  vector<G4TwoVector> vertices; 
+  G4LogicalVolume *FC_single_vol = new G4LogicalVolume(FlatCableSingleSolid, FindMaterial("Aluminum"), parentname+"/"+"FlatCableSingle");
+  FC_single_vol->SetVisAttributes(G4Colour(2.,.0,.0)); 
+
+  cout << level << endl;
+  level -= FlatCableHeight/2.;
+  cout << level << endl;
+  new G4PVPlacement(0, G4ThreeVector(0,0,level), FC_single_vol, parentname+"/"+"FlatCableSingle", FlatCable_logical, false, 0);
+
+  //bundles
+  vector<G4TwoVector> vertices;  
+  vertices.push_back( G4TwoVector( -FlatCableWidth/2.,-FlatCableLength/2.) );
+  vertices.push_back( G4TwoVector(  FlatCableWidth/2.,-FlatCableLength/2.) );
+  vertices.push_back( G4TwoVector( -FlatCableWidth/2.,-FlatCableLength/2.) );
+  vertices.push_back( G4TwoVector(  FlatCableWidth/2.,-FlatCableLength/2.) );
+
   vertices.push_back( G4TwoVector( -FlatCableWidth/2.,-FlatCableLength/2.) );
   vertices.push_back( G4TwoVector( -FlatCableWidth/2., FlatCableLength/2.) );
   vertices.push_back( G4TwoVector(  FlatCableWidth/2., FlatCableLength/2.) );
   vertices.push_back( G4TwoVector(  FlatCableWidth/2.,-FlatCableLength/2.) );
- 
-  vertices.push_back( G4TwoVector( -FlatCableWidth/2.,-FlatCableLength/2.) );
-  vertices.push_back( G4TwoVector(  FlatCableWidth/2.,-FlatCableLength/2.) );
-  vertices.push_back( G4TwoVector( -FlatCableWidth/2.,-FlatCableLength/2.) );
-  vertices.push_back( G4TwoVector(  FlatCableWidth/2.,-FlatCableLength/2.) );
 
-  G4VSolid *FlatCableSolid = new G4GenericTrap(
-					       "FlatCable_onPCB",
-					       FlatCableHeight/2., 
+  
+  G4VSolid *FlatCableBundleSolid = new G4GenericTrap(
+					       "FlatCableBundle",
+					       FlatCableBundleHeight/2., 
 					       vertices
 					       );
+  
+  G4LogicalVolume *FC_bundle_vol = new G4LogicalVolume(FlatCableBundleSolid, FindMaterial("Aluminum"), parentname+"/"+"FlatCable_onPCB");
+  FC_bundle_vol->SetVisAttributes(G4Colour(2.,.0,.0));
+  level -= FlatCableHeight/2. + FlatCableBundleHeight/2.;
+  new G4PVPlacement(0, G4ThreeVector(0,0,level), FC_bundle_vol, parentname+"/"+"FlatCableBundle", FlatCable_logical, false, 0);
 
-  G4LogicalVolume *FC_vol = new G4LogicalVolume(FlatCableSolid, FindMaterial("Aluminum"), parentname+"/"+"FlatCable_onPCB");
-  FC_vol->SetVisAttributes(G4Colour(1.0,1.0,1.0));
-
-  //ncableZ = 32
-  for (int i=0; i<ncableZ; i++)
-    {
-      //     cout<<"Cable Region Length:" << CableRegionLength/2. << endl;
-      //     cout <<i << "th: " << -CableRegionLength/2.+i*(CableRegionLength/ncableZ) + FlatCableWidth/2. << endl;
-      new G4PVPlacement(0, G4ThreeVector(-CableRegionWidth/2.+i*(CableRegionWidth/ncableZ) + FlatCableWidth/2.,0,0), FC_vol, parentname+"/"+"FlatCable", FlatCable_logical, false, i);
-    }
-
-  G4cout << "FlatCable Mass: " << FC_vol->GetMass()/CLHEP::g << "g" << G4endl;
+    cout << level << endl;
+  G4cout << "FlatCable Mass: " <<FC_single_vol->GetMass()/CLHEP::g + FC_bundle_vol->GetMass()/CLHEP::g << "g" << G4endl;
 
   return FlatCable_logical;
 }

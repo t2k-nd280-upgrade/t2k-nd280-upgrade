@@ -109,9 +109,8 @@ ExN02ND280XML::~ExN02ND280XML(){
 
  //FlatCable parameters
  fFlatCableThickness = 0;
- fFlatCableWidth = 0;
- fFlatCableX = 0;
- fFlatCableZ = 0;
+ fFlatCableN = 0;
+
  //
 
  
@@ -655,9 +654,7 @@ void ExN02ND280XML::SetInputs(){
     //
     //FlatCable
     XML2Double("FlatCableThickness", fFlatCableThickness);
-    XML2Double("FlatCableWidth", fFlatCableWidth);
-    XML2Int("FlatCableX", fFlatCableX);
-    XML2Int("FlatCableZ", fFlatCableZ);
+    XML2Int("FlatCableN", fFlatCableN);
     
     
     //HATPC Up

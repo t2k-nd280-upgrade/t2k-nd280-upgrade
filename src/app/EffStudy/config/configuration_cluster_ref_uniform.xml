@@ -245,20 +245,12 @@
    <!-- SuperFGD Flat Cable -->
    
    <FlatCableThickness>
-     0.117
+     0.663
    </FlatCableThickness>
  
-   <FlatCableWidth>
-     27.85
-   </FlatCableWidth>
-
-   <FlatCableX>
-     18
-   </FlatCableX>
-
-   <FlatCableZ>
-     32
-   </FlatCableZ>
+   <FlatCableN>
+     6
+   </FlatCableN>
   
 
    <!-- SuperFGD 2 -->
@@ -766,7 +758,7 @@
    </UsePCB>
 
    <UseFlatCable>
-     false
+     true
    </UseFlatCable>
 
    <UseFGD3D1>

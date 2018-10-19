@@ -113,9 +113,7 @@ public :
 
   //FlatCable
   G4double GetXMLFlatCableThickness()   {return fFlatCableThickness;};
-  G4double GetXMLFlatCableWidth()       {return fFlatCableWidth;};
-  G4int    GetXMLFlatCableX()           {return fFlatCableX;};
-  G4int    GetXMLFlatCableZ()           {return fFlatCableZ;};
+  G4int    GetXMLFlatCableN()           {return fFlatCableN;};
 
   //
 
@@ -411,11 +409,10 @@ private :
   G4double fCFBoxInnerClearanceThickness;
   G4double fCFBoxOuterClearanceThickness;
   //
-  //FlatCabl
+  //FlatCable
   G4double fFlatCableThickness;
-  G4double fFlatCableWidth;
-  G4int fFlatCableX;
-  G4int fFlatCableZ; 
+  G4int fFlatCableN;
+
   //
 
   

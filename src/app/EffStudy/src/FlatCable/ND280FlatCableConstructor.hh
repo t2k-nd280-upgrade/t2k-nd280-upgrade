@@ -74,12 +74,8 @@ public:
   virtual void SetFlatCableName  (G4String name){fFlatCableName = name;};
   virtual G4String GetFlatCableName  (){return fFlatCableName;};
 
-  void SetFlatCableX (int w){fFlatCableX = w;}
-  int GetFlatCableX (){return fFlatCableX;}
-
-  void SetFlatCableZ (int w){fFlatCableZ = w;}
-  int GetFlatCableZ (){return fFlatCableZ;}
-
+  void SetFlatCableNBundles (int w){fFlatCableN = w;}
+  int GetFlatCableNBundles (){return fFlatCableN;}
 
 
 private:
@@ -96,8 +92,7 @@ private:
   double fCableRegionLength;
 
   // Quantity of the FlatCable
-  int fFlatCableX;
-  int fFlatCableZ;
+  int fFlatCableN;
 
 
   // FlatCable Names
