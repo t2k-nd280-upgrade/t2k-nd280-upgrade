@@ -6,898 +6,897 @@
 </Main_Package>
 <Dependency_Details>
 
-  <Dependency>
-  
-  <StoreGeometry>
-    1
-  </StoreGeometry>
-  
-  <IsRandomSeed>
-    1
-  </IsRandomSeed>
-  
-  <Generator>      
-    GENIE  
-  </Generator>
+<Dependency>
 
-  <Path2file>
-    /gpfs/fs03/t2k/beam/work/kiwamoto/ND280Upgrade/Input/
-  </Path2file>
+<StoreGeometry>
+  1
+</StoreGeometry>
 
-  <filename>
-    GENIE/13_09_18/GENIE_geometry_uniform_target_FGD12_1e21_numu.root
-  </filename>
- <!--GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root -->
+<IsRandomSeed>
+  1
+</IsRandomSeed>
 
-  <treename>  
-    gRooTracker
-  </treename>
-  
-   <!--                        -->
-   <!-- Detector configuration -->
-   <!--                        -->
+<Generator>      
+  GENIE  
+</Generator>
+
+<Path2file>
+  /nfs/neutrinos/cjesus/work/iRODS_files/GENIE/13_09_18/
+</Path2file>
+
+<filename>
+  GENIE_geometry_uniform_target_FGD12_1e21_numu.root
+</filename>
+<!--GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root -->
+
+<treename>  
+  gRooTracker
+</treename>
+
+ <!--                        -->
+ <!-- Detector configuration -->
+ <!--                        -->
+
+ <!-- Forward TPCs positions -->
+
+ <forwTPCdefault>
+   false
+ </forwTPCdefault>
+
+ <forwTPCPos1_X>
+   0
+ </forwTPCPos1_X>
+ <forwTPCPos1_Y>
+   0
+ </forwTPCPos1_Y>
+ <forwTPCPos1_Z>
+   -211
+ </forwTPCPos1_Z>
+
+ <forwTPCPos2_X>
+   0
+ </forwTPCPos2_X>
+ <forwTPCPos2_Y>
+   0
+ </forwTPCPos2_Y>
+ <forwTPCPos2_Z>
+   +1066
+ </forwTPCPos2_Z>
  
-   <!-- Forward TPCs positions -->
+ <forwTPCPos3_X>
+   0
+ </forwTPCPos3_X>
+ <forwTPCPos3_Y>
+   0
+ </forwTPCPos3_Y>
+ <forwTPCPos3_Z>
+   +2343
+ </forwTPCPos3_Z>
 
-   <forwTPCdefault>
-     false
-   </forwTPCdefault>
+ <!-- Target 1 -->
 
-   <forwTPCPos1_X>
-     0
-   </forwTPCPos1_X>
-   <forwTPCPos1_Y>
-     0
-   </forwTPCPos1_Y>
-   <forwTPCPos1_Z>
-     -211
-   </forwTPCPos1_Z>
+ <Targetdefault1>
+   false
+ </Targetdefault1>
  
-   <forwTPCPos2_X>
-     0
-   </forwTPCPos2_X>
-   <forwTPCPos2_Y>
-     0
-   </forwTPCPos2_Y>
-   <forwTPCPos2_Z>
-     +1066
-   </forwTPCPos2_Z>
-   
-   <forwTPCPos3_X>
-     0
-   </forwTPCPos3_X>
-   <forwTPCPos3_Y>
-     0
-   </forwTPCPos3_Y>
-   <forwTPCPos3_Z>
-     +2343
-   </forwTPCPos3_Z>
+ <TargetMaterial1>
+   FGDScintillator
+ </TargetMaterial1>
 
-   <!-- Target 1 -->
-
-   <Targetdefault1>
-     false
-   </Targetdefault1>
-   
-   <TargetMaterial1>
-     FGDScintillator
-   </TargetMaterial1>
-
-   <Targetlength1>
-     1920
-   </Targetlength1>
-   <Targetwidth1>  
-     1920
-   </Targetwidth1>
-   <Targetheight1> 
-     560
-   </Targetheight1>
-   
-   <TargetPos1_X>
-     0
-   </TargetPos1_X>
-   <TargetPos1_Y>
-     0
-   </TargetPos1_Y>
-   <TargetPos1_Z>
-     -1707
-   </TargetPos1_Z>
-
-   
-   <!-- Target 2 -->
-
-   <Targetdefault2> 
-     false
-   </Targetdefault2>
-
-   <TargetMaterial2>
-     WAGASCIScintillatorEmpty
-   </TargetMaterial2>
-
-   <Targetlength2>
-     1300 
-   </Targetlength2>
-   <Targetwidth2>  
-     1864 
-   </Targetwidth2>
-   <Targetheight2> 
-     600 
-   </Targetheight2>
-
-   <TargetPos2_X>
-     0
-   </TargetPos2_X>
-   <TargetPos2_Y>
-     0
-   </TargetPos2_Y>
-   <TargetPos2_Z>
-     +1206
-   </TargetPos2_Z>
-
-   <!-- FGD 1 -->
-
-   <FGDdefault1>
-     false
-   </FGDdefault1>
-
-   <FGDMaterial1>
-     FGDScintillator
-   </FGDMaterial1>
-   
-   <FGDlength1>
-     303
-   </FGDlength1>
-   <FGDwidth1>  
-     1864.3
-   </FGDwidth1>
-   <FGDheight1> 
-     1864.3
-   </FGDheight1>
+ <Targetlength1>
+   1920
+ </Targetlength1>
+ <Targetwidth1>  
+   1920
+ </Targetwidth1>
+ <Targetheight1> 
+   560
+ </Targetheight1>
  
-   <FGDPos1_X>
-     0
-   </FGDPos1_X>
-   <FGDPos1_Y>
-     0
-   </FGDPos1_Y>
-   <FGDPos1_Z>
-     +427.5
-   </FGDPos1_Z>
+ <TargetPos1_X>
+   0
+ </TargetPos1_X>
+ <TargetPos1_Y>
+   0
+ </TargetPos1_Y>
+ <TargetPos1_Z>
+   -1760.412
+ </TargetPos1_Z>
 
-   
-   <!-- FGD 2 -->
-
-   <FGDdefault2> 
-     false
-   </FGDdefault2>
-
-   <FGDMaterial2>
-     FGD2Uniform
-   </FGDMaterial2>
-
-   <FGDlength2>
-     303
-   </FGDlength2>
-   <FGDwidth2>  
-     1864.3
-   </FGDwidth2>
-   <FGDheight2> 
-     1864.3
-   </FGDheight2>
-
-   <FGDPos2_X>
-     0
-   </FGDPos2_X>
-   <FGDPos2_Y>
-     0
-   </FGDPos2_Y>
-   <FGDPos2_Z>
-     +1704.5
-   </FGDPos2_Z>
-
-
-   <!-- SuperFGD 1 -->
-   <SuperFGDCubeEdge1>
-     10
-   </SuperFGDCubeEdge1>
-   <SuperFGDCubeNum1_X>
-     192
-   </SuperFGDCubeNum1_X>
-   <SuperFGDCubeNum1_Y>
-     56
-   </SuperFGDCubeNum1_Y>
-   <SuperFGDCubeNum1_Z>
-     192
-   </SuperFGDCubeNum1_Z>
-   <SuperFGDPos1_X>
-     0
-   </SuperFGDPos1_X>
-   <SuperFGDPos1_Y>
-     0
-   </SuperFGDPos1_Y>
-   <SuperFGDPos1_Z>
-     -1707
-   </SuperFGDPos1_Z>
-
-   <!-- SuperFGD CF Box -->
-   
-   <CFBoxCFRPThickness>
-     2
-   </CFBoxCFRPThickness>
-   
-   <CFBoxAIREXThickness>
-     16
-   </CFBoxAIREXThickness>
-
-   <CFBoxPlasticThickness>
-     4
-   </CFBoxPlasticThickness>
-
-   <CFBoxInnerClearanceThickness>
-     5
-   </CFBoxInnerClearanceThickness>
-
-   <CFBoxOuterClearanceThickness>
-     5
-   </CFBoxOuterClearanceThickness>
-
-
-   <!-- SuperFGD Flat Cable -->
-   
-   <FlatCableThickness>
-     0.101
-   </FlatCableThickness>
  
-   <FlatCableN>
-     6
-   </FlatCableN>
-  
+ <!-- Target 2 -->
 
-   <!-- SuperFGD 2 -->
-   <SuperFGDCubeEdge2>
-     10
-   </SuperFGDCubeEdge2>
+ <Targetdefault2> 
+   false
+ </Targetdefault2>
 
-   <SuperFGDCubeNum2_X>
-     96
-   </SuperFGDCubeNum2_X>
-   <SuperFGDCubeNum2_Y>
-     56
-   </SuperFGDCubeNum2_Y>
-   <SuperFGDCubeNum2_Z>
-     192
-   </SuperFGDCubeNum2_Z>
+ <TargetMaterial2>
+   WAGASCIScintillatorEmpty
+ </TargetMaterial2>
 
-   <SuperFGDPos2_X>
-     480.
-   </SuperFGDPos2_X>
-   <SuperFGDPos2_Y>
-     0
-   </SuperFGDPos2_Y>
-   <SuperFGDPos2_Z>
-     -1695
-   </SuperFGDPos2_Z>
+ <Targetlength2>
+   1300 
+ </Targetlength2>
+ <Targetwidth2>  
+   1864 
+ </Targetwidth2>
+ <Targetheight2> 
+   600 
+ </Targetheight2>
+
+ <TargetPos2_X>
+   0
+ </TargetPos2_X>
+ <TargetPos2_Y>
+   0
+ </TargetPos2_Y>
+ <TargetPos2_Z>
+   +1206
+ </TargetPos2_Z>
+
+ <!-- FGD 1 -->
+
+ <FGDdefault1>
+   false
+ </FGDdefault1>
+
+ <FGDMaterial1>
+   FGDScintillator
+ </FGDMaterial1>
+ 
+ <FGDlength1>
+   303
+ </FGDlength1>
+ <FGDwidth1>  
+   1864.3
+ </FGDwidth1>
+ <FGDheight1> 
+   1864.3
+ </FGDheight1>
+
+ <FGDPos1_X>
+   0
+ </FGDPos1_X>
+ <FGDPos1_Y>
+   0
+ </FGDPos1_Y>
+ <FGDPos1_Z>
+   +427.5
+ </FGDPos1_Z>
+
+ 
+ <!-- FGD 2 -->
+
+ <FGDdefault2> 
+   false
+ </FGDdefault2>
+
+ <FGDMaterial2>
+   FGD2Uniform
+ </FGDMaterial2>
+
+ <FGDlength2>
+   303
+ </FGDlength2>
+ <FGDwidth2>  
+   1864.3
+ </FGDwidth2>
+ <FGDheight2> 
+   1864.3
+ </FGDheight2>
+
+ <FGDPos2_X>
+   0
+ </FGDPos2_X>
+ <FGDPos2_Y>
+   0
+ </FGDPos2_Y>
+ <FGDPos2_Z>
+   +1704.5
+ </FGDPos2_Z>
+
+
+ <!-- SuperFGD 1 -->
+ <SuperFGDCubeEdge1>
+   10
+ </SuperFGDCubeEdge1>
+ <SuperFGDCubeNum1_X>
+   192
+ </SuperFGDCubeNum1_X>
+ <SuperFGDCubeNum1_Y>
+   56
+ </SuperFGDCubeNum1_Y>
+ <SuperFGDCubeNum1_Z>
+   192
+ </SuperFGDCubeNum1_Z>
+ <SuperFGDPos1_X>
+   0
+ </SuperFGDPos1_X>
+ <SuperFGDPos1_Y>
+   0
+ </SuperFGDPos1_Y>
+ <SuperFGDPos1_Z>
+   -1707
+ </SuperFGDPos1_Z>
+
+ <!-- SuperFGD CF Box -->
+ 
+ <CFBoxCFRPThickness>
+   2
+ </CFBoxCFRPThickness>
+ 
+ <CFBoxAIREXThickness>
+   16
+ </CFBoxAIREXThickness>
+
+ <CFBoxPlasticThickness>
+   4
+ </CFBoxPlasticThickness>
+
+ <CFBoxInnerClearanceThickness>
+   5
+ </CFBoxInnerClearanceThickness>
+
+ <CFBoxOuterClearanceThickness>
+   5
+ </CFBoxOuterClearanceThickness>
+
+
+ <!-- SuperFGD Flat Cable -->
+ 
+ <FlatCableThickness>
+   0.101
+ </FlatCableThickness>
+
+ <FlatCableN>
+   6
+ </FlatCableN>
+
+
+ <!-- SuperFGD 2 -->
+ <SuperFGDCubeEdge2>
+   10
+ </SuperFGDCubeEdge2>
+
+ <SuperFGDCubeNum2_X>
+   96
+ </SuperFGDCubeNum2_X>
+ <SuperFGDCubeNum2_Y>
+   56
+ </SuperFGDCubeNum2_Y>
+ <SuperFGDCubeNum2_Z>
+   192
+ </SuperFGDCubeNum2_Z>
+
+ <SuperFGDPos2_X>
+   480.
+ </SuperFGDPos2_X>
+ <SuperFGDPos2_Y>
+   0
+ </SuperFGDPos2_Y>
+ <SuperFGDPos2_Z>
+   -1695
+ </SuperFGDPos2_Z>
 
 
 
-   <!-- HATPCFC -->
+ <!-- HATPCFC -->
 
-   <HATPCFCName>
-     FC
-   </HATPCFCName>
-   
-   <!-- HATPCUp -->
+ <HATPCFCName>
+   FC
+ </HATPCFCName>
+ 
+ <!-- HATPCUp -->
 
-   <HATPCUpWidth>
-   2200
-   </HATPCUpWidth>
+ <HATPCUpWidth>
+ 2200
+ </HATPCUpWidth>
 
-   <HATPCUpHeight>
-   840
-   </HATPCUpHeight>
+ <HATPCUpHeight>
+ 840
+ </HATPCUpHeight>
 
-   <HATPCUpLength>
-   1840
-   </HATPCUpLength>
+ <HATPCUpLength>
+ 1840
+ </HATPCUpLength>
 
-   <HATPCUpDriftWidth>
-   1700
-   </HATPCUpDriftWidth>
+ <HATPCUpDriftWidth>
+ 1700
+ </HATPCUpDriftWidth>
 
-   <HATPCUpDriftHeight>
-   700
-   </HATPCUpDriftHeight>
+ <HATPCUpDriftHeight>
+ 700
+ </HATPCUpDriftHeight>
 
-   <HATPCUpDriftLength>
-   1700
-   </HATPCUpDriftLength>
+ <HATPCUpDriftLength>
+ 1700
+ </HATPCUpDriftLength>
 
-   <HATPCUpCathodeThickness>
-   13.2
-   </HATPCUpCathodeThickness>  
+ <HATPCUpCathodeThickness>
+ 13.2
+ </HATPCUpCathodeThickness>  
 
-   <HATPCUpInnerBoxWall>
+ <HATPCUpInnerBoxWall>
+ 100
+ </HATPCUpInnerBoxWall>
+
+ <HATPCUpOuterBoxWall>
+ 100
+ </HATPCUpOuterBoxWall>
+
+ <HATPCUpSteppingLimit>
+ 1.
+ </HATPCUpSteppingLimit>
+
+ <ActiveHATPCUpVerticalOffset>
+ 25
+ </ActiveHATPCUpVerticalOffset>
+
+ <HATPCUpPos_X>
+   0 
+ </HATPCUpPos_X>
+ <HATPCUpPos_Y>
+   724.676
+ </HATPCUpPos_Y>
+ <HATPCUpPos_Z>
+   -1760.412
+ </HATPCUpPos_Z>
+
+ <!-- HATPCDown -->
+
+ <HATPCDownWidth>
+ 2200
+ </HATPCDownWidth>
+
+ <HATPCDownHeight>
+ 840
+ </HATPCDownHeight>
+
+ <HATPCDownLength>
+ 1840
+ </HATPCDownLength>
+
+ <HATPCDownDriftWidth>
+ 1700
+ </HATPCDownDriftWidth>
+
+ <HATPCDownDriftHeight>
+ 700
+ </HATPCDownDriftHeight>
+
+ <HATPCDownDriftLength>
+ 1700
+ </HATPCDownDriftLength>
+
+ <HATPCDownCathodeThickness>
+ 13.2
+ </HATPCDownCathodeThickness>  
+
+ <HATPCDownCO2Top>
+ 100
+ </HATPCDownCO2Top>  
+
+ <HATPCDownCO2Bottom>
+ 100
+ </HATPCDownCO2Bottom>
+
+ <HATPCDownInnerBoxWall>
+ 100
+ </HATPCDownInnerBoxWall>
+
+ <HATPCDownOuterBoxWall>
+ 100
+ </HATPCDownOuterBoxWall>
+
+ <HATPCDownSteppingLimit>
+ 1.
+ </HATPCDownSteppingLimit>
+
+ <ActiveHATPCDownVerticalOffset>
+ 25
+ </ActiveHATPCDownVerticalOffset>
+
+ <HATPCDownPos_X>
+   0  
+ </HATPCDownPos_X>
+ <HATPCDownPos_Y>
+   -722.5
+ </HATPCDownPos_Y>
+ <HATPCDownPos_Z>
+   -1760.412
+ </HATPCDownPos_Z>
+
+ <!-- FGD3D 1 -->
+ 
+ <FGD3Dlength1>
    100
-   </HATPCUpInnerBoxWall>
+ </FGD3Dlength1>
+ <FGD3Dwidth1>  
+   600
+ </FGD3Dwidth1>
+ <FGD3Dheight1> 
+   600
+ </FGD3Dheight1>
 
-   <HATPCUpOuterBoxWall>
-   100
-   </HATPCUpOuterBoxWall>
+ <FGD3DPos1_X>
+   0
+ </FGD3DPos1_X>
+ <FGD3DPos1_Y>
+   0
+ </FGD3DPos1_Y>
+ <FGD3DPos1_Z>
+   0
+ </FGD3DPos1_Z>
 
-   <HATPCUpSteppingLimit>
-   1.
-   </HATPCUpSteppingLimit>
+ <!-- FGD3D 2 -->
 
-   <ActiveHATPCUpVerticalOffset>
-   25
-   </ActiveHATPCUpVerticalOffset>
+ <FGD3Dlength2>
+   13
+ </FGD3Dlength2>
+ <FGD3Dwidth2>  
+   18
+ </FGD3Dwidth2>
+ <FGD3Dheight2> 
+   6
+ </FGD3Dheight2>
 
-   <HATPCUpPos_X>
-     0 
-   </HATPCUpPos_X>
-   <HATPCUpPos_Y>
-     712
-   </HATPCUpPos_Y>
-   <HATPCUpPos_Z>
-     -1707
-   </HATPCUpPos_Z>
-
-   <!-- HATPCDown -->
-
-   <HATPCDownWidth>
-   2200
-   </HATPCDownWidth>
-
-   <HATPCDownHeight>
-   840
-   </HATPCDownHeight>
-
-   <HATPCDownLength>
-   1840
-   </HATPCDownLength>
-
-   <HATPCDownDriftWidth>
-   1700
-   </HATPCDownDriftWidth>
-
-   <HATPCDownDriftHeight>
-   700
-   </HATPCDownDriftHeight>
-
-   <HATPCDownDriftLength>
-   1700
-   </HATPCDownDriftLength>
-
-   <HATPCDownCathodeThickness>
-   13.2
-   </HATPCDownCathodeThickness>  
-
-   <HATPCDownCO2Top>
-   100
-   </HATPCDownCO2Top>  
-
-   <HATPCDownCO2Bottom>
-   100
-   </HATPCDownCO2Bottom>
-
-   <HATPCDownInnerBoxWall>
-   100
-   </HATPCDownInnerBoxWall>
-
-   <HATPCDownOuterBoxWall>
-   100
-   </HATPCDownOuterBoxWall>
-
-   <HATPCDownSteppingLimit>
-   1.
-   </HATPCDownSteppingLimit>
-
-   <ActiveHATPCDownVerticalOffset>
-   25
-   </ActiveHATPCDownVerticalOffset>
-
-   <HATPCDownPos_X>
-     0  
-   </HATPCDownPos_X>
-   <HATPCDownPos_Y>
-     -707
-   </HATPCDownPos_Y>
-   <HATPCDownPos_Z>
-     -1707
-   </HATPCDownPos_Z>
-
-   <!-- FGD3D 1 -->
-   
-   <FGD3Dlength1>
-     100
-   </FGD3Dlength1>
-   <FGD3Dwidth1>  
-     600
-   </FGD3Dwidth1>
-   <FGD3Dheight1> 
-     600
-   </FGD3Dheight1>
-
-   <FGD3DPos1_X>
-     0
-   </FGD3DPos1_X>
-   <FGD3DPos1_Y>
-     0
-   </FGD3DPos1_Y>
-   <FGD3DPos1_Z>
-     0
-   </FGD3DPos1_Z>
-
-   <!-- FGD3D 2 -->
-
-   <FGD3Dlength2>
-     13
-   </FGD3Dlength2>
-   <FGD3Dwidth2>  
-     18
-   </FGD3Dwidth2>
-   <FGD3Dheight2> 
-     6
-   </FGD3Dheight2>
-
-   <FGD3DPos2_X>
-     0
-   </FGD3DPos2_X>
-   <FGD3DPos2_Y>
-     0
-   </FGD3DPos2_Y>
-   <FGD3DPos2_Z>
-     0
-   </FGD3DPos2_Z>
+ <FGD3DPos2_X>
+   0
+ </FGD3DPos2_X>
+ <FGD3DPos2_Y>
+   0
+ </FGD3DPos2_Y>
+ <FGD3DPos2_Z>
+   0
+ </FGD3DPos2_Z>
 
 
-   <!-- FGDlike XZ -->
-   <FGDlikeBarEdge>
-     10
-   </FGDlikeBarEdge>
-   <FGDlikeNum_AlongX>
-     130
-   </FGDlikeNum_AlongX>
-   <FGDlikeNum_AlongZ>
-     180
-   </FGDlikeNum_AlongZ>
-   <FGDlikeNum_Layer>
-     30
-   </FGDlikeNum_Layer>
-   <FGDlikePos_X>
-     0
-   </FGDlikePos_X>
-   <FGDlikePos_Y>
-     0
-   </FGDlikePos_Y>
-   <FGDlikePos_Z>
-     0
-   </FGDlikePos_Z>
-   <!-- -1487 -->
+ <!-- FGDlike XZ -->
+ <FGDlikeBarEdge>
+   10
+ </FGDlikeBarEdge>
+ <FGDlikeNum_AlongX>
+   130
+ </FGDlikeNum_AlongX>
+ <FGDlikeNum_AlongZ>
+   180
+ </FGDlikeNum_AlongZ>
+ <FGDlikeNum_Layer>
+   30
+ </FGDlikeNum_Layer>
+ <FGDlikePos_X>
+   0
+ </FGDlikePos_X>
+ <FGDlikePos_Y>
+   0
+ </FGDlikePos_Y>
+ <FGDlikePos_Z>
+   0
+ </FGDlikePos_Z>
+ <!-- -1487 -->
 
-   <!-- ToF Top Upstream -->
-   <ToFdefault_TopUp>
-     false
-   </ToFdefault_TopUp>
-   <ToFPlaneXYNum_TopUp>
-     21
-   </ToFPlaneXYNum_TopUp>
+ <!-- ToF Top Upstream -->
+ <ToFdefault_TopUp>
+   false
+ </ToFdefault_TopUp>
+ <ToFPlaneXYNum_TopUp>
+   21
+ </ToFPlaneXYNum_TopUp>
 
-   <ToFBarwidth_TopUp>
-     10
-   </ToFBarwidth_TopUp>
-   <ToFBarheight_TopUp>
-     120
-   </ToFBarheight_TopUp>
-   <ToFBarlength_TopUp>
-     2085
-   </ToFBarlength_TopUp>
-   <ToFRotX_TopUp>
-     90
-   </ToFRotX_TopUp>
-   <ToFRotY_TopUp>
-     90
-   </ToFRotY_TopUp>
-   <ToFRotZ_TopUp>
-     0
-   </ToFRotZ_TopUp>
-   <ToFPosX_TopUp>
-     0
-   </ToFPosX_TopUp>
-   <ToFPosY_TopUp>
-     +1245
-   </ToFPosY_TopUp>
-   <ToFPosZ_TopUp>
-     -1707
-   </ToFPosZ_TopUp>
+ <ToFBarwidth_TopUp>
+   10
+ </ToFBarwidth_TopUp>
+ <ToFBarheight_TopUp>
+   120
+ </ToFBarheight_TopUp>
+ <ToFBarlength_TopUp>
+   2085
+ </ToFBarlength_TopUp>
+ <ToFRotX_TopUp>
+   90
+ </ToFRotX_TopUp>
+ <ToFRotY_TopUp>
+   90
+ </ToFRotY_TopUp>
+ <ToFRotZ_TopUp>
+   0
+ </ToFRotZ_TopUp>
+ <ToFPosX_TopUp>
+   0
+ </ToFPosX_TopUp>
+ <ToFPosY_TopUp>
+   +1245
+ </ToFPosY_TopUp>
+ <ToFPosZ_TopUp>
+   -1760.412
+ </ToFPosZ_TopUp>
 
-   <!-- ToF Bottom Upstream -->
-   <ToFdefault_BotUp>
-     false
-   </ToFdefault_BotUp>
-   <ToFPlaneXYNum_BotUp>
-     21
-   </ToFPlaneXYNum_BotUp>
-   <ToFBarwidth_BotUp>
-     10
-   </ToFBarwidth_BotUp>
-   <ToFBarheight_BotUp>
-     120
-   </ToFBarheight_BotUp>
-   <ToFBarlength_BotUp>
-     2085
-   </ToFBarlength_BotUp>
-   <ToFRotX_BotUp>
-     90
-   </ToFRotX_BotUp>
-   <ToFRotY_BotUp>
-     90
-   </ToFRotY_BotUp>
-   <ToFRotZ_BotUp>
-     0
-   </ToFRotZ_BotUp>
-   <ToFPosX_BotUp>
-     0
-   </ToFPosX_BotUp>
-   <ToFPosY_BotUp>
-     -1265
-   </ToFPosY_BotUp>
-   <ToFPosZ_BotUp>
-     -1707
-   </ToFPosZ_BotUp>
+ <!-- ToF Bottom Upstream -->
+ <ToFdefault_BotUp>
+   false
+ </ToFdefault_BotUp>
+ <ToFPlaneXYNum_BotUp>
+   21
+ </ToFPlaneXYNum_BotUp>
+ <ToFBarwidth_BotUp>
+   10
+ </ToFBarwidth_BotUp>
+ <ToFBarheight_BotUp>
+   120
+ </ToFBarheight_BotUp>
+ <ToFBarlength_BotUp>
+   2085
+ </ToFBarlength_BotUp>
+ <ToFRotX_BotUp>
+   90
+ </ToFRotX_BotUp>
+ <ToFRotY_BotUp>
+   90
+ </ToFRotY_BotUp>
+ <ToFRotZ_BotUp>
+   0
+ </ToFRotZ_BotUp>
+ <ToFPosX_BotUp>
+   0
+ </ToFPosX_BotUp>
+ <ToFPosY_BotUp>
+   -1265
+ </ToFPosY_BotUp>
+ <ToFPosZ_BotUp>
+   -1760.412
+ </ToFPosZ_BotUp>
 
-   <!-- ToF Right Upstream -->
-   <ToFdefault_RightUp>
-     false
-   </ToFdefault_RightUp>
-   <ToFPlaneXYNum_RightUp>
-     20
-   </ToFPlaneXYNum_RightUp>
-   <ToFBarwidth_RightUp>
-     10
-   </ToFBarwidth_RightUp>
-   <ToFBarheight_RightUp>
-     120
-   </ToFBarheight_RightUp>
-   <ToFBarlength_RightUp>
-     2085
-   </ToFBarlength_RightUp>
-   <ToFRotX_RightUp>
-     0
-   </ToFRotX_RightUp>
-   <ToFRotY_RightUp>
-     90
-   </ToFRotY_RightUp>
-   <ToFRotZ_RightUp>
-     0
-   </ToFRotZ_RightUp>
-   <ToFPosX_RightUp>
-     -1270
-   </ToFPosX_RightUp>
-   <ToFPosY_RightUp>
-     0
-   </ToFPosY_RightUp>
-   <ToFPosZ_RightUp>
-     -1707
-   </ToFPosZ_RightUp>
+ <!-- ToF Right Upstream -->
+ <ToFdefault_RightUp>
+   false
+ </ToFdefault_RightUp>
+ <ToFPlaneXYNum_RightUp>
+   20
+ </ToFPlaneXYNum_RightUp>
+ <ToFBarwidth_RightUp>
+   10
+ </ToFBarwidth_RightUp>
+ <ToFBarheight_RightUp>
+   120
+ </ToFBarheight_RightUp>
+ <ToFBarlength_RightUp>
+   2085
+ </ToFBarlength_RightUp>
+ <ToFRotX_RightUp>
+   0
+ </ToFRotX_RightUp>
+ <ToFRotY_RightUp>
+   90
+ </ToFRotY_RightUp>
+ <ToFRotZ_RightUp>
+   0
+ </ToFRotZ_RightUp>
+ <ToFPosX_RightUp>
+   -1270
+ </ToFPosX_RightUp>
+ <ToFPosY_RightUp>
+   0
+ </ToFPosY_RightUp>
+ <ToFPosZ_RightUp>
+   -1760.412
+ </ToFPosZ_RightUp>
 
-   <!-- ToF Left Upstream -->
-   <ToFdefault_LeftUp>
-     false
-   </ToFdefault_LeftUp>
-   <ToFPlaneXYNum_LeftUp>
-     20
-   </ToFPlaneXYNum_LeftUp>
-   <ToFBarwidth_LeftUp>
-     10
-   </ToFBarwidth_LeftUp>
-   <ToFBarheight_LeftUp>
-     120
-   </ToFBarheight_LeftUp>
-   <ToFBarlength_LeftUp>
-     2085
-   </ToFBarlength_LeftUp>
-   <ToFRotX_LeftUp>
-     0
-   </ToFRotX_LeftUp>
-   <ToFRotY_LeftUp>
-     90
-   </ToFRotY_LeftUp>
-   <ToFRotZ_LeftUp>
-     0
-   </ToFRotZ_LeftUp>
-   <ToFPosX_LeftUp>
-     +1270
-   </ToFPosX_LeftUp>
-   <ToFPosY_LeftUp>
-     0
-   </ToFPosY_LeftUp>
-   <ToFPosZ_LeftUp>
-     -1707
-   </ToFPosZ_LeftUp>
+ <!-- ToF Left Upstream -->
+ <ToFdefault_LeftUp>
+   false
+ </ToFdefault_LeftUp>
+ <ToFPlaneXYNum_LeftUp>
+   20
+ </ToFPlaneXYNum_LeftUp>
+ <ToFBarwidth_LeftUp>
+   10
+ </ToFBarwidth_LeftUp>
+ <ToFBarheight_LeftUp>
+   120
+ </ToFBarheight_LeftUp>
+ <ToFBarlength_LeftUp>
+   2085
+ </ToFBarlength_LeftUp>
+ <ToFRotX_LeftUp>
+   0
+ </ToFRotX_LeftUp>
+ <ToFRotY_LeftUp>
+   90
+ </ToFRotY_LeftUp>
+ <ToFRotZ_LeftUp>
+   0
+ </ToFRotZ_LeftUp>
+ <ToFPosX_LeftUp>
+   +1270
+ </ToFPosX_LeftUp>
+ <ToFPosY_LeftUp>
+   0
+ </ToFPosY_LeftUp>
+ <ToFPosZ_LeftUp>
+   -1760.412
+ </ToFPosZ_LeftUp>
 
-   <!-- ToF Back Upstream -->
-   <ToFdefault_BackUp>
-     false
-   </ToFdefault_BackUp>
-   <ToFPlaneXYNum_BackUp>
-     20
-   </ToFPlaneXYNum_BackUp>
-   <ToFBarwidth_BackUp>
-     10
-   </ToFBarwidth_BackUp>
-   <ToFBarheight_BackUp>
-     120
-   </ToFBarheight_BackUp>
-   <ToFBarlength_BackUp>
-     2300
-   </ToFBarlength_BackUp>
-   <ToFRotX_BackUp>
-     0
-   </ToFRotX_BackUp>
-   <ToFRotY_BackUp>
-     0
-   </ToFRotY_BackUp>
-   <ToFRotZ_BackUp>
-     0
-   </ToFRotZ_BackUp>
-   <ToFPosX_BackUp>
-     0
-   </ToFPosX_BackUp>
-   <ToFPosY_BackUp>
-     0
-   </ToFPosY_BackUp>
-   <ToFPosZ_BackUp>
-     -2800
-   </ToFPosZ_BackUp>
+ <!-- ToF Back Upstream -->
+ <ToFdefault_BackUp>
+   false
+ </ToFdefault_BackUp>
+ <ToFPlaneXYNum_BackUp>
+   20
+ </ToFPlaneXYNum_BackUp>
+ <ToFBarwidth_BackUp>
+   10
+ </ToFBarwidth_BackUp>
+ <ToFBarheight_BackUp>
+   120
+ </ToFBarheight_BackUp>
+ <ToFBarlength_BackUp>
+   2300
+ </ToFBarlength_BackUp>
+ <ToFRotX_BackUp>
+   0
+ </ToFRotX_BackUp>
+ <ToFRotY_BackUp>
+   0
+ </ToFRotY_BackUp>
+ <ToFRotZ_BackUp>
+   0
+ </ToFRotZ_BackUp>
+ <ToFPosX_BackUp>
+   0
+ </ToFPosX_BackUp>
+ <ToFPosY_BackUp>
+   0
+ </ToFPosY_BackUp>
+ <ToFPosZ_BackUp>
+   -2800
+ </ToFPosZ_BackUp>
 
-   <!-- ToF Front Upstream -->
-   <ToFdefault_FrontUp>
-     false
-   </ToFdefault_FrontUp>
-   <ToFPlaneXYNum_FrontUp>
-     20
-   </ToFPlaneXYNum_FrontUp>
-   <ToFBarwidth_FrontUp>
-     10
-   </ToFBarwidth_FrontUp>
-   <ToFBarheight_FrontUp>
-     120
-   </ToFBarheight_FrontUp>
-   <ToFBarlength_FrontUp>
-     2300
-   </ToFBarlength_FrontUp>
-   <ToFRotX_FrontUp>
-     0
-   </ToFRotX_FrontUp>
-   <ToFRotY_FrontUp>
-     0
-   </ToFRotY_FrontUp>
-   <ToFRotZ_FrontUp>
-     0
-   </ToFRotZ_FrontUp>
-   <ToFPosX_FrontUp>
-     0
-   </ToFPosX_FrontUp>
-   <ToFPosY_FrontUp>
-     0
-   </ToFPosY_FrontUp>
-   <ToFPosZ_FrontUp>
-     -723
-   </ToFPosZ_FrontUp>
+ <!-- ToF Front Upstream -->
+ <ToFdefault_FrontUp>
+   false
+ </ToFdefault_FrontUp>
+ <ToFPlaneXYNum_FrontUp>
+   20
+ </ToFPlaneXYNum_FrontUp>
+ <ToFBarwidth_FrontUp>
+   10
+ </ToFBarwidth_FrontUp>
+ <ToFBarheight_FrontUp>
+   120
+ </ToFBarheight_FrontUp>
+ <ToFBarlength_FrontUp>
+   2300
+ </ToFBarlength_FrontUp>
+ <ToFRotX_FrontUp>
+   0
+ </ToFRotX_FrontUp>
+ <ToFRotY_FrontUp>
+   0
+ </ToFRotY_FrontUp>
+ <ToFRotZ_FrontUp>
+   0
+ </ToFRotZ_FrontUp>
+ <ToFPosX_FrontUp>
+   0
+ </ToFPosX_FrontUp>
+ <ToFPosY_FrontUp>
+   0
+ </ToFPosY_FrontUp>
+ <ToFPosZ_FrontUp>
+   -723
+ </ToFPosZ_FrontUp>
 
 
-   <DegraderLength>
-     230
-   </DegraderLength>
-   <DegraderWidth>
-     240
-   </DegraderWidth>
-   <DegraderHeight>
-     80
-   </DegraderHeight>
-   <DegraderPositionX>
-     0
-   </DegraderPositionX>
-   <DegraderPositionY>
-     16
-   </DegraderPositionY>
-   <DegraderPositionZ>
-     -355
-   </DegraderPositionZ>
-   
+ <DegraderLength>
+   230
+ </DegraderLength>
+ <DegraderWidth>
+   240
+ </DegraderWidth>
+ <DegraderHeight>
+   80
+ </DegraderHeight>
+ <DegraderPositionX>
+   0
+ </DegraderPositionX>
+ <DegraderPositionY>
+   16
+ </DegraderPositionY>
+ <DegraderPositionZ>
+   -355
+ </DegraderPositionZ>
+ 
+ 
+ <!-- Include detectors -->
 
-   
-   <!-- Include detectors -->
+ <UseHATPCUp>
+   true
+ </UseHATPCUp>
+ <UseHATPCDown>
+   true
+ </UseHATPCDown>
 
-   <UseHATPCUp>
-     true
-   </UseHATPCUp>
-   <UseHATPCDown>
-     true
-   </UseHATPCDown>
+ <UseForwTPC1>
+   true
+ </UseForwTPC1>
+ <UseForwTPC2>
+   true
+ </UseForwTPC2>
+ <UseForwTPC3>
+   true
+ </UseForwTPC3>
 
-   <UseForwTPC1>
-     true
-   </UseForwTPC1>
-   <UseForwTPC2>
-     true
-   </UseForwTPC2>
-   <UseForwTPC3>
-     true
-   </UseForwTPC3>
+ <UseTarget1>
+   true
+ </UseTarget1>
+ <UseTarget2>
+   false
+ </UseTarget2>
 
-   <UseTarget1>
-     true
-   </UseTarget1>
-   <UseTarget2>
-     false
-   </UseTarget2>
+ <UseFGD1>
+  true
+ </UseFGD1>
+ <UseFGD2>
+  true
+ </UseFGD2>
 
-   <UseFGD1>
-    true
-   </UseFGD1>
-   <UseFGD2>
-    true
-   </UseFGD2>
+ <UseSuperFGD1>
+   false
+ </UseSuperFGD1>
 
-   <UseSuperFGD1>
-     false
-   </UseSuperFGD1>
+ <UseSuperFGD2>
+   false
+ </UseSuperFGD2>
 
-   <UseSuperFGD2>
-     false
-   </UseSuperFGD2>
+ <UseCFBox>
+   true
+ </UseCFBox>
 
-   <UseCFBox>
-     true
-   </UseCFBox>
+ <UsePCB>
+   true
+ </UsePCB>
 
-   <UsePCB>
-     true
-   </UsePCB>
+ <UseFlatCable>
+   true
+ </UseFlatCable>
 
-   <UseFlatCable>
-     true
-   </UseFlatCable>
+ <UseFGD3D1>
+   false
+ </UseFGD3D1>
+ <UseFGD3D2>
+   false
+ </UseFGD3D2>
+ <UseFGDlike>
+   false
+ </UseFGDlike>
 
-   <UseFGD3D1>
-     false
-   </UseFGD3D1>
-   <UseFGD3D2>
-     false
-   </UseFGD3D2>
-   <UseFGDlike>
-     false
-   </UseFGDlike>
+ <UseDegrader>
+   false
+ </UseDegrader>
+ 
+ <UseToF_TopUp>
+   true
+ </UseToF_TopUp>
+ <UseToF_BotUp>
+   true
+ </UseToF_BotUp>
+ <UseToF_RightUp>
+   true
+ </UseToF_RightUp>
+ <UseToF_LeftUp>
+   true
+ </UseToF_LeftUp>
+ <UseToF_BackUp>
+   true
+ </UseToF_BackUp>
+ <UseToF_FrontUp>
+   true
+ </UseToF_FrontUp>
 
-   <UseDegrader>
-     false
-   </UseDegrader>
-   
-   <UseToF_TopUp>
-     true
-   </UseToF_TopUp>
-   <UseToF_BotUp>
-     true
-   </UseToF_BotUp>
-   <UseToF_RightUp>
-     true
-   </UseToF_RightUp>
-   <UseToF_LeftUp>
-     true
-   </UseToF_LeftUp>
-   <UseToF_BackUp>
-     true
-   </UseToF_BackUp>
-   <UseToF_FrontUp>
-     true
-   </UseToF_FrontUp>
+ <UseMagnet>
+  false
+ </UseMagnet>
+ <!-- <UseSMRD> -->
+ <!-- true --> 
+ <!-- </UseSMRD> -->
+ <UseBasket>
+   true
+ </UseBasket>
+ 
+ <UseDsECal>
+   true
+ </UseDsECal>
+ <UseBrlECal>
+   true
+ </UseBrlECal>
+ <UseP0DECal>
+   true
+ </UseP0DECal>
+ 
+ <UseP0D>
+   true
+ </UseP0D>
+ 
+ <!-- Invisible detectors -->
 
-   <UseMagnet>
-    false
-   </UseMagnet>
-   <!-- <UseSMRD> -->
-   <!-- true --> 
-   <!-- </UseSMRD> -->
-   <UseBasket>
-     true
-   </UseBasket>
-   
-   <UseDsECal>
-     true
-   </UseDsECal>
-   <UseBrlECal>
-     true
-   </UseBrlECal>
-   <UseP0DECal>
-     true
-   </UseP0DECal>
-   
-   <UseP0D>
-     false
-   </UseP0D>
-   
-   <!-- Invisible detectors -->
+ <InvisForwTPC1>
+   false
+ </InvisForwTPC1>
+ <InvisForwTPC2>
+   false
+ </InvisForwTPC2>
+ <InvisForwTPC3>
+   false
+ </InvisForwTPC3>
 
-   <InvisForwTPC1>
-     false
-   </InvisForwTPC1>
-   <InvisForwTPC2>
-     false
-   </InvisForwTPC2>
-   <InvisForwTPC3>
-     false
-   </InvisForwTPC3>
+ <InvisTarget1>
+   false
+ </InvisTarget1>
+ <InvisTarget2>
+   false
+ </InvisTarget2>
 
-   <InvisTarget1>
-     false
-   </InvisTarget1>
-   <InvisTarget2>
-     false
-   </InvisTarget2>
+ <InvisFGD1>
+   false
+ </InvisFGD1>
+ <InvisFGD2>
+   false
+ </InvisFGD2>
 
-   <InvisFGD1>
-     false
-   </InvisFGD1>
-   <InvisFGD2>
-     false
-   </InvisFGD2>
+ <InvisSuperFGD>
+   true
+ </InvisSuperFGD>
+ <InvisFGD3D>
+   true
+ </InvisFGD3D> 
+ <InvisFGDlike>
+   true
+ </InvisFGDlike>
+ 
+ <InvisToF_TopUp>
+   false
+ </InvisToF_TopUp>
+ <InvisToF_BotUp>
+   false
+ </InvisToF_BotUp>
+ <InvisToF_RightUp>
+   false
+ </InvisToF_RightUp>
+ <InvisToF_LeftUp>
+   false
+ </InvisToF_LeftUp>
+ <InvisToF_BackUp>
+   false
+ </InvisToF_BackUp>
+ <InvisToF_FrontUp>
+   false
+ </InvisToF_FrontUp>
 
-   <InvisSuperFGD>
-     true
-   </InvisSuperFGD>
-   <InvisFGD3D>
-     true
-   </InvisFGD3D> 
-   <InvisFGDlike>
-     true
-   </InvisFGDlike>
-   
-   <InvisToF_TopUp>
-     false
-   </InvisToF_TopUp>
-   <InvisToF_BotUp>
-     false
-   </InvisToF_BotUp>
-   <InvisToF_RightUp>
-     false
-   </InvisToF_RightUp>
-   <InvisToF_LeftUp>
-     false
-   </InvisToF_LeftUp>
-   <InvisToF_BackUp>
-     false
-   </InvisToF_BackUp>
-   <InvisToF_FrontUp>
-     false
-   </InvisToF_FrontUp>
+ <InvisMagnet>
+   false
+ </InvisMagnet>
+ 
+ <InvisBasket>
+   false
+ </InvisBasket>
 
-   <InvisMagnet>
-     true
-   </InvisMagnet>
-   
-   <InvisBasket>
-     true
-   </InvisBasket>
-
-   <!-- To fix visualization for detectors below -->
-   <!-- always drawn if implented to the geometry -->
-   <InvisSMRD>
-     false
-   </InvisSMRD>
-   <InvisDsECal>
-     false
-   </InvisDsECal>
-   <InvisBrlECal>
-     false
-   </InvisBrlECal>
-   <InvisP0DECal>
-     false
-   </InvisP0DECal>
-   <InvisP0D>
-     false
-   </InvisP0D>
+ <!-- To fix visualization for detectors below -->
+ <!-- always drawn if implented to the geometry -->
+ <InvisSMRD>
+   false
+ </InvisSMRD>
+ <InvisDsECal>
+   false
+ </InvisDsECal>
+ <InvisBrlECal>
+   false
+ </InvisBrlECal>
+ <InvisP0DECal>
+   false
+ </InvisP0DECal>
+ <InvisP0D>
+   false
+ </InvisP0D>
 
 </Dependency>
 
