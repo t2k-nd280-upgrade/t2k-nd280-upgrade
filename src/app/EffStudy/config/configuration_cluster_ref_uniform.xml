@@ -84,13 +84,13 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     1880
+     1920
    </Targetlength1>
    <Targetwidth1>  
-     2040
+     1920
    </Targetwidth1>
    <Targetheight1> 
-     520
+     560
    </Targetheight1>
  
    <TargetPos1_X>
@@ -259,17 +259,17 @@
    </SuperFGDCubeEdge2>
 
    <SuperFGDCubeNum2_X>
-     103
+     96
    </SuperFGDCubeNum2_X>
    <SuperFGDCubeNum2_Y>
-     52
+     56
    </SuperFGDCubeNum2_Y>
    <SuperFGDCubeNum2_Z>
-     188
+     192
    </SuperFGDCubeNum2_Z>
 
    <SuperFGDPos2_X>
-     532.785
+     480.
    </SuperFGDPos2_X>
    <SuperFGDPos2_Y>
      0
@@ -482,7 +482,7 @@
    <ToFPlaneXYNum_TopUp>
      21
    </ToFPlaneXYNum_TopUp>
-   </ToFLayerHorizNBar_TopUp>   
+
    <ToFBarwidth_TopUp>
      10
    </ToFBarwidth_TopUp>
