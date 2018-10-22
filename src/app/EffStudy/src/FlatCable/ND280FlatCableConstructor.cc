@@ -92,7 +92,7 @@ G4LogicalVolume *ND280FlatCableConstructor::GetPiece(void) {
   G4VSolid *FlatCableSingleSolid = new G4Box("FlatCableSingle", CableRegionWidth/2.,CableRegionLength/2.,FlatCableHeight/2.);
 
   G4LogicalVolume *FC_single_vol = new G4LogicalVolume(FlatCableSingleSolid, FindMaterial("Aluminum"), parentname+"/"+"FlatCableSingle");
-  FC_single_vol->SetVisAttributes(G4Colour(2.,.0,.0)); 
+  FC_single_vol->SetVisAttributes(G4Colour(1.,.0,.0)); 
 
   cout << level << endl;
   level -= FlatCableHeight/2.;
