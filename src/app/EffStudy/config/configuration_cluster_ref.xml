@@ -21,11 +21,11 @@
   </Generator>
 
   <Path2file>
-    /gpfs/fs03/t2k/beam/work/kiwamoto/ND280Upgrade/Input/
+    /t2k/users/suvorov/AnalysisResults/ndUP/PileUp/
   </Path2file>
 
   <filename>
-    GENIE/13_09_18/GENIE_geometry_uniform_target_FGD12_1e21_numu.root
+    gRooTracher_gamma_4w.root
   </filename>
  <!--GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root -->
 
@@ -100,7 +100,7 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1707
+     -1760.412
    </TargetPos1_Z>
 
    
@@ -216,7 +216,7 @@
      0
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     -1707
+     -1760.412
    </SuperFGDPos1_Z>
 
    <!-- SuperFGD CF Box -->
@@ -336,10 +336,10 @@
      0 
    </HATPCUpPos_X>
    <HATPCUpPos_Y>
-     712
+     724.676
    </HATPCUpPos_Y>
    <HATPCUpPos_Z>
-     -1707
+     -1760.412
    </HATPCUpPos_Z>
 
    <!-- HATPCDown -->
@@ -400,10 +400,10 @@
      0  
    </HATPCDownPos_X>
    <HATPCDownPos_Y>
-     -707
+     -722.5
    </HATPCDownPos_Y>
    <HATPCDownPos_Z>
-     -1707
+     -1760.412
    </HATPCDownPos_Z>
 
    <!-- FGD3D 1 -->
@@ -508,7 +508,7 @@
      +1245
    </ToFPosY_TopUp>
    <ToFPosZ_TopUp>
-     -1707
+     -1760.412
    </ToFPosZ_TopUp>
 
    <!-- ToF Bottom Upstream -->
@@ -543,7 +543,7 @@
      -1265
    </ToFPosY_BotUp>
    <ToFPosZ_BotUp>
-     -1707
+     -1760.412
    </ToFPosZ_BotUp>
 
    <!-- ToF Right Upstream -->
@@ -578,7 +578,7 @@
      0
    </ToFPosY_RightUp>
    <ToFPosZ_RightUp>
-     -1707
+     -1760.412
    </ToFPosZ_RightUp>
 
    <!-- ToF Left Upstream -->
@@ -613,7 +613,7 @@
      0
    </ToFPosY_LeftUp>
    <ToFPosZ_LeftUp>
-     -1707
+     -1760.412
    </ToFPosZ_LeftUp>
 
    <!-- ToF Back Upstream -->
