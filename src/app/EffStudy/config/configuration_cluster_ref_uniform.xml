@@ -711,38 +711,38 @@
    <!-- Include detectors -->
 
    <UseHATPCUp>
-     false
+     true
    </UseHATPCUp>
    <UseHATPCDown>
-     false
+     true
    </UseHATPCDown>
 
    <UseForwTPC1>
-     false
+     true
    </UseForwTPC1>
    <UseForwTPC2>
-     false
+     true
    </UseForwTPC2>
    <UseForwTPC3>
-     false
+     true
    </UseForwTPC3>
 
    <UseTarget1>
-     false
+     true
    </UseTarget1>
    <UseTarget2>
      false
    </UseTarget2>
 
    <UseFGD1>
-    false
+    true
    </UseFGD1>
    <UseFGD2>
-    false
+    true
    </UseFGD2>
 
    <UseSuperFGD1>
-     true
+     false
    </UseSuperFGD1>
 
    <UseSuperFGD2>
@@ -776,22 +776,22 @@
    </UseDegrader>
    
    <UseToF_TopUp>
-     false
+     true
    </UseToF_TopUp>
    <UseToF_BotUp>
-     false
+     true
    </UseToF_BotUp>
    <UseToF_RightUp>
-     false
+     true
    </UseToF_RightUp>
    <UseToF_LeftUp>
-     false
+     true
    </UseToF_LeftUp>
    <UseToF_BackUp>
-     false
+     true
    </UseToF_BackUp>
    <UseToF_FrontUp>
-     false
+     true
    </UseToF_FrontUp>
 
    <UseMagnet>
@@ -801,17 +801,17 @@
    <!-- true --> 
    <!-- </UseSMRD> -->
    <UseBasket>
-     false
+     true
    </UseBasket>
    
    <UseDsECal>
-     false
+     true
    </UseDsECal>
    <UseBrlECal>
-     false
+     true
    </UseBrlECal>
    <UseP0DECal>
-     false
+     true
    </UseP0DECal>
    
    <UseP0D>
