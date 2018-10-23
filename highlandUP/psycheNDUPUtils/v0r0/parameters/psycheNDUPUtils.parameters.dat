@@ -20,7 +20,7 @@
  < psycheNDUPUtils.Geometry.AddToFOnTargets      = 0 >
  < psycheNDUPUtils.Geometry.AddToF               = 1 >
  < psycheNDUPUtils.Geometry.AddFakeP0D           = 1 >
- < psycheNDUPUtils.ToF.TimeResolution            = 0.600 >
+ < psycheNDUPUtils.ToF.TimeResolution            = 0.090 >
 
 
 --- Use the ROOT geometry to overrride the harcoded values in detectorDefinition (DetDef namespace)
