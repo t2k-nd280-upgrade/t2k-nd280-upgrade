@@ -1203,8 +1203,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     fCFBox1Constructor->SetCFBoxLength(Target_length);
     fCFBox1Constructor->SetCFBoxHeight(Target_height);
 
-    G4double CFRPthickness = ND280XMLInput->GetXMLCFBoxCFRPThickness();
-    G4double AIREXthickness = ND280XMLInput->GetXMLCFBoxAIREXThickness();
+    G4double CFRPthickness = ND280XMLInput->GetXMLCFBoxCFRPThickness()*2.;
+    G4double AIREXthickness = ND280XMLInput->GetXMLCFBoxAIREXThickness()*2.;
     G4double Plasticthickness = ND280XMLInput->GetXMLCFBoxPlasticThickness();
     G4double InnerClearancethickness = ND280XMLInput->GetXMLCFBoxInnerClearanceThickness();
     G4double OuterClearancethickness = ND280XMLInput->GetXMLCFBoxOuterClearanceThickness();
