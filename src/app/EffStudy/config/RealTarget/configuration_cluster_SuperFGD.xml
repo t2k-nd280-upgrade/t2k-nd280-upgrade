@@ -28,7 +28,7 @@
     GENIE_geometry_SuperFGD_1e21_numu.root
   </filename>
 
-  <treename>  
+   <treename>  
     gRooTracker
   </treename>
   
@@ -49,7 +49,7 @@
      0
    </forwTPCPos1_Y>
    <forwTPCPos1_Z>
-     -2274
+     -211
    </forwTPCPos1_Z>
  
    <forwTPCPos2_X>
@@ -59,7 +59,7 @@
      0
    </forwTPCPos2_Y>
    <forwTPCPos2_Z>
-     0
+     +1066
    </forwTPCPos2_Z>
    
    <forwTPCPos3_X>
@@ -69,82 +69,8 @@
      0
    </forwTPCPos3_Y>
    <forwTPCPos3_Z>
-     +2274
+     +2343
    </forwTPCPos3_Z>
-
-
-   
-   <!-- Side TPCs 1 -->
-
-   <sideTPCdefault1>
-     false
-   </sideTPCdefault1>
-
-   <sideTPClength1>
-     1200
-   </sideTPClength1>
-   <sideTPCwidth1>  
-     2200
-   </sideTPCwidth1>
-   <sideTPCheight1> 
-     840
-   </sideTPCheight1>
-
-   <sideTPCUpPos1_X>
-     0 
-   </sideTPCUpPos1_X>
-   <sideTPCUpPos1_Y>
-     720
-   </sideTPCUpPos1_Y>
-   <sideTPCUpPos1_Z>
-     -1137
-   </sideTPCUpPos1_Z>
-   
-   <sideTPCDownPos1_X>
-     0
-   </sideTPCDownPos1_X>
-   <sideTPCDownPos1_Y>
-     -720
-   </sideTPCDownPos1_Y>
-   <sideTPCDownPos1_Z>
-     -1137
-   </sideTPCDownPos1_Z>
-
-   <!-- Side TPCs 2 -->
-
-   <sideTPCdefault2>
-     false
-   </sideTPCdefault2>
-   <sideTPClength2>
-     1200
-   </sideTPClength2>
-   <sideTPCwidth2>  
-     2200
-   </sideTPCwidth2>
-   <sideTPCheight2> 
-     840.
-   </sideTPCheight2>
-
-   <sideTPCUpPos2_X>
-     0
-   </sideTPCUpPos2_X>
-   <sideTPCUpPos2_Y>
-     720
-   </sideTPCUpPos2_Y>
-   <sideTPCUpPos2_Z>
-     +1137
-   </sideTPCUpPos2_Z>
-   
-   <sideTPCDownPos2_X>
-     0 
-   </sideTPCDownPos2_X>
-   <sideTPCDownPos2_Y>
-     -720
-   </sideTPCDownPos2_Y>
-   <sideTPCDownPos2_Z>
-     +1137
-   </sideTPCDownPos2_Z>
-
 
    <!-- Target 1 -->
 
@@ -153,19 +79,19 @@
    </Targetdefault1>
    
    <TargetMaterial1>
-     Water
+     FGDScintillator
    </TargetMaterial1>
 
    <Targetlength1>
-     1300
+     1920
    </Targetlength1>
    <Targetwidth1>  
-     1864
+     1920
    </Targetwidth1>
    <Targetheight1> 
-     600
+     560
    </Targetheight1>
- 
+   
    <TargetPos1_X>
      0
    </TargetPos1_X>
@@ -173,7 +99,7 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1487
+     -1760.412
    </TargetPos1_Z>
 
    
@@ -188,7 +114,7 @@
    </TargetMaterial2>
 
    <Targetlength2>
-     1300
+     1300 
    </Targetlength2>
    <Targetwidth2>  
      1864 
@@ -204,15 +130,13 @@
      0
    </TargetPos2_Y>
    <TargetPos2_Z>
-     +0
+     +1206
    </TargetPos2_Z>
-
-
 
    <!-- FGD 1 -->
 
    <FGDdefault1>
-     true
+     false
    </FGDdefault1>
 
    <FGDMaterial1>
@@ -236,14 +160,14 @@
      0
    </FGDPos1_Y>
    <FGDPos1_Z>
-     -2588.5
+     +427.5
    </FGDPos1_Z>
 
    
    <!-- FGD 2 -->
 
    <FGDdefault2> 
-     true
+     false
    </FGDdefault2>
 
    <FGDMaterial2>
@@ -267,57 +191,32 @@
      0
    </FGDPos2_Y>
    <FGDPos2_Z>
-     +2648.5
+     +1704.5
    </FGDPos2_Z>
 
-  <!-- SuperFGD 1 -->
+
+   <!-- SuperFGD 1 -->
    <SuperFGDCubeEdge1>
      10
    </SuperFGDCubeEdge1>
    <SuperFGDCubeNum1_X>
-     204
+     192
    </SuperFGDCubeNum1_X>
    <SuperFGDCubeNum1_Y>
-     52
+     56
    </SuperFGDCubeNum1_Y>
    <SuperFGDCubeNum1_Z>
-     188
+     192
    </SuperFGDCubeNum1_Z>
    <SuperFGDPos1_X>
      0
    </SuperFGDPos1_X>
    <SuperFGDPos1_Y>
-     16
+     0
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     0
+     0.
    </SuperFGDPos1_Z>
-   <!-- -1695 -->
-   
-   <!-- SuperFGD 2 -->
-   <SuperFGDCubeEdge2>
-     10
-   </SuperFGDCubeEdge2>
-
-   <SuperFGDCubeNum2_X>
-     10
-   </SuperFGDCubeNum2_X>
-   <SuperFGDCubeNum2_Y>
-     10
-   </SuperFGDCubeNum2_Y>
-   <SuperFGDCubeNum2_Z>
-     10
-   </SuperFGDCubeNum2_Z>
-
-   <SuperFGDPos2_X>
-     0
-   </SuperFGDPos2_X>
-   <SuperFGDPos2_Y>
-     0
-   </SuperFGDPos2_Y>
-   <SuperFGDPos2_Z>
-     0
-   </SuperFGDPos2_Z>
 
    <!-- SuperFGD CF Box -->
    
@@ -326,45 +225,78 @@
    </CFBoxCFRPThickness>
    
    <CFBoxAIREXThickness>
-     30
+     16
    </CFBoxAIREXThickness>
+
+   <CFBoxPlasticThickness>
+     4
+   </CFBoxPlasticThickness>
+
+   <CFBoxInnerClearanceThickness>
+     5
+   </CFBoxInnerClearanceThickness>
+
+   <CFBoxOuterClearanceThickness>
+     5
+   </CFBoxOuterClearanceThickness>
+
 
    <!-- SuperFGD Flat Cable -->
    
    <FlatCableThickness>
-     0.117
+     0.101
    </FlatCableThickness>
  
-   <FlatCableWidth>
-     27.85
-   </FlatCableWidth>
+   <FlatCableN>
+     6
+   </FlatCableN>
+  
 
-   <FlatCableX>
-     18
-   </FlatCableX>
+   <!-- SuperFGD 2 -->
+   <SuperFGDCubeEdge2>
+     10
+   </SuperFGDCubeEdge2>
 
-   <FlatCableZ>
-     32
-   </FlatCableZ>
+   <SuperFGDCubeNum2_X>
+     96
+   </SuperFGDCubeNum2_X>
+   <SuperFGDCubeNum2_Y>
+     56
+   </SuperFGDCubeNum2_Y>
+   <SuperFGDCubeNum2_Z>
+     192
+   </SuperFGDCubeNum2_Z>
+
+   <SuperFGDPos2_X>
+     480.
+   </SuperFGDPos2_X>
+   <SuperFGDPos2_Y>
+     0
+   </SuperFGDPos2_Y>
+   <SuperFGDPos2_Z>
+     -1695
+   </SuperFGDPos2_Z>
+
+
 
    <!-- HATPCFC -->
 
    <HATPCFCName>
-   Solid
+     FC
    </HATPCFCName>
-
+   
    <!-- HATPCUp -->
 
    <HATPCUpWidth>
-   1850
+   2200
    </HATPCUpWidth>
 
    <HATPCUpHeight>
-   900
+   840
    </HATPCUpHeight>
 
    <HATPCUpLength>
-   1900
+   1840
    </HATPCUpLength>
 
    <HATPCUpDriftWidth>
@@ -400,27 +332,27 @@
    </ActiveHATPCUpVerticalOffset>
 
    <HATPCUpPos_X>
-     0  
+     0 
    </HATPCUpPos_X>
    <HATPCUpPos_Y>
-     725.75
+     734.676
    </HATPCUpPos_Y>
    <HATPCUpPos_Z>
-     -1695
+     -1760.412
    </HATPCUpPos_Z>
 
    <!-- HATPCDown -->
 
    <HATPCDownWidth>
-   1850
+   2200
    </HATPCDownWidth>
 
    <HATPCDownHeight>
-   900
+   840
    </HATPCDownHeight>
 
    <HATPCDownLength>
-   1900
+   1840
    </HATPCDownLength>
 
    <HATPCDownDriftWidth>
@@ -467,12 +399,11 @@
      0  
    </HATPCDownPos_X>
    <HATPCDownPos_Y>
-     -725.75
+     -732.5
    </HATPCDownPos_Y>
    <HATPCDownPos_Z>
-     -1695
+     -1760.412
    </HATPCDownPos_Z>
-
 
    <!-- FGD3D 1 -->
    
@@ -518,15 +449,16 @@
      0
    </FGD3DPos2_Z>
 
+
    <!-- FGDlike XZ -->
    <FGDlikeBarEdge>
      10
    </FGDlikeBarEdge>
    <FGDlikeNum_AlongX>
-     190
+     130
    </FGDlikeNum_AlongX>
    <FGDlikeNum_AlongZ>
-     190
+     180
    </FGDlikeNum_AlongZ>
    <FGDlikeNum_Layer>
      30
@@ -538,34 +470,32 @@
      0
    </FGDlikePos_Y>
    <FGDlikePos_Z>
-     -1695
+     0
    </FGDlikePos_Z>
-   <!-- -1695 -->
+   <!-- -1487 -->
 
    <!-- ToF Top Upstream -->
    <ToFdefault_TopUp>
      false
    </ToFdefault_TopUp>
    <ToFPlaneXYNum_TopUp>
-     1
+     21
    </ToFPlaneXYNum_TopUp>
-   <ToFLayerHorizNBar_TopUp>
-     52
-   </ToFLayerHorizNBar_TopUp>   
-   <ToFLayerVertNBar_TopUp>
-     92
-   </ToFLayerVertNBar_TopUp>
+
    <ToFBarwidth_TopUp>
-     25
+     10
    </ToFBarwidth_TopUp>
    <ToFBarheight_TopUp>
-     25
+     120
    </ToFBarheight_TopUp>
+   <ToFBarlength_TopUp>
+     2085
+   </ToFBarlength_TopUp>
    <ToFRotX_TopUp>
-     -90
+     90
    </ToFRotX_TopUp>
    <ToFRotY_TopUp>
-     0
+     90
    </ToFRotY_TopUp>
    <ToFRotZ_TopUp>
      0
@@ -574,10 +504,10 @@
      0
    </ToFPosX_TopUp>
    <ToFPosY_TopUp>
-     +1200
+     +1245
    </ToFPosY_TopUp>
    <ToFPosZ_TopUp>
-     -1137
+     -1760.412
    </ToFPosZ_TopUp>
 
    <!-- ToF Bottom Upstream -->
@@ -585,25 +515,22 @@
      false
    </ToFdefault_BotUp>
    <ToFPlaneXYNum_BotUp>
-     1
+     21
    </ToFPlaneXYNum_BotUp>
-   <ToFLayerHorizNBar_BotUp>
-     52
-   </ToFLayerHorizNBar_BotUp>   
-   <ToFLayerVertNBar_BotUp>
-     92
-   </ToFLayerVertNBar_BotUp>
    <ToFBarwidth_BotUp>
-     25
+     10
    </ToFBarwidth_BotUp>
    <ToFBarheight_BotUp>
-     25
+     120
    </ToFBarheight_BotUp>
+   <ToFBarlength_BotUp>
+     2085
+   </ToFBarlength_BotUp>
    <ToFRotX_BotUp>
-     -90
+     90
    </ToFRotX_BotUp>
    <ToFRotY_BotUp>
-     0
+     90
    </ToFRotY_BotUp>
    <ToFRotZ_BotUp>
      0
@@ -612,10 +539,10 @@
      0
    </ToFPosX_BotUp>
    <ToFPosY_BotUp>
-     -1200
+     -1265
    </ToFPosY_BotUp>
    <ToFPosZ_BotUp>
-     -1137
+     -1760.412
    </ToFPosZ_BotUp>
 
    <!-- ToF Right Upstream -->
@@ -623,20 +550,17 @@
      false
    </ToFdefault_RightUp>
    <ToFPlaneXYNum_RightUp>
-     1
+     20
    </ToFPlaneXYNum_RightUp>
-   <ToFLayerHorizNBar_RightUp>
-     91
-   </ToFLayerHorizNBar_RightUp>   
-   <ToFLayerVertNBar_RightUp>
-     52
-   </ToFLayerVertNBar_RightUp>
    <ToFBarwidth_RightUp>
-     25
+     10
    </ToFBarwidth_RightUp>
    <ToFBarheight_RightUp>
-     25
+     120
    </ToFBarheight_RightUp>
+   <ToFBarlength_RightUp>
+     2085
+   </ToFBarlength_RightUp>
    <ToFRotX_RightUp>
      0
    </ToFRotX_RightUp>
@@ -647,13 +571,13 @@
      0
    </ToFRotZ_RightUp>
    <ToFPosX_RightUp>
-     -1125
+     -1270
    </ToFPosX_RightUp>
    <ToFPosY_RightUp>
      0
    </ToFPosY_RightUp>
    <ToFPosZ_RightUp>
-     -1137
+     -1760.412
    </ToFPosZ_RightUp>
 
    <!-- ToF Left Upstream -->
@@ -661,20 +585,17 @@
      false
    </ToFdefault_LeftUp>
    <ToFPlaneXYNum_LeftUp>
-     1
+     20
    </ToFPlaneXYNum_LeftUp>
-   <ToFLayerHorizNBar_LeftUp>
-     91
-   </ToFLayerHorizNBar_LeftUp>   
-   <ToFLayerVertNBar_LeftUp>
-     52
-   </ToFLayerVertNBar_LeftUp>
    <ToFBarwidth_LeftUp>
-     25
+     10
    </ToFBarwidth_LeftUp>
    <ToFBarheight_LeftUp>
-     25
+     120
    </ToFBarheight_LeftUp>
+   <ToFBarlength_LeftUp>
+     2085
+   </ToFBarlength_LeftUp>
    <ToFRotX_LeftUp>
      0
    </ToFRotX_LeftUp>
@@ -685,13 +606,13 @@
      0
    </ToFRotZ_LeftUp>
    <ToFPosX_LeftUp>
-     +1125
+     +1270
    </ToFPosX_LeftUp>
    <ToFPosY_LeftUp>
      0
    </ToFPosY_LeftUp>
    <ToFPosZ_LeftUp>
-     -1137
+     -1760.412
    </ToFPosZ_LeftUp>
 
    <!-- ToF Back Upstream -->
@@ -699,20 +620,17 @@
      false
    </ToFdefault_BackUp>
    <ToFPlaneXYNum_BackUp>
-     1
+     20
    </ToFPlaneXYNum_BackUp>
-   <ToFLayerHorizNBar_BackUp>
-     91
-   </ToFLayerHorizNBar_BackUp>   
-   <ToFLayerVertNBar_BackUp>
-     88
-   </ToFLayerVertNBar_BackUp>
    <ToFBarwidth_BackUp>
-     25
+     10
    </ToFBarwidth_BackUp>
    <ToFBarheight_BackUp>
-     25
+     120
    </ToFBarheight_BackUp>
+   <ToFBarlength_BackUp>
+     2300
+   </ToFBarlength_BackUp>
    <ToFRotX_BackUp>
      0
    </ToFRotX_BackUp>
@@ -729,7 +647,7 @@
      0
    </ToFPosY_BackUp>
    <ToFPosZ_BackUp>
-     -1762
+     -2800
    </ToFPosZ_BackUp>
 
    <!-- ToF Front Upstream -->
@@ -737,20 +655,17 @@
      false
    </ToFdefault_FrontUp>
    <ToFPlaneXYNum_FrontUp>
-     1
+     20
    </ToFPlaneXYNum_FrontUp>
-   <ToFLayerHorizNBar_FrontUp>
-     91
-   </ToFLayerHorizNBar_FrontUp>   
-   <ToFLayerVertNBar_FrontUp>
-     88
-   </ToFLayerVertNBar_FrontUp>
    <ToFBarwidth_FrontUp>
-     25
+     10
    </ToFBarwidth_FrontUp>
    <ToFBarheight_FrontUp>
-     25
+     120
    </ToFBarheight_FrontUp>
+   <ToFBarlength_FrontUp>
+     2300
+   </ToFBarlength_FrontUp>
    <ToFRotX_FrontUp>
      0
    </ToFRotX_FrontUp>
@@ -767,19 +682,40 @@
      0
    </ToFPosY_FrontUp>
    <ToFPosZ_FrontUp>
-     -512
+     -723
    </ToFPosZ_FrontUp>
 
 
+   <DegraderLength>
+     230
+   </DegraderLength>
+   <DegraderWidth>
+     240
+   </DegraderWidth>
+   <DegraderHeight>
+     80
+   </DegraderHeight>
+   <DegraderPositionX>
+     0
+   </DegraderPositionX>
+   <DegraderPositionY>
+     16
+   </DegraderPositionY>
+   <DegraderPositionZ>
+     -355
+   </DegraderPositionZ>
+   
 
+   
    <!-- Include detectors -->
 
-  <UseHATPCUp>
+   <UseHATPCUp>
      false
    </UseHATPCUp>
    <UseHATPCDown>
      false
    </UseHATPCDown>
+
    <UseForwTPC1>
      false
    </UseForwTPC1>
@@ -796,18 +732,7 @@
    <UseTarget2>
      false
    </UseTarget2>
-   <UseTPCDown1>
-     false
-   </UseTPCDown1>
-   <UseTPCDown2>
-     false
-   </UseTPCDown2>
-   <UseTPCUp1>
-     false
-   </UseTPCUp1>
-   <UseTPCUp2>
-     false
-   </UseTPCUp2>
+
    <UseFGD1>
     false
    </UseFGD1>
@@ -819,62 +744,36 @@
      true
    </UseSuperFGD1>
 
-   <UseCFBox>
-     false
-   </UseCFBox>
-
-   <UsePCB>
-     false
-   </UsePCB>
-
-   <UseFlatCable>
-     false
-   </UseFlatCable>
    <UseSuperFGD2>
      false
    </UseSuperFGD2>
-   <UseWAGASCI1>
-     false
-   </UseWAGASCI1>
-   <UseWAGASCI2>
-     false
-   </UseWAGASCI2>
+
+   <UseCFBox>
+     true
+   </UseCFBox>
+
+   <UsePCB>
+     true
+   </UsePCB>
+
+   <UseFlatCable>
+     true
+   </UseFlatCable>
+
    <UseFGD3D1>
      false
    </UseFGD3D1>
    <UseFGD3D2>
      false
    </UseFGD3D2>
-   <UseSciFi>
-     false
-   </UseSciFi>
    <UseFGDlike>
      false
    </UseFGDlike>
 
-   <UseToF_TopDown>
+   <UseDegrader>
      false
-   </UseToF_TopDown>
-   <UseToF_BotDown>
-     false
-   </UseToF_BotDown>
-   <UseToF_RightDown>
-     false
-   </UseToF_RightDown>
-   <UseToF_LeftDown>
-     false
-   </UseToF_LeftDown>
-   <UseToF_BackDown>
-     false
-   </UseToF_BackDown>
-   <UseToF_FrontDown>
-     false
-   </UseToF_FrontDown>
-
-   <UseToF_ECalP0D>
-     false
-   </UseToF_ECalP0D>
-
+   </UseDegrader>
+   
    <UseToF_TopUp>
      false
    </UseToF_TopUp>
@@ -903,7 +802,7 @@
    <UseBasket>
      false
    </UseBasket>
-
+   
    <UseDsECal>
      false
    </UseDsECal>
@@ -913,33 +812,11 @@
    <UseP0DECal>
      false
    </UseP0DECal>
-
+   
    <UseP0D>
      false
    </UseP0D>
-
-  <UseDegrader>
-     false
-   </UseDegrader>
-   <DegraderLength>
-    230
-  </DegraderLength>
-  <DegraderWidth>
-    240
-  </DegraderWidth>
-  <DegraderHeight>
-    80
-  </DegraderHeight>
-  <DegraderPositionX>
-    0
-  </DegraderPositionX>
-  <DegraderPositionY>
-    16
-  </DegraderPositionY>
-  <DegraderPositionZ>
-    -355
-  </DegraderPositionZ>
-
+   
    <!-- Invisible detectors -->
 
    <InvisForwTPC1>
@@ -959,64 +836,23 @@
      false
    </InvisTarget2>
 
-   <InvisTPCDown1>
-     false
-   </InvisTPCDown1>
-   <InvisTPCDown2>
-     false
-   </InvisTPCDown2>
-   <InvisTPCUp1>
-     false
-   </InvisTPCUp1>
-   <InvisTPCUp2>
-     false
-   </InvisTPCUp2>
    <InvisFGD1>
      false
    </InvisFGD1>
    <InvisFGD2>
      false
    </InvisFGD2>
-   
+
    <InvisSuperFGD>
      true
    </InvisSuperFGD>
-   <InvisWAGASCI>
-     true
-   </InvisWAGASCI>
    <InvisFGD3D>
      true
    </InvisFGD3D> 
-  <InvisSciFi>
-     true
-   </InvisSciFi>
    <InvisFGDlike>
      true
    </InvisFGDlike>
-  
-   <InvisToF_TopDown>
-     false
-   </InvisToF_TopDown>
-   <InvisToF_BotDown>
-     false
-   </InvisToF_BotDown>
-   <InvisToF_RightDown>
-     false
-   </InvisToF_RightDown>
-   <InvisToF_LeftDown>
-     false
-   </InvisToF_LeftDown>
-   <InvisToF_BackDown>
-     false
-   </InvisToF_BackDown>
-   <InvisToF_FrontDown>
-     false
-   </InvisToF_FrontDown>
-
-   <InvisToF_ECalP0D>
-     false
-   </InvisToF_ECalP0D>
-
+   
    <InvisToF_TopUp>
      false
    </InvisToF_TopUp>
@@ -1036,14 +872,12 @@
      false
    </InvisToF_FrontUp>
 
-
-
    <InvisMagnet>
      true
    </InvisMagnet>
    
    <InvisBasket>
-     false
+     true
    </InvisBasket>
 
    <!-- To fix visualization for detectors below -->
@@ -1071,5 +905,4 @@
 
 
   
-
 

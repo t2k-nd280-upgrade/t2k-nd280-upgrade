@@ -87,4 +87,4 @@ fi
 echo "Compile"
 echo ""
 
-make -j4
+make -j6

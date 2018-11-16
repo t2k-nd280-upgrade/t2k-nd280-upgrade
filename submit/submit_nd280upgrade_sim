@@ -262,7 +262,7 @@ while($irun < $nruns) { # loop over the jobs
 
 if($resource eq "parallel") {
     close(par_file);
-    $run_command = "nice -n19 parallel -j 10 -a $job_dir/commands_sim.sh";
+    $run_command = "nice -n19 parallel -j 5 -a $job_dir/commands_sim.sh";
     print "running parallel \n";
     system($run_command);
     unlink "$job_dir/commands_sim.sh";

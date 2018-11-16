@@ -44,6 +44,7 @@
 #include "G4ParticleDefinition.hh"
 #include "Randomize.hh"
 #include "G4Run.hh"
+#include "TH2F.h"
 
 //#include "G4SystemOfUnits.hh" // NEW GLOBAL
 #include <CLHEP/Units/SystemOfUnits.h>
@@ -150,6 +151,36 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
       }
 
+    if (fTypeMomentum=="Neutron") {
+      G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+      float aKinEnergy = (G4UniformRand()*(800.) );
+      aMomAmp = sqrt((aKinEnergy+939.5654) * (aKinEnergy+939.5654) - 939.5654 * 939.5654);
+      fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+      cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
+      aEAmp = fParticleGun->GetParticleEnergy();
+    }
+
+    if (fTypeMomentum=="Neutron_real") {
+      G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+      float aKinEnergy = (G4UniformRand()*(800.) );
+      aMomAmp = sqrt((aKinEnergy+939.5654) * (aKinEnergy+939.5654) - 939.5654 * 939.5654);
+      TFile* file = new TFile("/t2k/users/suvorov/dev/t2k-nd280-upgrade/Neut/neutrons.root", "READ");
+      TH2F* htemp = (TH2F*)file->Get("htemp");
+      Double_t mom, cos;
+      htemp->GetRandom2(cos, mom);
+      fParticleGun->SetParticleMomentum(mom*CLHEP::MeV);
+
+      G4double cosTheta = cos;
+      G4double phi = G4UniformRand()*360*CLHEP::deg; //flat in [0,2pi]
+      G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
+      G4ThreeVector dir(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);
+      fParticleGun->SetParticleMomentumDirection(dir);
+      cout << "Momentum after update = " << mom << " MeV/c" << endl;
+      G4cout << "Direction of the gun: " 
+       << dir[0] << ", " << dir[1] << ", " << dir[2] 
+       << G4endl;
+      aEAmp = fParticleGun->GetParticleEnergy();
+    }
 
     if(fTypeDirection=="Uniform"){      
       G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();

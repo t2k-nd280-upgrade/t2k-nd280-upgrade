@@ -8,10 +8,10 @@ int main(int argc,char** argv) {
   // 2) recompile
   // 3) run
 
-  TrackReconstruction(argc, argv);
-  LightYield(argc, argv);
+  //TrackReconstruction(argc, argv);
+  //LightYield(argc, argv);
   NeutronAnalysis(argc, argv);
-  StoppingProton(argc, argv);
+  //StoppingProton(argc, argv);
   
   return 1;
 }
