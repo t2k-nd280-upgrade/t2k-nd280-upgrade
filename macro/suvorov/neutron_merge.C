@@ -10,8 +10,12 @@
 
 #include <iostream>
 
+const float MIP_LY_AV3 = 50;
+
+using namespace std;
+
 void neutron_merge() {
-	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v8-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v9-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
 
   const Int_t Ndist = 8;
   float distance_cut[Ndist];
@@ -27,6 +31,7 @@ void neutron_merge() {
   TTree* tree       = (TTree*)file->Get("neutron");
   Double_t ekin, costheta, light, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
   Double_t dir_true[3], dir_reco[3];
+  Double_t N_hits_XY, N_hits_XZ, N_hits_YZ; 
   tree->SetBranchAddress("KinEnergy_true",     &ekin);
   tree->SetBranchAddress("CosTheta_true",      &costheta);
   tree->SetBranchAddress("Light",              &light);
@@ -43,6 +48,10 @@ void neutron_merge() {
   tree->SetBranchAddress("Neutron_time",       &neutron_time);
   tree->SetBranchAddress("Neutron_dist",       &neutron_dist_true);
 
+  tree->SetBranchAddress("N_hits_XY",          &N_hits_XY);
+  tree->SetBranchAddress("N_hits_XZ",          &N_hits_XZ);
+  tree->SetBranchAddress("N_hits_YZ",          &N_hits_YZ);
+
 	TH2F* init_e_cos  = (TH2F*)file->Get("ini_ET");
 	TH2F* eff_e_cos   = (TH2F*)file->Get("eff_ET");
 	TH2F* pe_e_cos    = (TH2F*)file->Get("pe_ET");
@@ -57,6 +66,13 @@ void neutron_merge() {
 
   TH2F* pe_e        = (TH2F*)file->Get("pe_E");
 
+  TH1F* hits_cl_XY = (TH1F*)file->Get("hitsN_XY");
+  TH1F* hits_cl_XZ = (TH1F*)file->Get("hitsN_XZ");
+  TH1F* hits_cl_YZ = (TH1F*)file->Get("hitsN_YZ");
+
+  Int_t test_light_n = 0;
+  Float_t test_light = 0.;
+
   // do rebinning
   Int_t rebin_Y = 5;
   init_e_cos->RebinY(rebin_Y);
@@ -68,8 +84,17 @@ void neutron_merge() {
   TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_VA3.root", "RECREATE");
   file_out->cd();
 
-  const Int_t time_size = 9;
-  Double_t time_sigma[time_size] = {0., 0.9, 0.9/sqrt(2), 0.9/sqrt(3), 0.6, 0.6/sqrt(2), 0.6/sqrt(3), 2/sqrt(3), 1.5/sqrt(3)};
+  for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
+    for (Int_t j = 1; j <= pe_e_cos->GetYaxis()->GetNbins(); ++j) {
+      Float_t pre = pe_e_cos->GetBinContent(i, j);
+      Float_t scale = eff_e_cos->GetBinContent(i, j);
+      pe_e_cos->SetBinContent(i, j, pre / scale);
+    }
+  }
+
+  const Int_t time_size = 4;
+  //Double_t time_sigma[time_size] = {0., 0.9, 0.9/sqrt(2), 0.9/sqrt(3), 0.6, 0.6/sqrt(2), 0.6/sqrt(3), 2/sqrt(3), 1.5/sqrt(3), 0.};
+  Double_t time_sigma[time_size] = {0., 1.5/sqrt(3), 0.6/sqrt(3), 0.};
 
   // read tree several times in order to check
   for (Int_t distID = 0; distID < Ndist; ++distID) {
@@ -81,14 +106,22 @@ void neutron_merge() {
 
     TH2F* beta_ekin_sm[time_size];
 
+    TH1F* test_l_e   = new TH1F("ly_energy", "Averagy l.y.", 250, 0., 500.);
+    TH1F* test_l_e_n = new TH1F("test1", "test", 250, 0., 500.);
+
     TH2F* angle_smearing = new TH2F("angle_smearing", "Angle smearing", 50, -1., 1., 50, -1., 1.);
+
+    TH1F* time_resol  = new TH1F("time_res", "Time resolution", 500, 0., 6000.);
+    TH1F* light_y     = new TH1F("light_y", "Light yield", 250, 0., 6000.);
+
+    TH1F* test_light_y     = new TH1F("test_light_y", "Light yield", 6000, 0., 6000.);
   
-    const Int_t Nbins = 28;
-    Double_t bins[Nbins] = {0., 5., 10., 15., 20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 120., 130., 140., 150., 170.  , 190., 210., 230., 250., 300., 350., 400., 450., 500.};
+    const Int_t Nbins = 31;
+    Double_t bins[Nbins] = {0., 5., 10., 15., 20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 120., 130., 140., 150., 170.  , 190., 210., 230., 250., 300., 350., 400., 450., 500., 600., 700., 800.};
   
     for (Int_t i = 0; i < time_size; ++i) {
-      energy_resol[i]       = new TH2F(Form("energy_smearng_%i", i), "energy smearing matrix", 250, 0., 500, 300, 0., 600);
-      energy_resol_rebin[i] = new TH2F(Form("energy_resol_rebin_%i", i), "", Nbins-1, bins, 300, 0., 600.);
+      energy_resol[i]       = new TH2F(Form("energy_smearng_%i", i), "energy smearing matrix", 400, 0., 800, 600, 0., 1200);
+      energy_resol_rebin[i] = new TH2F(Form("energy_resol_rebin_%i", i), "", Nbins-1, bins, 600, 0., 1200.);
       energy_acc[i]         = new TH1F(Form("energy_acc_%i", i), "energy accuracy in the ROI", 120, -60., 60.);
       beta_ekin_sm[i]       = (TH2F*)beta_ekin->Clone(Form("beta_ekin_smeared_%i", i));
       beta_ekin_sm[i]->Reset();
@@ -120,6 +153,27 @@ void neutron_merge() {
 
       for (Int_t resID = 1; resID < time_size; ++resID ) {
   
+        if (resID == time_size - 1) {
+          float light_cl = light / 3.;
+          float res      = 1.5 / sqrt(3);
+          res           *= sqrt(MIP_LY_AV3 / light_cl);
+
+          time_resol->Fill(1000 * res);
+          light_y->Fill(light_cl);
+          time_sigma[resID] = res;
+
+          if (ekin > 400) {
+            test_light += light;
+            ++test_light_n;
+            test_light_y->Fill(light);
+          }
+
+          test_l_e->Fill(ekin, light);
+          test_l_e_n->Fill(ekin);
+          //if (res > 3.)
+          //  cout << "Light " << light_cl << "\ttr " << 1000 * res << endl;
+        }
+
         time = gen->Gaus(first_hit_time, time_sigma[resID]);
         beta = dist_cubes / (time * 30.);
         ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
@@ -217,6 +271,8 @@ void neutron_merge() {
     }
     eff_e_cos_2->Write("efficiency_vs_Ekin_theta");
     angle_smearing->Write();
+    time_resol->Write();
+    light_y->Write();
 
     for (Int_t i = 0; i < time_size; ++i) {
       energy_resol[i]->Write();
@@ -225,15 +281,17 @@ void neutron_merge() {
       //energy_resol_rebin[i]->Write();
     }
 
+    for (Int_t i = 1; i <= test_l_e->GetXaxis()->GetNbins(); ++i) {
+      Float_t pre = test_l_e->GetBinContent(i);
+      Float_t scale = test_l_e_n->GetBinContent(i);
+      test_l_e->SetBinContent(i, pre / scale);
+    }
+
+    test_l_e->Write();
+    test_light_y->Write();
+
   } // loop over distance cuts
 
-  for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
-    for (Int_t j = 1; j <= pe_e_cos->GetYaxis()->GetNbins(); ++j) {
-      Float_t pre = pe_e_cos->GetBinContent(i, j);
-      Float_t scale = eff_e_cos->GetBinContent(i, j);
-      pe_e_cos->SetBinContent(i, j, pre / scale);
-    }
-  }
   file_out->cd();
   // energy distance study
   // TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 300, 0., 1500, 250, 0., 500.);
@@ -300,6 +358,10 @@ void neutron_merge() {
   hits_number->Write();
   e_dist->Write();
   beta_ekin->Write();
+
+  hits_cl_XY->Write();
+  hits_cl_XZ->Write();
+  hits_cl_YZ->Write();
   //beta_ekin_sm->Write();
 
   mom_forward->Draw("E1");

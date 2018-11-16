@@ -34,7 +34,10 @@
 
 const int VERTEX_ACTIVITY = 3;
 
-#define NEvtDisplTot 0
+#define NEvtDisplTot 50
+bool PLOT = false;
+
+bool CloseHit(int i, int j, TH2F* h_ini);
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -113,16 +116,12 @@ int NeutronAnalysis(int argc,char** argv) {
 
   TH2F* vertexXZ    = new TH2F("vertexA", "Average vertex activity", 5, -2., 3., 5, -2., 3.);
 
-  TH2F* energy_resol0 = new TH2F("energy_resol0", "energy resolution", 250, 0., 500, 250, 0., 500);
-  TH2F* energy_resol1 = new TH2F("energy_resol1", "energy resolution", 250, 0., 500, 250, 0., 500);
-  TH2F* energy_resol2 = new TH2F("energy_resol2", "energy resolution", 250, 0., 500, 250, 0., 500);
-  TH2F* energy_resol3 = new TH2F("energy_resol3", "energy resolution", 250, 0., 500, 250, 0., 500);
-  TH2F* energy_resol4 = new TH2F("energy_resol4", "energy resolution", 250, 0., 500, 250, 0., 500);
-  TH2F* energy_resol5 = new TH2F("energy_resol5", "energy resolution", 250, 0., 500, 250, 0., 500);
-  TH2F* energy_resol6 = new TH2F("energy_resol6", "energy resolution", 250, 0., 500, 250, 0., 500);
-
   TH2F* beta_ekin     = new TH2F("beta_ekin", "energy resolution", 250, 0., 500, 250, 0., 1.);
   TH2F* beta_ekin_sm  = new TH2F("beta_ekin_sm", "energy resolution", 250, 0., 500, 250, 0., 1.);
+
+  TH1F* hits_cl_XY = new TH1F("hitsN_XY", "Number of hits XY", 50, 0., 50.);
+  TH1F* hits_cl_XZ = new TH1F("hitsN_XZ", "Number of hits XZ", 50, 0., 50.);
+  TH1F* hits_cl_YZ = new TH1F("hitsN_YZ", "Number of hits YZ", 50, 0., 50.);
 
   //TH1F* diff = new TH1F("diff", "", 400, -20., 20);
 
@@ -149,6 +148,7 @@ int NeutronAnalysis(int argc,char** argv) {
   TTree* outtree = new TTree("neutron", "");
 
   Double_t ekin, costheta, light, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
+  Double_t N_hits_XY, N_hits_XZ, N_hits_YZ;
   Double_t dir_true[3], dir_reco[3];
   ekin = costheta = light = dist_cubes = dist = first_hit_time = neutron_time = neutron_dist_true = -1.;
   outtree->Branch("KinEnergy_true",     &ekin);
@@ -161,6 +161,10 @@ int NeutronAnalysis(int argc,char** argv) {
   outtree->Branch("First_hit_time",     &first_hit_time);
   outtree->Branch("Neutron_time",       &neutron_time);
   outtree->Branch("Neutron_dist",       &neutron_dist_true);
+
+  outtree->Branch("N_hits_XY",          &N_hits_XY);
+  outtree->Branch("N_hits_XZ",          &N_hits_XZ);
+  outtree->Branch("N_hits_YZ",          &N_hits_YZ);
 
   /////////////////////////////
   //                         //
@@ -373,7 +377,7 @@ int NeutronAnalysis(int argc,char** argv) {
       continue;
     }
     TND280UpTrack* track = nd280UpEvent->GetTrack(0);
-    if (track->GetPDG() != 22) {
+    if (track->GetPDG() != 2112) {
       std::cout << "WARNING! First track is not neutron! The event will be skipped. PDG = " << track->GetPDG() << std::endl;
       continue;
     }
@@ -573,6 +577,64 @@ int NeutronAnalysis(int argc,char** argv) {
     if (first_hit_time == 1.e9) 
       continue;
 
+    TH2F* hits_map_XY_cluster = (TH2F*)h2d_xy->Clone("hits_map_XY_cluster");
+    TH2F* hits_map_XZ_cluster = (TH2F*)h2d_xz->Clone("hits_map_XZ_cluster");
+    TH2F* hits_map_YZ_cluster = (TH2F*)h2d_yz->Clone("hits_map_YZ_cluster");
+
+    hits_map_XY_cluster->SetBinContent(first_binX, first_binY, 1.);
+    hits_map_XZ_cluster->SetBinContent(first_binX, first_binZ, 1.);
+    hits_map_YZ_cluster->SetBinContent(first_binY, first_binZ, 1.);
+
+    if (DEBUG)
+      cout  << "Clustering hits 0 " << hits_map_XY->Integral() 
+                          << "\t" << hits_map_XZ->Integral()
+                          << "\t" << hits_map_YZ->Integral() << endl;
+
+    if (DEBUG)
+      cout  << "Clustering hits 1 " << hits_map_XY_cluster->Integral() 
+                          << "\t" << hits_map_XZ_cluster->Integral()
+                          << "\t" << hits_map_YZ_cluster->Integral() << endl;
+
+    int N_prev = 0;
+
+    while (hits_map_XY_cluster->Integral() != N_prev) {
+      N_prev = hits_map_XY_cluster->Integral();
+      for (Int_t i = 1; i <= hits_map_XY_cluster->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j <= hits_map_XY_cluster->GetYaxis()->GetNbins(); ++j) {
+          if (CloseHit(i, j, hits_map_XY) && !hits_map_XY_cluster->GetBinContent(i, j))
+            hits_map_XY_cluster->SetBinContent(i, j, 1);
+        }
+      }
+    }
+
+    N_prev = 0;
+    while (hits_map_XZ_cluster->Integral() != N_prev) {
+      N_prev = hits_map_XZ_cluster->Integral();
+      for (Int_t i = 1; i <= hits_map_XZ_cluster->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j <= hits_map_XZ_cluster->GetYaxis()->GetNbins(); ++j) {
+          if (CloseHit(i, j, hits_map_XZ) && !hits_map_XZ_cluster->GetBinContent(i, j))
+            hits_map_XZ_cluster->SetBinContent(i, j, 1);
+        }
+      }
+    }
+
+    N_prev = 0;
+    while (hits_map_YZ_cluster->Integral() != N_prev) {
+      N_prev = hits_map_YZ_cluster->Integral();
+      for (Int_t i = 1; i <= hits_map_YZ_cluster->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j <= hits_map_YZ_cluster->GetYaxis()->GetNbins(); ++j) {
+          if (CloseHit(i, j, hits_map_YZ) && !hits_map_YZ_cluster->GetBinContent(i, j))
+            hits_map_YZ_cluster->SetBinContent(i, j, 1);
+        }
+      }
+    }
+
+    if (DEBUG)
+      cout  << "Clustering hits 2 " << hits_map_XY_cluster->Integral() 
+                          << "\t" << hits_map_XZ_cluster->Integral()
+                          << "\t" << hits_map_YZ_cluster->Integral() << endl;
+
+
     // map the first hit
     Double_t x = hits_map_XY->GetXaxis()->GetBinCenter(first_binX);
     Double_t y = hits_map_XY->GetYaxis()->GetBinCenter(first_binY);
@@ -587,6 +649,14 @@ int NeutronAnalysis(int argc,char** argv) {
         abs(first_binY - vertex_binY) < VERTEX_ACTIVITY + 1 &&
         abs(first_binZ - vertex_binZ) < VERTEX_ACTIVITY + 1 )
       continue;
+
+    hits_cl_XY->Fill(hits_map_XY_cluster->Integral());
+    hits_cl_XZ->Fill(hits_map_XZ_cluster->Integral());
+    hits_cl_YZ->Fill(hits_map_YZ_cluster->Integral());
+
+    N_hits_XY = hits_map_XY_cluster->Integral();
+    N_hits_XZ = hits_map_XZ_cluster->Integral();
+    N_hits_YZ = hits_map_YZ_cluster->Integral();
 
     TVector3 reco_vec(first_binX - vertex_binX, first_binY - vertex_binY, first_binZ - vertex_binZ);
     reco_vec    = reco_vec.Unit();
@@ -627,9 +697,9 @@ int NeutronAnalysis(int argc,char** argv) {
 
       if (point_binX == first_binX && point_binY == first_binY && point_binZ == first_binZ) {
         neutron_time = pointT;
-        neutron_dist_true = sqrt( (first_binX - vertex_x) * (first_binX - vertex_x) + 
-                                  (point_binY - vertex_y) * (point_binY - vertex_y) +
-                                  (point_binZ - vertex_z) * (point_binZ - vertex_z));
+        neutron_dist_true = sqrt( (first_binX - vertex_binX) * (first_binX - vertex_binX) + 
+                                  (point_binY - vertex_binY) * (point_binY - vertex_binY) +
+                                  (point_binZ - vertex_binZ) * (point_binZ - vertex_binZ));
       }
     }
 
@@ -665,46 +735,6 @@ int NeutronAnalysis(int argc,char** argv) {
     float beta = dist_cubes / (first_hit_time * 30.);
     beta_ekin->Fill(ekin, beta);
 
-    beta = neutron_dist_true / (neutron_time * 30.);
-    float time = gen->Gaus(neutron_time - vertex_time, 0.9);
-    float ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
-    energy_resol0->Fill(ekin, ekin2);
-
-    time = gen->Gaus(first_hit_time - vertex_time, 0.9);
-    // c = 30 cm/ns
-    beta = dist_cubes / (time * 30.);
-
-    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
-
-    energy_resol1->Fill(ekin, ekin2);
-
-    time = gen->Gaus(first_hit_time - vertex_time, 0.9/sqrt(2));
-    beta = dist_cubes / (time * 30.);
-    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta))  - 939.565379;
-    energy_resol2->Fill(ekin, ekin2);
-
-    time = gen->Gaus(first_hit_time - vertex_time, 0.9/sqrt(3));
-    beta = dist_cubes / (time * 30.);
-    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
-    energy_resol3->Fill(ekin, ekin2);
-
-
-    beta_ekin_sm->Fill(ekin, beta);
-
-    time = gen->Gaus(first_hit_time - vertex_time, 0.6);
-    beta = dist_cubes / (time * 30.);
-    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
-    energy_resol4->Fill(ekin, ekin2);
-
-    time = gen->Gaus(first_hit_time - vertex_time, 0.6/sqrt(2));
-    beta = dist_cubes / (time * 30.);
-    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
-    energy_resol5->Fill(ekin, ekin2);
-
-    time = gen->Gaus(first_hit_time - vertex_time, 0.6/sqrt(3));
-    beta = dist_cubes / (time * 30.);
-    ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
-    energy_resol6->Fill(ekin, ekin2);
   } // loop over events
 
   fileout->cd();
@@ -730,24 +760,20 @@ int NeutronAnalysis(int argc,char** argv) {
   vertexXZ->Scale(1./vertex_norm);
   vertexXZ->Write();
 
-  energy_resol0->Write();
-  energy_resol1->Write();
-  energy_resol2->Write();
-  energy_resol3->Write();
-  energy_resol4->Write();
-  energy_resol5->Write();
-  energy_resol6->Write();
-
   beta_ekin->Write();
   beta_ekin_sm->Write();
 
   mom_forward->Write();
   mom_norm->Write();
 
+  hits_cl_XY->Write();
+  hits_cl_XZ->Write();
+  hits_cl_YZ->Write();
+
   int last = evtfirst+Nentries-1;
   for(int ievtdispl=evtfirst;ievtdispl<=last ;ievtdispl++){ 
     // Response
-    if(ievtdispl<NEvtDisplTot){
+    if(ievtdispl<NEvtDisplTot && PLOT){
       //cout << "ievtdispl = " << ievtdispl << endl;
       if(hMPPCHits_XY[ievtdispl]->Integral()>0 ||
          hMPPCHits_XZ[ievtdispl]->Integral()>0 ||
@@ -771,4 +797,29 @@ int NeutronAnalysis(int argc,char** argv) {
   fileout->Close();
   
   return 0;
+}
+
+bool CloseHit(int i, int j, TH2F* h_ini) {
+  if (!h_ini->GetBinContent(i, j))
+    return false;
+
+  if (i > 1 && h_ini->GetBinContent(i - 1, j))
+    return true;
+  if (i < h_ini->GetXaxis()->GetNbins() && h_ini->GetBinContent(i + 1, j))
+    return true;
+  if (j > 1 && h_ini->GetBinContent(i, j - 1))
+    return true;
+  if (j < h_ini->GetYaxis()->GetNbins() && h_ini->GetBinContent(i, j + 1))
+    return true;
+
+  if (i < h_ini->GetXaxis()->GetNbins() && j < h_ini->GetYaxis()->GetNbins() && h_ini->GetBinContent(i + 1, j + 1))
+    return true;
+  if (i < h_ini->GetXaxis()->GetNbins() && j > 1 && h_ini->GetBinContent(i + 1, j - 1))
+    return true;
+  if (i > 2 && j < h_ini->GetYaxis()->GetNbins() && h_ini->GetBinContent(i - 1, j + 1))
+    return true;
+  if (i > 2 && j > 2 && h_ini->GetBinContent(i - 1, j - 1))
+    return true;
+
+  return false;
 }
