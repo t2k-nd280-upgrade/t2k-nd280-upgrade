@@ -120,11 +120,11 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
 
   // uncomment this to store all points in the target
   
-  if (detname_curr.contains("/t2k/OA/Magnet/Basket/target1")) {
+  /*if (detname_curr.contains("/t2k/OA/Magnet/Basket/target1")) {
     ndPoint->MarkPoint();
     return;
   } else
-    return;
+    return;*/
   
 
   G4Region* SDRegion = G4RegionStore::GetInstance()->
@@ -216,6 +216,23 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
       return;
     }
   }
+
+  // neutron study cuts
+  /*if (particleName == "neutron") {
+    ndTraj->MarkTrajectory();
+    return;
+  }
+
+  if (particleName == "e+" || particleName == "e-"){
+    if(initialMomentum > 100*CLHEP::MeV){
+      ndTraj->MarkTrajectory(false); 
+      return;
+    } else return;
+  }
+
+  ndTraj->MarkTrajectory();
+  return;*/
+  // end of neutron study cuts
     
   // Don't save the neutrinos
   if (particleName == "anti_nu_e") return;

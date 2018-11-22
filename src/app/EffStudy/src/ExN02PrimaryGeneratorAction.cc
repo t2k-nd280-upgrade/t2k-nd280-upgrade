@@ -158,24 +158,37 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
       cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
       aEAmp = fParticleGun->GetParticleEnergy();
+
+      G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
+      G4double cosTheta = G4UniformRand()*2. - 1; //cosTheta in [-1,1] --> theta in [0,pi]
+      G4double phi = G4UniformRand()*360*CLHEP::deg; //flat in [0,2pi]
+      G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
+      G4ThreeVector dir(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);
+      //G4cout << "direction of the gun before update = " << aDir[0] << ", " << aDir[1] << ", " << aDir[2] <<endl;
+      //G4cout << "After update (favour foward going particles)= " << dir[0] << ", " << dir[1] << ", " << dir[2] <<endl;
+      G4cout << "Direction of the gun: " 
+       << dir[0] << ", " << dir[1] << ", " << dir[2] 
+       << G4endl;
+      fParticleGun->SetParticleMomentumDirection(dir);
     }
 
     if (fTypeMomentum=="Neutron_real") {
       G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
-      float aKinEnergy = (G4UniformRand()*(800.) );
-      aMomAmp = sqrt((aKinEnergy+939.5654) * (aKinEnergy+939.5654) - 939.5654 * 939.5654);
       TFile* file = new TFile("/t2k/users/suvorov/dev/t2k-nd280-upgrade/Neut/neutrons.root", "READ");
       TH2F* htemp = (TH2F*)file->Get("htemp");
-      Double_t mom, cos;
-      htemp->GetRandom2(cos, mom);
-      fParticleGun->SetParticleMomentum(mom*CLHEP::MeV);
+      G4double cosTheta;
+      htemp->GetRandom2(cosTheta, aMomAmp);
+      if (cosTheta > 1.)
+        cosTheta = 1.;
+      if (cosTheta < -1.)
+        cosTheta = -1.;
+      fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
 
-      G4double cosTheta = cos;
       G4double phi = G4UniformRand()*360*CLHEP::deg; //flat in [0,2pi]
       G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
       G4ThreeVector dir(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);
       fParticleGun->SetParticleMomentumDirection(dir);
-      cout << "Momentum after update = " << mom << " MeV/c" << endl;
+      cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
       G4cout << "Direction of the gun: " 
        << dir[0] << ", " << dir[1] << ", " << dir[2] 
        << G4endl;
@@ -184,8 +197,8 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
     if(fTypeDirection=="Uniform"){      
       G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
-      //G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi/2]
-      G4double cosTheta = G4UniformRand()*2. - 1; //cosTheta in [-1,1] --> theta in [0,pi]
+      G4double cosTheta = G4UniformRand(); //cosTheta in [0,1] --> theta in [0,pi/2]
+      //G4double cosTheta = G4UniformRand()*2. - 1; //cosTheta in [-1,1] --> theta in [0,pi]
       G4double phi = G4UniformRand()*360*CLHEP::deg; //flat in [0,2pi]
       G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
       G4ThreeVector dir(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);

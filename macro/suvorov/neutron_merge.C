@@ -15,7 +15,7 @@ const float MIP_LY_AV3 = 50;
 using namespace std;
 
 void neutron_merge() {
-	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v9-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v10-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
 
   const Int_t Ndist = 8;
   float distance_cut[Ndist];
@@ -29,12 +29,15 @@ void neutron_merge() {
   distance_cut[7] = 0.;
 
   TTree* tree       = (TTree*)file->Get("neutron");
-  Double_t ekin, costheta, light, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
+  Double_t ekin, costheta, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
   Double_t dir_true[3], dir_reco[3];
+  Double_t light_fst, light_max, light_tot;
   Double_t N_hits_XY, N_hits_XZ, N_hits_YZ; 
   tree->SetBranchAddress("KinEnergy_true",     &ekin);
   tree->SetBranchAddress("CosTheta_true",      &costheta);
-  tree->SetBranchAddress("Light",              &light);
+  tree->SetBranchAddress("Light_fst",          &light_fst);
+  tree->SetBranchAddress("Light_max",          &light_max);
+  tree->SetBranchAddress("Light_tot",          &light_tot);
 
   tree->SetBranchAddress("Dir_True",           dir_true);
   tree->SetBranchAddress("Dir_Reco",           dir_reco);
@@ -81,7 +84,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_VA3.root", "RECREATE");
+  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_v10.root", "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
@@ -93,7 +96,6 @@ void neutron_merge() {
   }
 
   const Int_t time_size = 4;
-  //Double_t time_sigma[time_size] = {0., 0.9, 0.9/sqrt(2), 0.9/sqrt(3), 0.6, 0.6/sqrt(2), 0.6/sqrt(3), 2/sqrt(3), 1.5/sqrt(3), 0.};
   Double_t time_sigma[time_size] = {0., 1.5/sqrt(3), 0.6/sqrt(3), 0.};
 
   // read tree several times in order to check
@@ -112,7 +114,9 @@ void neutron_merge() {
     TH2F* angle_smearing = new TH2F("angle_smearing", "Angle smearing", 50, -1., 1., 50, -1., 1.);
 
     TH1F* time_resol  = new TH1F("time_res", "Time resolution", 500, 0., 6000.);
-    TH1F* light_y     = new TH1F("light_y", "Light yield", 250, 0., 6000.);
+    TH1F* ly_fst     = new TH1F("ly_fst", "Light yield first", 250, 0., 6000.);
+    TH1F* ly_tot     = new TH1F("ly_tot", "Light yield total", 250, 0., 6000.);
+    TH1F* ly_max     = new TH1F("ly_max", "Light yield max", 250, 0., 6000.);
 
     TH1F* test_light_y     = new TH1F("test_light_y", "Light yield", 6000, 0., 6000.);
   
@@ -154,24 +158,26 @@ void neutron_merge() {
       for (Int_t resID = 1; resID < time_size; ++resID ) {
   
         if (resID == time_size - 1) {
-          float light_cl = light / 3.;
+          float light_fiber = light_tot / 3.;
           float res      = 1.5 / sqrt(3);
-          res           *= sqrt(MIP_LY_AV3 / light_cl);
+          res           *= sqrt(MIP_LY_AV3 / light_fiber);
 
           time_resol->Fill(1000 * res);
-          light_y->Fill(light_cl);
+          ly_fst->Fill(light_fst);
+          ly_max->Fill(light_max);
+          ly_tot->Fill(light_tot);
           time_sigma[resID] = res;
 
           if (ekin > 400) {
-            test_light += light;
+            test_light += light_tot;
             ++test_light_n;
-            test_light_y->Fill(light);
+            test_light_y->Fill(light_tot);
           }
 
-          test_l_e->Fill(ekin, light);
+          test_l_e->Fill(ekin, light_tot);
           test_l_e_n->Fill(ekin);
           //if (res > 3.)
-          //  cout << "Light " << light_cl << "\ttr " << 1000 * res << endl;
+          //  cout << "Light " << light_fiber << "\ttr " << 1000 * res << endl;
         }
 
         time = gen->Gaus(first_hit_time, time_sigma[resID]);
@@ -272,7 +278,9 @@ void neutron_merge() {
     eff_e_cos_2->Write("efficiency_vs_Ekin_theta");
     angle_smearing->Write();
     time_resol->Write();
-    light_y->Write();
+    ly_fst->Write();
+    ly_max->Write();
+    ly_tot->Write();
 
     for (Int_t i = 0; i < time_size; ++i) {
       energy_resol[i]->Write();
