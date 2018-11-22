@@ -171,15 +171,15 @@ void ND280CubeScintConstructor::Init() {
   SetFiberRadius(0.5*CLHEP::mm);
   SetHoleRadius(0.9*CLHEP::mm);
   
-  SetCoatingThickness(0.25*CLHEP::mm);
+  SetCoatingThickness(0.1*CLHEP::mm);
   //SetCoatingRadius(0.0*mm);
   SetGap(0.0*CLHEP::mm);
   
   //SetSensitiveDetector(NULL);
   SetVisibility(false);
 
-  SetCoatingMaterial("ScintillatorCoating");
-  //SetScintillatorMaterial("Scintillator");
+  //SetCoatingMaterial("ScintillatorCoating");
+  SetScintillatorMaterial("Scintillator");
 
   //SetScintillatorMaterial("GasMixtureTPC");  // CHANGED!!!
   SetScintillatorMaterial("FGDScintillator"); // OK  
