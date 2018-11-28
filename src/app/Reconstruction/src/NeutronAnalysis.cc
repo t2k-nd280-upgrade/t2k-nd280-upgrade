@@ -37,7 +37,7 @@ const int VERTEX_ACTIVITY = 3;
 #define NEvtDisplTot 50
 bool PLOT = false;
 
-int thr = 10;
+int thr = 50;
 
 bool CloseHit(int i, int j, TH2F* h_ini);
 
@@ -153,6 +153,8 @@ int NeutronAnalysis(int argc,char** argv) {
   Int_t hit_pdg = -1;
   Double_t light_fst, light_max, light_tot;
   ekin = costheta = dist_cubes = dist = first_hit_time = neutron_time = neutron_dist_true = -1.;
+  Double_t HM_proton;
+
   outtree->Branch("KinEnergy_true",     &ekin);
   outtree->Branch("CosTheta_true",      &costheta);
   outtree->Branch("Dir_True",           dir_true, "dir_true[3]/D");
@@ -165,6 +167,8 @@ int NeutronAnalysis(int argc,char** argv) {
   outtree->Branch("First_hit_time",     &first_hit_time);
   outtree->Branch("Neutron_time",       &neutron_time);
   outtree->Branch("Neutron_dist",       &neutron_dist_true);
+
+  outtree->Branch("HM_proton",           &HM_proton);
 
   outtree->Branch("hit_pdg",            &hit_pdg);
 
@@ -537,6 +541,29 @@ int NeutronAnalysis(int argc,char** argv) {
         hPEVsTime_z[ievt]->Fill(timepez,pez);
       }
     } // end loop over the hits
+
+    // define the topology
+    HM_proton = 0;
+    for (Int_t trackID = 0; trackID < nd280UpEvent->GetNTracks(); ++trackID) {
+      TND280UpTrack* track = nd280UpEvent->GetTrack(trackID);
+      if (track->GetPDG() != 2212)
+        continue;
+
+      TND280UpTrackPoint* point = track->GetPoint(0);
+      if (!point)
+        continue;
+
+      Int_t track_binX = hits_map_XY->GetXaxis()->FindBin(point->GetPrePosition().X());
+      Int_t track_binY = hits_map_XY->GetYaxis()->FindBin(point->GetPrePosition().Y());
+      Int_t track_binZ = hits_map_YZ->GetYaxis()->FindBin(point->GetPrePosition().Z());
+
+      if (abs(track_binX - first_binX) > 1 ||
+          abs(track_binY - first_binY) > 1 ||
+          abs(track_binZ - first_binZ) > 1) continue;
+
+      if (track->GetInitMom().Mag() > HM_proton)
+        HM_proton = track->GetInitMom().Mag();
+    } // loop over tracks
 
     light_fst = hits_map_XY->GetBinContent(first_binX, first_binY) +
                 hits_map_XZ->GetBinContent(first_binX, first_binZ) +

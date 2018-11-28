@@ -282,6 +282,13 @@ void neutron_merge() {
     ly_max->Write();
     ly_tot->Write();
 
+    TH1F* ly_cut = (TH1F*)ly_tot->Clone("ly_cut");
+    ly_cut->Reset();
+
+    for (Int_t i = 1; i <= ly_cut->GetXaxis()->GetNbins(); ++i)
+      ly_cut->SetBinContent(i, ly_tot->Integral(i, ly_cut->GetXaxis()->GetNbins()+1));
+    ly_cut->Write();
+
     for (Int_t i = 0; i < time_size; ++i) {
       energy_resol[i]->Write();
       energy_acc[i]->Write();
