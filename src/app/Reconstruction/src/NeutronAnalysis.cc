@@ -550,16 +550,21 @@ int NeutronAnalysis(int argc,char** argv) {
         continue;
 
       TND280UpTrackPoint* point = track->GetPoint(0);
-      if (!point)
+      if (!point) {
+        cout << "ALARM no FP for proton" << endl;
         continue;
+      }
 
       Int_t track_binX = hits_map_XY->GetXaxis()->FindBin(point->GetPrePosition().X());
       Int_t track_binY = hits_map_XY->GetYaxis()->FindBin(point->GetPrePosition().Y());
       Int_t track_binZ = hits_map_YZ->GetYaxis()->FindBin(point->GetPrePosition().Z());
 
-      if (abs(track_binX - first_binX) > 1 ||
-          abs(track_binY - first_binY) > 1 ||
-          abs(track_binZ - first_binZ) > 1) continue;
+      //cout << " found proton at " << track_binX << "\t" << track_binY << "\t" << track_binZ << endl;
+      //cout << "     first bin   " << first_binX << "\t" << first_binY << "\t" << first_binZ << endl;
+
+      if (abs(track_binX - first_binX) > 3 ||
+          abs(track_binY - first_binY) > 3 ||
+          abs(track_binZ - first_binZ) > 3) continue;
 
       if (track->GetInitMom().Mag() > HM_proton)
         HM_proton = track->GetInitMom().Mag();
@@ -623,9 +628,9 @@ int NeutronAnalysis(int argc,char** argv) {
     hits_map_XZ_cluster_N->SetBinContent(first_binX, first_binZ, 1.);
     hits_map_YZ_cluster_N->SetBinContent(first_binY, first_binZ, 1.);
 
-    hits_map_XY_cluster->SetBinContent(first_binX, first_binY, hits_map_XY_cluster->GetBinContent(first_binX, first_binY));
-    hits_map_XZ_cluster->SetBinContent(first_binX, first_binZ, hits_map_XZ_cluster->GetBinContent(first_binX, first_binZ));
-    hits_map_YZ_cluster->SetBinContent(first_binY, first_binZ, hits_map_YZ_cluster->GetBinContent(first_binY, first_binZ));
+    hits_map_XY_cluster->SetBinContent(first_binX, first_binY, hits_map_XY->GetBinContent(first_binX, first_binY));
+    hits_map_XZ_cluster->SetBinContent(first_binX, first_binZ, hits_map_XZ->GetBinContent(first_binX, first_binZ));
+    hits_map_YZ_cluster->SetBinContent(first_binY, first_binZ, hits_map_YZ->GetBinContent(first_binY, first_binZ));
 
     if (DEBUG)
       cout  << "Clustering hits 0 " << hits_map_XY->Integral() 
@@ -719,7 +724,13 @@ int NeutronAnalysis(int argc,char** argv) {
       }
     }
 
-    light_tot = hits_map_XY_cluster->Integral() + hits_map_XY_cluster->Integral() + hits_map_XY_cluster->Integral();
+    light_tot = hits_map_XY_cluster->Integral() + hits_map_XZ_cluster->Integral() + hits_map_YZ_cluster->Integral();
+
+    if (light_tot < light_fst) {
+      cout << "Tot < fist" << endl;
+      cout << "tot: " << light_tot << "   fst " << light_fst << endl;
+      cout << "proj " << hits_map_XY_cluster->Integral() << "  " << hits_map_XZ_cluster->Integral() << "  " << hits_map_YZ_cluster->Integral() << endl;
+    }
 
     TVector3 reco_vec(first_binX - vertex_binX, first_binY - vertex_binY, first_binZ - vertex_binZ);
     reco_vec    = reco_vec.Unit();
