@@ -75,6 +75,8 @@ private:
   G4String fTypeMomentum;
   G4String fTypeGun;
   G4String fTypePosition;
+
+  ExN02ND280XML *inxml;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

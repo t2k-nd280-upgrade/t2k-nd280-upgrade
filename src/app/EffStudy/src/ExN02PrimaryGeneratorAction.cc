@@ -31,6 +31,7 @@
 #include "ExN02PrimaryGeneratorAction.hh"
 #include "ExN02PrimaryGeneratorMessenger.hh"
 #include "ExN02RooTrackerKinematicsGenerator.hh"
+#include "ND280RootPersistencyManager.hh"
 
 #include "ExN02VertexInfo.hh"
 
@@ -76,6 +77,10 @@ ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,1.,0.)); 
   fParticleGun->SetParticleEnergy(particleenergy);
+
+  ND280RootPersistencyManager* InputPersistencyManager
+    = ND280RootPersistencyManager::GetInstance();
+  inxml = InputPersistencyManager->GetXMLInput();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -261,6 +266,18 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       y = y + gaus_rand->fire();
 
       std::cout << "New vertex position  " << x << "  " << y << "   " << z << std::endl;
+      anEvent->GetPrimaryVertex()->SetPosition(x, y, z);
+    }
+
+    if (fTypePosition == "Uniform") {
+      float targetWidth   = inxml->GetXMLTargetwidth1(); // width along X
+      float targetLength  = inxml->GetXMLTargetlength1(); // length along Z
+      float targetHeight  = inxml->GetXMLTargetheight1(); // height along Y
+
+      float x = G4UniformRand() * targetWidth  - targetWidth*0.5  + inxml->GetXMLTargetPos1_X();
+      float y = G4UniformRand() * targetHeight - targetHeight*0.5 + inxml->GetXMLTargetPos1_Y();
+      float z = G4UniformRand() * targetLength - targetLength*0.5 + inxml->GetXMLTargetPos1_Z();
+
       anEvent->GetPrimaryVertex()->SetPosition(x, y, z);
     }
 
