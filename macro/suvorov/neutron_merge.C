@@ -80,8 +80,6 @@ void neutron_merge() {
   Int_t test_light_n = 0;
   Float_t test_light = 0.;
 
-  TH1F* proton_mom = new TH1F("proton_mom", "Proton momentum", 250, 0., 500.);
-
   // do rebinning
   Int_t rebin_Y = 5;
   init_e_cos->RebinY(rebin_Y);
@@ -90,7 +88,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_v12.root", "RECREATE");
+  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_v16.root", "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
@@ -123,6 +121,8 @@ void neutron_merge() {
     TH1F* ly_fst     = new TH1F("ly_fst", "Light yield first", 250, 0., 6000.);
     TH1F* ly_tot     = new TH1F("ly_tot", "Light yield total", 250, 0., 6000.);
     TH1F* ly_max     = new TH1F("ly_max", "Light yield max", 250, 0., 6000.);
+
+    TH1F* proton_mom = new TH1F("proton_mom", "Proton momentum", 250, 0., 500.);
 
     TH1F* test_light_y     = new TH1F("test_light_y", "Light yield", 6000, 0., 6000.);
   
@@ -157,6 +157,10 @@ void neutron_merge() {
   
       // selection on distance (cm)
       if (dist_cubes < distance_cut[distID])
+        continue;
+
+      // selection on light
+      if (light_tot / 3. < 150)
         continue;
   
       eff_e_cos->Fill(costheta, ekin);
@@ -194,17 +198,13 @@ void neutron_merge() {
 
           test_l_e->Fill(ekin, light_tot);
           test_l_e_n->Fill(ekin);
-          if (distID == 0)
-            proton_mom->Fill(HM_proton);
+          proton_mom->Fill(HM_proton);
         }
 
         time = gen->Gaus(first_hit_time, time_sigma[resID]);
         beta = dist_cubes / (time * 30.);
         ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
 
-        if (resID == time_size - 1) {
-          cout << time_sigma[resID] << "  " << time << "   " << beta << "   " << ekin2 << endl;
-        }
         energy_resol[resID]->Fill(ekin, ekin2);
         energy_resol_rebin[resID]->Fill(ekin, ekin2);
         Int_t cos_bin = cos_h->FindBin(costheta);
@@ -335,6 +335,7 @@ void neutron_merge() {
 
     test_l_e->Write();
     test_light_y->Write();
+    proton_mom->Write();
 
   } // loop over distance cuts
 
@@ -414,8 +415,6 @@ void neutron_merge() {
   gPad->Modified();
   gPad->Update();
   mom_forward->Write();
-
-  proton_mom->Write();
 
   file_out->Close();
   file->Close();
