@@ -37,7 +37,7 @@ foreach (@ARGV) {
     elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }
     elsif($_ eq '--exe-clust-dir'    ) { $exe_clust_dir   = $ARGV[$iarg+1]; }
     elsif($_ eq '--exe-loc-dir'      ) { $exe_loc_dir     = $ARGV[$iarg+1]; }
-
+ 
     else {
 	print "Unrecognised argument ".$_."\n"; exit;
     }
@@ -49,7 +49,7 @@ $exe_loc_dir = "bin/" unless defined $exe_loc_dir; # path starting from $softw_d
 
 $resource        = "interactive"               unless defined $resource;
 
-#$tag             = "test" unless defined $tag;
+$tag             = "test" unless defined $tag;
 #$tag             = "g4ND280Up_NoNorm_Alternative_Targ_TPC_ECal_ToF_oofv"                 unless defined $tag;  
 #$tag             = "g4ND280Up_1E21_Reference_ECal_RHC_numu"                 unless defined $tag;
 #$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
@@ -61,71 +61,28 @@ $resource        = "interactive"               unless defined $resource;
 #$tag             = "g4ND280Up_AltTargTPC_Only_SuperFGD"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu_NEUT"    unless defined $tag;
-$tag              = "g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector"               unless defined $tag;
 
 
 ######################################################################################################################################
 #
-# After update 14/3/17
-#
-
-# w/o ToF, w/o ECal
-#$config_file     = "config/configuration_cluster_current.xml" unless defined $config_file; # current: no ecal, no tof, cluster
-#$config_file     = "config/configuration_cluster_ref.xml" unless defined $config_file; # reference: no ecal, no tof, cluste
-#$config_file     = "config/configuration_cluster_targ_ftpc_2fgd.xml" unless defined $config_file; # alternative targ/ftpc: no ecal, no tof, cluster
-
-# w/o ToF, with ECal
-#$config_file     = "config/configuration_cluster_current_ecal.xml" unless defined $config_file; # current: no ecal, no tof, cluster
-#$config_file     = "config/configuration_cluster_current_ecal_nue.xml" unless defined $config_file; # current: no tof, cluster
-#$config_file     = "config/configuration_cluster_current_ecal_rhc_nuebar.xml" unless defined $config_file; # current: no ecal, no tof, cluster
-#$config_file     = "config/configuration_cluster_current_ecal_rhc_numubar.xml" unless defined $config_file; # current: no ecal, no tof, rhc-numubar, cluster
-#$config_file     = "config/configuration_cluster_current_ecal_rhc_numu.xml" unless defined $config_file; # current: no ecal, no tof, rhc-numubar, cluster
-#$config_file     = "config/configuration_cluster_ref_ecal.xml" unless defined $config_file; # reference: no ecal, no tof, cluste
-#$config_file     = "config/configuration_cluster_targ_ftpc_2fgd_ecal.xml" unless defined $config_file; # alternative targ/ftpc: no ecal, no tof, cluster
-
-# with ToF, w/o ECal
-#$config_file     = "config/ToF/configuration_cluster_ref_tof.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof.xml" unless defined $config_file; # reference: no ecal, cluster
- 
-# with ToF, with ECal
-#$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_ref_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster   
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numubar.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_numu.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_nue.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_rhc_nuebar.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/ToF/configuration_cluster_targ_ftpc_2fgd_tof_ecal_oofv.xml" unless defined $config_file; # reference: no ecal, cluster    
-
-#with hatpc
-#$config_file     = "config/HATPC/configuration_cluster_targ_ftpc_2fgd_tof_ecal_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
-#$config_file     = "config/HATPC/configuration_pgun_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
- 
-
-# ECal, Basket, Magnet (no Tracker)
-#$config_file     = "config/configuration_cluster_outfv.xml" unless defined $config_file;
-
-# TEST 
-#$config_file     = "config/Test/configuration_cluster_test.xml" unless defined $config_file;
-
 # Real Target 
-#$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_numu_NEUT.xml" unless defined $config_file;
-#$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_numu.xml" unless defined $config_file;
-#$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_numubar.xml" unless defined $config_file;
-#$config_file     = "config/RealTarget/configuration_cluster_SuperFGD_nue.xml" unless defined $config_file;
-#$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_numu.xml" unless defined $config_file;
-#$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_numubar.xml" unless defined $config_file;
-#$config_file     = "config/RealTarget/configuration_cluster_FGDXZ_nue.xml" unless defined $config_file;
-$config_file      = "config/configuration_cluster_ref_uniform.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_ref_uniform.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_ref.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_ref_fgdxz.xml" unless defined $config_file;
+
+$config_file     = "config/configuration_cluster_ref_sfgdonly.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_ref_fgdxzonly.xml" unless defined $config_file;
+#$config_file     = "config/configuration_cluster_ref_uniform_NEUT.xml" unless defined $config_file;
+#$config_file     = "config/SuperFGDBox/configuration_cluster_SuperFGDBox.xml" unless defined $config_file;
+#$config_file     = "config/HATPC/configuration_cluster_targ_ftpc_2fgd_tof_ecal_hatpc.xml" unless defined $config_file;
 
 ######################################################################################################################################
 
 #$vis_file        = "mac/vis_test.mac"           unless defined $vis_file;  
-#$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
+$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis.mac"           unless defined $vis_file;
-$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
+
 
 #$nruns           = 80                          unless defined $nruns;      # number of jobs (current and reference)
 #$nruns           = 127                          unless defined $nruns;      # number of jobs (alternative)
@@ -139,12 +96,8 @@ $nexpts          = 3000                        unless defined $nexpts;     # num
 $first_expt      = 0                           unless defined $first_expt; # first event
 
 #$queue           = "veryshort"                unless defined $queue;
-$queue           = "rhel6-short"                unless defined $queue;
-
-if($resource eq "parallel"){
-    open(par_file, ">$job_dir/commands_sim.sh") or die("Can not create the sbatch script");
-    print par_file "#!/bin/bash -l  \n";
-}
+#$queue           = "rhel6-short"                unless defined $queue;
+$queue           = "sx"                unless defined $queue;
 
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
@@ -192,25 +145,6 @@ while($irun < $nruns) { # loop over the jobs
 	close(PBS);	
 	`qsub -q $queue -l mem=6000mb -l vmem=6000mb $sbatchfile`;	
     }
-
-    if($resource eq "PIC") {
-
-    print "inside PIC \n";
-    $sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
-    $outfiledir = "$job_dir/";
-    $errfiledir = "$job_dir/";
-    open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
-    print PBS "#!/bin/bash -l  \n";
-    print PBS "source $softw_dir/mypath.sh $softw_dir \n";
-    print PBS "\n";
-    print PBS "env \n";
-    print PBS "\n";
-    print PBS "uname -n \n";
-    print PBS "\n";
-    print PBS "$command \n";
-    close(PBS); 
-    `qsub -q short -l nodes=1 $sbatchfile`; 
-    }
     
     if($resource eq "UNIGE-Atlas-Slurm") {
 
@@ -243,27 +177,31 @@ while($irun < $nruns) { # loop over the jobs
 	`sbatch $sbatchfile`;
 	#`sbatch -t 07:00:00 $sbatchfile`;	
     }
+
+    if($resource eq "KEKCC") {
+	$sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
+	open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+	print PBS "#!/bin/csh \n";
+	print PBS "cd $job_dir  \n";
+	print PBS "source T2KND280Up_CLHEP.csh \n";
+	print PBS "cd $job_dir  \n";
+	print PBS "\n";
+	print PBS "env \n";
+	print PBS "\n";
+	print PBS "uname -n \n";
+	print PBS "\n";
+	print PBS "$command \n";
+	close(PBS);
+	`chmod 765 $sbatchfile`;
+	`bsub -q $queue $sbatchfile`;
+    }
     
     if($resource eq "interactive") {
 	system($command);
     }
 
-    if($resource eq "parallel") {
-        print par_file "#!/bin/bash -l  \n";
-        print par_file "$command; echo \"job $irun from $nruns done\" \n";
-        print "Parallel\n";
-        print "$command\n";
-    }
 
 
 
     $irun=$irun+1;
 } # end loop over jobs
-
-if($resource eq "parallel") {
-    close(par_file);
-    $run_command = "nice -n19 parallel -j 5 -a $job_dir/commands_sim.sh";
-    print "running parallel \n";
-    system($run_command);
-    unlink "$job_dir/commands_sim.sh";
-}
