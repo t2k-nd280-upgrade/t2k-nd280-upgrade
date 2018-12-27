@@ -313,8 +313,14 @@ while($irun < $nruns) { # loop over the jobs
 	print PBS "\n";
 	print PBS "$command \n";
 	close(PBS);
+
+        $outputlog = "$tag-$evt_first-$nexpts-log.out";
+        $outputerr = "$tag-$evt_first-$nexpts-err.out";
+        $logdir = "$job_dir/log";
+        mkdir("$logdir") unless(-d "$logdir");
+
 	`chmod 765 $sbatchfile`;
-	`bsub -q $queue $sbatchfile`;
+        `bsub -o $logdir/$outputlog -e $logdir/$outputerr -q $queue $sbatchfile`;
     }
     
     if($resource eq "interactive") {

@@ -750,15 +750,15 @@
    </UseSuperFGD2>
 
    <UseCFBox>
-     true
+     false
    </UseCFBox>
 
    <UsePCB>
-     true
+     false
    </UsePCB>
 
    <UseFlatCable>
-     true
+     false
    </UseFlatCable>
 
    <UseFGD3D1>
