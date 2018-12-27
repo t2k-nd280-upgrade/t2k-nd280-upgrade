@@ -61,7 +61,7 @@ private:
   G4UIcmdWithAString*        fTypeDirCmd;
   G4UIcmdWithAString*        fTypeMomCmd;
   G4UIcmdWithAString*        fTypeGunCmd;
-  G4UIcmdWithAString*				 fTypePosCmd;
+  G4UIcmdWithAString*	     fTypePosCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -1,5 +1,5 @@
-#include <TH1D.h>
-#include <TH2D.h>
+#include <TH2F.h>
+#include <TH1F.h>
 #include <TROOT.h>
 #include <TTree.h>
 #include <TFile.h>
@@ -20,6 +20,9 @@
 #include "ND280UpPID.hh"
 
 #include "LightYield.hh"
+
+#include <iostream>
+#include <fstream>
 
 bool IsTargetIn(double x,double y,double z,
                 // Target 1
@@ -83,12 +86,12 @@ int EGammaSeparation (int argc, char** argv){
  int e_trkid = 0;
  int pos_trkid = 0;
 
-  if(nevents>2000){
-    cout << "You cannot use more than 2000 events!!!" << endl;
+  if(nevents>1000){
+    cout << "You cannot use more than 1000 events!!!" << endl;
     exit(1);
   }
 
-  const int NEvtDisplTot = nevents; 
+  const int NEvtDisplTot = 1000; 
 
   //Defines Track ID to study (currently optimized for particle gun settings)
   if (useElectron) e_trkid = 1;
@@ -145,12 +148,6 @@ int EGammaSeparation (int argc, char** argv){
   TGraph *gMCPositronHits_XY[NEvtDisplTot];
   TGraph *gMCPositronHits_XZ[NEvtDisplTot];
   TGraph *gMCPositronHits_YZ[NEvtDisplTot];
-
-  TH1F *hETrack_HiLoRatio_X = new TH1F("hETrack_HiLoRatio_X","hETrack_HiLoRatio_X",100,0.,20.);
-  TH1F *hETrack_HiLoRatio_Y = new TH1F("hETrack_HiLoRatio_Y","hETrack_HiLoRatio_Y",100,0.,20.);
-  TH1F *hETrack_HiLoRatio_Z = new TH1F("hETrack_HiLoRatio_Z","hETrack_HiLoRatio_Z",100,0.,20.);
-
-  TH1F *hETrack_HiLoRatio_Prod = new TH1F("hETrack_HiLoRatio_Prod","hETrack_HiLoRatio_Prod",100,0,20.);
 
   TH2F *hView_HiLo = new TH2F("hView_HiLo","",3,0.5,3.5,40,0.,10.);
   TH2F *hView_NumHit = new TH2F("hView_NumHit","",3,0.5,3.5,100,0.,200.);
@@ -260,8 +257,6 @@ int EGammaSeparation (int argc, char** argv){
 
   // int EntryLast = evtfirst+Nentries-1;
 
-  int elike_count = 0;
-  int sepcut_count = 0;
 
   vector <int> passed_evt;
   passed_evt.clear();
@@ -625,7 +620,6 @@ int EGammaSeparation (int argc, char** argv){
     cout << endl;
     
     passed_evt.push_back(ievt);  
-
       
     int NHits = nd280UpEvent->GetNHits();
 
@@ -982,21 +976,17 @@ int EGammaSeparation (int argc, char** argv){
 
   
   if (!useSFGD) ithbin[1] = 2000;
-
-  int MinimumNBin = TMath::MinElement(3,ithbin);
   
   cout << "# of cubes w/ electron hits (X):" << ithbin[0]<<endl;
   cout << "# of cubes w/ electron hits (Y):" << ithbin[1]<<endl;
   cout << "# of cubes w/ electron hits (Z):" << ithbin[2]<<endl;
-
-  int NHitViewMin = (nbinskip + nbinseg)*2;
 
   /////////////////////////
 
   
     for (int tts=0;tts<3;tts++) twotracksep[tts] = false;
 
-    bool TwoTrackLike = false;
+
 
     cout <<"EVT:"<< ievt<<endl;
 
@@ -1013,14 +1003,7 @@ int EGammaSeparation (int argc, char** argv){
       twotracksep[0] = CheckTrackSeparation(gMCElectronHits_YZ[ievt], gMCPositronHits_YZ[ievt], hMPPCHits_YZ[ievt]);
 
     }
-    
-    /*  if (!useElectron && ((twotracksep[0]+twotracksep[1]+twotracksep[2]) >= 2) ){
-      cout << "Track Separation Cut!" << endl;
-      sepcut_count++;
-      TwoTrackLike = true;
-    }
-    */
-    
+        
     ///
     
     //SCRIPT FOR RATIO CALC
@@ -1059,30 +1042,8 @@ int EGammaSeparation (int argc, char** argv){
     // cout << "LY ratio (Z) = " << fratio_hilo[2] << endl;
  
       fratio_hilo_prod = fratio_hilo[0]*fratio_hilo[1]*fratio_hilo[2];
-
-    //    cout << "LY ratio product = " << fratio_hilo_prod << endl;
-      
     
-    // if (TwoTrackLike) fratio_hilo_prod = 19.;
-    /*
-     hETrack_HiLoRatio_X->Fill(fratio_hilo[0]);
-     hETrack_HiLoRatio_Y->Fill(fratio_hilo[1]);
-     hETrack_HiLoRatio_Z->Fill(fratio_hilo[2]);
-    
-     hETrack_HiLoRatio_Prod->Fill(fratio_hilo_prod);
-     hElecMom_CosTheta_All->Fill(pmom[1],pcos[1]);
 
-     hElecMom_PID->Fill(pmom[1],fratio_hilo_prod);
-     
-     if (gamma_track) {
-       hElecMom_GammaMom_All->Fill(pmom[1],pmom[0]);
-       hElecMom_PosiMom_All->Fill(pmom[1],pmom[2]);
-       hPosiMom_PID->Fill(pmom[2],fratio_hilo_prod);
-       hGammaMom_PID->Fill(pmom[0],fratio_hilo_prod);
-     }
-     */
-     
-     //     cout << pmom[0] << ", " << pmom[1] << ", " << pmom[2] << endl;
 
      outtree->Fill();
     
@@ -1094,9 +1055,6 @@ int EGammaSeparation (int argc, char** argv){
   // Write output file
   TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
   TFile *out = new TFile(outfilename.Data(),"RECREATE");
-  // 
-  //  cout << nccqe<<endl;
-  cout << "out of " << passed_evt.size() << " events, " << sepcut_count << " events were two-track-like." <<endl;
 
   outtree->Write();
 

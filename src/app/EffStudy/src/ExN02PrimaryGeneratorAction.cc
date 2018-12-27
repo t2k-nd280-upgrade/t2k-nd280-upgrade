@@ -146,6 +146,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4double aMomAmp = fParticleGun->GetParticleMomentum();
     G4double aEAmp = fParticleGun->GetParticleEnergy();  
     
+    
     if (fTypeMomentum=="Wide")
       {
         G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;

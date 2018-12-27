@@ -807,11 +807,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double LengthFGD1 = 0.;
     double LengthFGD2 = 0.;
     double LengthTPCUp1     = 0.;
-    double LengthTPCUp2     = 0.;
-    double LengthHATPCUp    = 0.;
+    // double LengthTPCUp2     = 0.;
+    // double LengthHATPCUp    = 0.;
     double LengthTPCDown1   = 0.;
-    double LengthTPCDown2   = 0.;
-    double LengthHATPCDown  = 0.;
+    // double LengthTPCDown2   = 0.;
+    // double LengthHATPCDown  = 0.;
     double LengthForwTPC1   = 0.;
     double LengthForwTPC2   = 0.;
     double LengthForwTPC3   = 0.;
@@ -821,11 +821,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double LengthUSECalP0D  = 0.;
 
     double LyzTPCUp1     = 0.;
-    double LyzTPCUp2     = 0.;
-    double LyzHATPCUp    = 0.;
+    // double LyzTPCUp2     = 0.;
+    // double LyzHATPCUp    = 0.;
     double LyzTPCDown1   = 0.;
-    double LyzTPCDown2   = 0.;
-    double LyzHATPCDown  = 0.;  
+    // double LyzTPCDown2   = 0.;
+    // double LyzHATPCDown  = 0.;  
     double LyzForwTPC1   = 0.;
     double LyzForwTPC2   = 0.;
     double LyzForwTPC3   = 0.;
@@ -836,11 +836,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     double EdepFGD1 = 0.;
     double EdepFGD2 = 0.;
     double EdepTPCUp1     = 0.;
-    double EdepTPCUp2     = 0.;
-    double EdepHATPCUp    = 0.;
+    // double EdepTPCUp2     = 0.;
+    // double EdepHATPCUp    = 0.;
     double EdepTPCDown1   = 0.;
-    double EdepTPCDown2   = 0.;
-    double EdepHATPCDown   = 0.;
+    // double EdepTPCDown2   = 0.;
+    // double EdepHATPCDown   = 0.;
     double EdepForwTPC1   = 0.;
     double EdepForwTPC2   = 0.;
     double EdepForwTPC3   = 0.;
@@ -1092,11 +1092,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetLengthFGD1(LengthFGD1);
     nd280Track->SetLengthFGD2(LengthFGD2); 
     nd280Track->SetLengthTPCUp1(LengthTPCUp1);
-    nd280Track->SetLengthTPCUp2(LengthTPCUp2);
-//    nd280Track->SetLengthHATPCUp(LengthHATPCUp);
+    // nd280Track->SetLengthTPCUp2(LengthTPCUp2);
+    // nd280Track->SetLengthHATPCUp(LengthHATPCUp);
     nd280Track->SetLengthTPCDown1(LengthTPCDown1);
-    nd280Track->SetLengthTPCDown2(LengthTPCDown2);
-//    nd280Track->SetLengthHATPCDown(LengthHATPCDown);
+    // nd280Track->SetLengthTPCDown2(LengthTPCDown2);
+    // nd280Track->SetLengthHATPCDown(LengthHATPCDown);
     nd280Track->SetLengthForwTPC1(LengthForwTPC1);
     nd280Track->SetLengthForwTPC2(LengthForwTPC2);
     nd280Track->SetLengthForwTPC3(LengthForwTPC3);
@@ -1107,11 +1107,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
     
     nd280Track->SetLyzTPCUp1(LyzTPCUp1);
-    nd280Track->SetLyzTPCUp2(LyzTPCUp2);
-//    nd280Track->SetLyzHATPCUp(LyzHATPCUp);
+    // nd280Track->SetLyzTPCUp2(LyzTPCUp2);
+    // nd280Track->SetLyzHATPCUp(LyzHATPCUp);
     nd280Track->SetLyzTPCDown1(LyzTPCDown1);
-    nd280Track->SetLyzTPCDown2(LyzTPCDown2);
-//    nd280Track->SetLyzHATPCDown(LyzHATPCDown);
+    // nd280Track->SetLyzTPCDown2(LyzTPCDown2);
+    // nd280Track->SetLyzHATPCDown(LyzHATPCDown);
     nd280Track->SetLyzForwTPC1(LyzForwTPC1);
     nd280Track->SetLyzForwTPC2(LyzForwTPC2);
     nd280Track->SetLyzForwTPC3(LyzForwTPC3);
@@ -1121,11 +1121,11 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
     nd280Track->SetEdepFGD1(EdepFGD1);
     nd280Track->SetEdepFGD2(EdepFGD2);    
     nd280Track->SetEdepTPCUp1(EdepTPCUp1);
-    nd280Track->SetEdepTPCUp2(EdepTPCUp2);
-//    nd280Track->SetEdepHATPCUp(EdepHATPCUp);    
+    // nd280Track->SetEdepTPCUp2(EdepTPCUp2);
+    // nd280Track->SetEdepHATPCUp(EdepHATPCUp);    
     nd280Track->SetEdepTPCDown1(EdepTPCDown1);
-    nd280Track->SetEdepTPCDown2(EdepTPCDown2);
-//    nd280Track->SetEdepHATPCDown(EdepHATPCDown); 
+    // nd280Track->SetEdepTPCDown2(EdepTPCDown2);
+    // nd280Track->SetEdepHATPCDown(EdepHATPCDown); 
     nd280Track->SetEdepForwTPC1(EdepForwTPC1);
     nd280Track->SetEdepForwTPC2(EdepForwTPC2);
     nd280Track->SetEdepForwTPC3(EdepForwTPC3);
