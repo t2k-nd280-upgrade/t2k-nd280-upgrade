@@ -142,7 +142,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		  "MyCode0002",FatalException, msg);
     } 
     */
-
+  
     G4double aMomAmp = fParticleGun->GetParticleMomentum();
     G4double aEAmp = fParticleGun->GetParticleEnergy();  
     
