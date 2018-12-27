@@ -21,7 +21,8 @@ foreach (@ARGV) {
     if   ($_ eq '--resource'         ) { $resource        = $ARGV[$iarg+1]; }
     elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
     elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
-    elsif($_ eq '--inputfile'        ) { $inputfile       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--input-dir'        ) { $input_dir       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--input-tag'        ) { $input_tag       = $ARGV[$iarg+1]; }
     elsif($_ eq '--first-expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
     elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
     elsif($_ eq '--detector'         ) { $detector        = $ARGV[$iarg+1]; } 
@@ -32,6 +33,14 @@ foreach (@ARGV) {
     elsif($_ eq '--use-view-yz'      ) { $useviewYZ       = $ARGV[$iarg+1]; }
     elsif($_ eq '--min-track-dist'   ) { $min_trk_dist    = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-truth-fv'     ) { $cut_truthfv     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--use-nuint'        ) { $use_nuint       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--use-electron'     ) { $use_electron    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--write-plots'      ) { $writeplots      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nplots-write'     ) { $nplotswrite     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nbinignore'       ) { $nbinignore      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nminhits'         ) { $nminhits        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--usesfgd'          ) { $usesfgd         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--useupstream'      ) { $useupstream     = $ARGV[$iarg+1]; }
 
     # where to put the output files
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
@@ -44,13 +53,19 @@ foreach (@ARGV) {
 }
 
 # wheter you want to merge all files into one and delete all the other output
-$merge_output = 1;
+$merge_output = 0;
 
 $resource        = "interactive"                 unless defined $resource;
 
 #$tag            = "NuMu-GasAr" unless defined $tag;
 #$tag            = "NuE-Plastic" unless defined $tag;
-$tag            = "NuMu" unless defined $tag;
+
+if ($usesfgd){
+    $tag = "FullSFGD";
+}
+else {
+    $tag = "FGDXZ" ;
+}
 
 $useviewXY      = 1 unless defined $useviewXY; # (0 or 1)
 $useviewXZ      = 1 unless defined $useviewXZ; # (0 or 1)
@@ -58,14 +73,9 @@ $useviewYZ      = 1 unless defined $useviewYZ; # (0 or 1)
 
 $min_trk_dist    = 10 unless defined $min_trk_dist; # if <0 --> use default (mm)
 
-#$inputfile        = "g4ND280Up_1E21_SuperFGD_NuE-Exp0-Nexpt1000_GasAr.root" unless defined $inputfile;
-#$inputfile        = "g4ND280Up_1E21_SuperFGD_NuMu-Exp0-Nexpt1000_GasAr.root" unless defined $inputfile;
+$input_dir       = "/gpfs/group/t2k/beam/work/kiwamoto/ND280Upgrade/Run/particle_gun/photon/" unless defined $input_dir; 
 
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E22_SuperFGD_NuE.root" unless defined $inputfile;
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E22_FGDXZ_NuE.root" unless defined $inputfile;
-
-$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E21_SuperFGD_NuMu.root" unless defined $inputfile;
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E21_FGDXZ_NuMu.root" unless defined $inputfile;
+$input_tag       = "e_gamma_sep_ph" unless defined $input_tag;
 
 $first_expt      = 0                             unless defined $first_expt;
 $nruns           = 6                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
@@ -77,48 +87,74 @@ $debug           = 0   unless defined $debug; # flag for debugging output: 0 -->
 $debug_plot      = 0   unless defined $debug_plot; # flag for debugging plots: 0 --> NO, 1 --> YES
 
 $cut_truthfv     = 1   unless defined $cut_truthfv;
-  
-##################################
 
-if($resource eq "parallel"){
-    open(par_file, ">$job_dir/commands_reco.sh") or die("Can not create the sbatch script");
-    print par_file "#!/bin/bash -l  \n";
+$use_nuint       = 1   unless defined $use_nuint; #look for neutrino interaction (1) or particle gun (0)
+
+$use_electron    = 1   unless defined $use_electron; #look for electron (1) or gamma (0)
+
+$writeplots = 0 unless defined $writeplots; # write plots or not
+
+$nbinignore = 1 unless defined $nbinignore; # how many initial and last hits to ignore
+
+$nminhits   = 3 unless defined $nminhits;  # how many hits to require for each segment
+
+$usesfgd    = 1 unless defined $usesfgd;  # use SFGD or FGDXZ
+
+$useupstream = 0 unless defined $useupstream;  # use upstream hits only or not
+
+
+if ($writeplots) {
+    $tag = "${tag}-evtdisplays";
 }
+
+$nplotswrite = 10 unless defined $nplotswrite; 
+
+$tag = "${tag}_${nbinignore}_${nminhits}_hits";
+
+if ($useupstream) {
+
+    $tag = "${tag}-upstream";
+
+}
+
+if ($use_electron) {
+    $tag = "${tag}-electron";
+    if ($lowmomcut) {
+	$tag = "${tag}-lowmomcut";
+    }
+    if ($use_nuint) {
+	$input_dir = "${input_dir}/nue/";
+    }
+    else {
+	$input_dir = "${input_dir}/particle_gun_sample/electron/";
+    }
+}  
+else {
+    $tag = "${tag}-photon";
+    $input_dir = "${input_dir}/particle_gun_sample/photon/";
+    if ($lowmomcut) {
+	$tag = "${tag}-lowmomcut";
+    }
+}
+
+
+##################################
 
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
-    $newtag = "$tag";
-    
-    if   ($detector eq 0){$newtag = "SuperFGD-$newtag";}
-    elsif($detector eq 1){$newtag = "FGDlike-$newtag";}
-    else{ 
-	print "\n";
-	print "The detector ID $detector is not defined";
-	exit;
-    }
-    
-    if($useviewXY eq 0){}
-    else{ $newtag = "$newtag-UseXY";}
-    
-    if($useviewXZ eq 0){}
-    else{ $newtag = "$newtag-UseXZ";}
+#    $newtag = "$tag";   
+     $newtag = $input_tag;   
 
-    if($useviewYZ eq 0){}
-    else{ $newtag = "$newtag-UseYZ";}
+#    $arguments = "$softw_dir/bin/Reconstruction.exe $input_tag $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv";
 
-    if($cut_truthfv eq 0){}
-    else{ $newtag = "$newtag-TruthFV";}
+#$T2KND280UP/bin/Reconstruction.exe e_gamma_sep_ph-Exp0-Nexpt1000.root 0 1000 fullsfgd_ph_egamma 0 2
+    $arguments = "$softw_dir/bin/Reconstruction.exe ${input_dir}${input_tag}-Exp${evt_first}-Nexpt${nexpts}.root $evt_first $nexpts $tag $use_nuint $use_electron $writeplots $nplotswrite $nbinignore $nminhits $usesfgd $useupstream";
 
-    if($min_trk_dist ge 0){
-	$newtag = "$newtag-Separate$min_trk_dist";
-    }
- 
-   
+#e.g $T2KND280UP/submit/Reconstruction/submit_nd280upgrade_targetreco --softw-dir $T2KND280UP --inputfile e_gamma_sep_ph-Exp0-Nexpt1000.root --first-expt 0 --nexpts 100 --nruns 1 --resource interactive
 
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
     $command = "$arguments";
     
     print "\n";
@@ -134,7 +170,7 @@ while($irun < $nruns) { # loop over the jobs
     # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
     #
     if($resource eq "UNIGE-Atlas") {
-	open(PBS, ">$job_dir/$newtag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	open(PBS, ">$job_dir/$newtag-$evt_first-$nexpts-$tag.sbatch") or die("Can not create the sbatch script");
 	print PBS "#!/bin/bash -l  \n";
 	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
 	print PBS "$command \n";
@@ -143,55 +179,37 @@ while($irun < $nruns) { # loop over the jobs
 	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
     }
 
-    if($resource eq "KEKCC") {
-	$sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
-	open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
-	print PBS "#!/bin/csh \n";
-	print PBS "source $softw_dir/T2KND280Up_CLHEP.csh \n";
-	print PBS "cd $job_dir  \n";
-	print PBS "\n";
-	print PBS "env \n";
-	print PBS "\n";
-	print PBS "uname -n \n";
-	print PBS "\n";
-	print PBS "$command \n";
-	close(PBS);
-	`chmod 765 $sbatchfile`;
-	`bsub -q $queue $sbatchfile`;
-    }
 
+
+    if($resource eq "KEKCC") {
+        $sbatchfile = "$job_dir/$newtag-$evt_first-$nexpts-$tag.sbatch";
+	open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+        print PBS "#!/bin/csh \n";
+        print PBS "source $softw_dir/T2KND280Up_CLHEP.csh \n";
+        print PBS "cd $job_dir \n";
+        print PBS "\n";
+	print PBS "env \n";
+        print PBS "\n";
+        print PBS "uname -n \n";
+	print PBS "\n";
+        print PBS "$command \n";
+	close(PBS);
+        `chmod 765 $sbatchfile`;
+	`bsub -q sx $sbatchfile`;
+    }
+  
     if($resource eq "interactive") {
 	system($command);
     }
-    
-    if($resource eq "parallel") {
-        $inputfile_new = "$inputfile-Exp$evt_first-Nexpt$nexpts.root";
-        $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile_new 0 $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
-        print par_file "$arguments; echo \"job $irun from $nruns done\" \n";
-        print "Parallel\n";
-        print "$arguments\n";
-    }
-    
+ 
     $irun=$irun+1; # increment job id
     
 } # loop over jobs
 
-
-
-
-if($resource eq "parallel") {
-    close(par_file);
-    $run_command = "nice -n19 parallel -j 10 -a $job_dir/commands_reco.sh";
-    print "running parallel \n";
-    system($run_command);
-    unlink "$job_dir/commands_reco.sh";
-}
-
 # output file: $job_dir/$newtag
-if($merge_output eq 1) {
-	$events = $nexpts * $nruns;
-    $newtag = "$newtag\_na";
-	$command = "rm $job_dir/$newtag\_$events.root; hadd -f $job_dir/$newtag\_$events.root $job_dir/$newtag\_Evt*; rm $job_dir/$newtag\_Evt*";
-	print "$command \n";
-	system($command);
-}
+#if($merge_output eq 1) {
+#	$events = $nexpts * $nruns;
+#	$command = "rm $job_dir/$newtag\_$events.root; hadd $job_dir/$newtag\_$events.root $job_dir/$newtag\_Evt*; rm $job_dir/$newtag\_Evt*";
+#	print "$command \n";
+#	system($command);
+#}

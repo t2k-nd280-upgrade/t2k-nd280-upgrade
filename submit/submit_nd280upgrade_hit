@@ -308,6 +308,24 @@ while($irun < $nruns) { # loop over the jobs
 	close(PBS);	
 	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
     }
+
+    if($resource eq "KEKCC") {
+	$sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
+	open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+	print PBS "#!/bin/csh \n";
+	print PBS "source $softw_dir/T2KND280Up_CLHEP.csh \n";
+	print PBS "cd $job_dir \n";
+	print PBS "\n";
+	print PBS "env \n";
+	print PBS "\n";
+	print PBS "uname -n \n";
+	print PBS "\n";
+	print PBS "$command \n";
+	close(PBS);
+	`chmod 765 $sbatchfile`;
+	`bsub -q $queue $sbatchfile`;
+    }
+
     if($resource eq "interactive") {
 	system($command);
     }
