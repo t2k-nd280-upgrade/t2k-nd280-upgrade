@@ -54,19 +54,19 @@ bool AnaTreeConverterEvent::Initialize(){
 
   TargetType = ND::params().GetParameterI("highlandIO.Target.Type");
 
-  fefficiency_target = new TFile("$HIGHLANDIOROOT/data/TargetEfficiency_28_9_17.root");
+  fefficiency_target = new TFile("$HIGHLANDIOROOT/data/TargetEfficiency_SFGD_19_11_18.root");
   if (TargetType == 1) {
-    hefficiency_target_muon   = (TH2D*)fefficiency_target->Get("SuperFGD_TrueMomVsTrueCosTh_IsoTarget_Muon");
-    hefficiency_target_pion   = (TH2D*)fefficiency_target->Get("SuperFGD_TrueMomVsTrueCosTh_IsoTarget_Pion");
-    hefficiency_target_proton = (TH2D*)fefficiency_target->Get("SuperFGD_TrueMomVsTrueCosTh_IsoTarget_Prot");
+    hefficiency_target_muon   = (TH2D*)fefficiency_target->Get("GENIE_XYZ_TrueMomVsTrueCosTh_IsoTarget_Muon");
+    hefficiency_target_pion   = (TH2D*)fefficiency_target->Get("GENIE_XYZ_TrueMomVsTrueCosTh_IsoTarget_Pion");
+    hefficiency_target_proton = (TH2D*)fefficiency_target->Get("GENIE_XYZ_TrueMomVsTrueCosTh_IsoTarget_Prot");
   }
   else {
-    hefficiency_target_muon   = (TH2D*)fefficiency_target->Get("FGDXZ_TrueMomVsTrueCosTh_IsoTarget_Muon");
-    hefficiency_target_pion   = (TH2D*)fefficiency_target->Get("FGDXZ_TrueMomVsTrueCosTh_IsoTarget_Pion");
-    hefficiency_target_proton = (TH2D*)fefficiency_target->Get("FGDXZ_TrueMomVsTrueCosTh_IsoTarget_Prot");
+    hefficiency_target_muon   = (TH2D*)fefficiency_target->Get("GENIE_noXZ_TrueMomVsTrueCosTh_IsoTarget_Muon");
+    hefficiency_target_pion   = (TH2D*)fefficiency_target->Get("GENIE_noXZ_TrueMomVsTrueCosTh_IsoTarget_Pion");
+    hefficiency_target_proton = (TH2D*)fefficiency_target->Get("GENIE_noXZ_TrueMomVsTrueCosTh_IsoTarget_Prot");
   }
 
-  fmisid_target = new TFile("$HIGHLANDIOROOT/data/TargetPID_28_9_17.root");
+  fmisid_target = new TFile("$HIGHLANDIOROOT/data/TargetPID_SFGD_19_11_18.root");
   if (TargetType == 1) {
     hmisid_muon_as_proton = (TH1F*)fmisid_target->Get("hMuonMisidAsProt_VsTrMom_SuperFGD");
     hmisid_proton_as_muon = (TH1F*)fmisid_target->Get("hProtMisidAsMuon_VsTrMom_SuperFGD");
@@ -1995,7 +1995,6 @@ bool AnaTreeConverterEvent::IsReconstructedTarget(int pdg, double mom, double co
   }
 
   double r = gRandom->Rndm();
-  std::cout << "rRecTarg is: " << r << std::endl;
   if (r<eff)
     return true;
   return false;
@@ -2090,7 +2089,6 @@ bool AnaTreeConverterEvent::IsReconstructedECal(TVector3 P, int PDG, TString det
     }
 
     double r = gRandom->Rndm();
-      std::cout << "rEcal is: " << r << std::endl;
     if (r < TPC_ECal_eff)
       return true;
     return false;
@@ -2121,7 +2119,6 @@ bool AnaTreeConverterEvent::IdAsProton(int pdg, double mom) {
   misid = h->GetBinContent(binX);
 
   double r = gRandom->Rndm();
-  std::cout << "rIdAsProton is: " << r << std::endl;
 
   if (abs(pdg)==13 || abs(pdg)==211){
     if (r<misid)
@@ -2162,7 +2159,6 @@ bool AnaTreeConverterEvent::ChargeConfused(AnaTrueParticleB* trueParticle) {
     
   if(prob <= 0.0) return false;    
   Double_t r = gRandom->Rndm();
-  std::cout << "rChargeConf is: " << r << std::endl;
   return (r<prob);
 
 }

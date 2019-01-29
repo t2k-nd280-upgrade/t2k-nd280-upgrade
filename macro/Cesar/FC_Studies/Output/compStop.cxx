@@ -25,7 +25,8 @@
    c1->Divide(4,3);
  //  c2->Divide(4,3);
 
-   TFile f1("/software/neutrinos/t2k-nd280-upgrade/macro/Cesar/FC_Studies/Output/Histo0_Solid_Evt0_NEvt400000.root");
+TFile f1("/nfs/pic.es/user/c/cjesus/scripts/bash/nuEvt_400k.root");
+//   TFile f1("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_Ana_500k.root");
    
    NStopGrEl0 = new TGraphAsymmErrors;
    NStopGrEl0 =grStopEl0;
@@ -79,7 +80,8 @@
    NStopHPr60 = new TH1F;
    NStopHPr60 = hStopPr60;
 
-   TFile f2("AnalysisOutput_Solid_Evt0_NEvt400000.root");
+//   TFile f2("/nfs/pic.es/user/c/cjesus/scripts/bash/nuEvt_400k.root");
+   TFile f2("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_Ana_500k.root");
 
    GStopGrEl0 = new TGraphAsymmErrors;
    GStopGrEl0 =grStopEl0;
@@ -133,7 +135,7 @@
    GStopHPr60 = new TH1F;
    GStopHPr60 = hStopPr60;
 
-   TFile f3("AnalysisOutput_Solid_Evt0_NEvt400000.root");
+   TFile f3("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_SFGD_Ana_500k.root");
 
    SStopGrEl0 = new TGraphAsymmErrors;
    SStopGrEl0 =grStopEl0;

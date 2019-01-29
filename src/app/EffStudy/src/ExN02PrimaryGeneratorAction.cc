@@ -232,9 +232,9 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4double cosTheta = G4UniformRand();
     G4double phi = 15*CLHEP::deg+G4UniformRand()*150*CLHEP::deg;
     G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
-    G4ThreeVector dir(0,sinTheta*std::sin(phi),sinTheta*std::cos(phi));
+    G4ThreeVector dir(0,-sinTheta*std::sin(phi),sinTheta*std::cos(phi));
     G4cout << "Direction of the gun: " 
-           << dir[0] << ", " << dir[1] << ", " << dir[2] 
+           << dir[0] << ", " << -dir[1] << ", " << dir[2] 
 	   << G4endl;
     fParticleGun->SetParticleMomentumDirection(dir);
 

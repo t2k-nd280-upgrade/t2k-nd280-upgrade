@@ -3351,6 +3351,18 @@ void ExN02DetectorConstruction::DefineMaterials() {
   nistManager->FindOrBuildMaterial("G4_KEVLAR");
   nistManager->FindOrBuildMaterial("G4_POLYVINYL_ACETATE");
 
+// NOMEX (HoneyComb)
+// density from http://www.fibreglast.com/product/Nomex_Honeycomb_1562/Vacuum_Bagging_Sandwich_Core
+// 1562: 29 kg/m^3 <-- I guess it is this one
+// 2562: 48 kg/m^3
+// chemical composition http://ww2.unime.it/cdlchimind/adm/inviofile/uploads/HP_Pols2.b.pdf
+  density = 29*kg/m3;
+  G4Material *NOMEX = new G4Material("NOMEX", density, ncomponents = 4);
+  NOMEX->AddElement(G4Element::GetElement("C"), natoms = 14);
+  NOMEX->AddElement(G4Element::GetElement("H"), natoms = 10);
+  NOMEX->AddElement(G4Element::GetElement("N"), natoms = 2);
+  NOMEX->AddElement(G4Element::GetElement("O"), natoms = 2);
+
   //Epoxy -- For making CarbonFiber and GlassFiber
   density = 1.2*g/cm3;
   G4Material* Epoxy = new G4Material("Epoxy" , density, ncomponents=2);
@@ -3386,6 +3398,10 @@ void ExN02DetectorConstruction::DefineMaterials() {
   G4Material* AramidHoneycombFillerMaterial = new G4Material("AramidHoneycomb", 39.95 * kg/m3, 2);
   AramidHoneycombFillerMaterial->AddMaterial(G4Material::GetMaterial("Galactic"), 73 *perCent);
   AramidHoneycombFillerMaterial->AddMaterial(G4Material::GetMaterial("G4_KEVLAR"), 27 *perCent); 
+
+  // G4Material* NomexHoneycombFillerMaterial = new G4Material("NomexHoneycomb", 39.95 * kg/m3, 2);
+  // NomexHoneycombFillerMaterial->AddMaterial(G4Material::GetMaterial("Galactic"), 73 *perCent);
+  // NomexHoneycombFillerMaterial->AddMaterial(G4Material::GetMaterial("NOMEX"), 27 *perCent); 
   
 }
 

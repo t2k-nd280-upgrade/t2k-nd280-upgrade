@@ -103,7 +103,7 @@ $resource        = "interactive"                 unless defined $resource;
 #$tag             = "SelND280Up_6E20_Current_AllECal_1_2_17" unless defined $tag; 
 #$tag             = "SelND280Up_6E20_Alter_targ_ftpc_AllECal" unless defined $tag;
 #$tag             = "SelND280Up_6E20_Alter_targ_ftpc_AllECal_FGD2" unless defined $tag;
-$tag            = "Histos" unless defined $tag;
+$tag            = "FC" unless defined $tag;
 
 #$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_classic_ECalAll_1_2_17_AllTrkPt.root" unless defined $inputfile;
 #$inputfile        = "/neutrino/data7/davide/files/ND280Upgrade/GEANT4Sim/0p2T/1_2_17_ECalAll/g4ND280Up_6E20_current_ECalAll_1_2_17_All.root" unless defined $inputfile;
@@ -112,7 +112,8 @@ $tag            = "Histos" unless defined $tag;
 #$inputfile        = "/home/cjesus/Desktop/prueba.root" unless defined $inputfile;
 #$inputfile        = "/home/cjesus/Desktop/pgun_low_hatpc-Exp0-Nexpt100000.root" unless defined $inputfile;
 #$inputfile         = "$softw_dir/" unless defined $inputfile;
-$inputfile         = "/nfs/pic.es/user/c/cjesus/scripts/bash/g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector-Exp0-Nexpt1000.root" unless defined $inputfile;
+#$inputfile         = "/nfs/neutrinos/cjesus/work/pgun_files/500k/HATPC_500k.root" unless defined $inputfile;
+$inputfile         = "/nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/CesarProd/noMAgField/noMag_500k.root" unless defined $inputfile;
 #$inputfile         = "/nfs/pic.es/user/c/cjesus/scripts/bash/g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector-Exp0-Nexpt100.root" unless defined $inputfile;
 #$inputfile         = "/nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/CesarProd/good_size_good_position/fullproduction/full_production.root" unless defined $inputfile;
 
@@ -140,7 +141,7 @@ while($irun < $nruns) { # loop over the jobs
 
 #    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpHit.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/FieldCageWalls.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\",$cut_fv1_minX,$cut_fv1_maxX,$cut_fv1_minY,$cut_fv1_maxY,$cut_fv1_minZ,$cut_fv1_maxZ,$docut_cc,$docut_reac,$cut_reac,$docut_mater,$docut_vertex,$docut_target1,$docut_target2,$docut_fgd1,$docut_fgd2,$docut_vtxX,$cut_xmin,$cut_xmax,$docut_vtxZ,$cut_zmin,$cut_zmax,$docut_pdg,$cut_pdg,$docut_parid,$cut_parid,$docut_charge,$cut_charge,$docut_dl_target,$cut_dl_target,$docut_dlyz_tpc,$cut_dlyz_tpc)'";
 
- $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpHit.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/MaterialBudget.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\")'"; 
+ $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpHit.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/MaterialBudgetNuEvt.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\")'"; 
 
     $command = "$arguments";
     

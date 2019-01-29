@@ -61,6 +61,10 @@ $tag             = "test" unless defined $tag;
 #$tag             = "g4ND280Up_AltTargTPC_Only_SuperFGD"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu_NEUT"    unless defined $tag;
+<<<<<<< Updated upstream
+=======
+$tag              = "GENIE_G18_10b_1e22_nue_FHC"               unless defined $tag;
+>>>>>>> Stashed changes
 
 
 ######################################################################################################################################

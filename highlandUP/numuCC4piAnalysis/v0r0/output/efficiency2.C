@@ -24,12 +24,12 @@
 
 using namespace std;
 
-TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/TDR_SFGD_Updated";
-TString INPDIR2 = "c";
-TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots/GENIEv3/TDR_SFGD_Updated";
+//TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/CompEff";
+//TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots";
+TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/UniTarget-FGD12";
+TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots";
 
 int NTargets[4] = {2, 2, 3, 3};
-//int NTargets[4] = {3, 3, 3, 3}; // ONLY TO COMPARE CDR VS TDR, config0 is in reality CDR and it also has config0_Target3
 TString branchNames[8] = {"CC0pi", "CC1pi", "CCoth", "FWD", "BWD", "HA", "Target", "ECal"};
 
 const int NBins_CosTh = 20;
@@ -62,15 +62,9 @@ TH1F* computeEff(TString suffix, int config, int target, int categ, int cut1, in
 
  // config = 2;
  // target = 3;
-  if(config == 0){
-  TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
-        INPDIR2.Data(),target, 2, target, suffix.Data()));
-  }
-  if(config == 2){
+
   TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
         INPDIR.Data(),target, config, target, suffix.Data()));
-  }
-
   TTree* t = (TTree*)f.Get("truth");	
 
   TH1F* h_beforeCut = new TH1F(TString::Format("before_%s_%i_%i",var.Data(),config,target),
@@ -155,6 +149,258 @@ TH1F* computeEff(TString suffix, int config, int target, int categ, int cut1, in
 }
 
 
+TH1F* computeDisBef(TString suffix, int config, int target, int categ, int cut1, int cut2,
+     TString var, TString var_title, 
+     int nbins, double* xbins, bool PSRes=false) {
+  
+  TH1::AddDirectory(kFALSE);
+
+ // config = 2;
+ // target = 3;
+
+  TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
+        INPDIR.Data(),target, config, target, suffix.Data()));
+  TTree* t = (TTree*)f.Get("truth");  
+
+  TH1F* h_beforeCut = new TH1F(TString::Format("before_%s_%i_%i",var.Data(),config,target),
+             TString::Format("before_%s_%i_%i",var.Data(),config,target),
+             nbins, xbins);
+  TH1F* h_afterCut = new TH1F(TString::Format("after_%s_%i_%i",var.Data(),config,target),
+            TString::Format("after_%s_%i_%i",var.Data(),config,target),
+            nbins, xbins);
+
+  Int_t accum_level[8];
+  Float_t variable;
+  int topology;
+  Float_t res_var;
+  
+  t->SetBranchAddress("accum_level", &accum_level);
+  t->SetBranchAddress(var,           &variable);
+  t->SetBranchAddress("topology",    &topology);
+
+  if (PSRes && var=="true_costheta")
+    t->SetBranchAddress("true_mom", &res_var);
+  if (PSRes && var=="true_mom")
+    t->SetBranchAddress("true_costheta", &res_var);
+ 
+  vector<int> branches;
+  if (categ <= -1) {
+    branches.push_back(3); 
+    branches.push_back(4);
+    branches.push_back(5);
+    branches.push_back(7);
+    if (categ == -1)
+      branches.push_back(6);
+  }
+  else
+    branches.push_back(categ);
+    
+
+  for (Int_t ient=0; ient < t->GetEntries(); ient++) {
+    
+    t->GetEntry(ient);
+
+    // do we apply some phase space restriction for the efficiency computation
+    if (PSRes && var=="true_costheta")
+      if (res_var < PSRes_muonMom)
+  continue;
+    if (PSRes && var=="true_mom")
+      if (res_var < PSRes_muonCos)
+  continue;
+      
+    bool sel1 = false, sel2 = false;
+    for (vector<int>::iterator it = branches.begin(); it != branches.end(); ++it) {
+      bool topoCut = ((*it) >= 3) || (topology==(*it));
+      sel1 = sel1 || (accum_level[*it] > cut1 && topoCut);
+      sel2 = sel2 || (accum_level[*it] > cut2 && topoCut);
+    }
+
+    if (sel1)
+      h_beforeCut->Fill(variable);
+    if (sel2)
+      h_afterCut->Fill(variable);
+    
+  }
+
+  // prepare the efficiency histogram
+  // TH1F *h_eff = new TH1F(TString::Format("h_eff_%s_%i_%i",var.Data(),config,target),
+  //      TString::Format("h_eff_%s_%i_%i",var.Data(),config,target),
+  //      nbins, xbins);
+  // h_eff->Divide(h_afterCut, h_beforeCut);
+
+  // for (int i=0; i<nbins; i++) {
+  //   float eff = h_eff->GetBinContent(i+1);
+  //   h_eff->SetBinError(i+1, sqrt(eff*(1-eff)/h_beforeCut->GetBinContent(i+1)));
+  // }
+  
+  h_beforeCut->GetXaxis()->SetTitle(var_title);
+  h_beforeCut->GetXaxis()->SetTitleSize(0.05);
+  h_beforeCut->GetXaxis()->SetTitleOffset(0.9);
+  h_beforeCut->GetYaxis()->SetTitleSize(0.05);
+  h_beforeCut->GetYaxis()->SetTitle("before selection");
+  
+  return h_beforeCut;
+
+}
+
+TH1F* computeDisAft(TString suffix, int config, int target, int categ, int cut1, int cut2,
+     TString var, TString var_title, 
+     int nbins, double* xbins, bool PSRes=false) {
+  
+  TH1::AddDirectory(kFALSE);
+
+ // config = 2;
+ // target = 3;
+
+  TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
+        INPDIR.Data(),target, config, target, suffix.Data()));
+  TTree* t = (TTree*)f.Get("truth");  
+
+  TH1F* h_beforeCut = new TH1F(TString::Format("before_%s_%i_%i",var.Data(),config,target),
+             TString::Format("before_%s_%i_%i",var.Data(),config,target),
+             nbins, xbins);
+  TH1F* h_afterCut = new TH1F(TString::Format("after_%s_%i_%i",var.Data(),config,target),
+            TString::Format("after_%s_%i_%i",var.Data(),config,target),
+            nbins, xbins);
+
+  Int_t accum_level[8];
+  Float_t variable;
+  int topology;
+  Float_t res_var;
+  
+  t->SetBranchAddress("accum_level", &accum_level);
+  t->SetBranchAddress(var,           &variable);
+  t->SetBranchAddress("topology",    &topology);
+
+  if (PSRes && var=="true_costheta")
+    t->SetBranchAddress("true_mom", &res_var);
+  if (PSRes && var=="true_mom")
+    t->SetBranchAddress("true_costheta", &res_var);
+ 
+  vector<int> branches;
+  if (categ <= -1) {
+    branches.push_back(3); 
+    branches.push_back(4);
+    branches.push_back(5);
+    branches.push_back(7);
+    if (categ == -1)
+      branches.push_back(6);
+  }
+  else
+    branches.push_back(categ);
+    
+
+  for (Int_t ient=0; ient < t->GetEntries(); ient++) {
+    
+    t->GetEntry(ient);
+
+    // do we apply some phase space restriction for the efficiency computation
+    if (PSRes && var=="true_costheta")
+      if (res_var < PSRes_muonMom)
+  continue;
+    if (PSRes && var=="true_mom")
+      if (res_var < PSRes_muonCos)
+  continue;
+      
+    bool sel1 = false, sel2 = false;
+    for (vector<int>::iterator it = branches.begin(); it != branches.end(); ++it) {
+      bool topoCut = ((*it) >= 3) || (topology==(*it));
+      sel1 = sel1 || (accum_level[*it] > cut1 && topoCut);
+      sel2 = sel2 || (accum_level[*it] > cut2 && topoCut);
+    }
+
+    if (sel1)
+      h_beforeCut->Fill(variable);
+    if (sel2)
+      h_afterCut->Fill(variable);
+    
+  }
+
+  // prepare the efficiency histogram
+  // TH1F *h_eff = new TH1F(TString::Format("h_eff_%s_%i_%i",var.Data(),config,target),
+  //      TString::Format("h_eff_%s_%i_%i",var.Data(),config,target),
+  //      nbins, xbins);
+  // h_eff->Divide(h_afterCut, h_beforeCut);
+
+  // for (int i=0; i<nbins; i++) {
+  //   float eff = h_eff->GetBinContent(i+1);
+  //   h_eff->SetBinError(i+1, sqrt(eff*(1-eff)/h_beforeCut->GetBinContent(i+1)));
+  // }
+  
+  h_afterCut->GetXaxis()->SetTitle(var_title);
+  h_afterCut->GetXaxis()->SetTitleSize(0.05);
+  h_afterCut->GetXaxis()->SetTitleOffset(0.9);
+  h_afterCut->GetYaxis()->SetTitleSize(0.05);
+  h_afterCut->GetYaxis()->SetTitle("selected");
+  
+  return h_afterCut;
+
+}
+
+
+// TH1F* computeDis(TString suffix, int config, int target, int categ, int cut,
+//      TString var, TString var_title, 
+//      int nbins, double* xbins, bool PSRes=false) {
+  
+//   TH1::AddDirectory(kFALSE);
+
+//   TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
+//         INPDIR.Data(),target, config, target, suffix.Data()));
+//   TTree* t = (TTree*)f.Get("truth");  
+
+//   TH1F* h = new TH1F(TString::Format("after_%s_%i_%i",var.Data(),config,target),
+//             TString::Format("after_%s_%i_%i",var.Data(),config,target),
+//             nbins, xbins);
+
+//   Int_t accum_level[8];
+//   Float_t variable;
+//   int topology;
+//   Float_t res_var;
+  
+//   t->SetBranchAddress("accum_level", &accum_level);
+//   t->SetBranchAddress(var,           &variable);
+//   t->SetBranchAddress("topology",    &topology);
+
+//   if (PSRes && var=="true_costheta")
+//     t->SetBranchAddress("true_mom", &res_var);
+//   if (PSRes && var=="true_mom")
+//     t->SetBranchAddress("true_costheta", &res_var);
+ 
+//   vector<int> branches;
+//   if (categ <= -1) {
+//     branches.push_back(3); 
+//     branches.push_back(4);
+//     branches.push_back(5);
+//     branches.push_back(7);
+//     if (categ == -1)
+//       branches.push_back(6);
+//   }
+//   else
+//     branches.push_back(categ);
+    
+
+//   for (Int_t ient=0; ient < t->GetEntries(); ient++) {
+    
+//     t->GetEntry(ient);
+      
+//     bool sel = false
+//     for (vector<int>::iterator it = branches.begin(); it != branches.end(); ++it) {
+//       bool topoCut = ((*it) >= 3) || (topology==(*it));
+//       sel = sel || (accum_level[*it] > cut && topoCut);
+//     }
+//     if (sel)
+//       h->Fill(variable);
+    
+//   }
+  
+//   h->GetXaxis()->SetTitle(var_title);
+//   h->GetXaxis()->SetTitleSize(0.05);
+//   h->GetXaxis()->SetTitleOffset(0.9);
+//   return h;
+
+// }
+
+
 // superimpose the efficiencies for a given set of files, category and variable
 void plotTotal(TString suffix, int categ, int cut1, int cut2, 
 	       TString var, TString var_title, 
@@ -202,15 +448,14 @@ void plotTotal(TString suffix, int categ, int cut1, int cut2,
       if (ic==0 || it<=2)
 	targetName = TString::Format("FGD %i", it);
       else
-	targetName = "SuperFGD";
+	targetName = "Horiz.Target";
       leg->AddEntry(h, TString::Format("%s, %s", configNames[ic].Data(), targetName.Data()), "el");
 
       histos.push_back(h);
     }
 
     if (ic==0)
-        leg->AddEntry((TObject*)0, "", "");
-   //   leg->AddEntry((TObject*)0, "#bf{Preliminary}", "");
+      leg->AddEntry((TObject*)0, "#bf{Preliminary}", "");
 //      leg->AddEntry((TObject*)0, "#bf{NEW_hUp}", "");
   }
 
@@ -230,7 +475,7 @@ void plotTotal(TString suffix, int categ, int cut1, int cut2,
     categName = branchNames[categ];
 
   c->Update();
-  c->SaveAs(TString::Format("%s/eff_total%s_%s_%s%s.pdf", 
+  c->SaveAs(TString::Format("%s/eff_total%s_%s_%s%s.eps", 
 			    OUTDIR.Data(), suffixName.Data(), var.Data(), categName.Data(), PSRes ? "_PSRes":""));
 
   TFile fW(TString::Format("%s/eff_total%s_%s_%s%s.root", 
@@ -256,12 +501,12 @@ void plotTotalComp(TString suffix1, TString suffix2, int config, int categ, int 
   vector<TH1F*> histos;
   
   TCanvas *c = new TCanvas("c");
-  TH1F* h_dummy = c->DrawFrame(xbins[0], 0, xbins[nbins], 1.02);
-  h_dummy->GetXaxis()->SetTitle(var_title);
-  h_dummy->GetXaxis()->SetTitleSize(0.05);
-  h_dummy->GetXaxis()->SetTitleOffset(0.9);
-  h_dummy->GetYaxis()->SetTitleSize(0.05);
-  h_dummy->GetYaxis()->SetTitle("efficiency");
+  // TH1F* h_dummy = c->DrawFrame(xbins[0], 0, xbins[nbins], 1.02);
+  // h_dummy->GetXaxis()->SetTitle(var_title);
+  // h_dummy->GetXaxis()->SetTitleSize(0.05);
+  // h_dummy->GetXaxis()->SetTitleOffset(0.9);
+  // h_dummy->GetYaxis()->SetTitleSize(0.05);
+  // h_dummy->GetYaxis()->SetTitle("efficiency");
 
   TLegend *leg = new TLegend(0.1, 0.905, 0.9, 0.98);
   leg->SetBorderSize(0);
@@ -272,12 +517,14 @@ void plotTotalComp(TString suffix1, TString suffix2, int config, int categ, int 
 
   int colors[3] = {kBlack, kRed, kBlue};
 
-  for (int ic=0; ic<2; ic++) {
+  for (int ic=1; ic>=0; ic--) {
 	  
     for (int it=1; it<=NTargets[config]; it++) {
 		
-      TH1F* h = computeEff(suffixes[ic], config, it, categ, cut1, cut2, 
-				var, var_title, nbins, xbins);
+    //   TH1F* h = computeEff(suffixes[ic], config, it, categ, cut1, cut2, 
+				// var, var_title, nbins, xbins);
+      TH1F* h = computeDisBef(suffixes[ic], config, it, categ, cut1, cut2,
+        var, var_title, nbins, xbins);
       h->SetLineColor(colors[it-1]);
       h->SetLineStyle(linestyles[ic]);
       h->SetLineWidth(3);
@@ -287,7 +534,7 @@ void plotTotalComp(TString suffix1, TString suffix2, int config, int categ, int 
       if (config==0 || it<=2)
 	targetName = TString::Format("FGD %i", it);
       else
-	targetName = "SuperFGD";
+	targetName = "Horiz.Target";
 
       TString suffixName="";
       if (suffixes[ic]!="") {
@@ -313,7 +560,7 @@ void plotTotalComp(TString suffix1, TString suffix2, int config, int categ, int 
     categName = branchNames[categ];
 
   c->Update();
-  c->SaveAs(TString::Format("%s/eff_total_%s_comp_config%i%s_VS%s_%s.pdf", 
+  c->SaveAs(TString::Format("%s/eff_total_%s_comp_config%i%s_VS%s_%s.eps", 
 			    OUTDIR.Data(), var.Data(), config, suffix1.Data(), suffix2.Data(), categName.Data()));
 
 
@@ -329,8 +576,8 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
   gStyle->SetTitleAlign(23);
   TH1::AddDirectory(kFALSE);
 
-  TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
-        INPDIR.Data(),target, config, target, suffix.Data()));
+  TFile f(TString::Format("%s/config%i_Target%i%s.root",
+        INPDIR.Data(),config, target, suffix.Data()));
   TTree* t = (TTree*)f.Get("truth");
 
   TH2F* hSig    = new TH2F("h1", "h2", nbinsX, xbinsX, nbinsY, xbinsY);
@@ -382,6 +629,10 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
   f.Close();
 
   TCanvas *c = new TCanvas("c", "c");
+  TH2F *h_eff = new TH2F("h_eff", "h_eff", nbinsX, xbinsX, nbinsY, xbinsY);
+  h_eff->Divide(hSelSig, hSig);
+  TH2F *h_pur = new TH2F("h_pur", "h_pur", nbinsX, xbinsX, nbinsY, xbinsY);
+  h_pur->Divide(hSelSig, hSel);
 
   TString suffixName = suffix;
   if (suffix == "")
@@ -391,7 +642,7 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
   if (config==0 || target<=2)
     targetName = TString::Format("FGD %i", target);
   else
-    targetName = "SuperFGD";
+    targetName = "Horiz.Target";
 
   TString categName = "";
   if (categ == -1)
@@ -400,12 +651,6 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
     categName = "woTarget";
   else
     categName = branchNames[categ];
-
-  TString namehist = TString::Format("HM_%s_%s",categName.Data(),targetName.Data());
-  TH2F *h_eff = new TH2F(namehist, namehist, nbinsX, xbinsX, nbinsY, xbinsY);
-  h_eff->Divide(hSelSig, hSig);
-  TH2F *h_pur = new TH2F(namehist+"_pur", namehist, nbinsX, xbinsX, nbinsY, xbinsY);
-  h_pur->Divide(hSelSig, hSel);
 
   h_eff->SetTitle(TString::Format("%s, %s, %s", 
 				  config==0 ? "Current":"Upgrade",
@@ -422,13 +667,13 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
   
   h_eff->Draw("colz");
   c->Update();
-  c->SaveAs(TString::Format("%s/2D_eff_config%i_target%i_total_%s_%s_%s%s.pdf", 
+  c->SaveAs(TString::Format("%s/eff_config%i_target%i_total_%s_%s_%s%s.eps", 
 			    OUTDIR.Data(), config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()));
 
-  TFile fW(TString::Format("%s/2D_eff_config%i_target%i_total_%s_%s_%s%s.root", 
+  TFile fW(TString::Format("%s/eff_config%i_target%i_total_%s_%s_%s%s.root", 
 			   OUTDIR.Data(), config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()), "RECREATE");
 
-  //h_eff->Write();
+  h_eff->Write();
   h_pur->Write();
 
 
@@ -436,16 +681,16 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
 
 
 
-void efficiency() {
+void efficiency2() {
 
-  TString suffixes[1] = {"_FHC_numu"};
+  TString suffixes[1] = {"_FHC_numu_OLD"};
   int conf[2] = {0,2};
 
-   for (int c=-2; c<8; c++) {
-     for (int s=0; s<1; s++) {
-      plotTotal(suffixes[s], c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
-      plotTotal(suffixes[s], c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
-      plotTotal(suffixes[s], c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+ //  for (int c=-2; c<8; c++) {
+ //    for (int s=0; s<3; s++) {
+ //      plotTotal(suffixes[s], c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+ //      plotTotal(suffixes[s], c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+ //      plotTotal(suffixes[s], c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
 
  //      for (int cc=0; cc<2; cc++) {
 	// for (int t=1; t<=NTargets[conf[cc]]; t++) {
@@ -453,9 +698,9 @@ void efficiency() {
 	// 	 "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
 	// 	 NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
 	// }
- //       }
-    }
-      }
+ //      }
+ //    }
+ //  }
 
  //  for (int s=0; s<3; s++) {
  //    plotTotal(suffixes[s], -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, true);
@@ -465,47 +710,53 @@ void efficiency() {
  //  plotTotalComp("", "_old", 0, -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
  //  plotTotalComp("", "_old", 2, -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
 
-
-     // plot2D("_RHC_numu", 0, 1, -2, -1, 4, 
+     // plot2D("_FHC_numu_OLD", 2, 3, -2, -1, 4, 
      // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
      // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
 
-     // plot2D("_RHC_numu", 0, 2, -2, -1, 4, 
-     // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-     // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
 
-     // // plot2D("_FHC_numu", 2, 3, -2, -1, 4, 
-     // // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-     // // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+   // plotTotal("_FHC_numu_OLD", -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+   // plotTotal("_FHC_numu_NEW", -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
 
-     // plot2D("_RHC_numu", 2, 1, -2, -1, 4, 
-     // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-     // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
-
-     // plot2D("_RHC_numu", 2, 2, -2, -1, 4, 
-     // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-     // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
-
-     // plot2D("_RHC_numu", 2, 3, -2, -1, 4, 
-     // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-     // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
-
-  // plotTotal("_FHC_numu", -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
-
-  // plotTotal("_FHC_numu", -2, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
-
-
-// for (int c=-2; c<0; c++) {
-//    plotTotal("_RHC_numu", c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+// for (int c=-2; c<8; c++) {
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
 //  }
 
- // for (int c=-2; c<8; c++) {
- //   plotTotal("_RHC_numu", c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
- // }
+//  for (int c=-2; c<8; c++) {
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+//  }
 
- // for (int c=-2; c<8; c++) {
- //   plotTotal("_RHC_numu", c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
- // }
+//  for (int c=-2; c<8; c++) {
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+//  }
+
+// for (int c=-2; c<8; c++) {
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_NEW_G4", c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+//  }
+
+//  for (int c=-2; c<8; c++) {
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_NEW_G4", c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+//  }
+
+//  for (int c=-2; c<8; c++) {
+//    plotTotal("_FHC_numu_EcalMod_NEW_hUp_NEW_G4", c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+//  }
+
+
+for (int c=-2; c<8; c++) {
+     plotTotalComp("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", "_FHC_numu_EcalMod_NEW_hUp_NEW_G4", 2, 
+           c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
+   }
+
+for (int c=-2; c<8; c++) {
+     plotTotalComp("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", "_FHC_numu_EcalMod_NEW_hUp_NEW_G4", 2, 
+           c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+   }
+
+  for (int c=-2; c<8; c++) {
+     plotTotalComp("_FHC_numu_EcalMod_NEW_hUp_OLD_G4", "_FHC_numu_EcalMod_NEW_hUp_NEW_G4", 2, 
+           c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+ }
 
 
 }

@@ -25,7 +25,8 @@
    c1->Divide(4,3);
    c2->Divide(4,3);
 
-   TFile f1("/software/neutrinos/t2k-nd280-upgrade/macro/Cesar/FC_Studies/Output/Histo0_Solid_Evt0_NEvt400000.root");
+TFile f1("/nfs/pic.es/user/c/cjesus/scripts/bash/nuEvt_400k.root");
+//   TFile f1("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_Ana_500k.root");
    NAngEl3DProj = new TProfile2D;
    NAngEl3DProj = hAngEl3D_pxy;
    NAngMu3DProj = new TProfile2D;
@@ -62,7 +63,8 @@
    NAngPr60Proj = new TProfile;
    NAngPr60Proj = hAngPr60Proj;
 
-   TFile f2("AnalysisOutput_Solid_Evt0_NEvt400000.root");
+ //  TFile f2("/nfs/pic.es/user/c/cjesus/scripts/bash/nuEvt_400k.root");
+   TFile f2("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_Ana_500k.root");
    GAngEl3DProj = new TProfile2D;
    GAngEl3DProj = hAngEl3D_pxy;
    GAngMu3DProj = new TProfile2D;
@@ -99,7 +101,7 @@
    GAngPr60Proj = new TProfile;
    GAngPr60Proj = hAngPr60Proj;
 
-   TFile f3("AnalysisOutput_Solid_Evt0_NEvt400000.root");
+   TFile f3("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_SFGD_Ana_500k.root");
    SAngEl3DProj = new TProfile2D;
    SAngEl3DProj = hAngEl3D_pxy;
    SAngMu3DProj = new TProfile2D;

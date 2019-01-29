@@ -25,7 +25,9 @@
    c1->Divide(4,3);
    c2->Divide(4,3);
 
-   TFile f1("/software/neutrinos/t2k-nd280-upgrade/macro/Cesar/FC_Studies/Output/Histo0_Solid_Evt0_NEvt400000.root");
+//   TFile f1("/software/neutrinos/t2k-nd280-upgrade/macro/Cesar/FC_Studies/Output/Histo0_Solid_Evt0_NEvt400000.root");
+//   TFile f1("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_Ana_500k.root");
+   TFile f1("/nfs/pic.es/user/c/cjesus/scripts/bash/nuEvt_400k.root");
    NMomEl3DProj = new TProfile2D;
    NMomEl3DProj = hMomEl3D_pxy;
    NMomMu3DProj = new TProfile2D;
@@ -62,7 +64,7 @@
    NMomPr60Proj = new TProfile;
    NMomPr60Proj = hMomPr60Proj;
 
-   TFile f2("AnalysisOutput_Solid_Evt0_NEvt400000.root");
+   TFile f2("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_Ana_500k.root");
    GMomEl3DProj = new TProfile2D;
    GMomEl3DProj = hMomEl3D_pxy;
    GMomMu3DProj = new TProfile2D;
@@ -99,7 +101,8 @@
    GMomPr60Proj = new TProfile;
    GMomPr60Proj = hMomPr60Proj;
 
-   TFile f3("AnalysisOutput_Solid_Evt0_NEvt400000.root");
+ //  TFile f3("AnalysisOutput_Solid_Evt0_NEvt400000.root");
+   TFile f3("/nfs/pic.es/user/c/cjesus/scripts/bash/HATPC_SFGD_Ana_500k.root");
    SMomEl3DProj = new TProfile2D;
    SMomEl3DProj = hMomEl3D_pxy;
    SMomMu3DProj = new TProfile2D;

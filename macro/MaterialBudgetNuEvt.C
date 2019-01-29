@@ -27,7 +27,7 @@
   #include "/software/neutrinos/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
   #include "/software/neutrinos/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
 
-  void MaterialBudget
+  void MaterialBudgetNuEvt
   (
   //Initialize the variables fixed in the submit script
    const int evtfirst = 0,
@@ -192,11 +192,14 @@
   {
   cntTotal++;
 
+  //if(ievt>10) linput->Reset();
   TTree *linput = (TTree*) finput->Get("ND280upEvents");
 
   linput->SetBranchAddress("Event",&nd280UpEvent);
 
   linput->GetEntry(ievt);
+
+ 
 
 
 
@@ -211,7 +214,7 @@
   for(int itrk=0;itrk<NTracks;itrk++)
   {
 
-//cout << endl << "NEW Track" << endl << endl;  
+// cout << endl << "NEW Track" << endl << endl;  
 
 
     TND280UpTrack *nd280UpTrack = nd280UpEvent->GetTrack(itrk);
@@ -233,9 +236,12 @@
     hAng->Fill(phi);
     hdirX->Fill(cosphi);
     hdirY->Fill(dirY);
-    hdirZ->Fill(dirZ);     
+    hdirZ->Fill(dirZ);
 
-    if(trkID > 1) break;
+   // if(trkID != 2) break;    
+
+ //  cout << "trkID is: " << trkID << endl;
+ //  cout << "pdg is: " << pdg << endl; 
 
   //  phi = abs(phi);   
 
@@ -248,24 +254,38 @@
     double MomFin = -1; //To ensure no double counting, or repetition errors
 
   for(int ipt=0;ipt<NPoints;ipt++)
-  { 
+  {	
 
-    TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);  
-    double MomX = nd280UpTrackPoint->GetMomentum().X();
-    double MomY = nd280UpTrackPoint->GetMomentum().Y();
-    double MomZ = nd280UpTrackPoint->GetMomentum().Z();     
-    double MomMod = nd280UpTrackPoint->GetMomentum().Mag();   
+    TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
+   	double MomX = nd280UpTrackPoint->GetMomentum().X();
+   	double MomY = nd280UpTrackPoint->GetMomentum().Y();
+   	double MomZ = nd280UpTrackPoint->GetMomentum().Z();     
+    double MomMod = nd280UpTrackPoint->GetMomentum().Mag();  	
     double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
     double phi2=atan2(MomVec[1],MomVec[2]);
     string volname = nd280UpTrackPoint->GetLogVolName();
 
    // phi2 = abs(phi2);
-  //cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
 
-    // int b_cnt =0;
+    //int b_cnt =0;
 
-    // if(ipt==0 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
-    // if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
+    if(ipt==0 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
+    if(ipt==1 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
+    if(ipt==2 && volname == "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") break;
+    if(volname.find("ToF") != std::string::npos) break;
+    if(volname.find("LeftClam") != std::string::npos) break;
+    if(volname.find("RightClam") != std::string::npos) break;
+    if(volname.find("OutOfWorld") != std::string::npos) break;
+    if(volname == "/t2k/OA/Magnet/Basket") break;
+
+   if(ipt==2 && volname == "/t2k/OA/Magnet/Basket") break;
+   if(ipt==2 && volname == "/t2k") break;
+   if(ipt==2 && volname == "/t2k/OA") break;
+   if(ipt==2 && volname == "/t2k/OA/Magnet") break;
+   if(ipt==2 && volname == "OutOfWorld") break;
+   if(ipt==2 && volname == "/t2k/OA/Magnet/LeftClam") break;
+   if(ipt==2 && volname == "/t2k/OA/Magnet/RightClam") break;
+    
     // if(ipt==2 && volname == "/t2k/OA/Magnet/Basket/FC/HATPCDown/Drift/Half0") b_cnt++;
     // if(ipt==2 && volname == "/t2k/OA/Magnet/Basket/FC/HATPCDown/Drift/Half1") b_cnt++;
     // if(ipt==2 && volname == "/t2k/OA/Magnet/Basket/FC/HATPCUp/Drift/Half0") b_cnt++;
@@ -273,28 +293,20 @@
 
     //  if(ipt ==2 && b_cnt==0) break;
 
-   if(ipt==1 && volname == "/t2k/OA/Magnet/Basket") break;
-   if(ipt==1 && volname == "/t2k") break;
-   if(ipt==1 && volname == "/t2k/OA") break;
-   if(ipt==1 && volname == "/t2k/OA/Magnet") break;
-   if(ipt==1 && volname == "OutOfWorld") break;
-   if(ipt==1 && volname == "/t2k/OA/Magnet/LeftClam") break;
-   if(ipt==1 && volname == "/t2k/OA/Magnet/RightClam") break;
-   if(ipt > 1 && volname == "OutOfWorld") break;
+//if(ipt >1 && volname.find("Drift") == std::string::npos) cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
 
 
-   // if(volname == "PCBParent/PCBlayer1" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer2" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer3" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer4" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer5" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer6" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-
-   cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
+ //cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
+   
+  // // Conditions to select the plot's .pdf file names.
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FC/layer8") {FCname = "old"; break;}
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCNexus/layer8") FCname = "Nexus";
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCGF/layer7") FCname = "GF";
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer5") FCname = "Solid";
 
   // Condition to store information before entering in the FC
 //     if(volname == "TargetUniform" && trkID ==1)
-     if(volname == "/t2k/OA/Magnet/Basket/FC/HATPCUp/Drift/Half1" &&  ipt==1)
+     if(volname == "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform" &&  ipt==1)
      {    
      if(cnt1 == 0) // Only enters the first time (per event) it is in "/t2k/OA/Magnet/Basket" to avoid double counting.
      {
@@ -302,10 +314,17 @@
      }
      cnt1++;
      }
+     
+     // cout << "cosphi: " << cosphi << endl;
+     // cout << "phi: " << phi*360/(2*3.141592) << endl;
+     // cout << "phi2: " << phi2*360/(2*3.141592) << endl;
+     // cout << "abs(phi2-phi): " << abs(phi2-phi)*360/(2*3.141592) << endl;
+
+
 
 // Condition to store information after entering in the FC
 //     if(volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half1" && cnt1 == 1 && trkID ==1) // (cnt1 == 1) is important. It ensures that any event is stored if we don't have both inital and final information.
-     if(volname == "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") 
+     if(ipt==2 && volname != "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform" && cnt1 == 1) 
      {
         MomFin = MomMod;
         if(cnt == 0)
@@ -337,97 +356,103 @@
           if(pdg ==11)
           {
           hMomEl3D->Fill(cosphi,MomIni,100*MomFin/MomIni);
-          hAngEl3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          if(phi>0)hAngEl3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          //hAngEl3D->Fill(cosphi,MomIni,(abs(phi2)-abs(phi))*360/(2*3.141592));
           }
           if(pdg ==13)
           {
           hMomMu3D->Fill(cosphi,MomIni,100*MomFin/MomIni);
-          hAngMu3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          if(phi>0)hAngMu3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          //if(phi>0)hAngMu3D->Fill(cosphi,MomIni,(abs(phi2)-abs(phi))*360/(2*3.141592));
           hSpeMu200MeV0deg->Fill(MomIni-MomFin);
           }
-          if(pdg == -211 || pdg == 211)
+          if(pdg == -211)
           {
           hMomPi3D->Fill(cosphi,MomIni,100*MomFin/MomIni);
-          hAngPi3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          if(phi>0)hAngPi3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          //if(phi>0)hAngPi3D->Fill(cosphi,MomIni,(abs(phi2)-abs(phi))*360/(2*3.141592));
           }
           if(pdg ==2212)
           {
           hMomPr3D->Fill(cosphi,MomIni,100*MomFin/MomIni);
-          hAngPr3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          if(phi>0)hAngPr3D->Fill(cosphi,MomIni,abs((phi2-phi)*360/(2*3.141592)));
+          //if(phi>0)hAngPr3D->Fill(cosphi,MomIni,(abs(phi2)-abs(phi))*360/(2*3.141592));
           }
 
 
           }      
-     cnt++;     //To avoid double counting, only 1 Fill in Half1 layer per event.
+     if(volname.find("Drift") != std::string::npos) cnt++;     //To avoid double counting, only 1 Fill in Half1 layer per event.
      //ipt = NPoints-1;
      }
 
      int AngWindow = 5; //Actually the real window is 2 times this
 
-        if(ipt == NPoints-1 && cnt == 0){ 
+        if(ipt == 2 && cnt == 0){ 
           bPassed = false;
           if( abs(phi*360/(2*3.141592)) >= 90-AngWindow && abs(phi*360/(2*3.141592)) <= 90+AngWindow)
           {
           if(pdg ==11) EffEl0->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu0->Fill(bPassed,MomIni);
-          if(pdg ==-211 || pdg ==211)  EffPi0->Fill(bPassed,MomIni);
+          if(pdg ==-211)  EffPi0->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr0->Fill(bPassed,MomIni);
           }
           if(abs(phi*360/(2*3.141592)) >= (90-30-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-30+AngWindow))
           {
           if(pdg ==11) EffEl30->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu30->Fill(bPassed,MomIni);
-          if(pdg ==-211 || pdg ==211)  EffPi30->Fill(bPassed,MomIni);
+          if(pdg ==-211)  EffPi30->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr30->Fill(bPassed,MomIni);
           }
           if(abs(phi*360/(2*3.141592)) >= (90-60-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-60+AngWindow))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
-          if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
+          if(pdg ==-211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
           if(abs(phi*360/(2*3.141592)) >= (90-75-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-75+AngWindow))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
-          if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
+          if(pdg ==-211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
         }
 
-        if(ipt == NPoints-1 && cnt >= 1)
+        if(ipt == 2 && cnt >= 1)
         { 
           bPassed = true;
           if( abs(phi*360/(2*3.141592)) >= 90-AngWindow && abs(phi*360/(2*3.141592)) <= 90+AngWindow)
           {
           if(pdg ==11) EffEl0->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu0->Fill(bPassed,MomIni);
-          if(pdg ==-211 || pdg ==211)  EffPi0->Fill(bPassed,MomIni);
+          if(pdg ==-211)  EffPi0->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr0->Fill(bPassed,MomIni);
           }
           if(abs(phi*360/(2*3.141592)) >= (90-30-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-30+AngWindow))
           {
           if(pdg ==11) EffEl30->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu30->Fill(bPassed,MomIni);
-          if(pdg ==-211 || pdg ==211)  EffPi30->Fill(bPassed,MomIni);
+          if(pdg ==-211)  EffPi30->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr30->Fill(bPassed,MomIni);
           }
           if(abs(phi*360/(2*3.141592)) >= (90-60-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-60+AngWindow))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
-          if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
+          if(pdg ==-211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
           if(abs(phi*360/(2*3.141592)) >= (90-75-AngWindow) && abs(phi*360/(2*3.141592)) <= (90-75+AngWindow))
           {
           if(pdg ==11) EffEl60->Fill(bPassed,MomIni);
           if(pdg ==13) EffMu60->Fill(bPassed,MomIni);
-          if(pdg ==-211 || pdg ==211)  EffPi60->Fill(bPassed,MomIni);
+          if(pdg ==-211)  EffPi60->Fill(bPassed,MomIni);
           if(pdg ==2212) EffPr60->Fill(bPassed,MomIni);
           }
         }
+
+        if(ipt == 2) ipt = NPoints-1;
 
       
 
@@ -1393,10 +1418,10 @@
 
   // Save in an output file.
 
+
   TString outfilename = "";
 
   outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
-
 
     TFile *out = new TFile(outfilename.Data(),"RECREATE");
 
@@ -1502,3 +1527,7 @@
 
 
   }
+
+
+
+

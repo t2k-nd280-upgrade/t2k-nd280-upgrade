@@ -27,7 +27,7 @@
   #include "/software/neutrinos/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.hh"
   #include "/software/neutrinos/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.hh"
 
-  void MaterialBudget
+  void MaterialBudgetSFGD
   (
   //Initialize the variables fixed in the submit script
    const int evtfirst = 0,
@@ -204,14 +204,14 @@
     cout << "Event " << ievt << endl; // Message for large files: Print the analysis status every 10000 analyzed events.    
  }
 
-//cout << endl << endl << "NEW EVENT" << endl << endl;
+ cout << endl << endl << "NEW EVENT" << endl << endl;
 
   //Loop over Tracks (per each events).
   int NTracks = nd280UpEvent->GetNTracks();
   for(int itrk=0;itrk<NTracks;itrk++)
   {
 
-//cout << endl << "NEW Track" << endl << endl;  
+ cout << endl << "NEW Track" << endl << endl;  
 
 
     TND280UpTrack *nd280UpTrack = nd280UpEvent->GetTrack(itrk);
@@ -248,13 +248,13 @@
     double MomFin = -1; //To ensure no double counting, or repetition errors
 
   for(int ipt=0;ipt<NPoints;ipt++)
-  { 
+  {	
 
-    TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);  
-    double MomX = nd280UpTrackPoint->GetMomentum().X();
-    double MomY = nd280UpTrackPoint->GetMomentum().Y();
-    double MomZ = nd280UpTrackPoint->GetMomentum().Z();     
-    double MomMod = nd280UpTrackPoint->GetMomentum().Mag();   
+    TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(ipt);	
+   	double MomX = nd280UpTrackPoint->GetMomentum().X();
+   	double MomY = nd280UpTrackPoint->GetMomentum().Y();
+   	double MomZ = nd280UpTrackPoint->GetMomentum().Z();     
+    double MomMod = nd280UpTrackPoint->GetMomentum().Mag();  	
     double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
     double phi2=atan2(MomVec[1],MomVec[2]);
     string volname = nd280UpTrackPoint->GetLogVolName();
@@ -280,21 +280,19 @@
    if(ipt==1 && volname == "OutOfWorld") break;
    if(ipt==1 && volname == "/t2k/OA/Magnet/LeftClam") break;
    if(ipt==1 && volname == "/t2k/OA/Magnet/RightClam") break;
-   if(ipt > 1 && volname == "OutOfWorld") break;
 
 
-   // if(volname == "PCBParent/PCBlayer1" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer2" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer3" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer4" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer5" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-   // if(volname == "PCBParent/PCBlayer6" )cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
-
-   cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
+  cout << "volname is: " << volname << "  |  ipt " << ipt <<endl;
+   
+  // // Conditions to select the plot's .pdf file names.
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FC/layer8") {FCname = "old"; break;}
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCNexus/layer8") FCname = "Nexus";
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCGF/layer7") FCname = "GF";
+  //    if(volname== "/t2k/OA/Magnet/Basket/HATPCUp/FCSolid/layer5") FCname = "Solid";
 
   // Condition to store information before entering in the FC
 //     if(volname == "TargetUniform" && trkID ==1)
-     if(volname == "/t2k/OA/Magnet/Basket/FC/HATPCUp/Drift/Half1" &&  ipt==1)
+     if(volname == "/t2k/OA/Magnet/Basket" &&  ipt==0)
      {    
      if(cnt1 == 0) // Only enters the first time (per event) it is in "/t2k/OA/Magnet/Basket" to avoid double counting.
      {
@@ -305,7 +303,7 @@
 
 // Condition to store information after entering in the FC
 //     if(volname == "/t2k/OA/Magnet/Basket/HATPCUp/Drift/Half1" && cnt1 == 1 && trkID ==1) // (cnt1 == 1) is important. It ensures that any event is stored if we don't have both inital and final information.
-     if(volname == "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform") 
+     if(ipt == 1) 
      {
         MomFin = MomMod;
         if(cnt == 0)
@@ -358,8 +356,8 @@
 
 
           }      
-     cnt++;     //To avoid double counting, only 1 Fill in Half1 layer per event.
-     //ipt = NPoints-1;
+     if (volname == "/t2k/OA/Magnet/Basket/target1/CFBox1/TargetUniform" ) cnt++;     //To avoid double counting, only 1 Fill in Half1 layer per event.
+     ipt = NPoints-1;
      }
 
      int AngWindow = 5; //Actually the real window is 2 times this
@@ -1395,6 +1393,10 @@
 
   TString outfilename = "";
 
+  // if(FCname == "Nexus") outfilename = TString::Format("%s_Nexus_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
+  // if(FCname == "GF")    outfilename = TString::Format("%s_GF_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
+  // if(FCname == "Solid") outfilename = TString::Format("%s_Solid_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
+
   outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
 
 
@@ -1496,9 +1498,16 @@
   TString filename = "";
 
   filename = TString::Format("%s_Evt%d_NEvt%d.pdf",tag.c_str(),evtfirst,nevents);
+  // if(FCname == "Nexus") filename = TString::Format("%s_Nexus.pdf",outfilename.Data());
+  // if(FCname == "GF") filename = TString::Format("%s_GF.pdf",outfilename.Data());
+  // if(FCname == "Solid") filename = TString::Format("%s_Solid.pdf",outfilename.Data());
 
   c1->Print(filename);
 
 
 
   }
+
+
+
+

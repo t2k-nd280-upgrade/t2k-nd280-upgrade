@@ -21,10 +21,12 @@
 
 using namespace std;
 
-TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/UniTarget-FGD12/config2";
+TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/GENIEv3";
 TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots";
 
 int NTargets[3] = {2, 2, 3};
+
+//int NTargets[3] = {3, 3, 3};
 
 TString branchNames[8] = {"CC0pi", "CC1pi", "CCoth", "FWD", "BWD", "HA", "Target", "ECal"};
 
@@ -165,7 +167,7 @@ void plot2D(TString suffix, int config, int categ, int cut_level,
    h->SetContour(100);
    h->Draw("colz");
 
-  c->SaveAs(TString::Format("%s/2D_%s_%s_config%i_%s%s%s.eps", 
+  c->SaveAs(TString::Format("%s/2D_%s_%s_config%i_%s%s%s.pdf", 
           OUTDIR.Data(), varX.Data(), varY.Data(), config, categName.Data(), suffixName.Data(), log ? "_log":""));
 
 }
@@ -195,9 +197,21 @@ void plotAll() {
   //    "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
   //    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, false);
 
-  plot2D("_FHC_numu_NEW_hUp_OLD_G4", 0, -1, 4, 
+  // plot2D("_FHC_numu", 0, -1, 4, 
+  //    "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+  //    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
+
+  plot2D("_FHC_numu", 2, -2, 4, 
      "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
      NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
+
+  plot2D("_FHC_numu", 0, -2, 4, 
+     "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+     NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
+
+  // plot2D("_FHC_numu", 0, -2, 4, 
+  //    "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+  //    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom, true);
 
   // plot2D("_FHC_numu_NEW_hUp_NEW_G4", 2, -1, 4, 
   //    "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 

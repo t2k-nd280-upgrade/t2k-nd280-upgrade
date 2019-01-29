@@ -100,7 +100,7 @@ $tag             = "pgun"    unless defined $tag;
 
 #with hatpc
 #$config_file     = "config/HATPC/configuration_cluster_targ_ftpc_2fgd_tof_ecal_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
-$config_file     = "config/HATPC/configuration_pgun_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
+$config_file     = "config/configuration_pgun_sfgd_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
  
 
 # ECal, Basket, Magnet (no Tracker)

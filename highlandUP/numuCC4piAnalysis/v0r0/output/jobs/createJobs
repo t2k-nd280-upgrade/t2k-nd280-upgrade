@@ -2,7 +2,7 @@
 
 #set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/g4ND280Up_FHC_GENIE_1E21_UniTarget-FGD12_wholeDetector
 #set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/OLD_TDR_Productions/FHC_numu/config2
-set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/CesarProd
+set file_dir = /nfs/neutrinos/cjesus/work/iRODS_files/Sim_Opt_Productions/CesarProd/TDR/FHC_numu
 set code_dir = /software/neutrinos/t2k-nd280-upgrade/highlandUP/numuCC4piAnalysis/v0r0
 set original_parfile = ${code_dir}/parameters/numuCC4piAnalysis.parameters.dat
 
@@ -10,7 +10,7 @@ set par_dir = ${code_dir}/output/jobs/parameters
 #set log_dir = ${code_dir}/output/jobs/logs
 set log_dir = /nfs/neutrinos/cjesus/work/jobs/logs
 set job_dir = ${code_dir}/output/jobs/jobs
-set out_dir = /nfs/neutrinos/cjesus/work/jobs/files/UniTarget-FGD12/
+set out_dir = /nfs/neutrinos/cjesus/work/jobs/files/TDR_SFGD_Updated
 #set out_dir = ${code_dir}/output/jobs/files
 
 set launcher = launchJobs
@@ -41,6 +41,8 @@ while ($i_nu < 1)                   #originally < 2 (with FHC & RHC)
 	set folder = "RHC"
 	set numode = "RHC_numu_antinu"
     endif
+
+    set numode = "FHC_numu"
 
 #    set i_conf=0
 #    # loop on the detector configuration
@@ -85,12 +87,14 @@ while ($i_nu < 1)                   #originally < 2 (with FHC & RHC)
 	    set parfile = ${par_dir}/par_$j.dat
 	    cp -f $original_parfile $parfile
 
-	    set name = "OLD_config${i_conf}_Target${i_target}_${numode}${ext}"
+	    set name = "FHC_antinu_config${i_conf}_Target${i_target}_${numode}${ext}"
 	    set job  = "${job_dir}/job_${name}.sh"
 			
 	    if ($i_nu == 1) then
 		sed -i "/NeutrinoMode =/c\ < numuCC4piAnalysis.NeutrinoMode = -1 >" $parfile
 	    endif
+
+#		sed -i "/NeutrinoMode =/c\ < numuCC4piAnalysis.NeutrinoMode = -1 >" $parfile
 
 	    if ($conf == 0) then
 		sed -i "/EnableTarget1 =/c\ < numuCC4piAnalysis.EnableTarget1 = 0 >" $parfile
@@ -143,8 +147,11 @@ while ($i_nu < 1)                   #originally < 2 (with FHC & RHC)
 		    set prev_job_name = "${dq}hUP_$k${dq}"
 
 		    if ($f < $max_job) then 
-		    echo "qsub -N $job_name -o ${log_dir}/output_$f.txt -e ${log_dir}/outerr_$f.txt -q short -l nodes=1 ${job}" >> $launcher
-		    #echo "qsub -N $job_name -P P_t2k -o ${log_dir}/output_$f.txt -e ${log_dir}/outerr_$f.txt -l ct=24:00:00,s_fsize=8G,s_rss=8G,sps=1 ${job}" >> $launcher
+		    	echo "qsub -N $job_name -o ${log_dir}/output_$f.txt -e ${log_dir}/outerr_$f.txt -q short -l nodes=1 ${job}" >> $launcher
+		    	echo "echo 'qsub -N $job_name -o ${log_dir}/output_$f.txt -e ${log_dir}/outerr_$f.txt -q short -l nodes=1 ${job}' " >> $launcher
+		    	#echo "qsub -N $job_name -P P_t2k -o ${log_dir}/output_$f.txt -e ${log_dir}/outerr_$f.txt -l ct=24:00:00,s_fsize=8G,s_rss=8G,sps=1 ${job}" >> $launcher
+		    else
+		    	break
 		    endif
 
 	    end

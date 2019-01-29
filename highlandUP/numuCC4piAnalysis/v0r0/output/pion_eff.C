@@ -20,8 +20,10 @@
 #include "TString.h"
 #include "TColor.h"
 
-#include "/sps/t2k/mlamoure/T2KStyle/SetT2KStyle.H"
+//#include "/sps/t2k/mlamoure/T2KStyle/SetT2KStyle.H"
 
+TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/NoPionInTarget";
+TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots/";
 
 TString confName[4] = {"ND280 current-like", 
 		       "ND280 up-like reference", 
@@ -41,21 +43,30 @@ double BinEdges_MomGeV[NBins_Mom+1] = {0,0.100,0.200,0.300,0.400,0.500,0.600,0.7
   
 int NTargets[6] = {2, 2, 3, 3, 3, 3};
 
+//int NTargets[6] = {3, 3, 3, 3, 3, 3};//DO NOT USE THIS
 
 void plotPionEfficiency(int config, int target, TString suffix="") {
 
-  TFile f(TString::Format("jobs/files/config%i_Target%i%s.root",
-			  config, target, suffix.Data()));
+  TFile f(TString::Format("%s/Target%i/config%i_Target%i%s.root",
+        INPDIR.Data(),target, config, target, suffix.Data()));
   TTree* t = (TTree*)f.Get("default");
   TH1::AddDirectory(kFALSE);
 
   int col[5] = {1,2,3,4,6};
   TString name[5] = {"#pi^{+}->#pi^{+}", "#pi^{+}->#pi^{-}", "#pi^{-}->#pi^{-}", "#pi^{-}->#pi^{+}", "#pi^{0}->#pi^{0}"};
-  TString name2[5] = {"true_piplus_seen_as_piplus",
-		      "true_piplus_seen_as_piminus",
-		      "true_piminus_seen_as_piminus",
-		      "true_piminus_seen_as_piplus",
-		      "true_pizero_seen_as_pizero"};
+  // TString name2[5] = {"true_piplus_seen_as_piplus",
+		//       "true_piplus_seen_as_piminus",
+		//       "true_piminus_seen_as_piminus",
+		//       "true_piminus_seen_as_piplus",
+		//       "true_pizero_seen_as_pizero"};
+
+  TString name2[5] = {"pipEff",
+          "pipMisId",
+          "pimEff",
+          "pimMisId",
+          "pi0Eff"};
+
+          
 
   TString name_piplus[3] = {"TPC pion", "Isotarget pion", "ME pion"};
 
@@ -104,7 +115,7 @@ void plotPionEfficiency(int config, int target, TString suffix="") {
     h2[i] = new TH2F(TString::Format("after_%s",name2[i].Data()), 
 		     TString::Format("before_%s",name2[i].Data()), 
 		     nbinsC, xbinsC, nbinsM, xbinsM);
-    heff[i] = new TH2F(TString::Format("eff_%s",name2[i].Data()), 
+    heff[i] = new TH2F(TString::Format("%s_%i",name2[i].Data(),target), 
 		       TString::Format("before_%s",name2[i].Data()), 
 		       nbinsC, xbinsC, nbinsM, xbinsM);
   }
@@ -151,6 +162,10 @@ void plotPionEfficiency(int config, int target, TString suffix="") {
     if (accum_level[0][0]<=2) continue;
 
     for (int j=0; j<npiplus; j++){
+      cout << "npiplus: " << npiplus << endl;
+      cout << "piplus_reco[j]: " << piplus_reco[j] << endl;
+      cout << "piplus_mom[j]: " << piplus_mom[j] << endl; 
+
       h1_mom[0]->Fill(piplus_mom[j]);
       h1_mom[1]->Fill(piplus_mom[j]);
       if (piplus_reco[j]>0)
@@ -246,7 +261,8 @@ void plotPionEfficiency(int config, int target, TString suffix="") {
   TLegend *leg = new TLegend(0.1, 0.88, 0.9, 0.94);
   leg->SetNColumns(5);
 
-  TFile *fW = new TFile(TString::Format("root/effPion_%s_config%i_target%i.root", sample.Data(), config, target), "RECREATE");
+  TFile *fW = new TFile(TString::Format("%s/effPion_%s_config%i_target%i.root", OUTDIR.Data(), sample.Data(), config, target), "RECREATE");
+  //TFile *fW = new TFile(TString::Format("%s/efficiency_pion.root", OUTDIR.Data());
 
   for (int i=0; i<5; i++){
 
@@ -284,10 +300,11 @@ void plotPionEfficiency(int config, int target, TString suffix="") {
 				      confName[config].Data(), 
 				      (config!=1 && target!=3) ? "FGD":"Target",
 				      (target!=3) ? target : 1, name[i].Data()));
+    heff[i]->GetZaxis()->SetRangeUser(0.,1.);
     heff[i]->Draw("colz");
     heff[i]->Write();
-    c->SaveAs(TString::Format("fig/eff/pion/2D/effPion%i_%s_config%i_Target%i_2D.eps", 
-			      i, sample.Data(), config, target));
+    c->SaveAs(TString::Format("%s/2D_effPion%i_%s_config%i_Target%i_2D.eps", 
+			      OUTDIR.Data(),i, sample.Data(), config, target));
 
   }
 
@@ -296,10 +313,10 @@ void plotPionEfficiency(int config, int target, TString suffix="") {
   cCos->cd();
   leg->Draw("same");
 
-  cMom->SaveAs(TString::Format("fig/eff/pion/effPion_%s_config%i_Target%i_mom.eps", 
-			       sample.Data(), config, target));
-  cCos->SaveAs(TString::Format("fig/eff/pion/effPion_%s_config%i_Target%i_cos.eps", 
-			       sample.Data(), config, target));
+  cMom->SaveAs(TString::Format("%s/effPion_%s_config%i_Target%i_mom.eps", 
+			       OUTDIR.Data(),sample.Data(), config, target));
+  cCos->SaveAs(TString::Format("%s/effPion_%s_config%i_Target%i_cos.eps", 
+			       OUTDIR.Data(),sample.Data(), config, target));
 
 
   //======================================
@@ -361,10 +378,10 @@ void plotPionEfficiency(int config, int target, TString suffix="") {
   cCos2->cd();
   leg2->Draw("same");
 
-  cMom2->SaveAs(TString::Format("fig/eff/pion/effPionPlus_%s_config%i_Target%i_mom%s.eps", 
-				sample.Data(), config, target, suffix.Data()));
-  cCos2->SaveAs(TString::Format("fig/eff/pion/effPionPlus_%s_config%i_Target%i_cos%s.eps", 
-				sample.Data(), config, target, suffix.Data()));
+  cMom2->SaveAs(TString::Format("%s/effPionPlus_%s_config%i_Target%i_mom%s.eps", 
+				OUTDIR.Data(),sample.Data(), config, target, suffix.Data()));
+  cCos2->SaveAs(TString::Format("%s/effPionPlus_%s_config%i_Target%i_cos%s.eps", 
+				OUTDIR.Data(),sample.Data(), config, target, suffix.Data()));
 
 }
 
@@ -443,8 +460,11 @@ void plotTotalPionEfficiency(TString suffix="") {
 
   for (int i=0; i<N; i++) {
 
-    TFile f(TString::Format("jobs/files/config%i_Target%i%s%s.root",
-			    config[i], target[i], suffix.Data(), suffix2[i].Data()));
+  TFile f(TString::Format("%s/Target%i/config%i_Target%i%s%s.root",
+        INPDIR.Data(),target[i], config[i], target[i], suffix.Data(), suffix2[i].Data()));
+
+    // TFile f(TString::Format("/config%i_Target%i%s%s.root",
+			 //    config[i], target[i], suffix.Data(), suffix2[i].Data()));
     TTree* t = (TTree*)f.Get("default");
 
     t->SetBranchAddress("accum_level",          &accum_level);
@@ -542,11 +562,10 @@ void plotTotalPionEfficiency(TString suffix="") {
   cCos->cd();
   leg->Draw("same");
 
-  cMom->SaveAs(TString::Format("fig/eff/pion/effPionTot_%s_mom.eps", 
-			       sample.Data()));
-  cCos->SaveAs(TString::Format("fig/eff/pion/effPionTot_%s_cos.eps", 
-			       sample.Data()));
-
+  cMom->SaveAs(TString::Format("%s/effPionTot_%s_mom.eps", 
+			       OUTDIR.Data(), sample.Data()));
+  cCos->SaveAs(TString::Format("%s/effPionTot_%s_cos.eps", 
+			       OUTDIR.Data(), sample.Data()));
 
   //======================================
 
@@ -557,17 +576,18 @@ void plotTotalPionEfficiency(TString suffix="") {
 
 
 void plotAll(){
-	
-  for (int ic=0; ic<=2; ic++){
+
+  for (int ic=2; ic<=2; ic++){
     for (int it=1; it<=NTargets[ic]; it++){
-      plotPionEfficiency(ic, it, "");
-      plotPionEfficiency(ic, it, "_antinu");
-      plotPionEfficiency(ic, it, "_nubkg_antinu");
+      if(ic == 1) continue;
+      plotPionEfficiency(ic, it, "_FHC_numu");
+//      plotPionEfficiency(ic, it, "_antinu");
+//      plotPionEfficiency(ic, it, "_nubkg_antinu");
     }
   }
 
-  plotTotalPionEfficiency("");
-  plotTotalPionEfficiency("_antinu");
-  plotTotalPionEfficiency("_nubkg_antinu");
+//plotTotalPionEfficiency("_FHC_numu");
+//  plotTotalPionEfficiency("_antinu");
+//  plotTotalPionEfficiency("_nubkg_antinu");
 
 }

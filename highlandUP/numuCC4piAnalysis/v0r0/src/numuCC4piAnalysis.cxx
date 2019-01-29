@@ -359,6 +359,14 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
 	if (track->GetTrueParticle()->ID == part->ID)
 	  found=1;
       }
+
+    for (int i=0; i<cc4pibox().nNegativePionTPCtracks; i++) {
+  AnaTrackB *track = cc4pibox().NegativePionTPCtracks[i];
+  if (!track->TrueObject) continue;
+  if (!track->GetTrueParticle()) continue;
+  if (track->GetTrueParticle()->ID == part->ID)
+      found=-1;
+      }
   
       output().FillVectorVar(sel_TruePiPlus_reco, found);
       output().FillVectorVar(sel_TruePiPlus_mom, part->Momentum);
@@ -398,6 +406,14 @@ void numuCC4piAnalysis::FillMicroTrees(bool addBase){
 	if (!track->GetTrueParticle()) continue;
 	if (track->GetTrueParticle()->ID       == part->ID)
 	  found=1;
+      }
+
+    for (int i=0; i<cc4pibox().nPositivePionTPCtracks; i++) {
+  AnaTrackB *track = cc4pibox().PositivePionTPCtracks[i];
+  if (!track->TrueObject) continue;
+  if (!track->GetTrueParticle()) continue;
+  if (track->GetTrueParticle()->ID       == part->ID)
+    found=-1;
       }
 
       output().FillVectorVar(sel_TruePiMinus_reco, found);
