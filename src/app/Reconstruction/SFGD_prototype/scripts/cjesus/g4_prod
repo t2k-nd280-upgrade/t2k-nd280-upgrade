@@ -1,0 +1,14 @@
+#!/bin/csh -f
+
+set j=0
+set f=1
+set n=1000
+set s=1
+
+      while ($j < $s)
+      echo "$T2KND280UP/src/app/Reconstruction/SFGD_prototype/submit/submit_nd280upgrade_prototype --softw-dir $T2KND280UP --job-dir $PWD --resource interactive --nexpts $n --nruns $f"
+
+      $T2KND280UP/src/app/Reconstruction/SFGD_prototype/submit/submit_nd280upgrade_prototype --softw-dir $T2KND280UP --job-dir $PWD --resource interactive --nexpts $n --nruns $f
+
+      @ j = $j + 1
+      end

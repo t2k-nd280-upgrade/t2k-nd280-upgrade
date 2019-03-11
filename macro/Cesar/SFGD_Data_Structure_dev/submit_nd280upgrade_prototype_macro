@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+
+use File::Path;
+
+$iarg=0;
+foreach (@ARGV) {
+
+    if($iarg % 2 == 1) {$iarg++; next;}
+    
+    ##################################### Common ########################################
+    if   ($_ eq '--resource'         ) { $resource        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--inputfile'        ) { $inputfile       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--first_expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
+
+    # where to put the output files
+    elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
+    # where is the software (/t2k-nd280-upgrade)
+    elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }    
+    
+    else {
+	print "Unrecognised argument ".$_."\n"; exit;
+    }
+    $iarg++;
+}
+
+$resource        = "interactive"                 unless defined $resource;
+
+$tag            = "SFGD_prototype_Analysis" unless defined $tag;
+
+$inputfile         = "/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype/SFGD_MC_dev-0-Exp0-Nexpt100.root" unless defined $inputfile;
+#$inputfile         = "/nfs/pic.es/user/c/cjesus/scripts/SFGD_MC/SuperFGD-SFGD_prototype_Analysis-UseXY-UseXZ-UseYZ-TruthFV-Separate10_sp_Evt0_NEvt100.root" unless defined $inputfile;
+
+$first_expt      = 0                             unless defined $first_expt;
+
+$nruns           = 1                             unless defined $nruns;
+$nexpts          = 1                             unless defined $nexpts;
+
+$irun = 0;
+while($irun < $nruns) { # loop over the jobs
+    
+    $evt_first = $first_expt + $irun * $nexpts;
+    
+    $newtag = "$tag";
+
+    $arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpHit.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpHit.cc+ '$softw_dir/macro/Cesar/SFGD_Data_Structure_dev/basic_analysis.C+($evt_first,$nexpts,\"$job_dir/$newtag\",\"$inputfile\")'"; 
+    #$arguments = "root -l -q -b $softw_dir/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpHit.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpTrack.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpVertex.cc+ $softw_dir/src/app/nd280UpEvent/TND280UpEvent.cc+ '$softw_dir/macro/Cesar/SFGD_Data_Structure_dev/basic_analysis.C+()'"; 
+
+    $command = "$arguments";
+    
+    print "\n";
+    print "Job $irun \n";
+    print "First event: $evt_first \n";
+    print "# of events: $nexpts \n";
+    print "$command \n";
+    print "\n////////////////////////////// \n\n";
+
+    if($resource eq "PIC") {
+
+    print "inside PIC \n";
+    $sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
+    $outfiledir = "$job_dir/";
+    $errfiledir = "$job_dir/";
+    open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+    print PBS "#!/bin/bash -l  \n";
+    print PBS "source $softw_dir/mypath.sh $softw_dir \n";
+    print PBS "\n";
+    print PBS "env \n";
+    print PBS "\n";
+    print PBS "uname -n \n";
+    print PBS "\n";
+    print PBS "$command \n";
+    close(PBS); 
+    `qsub -q short -l nodes=1 $sbatchfile`; 
+    }
+
+    if($resource eq "interactive") {
+    system($command);
+    }
+
+    $irun=$irun+1; # increment job id
+    
+} # loop over jobs
+

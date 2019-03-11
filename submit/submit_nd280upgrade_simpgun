@@ -100,7 +100,7 @@ $tag             = "pgun"    unless defined $tag;
 
 #with hatpc
 #$config_file     = "config/HATPC/configuration_cluster_targ_ftpc_2fgd_tof_ecal_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
-$config_file     = "config/configuration_pgun_sfgd_hatpc.xml" unless defined $config_file; # reference: no ecal, cluster
+$config_file     = "config/configuration_cluster_SuperFGD_proto2.xml" unless defined $config_file; # reference: no ecal, cluster
  
 
 # ECal, Basket, Magnet (no Tracker)
@@ -121,9 +121,9 @@ $config_file     = "config/configuration_pgun_sfgd_hatpc.xml" unless defined $co
 ######################################################################################################################################
 
 #$vis_file        = "mac/vis_test.mac"           unless defined $vis_file;  
-$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
+#$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
 #$vis_file        = "mac/vis.mac"           unless defined $vis_file;
-#$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
+$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
 
 #$nruns           = 80                          unless defined $nruns;      # number of jobs (current and reference)
 #$nruns           = 127                          unless defined $nruns;      # number of jobs (alternative)

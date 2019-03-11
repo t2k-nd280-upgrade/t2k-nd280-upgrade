@@ -9,7 +9,7 @@
 <Dependency>
   
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
   
   <IsRandomSeed>
@@ -85,13 +85,13 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     1880
+     48
    </Targetlength1>
    <Targetwidth1>  
-     2040
+     24
    </Targetwidth1>
    <Targetheight1> 
-     520
+     8
    </Targetheight1>
  
    <TargetPos1_X>
@@ -202,13 +202,13 @@
      10
    </SuperFGDCubeEdge1>
    <SuperFGDCubeNum1_X>
-     204
+     24
    </SuperFGDCubeNum1_X>
    <SuperFGDCubeNum1_Y>
-     52
+     8
    </SuperFGDCubeNum1_Y>
    <SuperFGDCubeNum1_Z>
-     188
+     48
    </SuperFGDCubeNum1_Z>
    <SuperFGDPos1_X>
      0
@@ -217,7 +217,7 @@
      0
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     -1707
+     0
    </SuperFGDPos1_Z>
 
    <!-- SuperFGD CF Box -->
@@ -717,10 +717,10 @@
    <!-- Include detectors -->
 
    <UseHATPCUp>
-     true
+     false
    </UseHATPCUp>
    <UseHATPCDown>
-     true
+     false
    </UseHATPCDown>
 
    <UseForwTPC1>
@@ -734,7 +734,7 @@
    </UseForwTPC3>
 
    <UseTarget1>
-     true
+     false
    </UseTarget1>
    <UseTarget2>
      false
@@ -748,7 +748,7 @@
    </UseFGD2>
 
    <UseSuperFGD1>
-     false
+     true
    </UseSuperFGD1>
 
    <UseSuperFGD2>
@@ -756,15 +756,15 @@
    </UseSuperFGD2>
 
    <UseCFBox>
-     true
+     false
    </UseCFBox>
 
    <UsePCB>
-     true
+     false
    </UsePCB>
 
    <UseFlatCable>
-     true
+     false
    </UseFlatCable>
 
    <UseFGD3D1>
@@ -851,7 +851,7 @@
    </InvisFGD2>
 
    <InvisSuperFGD>
-     false
+     true
    </InvisSuperFGD>
    <InvisFGD3D>
      false
@@ -909,7 +909,4 @@
 
 </Dependency_Details>
 </fileStructure>
-
-
-  
 

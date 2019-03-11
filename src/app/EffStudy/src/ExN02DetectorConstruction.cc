@@ -240,18 +240,18 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   physiWorld = new G4PVPlacement(0,               // no rotation
                                  G4ThreeVector(), // at (0,0,0)
                                  logicWorld,      // its logical volume
-				 cNamePhysiWorld, // its name
+         cNamePhysiWorld, // its name
                                  0,               // its mother  volume
                                  false,           // no boolean operations
                                  0               // copy number
-				 );
+         );
   //fCheckOverlaps); // checking overlaps
  
   G4cout << "World is "
-  	 << fWorldWidth/CLHEP::mm  << " (width) x " 
-  	 << fWorldHeight/CLHEP::mm << " (height) x " 
-  	 << fWorldLength/CLHEP::mm << " (length) mm^3" 
-	 << " of " << WorldMater->GetName() << G4endl;
+     << fWorldWidth/CLHEP::mm  << " (width) x " 
+     << fWorldHeight/CLHEP::mm << " (height) x " 
+     << fWorldLength/CLHEP::mm << " (length) mm^3" 
+   << " of " << WorldMater->GetName() << G4endl;
   G4cout << " mass="<<logicWorld->GetMass()/CLHEP::kg   <<" kg";
   G4cout << " name: " << logicWorld->GetName() << G4endl;
   G4cout << G4endl;
@@ -268,12 +268,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
   G4VPhysicalVolume* physiND280MC 
     = new G4PVPlacement(0,               // no rotation
-  			G4ThreeVector(0,0,0), // position (0,0,0)
-  			logicND280MC,// logical volume
-  			nameND280MC, // name
-  			logicWorld,               // mother  volume
-  			false,           // no boolean operations
-  			0);
+        G4ThreeVector(0,0,0), // position (0,0,0)
+        logicND280MC,// logical volume
+        nameND280MC, // name
+        logicWorld,               // mother  volume
+        false,           // no boolean operations
+        0);
 
     (void)physiND280MC;
 
@@ -307,8 +307,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   G4String nameBasket = physiBasket->GetName();
   if(nameBasket!="/t2k/OA/Magnet/Basket"){
     G4Exception("ExN02DetectorConstruction::Construct",
-		"MyCode0002",FatalException,
-		"The Basket logical volume is not the right one!");
+    "MyCode0002",FatalException,
+    "The Basket logical volume is not the right one!");
   }
 
 
@@ -361,43 +361,43 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
      
     logicToF_TopUp = fToFConstructor_TopUp->GetPiece();
     physiToF_TopUp = new G4PVPlacement(
-				       rotation_tof_TopUp,               // rotation
-				       GetToFPos_TopUp(),
-				       logicToF_TopUp,// logical volume
-				       nameToF_TopUp, // name   
-				       logicMagnet,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
+               rotation_tof_TopUp,               // rotation
+               GetToFPos_TopUp(),
+               logicToF_TopUp,// logical volume
+               nameToF_TopUp, // name   
+               logicMagnet,    // mother  volume  
+               false,        // no boolean operations
+               0);
     
     G4cout << " - name: " << logicToF_TopUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_TopUp->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_TopUp->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_TopUp->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
+     << fToFConstructor_TopUp->GetWidth() / CLHEP::mm << " (width) x "
+     << fToFConstructor_TopUp->GetHeight() / CLHEP::mm << " (height) x "
+     << fToFConstructor_TopUp->GetLength() / CLHEP::mm << " (length)"
+     << G4endl;
     G4cout << " - Rotation ToF TopUp: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
+     << rotX / CLHEP::degree << ","
+     << rotY / CLHEP::degree << ","
+     << rotZ / CLHEP::degree << ")"
+     << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_TopUp().x()/CLHEP::mm << ", "
-	   << GetToFPos_TopUp().y()/CLHEP::mm << ", "
-	   << GetToFPos_TopUp().z()/CLHEP::mm << " ) mm" << G4endl;
+     << GetToFPos_TopUp().x()/CLHEP::mm << ", "
+     << GetToFPos_TopUp().y()/CLHEP::mm << ", "
+     << GetToFPos_TopUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_TopUp->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_TopUp->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
+     << " --> " << fToFConstructor_TopUp->GetPlaneXYNum() * 2. << " layers"
+     << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_TopUp->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_TopUp->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_TopUp->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_TopUp->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
+     << fToFConstructor_TopUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+     << fToFConstructor_TopUp->GetBarHeight() / CLHEP::mm << " (height)" 
+     << G4endl
+     << "   Horiz length = " << fToFConstructor_TopUp->GetBarHorizLength() / CLHEP::mm 
+     << " / Vert length = " << fToFConstructor_TopUp->GetBarVertLength() / CLHEP::mm 
+     << G4endl;
     G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_TopUp->GetLayerHorizNBar() << " (horiz) - "
-	   //<< fToFConstructor_TopUp->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;  
+     << fToFConstructor_TopUp->GetLayerHorizNBar() << " (horiz) - "
+     //<< fToFConstructor_TopUp->GetLayerVertNBar() << " (vert)"
+     << G4endl << G4endl;  
   }
   
   
@@ -435,43 +435,43 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     logicToF_BotUp = fToFConstructor_BotUp->GetPiece();
     physiToF_BotUp = new G4PVPlacement(
-				       rotation_tof_BotUp,               // rotation
-				       GetToFPos_BotUp(),
-				       logicToF_BotUp,// logical volume
-				       nameToF_BotUp, // name   
-				       logicMagnet,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
+               rotation_tof_BotUp,               // rotation
+               GetToFPos_BotUp(),
+               logicToF_BotUp,// logical volume
+               nameToF_BotUp, // name   
+               logicMagnet,    // mother  volume  
+               false,        // no boolean operations
+               0);
     
     G4cout << " - name: " << logicToF_BotUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_BotUp->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_BotUp->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_BotUp->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
+     << fToFConstructor_BotUp->GetWidth() / CLHEP::mm << " (width) x "
+     << fToFConstructor_BotUp->GetHeight() / CLHEP::mm << " (height) x "
+     << fToFConstructor_BotUp->GetLength() / CLHEP::mm << " (length)"
+     << G4endl;
     G4cout << " - Rotation ToF BotUp: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
+     << rotX / CLHEP::degree << ","
+     << rotY / CLHEP::degree << ","
+     << rotZ / CLHEP::degree << ")"
+     << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_BotUp().x()/CLHEP::mm << ", "
-	   << GetToFPos_BotUp().y()/CLHEP::mm << ", "
-	   << GetToFPos_BotUp().z()/CLHEP::mm << " ) mm" << G4endl;
+     << GetToFPos_BotUp().x()/CLHEP::mm << ", "
+     << GetToFPos_BotUp().y()/CLHEP::mm << ", "
+     << GetToFPos_BotUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_BotUp->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_BotUp->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
+     << " --> " << fToFConstructor_BotUp->GetPlaneXYNum() * 2. << " layers"
+     << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_BotUp->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_BotUp->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_BotUp->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_BotUp->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
+     << fToFConstructor_BotUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+     << fToFConstructor_BotUp->GetBarHeight() / CLHEP::mm << " (height)" 
+     << G4endl
+     << "   Horiz length = " << fToFConstructor_BotUp->GetBarHorizLength() / CLHEP::mm 
+     << " / Vert length = " << fToFConstructor_BotUp->GetBarVertLength() / CLHEP::mm 
+     << G4endl;
     G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_BotUp->GetLayerHorizNBar() << " (horiz) - "
-	   //<< fToFConstructor_BotUp->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;
+     << fToFConstructor_BotUp->GetLayerHorizNBar() << " (horiz) - "
+     //<< fToFConstructor_BotUp->GetLayerVertNBar() << " (vert)"
+     << G4endl << G4endl;
     
   }
 
@@ -509,43 +509,43 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     logicToF_RightUp = fToFConstructor_RightUp->GetPiece();
     physiToF_RightUp = new G4PVPlacement(
-				       rotation_tof_RightUp,               // rotation
-				       GetToFPos_RightUp(),
-				       logicToF_RightUp,// logical volume
-				       nameToF_RightUp, // name   
-				       logicMagnet,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
+               rotation_tof_RightUp,               // rotation
+               GetToFPos_RightUp(),
+               logicToF_RightUp,// logical volume
+               nameToF_RightUp, // name   
+               logicMagnet,    // mother  volume  
+               false,        // no boolean operations
+               0);
     
     G4cout << " - name: " << logicToF_RightUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_RightUp->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_RightUp->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_RightUp->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
+     << fToFConstructor_RightUp->GetWidth() / CLHEP::mm << " (width) x "
+     << fToFConstructor_RightUp->GetHeight() / CLHEP::mm << " (height) x "
+     << fToFConstructor_RightUp->GetLength() / CLHEP::mm << " (length)"
+     << G4endl;
     G4cout << " - Rotation ToF RightUp: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
+     << rotX / CLHEP::degree << ","
+     << rotY / CLHEP::degree << ","
+     << rotZ / CLHEP::degree << ")"
+     << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_RightUp().x()/CLHEP::mm << ", "
-	   << GetToFPos_RightUp().y()/CLHEP::mm << ", "
-	   << GetToFPos_RightUp().z()/CLHEP::mm << " ) mm" << G4endl;
+     << GetToFPos_RightUp().x()/CLHEP::mm << ", "
+     << GetToFPos_RightUp().y()/CLHEP::mm << ", "
+     << GetToFPos_RightUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_RightUp->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_RightUp->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
+     << " --> " << fToFConstructor_RightUp->GetPlaneXYNum() * 2. << " layers"
+     << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_RightUp->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_RightUp->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_RightUp->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_RightUp->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
+     << fToFConstructor_RightUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+     << fToFConstructor_RightUp->GetBarHeight() / CLHEP::mm << " (height)" 
+     << G4endl
+     << "   Horiz length = " << fToFConstructor_RightUp->GetBarHorizLength() / CLHEP::mm 
+     << " / Vert length = " << fToFConstructor_RightUp->GetBarVertLength() / CLHEP::mm 
+     << G4endl;
     G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_RightUp->GetLayerHorizNBar() << " (horiz) - "
-	   //<< fToFConstructor_RightUp->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;
+     << fToFConstructor_RightUp->GetLayerHorizNBar() << " (horiz) - "
+     //<< fToFConstructor_RightUp->GetLayerVertNBar() << " (vert)"
+     << G4endl << G4endl;
     
   }
 
@@ -582,43 +582,43 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
      
     logicToF_LeftUp = fToFConstructor_LeftUp->GetPiece();
     physiToF_LeftUp = new G4PVPlacement(
-				       rotation_tof_LeftUp,               // rotation
-				       GetToFPos_LeftUp(),
-				       logicToF_LeftUp,// logical volume
-				       nameToF_LeftUp, // name   
-				       logicMagnet,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
+               rotation_tof_LeftUp,               // rotation
+               GetToFPos_LeftUp(),
+               logicToF_LeftUp,// logical volume
+               nameToF_LeftUp, // name   
+               logicMagnet,    // mother  volume  
+               false,        // no boolean operations
+               0);
     
     G4cout << " - name: " << logicToF_LeftUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_LeftUp->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_LeftUp->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_LeftUp->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
+     << fToFConstructor_LeftUp->GetWidth() / CLHEP::mm << " (width) x "
+     << fToFConstructor_LeftUp->GetHeight() / CLHEP::mm << " (height) x "
+     << fToFConstructor_LeftUp->GetLength() / CLHEP::mm << " (length)"
+     << G4endl;
     G4cout << " - Rotation ToF LeftUp: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
+     << rotX / CLHEP::degree << ","
+     << rotY / CLHEP::degree << ","
+     << rotZ / CLHEP::degree << ")"
+     << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_LeftUp().x()/CLHEP::mm << ", "
-	   << GetToFPos_LeftUp().y()/CLHEP::mm << ", "
-	   << GetToFPos_LeftUp().z()/CLHEP::mm << " ) mm" << G4endl;
+     << GetToFPos_LeftUp().x()/CLHEP::mm << ", "
+     << GetToFPos_LeftUp().y()/CLHEP::mm << ", "
+     << GetToFPos_LeftUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_LeftUp->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_LeftUp->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
+     << " --> " << fToFConstructor_LeftUp->GetPlaneXYNum() * 2. << " layers"
+     << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_LeftUp->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_LeftUp->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_LeftUp->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_LeftUp->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
+     << fToFConstructor_LeftUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+     << fToFConstructor_LeftUp->GetBarHeight() / CLHEP::mm << " (height)" 
+     << G4endl
+     << "   Horiz length = " << fToFConstructor_LeftUp->GetBarHorizLength() / CLHEP::mm 
+     << " / Vert length = " << fToFConstructor_LeftUp->GetBarVertLength() / CLHEP::mm 
+     << G4endl;
     G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_LeftUp->GetLayerHorizNBar() << " (horiz) - "
-	   //<< fToFConstructor_LeftUp->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;    
+     << fToFConstructor_LeftUp->GetLayerHorizNBar() << " (horiz) - "
+     //<< fToFConstructor_LeftUp->GetLayerVertNBar() << " (vert)"
+     << G4endl << G4endl;    
   }
 
 
@@ -656,43 +656,43 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     logicToF_BackUp = fToFConstructor_BackUp->GetPiece();
     physiToF_BackUp = new G4PVPlacement(
-				       rotation_tof_BackUp,               // rotation
-				       GetToFPos_BackUp(),
-				       logicToF_BackUp,// logical volume
-				       nameToF_BackUp, // name   
-				       logicBasket,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
+               rotation_tof_BackUp,               // rotation
+               GetToFPos_BackUp(),
+               logicToF_BackUp,// logical volume
+               nameToF_BackUp, // name   
+               logicBasket,    // mother  volume  
+               false,        // no boolean operations
+               0);
     
     G4cout << " - name: " << logicToF_BackUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_BackUp->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_BackUp->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_BackUp->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
+     << fToFConstructor_BackUp->GetWidth() / CLHEP::mm << " (width) x "
+     << fToFConstructor_BackUp->GetHeight() / CLHEP::mm << " (height) x "
+     << fToFConstructor_BackUp->GetLength() / CLHEP::mm << " (length)"
+     << G4endl;
     G4cout << " - Rotation ToF BackUp: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
+     << rotX / CLHEP::degree << ","
+     << rotY / CLHEP::degree << ","
+     << rotZ / CLHEP::degree << ")"
+     << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_BackUp().x()/CLHEP::mm << ", "
-	   << GetToFPos_BackUp().y()/CLHEP::mm << ", "
-	   << GetToFPos_BackUp().z()/CLHEP::mm << " ) mm" << G4endl;
+     << GetToFPos_BackUp().x()/CLHEP::mm << ", "
+     << GetToFPos_BackUp().y()/CLHEP::mm << ", "
+     << GetToFPos_BackUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_BackUp->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_BackUp->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
+     << " --> " << fToFConstructor_BackUp->GetPlaneXYNum() * 2. << " layers"
+     << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_BackUp->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_BackUp->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_BackUp->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_BackUp->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
+     << fToFConstructor_BackUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+     << fToFConstructor_BackUp->GetBarHeight() / CLHEP::mm << " (height)" 
+     << G4endl
+     << "   Horiz length = " << fToFConstructor_BackUp->GetBarHorizLength() / CLHEP::mm 
+     << " / Vert length = " << fToFConstructor_BackUp->GetBarVertLength() / CLHEP::mm 
+     << G4endl;
     G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_BackUp->GetLayerHorizNBar() << " (horiz) - "
-	   //<< fToFConstructor_BackUp->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;    
+     << fToFConstructor_BackUp->GetLayerHorizNBar() << " (horiz) - "
+     //<< fToFConstructor_BackUp->GetLayerVertNBar() << " (vert)"
+     << G4endl << G4endl;    
   }
 
 
@@ -730,43 +730,43 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
      
     logicToF_FrontUp = fToFConstructor_FrontUp->GetPiece();
     physiToF_FrontUp = new G4PVPlacement(
-				       rotation_tof_FrontUp,               // rotation
-				       GetToFPos_FrontUp(),
-				       logicToF_FrontUp,// logical volume
-				       nameToF_FrontUp, // name   
-				       logicBasket,    // mother  volume  
-				       false,        // no boolean operations
-				       0);
+               rotation_tof_FrontUp,               // rotation
+               GetToFPos_FrontUp(),
+               logicToF_FrontUp,// logical volume
+               nameToF_FrontUp, // name   
+               logicBasket,    // mother  volume  
+               false,        // no boolean operations
+               0);
     
     G4cout << " - name: " << logicToF_FrontUp->GetName() << G4endl;
     G4cout << " - Total size before rotation  (mm^3): "
-	   << fToFConstructor_FrontUp->GetWidth() / CLHEP::mm << " (width) x "
-	   << fToFConstructor_FrontUp->GetHeight() / CLHEP::mm << " (height) x "
-	   << fToFConstructor_FrontUp->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
+     << fToFConstructor_FrontUp->GetWidth() / CLHEP::mm << " (width) x "
+     << fToFConstructor_FrontUp->GetHeight() / CLHEP::mm << " (height) x "
+     << fToFConstructor_FrontUp->GetLength() / CLHEP::mm << " (length)"
+     << G4endl;
     G4cout << " - Rotation ToF FrontUp: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
+     << rotX / CLHEP::degree << ","
+     << rotY / CLHEP::degree << ","
+     << rotZ / CLHEP::degree << ")"
+     << G4endl;
     G4cout << " - position: ( "
-	   << GetToFPos_FrontUp().x()/CLHEP::mm << ", "
-	   << GetToFPos_FrontUp().y()/CLHEP::mm << ", "
-	   << GetToFPos_FrontUp().z()/CLHEP::mm << " ) mm" << G4endl;
+     << GetToFPos_FrontUp().x()/CLHEP::mm << ", "
+     << GetToFPos_FrontUp().y()/CLHEP::mm << ", "
+     << GetToFPos_FrontUp().z()/CLHEP::mm << " ) mm" << G4endl;
     G4cout << " - # of planes XY = " << fToFConstructor_FrontUp->GetPlaneXYNum() 
-	   << " --> " << fToFConstructor_FrontUp->GetPlaneXYNum() * 2. << " layers"
-	   << G4endl;
+     << " --> " << fToFConstructor_FrontUp->GetPlaneXYNum() * 2. << " layers"
+     << G4endl;
     G4cout << " - size of bar cross section (mm): " 
-	   << fToFConstructor_FrontUp->GetBarWidth() / CLHEP::mm << " (width) x " 
-	   << fToFConstructor_FrontUp->GetBarHeight() / CLHEP::mm << " (height)" 
-	   << G4endl
-	   << "   Horiz length = " << fToFConstructor_FrontUp->GetBarHorizLength() / CLHEP::mm 
-	   << " / Vert length = " << fToFConstructor_FrontUp->GetBarVertLength() / CLHEP::mm 
-	   << G4endl;
+     << fToFConstructor_FrontUp->GetBarWidth() / CLHEP::mm << " (width) x " 
+     << fToFConstructor_FrontUp->GetBarHeight() / CLHEP::mm << " (height)" 
+     << G4endl
+     << "   Horiz length = " << fToFConstructor_FrontUp->GetBarHorizLength() / CLHEP::mm 
+     << " / Vert length = " << fToFConstructor_FrontUp->GetBarVertLength() / CLHEP::mm 
+     << G4endl;
     G4cout << " - number of bars / layer: " 
-	   << fToFConstructor_FrontUp->GetLayerHorizNBar() << " (horiz) - "
-	   //<< fToFConstructor_FrontUp->GetLayerVertNBar() << " (vert)"
-	   << G4endl << G4endl;
+     << fToFConstructor_FrontUp->GetLayerHorizNBar() << " (horiz) - "
+     //<< fToFConstructor_FrontUp->GetLayerVertNBar() << " (vert)"
+     << G4endl << G4endl;
     
   }
 
@@ -793,25 +793,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     }
     
     new G4PVPlacement(0,
-		      GetForwTPCPos1(),
-		      tpc1Volume,
-		      //cParentNameTPC+"/ForwTPC1",
-		      tpc1Volume->GetName(),
-		      //logicTracker,
-		      //logicND280MC,
-		      logicBasket,
-		      false,
-		      0);
+          GetForwTPCPos1(),
+          tpc1Volume,
+          //cParentNameTPC+"/ForwTPC1",
+          tpc1Volume->GetName(),
+          //logicTracker,
+          //logicND280MC,
+          logicBasket,
+          false,
+          0);
     
     G4cout << " - name: " << tpc1Volume->GetName() << G4endl;
     G4cout << " - length (mm): " << GetLengthForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - width (mm): " << GetWidthForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - height (mm): " << GetHeightForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - position: ( " 
-	   << GetForwTPCPos1().x()/CLHEP::mm << ", "
-	   << GetForwTPCPos1().y()/CLHEP::mm << ", "
-	   << GetForwTPCPos1().z()/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
+     << GetForwTPCPos1().x()/CLHEP::mm << ", "
+     << GetForwTPCPos1().y()/CLHEP::mm << ", "
+     << GetForwTPCPos1().z()/CLHEP::mm << " ) mm"  
+     << G4endl << G4endl;
   }
 
   //------------------------------ 
@@ -834,25 +834,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     }
     
     new G4PVPlacement(0,
-		      GetForwTPCPos2(),
-		      tpc2Volume,
-		      //cParentNameTPC+"/ForwTPC2",
-		      tpc2Volume->GetName(),
-		      //logicTracker,
-		      //logicND280MC,
-		      logicBasket,
-		      false,
-		      0);
+          GetForwTPCPos2(),
+          tpc2Volume,
+          //cParentNameTPC+"/ForwTPC2",
+          tpc2Volume->GetName(),
+          //logicTracker,
+          //logicND280MC,
+          logicBasket,
+          false,
+          0);
     
     G4cout << " - name: " << tpc2Volume->GetName() << G4endl;
     G4cout << " - length (mm): " << GetLengthForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - width (mm): " << GetWidthForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - height (mm): " << GetHeightForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - position: ( " 
-	   << GetForwTPCPos2().x()/CLHEP::mm << ", "
-	   << GetForwTPCPos2().y()/CLHEP::mm << ", "
-	   << GetForwTPCPos2().z()/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
+     << GetForwTPCPos2().x()/CLHEP::mm << ", "
+     << GetForwTPCPos2().y()/CLHEP::mm << ", "
+     << GetForwTPCPos2().z()/CLHEP::mm << " ) mm"  
+     << G4endl << G4endl;
   }
   
   //------------------------------ 
@@ -875,25 +875,25 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     }
     
     new G4PVPlacement(0,
-		      GetForwTPCPos3(),
-		      tpc3Volume,
-		      //cParentNameTPC+"/ForwTPC3",
-		      tpc3Volume->GetName(),
-		      //logicTracker,
-		      //logicND280MC,
-		      logicBasket,
-		      false,
-		      0);
+          GetForwTPCPos3(),
+          tpc3Volume,
+          //cParentNameTPC+"/ForwTPC3",
+          tpc3Volume->GetName(),
+          //logicTracker,
+          //logicND280MC,
+          logicBasket,
+          false,
+          0);
     
     G4cout << " - name: " << tpc3Volume->GetName() << G4endl;
     G4cout << " - length (mm): " << GetLengthForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - width (mm): " << GetWidthForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - height (mm): " << GetHeightForwTPC() / CLHEP::mm << G4endl;
     G4cout << " - position: ( " 
-	   << GetForwTPCPos3().x()/CLHEP::mm << ", "
-	   << GetForwTPCPos3().y()/CLHEP::mm << ", "
-	   << GetForwTPCPos3().z()/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
+     << GetForwTPCPos3().x()/CLHEP::mm << ", "
+     << GetForwTPCPos3().y()/CLHEP::mm << ", "
+     << GetForwTPCPos3().z()/CLHEP::mm << " ) mm"  
+     << G4endl << G4endl;
   }
 
 
@@ -932,29 +932,29 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     solidFGD1 = new G4Box(cNameSolidFGD1,FGDSizeWidth1,FGDSizeHeight1,FGDSizeLength1);
     logicFGD1 = new G4LogicalVolume(solidFGD1,FGDMater1,cNameLogicFGD1,0,0,0);
     physiFGD1 = new G4PVPlacement(0,                 // no rotation
-  				  GetFGDPos1(),    // at (x,y,z)
-  				  logicFGD1,       // its logical volume  	  
-  				  cNamePhysiFGD1,  // its name
-  				  //logicTracker,      // its mother  volume
-  				  //logicND280MC,      // its mother  volume
-  				  logicBasket,
-				  false,             // no boolean operations
-  				  0);                 // copy number 
+            GetFGDPos1(),    // at (x,y,z)
+            logicFGD1,       // its logical volume      
+            cNamePhysiFGD1,  // its name
+            //logicTracker,      // its mother  volume
+            //logicND280MC,      // its mother  volume
+            logicBasket,
+          false,             // no boolean operations
+            0);                 // copy number 
     //fCheckOverlaps);   
     
     G4cout << "FGD 1: " << G4endl
-  	   << " - dimensions: "
-  	   << GetFGDFullWidth1()/CLHEP::mm  << " (width) x " 
-  	   << GetFGDFullHeight1()/CLHEP::mm << " (height) x " 
-  	   << GetFGDFullLength1()/CLHEP::mm << " (length) mm^3" 
-  	   << " of " << logicFGD1->GetMaterial()->GetName() << G4endl; 
+       << " - dimensions: "
+       << GetFGDFullWidth1()/CLHEP::mm  << " (width) x " 
+       << GetFGDFullHeight1()/CLHEP::mm << " (height) x " 
+       << GetFGDFullLength1()/CLHEP::mm << " (length) mm^3" 
+       << " of " << logicFGD1->GetMaterial()->GetName() << G4endl; 
     G4cout << " mass="<<logicFGD1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
     G4cout << " name: " << logicFGD1->GetName() << G4endl;
     G4cout << " - position: ( " 
-  	   << GetFGDPos1().x()/CLHEP::mm << ", "
-  	   << GetFGDPos1().y()/CLHEP::mm << ", "
-  	   << GetFGDPos1().z()/CLHEP::mm << " ) mm"  
-  	   << G4endl << G4endl;
+       << GetFGDPos1().x()/CLHEP::mm << ", "
+       << GetFGDPos1().y()/CLHEP::mm << ", "
+       << GetFGDPos1().z()/CLHEP::mm << " ) mm"  
+       << G4endl << G4endl;
   }
 
   //------------------------------ 
@@ -989,29 +989,29 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     solidFGD2 = new G4Box(cNameSolidFGD2,FGDSizeWidth2,FGDSizeHeight2,FGDSizeLength2);
     logicFGD2 = new G4LogicalVolume(solidFGD2,FGDMater2,cNameLogicFGD2,0,0,0);
     physiFGD2 = new G4PVPlacement(0,                 // no rotation
-  				  GetFGDPos2(),    // at (x,y,z)
-  				  logicFGD2,       // its logical volume  	  
-  				  cNamePhysiFGD2,  // its name
-  				  //logicTracker,      // its mother  volume
-  				  //logicND280MC,      // its mother  volume
-  				  logicBasket,
-				  false,             // no boolean operations
-  				  0);                 // copy number 
+            GetFGDPos2(),    // at (x,y,z)
+            logicFGD2,       // its logical volume      
+            cNamePhysiFGD2,  // its name
+            //logicTracker,      // its mother  volume
+            //logicND280MC,      // its mother  volume
+            logicBasket,
+          false,             // no boolean operations
+            0);                 // copy number 
     //fCheckOverlaps);   
     
     G4cout << "FGD 2: " << G4endl
-  	   << " - dimensions: "
-  	   << GetFGDFullWidth2()/CLHEP::mm  << " (width) x " 
-  	   << GetFGDFullHeight2()/CLHEP::mm << " (height) x " 
-  	   << GetFGDFullLength2()/CLHEP::mm << " (length) mm^3" 
-  	   << " of " << logicFGD2->GetMaterial()->GetName() << G4endl; 
+       << " - dimensions: "
+       << GetFGDFullWidth2()/CLHEP::mm  << " (width) x " 
+       << GetFGDFullHeight2()/CLHEP::mm << " (height) x " 
+       << GetFGDFullLength2()/CLHEP::mm << " (length) mm^3" 
+       << " of " << logicFGD2->GetMaterial()->GetName() << G4endl; 
     G4cout << " mass="<<logicFGD2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicFGD2->GetName() << G4endl;
     G4cout << " - position: ( " 
-  	   << GetFGDPos2().x()/CLHEP::mm << ", "
-  	   << GetFGDPos2().y()/CLHEP::mm << ", "
-  	   << GetFGDPos2().z()/CLHEP::mm << " ) mm"  
-  	   << G4endl << G4endl;
+       << GetFGDPos2().x()/CLHEP::mm << ", "
+       << GetFGDPos2().y()/CLHEP::mm << ", "
+       << GetFGDPos2().z()/CLHEP::mm << " ) mm"  
+       << G4endl << G4endl;
   }
 
 
@@ -1219,7 +1219,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     //
 
 
-	    
+      
     logicCFBox1 = fCFBox1Constructor->GetPiece(); // CFBox logical volume (size based on the SuperFGD size)
 
     Target_width   = fCFBox1Constructor->GetCFBoxWidth();
@@ -1308,7 +1308,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
       
       if (!(ND280XMLInput->GetXMLUseSuperFGD2())){
 
-	//TOP PCBs
+  //TOP PCBs
         fFlatCable1_Constructor->SetFlatCableWidth(Target_length);
         fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
         fFlatCable1_Constructor->SetFlatCableNBundles(flatcable_n);
@@ -1319,62 +1319,62 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
         fFlatCable2_Constructor->SetFlatCableNBundles(flatcable_n);
         fFlatCable2_Constructor->SetFlatCableLength(Target_width/2.);
 
-	//Upstream PCBs
-	fFlatCable3_Constructor->SetFlatCableWidth(Target_height);
+  //Upstream PCBs
+  fFlatCable3_Constructor->SetFlatCableWidth(Target_height);
         fFlatCable3_Constructor->SetFlatCableThickness(flatcable_thickness);
         fFlatCable3_Constructor->SetFlatCableNBundles(flatcable_n);
         fFlatCable3_Constructor->SetFlatCableLength(Target_width/2.);
 
-	fFlatCable4_Constructor->SetFlatCableWidth(Target_height);
+  fFlatCable4_Constructor->SetFlatCableWidth(Target_height);
         fFlatCable4_Constructor->SetFlatCableThickness(flatcable_thickness);
         fFlatCable4_Constructor->SetFlatCableNBundles(flatcable_n);
         fFlatCable4_Constructor->SetFlatCableLength(Target_width/2.);
 
-	//PCB X0
-	fFlatCable5_Constructor->SetFlatCableWidth(Target_height);
+  //PCB X0
+  fFlatCable5_Constructor->SetFlatCableWidth(Target_height);
         fFlatCable5_Constructor->SetFlatCableThickness(flatcable_thickness);
         fFlatCable5_Constructor->SetFlatCableNBundles(flatcable_n);
         fFlatCable5_Constructor->SetFlatCableLength(Target_length/2.);
 
-	//PCB X1
-	fFlatCable6_Constructor->SetFlatCableWidth(Target_height);
+  //PCB X1
+  fFlatCable6_Constructor->SetFlatCableWidth(Target_height);
         fFlatCable6_Constructor->SetFlatCableThickness(flatcable_thickness);
         fFlatCable6_Constructor->SetFlatCableNBundles(flatcable_n);
         fFlatCable6_Constructor->SetFlatCableLength(Target_length/2.);
   
 
-	logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+  logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
         logicFlatCable2 = fFlatCable2_Constructor->GetPiece();
         logicFlatCable3 = fFlatCable3_Constructor->GetPiece();
         logicFlatCable4 = fFlatCable4_Constructor->GetPiece();
-	logicFlatCable5 = fFlatCable5_Constructor->GetPiece();
-	logicFlatCable6 = fFlatCable6_Constructor->GetPiece();
+  logicFlatCable5 = fFlatCable5_Constructor->GetPiece();
+  logicFlatCable6 = fFlatCable6_Constructor->GetPiece();
 
       }
   
       else {
 
         //TOP PCBs
-	fFlatCable1_Constructor->SetFlatCableWidth(Target_length);
-	fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
-	fFlatCable1_Constructor->SetFlatCableNBundles(flatcable_n);
-	fFlatCable1_Constructor->SetFlatCableLength(Target_width/2.);
+  fFlatCable1_Constructor->SetFlatCableWidth(Target_length);
+  fFlatCable1_Constructor->SetFlatCableThickness(flatcable_thickness);
+  fFlatCable1_Constructor->SetFlatCableNBundles(flatcable_n);
+  fFlatCable1_Constructor->SetFlatCableLength(Target_width/2.);
 
-	//Upstream PCBs
-	fFlatCable3_Constructor->SetFlatCableWidth(Target_height);
-	fFlatCable3_Constructor->SetFlatCableThickness(flatcable_thickness);
-	fFlatCable3_Constructor->SetFlatCableNBundles(flatcable_n);
-	fFlatCable3_Constructor->SetFlatCableLength(Target_width/2.);
+  //Upstream PCBs
+  fFlatCable3_Constructor->SetFlatCableWidth(Target_height);
+  fFlatCable3_Constructor->SetFlatCableThickness(flatcable_thickness);
+  fFlatCable3_Constructor->SetFlatCableNBundles(flatcable_n);
+  fFlatCable3_Constructor->SetFlatCableLength(Target_width/2.);
 
-	//PCB X0
-	fFlatCable5_Constructor->SetFlatCableWidth(Target_height);
-	fFlatCable5_Constructor->SetFlatCableThickness(flatcable_thickness);
-	fFlatCable5_Constructor->SetFlatCableNBundles(flatcable_n);
-	fFlatCable5_Constructor->SetFlatCableLength(Target_length/2.);
-	
-	logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
-	logicFlatCable3 = fFlatCable3_Constructor->GetPiece();
-	logicFlatCable5 = fFlatCable5_Constructor->GetPiece();
+  //PCB X0
+  fFlatCable5_Constructor->SetFlatCableWidth(Target_height);
+  fFlatCable5_Constructor->SetFlatCableThickness(flatcable_thickness);
+  fFlatCable5_Constructor->SetFlatCableNBundles(flatcable_n);
+  fFlatCable5_Constructor->SetFlatCableLength(Target_length/2.);
+  
+  logicFlatCable1 = fFlatCable1_Constructor->GetPiece();
+  logicFlatCable3 = fFlatCable3_Constructor->GetPiece();
+  logicFlatCable5 = fFlatCable5_Constructor->GetPiece();
       }  
     }
 
@@ -1424,7 +1424,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   
     } 
 
-    logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
+    //logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
+    logicTarget1->SetVisAttributes(G4Colour::Grey);
     
     physiSuperFGD1 = new G4PVPlacement(
                0, // no rotation
@@ -1544,32 +1545,32 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
               0);                 // copy number
 
 
-	physiFlatCable3 = new G4PVPlacement( 
-	      G4Transform3D(rotFlatCable[2],G4ThreeVector(xPCB[3]-Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
-	      logicFlatCable3,       // its logical volume
+  physiFlatCable3 = new G4PVPlacement( 
+        G4Transform3D(rotFlatCable[2],G4ThreeVector(xPCB[3]-Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
+        logicFlatCable3,       // its logical volume
               nameFlatCable3,  // its name
               logicBasket,
               false,             // no boolean operations
               0);                 // copy number
 
-	physiFlatCable4 = new G4PVPlacement( 
-	      G4Transform3D(rotFlatCable[3],G4ThreeVector(xPCB[3]+Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
+  physiFlatCable4 = new G4PVPlacement( 
+        G4Transform3D(rotFlatCable[3],G4ThreeVector(xPCB[3]+Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
               logicFlatCable4,       // its logical volume
               nameFlatCable4,  // its name
               logicBasket,
               false,             // no boolean operations
               0);                 // copy number
 
-	physiFlatCable5 = new G4PVPlacement( 
-	      G4Transform3D(rotFlatCable[4],G4ThreeVector(xPCB[0]-PCB_X0_height/2.-FlatCable_height/2.,yPCB[0],zPCB[0])),
-	      logicFlatCable5,       // its logical volume
+  physiFlatCable5 = new G4PVPlacement( 
+        G4Transform3D(rotFlatCable[4],G4ThreeVector(xPCB[0]-PCB_X0_height/2.-FlatCable_height/2.,yPCB[0],zPCB[0])),
+        logicFlatCable5,       // its logical volume
               nameFlatCable5,  // its name
               logicBasket,
               false,             // no boolean operations
               0);                 // copy number
 
-	physiFlatCable6 = new G4PVPlacement( 
-	      G4Transform3D(rotFlatCable[5],G4ThreeVector(xPCB[1]+PCB_X1_height/2.+FlatCable_height/2.,yPCB[1],zPCB[1])),
+  physiFlatCable6 = new G4PVPlacement( 
+        G4Transform3D(rotFlatCable[5],G4ThreeVector(xPCB[1]+PCB_X1_height/2.+FlatCable_height/2.,yPCB[1],zPCB[1])),
               logicFlatCable6,       // its logical volume
               nameFlatCable6,  // its name
               logicBasket,
@@ -1673,7 +1674,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     cout << "Plastic:" <<Plasticthickness << endl;
     cout << "InnerClearance:" <<InnerClearancethickness << endl;
     cout << "OuterClearance:" <<OuterClearancethickness << endl;
-	    
+      
     
     //
     logicCFBox2 = fCFBox2Constructor->GetPiece(); // CFBox logical volume (size based on the SuperFGD size)
@@ -1859,12 +1860,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     solidTarget2 = new G4Box(cNameSolidTarget2,Target_width/2,Target_height/2,Target_length/2);
     logicTarget2 = new G4LogicalVolume(solidTarget2,FindMaterial("Air"),cNameLogicTarget2,0,0,0);
     physiTarget2 = new G4PVPlacement(0,                 // no rotation
-				     G4ThreeVector(x,y,z),
-				     logicTarget2,       // its logical volume
-				     cNamePhysiTarget2,  // its name
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number
+             G4ThreeVector(x,y,z),
+             logicTarget2,       // its logical volume
+             cNamePhysiTarget2,  // its name
+             logicBasket,
+             false,             // no boolean operations
+             0);                 // copy number
 
     //logicTarget1->SetVisAttributes(G4VisAttributes::Invisible);
     //logicSuperFGD1->SetVisAttributes(G4VisAttributes::Invisible);
@@ -1884,24 +1885,24 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     }
 
     physiCFBox2 = new G4PVPlacement(
-				   0, // no rotation
-				   G4ThreeVector(0,0,0), // same origin as Target2
-				   logicCFBox2,       // its logical volume
-				   nameCFBox2,  // its name
-				   logicTarget2,
-				   false,             // no boolean operations
-				   0);                 // copy number
+           0, // no rotation
+           G4ThreeVector(0,0,0), // same origin as Target2
+           logicCFBox2,       // its logical volume
+           nameCFBox2,  // its name
+           logicTarget2,
+           false,             // no boolean operations
+           0);                 // copy number
 
 
 
     physiSuperFGD2 = new G4PVPlacement(
-				       0, // no rotation
-				       G4ThreeVector(0,0,0), // same origin as Target2
-				       logicSuperFGD2,       // its logical volume
-				       nameSuperFGD2,  // its name
-				       logicCFBox2,
-				       false,             // no boolean operations
-				       0);                 // copy number
+               0, // no rotation
+               G4ThreeVector(0,0,0), // same origin as Target2
+               logicSuperFGD2,       // its logical volume
+               nameSuperFGD2,  // its name
+               logicCFBox2,
+               false,             // no boolean operations
+               0);                 // copy number
 
 
 
@@ -1921,21 +1922,21 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
       cout << "placing pcb2 x0" <<endl;
       physiPCB2_X0 = new G4PVPlacement(
-				       G4Transform3D(rot[0],G4ThreeVector(xPCB[0],yPCB[0],zPCB[0])),
-				       logicPCB2_X0,       // its logical volume
-				       namePCB2_X0,  // its name
-				       logicBasket,
-				       false,             // no boolean operations
-				       0);                 // copy number
+               G4Transform3D(rot[0],G4ThreeVector(xPCB[0],yPCB[0],zPCB[0])),
+               logicPCB2_X0,       // its logical volume
+               namePCB2_X0,  // its name
+               logicBasket,
+               false,             // no boolean operations
+               0);                 // copy number
 
       cout << "placing pcb2 x1" <<endl;
       physiPCB2_X1 = new G4PVPlacement(
-				       G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
-				       logicPCB2_X1,       // its logical volume
-				       namePCB2_X1,  // its name
-				       logicBasket,
-				       false,             // no boolean operations
-				       0);                 // copy number
+               G4Transform3D(rot[1],G4ThreeVector(xPCB[1],yPCB[1],zPCB[1])),
+               logicPCB2_X1,       // its logical volume
+               namePCB2_X1,  // its name
+               logicBasket,
+               false,             // no boolean operations
+               0);                 // copy number
 
       cout << "placing pcb2 y" <<endl;
       physiPCB2_Y = new G4PVPlacement(
@@ -1987,85 +1988,85 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
       if (!(ND280XMLInput->GetXMLUseSuperFGD1())){
 
-	physiFlatCable1 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[2]-Target_width/4,yPCB[2]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[2])),
-					    logicFlatCable1,       // its logical volume
-					    nameFlatCable1,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable1 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[0],G4ThreeVector(xPCB[2]-Target_width/4,yPCB[2]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[2])),
+              logicFlatCable1,       // its logical volume
+              nameFlatCable1,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
 
-	physiFlatCable2 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[2]+Target_width/4,yPCB[2]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[2])),
-					    logicFlatCable2,       // its logical volume
-					    nameFlatCable2,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable2 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[2]+Target_width/4,yPCB[2]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[2])),
+              logicFlatCable2,       // its logical volume
+              nameFlatCable2,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
 
 
 
-	physiFlatCable3 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[2],G4ThreeVector(xPCB[3]-Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
-					    logicFlatCable3,       // its logical volume
-					    nameFlatCable3,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable3 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[2],G4ThreeVector(xPCB[3]-Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
+              logicFlatCable3,       // its logical volume
+              nameFlatCable3,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
 
-	physiFlatCable4 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[3],G4ThreeVector(xPCB[3]+Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
-					    logicFlatCable4,       // its logical volume
-					    nameFlatCable4,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable4 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[3],G4ThreeVector(xPCB[3]+Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
+              logicFlatCable4,       // its logical volume
+              nameFlatCable4,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
 
-	physiFlatCable5 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[4],G4ThreeVector(xPCB[0]-PCB_X0_height/2.-FlatCable_height/2.,yPCB[0],zPCB[0])),
-					    logicFlatCable5,       // its logical volume
-					    nameFlatCable5,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable5 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[4],G4ThreeVector(xPCB[0]-PCB_X0_height/2.-FlatCable_height/2.,yPCB[0],zPCB[0])),
+              logicFlatCable5,       // its logical volume
+              nameFlatCable5,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
 
-	physiFlatCable6 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[5],G4ThreeVector(xPCB[1]+PCB_X1_height/2.+FlatCable_height/2.,yPCB[1],zPCB[1])),
-					    logicFlatCable6,       // its logical volume
-					    nameFlatCable6,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable6 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[5],G4ThreeVector(xPCB[1]+PCB_X1_height/2.+FlatCable_height/2.,yPCB[1],zPCB[1])),
+              logicFlatCable6,       // its logical volume
+              nameFlatCable6,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
       }
   
       else {
 
-	physiFlatCable2 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[2]+Target_width/4,yPCB[2]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[2])),
-					    logicFlatCable2,       // its logical volume
-					    nameFlatCable2,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable2 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[1],G4ThreeVector(xPCB[2]+Target_width/4,yPCB[2]+PCB_Y_height/2.+FlatCable_height/2.,zPCB[2])),
+              logicFlatCable2,       // its logical volume
+              nameFlatCable2,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
 
 
 
 
-	physiFlatCable4 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[3],G4ThreeVector(xPCB[3]+Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
-					    logicFlatCable4,       // its logical volume
-					    nameFlatCable4,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable4 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[3],G4ThreeVector(xPCB[3]+Target_width/4,yPCB[3],zPCB[3]-PCB_Z_height/2.-FlatCable_height/2.)),
+              logicFlatCable4,       // its logical volume
+              nameFlatCable4,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
 
-	physiFlatCable6 = new G4PVPlacement(
-					    G4Transform3D(rotFlatCable[5],G4ThreeVector(xPCB[1]+PCB_X1_height/2.+FlatCable_height/2.,yPCB[1],zPCB[1])),
-					    logicFlatCable6,       // its logical volume
-					    nameFlatCable6,  // its name
-					    logicBasket,
-					    false,             // no boolean operations
-					    0);                 // copy number
+  physiFlatCable6 = new G4PVPlacement(
+              G4Transform3D(rotFlatCable[5],G4ThreeVector(xPCB[1]+PCB_X1_height/2.+FlatCable_height/2.,yPCB[1],zPCB[1])),
+              logicFlatCable6,       // its logical volume
+              nameFlatCable6,  // its name
+              logicBasket,
+              false,             // no boolean operations
+              0);                 // copy number
       
 
       }
@@ -2075,26 +2076,26 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
 
     G4cout << "Target 2: " << G4endl;
     G4cout << " - Total size (mm^3): "
-	   << Target_width / CLHEP::mm << " (width) x "
-	   << Target_height / CLHEP::mm << " (height) x "
-	   << Target_length / CLHEP::mm << " (length) x "
-	   << G4endl;
+     << Target_width / CLHEP::mm << " (width) x "
+     << Target_height / CLHEP::mm << " (height) x "
+     << Target_length / CLHEP::mm << " (length) x "
+     << G4endl;
     G4cout << "SuperFGD 2: " << G4endl
-	   << " - Cube size: "
-	   << fSuperFGDConstructor2->GetEdge() / CLHEP::mm << G4endl;
+     << " - Cube size: "
+     << fSuperFGDConstructor2->GetEdge() / CLHEP::mm << G4endl;
     G4cout << " - # of cubes: " << G4endl
-	   << "   " << fSuperFGDConstructor2->GetCubeNumX() << " (width) "
-	   << "   " << fSuperFGDConstructor2->GetCubeNumY() << " (height) "
-	   << "   " << fSuperFGDConstructor2->GetCubeNumZ() << " (length) "
-	   << G4endl;
+     << "   " << fSuperFGDConstructor2->GetCubeNumX() << " (width) "
+     << "   " << fSuperFGDConstructor2->GetCubeNumY() << " (height) "
+     << "   " << fSuperFGDConstructor2->GetCubeNumZ() << " (length) "
+     << G4endl;
     G4cout << " mass="<<logicSuperFGD2->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicSuperFGD2->GetName() << G4endl;
     G4cout << "CFBox: " << G4endl;
     G4cout << " - Total size (mm^3): "
-	   << Target_width / CLHEP::mm << " (width) x "
-	   << Target_height / CLHEP::mm << " (height) x "
-	   << Target_length / CLHEP::mm << " (length) x "
-	   << G4endl;
+     << Target_width / CLHEP::mm << " (width) x "
+     << Target_height / CLHEP::mm << " (height) x "
+     << Target_length / CLHEP::mm << " (length) x "
+     << G4endl;
 
     //G4cout << " - position inside the Basket: ( "
     //<< fSuperFGDConstructor1->GetPosX()/CLHEP::mm << ", "
@@ -2155,12 +2156,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   logicHATPCUp = fHATPCUpConstructor->GetPiece();
  
   new G4PVPlacement(0,
-		    GetHATPCUpPos(),
-		    logicHATPCUp,
-		    logicHATPCUp->GetName(),
-		    logicBasket,
-		    false,
-		    0);
+        GetHATPCUpPos(),
+        logicHATPCUp,
+        logicHATPCUp->GetName(),
+        logicBasket,
+        false,
+        0);
 
   cout << "LOGIC NAME: " << logicHATPCUp->GetName() << endl;
   }
@@ -2215,12 +2216,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
   logicHATPCDown = fHATPCDownConstructor->GetPiece();
  
   new G4PVPlacement(0,
-		    GetHATPCDownPos(),
-		    logicHATPCDown,
-		    logicHATPCDown->GetName(),
-		    logicBasket,
-		    false,
-		    0);
+        GetHATPCDownPos(),
+        logicHATPCDown,
+        logicHATPCDown->GetName(),
+        logicBasket,
+        false,
+        0);
 
   }
 
@@ -2290,21 +2291,21 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     //logicFGDlike1->SetVisAttributes(G4VisAttributes::Invisible);
 
     physiFGDlike1 = new G4PVPlacement(
-				    rotation_fgdlike, // no rotation
-				    G4ThreeVector(0,0,0), // same origin as Target1
-				    logicFGDlike1,       // its logical volume    
-				    nameFGDlike1,  // its name
-				    logicTarget1,
-				    false,             // no boolean operations
-				    0);                 // copy number     
+            rotation_fgdlike, // no rotation
+            G4ThreeVector(0,0,0), // same origin as Target1
+            logicFGDlike1,       // its logical volume    
+            nameFGDlike1,  // its name
+            logicTarget1,
+            false,             // no boolean operations
+            0);                 // copy number     
 
     physiTarget1 = new G4PVPlacement(0,      // no rotation
-				     G4ThreeVector(x,y,z),
-				     logicTarget1,       // its logical volume 
-				     cNamePhysiTarget1,  // its name
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number 
+             G4ThreeVector(x,y,z),
+             logicTarget1,       // its logical volume 
+             cNamePhysiTarget1,  // its name
+             logicBasket,
+             false,             // no boolean operations
+             0);                 // copy number 
     
     // 
     // Set the detector name where the hit distance in target 
@@ -2345,36 +2346,36 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     
     G4cout << "Target 1: " << G4endl;
     G4cout << " - Total size (mm^3): " 
-	   << width / CLHEP::mm << " (width) x " 
-	   << height / CLHEP::mm << " (height) x " 
-	   << length / CLHEP::mm << " (length) x " 
-	   << G4endl;
+     << width / CLHEP::mm << " (width) x " 
+     << height / CLHEP::mm << " (height) x " 
+     << length / CLHEP::mm << " (length) x " 
+     << G4endl;
     G4cout << "FGDlike 1: " << G4endl;
     G4cout << " - Total size before rotation (mm^3): "
-	   << fFGDlikeConstructor1->GetWidth() / CLHEP::mm << " (width) x "
-	   << fFGDlikeConstructor1->GetHeight() / CLHEP::mm << " (height) x "
-	   << fFGDlikeConstructor1->GetLength() / CLHEP::mm << " (length)"
-	   << G4endl;
+     << fFGDlikeConstructor1->GetWidth() / CLHEP::mm << " (width) x "
+     << fFGDlikeConstructor1->GetHeight() / CLHEP::mm << " (height) x "
+     << fFGDlikeConstructor1->GetLength() / CLHEP::mm << " (length)"
+     << G4endl;
     G4cout << " - Bar edge: "
-	   << fFGDlikeConstructor1->GetEdge() / CLHEP::mm << " mm" << G4endl;
+     << fFGDlikeConstructor1->GetEdge() / CLHEP::mm << " mm" << G4endl;
     G4cout << " - # of bars: " << G4endl
-	   << "   " << fFGDlikeConstructor1->GetBarHorizNum() << " horizontal (along X) "
-	   << "   " << fFGDlikeConstructor1->GetBarVertNum() << " vertical (along Y) "
-	   << G4endl;
+     << "   " << fFGDlikeConstructor1->GetBarHorizNum() << " horizontal (along X) "
+     << "   " << fFGDlikeConstructor1->GetBarVertNum() << " vertical (along Y) "
+     << G4endl;
     G4cout << " - # of layers (XY each): " << G4endl
-	   << "   " << fFGDlikeConstructor1->GetLayerNum() << G4endl; 
+     << "   " << fFGDlikeConstructor1->GetLayerNum() << G4endl; 
     G4cout << " - Rotation FGDlike: ("
-	   << rotX / CLHEP::degree << ","
-	   << rotY / CLHEP::degree << ","
-	   << rotZ / CLHEP::degree << ")"
-	   << G4endl;
+     << rotX / CLHEP::degree << ","
+     << rotY / CLHEP::degree << ","
+     << rotZ / CLHEP::degree << ")"
+     << G4endl;
     G4cout << " mass="<<logicFGDlike1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
     G4cout << " name: " << logicFGDlike1->GetName() << G4endl;
     G4cout << " - position inside the Basket: ( " 
-	   << fFGDlikeConstructor1->GetPosX()/CLHEP::mm << ", "
-	   << fFGDlikeConstructor1->GetPosY()/CLHEP::mm << ", "
-	   << fFGDlikeConstructor1->GetPosZ()/CLHEP::mm << ") "
-	   << G4endl << G4endl;    
+     << fFGDlikeConstructor1->GetPosX()/CLHEP::mm << ", "
+     << fFGDlikeConstructor1->GetPosY()/CLHEP::mm << ", "
+     << fFGDlikeConstructor1->GetPosZ()/CLHEP::mm << ") "
+     << G4endl << G4endl;    
   }
 
   //
@@ -2408,12 +2409,12 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     solidTarget1 = new G4Box(cNameSolidTarget1,width/2,height/2,length/2);
     logicTarget1 = new G4LogicalVolume(solidTarget1,FindMaterial("Air"),cNameLogicTarget1,0,0,0);
     physiTarget1 = new G4PVPlacement(0,                 // no rotation
-				     G4ThreeVector(x,y,z),
-				     logicTarget1,       // its logical volume 
-				     cNamePhysiTarget1,  // its name
-				     logicBasket,
-				     false,             // no boolean operations
-				     0);                 // copy number 
+             G4ThreeVector(x,y,z),
+             logicTarget1,       // its logical volume 
+             cNamePhysiTarget1,  // its name
+             logicBasket,
+             false,             // no boolean operations
+             0);                 // copy number 
 
     FGD3D1->ND280WaffleActiveConstructor::Construct(logicTarget1,GetTargetPos1(),ModuleSize1,cNamePhysiTarget1); 
     
@@ -2424,18 +2425,18 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     InputPersistencyManager->SetNavigDetName_Targ1(cNameLogicTarget1);    
     
     G4cout << "Target 1: " << G4endl
-	   << " - dimensions: "
-	   << width/CLHEP::mm  << " (width) x " 
-	   << height/CLHEP::mm << " (height) x " 
-	   << length/CLHEP::mm << " (length) mm^3" 
-	   << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
+     << " - dimensions: "
+     << width/CLHEP::mm  << " (width) x " 
+     << height/CLHEP::mm << " (height) x " 
+     << length/CLHEP::mm << " (length) mm^3" 
+     << " of " << logicTarget1->GetMaterial()->GetName() << G4endl; 
     G4cout << " mass="<<logicTarget1->GetMass()/CLHEP::kg   <<" kg" << G4endl;
     G4cout << " name: " << logicTarget1->GetName() << G4endl;
     G4cout << " - position: ( " 
-	   << x/CLHEP::mm << ", "
-	   << y/CLHEP::mm << ", "
-	   << z/CLHEP::mm << " ) mm"  
-	   << G4endl << G4endl;
+     << x/CLHEP::mm << ", "
+     << y/CLHEP::mm << ", "
+     << z/CLHEP::mm << " ) mm"  
+     << G4endl << G4endl;
   }
 
 
@@ -2509,7 +2510,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4ExceptionDescription msg;
     msg << "The drift region does not exist" << G4endl;
     G4Exception("ExN02DetectorConstruction::Construct",
-		"MyCode0002",FatalException, msg);
+    "MyCode0002",FatalException, msg);
   }
 #endif
   
@@ -2531,7 +2532,7 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     G4ExceptionDescription msg;
     msg << "The SD region does not exist" << G4endl;
     G4Exception("ExN02DetectorConstruction::Construct",
-		"MyCode0002",FatalException, msg);
+    "MyCode0002",FatalException, msg);
   }
 
   
@@ -2561,8 +2562,8 @@ G4VPhysicalVolume* ExN02DetectorConstruction::Construct()
     else{
       G4cout << "Not included or not same name as physical volume!!!" << G4endl;
       G4Exception("ExN02DetectorConstruction::Construct",
-		  "MyCode0002",FatalException,
-		  "SDLogical volume has not a counterpart in Physical volume with same name ");
+      "MyCode0002",FatalException,
+      "SDLogical volume has not a counterpart in Physical volume with same name ");
     }
   }
   G4cout << G4endl;
@@ -2683,18 +2684,18 @@ void ExN02DetectorConstruction::setMaterial_FGD1(G4String materialName)
       //<< materialName << G4endl;
       
       G4cout << "FGD 1: " << G4endl
-	     << " - dimensions: "
-	     << GetFGDFullWidth1()/CLHEP::mm  << " (width) x " 
-	     << GetFGDFullHeight1()/CLHEP::mm << " (height) x " 
-	     << GetFGDFullLength1()/CLHEP::mm << " (length) mm^3" 
-	     << " of " << logicFGD1->GetMaterial()->GetName() << G4endl; 
+       << " - dimensions: "
+       << GetFGDFullWidth1()/CLHEP::mm  << " (width) x " 
+       << GetFGDFullHeight1()/CLHEP::mm << " (height) x " 
+       << GetFGDFullLength1()/CLHEP::mm << " (length) mm^3" 
+       << " of " << logicFGD1->GetMaterial()->GetName() << G4endl; 
       G4cout << " mass="<<logicFGD1->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
       G4cout << " name: " << logicFGD1->GetName() << G4endl;
       G4cout << " - position: ( " 
-	     << GetFGDPos1().x()/CLHEP::mm << ", "
-	     << GetFGDPos1().y()/CLHEP::mm << ", "
-	     << GetFGDPos1().z()/CLHEP::mm << " ) mm"  
-	     << G4endl << G4endl;
+       << GetFGDPos1().x()/CLHEP::mm << ", "
+       << GetFGDPos1().y()/CLHEP::mm << ", "
+       << GetFGDPos1().z()/CLHEP::mm << " ) mm"  
+       << G4endl << G4endl;
       
     }             
 }
@@ -2713,18 +2714,18 @@ void ExN02DetectorConstruction::setMaterial_FGD2(G4String materialName)
       //<< materialName << G4endl;
 
       G4cout << "FGD 2: " << G4endl
-	     << " - dimensions: "
-	     << GetFGDFullWidth2()/CLHEP::mm  << " (width) x " 
-	     << GetFGDFullHeight2()/CLHEP::mm << " (height) x " 
-	     << GetFGDFullLength2()/CLHEP::mm << " (length) mm^3" 
-	     << " of " << logicFGD2->GetMaterial()->GetName() << G4endl; 
+       << " - dimensions: "
+       << GetFGDFullWidth2()/CLHEP::mm  << " (width) x " 
+       << GetFGDFullHeight2()/CLHEP::mm << " (height) x " 
+       << GetFGDFullLength2()/CLHEP::mm << " (length) mm^3" 
+       << " of " << logicFGD2->GetMaterial()->GetName() << G4endl; 
       G4cout << " mass="<<logicFGD2->GetMass()/CLHEP::kg   <<" kg" << G4endl; 
       G4cout << " name: " << logicFGD2->GetName() << G4endl;
       G4cout << " - position: ( " 
-	     << GetFGDPos2().x()/CLHEP::mm << ", "
-	     << GetFGDPos2().y()/CLHEP::mm << ", "
-	     << GetFGDPos2().z()/CLHEP::mm << " ) mm"  
-	     << G4endl << G4endl;
+       << GetFGDPos2().x()/CLHEP::mm << ", "
+       << GetFGDPos2().y()/CLHEP::mm << ", "
+       << GetFGDPos2().z()/CLHEP::mm << " ) mm"  
+       << G4endl << G4endl;
     }             
 }
 
@@ -2776,7 +2777,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   pressure    = 3.e-18*CLHEP::pascal;
   temperature = 2.73*CLHEP::kelvin;
   vacuum = new G4Material(name="Vacuum", z=1., a=1.01*g/mole,
-			  density,kStateGas,temperature,pressure);
+        density,kStateGas,temperature,pressure);
   gMan->SetColor(vacuum->GetName(),-1); // ND280 class
 #endif
 
@@ -2785,8 +2786,8 @@ void ExN02DetectorConstruction::DefineMaterials() {
   pressure    = 1*CLHEP::atmosphere;
   temperature = 293.15*CLHEP::kelvin;
   G4Material* air =  new G4Material(name="Air", density,
-				    nel=2,kStateGas,temperature,
-				    pressure);
+            nel=2,kStateGas,temperature,
+            pressure);
   air->AddElement(elN, fractionmass = 70*CLHEP::perCent);
   air->AddElement(elO, fractionmass = 30*CLHEP::perCent);
   fDefaultMaterial = air;
@@ -2864,8 +2865,8 @@ void ExN02DetectorConstruction::DefineMaterials() {
   pressure    = 1*CLHEP::atmosphere;
   temperature = 293.15*CLHEP::kelvin;
   G4Material* argon =  new G4Material(name="Ar", density,
-				      nel=1,kStateGas,temperature,
-				      pressure);
+              nel=1,kStateGas,temperature,
+              pressure);
   argon->AddElement(elAr, natoms=1);
   gMan->SetDrawAtt(argon,kBlue-10,0.1);// ND280 class
 
@@ -2874,8 +2875,8 @@ void ExN02DetectorConstruction::DefineMaterials() {
   pressure    = 1*CLHEP::atmosphere;
   temperature = 293.15*CLHEP::kelvin;
   G4Material* methane = new G4Material(name="CH4", density,
-				       nel=2,kStateGas,temperature,
-				       pressure);
+               nel=2,kStateGas,temperature,
+               pressure);
   methane->AddElement(elC, natoms=1);
   methane->AddElement(elH, natoms=4);
   gMan->SetDrawAtt(methane,kBlue-10,0.1);// ND280 class
@@ -2893,8 +2894,8 @@ void ExN02DetectorConstruction::DefineMaterials() {
   pressure    = 1.*CLHEP::atmosphere;
   temperature = 293.15*CLHEP::kelvin;
   G4Material* CO2 = new G4Material(name="CO2", density,
-				   nel=2,kStateGas,temperature,
-				   pressure);
+           nel=2,kStateGas,temperature,
+           pressure);
   CO2->AddElement(elC, natoms=1);
   CO2->AddElement(elO, natoms=2);
   gMan->SetDrawAtt(CO2,kBlue-10,0.1);// ND280 class
@@ -2904,8 +2905,8 @@ void ExN02DetectorConstruction::DefineMaterials() {
   pressure    = 1.*CLHEP::atmosphere;
   temperature = 293.15*CLHEP::kelvin;
   G4Material* CF4 = new G4Material(name="CF4", density,
-				   nel=2,kStateGas,temperature,
-				   pressure);
+           nel=2,kStateGas,temperature,
+           pressure);
   CF4->AddElement(elC, natoms=1);
   CF4->AddElement(elF, natoms=4);
   gMan->SetDrawAtt(CF4,kBlue-10,0.1);// ND280 class
@@ -3391,7 +3392,7 @@ void ExN02DetectorConstruction::DefineMaterials() {
   pressure    = 3.e-18*CLHEP::pascal;
   temperature = 2.73*CLHEP::kelvin;
   G4Material* galactic = new G4Material(name="Galactic", 1., 1.01*g/mole,
-			  density,kStateGas,temperature,pressure);
+        density,kStateGas,temperature,pressure);
   (void)galactic;
 
   //AramidHoneyComb
@@ -3450,10 +3451,10 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   for (int rp = 0; rp < 2; rp++)
     {
       for (int imm = 0; imm < 12; imm++)
-	{
-	  tpcMMTrans[rp][imm] = G4ThreeVector(0., 0., 0.);
-	  tpcMMRot[rp][imm] = new G4RotationMatrix (G4ThreeVector(0, 0, 1), 0);
-	}
+  {
+    tpcMMTrans[rp][imm] = G4ThreeVector(0., 0., 0.);
+    tpcMMRot[rp][imm] = new G4RotationMatrix (G4ThreeVector(0, 0, 1), 0);
+  }
     }
   // Define the rotation axis to +x in TPC coordinate system (+z in the interface).
   tpcMMRotAxis = G4ThreeVector(0, 0, 1);
@@ -3481,10 +3482,10 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   G4LogicalVolume* logDrift
     = new G4LogicalVolume(solidDrift,
-			  FindMaterial("GasMixtureTPC"),
-			  //GetName()+"/Drift");
-			  //"TPC1/Drift");
-			  parentname+"/"+name+"/Drift");
+        FindMaterial("GasMixtureTPC"),
+        //GetName()+"/Drift");
+        //"TPC1/Drift");
+        parentname+"/"+name+"/Drift");
   
   logDrift->SetVisAttributes(TPCVisAtt);
   //logDrift->SetVisAttributes(G4VisAttributes::Invisible);
@@ -3512,7 +3513,7 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   // //   G4ExceptionDescription msg;
   // //   msg << "The SD region does not exist" << G4endl;
   // //   G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-  // // 		"MyCode0002",FatalException, msg);
+  // //     "MyCode0002",FatalException, msg);
   // // }
   
 
@@ -3526,10 +3527,10 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   G4LogicalVolume* logGasGap
     = new G4LogicalVolume(solidCO2,
-			  FindMaterial("CO2"),
-			  //GetName()+"/GasGap");
-			  //"TPC1/GasGap");
-			  parentname+"/"+name+"/GasGap");
+        FindMaterial("CO2"),
+        //GetName()+"/GasGap");
+        //"TPC1/GasGap");
+        parentname+"/"+name+"/GasGap");
 
   logGasGap->SetVisAttributes(TPCCO2);
   logGasGap->SetVisAttributes(G4VisAttributes::Invisible);
@@ -3549,20 +3550,20 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   G4LogicalVolume* logVolume
     = new G4LogicalVolume(new G4Box(
-				    //GetName(),
-				    //"TPC1",
-				    parentname+"/"+name,
-				    GetWidthForwTPC()/2.,
-				    GetHeightForwTPC()/2.,
-				    GetLengthForwTPC()/2.),
-			  //width/2.,
-			  //height/2.,
-			  //length_inact/2.),
-			  FindMaterial("Air"),
-			  //GetName()
-			  //"TPC1"
-			  parentname+"/"+name
-			  );
+            //GetName(),
+            //"TPC1",
+            parentname+"/"+name,
+            GetWidthForwTPC()/2.,
+            GetHeightForwTPC()/2.,
+            GetLengthForwTPC()/2.),
+        //width/2.,
+        //height/2.,
+        //length_inact/2.),
+        FindMaterial("Air"),
+        //GetName()
+        //"TPC1"
+        parentname+"/"+name
+        );
   
   logVolume->SetVisAttributes(TPCDeadMat);
   logVolume->SetVisAttributes(G4VisAttributes::Invisible);
@@ -3581,25 +3582,25 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   fActiveTPCVerticalOffset = (GetCO2Bottom() - GetCO2Top())/2;
   
   new G4PVPlacement(0,
-  		    G4ThreeVector(0,fActiveTPCVerticalOffset,0),
-  		    logDrift,
-  		    //GetName()+"/Drift",
-  		    //"TPC1/Drift",
-  		    parentname+"/"+name+"/Drift",
-  		    logGasGap,
-  		    false,
-  		    0);
+          G4ThreeVector(0,fActiveTPCVerticalOffset,0),
+          logDrift,
+          //GetName()+"/Drift",
+          //"TPC1/Drift",
+          parentname+"/"+name+"/Drift",
+          logGasGap,
+          false,
+          0);
   //fCheckOverlaps);
 
   new G4PVPlacement(0,
-		    G4ThreeVector(0,0,0),
-		    logGasGap,
-		    //GetName()+"/GasGap",
-		    //"TPC1/GasGap",
-		    parentname+"/"+name+"/GasGap",
-		    logVolume,
-		    false,
-		    0);
+        G4ThreeVector(0,0,0),
+        logGasGap,
+        //GetName()+"/GasGap",
+        //"TPC1/GasGap",
+        parentname+"/"+name+"/GasGap",
+        logVolume,
+        false,
+        0);
   //fCheckOverlaps);
 
 
@@ -3626,16 +3627,16 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   G4LogicalVolume* logHalf0
     = new G4LogicalVolume(innerHalf,
-			  FindMaterial("GasMixtureTPC"),
-			  //GetName()+"/Half");
-			  //"TPC1/Half");
-			  parentname+"/"+name+"/Half");
+        FindMaterial("GasMixtureTPC"),
+        //GetName()+"/Half");
+        //"TPC1/Half");
+        parentname+"/"+name+"/Half");
   G4LogicalVolume* logHalf1
     = new G4LogicalVolume(innerHalf,
-			  FindMaterial("GasMixtureTPC"),
-			  //GetName()+"/Half");
-			  //"TPC1/Half");
-			  parentname+"/"+name+"/Half");
+        FindMaterial("GasMixtureTPC"),
+        //GetName()+"/Half");
+        //"TPC1/Half");
+        parentname+"/"+name+"/Half");
   logHalf0->SetVisAttributes(TPCVisAtt); //TPCDeadMat);
   logHalf1->SetVisAttributes(TPCVisAtt); //TPCDeadMat);
   //logHalf0->SetVisAttributes(G4VisAttributes::Invisible);
@@ -3663,20 +3664,20 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
       G4ExceptionDescription msg;
       msg << "The SD region does not exist" << G4endl;
       G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-		  "MyCode0002",FatalException, msg);
+      "MyCode0002",FatalException, msg);
     }
     
 #ifdef USE_PAI
     G4Region* driftRegion = G4RegionStore::GetInstance()->
       GetRegion("driftRegion",false);
     if (driftRegion) {
-	driftRegion->AddRootLogicalVolume(logHalf0);
-	driftRegion->AddRootLogicalVolume(logHalf1);
+  driftRegion->AddRootLogicalVolume(logHalf0);
+  driftRegion->AddRootLogicalVolume(logHalf1);
     } else {
       G4ExceptionDescription msg;
       msg << "The drift region does not exist" << G4endl;
       G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-		  "MyCode0002",FatalException, msg);
+      "MyCode0002",FatalException, msg);
     }
 #endif
   }
@@ -3692,25 +3693,25 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   rm.rotateY(90.0*CLHEP::deg);
   
   new G4PVPlacement(G4Transform3D(rm,G4ThreeVector(-delta,0,0)),
-		    logHalf0,
-		    //GetName()+"/Half",
-		    //"TPC1/Half",
-		    parentname+"/"+name+"/Half",
-		    logDrift,
-		    false,
-		    0);
+        logHalf0,
+        //GetName()+"/Half",
+        //"TPC1/Half",
+        parentname+"/"+name+"/Half",
+        logDrift,
+        false,
+        0);
   //fCheckOverlaps);
   
   rm.rotateY(180.0*CLHEP::deg);    
   
   new G4PVPlacement(G4Transform3D(rm,G4ThreeVector(delta,0,0)),
-		    logHalf1,
-		    //GetName()+"/Half",
-		    //"TPC1/Half",
-		    parentname+"/"+name+"/Half",
-		    logDrift,
-		    false,
-		    1);
+        logHalf1,
+        //GetName()+"/Half",
+        //"TPC1/Half",
+        parentname+"/"+name+"/Half",
+        logDrift,
+        false,
+        1);
   //fCheckOverlaps);
 
   
@@ -3722,13 +3723,13 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
   
   G4LogicalVolume* logMM
     = new G4LogicalVolume(new G4Box("MicromegasModule",
-				    mmWidth/2.,
-				    mmHeight/2.,
-				    mmLength/2.),
-			  FindMaterial("GasMixtureTPC"),
-			  //GetName()+"/MM");
-			  //"TPC1/MM");
-			  parentname+"/"+name+"/MM");
+            mmWidth/2.,
+            mmHeight/2.,
+            mmLength/2.),
+        FindMaterial("GasMixtureTPC"),
+        //GetName()+"/MM");
+        //"TPC1/MM");
+        parentname+"/"+name+"/MM");
   
   //if (GetVisible() && !GetShowOuterVolume()) {
   G4VisAttributes* visual = new G4VisAttributes();
@@ -3751,19 +3752,19 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
     G4ExceptionDescription msg;
     msg << "The SD region does not exist" << G4endl;
     G4Exception("ExN02DetectorConstruction::GetPieceTPC",
-		"MyCode0002",FatalException, msg);
+    "MyCode0002",FatalException, msg);
   }
 
   int nmod = 12;  
   double xmod[12] = {  189.65*CLHEP::mm ,  189.65*CLHEP::mm ,  189.65*CLHEP::mm ,
-		       189.65*CLHEP::mm ,  189.65*CLHEP::mm ,  189.65*CLHEP::mm ,
-		       -189.65*CLHEP::mm , -189.65*CLHEP::mm , -189.65*CLHEP::mm ,
-		       -189.65*CLHEP::mm , -189.65*CLHEP::mm , -189.65*CLHEP::mm  };
+           189.65*CLHEP::mm ,  189.65*CLHEP::mm ,  189.65*CLHEP::mm ,
+           -189.65*CLHEP::mm , -189.65*CLHEP::mm , -189.65*CLHEP::mm ,
+           -189.65*CLHEP::mm , -189.65*CLHEP::mm , -189.65*CLHEP::mm  };
   
   double ymod[12] = {  881.65*CLHEP::mm ,  538.05*CLHEP::mm ,  194.45*CLHEP::mm ,
-		       -149.15*CLHEP::mm , -492.75*CLHEP::mm , -836.35*CLHEP::mm ,
-		       836.35*CLHEP::mm ,  492.75*CLHEP::mm ,  149.15*CLHEP::mm ,
-		       -194.45*CLHEP::mm , -538.05*CLHEP::mm , -881.65*CLHEP::mm  };
+           -149.15*CLHEP::mm , -492.75*CLHEP::mm , -836.35*CLHEP::mm ,
+           836.35*CLHEP::mm ,  492.75*CLHEP::mm ,  149.15*CLHEP::mm ,
+           -194.45*CLHEP::mm , -538.05*CLHEP::mm , -881.65*CLHEP::mm  };
   
   // Translations and rotations get applied in this version
   // Placement in first readout plane
@@ -3771,26 +3772,26 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
     
     if ( imod < 6 ) {
       new G4PVPlacement(tpcMMRot[0][imod],
-			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(), 0.),
-			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf0,
-			false,
-			imod);
+      G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(), 0.),
+      logMM,
+      //GetName()+"/MM",
+      //"TPC1/MM",
+      parentname+"/"+name+"/MM",
+      logHalf0,
+      false,
+      imod);
     }
     else {
       tpcMMRot[0][imod]->rotateZ(180.0*CLHEP::deg);
       new G4PVPlacement(tpcMMRot[0][imod],
-			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(),0.),
-			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf0,
-			false,
-			imod);
+      G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(),0.),
+      logMM,
+      //GetName()+"/MM",
+      //"TPC1/MM",
+      parentname+"/"+name+"/MM",
+      logHalf0,
+      false,
+      imod);
     }
   }
   // Placement in second readout plane
@@ -3798,26 +3799,26 @@ G4LogicalVolume* ExN02DetectorConstruction::GetPieceTPC(G4String name,G4String p
     
     if ( imod < 6 ) {
       new G4PVPlacement(tpcMMRot[1][imod],
-			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
-			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf1,
-			false,
-			imod);
+      G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
+      logMM,
+      //GetName()+"/MM",
+      //"TPC1/MM",
+      parentname+"/"+name+"/MM",
+      logHalf1,
+      false,
+      imod);
     }
     else {
       tpcMMRot[1][imod]->rotateZ(180.0*CLHEP::deg);
       new G4PVPlacement(tpcMMRot[1][imod],
-			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
-			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf1,
-			false,
-			imod);
+      G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
+      logMM,
+      //GetName()+"/MM",
+      //"TPC1/MM",
+      parentname+"/"+name+"/MM",
+      logHalf1,
+      false,
+      imod);
     }
   }
   
@@ -3948,7 +3949,7 @@ void ExN02DetectorConstruction::BuildTPCCentralCathode(G4LogicalVolume* logVolum
                           logVolume,
                           false,
                           k);
-	k++;
+  k++;
     }
     
     if (toboCon1.GetVisible()) { // && GetShowOuterVolume()) {
@@ -5140,33 +5141,33 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume* logVolume) {
       G4cout << "ToBoCon             (2) mass="<<log_toboCon->GetMass()/CLHEP::kg            <<" kg" << G4endl;
       
       G4cout << "Total TPC cage mass : "<<
-	2*log_sideG10Plate->GetMass()/CLHEP::kg       +
-	4*log_verticalG10Frame->GetMass()/CLHEP::kg   +
-	4*log_horizontalG10Frame->GetMass()/CLHEP::kg +
-	2*log_verticalG10Plate->GetMass()/CLHEP::kg   +
-	4*log_sideAlPlate->GetMass()/CLHEP::kg        +
-	4*log_post->GetMass()/CLHEP::kg               +
-	2*log_sideAlRoPlate->GetMass()/CLHEP::kg      +
-	4*log_frbaAlRoPlate->GetMass()/CLHEP::kg      +
-	4*log_toboAlRoPlate->GetMass()/CLHEP::kg      +
-	4*log_frbaG10RoPlate->GetMass()/CLHEP::kg     +
-	4*log_toboG10RoPlate->GetMass()/CLHEP::kg     +
-	4*log_frbaPiece1->GetMass()/CLHEP::kg         +
-	4*log_frbaPiece2->GetMass()/CLHEP::kg         +
-	4*log_frbaPiece3->GetMass()/CLHEP::kg         +
-	2*log_boPiece1->GetMass()/CLHEP::kg           +
-	2*log_boPiece2->GetMass()/CLHEP::kg           +
-	2*log_boPiece3->GetMass()/CLHEP::kg           +
-	2*log_boPiece4->GetMass()/CLHEP::kg           +
-	2*log_boPiece5->GetMass()/CLHEP::kg           +
-	2*log_toPiece1->GetMass()/CLHEP::kg           +
-	2*log_toPiece2->GetMass()/CLHEP::kg           +
-	2*log_toPiece3->GetMass()/CLHEP::kg           +
-	2*log_frbaCon2->GetMass()/CLHEP::kg           +
-	2*log_toboCon2->GetMass()/CLHEP::kg           +
-	2*log_frbaCon->GetMass()/CLHEP::kg            +
-	2*log_toboCon->GetMass()/CLHEP::kg            
-	     <<" kg" << G4endl;
+  2*log_sideG10Plate->GetMass()/CLHEP::kg       +
+  4*log_verticalG10Frame->GetMass()/CLHEP::kg   +
+  4*log_horizontalG10Frame->GetMass()/CLHEP::kg +
+  2*log_verticalG10Plate->GetMass()/CLHEP::kg   +
+  4*log_sideAlPlate->GetMass()/CLHEP::kg        +
+  4*log_post->GetMass()/CLHEP::kg               +
+  2*log_sideAlRoPlate->GetMass()/CLHEP::kg      +
+  4*log_frbaAlRoPlate->GetMass()/CLHEP::kg      +
+  4*log_toboAlRoPlate->GetMass()/CLHEP::kg      +
+  4*log_frbaG10RoPlate->GetMass()/CLHEP::kg     +
+  4*log_toboG10RoPlate->GetMass()/CLHEP::kg     +
+  4*log_frbaPiece1->GetMass()/CLHEP::kg         +
+  4*log_frbaPiece2->GetMass()/CLHEP::kg         +
+  4*log_frbaPiece3->GetMass()/CLHEP::kg         +
+  2*log_boPiece1->GetMass()/CLHEP::kg           +
+  2*log_boPiece2->GetMass()/CLHEP::kg           +
+  2*log_boPiece3->GetMass()/CLHEP::kg           +
+  2*log_boPiece4->GetMass()/CLHEP::kg           +
+  2*log_boPiece5->GetMass()/CLHEP::kg           +
+  2*log_toPiece1->GetMass()/CLHEP::kg           +
+  2*log_toPiece2->GetMass()/CLHEP::kg           +
+  2*log_toPiece3->GetMass()/CLHEP::kg           +
+  2*log_frbaCon2->GetMass()/CLHEP::kg           +
+  2*log_toboCon2->GetMass()/CLHEP::kg           +
+  2*log_frbaCon->GetMass()/CLHEP::kg            +
+  2*log_toboCon->GetMass()/CLHEP::kg            
+       <<" kg" << G4endl;
     }
     
 }

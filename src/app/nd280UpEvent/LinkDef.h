@@ -24,4 +24,7 @@
 #pragma link C++ class TND280UpRecoTrack+;
 #pragma link C++ class std::vector<TND280UpRecoTrack>+;
 
+#pragma link C++ class Hit+;
+#pragma link C++ class Event+;
+
 #endif
