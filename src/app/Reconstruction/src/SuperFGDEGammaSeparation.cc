@@ -40,7 +40,7 @@ inline void AddGraph(TGraph *gAll,TGraph *gSubSet);
 inline int FindIndex(vector<int> vec,int val);
 
 int SuperFGDEGammaSeparation (int argc, char** argv){
- if (argc!=10) {
+ /*if (argc!=10) {
    
    cout << "1) input ROOT file name" << endl;
    cout << "2) first event number" << endl;
@@ -53,7 +53,25 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
    cout << "9) # of plots to write" << endl;
    exit(1);
 
- }
+ }*/
+
+ if (argc!=14){   // batch mode                                        
+    cout << "You need to provide the following arguments:" << endl;
+    cout << " 1) input ROOT file name (from GEANT4 simulation) " << endl;
+    cout << " 2) first event number to run" << endl;
+    cout << " 3) total number of events to run" << endl;
+    cout << " 4) the tag for the output file name" << endl;
+    cout << " 5) detector ID: 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI" << endl;
+    cout << " 6) set debug option" << endl;
+    cout << " 7) set debug plot option" << endl;
+    cout << " 8) use view XY (0 or 1)" << endl;
+    cout << " 9) use view XZ (0 or 1)" << endl;
+    cout << " 10) use view YZ (0 or 1)" << endl;
+    cout << " 11) Minimum track distance (if <=0 use default)" << endl;
+    cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << endl;
+    cout << " 13) Output file name. In iteractive run it can be first event, but for parallel need separate param" << endl;
+    exit(1);
+  }
 
  string infilename = argv[1];
  const int evtfirst = atoi(argv[2]);
@@ -65,11 +83,19 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
  nd280upconv::TargetType_t DetType;
  DetType = nd280upconv::kSuperFGD;
 
- const bool isNuInt = atoi(argv[5]);
+ const int outname = atoi (argv[13]);
+
+ /*const bool isNuInt = atoi(argv[5]);
  const bool useElectron = atoi(argv[6]);
  const double RatioCriteria = atoi(argv[7]);
  const bool writePlots = atoi(argv[8]);
- const int nPlotsWrite = atoi(argv[9]);
+ const int nPlotsWrite = atoi(argv[9]);*/
+
+ const bool isNuInt         = 0;
+ const bool useElectron     = 0;
+ const double RatioCriteria = 0;
+ const bool writePlots      = 0;
+ const int nPlotsWrite      = 1;
 
  int e_trkid = 0;
  int pos_trkid = 0;
@@ -86,18 +112,18 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   else e_trkid = 2;
   pos_trkid = 3;
 
-  TH1F *hPE_X_etrack[NEvtDisplTot];
-  TH1F *hPE_Y_etrack[NEvtDisplTot];
-  TH1F *hPE_Z_etrack[NEvtDisplTot];
+  TH1F *hPE_X_etrack;
+  TH1F *hPE_Y_etrack;
+  TH1F *hPE_Z_etrack;
 
-  TF1 *fstep_X[NEvtDisplTot];
-  TF1 *fstep_Y[NEvtDisplTot];
-  TF1 *fstep_Z[NEvtDisplTot];
+  TF1 *fstep_X;
+  TF1 *fstep_Y;
+  TF1 *fstep_Z;
 
-  double fratio_hilo_X[NEvtDisplTot];
-  double fratio_hilo_Y[NEvtDisplTot];
-  double fratio_hilo_Z[NEvtDisplTot];
-  double fratio_hilo_Prod[NEvtDisplTot];
+  double fratio_hilo_X;
+  double fratio_hilo_Y;
+  double fratio_hilo_Z;
+  double fratio_hilo_Prod;
 
   // Declare variable of reconstructed tracks
   vector<TH2F*> fRecoTrack_MPPCHit_XY;
@@ -121,17 +147,17 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   vector< vector< vector<double> > > fRecoTrack_hitXZ;
   vector< vector< vector<double> > > fRecoTrack_hitYZ;
 
-  TH2F *hMPPCHits_XY[NEvtDisplTot];
-  TH2F *hMPPCHits_XZ[NEvtDisplTot];
-  TH2F *hMPPCHits_YZ[NEvtDisplTot];
+  TH2F *hMPPCHits_XY;
+  TH2F *hMPPCHits_XZ;
+  TH2F *hMPPCHits_YZ;
 
-  TGraph *gMCElectronHits_XY[NEvtDisplTot];
-  TGraph *gMCElectronHits_XZ[NEvtDisplTot];
-  TGraph *gMCElectronHits_YZ[NEvtDisplTot];
+  TGraph *gMCElectronHits_XY;
+  TGraph *gMCElectronHits_XZ;
+  TGraph *gMCElectronHits_YZ;
 
-  TGraph *gMCPositronHits_XY[NEvtDisplTot];
-  TGraph *gMCPositronHits_XZ[NEvtDisplTot];
-  TGraph *gMCPositronHits_YZ[NEvtDisplTot];
+  TGraph *gMCPositronHits_XY;
+  TGraph *gMCPositronHits_XZ;
+  TGraph *gMCPositronHits_YZ;
 
   TH1F *hETrack_HiLoRatio_X = new TH1F("hETrack_HiLoRatio_X","hETrack_HiLoRatio_X",40,0.,10.);
   TH1F *hETrack_HiLoRatio_Y = new TH1F("hETrack_HiLoRatio_Y","hETrack_HiLoRatio_Y",40,0.,10.);
@@ -165,10 +191,13 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   // Take 2D projection histograms with MPPC hits 
 
   TH2F* h2d_xy; TH2F* h2d_xz; TH2F* h2d_yz;
-  h2d_xy = (TH2F*)finput->Get("fMPPCProj2D_XY_Mod01");
+  /*h2d_xy = (TH2F*)finput->Get("fMPPCProj2D_XY_Mod01");
   h2d_xz = (TH2F*)finput->Get("fMPPCProj2D_XZ_Mod01");
-  h2d_yz = (TH2F*)finput->Get("fMPPCProj2D_YZ_Mod01");  
+  h2d_yz = (TH2F*)finput->Get("fMPPCProj2D_YZ_Mod01"); */ 
   //
+  h2d_xy = (TH2F*)finput->Get("OutMPPCProj2D_XY");
+  h2d_xz = (TH2F*)finput->Get("OutMPPCProj2D_XZ");
+  h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
 
   // Take the World origin position in the target (local) reference system
   TPolyMarker3D *WorldOrigInLocal = (TPolyMarker3D*)finput->Get("WorldOrigInLocal");
@@ -220,6 +249,100 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
   vector <int> passed_evt;
   passed_evt.clear();
+
+  TString name = TString::Format("gMCElectronHits_XY_%d",0);
+  gMCElectronHits_XY = new TGraph();
+  gMCElectronHits_XY->SetName(name);
+  gMCElectronHits_XY->SetTitle(name);
+  gMCElectronHits_XY->SetMarkerSize(1);
+  gMCElectronHits_XY->SetMarkerStyle(20);
+  name = TString::Format("gMCElectronHits_XZ_%d",0);
+  gMCElectronHits_XZ = new TGraph();
+  gMCElectronHits_XZ->SetName(name);
+  gMCElectronHits_XZ->SetTitle(name);
+  gMCElectronHits_XZ->SetMarkerSize(1);
+  gMCElectronHits_XZ->SetMarkerStyle(20);
+  name = TString::Format("gMCElectronHits_YZ_%d",0);
+  gMCElectronHits_YZ = new TGraph();
+  gMCElectronHits_YZ->SetName(name);
+  gMCElectronHits_YZ->SetTitle(name);
+  gMCElectronHits_YZ->SetMarkerSize(1);
+  gMCElectronHits_YZ->SetMarkerStyle(20);
+
+  name = TString::Format("gMCPositronHits_XY_%d",0);
+  gMCPositronHits_XY = new TGraph();
+  gMCPositronHits_XY->SetName(name);
+  gMCPositronHits_XY->SetTitle(name);
+  gMCPositronHits_XY->SetMarkerSize(1);
+  gMCPositronHits_XY->SetMarkerStyle(20);
+  name = TString::Format("gMCPositronHits_XZ_%d",0);
+  gMCPositronHits_XZ = new TGraph();
+  gMCPositronHits_XZ->SetName(name);
+  gMCPositronHits_XZ->SetTitle(name);
+  gMCPositronHits_XZ->SetMarkerSize(1);
+  gMCPositronHits_XZ->SetMarkerStyle(20);
+  name = TString::Format("gMCPositronHits_YZ_%d",0);
+  gMCPositronHits_YZ = new TGraph();
+  gMCPositronHits_YZ->SetName(name);
+  gMCPositronHits_YZ->SetTitle(name);
+  gMCPositronHits_YZ->SetMarkerSize(1);
+  gMCPositronHits_YZ->SetMarkerStyle(20);
+
+
+
+
+  name = TString::Format("hMPPCHits_XY_%d",0);
+  hMPPCHits_XY = (TH2F*)h2d_xy->Clone(name);
+  hMPPCHits_XY->SetTitle("");
+  hMPPCHits_XY->GetXaxis()->SetTitle("Distance from Target Center in X axis (mm)");
+  hMPPCHits_XY->GetYaxis()->SetTitle("Distance from Target Center in Y axis (mm)");
+
+  name = TString::Format("hMPPCHits_XZ_%d",0);
+  hMPPCHits_XZ = (TH2F*)h2d_xz->Clone(name);
+  hMPPCHits_XZ->SetTitle("");
+  hMPPCHits_XZ->GetXaxis()->SetTitle("Distance from Target Center in X axis (mm)");
+  hMPPCHits_XZ->GetYaxis()->SetTitle("Distance from Target Center in Z axis (mm)");
+
+  name = TString::Format("hMPPCHits_YZ_%d",0);
+  hMPPCHits_YZ = (TH2F*)h2d_yz->Clone(name);
+  hMPPCHits_YZ->SetTitle("");
+  hMPPCHits_YZ->GetXaxis()->SetTitle("Distance from Target Center in Y axis (mm)");
+  hMPPCHits_YZ->GetYaxis()->SetTitle("Distance from Target Center in Z axis (mm)");
+
+
+    /////
+
+  name = TString::Format("fstep_X_%d",0);
+
+  fstep_X = new TF1(name, "pol0(0)", 0, 200.);
+  fstep_X->SetParameter(0,0.);
+
+  name = TString::Format("fstep_Y_%d",0);
+
+  fstep_Y = new TF1(name, "pol0(0)", 0, 200.);
+  fstep_Y->SetParameter(0,0.);
+
+  name = TString::Format("fstep_Z_%d",0);
+
+  fstep_Z = new TF1(name, "pol0(0)", 0, 200.);
+  fstep_Z->SetParameter(0,0.);
+
+    // Initialize the histograms
+
+  name = TString::Format("hPE_X_etrack_%d",0);
+  hPE_X_etrack = new TH1F(name,"",200,0,200);
+  hPE_X_etrack->GetXaxis()->SetTitle("i-th hit of the e-like track");
+  hPE_X_etrack->GetYaxis()->SetTitle("p.e.");
+
+  name = TString::Format("hPE_Y_etrack_%d",0);
+  hPE_Y_etrack = new TH1F(name,"",200,0,200);
+  hPE_Y_etrack->GetXaxis()->SetTitle("i-th hit of the e-like track");
+  hPE_Y_etrack->GetYaxis()->SetTitle("p.e.");
+
+  name = TString::Format("hPE_Z_etrack_%d",0);
+  hPE_Z_etrack = new TH1F(name,"",200,0,200);
+  hPE_Z_etrack->GetXaxis()->SetTitle("i-th hit of the e-like track");
+  hPE_Z_etrack->GetYaxis()->SetTitle("p.e.");
 
   for(int ievt=0;ievt<Nentries;ievt++){ // get last entry
     
@@ -275,99 +398,41 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
     }
 
 
-      name = TString::Format("gMCElectronHits_XY_%d",ievt);
-      gMCElectronHits_XY[ievt] = new TGraph();
-      gMCElectronHits_XY[ievt]->SetName(name);
-      gMCElectronHits_XY[ievt]->SetTitle(name);
-      gMCElectronHits_XY[ievt]->SetMarkerSize(1);
-      gMCElectronHits_XY[ievt]->SetMarkerStyle(20);
-      name = TString::Format("gMCElectronHits_XZ_%d",ievt);
-      gMCElectronHits_XZ[ievt] = new TGraph();
-      gMCElectronHits_XZ[ievt]->SetName(name);
-      gMCElectronHits_XZ[ievt]->SetTitle(name);
-      gMCElectronHits_XZ[ievt]->SetMarkerSize(1);
-      gMCElectronHits_XZ[ievt]->SetMarkerStyle(20);
-      name = TString::Format("gMCElectronHits_YZ_%d",ievt);
-      gMCElectronHits_YZ[ievt] = new TGraph();
-      gMCElectronHits_YZ[ievt]->SetName(name);
-      gMCElectronHits_YZ[ievt]->SetTitle(name);
-      gMCElectronHits_YZ[ievt]->SetMarkerSize(1);
-      gMCElectronHits_YZ[ievt]->SetMarkerStyle(20);
+      gMCElectronHits_XY->Set(0);
+      gMCElectronHits_XZ->Set(0);
+      gMCElectronHits_YZ->Set(0);
 
-      name = TString::Format("gMCPositronHits_XY_%d",ievt);
-      gMCPositronHits_XY[ievt] = new TGraph();
-      gMCPositronHits_XY[ievt]->SetName(name);
-      gMCPositronHits_XY[ievt]->SetTitle(name);
-      gMCPositronHits_XY[ievt]->SetMarkerSize(1);
-      gMCPositronHits_XY[ievt]->SetMarkerStyle(20);
-      name = TString::Format("gMCPositronHits_XZ_%d",ievt);
-      gMCPositronHits_XZ[ievt] = new TGraph();
-      gMCPositronHits_XZ[ievt]->SetName(name);
-      gMCPositronHits_XZ[ievt]->SetTitle(name);
-      gMCPositronHits_XZ[ievt]->SetMarkerSize(1);
-      gMCPositronHits_XZ[ievt]->SetMarkerStyle(20);
-      name = TString::Format("gMCPositronHits_YZ_%d",ievt);
-      gMCPositronHits_YZ[ievt] = new TGraph();
-      gMCPositronHits_YZ[ievt]->SetName(name);
-      gMCPositronHits_YZ[ievt]->SetTitle(name);
-      gMCPositronHits_YZ[ievt]->SetMarkerSize(1);
-      gMCPositronHits_YZ[ievt]->SetMarkerStyle(20);
+      gMCPositronHits_XY->Set(0);
+      gMCPositronHits_XZ->Set(0);
+      gMCPositronHits_YZ->Set(0);
 
 
 
 
-      name = TString::Format("hMPPCHits_XY_%d",ievt);
-      hMPPCHits_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
-      hMPPCHits_XY[ievt]->SetTitle("");
-      hMPPCHits_XY[ievt]->GetXaxis()->SetTitle("Distance from Target Center in X axis (mm)");
-      hMPPCHits_XY[ievt]->GetYaxis()->SetTitle("Distance from Target Center in Y axis (mm)");
+      hMPPCHits_XY = (TH2F*)h2d_xy->Clone(name);
 
-      name = TString::Format("hMPPCHits_XZ_%d",ievt);
-      hMPPCHits_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
-      hMPPCHits_XZ[ievt]->SetTitle("");
-      hMPPCHits_XZ[ievt]->GetXaxis()->SetTitle("Distance from Target Center in X axis (mm)");
-      hMPPCHits_XZ[ievt]->GetYaxis()->SetTitle("Distance from Target Center in Z axis (mm)");
+      hMPPCHits_XZ = (TH2F*)h2d_xz->Clone(name);
       
-      name = TString::Format("hMPPCHits_YZ_%d",ievt);
-      hMPPCHits_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
-      hMPPCHits_YZ[ievt]->SetTitle("");
-      hMPPCHits_YZ[ievt]->GetXaxis()->SetTitle("Distance from Target Center in Y axis (mm)");
-      hMPPCHits_YZ[ievt]->GetYaxis()->SetTitle("Distance from Target Center in Z axis (mm)");
+      hMPPCHits_YZ = (TH2F*)h2d_yz->Clone(name);
 
 
     /////
 
-      name = TString::Format("fstep_X_%d",ievt);
-
-      fstep_X[ievt] = new TF1(name, "pol0(0)", 0, 200.);
-      fstep_X[ievt]->SetParameter(0,0.);
+      fstep_X->SetParameter(0,0.);
       
-      name = TString::Format("fstep_Y_%d",ievt);
       
-      fstep_Y[ievt] = new TF1(name, "pol0(0)", 0, 200.);
-      fstep_Y[ievt]->SetParameter(0,0.);
+      fstep_Y->SetParameter(0,0.);
       
-      name = TString::Format("fstep_Z_%d",ievt);
       
-      fstep_Z[ievt] = new TF1(name, "pol0(0)", 0, 200.);
-      fstep_Z[ievt]->SetParameter(0,0.);
+      fstep_Z->SetParameter(0,0.);
       
     // Initialize the histograms
       
-      name = TString::Format("hPE_X_etrack_%d",ievt);
-      hPE_X_etrack[ievt] = new TH1F(name,"",200,0,200);
-      hPE_X_etrack[ievt]->GetXaxis()->SetTitle("i-th hit of the e-like track");
-      hPE_X_etrack[ievt]->GetYaxis()->SetTitle("p.e.");
+      hPE_X_etrack->Reset();
       
-      name = TString::Format("hPE_Y_etrack_%d",ievt);
-      hPE_Y_etrack[ievt] = new TH1F(name,"",200,0,200);
-      hPE_Y_etrack[ievt]->GetXaxis()->SetTitle("i-th hit of the e-like track");
-      hPE_Y_etrack[ievt]->GetYaxis()->SetTitle("p.e.");
+      hPE_Y_etrack->Reset();
       
-      name = TString::Format("hPE_Z_etrack_%d",ievt);
-      hPE_Z_etrack[ievt] = new TH1F(name,"",200,0,200);
-      hPE_Z_etrack[ievt]->GetXaxis()->SetTitle("i-th hit of the e-like track");
-      hPE_Z_etrack[ievt]->GetYaxis()->SetTitle("p.e.");
+      hPE_Z_etrack->Reset();
       
 
     /////////////
@@ -422,6 +487,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
     bool isnue = false;
 
 
+    if (isNuInt) {
     for (int ivtx=0;ivtx<NVertices;ivtx++)
       {
         nd280UpVertex = nd280UpEvent->GetVertex(ivtx);
@@ -435,7 +501,6 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
       }
 
-    if (isNuInt) {
       if (!isnue) continue;
       if (!isCCQE) continue;
     }
@@ -465,7 +530,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
       string volname = nd280UpTrackPoint->GetLogVolName();
 
       if (parentID==0){
-        inthetarget = IsTargetIn(PtX,PtY,PtZ,-1020.,1020.,-260.,260.,-940.,940.);
+        inthetarget = IsTargetIn(PtX,PtY,PtZ,-1020.,1020.,-280.,280.,-940.,940.);
       }
 
 
@@ -738,20 +803,20 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
       hits_map_YZ->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
     }
 
-    hMPPCHits_XY[ievt]->Add(hits_map_XY); // pe along Z
-    hMPPCHits_XZ[ievt]->Add(hits_map_XZ); // pe along Y
-    hMPPCHits_YZ[ievt]->Add(hits_map_YZ); // pe along X
+    hMPPCHits_XY->Add(hits_map_XY); // pe along Z
+    hMPPCHits_XZ->Add(hits_map_XZ); // pe along Y
+    hMPPCHits_YZ->Add(hits_map_YZ); // pe along X
     
   for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
     if (fRecoTrack_ID[itrk] == e_trkid) {
-      AddGraph(gMCElectronHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z
-      AddGraph(gMCElectronHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y
-      AddGraph(gMCElectronHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X
+      AddGraph(gMCElectronHits_XY,fTrueTrack_MCHit_XY[itrk]); // pe along Z
+      AddGraph(gMCElectronHits_XZ,fTrueTrack_MCHit_XZ[itrk]); // pe along Y
+      AddGraph(gMCElectronHits_YZ,fTrueTrack_MCHit_YZ[itrk]); // pe along X
     }
    else if (!useElectron && fRecoTrack_ID[itrk] == pos_trkid){
-      AddGraph(gMCPositronHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z
-      AddGraph(gMCPositronHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y
-      AddGraph(gMCPositronHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X
+      AddGraph(gMCPositronHits_XY,fTrueTrack_MCHit_XY[itrk]); // pe along Z
+      AddGraph(gMCPositronHits_XZ,fTrueTrack_MCHit_XZ[itrk]); // pe along Y
+      AddGraph(gMCPositronHits_YZ,fTrueTrack_MCHit_YZ[itrk]); // pe along X
     }
   }
   
@@ -779,18 +844,18 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   used_cube = false;
   poshitI_prev = fRecoTrack_hitYZ[0][0][2];
   poshitJ_prev = fRecoTrack_hitYZ[0][0][3];
-  binI = hMPPCHits_YZ[ievt]->GetXaxis()->FindBin(poshitI_prev);
-  binJ = hMPPCHits_YZ[ievt]->GetYaxis()->FindBin(poshitJ_prev);
-  ith_pe =  hMPPCHits_YZ[ievt]->GetBinContent(binI,binJ);
+  binI = hMPPCHits_YZ->GetXaxis()->FindBin(poshitI_prev);
+  binJ = hMPPCHits_YZ->GetYaxis()->FindBin(poshitJ_prev);
+  ith_pe =  hMPPCHits_YZ->GetBinContent(binI,binJ);
 
   for (int i=0;i<fRecoTrack_hitYZ[0].size();i++){
 
     double poshitI = fRecoTrack_hitYZ[0][i][2];
     double poshitJ = fRecoTrack_hitYZ[0][i][3];
           
-    binI = hMPPCHits_YZ[ievt]->GetXaxis()->FindBin(poshitI);
-    binJ = hMPPCHits_YZ[ievt]->GetYaxis()->FindBin(poshitJ);
-    ith_pe = hMPPCHits_YZ[ievt]->GetBinContent(binI,binJ);
+    binI = hMPPCHits_YZ->GetXaxis()->FindBin(poshitI);
+    binJ = hMPPCHits_YZ->GetYaxis()->FindBin(poshitJ);
+    ith_pe = hMPPCHits_YZ->GetBinContent(binI,binJ);
 
     if ((poshitI != poshitI_prev || poshitJ != poshitJ_prev) && ith_pe > 3.0){
       ithbin[0]++;
@@ -802,7 +867,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
     
     if (!used_cube) {
       used_cube = true;
-      hPE_X_etrack[ievt]->SetBinContent(ithbin[0],ith_pe);
+      hPE_X_etrack->SetBinContent(ithbin[0],ith_pe);
     }
   }
  
@@ -811,18 +876,18 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   used_cube = false;
   poshitI_prev = fRecoTrack_hitXZ[0][0][2];
   poshitJ_prev = fRecoTrack_hitXZ[0][0][3];
-  binI = hMPPCHits_XZ[ievt]->GetXaxis()->FindBin(poshitI_prev);
-  binJ = hMPPCHits_XZ[ievt]->GetYaxis()->FindBin(poshitJ_prev);
-  ith_pe =  hMPPCHits_XZ[ievt]->GetBinContent(binI,binJ);
+  binI = hMPPCHits_XZ->GetXaxis()->FindBin(poshitI_prev);
+  binJ = hMPPCHits_XZ->GetYaxis()->FindBin(poshitJ_prev);
+  ith_pe =  hMPPCHits_XZ->GetBinContent(binI,binJ);
 
   for (int i=0;i<fRecoTrack_hitXZ[0].size();i++){
 
     double poshitI = fRecoTrack_hitXZ[0][i][2];
     double poshitJ = fRecoTrack_hitXZ[0][i][3];
 
-    binI = hMPPCHits_XZ[ievt]->GetXaxis()->FindBin(poshitI);
-    binJ = hMPPCHits_XZ[ievt]->GetYaxis()->FindBin(poshitJ);
-    ith_pe =  hMPPCHits_XZ[ievt]->GetBinContent(binI,binJ);
+    binI = hMPPCHits_XZ->GetXaxis()->FindBin(poshitI);
+    binJ = hMPPCHits_XZ->GetYaxis()->FindBin(poshitJ);
+    ith_pe =  hMPPCHits_XZ->GetBinContent(binI,binJ);
 
     if ((poshitI != poshitI_prev || poshitJ != poshitJ_prev) && ith_pe >3.0){
       ithbin[1]++;
@@ -834,7 +899,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
     if (!used_cube) {
       used_cube = true;
-      hPE_Y_etrack[ievt]->SetBinContent(ithbin[1],ith_pe);
+      hPE_Y_etrack->SetBinContent(ithbin[1],ith_pe);
     }
   }
 
@@ -843,18 +908,18 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   used_cube = false;
   poshitI_prev = fRecoTrack_hitXY[0][0][2];
   poshitJ_prev = fRecoTrack_hitXY[0][0][3];
-  binI = hMPPCHits_XY[ievt]->GetXaxis()->FindBin(poshitI_prev);
-  binJ = hMPPCHits_XY[ievt]->GetYaxis()->FindBin(poshitJ_prev);
-  ith_pe =  hMPPCHits_XY[ievt]->GetBinContent(binI,binJ);
+  binI = hMPPCHits_XY->GetXaxis()->FindBin(poshitI_prev);
+  binJ = hMPPCHits_XY->GetYaxis()->FindBin(poshitJ_prev);
+  ith_pe =  hMPPCHits_XY->GetBinContent(binI,binJ);
 
   for (int i=0;i<fRecoTrack_hitXY[0].size();i++){
 
     double poshitI = fRecoTrack_hitXY[0][i][2];
     double poshitJ = fRecoTrack_hitXY[0][i][3];
 
-    binI = hMPPCHits_XY[ievt]->GetXaxis()->FindBin(poshitI);
-    binJ = hMPPCHits_XY[ievt]->GetYaxis()->FindBin(poshitJ);
-    ith_pe =  hMPPCHits_XY[ievt]->GetBinContent(binI,binJ);
+    binI = hMPPCHits_XY->GetXaxis()->FindBin(poshitI);
+    binJ = hMPPCHits_XY->GetYaxis()->FindBin(poshitJ);
+    ith_pe =  hMPPCHits_XY->GetBinContent(binI,binJ);
 
     if ((poshitI != poshitI_prev || poshitJ != poshitJ_prev) && ith_pe >3.0){
       ithbin[2]++;
@@ -866,7 +931,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
     if (!used_cube) {
       used_cube = true;
-      hPE_Z_etrack[ievt]->SetBinContent(ithbin[2],ith_pe);
+      hPE_Z_etrack->SetBinContent(ithbin[2],ith_pe);
     }
   }
 
@@ -919,11 +984,11 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
     if (!useElectron){
       cout << "Track Separation Check (XY):" << endl;
-      TrackSepCheckXY = CheckTrackSeparation(gMCElectronHits_XY[ievt], gMCPositronHits_XY[ievt], hMPPCHits_XY[ievt]);
+      TrackSepCheckXY = CheckTrackSeparation(gMCElectronHits_XY, gMCPositronHits_XY, hMPPCHits_XY);
       cout << "Track Separation Check (XZ):" << endl;
-      TrackSepCheckXZ = CheckTrackSeparation(gMCElectronHits_XZ[ievt], gMCPositronHits_XZ[ievt], hMPPCHits_XZ[ievt]);
+      TrackSepCheckXZ = CheckTrackSeparation(gMCElectronHits_XZ, gMCPositronHits_XZ, hMPPCHits_XZ);
       cout << "Track Separation Check (YZ):" << endl;
-      TrackSepCheckYZ = CheckTrackSeparation(gMCElectronHits_YZ[ievt], gMCPositronHits_YZ[ievt], hMPPCHits_YZ[ievt]);
+      TrackSepCheckYZ = CheckTrackSeparation(gMCElectronHits_YZ, gMCPositronHits_YZ, hMPPCHits_YZ);
     }
     
 
@@ -950,23 +1015,23 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
     cout << "Ratio Study Result (YZ):" <<endl; 
     name = TString::Format("fstep_X_%d",ievt);
-    fstep_X[ievt] = RatioCalc(name, ithbin[0], hPE_X_etrack[ievt], fratio_hilo_X[ievt]);
+    fstep_X = RatioCalc(name, ithbin[0], hPE_X_etrack, fratio_hilo_X);
     
     cout << "Ratio Study Result (XZ):" <<endl; 
     name = TString::Format("fstep_Y_%d",ievt);
-    fstep_Y[ievt] = RatioCalc(name, ithbin[1], hPE_Y_etrack[ievt], fratio_hilo_Y[ievt]);
+    fstep_Y = RatioCalc(name, ithbin[1], hPE_Y_etrack, fratio_hilo_Y);
 
     cout << "Ratio Study Result (XY):" <<endl; 
     name = TString::Format("fstep_Z_%d",ievt);
-    fstep_Z[ievt] = RatioCalc(name, ithbin[2], hPE_Z_etrack[ievt], fratio_hilo_Z[ievt]);
+    fstep_Z = RatioCalc(name, ithbin[2], hPE_Z_etrack, fratio_hilo_Z);
 
-    hETrack_HiLoRatio_X->Fill(fratio_hilo_X[ievt]);
-    hETrack_HiLoRatio_Y->Fill(fratio_hilo_Y[ievt]);
-    hETrack_HiLoRatio_Z->Fill(fratio_hilo_Z[ievt]);
+    hETrack_HiLoRatio_X->Fill(fratio_hilo_X);
+    hETrack_HiLoRatio_Y->Fill(fratio_hilo_Y);
+    hETrack_HiLoRatio_Z->Fill(fratio_hilo_Z);
 
-    hView_HiLo->Fill(3.,fratio_hilo_X[ievt]);
-    hView_HiLo->Fill(2.,fratio_hilo_Y[ievt]);
-    hView_HiLo->Fill(1.,fratio_hilo_Z[ievt]);
+    hView_HiLo->Fill(3.,fratio_hilo_X);
+    hView_HiLo->Fill(2.,fratio_hilo_Y);
+    hView_HiLo->Fill(1.,fratio_hilo_Z);
 
     hView_NumHit->Fill(3.,ithbin[0]);
     hView_NumHit->Fill(2.,ithbin[1]);
@@ -974,9 +1039,9 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
 
     if (!rejX && !rejY && !rejZ) {
-      if (fratio_hilo_X[ievt]>3.5) rejX = true;
-      if (fratio_hilo_Y[ievt]>3.5) rejY = true; 
-      if (fratio_hilo_Z[ievt]>3.5) rejZ = true; 
+      if (fratio_hilo_X>3.5) rejX = true;
+      if (fratio_hilo_Y>3.5) rejY = true; 
+      if (fratio_hilo_Z>3.5) rejZ = true; 
     }
 
     if (!rejX && !rejY && !rejZ) {
@@ -993,27 +1058,27 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
       continue;
     }
 
-    if (rejX) fratio_hilo_X[ievt] = 1.;
-    if (rejY) fratio_hilo_Y[ievt] = 1.;
-    if (rejZ) fratio_hilo_Z[ievt] = 1.;
+    if (rejX) fratio_hilo_X = 1.;
+    if (rejY) fratio_hilo_Y = 1.;
+    if (rejZ) fratio_hilo_Z = 1.;
 
 
 
 
-    cout << "LY ratio (X) = " << fratio_hilo_X[ievt] << endl;
-    cout << "LY ratio (Y) = " << fratio_hilo_Y[ievt] << endl;
-    cout << "LY ratio (Z) = " << fratio_hilo_Z[ievt] << endl;
+    cout << "LY ratio (X) = " << fratio_hilo_X << endl;
+    cout << "LY ratio (Y) = " << fratio_hilo_Y << endl;
+    cout << "LY ratio (Z) = " << fratio_hilo_Z << endl;
 
-    fratio_hilo_Prod[ievt] = fratio_hilo_X[ievt]*fratio_hilo_Y[ievt]*fratio_hilo_Z[ievt];
+    fratio_hilo_Prod = fratio_hilo_X*fratio_hilo_Y*fratio_hilo_Z;
 
-    cout << "LY ratio product = " << fratio_hilo_Prod[ievt] << endl;
+    cout << "LY ratio product = " << fratio_hilo_Prod << endl;
 
-    //    if (TwoTrackLike) fratio_hilo_Prod[ievt] = 20.;
+    //    if (TwoTrackLike) fratio_hilo_Prod = 20.;
 
-    hETrack_HiLoRatio_Prod->Fill(fratio_hilo_Prod[ievt]);
+    hETrack_HiLoRatio_Prod->Fill(fratio_hilo_Prod);
      
 
-    if (fratio_hilo_Prod[ievt]<RatioCriteria){//accepted
+    if (fratio_hilo_Prod<RatioCriteria){//accepted
       hElecMom_CosTheta_Passed->Fill(track_momentum[0],track_costheta[0]);
       elike_count++;
   }
@@ -1023,8 +1088,8 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   } // end loop over events
 
   // Write output file
-  TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
-  TFile *out = new TFile(outfilename.Data(),"RECREATE");
+  TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),outname,nevents);
+  TFile *out = new TFile(outfilename.Data(),"RECREATE"); 
   // 
   
   cout << "out of " << passed_evt.size() << " events, " << sepcut_count << " events were two-track-like." <<endl;
@@ -1032,10 +1097,10 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
 
 
-    if (writePlots) {
+   /* if (writePlots) {
   
       for(size_t ievtdispl=0;ievtdispl<passed_evt.size();ievtdispl++){ // get last entry
-		
+		/*
 	if (ievtdispl < nPlotsWrite) {
 	  hMPPCHits_XY[passed_evt[ievtdispl]]->Write();
 	  hMPPCHits_XZ[passed_evt[ievtdispl]]->Write();
@@ -1059,7 +1124,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 	  fstep_Z[passed_evt[ievtdispl]]->Write();
 	}
       }
-    }
+    }*/
 
   hETrack_HiLoRatio_X->Write();
   hETrack_HiLoRatio_Y->Write();
@@ -1278,7 +1343,7 @@ inline int FindIndex(vector<int> vec,int val){
   it=find(vec.begin(),vec.end(),val);
   int pos = distance(vec.begin(), it);
   if(it!=vec.end()){
-   cout<<"FOUND  "<< *it<<"  at position: "<<pos<<endl;
+   //cout<<"FOUND  "<< *it<<"  at position: "<<pos<<endl;
   }
   else{
     cout<<"NOT FOUND"<<endl;

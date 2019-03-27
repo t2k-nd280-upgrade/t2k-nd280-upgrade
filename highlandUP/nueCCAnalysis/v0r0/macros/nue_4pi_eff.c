@@ -1,20 +1,20 @@
 void nue_4pi_eff(){
   std::string mc_path   = "/t2k/users/suvorov/AnalysisResults/ndUP/nue/";
-  std::string prefix    = "/t2k/users/suvorov/dev/t2k-nd280-upgrade/highlandUP/figures/";
+  std::string prefix    = "/t2k/users/suvorov/figure/ndUP/nue/test/";
 
   std::string conf;
   //conf = "Current/";
   conf = "Alternative_Target_TPC/";
 
   mc_path += conf;
-  prefix  += conf;
+  //prefix  += conf;
 
   mc_path           += "v11/";
   std::string timing = "600/";
 
   if (conf != "Current/") {
     mc_path += timing;
-    prefix  += timing;
+    //prefix  += timing;
   }
 
   std::string file_tmp = mc_path;
@@ -53,10 +53,43 @@ void nue_4pi_eff(){
 
   Experiment* exp = new Experiment("nd280up");
 
+  file_tmp = "/t2k/users/suvorov/AnalysisResults/ndUP/nue/";
+  prefix    = "/t2k/users/suvorov/figure/ndUP/nue/test/";
+
   AddSamples(exp, UseNumu, RHC, file_tmp);  
+  //************************************
+  /*SampleGroup nue("nue");
+  SampleGroup numu("numu");
+
+  DataSample *NueDS, *NumuDS;
+  DataSample *NumuBarDS;
+
+  // nue reference ToF has normalisation to 1e22. Norm to 1e21
+  //if (RHC)
+    NueDS  = new DataSample((file_tmp + "nue_1.root").c_str());
+    cout << NueDS->GetNorm() << endl;
+    NueDS->SetNorm(0.1);
+    cout << NueDS->GetNorm() << endl;
+  //else 
+  //  NueDS  = new DataSample((file_tmp + "nue_1.root").c_str(), 0.0001, "");
+  nue.AddMCSample("NueDS", NueDS);
+
+  //if (UseNumu) {
+    //NumuDS  = new DataSample((file_tmp + "numu_1.root").c_str(), 1.);
+    //numu.AddMCSample("numuDS", NumuDS);
+    //if (RHC) {
+      //NumuBarDS  = new DataSample((file_tmp + "numu_RHC.root").c_str(), 0.00001, "");
+      //numu.AddMCSample("NumuBarDS", NumuBarDS);
+    //}
+  //}
+
+  exp->AddSampleGroup("nue",  nue);
+
+  exp->AddSampleGroup("numu", numu);*/
+  //************************************
 
   // 8 - all cuts, - before ToF
-  std::string cut_base = "accum_level[][0] > 8";
+  std::string cut_base = "accum_level[][0] > 8";// && truelepton_pos[2] < 0";
   if (det != "")
     cut_base += " && " + det;
   std::string signal;
@@ -64,11 +97,11 @@ void nue_4pi_eff(){
   //signal = "particle == 11 && nu_pdg == 12";
   std::string opt = "OVER";
 
-  dump(*exp, prefix, cut_base, opt, mc_path, signal);
+  //dump(*exp, prefix, cut_base, opt, mc_path, signal);
   //SelectionKinem(*exp, prefix, cut_base, opt, mc_path, signal);
   //IsoTargetStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);
   //EffStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);
-  //PlotToF(*exp, prefix, cut_base, opt, mc_path, signal);
+  PlotToF(*exp, prefix, cut_base, opt, mc_path, signal);
   //ScanCut(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"));
   //TopoStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);
   //ECalStudy(*exp, prefix, cut_base, opt, mc_path, signal, RHC, (conf == "Current/"), det);;
@@ -77,43 +110,142 @@ void nue_4pi_eff(){
 // ********************************************************
 void PlotToF(Experiment exp, std::string prefix, std::string cut_base, std::string opt, std::string mc_path, std::string signal) {
   // ********************************************************
-  DrawingTools  draw((mc_path + "All_RHC_ToF_TarToF_nue.root").c_str(), 1);
+  //DrawingTools  draw((mc_path + "All_RHC_ToF_TarToF_nue.root").c_str(), 1);
+  DrawingTools  draw("/t2k/users/suvorov/AnalysisResults/ndUP/nue/nue.root", 1);
   TCanvas c1("canva","",50,50,1000,800);
+
+  draw.ListOptions();
+  draw.DumpCuts();
+  //cout << "TEST" << endl;
 
   //draw.SetMinY(3);
   //draw.SetLogY();
 
   // ToF
-  std::string cut1 = cut_base + " && selelec_mom > 200 && selelec_likeel > 0.5";
+  std::string cut1 = cut_base + " && selelec_mom > 200";// && selelec_likeel > 0.5";
   draw.SetTitleX("L_{ToF ele}");
   draw.Draw(exp, "selelec_ToF_lkl_electron",  50, 0., 1., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_ele.png").c_str()); 
+  c1.Print((prefix+"mc_ele_ToF_ele.pdf").c_str()); 
 
   draw.SetTitleX("L_{ToF #mu}");
   draw.Draw(exp, "selelec_ToF_lkl_muon",  50, 0., 1., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_mu.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_mu.pdf").c_str());
 
   draw.SetTitleX("L_{ToF p}");
   draw.Draw(exp, "selelec_ToF_lkl_proton",  50, 0., 1., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_proton.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_proton.pdf").c_str());
 
   draw.Draw(exp, "selelec_ToF_lkl_proton",  50, 0., 1., "nueCC", cut1, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_proton_top.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_proton_top.pdf").c_str());
 
   draw.SetTitleX("L_{ToF #pi}");
   draw.Draw(exp, "selelec_ToF_lkl_pion",  50, 0., 1., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_pion.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_pion.pdf").c_str());
 
   draw.SetTitleX("ToF mass, MeV");
   draw.Draw(exp, "selelec_ToF_mass",  50, 0., 7000., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_mass.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_mass.pdf").c_str());
 
-  std::string cut_tmp; 
+  std::string cut_tmp = cut1 + " && abs(particle) == 11";
+
+  draw.SetTitleX("ToF mass, MeV");
+  //draw.SetFillColor(kMagenta);
+  draw.SetMaxY(100.);
+  draw.Draw(exp, "selelec_ToF_mass",  25, 0., 3000., "all", cut_tmp, "AREA1", "OVER");
+  TH1F* h1(draw.GetLastHisto());
+  draw.SetMaxY(100.);
+  //draw.SetFillColor(kGreen);
+  cut_tmp = cut1 + " && abs(particle) == 2212";
+  draw.Draw(exp, "selelec_ToF_mass",  25, 0., 3000., "all", cut_tmp, "SAME AREA1", "OVER");
+  TH1F* h2(draw.GetLastHisto());
+  c1.Print((prefix+"mc_ele_ToF_mass_1.pdf").c_str());
+
+  cout << "Eff ele:    " << h1->Integral(0, 7) / h1->Integral(0, 100) << endl;
+  cout << "Mis-proton: " << h2->Integral(0, 7) / h2->Integral(0, 100) << endl;
+  cout << "ratio:      " << h1->Integral() / h2->Integral() << endl;
+
+  draw.SetTitleX("ToF mass, MeV");
+  //cut_tmp = cut1 + " && abs(particle) == 11 && selelec_likeel > 0.5 && (selelec_mom > 900 && selelec_mom < 1400)";
+  cut_tmp = cut1 + " && abs(particle) == 11 && selelec_likeel > 0.5";
+  draw.Draw(exp, "1",  25, 0., 3000., "all", cut_tmp, "", "");
+  TH1F* h3(draw.GetLastHisto());
+  //h3->Scale(1./h3->Integral());
+  h3->SetLineColor(kMagenta);
+  h3->SetMarkerColor(kMagenta);
+  //cut_tmp = cut1 + " && abs(particle) == 2212 && selelec_likeel > 0.5 && (selelec_mom > 900 && selelec_mom < 1400)";
+  cut_tmp = cut1 + " && abs(particle) == 2212 && selelec_likeel > 0.5";
+  draw.Draw(exp, "1",  25, 0., 3000., "all", cut_tmp, " ", "");
+  TH1F* h4(draw.GetLastHisto());
+  //h4->Scale(1./h4->Integral());
+  h4->SetLineColor(kGreen);
+  h4->SetMarkerColor(kGreen);
+
+  cut_tmp = cut1 + " && abs(particle) == 11 && selelec_likeel > 0.5 && (selelec_mom > 0 && selelec_mom < 900)";
+  draw.Draw(exp, "selelec_ToF_mass",  25, 0., 3000., "all", cut_tmp, " ", "");
+  TH1F* h5(draw.GetLastHisto());
+  h5->SetLineColor(kMagenta);
+  h5->Scale(1/h3->Integral());
+  cut_tmp = cut1 + " && abs(particle) == 11 && selelec_likeel > 0.5 && (selelec_mom > 900 && selelec_mom < 1400)";
+  draw.Draw(exp, "selelec_ToF_mass",  25, 0., 3000., "all", cut_tmp, " ", "");
+  TH1F* h6(draw.GetLastHisto());
+  h6->SetLineColor(kMagenta);
+  h6->Scale(1/h3->Integral());
+  cut_tmp = cut1 + " && abs(particle) == 11 && selelec_likeel > 0.5 && (selelec_mom > 1400)";
+  draw.Draw(exp, "selelec_ToF_mass",  25, 0., 3000., "all", cut_tmp, " ", "");
+  TH1F* h7(draw.GetLastHisto());
+  h7->SetLineColor(kMagenta);
+  h7->Scale(1/h3->Integral());
+
+  cut_tmp = cut1 + " && abs(particle) == 2212 && selelec_likeel > 0.5 && (selelec_mom > 0 && selelec_mom < 900)";
+  draw.Draw(exp, "selelec_ToF_mass",  25, 0., 3000., "all", cut_tmp, " ", "");
+  TH1F* h8(draw.GetLastHisto());
+  h8->SetLineColor(kGreen);
+  h8->Scale(1/h4->Integral());
+  cut_tmp = cut1 + " && abs(particle) == 2212 && selelec_likeel > 0.5 && (selelec_mom > 900 && selelec_mom < 1400)";
+  draw.Draw(exp, "selelec_ToF_mass",  25, 0., 3000., "all", cut_tmp, " ", "");
+  TH1F* h9(draw.GetLastHisto());
+  h9->SetLineColor(kGreen);
+  h9->Scale(1/h4->Integral());
+  cut_tmp = cut1 + " && abs(particle) == 2212 && selelec_likeel > 0.5 && (selelec_mom > 1400)";
+  draw.Draw(exp, "selelec_ToF_mass",  25, 0., 3000., "all", cut_tmp, " ", "");
+  TH1F* h10(draw.GetLastHisto());
+  h10->SetLineColor(kGreen);
+  h10->Scale(1/h4->Integral());
+
+  h5->Draw("HIST");
+  h8->Draw("same HIST");
+  c1.Print((prefix+"mc_ele_ToF_mass_1_s1_a.pdf").c_str());
+
+  h6->Draw("HIST");
+  h9->Draw("same HIST");
+  c1.Print((prefix+"mc_ele_ToF_mass_1_s2_a.pdf").c_str());
+
+  h7->Draw("HIST");
+  h10->Draw("same HIST");
+  c1.Print((prefix+"mc_ele_ToF_mass_1_s3_a.pdf").c_str());
+
+
+
+
+
+
+  h3->Draw("HIST");
+  h4->Draw("same HIST");
+  c1.Print((prefix+"mc_ele_ToF_mass_1_a.pdf").c_str());
+
+  cout << "First ele = " << h3->GetBinContent(1) << "  Last " << h3->GetBinContent(h3->GetNbinsX()+1) << endl;
+  cout << "First pro = " << h4->GetBinContent(1) << "  Last " << h4->GetBinContent(h3->GetNbinsX()+1) << endl;
+
+  cout << "Eff ele:    " << h3->Integral(0, 7) / h3->Integral(0, 100) << endl;
+  cout << "Mis-proton: " << h4->Integral(0, 7) / h4->Integral(0, 100) << endl;
+  cout << "ratio:      " << h3->Integral() / h4->Integral() << endl;
+
+  draw.SetMaxY(0.);
 
   draw.SetTitleX("First ToF det");
   draw.SetTitleY("Seconf ToF det");
   cut_tmp = cut1 + " && selelec_second_ToF < 21 && selelec_first_ToF < 21";
-  c1->SetGrid(1);
+  c1.SetGrid(1);
   draw.Draw(exp, "selelec_second_ToF:selelec_first_ToF",  11, 7., 18., 11, 7., 18., "all", cut_tmp, "colz TEXT0", "");
   TH2D* histo(draw.GetLastStackTotal2D());
   histo->SetMarkerSize(1.7);
@@ -150,73 +282,113 @@ void PlotToF(Experiment exp, std::string prefix, std::string cut_base, std::stri
   histo->GetYaxis()->SetBinLabel(15,"Invalid");
   
   histo->Draw("colz text0");
-  c1.Print((prefix+"mc_ele_ToF_det.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_det.pdf").c_str());
 
 
   draw.SetFillStyle(1001); 
+  draw.SetOptStat(1001110);
   draw.SetFillColor(kMagenta);
   //cut1 += " && selelec_ToF_mass != 0";
   draw.SetTitleX("ToF mass, MeV");
   draw.SetTitleY("Momentum, MeV");
   cut_tmp = cut1 + " && abs(particle) == 11";
   draw.Draw(exp, "selelec_mom:selelec_ToF_mass",  50, 0., 5000., 50, 0., 5000., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_mass_momentum.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_mass_momentum.pdf").c_str());
 
   draw.SetFillColor(kGreen);
   cut_tmp = cut1 + " && abs(particle) == 2212";
   draw.Draw(exp, "selelec_mom:selelec_ToF_mass",  50, 0., 5000., 50, 0., 5000., "all", cut_tmp, "same", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_mass_momentum1.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_mass_momentum1.pdf").c_str());
+
+  draw.SetFillColor(kMagenta);
+  cut_tmp = cut1 + " && abs(particle) == 11 && selelec_likeel > 0.5";
+  draw.Draw(exp, "selelec_mom:selelec_ToF_mass",  50, 0., 5000., 50, 0., 5000., "all", cut_tmp, "", "OVER");
+  draw.SetFillColor(kGreen);
+  cut_tmp = cut1 + " && abs(particle) == 2212 && selelec_likeel > 0.5";
+  draw.Draw(exp, "selelec_mom:selelec_ToF_mass",  50, 0., 5000., 50, 0., 5000., "all", cut_tmp, "same", "OVER");
+  c1.Print((prefix+"mc_ele_ToF_mass_momentum1_a.pdf").c_str());
+
+  draw.SetFillColor(kMagenta);
+  cut_tmp = cut1 + " && abs(particle) == 11 && selelec_likeel > 0.5";
+  draw.Draw(exp, "selelec_mom:selelec_ToF_mass",  50, 0., 2000., 50, 0., 5000., "all", cut_tmp, "", "OVER");
+  draw.SetFillColor(kGreen);
+  cut_tmp = cut1 + " && abs(particle) == 2212 && selelec_likeel > 0.5";
+  draw.Draw(exp, "selelec_mom:selelec_ToF_mass",  50, 0., 2000., 50, 0., 5000., "all", cut_tmp, "same", "OVER");
+  c1.Print((prefix+"mc_ele_ToF_mass_momentum1_a_zoom.pdf").c_str());
+
+
+  cut_tmp = cut1 + " && abs(particle) == 11 && selelec_likeel > 0.5";
+  draw.Draw(exp, "1", 2, 0, 2, "all", cut_tmp);
+  float ele_before = draw.GetLastHisto()->Integral();
+  cut_tmp += " && (selelec_mom < 900 || selelec_mom > 1400 || selelec_ToF_mass < 600)";
+  draw.Draw(exp, "1", 2, 0., 2, "all", cut_tmp);
+  float ele_after = draw.GetLastHisto()->Integral();
+  cut_tmp = cut1 + " && abs(particle) == 2212 && selelec_likeel > 0.5";
+  draw.Draw(exp, "1", 2, 0., 2, "all", cut_tmp);
+  float pr_before = draw.GetLastHisto()->Integral();
+  cut_tmp += " && (selelec_mom < 900 || selelec_mom > 1400 || selelec_ToF_mass < 600)";
+  draw.Draw(exp, "1", 2, 0., 2, "all", cut_tmp);
+  float pr_after = draw.GetLastHisto()->Integral();
+  
+  cout << "*****************************************************" << endl;
+  cout << "Ele eff:    " << ele_after / ele_before << endl;
+  cout << "Pr eff:    " << pr_after / pr_before << endl;
+  cout << endl;
+  cout << "ele after / before " <<  ele_after << " / " << ele_before << endl;
+  cout << "pro after / before " <<  pr_after << " / " << pr_before << endl;
+  cout << "*****************************************************" << endl;
+
+
 
   draw.SetFillColor(kMagenta);
   draw.SetTitleX("Ele Llh");
   draw.SetTitleY("Momentum, MeV");
   cut_tmp = cut1 + " && (abs(particle) == 11 || abs(particle) == 2212)";
   draw.Draw(exp, "selelec_mom:selelec_ToF_lkl_electron",  50, 0., 1., 50, 0., 5000., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_Mom_ele_lkl.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_Mom_ele_lkl.pdf").c_str());
 
   draw.SetFillColor(kGreen);
   cut_tmp = cut1 + " && abs(particle) == 2212";
   draw.Draw(exp, "selelec_mom:selelec_ToF_lkl_electron",  50, 0., 1., 50, 0., 5000., "all", cut_tmp, "same", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_Mom_ele_lkl1.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_Mom_ele_lkl1.pdf").c_str());
 
   draw.SetFillColor(kMagenta);
   draw.SetTitleX("Proton Llh");
   draw.SetTitleY("Momentum, MeV");
   cut_tmp = cut1 + " && abs(particle) == 11";
   draw.Draw(exp, "selelec_mom:selelec_ToF_lkl_proton",  50, 0., 1., 50, 0., 5000., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_Mom_pr_lkl.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_Mom_pr_lkl.pdf").c_str());
 
   draw.SetFillColor(kGreen);
   cut_tmp = cut1 + " && abs(particle) == 2212";
   draw.Draw(exp, "selelec_mom:selelec_ToF_lkl_proton",  50, 0., 1., 50, 0., 5000., "all", cut_tmp, "same", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_Mom_pr_lkl1.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_Mom_pr_lkl1.pdf").c_str());
 
   draw.SetFillColor(kMagenta);
   draw.SetTitleX("Ele TPC Llh");
   draw.SetTitleY("Momentum, MeV");
   cut_tmp = cut1 + " && abs(particle) == 11";
   draw.Draw(exp, "selelec_mom:selelec_likeel",  50, 0., 1., 50, 0., 5000., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_Mom_ele_tpc_lkl.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_Mom_ele_tpc_lkl.pdf").c_str());
 
   draw.SetFillColor(kGreen);
   cut_tmp = cut1 + " && abs(particle) == 2212";
   draw.Draw(exp, "selelec_mom:selelec_likeel",  50, 0., 1., 50, 0., 5000., "all", cut_tmp, "same", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_Mom_ele_tpc_lkl1.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_Mom_ele_tpc_lkl1.pdf").c_str());
 
   draw.SetFillStyle(0);
-
 
   draw.SetOptStat(1001110);
   gStyle->SetOptStat(1001110);
   cut_tmp = cut1 + " && selelec_mom > 800 && selelec_mom < 1500";
   draw.SetTitleX("Momentum resolution");
   draw.Draw(exp, "(selelec_mom-selelec_truemom)/selelec_truemom",  50, -10, 10., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_mom_smear.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_mom_smear.pdf").c_str());
 
   cut_tmp = cut1 + " && selelec_mom > 800 && selelec_mom < 1500";
   draw.SetTitleX("ToF resolution");
   draw.Draw(exp, "(selelec_ToF-selelec_ToF_true)/selelec_ToF_true",  50, -10, 10., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_ToF_smear.png").c_str()); 
+  c1.Print((prefix+"mc_ele_ToF_ToF_smear.pdf").c_str()); 
 
   draw.SetOptStat(0);
   gStyle->SetOptStat(0);
@@ -227,12 +399,12 @@ void PlotToF(Experiment exp, std::string prefix, std::string cut_base, std::stri
   cut_tmp = cut1 + " && abs(particle) == 11";
   draw.SetTitleX("ToF mass, MeV");
   draw.Draw(exp, "selelec_ToF_mass",  50, 0., 10000., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_mass_before_PID_ele.png").c_str()); 
+  c1.Print((prefix+"mc_ele_ToF_mass_before_PID_ele.pdf").c_str()); 
 
   cut_tmp = cut1 + " && " + signal;
   draw.SetTitleX("ToF mass, MeV");
   draw.Draw(exp, "selelec_ToF_mass",  50, 0., 10000., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_ToF_mass_before_PID_signal.png").c_str()); 
+  c1.Print((prefix+"mc_ele_ToF_mass_before_PID_signal.pdf").c_str()); 
 
   draw.SetTitleX("L_{e, ToF}");
   draw.SetTitleY("L_{e, TPC}");
@@ -242,15 +414,15 @@ void PlotToF(Experiment exp, std::string prefix, std::string cut_base, std::stri
   draw.SetFillColor(kMagenta);
   cut_tmp = cut_tof + " && abs(particle) == 11";
   draw.Draw(exp, "selelec_likeel:selelec_ToF_lkl_electron",  50, 0., 1., 50, 0., 1., "all", cut_tmp, "box", "");
-  c1.Print((prefix+"mc_ele_ToF_TPC_ele_ele.png").c_str()); 
+  c1.Print((prefix+"mc_ele_ToF_TPC_ele_ele.pdf").c_str()); 
   draw.SetFillColor(kGreen);
   cut_tmp = cut_tof + " && abs(particle) == 2212";
   draw.Draw(exp, "selelec_likeel:selelec_ToF_lkl_electron",  50, 0., 1., 50, 0., 1., "all", cut_tmp, "box", "");
-  c1.Print((prefix+"mc_ele_ToF_TPC_ele_p.png").c_str()); 
+  c1.Print((prefix+"mc_ele_ToF_TPC_ele_p.pdf").c_str()); 
 
   cut_tmp = cut_tof + " && abs(particle) == 2212 && selelec_likeel > 0.5";
   draw.Draw(exp, "selelec_likeel:selelec_ToF_lkl_electron",  50, 0., 1., 50, 0., 1., "all", cut_tmp, "box", "");
-  c1.Print((prefix+"mc_ele_ToF_TPC_ele_p_0.5.png").c_str()); 
+  c1.Print((prefix+"mc_ele_ToF_TPC_ele_p_0.5.pdf").c_str()); 
 
   draw.SetFillColor(kMagenta);
   cut_tmp = cut_tof + " && abs(particle) == 11";
@@ -258,7 +430,7 @@ void PlotToF(Experiment exp, std::string prefix, std::string cut_base, std::stri
   draw.SetFillColor(kGreen);
   cut_tmp = cut_tof + " && abs(particle) == 2212";
   draw.Draw(exp, "selelec_likeel:selelec_ToF_lkl_electron",  50, 0., 1., 50, 0., 1., "all", cut_tmp, "box same", "");
-  c1.Print((prefix+"mc_ele_ToF_TPC_ele_p_same.png").c_str()); 
+  c1.Print((prefix+"mc_ele_ToF_TPC_ele_p_same.pdf").c_str()); 
 
   draw.SetTitleX("L_{p, ToF}");
   draw.SetTitleY("L_{p, TPC}");
@@ -266,11 +438,19 @@ void PlotToF(Experiment exp, std::string prefix, std::string cut_base, std::stri
   draw.SetFillColor(kMagenta);
   cut_tmp = cut_tof + " && abs(particle) == 11";
   draw.Draw(exp, "selelec_likepr:selelec_ToF_lkl_proton",  50, 0., 1., 50, 0., 1., "all", cut_tmp, "box", "");
-  c1.Print((prefix+"mc_ele_ToF_TPC_proton_ele.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_TPC_proton_ele.pdf").c_str());
   draw.SetFillColor(kGreen);
   cut_tmp = cut_tof + " && abs(particle) == 2212";
   draw.Draw(exp, "selelec_likepr:selelec_ToF_lkl_proton",  50, 0., 1., 50, 0., 1., "all", cut_tmp, "box", "");
-  c1.Print((prefix+"mc_ele_ToF_TPC_proton_proton.png").c_str());
+  c1.Print((prefix+"mc_ele_ToF_TPC_proton_proton.pdf").c_str());
+
+  draw.SetTitleX("P_{HMN, reco}, MeV/c");
+  draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut1, "", "OVER");
+  c1.Print((prefix+"mc_ele_mom_particle.pdf").c_str()); 
+
+  cut_tmp = cut1 + " && (selelec_mom < 900 || selelec_mom > 1400 || selelec_ToF_mass < 600)";
+  draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut_tmp, "", "OVER");
+  c1.Print((prefix+"mc_ele_mom_particle_a.pdf").c_str()); 
 
 }
 
@@ -298,57 +478,57 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   std::string cut_tmp = cut1 +  " && truelepton_pos[2] > 1000. && selelec_dir[2] > 0";
   draw.Draw(exp, "selelec_mom",  50, 0., 5000., "nueCC", cut_tmp , "", "OVER");
   //draw.DrawCutLineVertical(200, true, "r");
-  c1.Print((prefix+"mc_ele_mom_topology.png").c_str()); 
+  c1.Print((prefix+"mc_ele_mom_topology.pdf").c_str()); 
 
   draw.SetTitleX("P_{HMN, reco}, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_particle.png").c_str()); 
+  c1.Print((prefix+"mc_ele_mom_particle.pdf").c_str()); 
 
   std::string cut_tmp = "accum_level[][0] > 2 && abs(particle) == 11";
   draw.SetTitleX("P_{HMN}, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_before_PID_ele.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_before_PID_ele.pdf").c_str());
 
   std::string cut_tmp = "accum_level[][0] > 2 && abs(particle) == 11 && selelec_mom > 200";
   draw.SetTitleX("P_{HMN}, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_before_PID_ele_200.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_before_PID_ele_200.pdf").c_str());
 
   cut_tmp = "accum_level[][0] > 2";
   draw.SetTitleX("P_{HMN}, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_before_TPC_PID.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_before_TPC_PID.pdf").c_str());
 
   cut_tmp = "accum_level[][0] > 3";
   draw.SetTitleX("P_{HMN}, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_before_ECal_PID.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_before_ECal_PID.pdf").c_str());
 
   cut_tmp = "accum_level[][0] > 4";
   draw.SetTitleX("P_{HMN}, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_after_ECal_PID.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_after_ECal_PID.pdf").c_str());
 
   cut_tmp = "accum_level[][0] > 5";
   draw.SetTitleX("P_{HMN}, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 5000., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_after_ECal_PID_PID2.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_after_ECal_PID_PID2.pdf").c_str());
 
   draw.SetLegendPos("lt"); 
 
   draw.SetTitleX("cos(#theta_{HMN})");
   draw.Draw(exp, "selelec_costheta",  50, -1., 1., "nueCC", cut1, "", "OVER");
-  c1.Print((prefix+"mc_ele_theta.png").c_str()); 
+  c1.Print((prefix+"mc_ele_theta.pdf").c_str()); 
 
   draw.SetTitleX("cos(#theta_{HMN})");
   cut_tmp = cut1 + " && selelec_pos[2] < 0 && " + signal;
   draw.Draw(exp, "selelec_truepos[2]",  1000, -3000., 3500., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_Z.png").c_str()); 
+  c1.Print((prefix+"mc_ele_Z.pdf").c_str()); 
 
   draw.SetTitleX("cos(#theta_{HMN})");
   cut_tmp = cut1 + " && selelec_pos[2] < 0";
   draw.Draw(exp, "selelec_truepos[2]",  1000, -3000., 3500., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_Z_TAR.png").c_str()); 
+  c1.Print((prefix+"mc_ele_Z_TAR.pdf").c_str()); 
 
   cut_tmp = "accum_level[][0]>8";
   draw.SetTitleX("#beta_{reco}");
@@ -356,20 +536,20 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   draw.SetMaxY(700.);
   draw.SetLogY(1);
   draw.Draw(exp, "Beta_ToF",  50, 0., 1., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_beta_ToF.png").c_str()); 
+  c1.Print((prefix+"mc_ele_beta_ToF.pdf").c_str()); 
 
   draw.SetTitleX("#beta_{true}");
   draw.Draw(exp, "Beta_true_ToF",  50, 0., 1., "particle", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_beta_ToF_true.png").c_str()); 
+  c1.Print((prefix+"mc_ele_beta_ToF_true.pdf").c_str()); 
 
   cut_tmp = "accum_level[][0]>8 && particle == 2212";
   draw.SetTitleX("#beta_{reco}");
   draw.Draw(exp, "Beta_ToF",  50, -1., 5., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_beta_pr.png").c_str());
+  c1.Print((prefix+"mc_ele_beta_pr.pdf").c_str());
 
   draw.SetTitleX("#beta_{true}");
   draw.Draw(exp, "Beta_true_ToF",  50, -1., 5., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_beta_pr_true.png").c_str()); 
+  c1.Print((prefix+"mc_ele_beta_pr_true.pdf").c_str()); 
 
   draw.SetLogY(0);
   draw.SetMinY(0);
@@ -379,13 +559,13 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   cut_tmp = "1";
   draw.SetTitleX("Daughter PDG");
   draw.Draw(exp, "selelec_daughterPDG",  2000, -1., 2500., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_daughter.png").c_str());
+  c1.Print((prefix+"mc_ele_daughter.pdf").c_str());
 
   draw.SetTitleY("dE/dx");
   draw.SetTitleX("P_{e, true}, MeV/c");
   cut_tmp = cut1 + " && truelepton_pos[2]<200.";
   draw.Draw(exp, "((sqrt(selelec_truemom*selelec_truemom + 0.2611) - sqrt(true_target_end_mom*true_target_end_mom + 0.2611)) / true_target_length):selelec_truemom", 40, 0., 4000, 40, 0., 10., "all", cut_tmp, "colz", "OVER");
-  c1.Print((prefix+"mc_ele_dEdx.png").c_str());
+  c1.Print((prefix+"mc_ele_dEdx.pdf").c_str());
 
   exp.SetCurrentTree("truth");
 
@@ -393,7 +573,7 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   draw.SetTitleY("P_{e, true}, MeV/c");
   //draw.SetMaxY(2500.);
   draw.Draw(exp, "truelepton_mom", 50, 0., 5000., "all", "1", "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_true.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_true.pdf").c_str());
 
   cut_tmp = cut_base;
   draw.SetTitleX("cos(#theta_{true})");
@@ -401,29 +581,29 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   draw.SetLogZ(1);
   draw.Draw(exp, "truelepton_mom:true_costheta", 20, -1., 1., 40, 0., 2000., "all", cut_tmp, "colz", "OVER");
   draw.DrawCutLineHorizontal(200, true, "U");
-  c1.Print((prefix+"mc_ele_mom_theta_true.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_theta_true.pdf").c_str());
   draw.SetLogZ(0);
 
   cut_tmp = "true_costheta > 0.8 && true_position[2] > 200.";
   draw.SetTitleX("Start-End distance, mm");
   draw.Draw(exp, "sqrt(pow(true_end[0]-true_position[0],2) + pow(true_end[1]-true_position[1],2) + pow(true_end[2]-true_position[2],2))",  50, 0., 6000., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_length_FGDs.png").c_str());
+  c1.Print((prefix+"mc_ele_length_FGDs.pdf").c_str());
 
   std::string cut_tmp = "true_costheta > 0.8 && true_position[2] < 200.";
   draw.SetTitleX("Start-End distance, mm");
   draw.Draw(exp, "sqrt(pow(true_end[0]-true_position[0],2) + pow(true_end[1]-true_position[1],2) + pow(true_end[2]-true_position[2],2))",  50, 0., 6000., "all", cut_tmp, "", "OVER");
-  c1.Print((prefix+"mc_ele_length_Tar.png").c_str());   
+  c1.Print((prefix+"mc_ele_length_Tar.pdf").c_str());   
 
   //DataSample ds(mc_path + "All_ToF_noTarToF_nue.root");
   cut_tmp = "1";
   draw.SetTitleX("Z, mm");
   draw.SetTitleY("X, mm");
   draw.Draw(exp, "true_end[0]:true_end[2]", 150, -3000., 3500., 100, -2000., 2000., "all", cut_tmp, "colz", "OVER");
-  c1.Print((prefix+"mc_ele_stopXZ.png").c_str());
+  c1.Print((prefix+"mc_ele_stopXZ.pdf").c_str());
   draw.SetTitleY("Y, mm");
   draw.Draw(exp, "true_end[1]:true_end[2]", 150, -3000., 3500., 100, -2000., 2000., "all", cut_tmp, "colz", "OVER");
   //draw.Draw(ds.GetTree("truth"), "true_end[2]", 100, -1500., 3500., "all", cut_tmp, "colz", "OVER");
-  c1.Print((prefix+"mc_ele_stopYZ.png").c_str());
+  c1.Print((prefix+"mc_ele_stopYZ.pdf").c_str());
   exp.SetCurrentTree("default");
 
   
@@ -431,11 +611,11 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   draw.SetTitleX("Z, mm");
   draw.SetTitleY("X, mm");
   draw.Draw(exp, "selelec_trueendpos[0]:selelec_trueendpos[2]", 150, -3000., 3500., 100, -2000., 2000., "all", cut_tmp, "colz", "OVER");
-  c1.Print((prefix+"mc_ele_stopXZ.png").c_str());
+  c1.Print((prefix+"mc_ele_stopXZ.pdf").c_str());
   draw.SetTitleY("Y, mm");
   cut_tmp = cut_base + " && selelec_stopped == 0 && abs(selelec_trueendpos[0]) < 1600.";
   draw.Draw(exp, "selelec_trueendpos[1]:selelec_trueendpos[2]", 150, -3000., 3500., 100, -2000., 2000., "all", cut_tmp, "colz", "OVER");
-  c1.Print((prefix+"mc_ele_stopYZ.png").c_str());
+  c1.Print((prefix+"mc_ele_stopYZ.pdf").c_str());
 
   std::string target_end = "true_end[0] > -932. && true_end[0] < 932. && true_end[1] > -316. && true_end[1] < 316. && true_end[2] > -2642. && true_end[2] < -748.";
   cut_tmp = target_end + " && truelepton_pos[2] < 200. && true_stopped != 1";
@@ -443,7 +623,7 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   draw.Draw(exp, "1", 4, 0., 4., "all", cut_tmp, "colz", "OVER");
 
 
-/*
+
   // PID plotting
   cut1 = "accum_level[][0] > 3";
   draw.SetMinY(3);
@@ -453,26 +633,26 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   draw.SetTitleX("L_{e}");
   draw.Draw(exp, "selelec_likeel",  50, 0., 1., "particle", cut1, "", "OVER");
   draw.DrawCutLineVertical(0.5, true, "r");
-  c1.Print((prefix+"mc_ele_llh.png").c_str()); 
+  c1.Print((prefix+"mc_ele_llh.pdf").c_str()); 
 
   draw.SetTitleX("L_{#pi}");
   draw.Draw(exp, "selelec_likepi",  50, 0., 1., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_prot_llh.png").c_str());  
+  c1.Print((prefix+"mc_prot_llh.pdf").c_str());  
 
   draw.SetTitleX("L_{p}");
   draw.Draw(exp, "selelec_likepr",  50, 0., 1., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_pion_llh.png").c_str());  
+  c1.Print((prefix+"mc_pion_llh.pdf").c_str());  
 
   draw.SetTitleX("L_{#mu}");
   draw.Draw(exp, "selelec_likemu",  50, 0., 1., "particle", cut1, "", "OVER");
-  c1.Print((prefix+"mc_mu_llh.png").c_str());  
+  c1.Print((prefix+"mc_mu_llh.pdf").c_str());  
   
 
   draw.SetTitleX("L_{#mu}");
   cut1 = "accum_level[][0] > 4 ";
   draw.Draw(exp, "selelec_likemu",  50, 0., 1., "particle", cut1, "", "OVER");
   draw.DrawCutLineVertical(0.03, true, "l");
-  c1.Print((prefix+"mc_ele_mu_llh_5.png").c_str()); 
+  c1.Print((prefix+"mc_ele_mu_llh_5.pdf").c_str()); 
   
   draw.SetLegendPos("rt");
 
@@ -480,20 +660,20 @@ void SelectionKinem(Experiment exp, std::string prefix, std::string cut_base, st
   draw.SetTitleX("ECal MIP EM");  
   draw.Draw(exp, "selelec_ecal_mipem",  50, -40., 60., "particle", cut1, "", "OVER");
   draw.DrawCutLineVertical(0., true, "r");
-  c1.Print((prefix+"mc_ele_MIPEM.png").c_str()); 
+  c1.Print((prefix+"mc_ele_MIPEM.pdf").c_str()); 
 
   draw.SetLogY(0);
   draw.SetMinY();  
-*/
+
   //exp.SetCurrentTree("truth");
   c1.Clear();
   draw.SetTitleX("E_{#nu}, MeV");
   draw.Draw(exp, "true_Nu_mom",  200, 0., 10000., "all", "", "", "");
-  c1.Print((prefix+"mc_ele_Nu_mom_truth.png").c_str());
+  c1.Print((prefix+"mc_ele_Nu_mom_truth.pdf").c_str());
   exp.SetCurrentTree("default");  
 
 }
-
+/*
 // ********************************************************
 void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::string opt, std::string mc_path, std::string signal, bool RHC, bool Current, std::string det) {
   // ********************************************************
@@ -512,8 +692,8 @@ void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::str
   const int NBins_Mom1 = 17;
   double BinEdges_Mom1[NBins_Mom1 + 1]   = {0, 200, 300., 400, 500., 600, 700., 800, 900., 1000, 1100., 1200, 1400, 1600, 1800, 2000, 2500, 3000};
 
-  /*const int NBins_CosTh = 20;
-  double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};*/
+  const int NBins_CosTh = 20;
+  double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
 
   const int NBins_CosTh = 12;
   double BinEdges_CosTh[NBins_CosTh+1] = {-1,-0.7,-0.4,-0.2,0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
@@ -529,11 +709,11 @@ void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::str
   std::string cut_pur_after  = cutP + " && " + signal;
 
   /*draw.DrawEffPurVSCut(exp, signal, "", -1, -1, "");
-  c1.Print((prefix+"EffvsCuts.png").c_str());
+  c1.Print((prefix+"EffvsCuts.pdf").c_str());
   draw.DrawEventsVSCut(exp);
   draw.DrawEffVSCut(exp, signal, det, -1, -1, "");*/
 
-  TFile* file;
+ /* TFile* file;
   if (use_file) {
     std::cout << "1" << std::endl;
     if (Current) {
@@ -584,13 +764,13 @@ void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::str
   draw.SetTitleX("cos(#theta)");  
   draw.DrawPur(exp, "true_costheta",  NBins_CosTh, BinEdges_CosTh, cut_eff_after_FGD, cut_eff_before_FGD, "", "OVER");
   draw.DrawPur(exp, "true_costheta",  NBins_CosTh, BinEdges_CosTh, cut_eff_after_TAR, cut_eff_before_TAR, "same", "OVER");
-  c1.Print((prefix+"mc_ele_theta_eff_true_FGD_TAR.png").c_str());
+  c1.Print((prefix+"mc_ele_theta_eff_true_FGD_TAR.pdf").c_str());
 
   exp.SetCurrentTree("truth");
 
   draw.SetTitleX("cos(#theta)");  
   draw.DrawPur(exp, "true_costheta",  NBins_CosTh, BinEdges_CosTh, cut_eff_after, cut_eff_before, "", "OVER");
-  c1.Print((prefix+"mc_ele_theta_eff_true.png").c_str()); 
+  c1.Print((prefix+"mc_ele_theta_eff_true.pdf").c_str()); 
 
   if (use_file) {
     if (Current) {
@@ -685,19 +865,19 @@ void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::str
     
   }
 
-  c1.Print((prefix+"mc_ele_theta_eff_true_to_current.png").c_str());  
+  c1.Print((prefix+"mc_ele_theta_eff_true_to_current.pdf").c_str());  
    
   draw.SetTitleX("P_{e, true}, MeV/c");
   draw.DrawPur(exp, "truelepton_mom",  NBins_Mom1, BinEdges_Mom1, cut_eff_after, cut_eff_before, "", "OVER");
   exp.SetCurrentTree("default");
   draw.DrawPur(exp, "truelepton_mom",  NBins_Mom1, BinEdges_Mom1, cut_pur_after, cut_pur_before, "same", "OVER");
-  c1.Print((prefix+"mc_ele_mom_eff_true.png").c_str());  
+  c1.Print((prefix+"mc_ele_mom_eff_true.pdf").c_str());  
 
   exp.SetCurrentTree("truth");
 
   draw.DrawPur(exp, "truelepton_mom",  NBins_Mom1, BinEdges_Mom1, cut_eff_after_FGD, cut_eff_before_FGD, "", "OVER");
   draw.DrawPur(exp, "truelepton_mom",  NBins_Mom1, BinEdges_Mom1, cut_eff_after_TAR, cut_eff_before_TAR, "same", "OVER");
-  c1.Print((prefix+"mc_ele_mom_eff_true_FGD_TAR.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_eff_true_FGD_TAR.pdf").c_str());
 
   draw.DrawPur(exp, "truelepton_mom",  NBins_Mom1, BinEdges_Mom1, cut_eff_after, cut_eff_before, "", "OVER");
   if (use_file) {
@@ -798,12 +978,12 @@ void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::str
     file->Close();
   }
 
-  c1.Print((prefix+"mc_ele_mom_eff_true_to_current.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_eff_true_to_current.pdf").c_str());
   
 
   draw.SetTitleX("E_{#nu}, MeV");
   draw.DrawPur(exp, "true_Nu_mom",  NBins_Mom1, BinEdges_Mom1, cut_eff_after, cut_eff_before, "", "OVER");
-  c1.Print((prefix+"mc_nu_mom_eff_true.png").c_str()); 
+  c1.Print((prefix+"mc_nu_mom_eff_true.pdf").c_str()); 
 
   exp.SetCurrentTree("default");
 
@@ -832,7 +1012,7 @@ void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::str
   grFGD2pur->SetMarkerStyle(1);
   grFGD1pur->Draw("same p Z");
   grFGD2pur->Draw("same p Z");
-  c1.Print((prefix+"mc_ele_mom_pur.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_pur.pdf").c_str());
 
   draw.SetTitleX("cos(#theta_{HMN})");
   draw.DrawPur(exp, "selelec_costheta",  NBins_CosTh, BinEdges_CosTh, cut_pur_after_TAR, cut_pur_before_TAR, "", "OVER");
@@ -858,7 +1038,7 @@ void EffStudy(Experiment exp, std::string prefix, std::string cut_base, std::str
   grFGD2pur1->SetMarkerStyle(1);
   //grFGD1pur1->Draw("same p Z");
   //grFGD2pur1->Draw("same p Z");
-  c1.Print((prefix+"mc_ele_theta_pur.png").c_str());    
+  c1.Print((prefix+"mc_ele_theta_pur.pdf").c_str());    
 
   std::cout << "------- Target Eff Pur --------" << std::endl;
   exp.SetCurrentTree("truth");
@@ -962,32 +1142,32 @@ void IsoTargetStudy(Experiment exp, std::string prefix, std::string cut_base, st
   draw.SetTitleX("cos(#theta)");  
   exp.SetCurrentTree("truth");
   draw.DrawPur(exp, "truelepton_dir[2]",  NBins_CosTh, BinEdges_CosTh, cut_eff_after_TAR, cut_eff_before_TAR, "", "OVER");
-  c1.Print((prefix+"mc_ele_theta_eff_iso.png").c_str());
+  c1.Print((prefix+"mc_ele_theta_eff_iso.pdf").c_str());
 
    draw.SetTitleX("cos(#theta)");  
   exp.SetCurrentTree("default");
   draw.DrawPur(exp, "truelepton_dir[2]",  NBins_CosTh, BinEdges_CosTh, cut_pur_after_TAR, cut_pur_before_TAR, "", "OVER");
-  c1.Print((prefix+"mc_ele_theta_pur_iso.png").c_str());
+  c1.Print((prefix+"mc_ele_theta_pur_iso.pdf").c_str());
 
   draw.SetTitleX("Length");
   draw.Draw(exp, "true_target_ele_length",  50, 0., 2000., "all", cut_pur_before_TAR, "", "OVER");
   draw.Draw(exp, "true_target_pr_length",  50, 0., 2000., "all", cut_pur_before_TAR, "same", "OVER");
   draw.Draw(exp, "true_target_mu_length",  50, 0., 2000., "all", cut_pur_before_TAR, "same", "OVER");
   draw.Draw(exp, "true_target_pi_length",  50, 0., 2000., "all", cut_pur_before_TAR, "same", "OVER");
-  c1.Print((prefix+"mc_ele_iso_length.png").c_str()); 
+  c1.Print((prefix+"mc_ele_iso_length.pdf").c_str()); 
 
   draw.SetTitleX("P, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 1000., "nueCC", cut_pur_before_TAR, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_iso.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_iso.pdf").c_str());
 
   draw.SetTitleX("P, MeV/c");
   draw.Draw(exp, "selelec_mom",  50, 0., 1000., "particle", cut_pur_before_TAR, "", "OVER");
-  c1.Print((prefix+"mc_ele_mom_iso_particle.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_iso_particle.pdf").c_str());
 
   draw.SetTitleX("P, MeV/c");
   //exp.SetCurrentTree("truth");
   draw.Draw(exp, "selelec_mom",  50, 0., 1000., "reactionnofv", cut_pur_before_TAR, "", "UNDER OVER");
-  c1.Print((prefix+"mc_ele_mom_iso_reaction.png").c_str());
+  c1.Print((prefix+"mc_ele_mom_iso_reaction.pdf").c_str());
 
   
 }
@@ -1060,15 +1240,15 @@ void TopoStudy(Experiment exp, std::string prefix, std::string cut_base, std::st
   draw.SetTitleX("P, MeV/c");
   std::string cut_TAR = "accum_level[][0] > 9  && selelec_mom > 200 && selelec_pos[2] < 0.";
   draw.Draw(exp, "selelec_mom", 50, 0., 5000., "nueCC", cut_TAR, "", "OVER");
-  c1.Print((prefix + "mc_ele_top_CC0pi_TAR.png").c_str());
+  c1.Print((prefix + "mc_ele_top_CC0pi_TAR.pdf").c_str());
 
   cut_TAR = "accum_level[][1] > 9  && selelec_mom > 200 && selelec_pos[2] < 0.";
   draw.Draw(exp, "selelec_mom", 50, 0., 5000., "nueCC", cut_TAR, "", "OVER");
-  c1.Print((prefix + "mc_ele_top_CC1pi_TAR.png").c_str());
+  c1.Print((prefix + "mc_ele_top_CC1pi_TAR.pdf").c_str());
 
   cut_TAR = "accum_level[][2] > 9  && selelec_mom > 200 && selelec_pos[2] < 0.";
   draw.Draw(exp, "selelec_mom", 50, 0., 5000., "nueCC", cut_TAR, "", "OVER");
-  c1.Print((prefix + "mc_ele_top_CCOther_TAR.png").c_str());
+  c1.Print((prefix + "mc_ele_top_CCOther_TAR.pdf").c_str());
 
   std::cout << "------- Target Eff Pur Opi --------" << std::endl;
   draw.DrawPur(exp, "truelepton_mom",  NBins_Mom2, BinEdges_Mom2, cut_pur_after_TAR_Opi, cut_pur_before_TAR_Opi, "", "OVER");
@@ -1198,7 +1378,7 @@ void ScanCut(Experiment exp, std::string prefix, std::string cut_base, std::stri
   str.str("");
   str << test4;
   cut0 = cut_base1 + " && selelec_likeel > " + str.str();
-*/
+
   for (Int_t i = 0; i <= it1; ++i) {
 
     Float_t test1 = min_val1 + step1*i;
@@ -1310,11 +1490,11 @@ void ScanCut(Experiment exp, std::string prefix, std::string cut_base, std::stri
   std::cout << "Best cut = " << bestCut1 << "     SN = " << SN << std::endl;
   std::cout << "Best pur = " << bestPur << "      N  =" << bestN << std::endl;
   //std::cout << "N before = " << pur << std::endl;
- */
+ 
 }
+*/
 
-
-void AddSamples(Experiment* exp, bool UseNumu, bool RHC, std::string file_tmp) {
+void AddSamples(Experiment* exp, bool UseNumu, bool RHC, string file_tmp) {
   SampleGroup nue("nue");
   SampleGroup numu("numu");
 
@@ -1322,20 +1502,20 @@ void AddSamples(Experiment* exp, bool UseNumu, bool RHC, std::string file_tmp) {
   DataSample *NumuBarDS;
 
   // nue reference ToF has normalisation to 1e22. Norm to 1e21
-  if (RHC)
-    NueDS  = new DataSample((file_tmp + "nue.root").c_str(), 0.1);
-  else 
-    NueDS  = new DataSample((file_tmp + "nue.root").c_str(), 0.1);
+  //if (RHC)
+    NueDS  = new DataSample((file_tmp + "nue_1.root").c_str(), 0.0001, "");
+  //else 
+  //  NueDS  = new DataSample((file_tmp + "nue_1.root").c_str(), 0.0001, "");
   nue.AddMCSample("NueDS", NueDS);
 
-  if (UseNumu) {
-    NumuDS  = new DataSample((file_tmp + "numu.root").c_str(), 1.);
+  //if (UseNumu) {
+    NumuDS  = new DataSample((file_tmp + "numu_1.root").c_str(), 1.);
     numu.AddMCSample("numuDS", NumuDS);
-    if (RHC) {
-      NumuBarDS  = new DataSample((file_tmp + "numubar.root").c_str(), 1.);
+    //if (RHC) {
+      NumuBarDS  = new DataSample((file_tmp + "numu_RHC.root").c_str(), 0.00001, "");
       numu.AddMCSample("NumuBarDS", NumuBarDS);
-    }
-  }
+    //}
+  //}
 
   exp->AddSampleGroup("nue",  nue);
   exp->AddSampleGroup("numu", numu);

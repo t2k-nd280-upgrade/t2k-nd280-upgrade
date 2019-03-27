@@ -33,6 +33,7 @@
 #include "LightYield.hh"
 
 const int VERTEX_ACTIVITY = 3;
+const float tolerance = 5.;
 
 #define NEvtDisplTot 50
 bool PLOT = false;
@@ -110,6 +111,8 @@ int NeutronAnalysis(int argc,char** argv) {
   TH2F* pe_e        = new TH2F("pe_E", "PE from 1st hit", 250., 0., 500, 250, 0., 500.);
   // distance from born position towards 1st hit
   TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 300, 0., 1500, 250, 0., 500.);
+
+  TH1F* dist_true   = new TH1F("dist_true", "true neutron distance", 300, 0., 1500);
   // momentum for forward going
   TH1F* mom_forward = new TH1F("mom",   "Momentum", 500, 0., 1000.);
   TH1F* mom_norm    = new TH1F("mom1",   "Momentum1", 500, 0., 1000.);
@@ -126,6 +129,9 @@ int NeutronAnalysis(int argc,char** argv) {
   //TH1F* diff = new TH1F("diff", "", 400, -20., 20);
 
   int vertex_norm = 0;
+
+  TRandom3* gen = new TRandom3();
+  Float_t TIME_RES = 1.5/sqrt(3);
 
   // Event displays
 #ifdef NEvtDisplTot
@@ -155,6 +161,9 @@ int NeutronAnalysis(int argc,char** argv) {
   ekin = costheta = dist_cubes = dist = first_hit_time = neutron_time = neutron_dist_true = -1.;
   Double_t HM_proton;
 
+  Int_t first_sc_reco;
+  Int_t topology;
+
   outtree->Branch("KinEnergy_true",     &ekin);
   outtree->Branch("CosTheta_true",      &costheta);
   outtree->Branch("Dir_True",           dir_true, "dir_true[3]/D");
@@ -168,6 +177,8 @@ int NeutronAnalysis(int argc,char** argv) {
   outtree->Branch("Neutron_time",       &neutron_time);
   outtree->Branch("Neutron_dist",       &neutron_dist_true);
 
+  outtree->Branch("First_sc_reco",      &first_sc_reco);
+
   outtree->Branch("HM_proton",           &HM_proton);
 
   outtree->Branch("hit_pdg",            &hit_pdg);
@@ -175,6 +186,8 @@ int NeutronAnalysis(int argc,char** argv) {
   outtree->Branch("N_hits_XY",          &N_hits_XY);
   outtree->Branch("N_hits_XZ",          &N_hits_XZ);
   outtree->Branch("N_hits_YZ",          &N_hits_YZ);
+
+  outtree->Branch("topology",          &topology);
 
   /////////////////////////////
   //                         //
@@ -381,23 +394,34 @@ int NeutronAnalysis(int argc,char** argv) {
 
     // take for the neutron vars
     // TODO loop over trajs looking for neutron
+    topology = -1;
+
     if (nd280UpEvent->GetNTracks() < 1) {
       std::cout << "WARNING! no tracks in the event! The event will be skipped" << std::endl;
       continue;
     }
-    TND280UpTrack* track = nd280UpEvent->GetTrack(0);
-    if (track->GetPDG() != 2112) {
-      std::cout << "WARNING! First track is not neutron! The event will be skipped. PDG = " << track->GetPDG() << std::endl;
+    TND280UpTrack* track_n = nd280UpEvent->GetTrack(0);
+    if (track_n->GetPDG() != 2112) {
+      std::cout << "WARNING! First track is not neutron! The event will be skipped. PDG = " << track_n->GetPDG() << std::endl;
       continue;
     }
 
-    ekin      = track->GetInitKinEnergy();
-    costheta  = track->GetInitCosTheta();
-    TVector3 mom_vec = track->GetInitMom();
+    if (nd280UpEvent->GetNTracks() == 1) {
+      topology = 0;
+      continue;
+    }
+
+    ekin      = track_n->GetInitKinEnergy();
+    costheta  = track_n->GetInitCosTheta();
+    TVector3 mom_vec = track_n->GetInitMom();
     mom_vec = mom_vec.Unit();
     dir_true[0]  = mom_vec.X();
     dir_true[1]  = mom_vec.Y();
     dir_true[2]  = mom_vec.Z();
+
+    Int_t bix_X_n = h2d_xz->GetXaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().X());
+    Int_t bix_Y_n = h2d_yz->GetXaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().Y());
+    Int_t bix_Z_n = h2d_xz->GetYaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().Z());
     
     // Loop over the hits
     
@@ -414,6 +438,7 @@ int NeutronAnalysis(int argc,char** argv) {
     }
 
     first_hit_time = 1.e9;
+    Float_t first_hit_dist = 1.e9;
     dist = -2.;
     dist_cubes = -2.;
     float mom_h = -1.;
@@ -449,6 +474,10 @@ int NeutronAnalysis(int argc,char** argv) {
       double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y 
       double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
       TVector3 lightPos(posX,posY,posZ); // already in local position
+
+      // smear the time for each hit
+      //time = gen->Gaus(time, TIME_RES);
+      //if (time < 0) time = 0.;
 
       double edep = nd280UpHit->GetEnergyDeposit(); 
 
@@ -505,11 +534,20 @@ int NeutronAnalysis(int argc,char** argv) {
       if (DEBUG) 
         cout << "   # hit " << ihit << "  pos "<< binX << "\t" << binY << "\t" << binZ  << "\t" << time << " ly " << pex + pey + pez << endl;
 
+      Float_t dist_temp = sqrt( (binX - vertex_binX) * (binX - vertex_binX) + 
+                                (binY - vertex_binY) * (binY - vertex_binY) +
+                                (binZ - vertex_binZ) * (binZ - vertex_binZ));
+
+      // HERE THE FIRST HIT IS SELECTED
+      // time < first_hit_time in case of the time cut
+      // dist < first_hit_dist in case of space cut
+      //if (pex + pey + pez > 0 && dist_temp < first_hit_dist) {
       if (pex + pey + pez > 0 && time < first_hit_time) {
         first_binX = hits_map_XY->GetXaxis()->FindBin(poshitX);
         first_binY = hits_map_XY->GetYaxis()->FindBin(poshitY);
         first_binZ = hits_map_YZ->GetYaxis()->FindBin(poshitZ);
         first_hit_time = time;
+        first_hit_dist = dist_temp;
         dist = sqrt(  (poshitX - vertex_x) * (poshitX - vertex_x) + 
                       (poshitY - vertex_y) * (poshitY - vertex_y) +
                       (poshitZ - vertex_z) * (poshitZ - vertex_z));
@@ -542,10 +580,42 @@ int NeutronAnalysis(int argc,char** argv) {
       }
     } // end loop over the hits
 
+    neutron_dist_true = -1.;
+    TVector3 start( track_n->GetPoint(0)->GetPrePosition().X(), 
+                    track_n->GetPoint(0)->GetPrePosition().Y(),
+                    track_n->GetPoint(0)->GetPrePosition().Z());
+
+    Int_t pointID = track_n->GetNPoints() - 1;
+    TVector3 end(   track_n->GetPoint(pointID)->GetPrePosition().X(), 
+                    track_n->GetPoint(pointID)->GetPrePosition().Y(),
+                    track_n->GetPoint(pointID)->GetPrePosition().Z());
+
+    neutron_dist_true = (end - start).Mag();
+
     // define the topology
     HM_proton = 0;
-    for (Int_t trackID = 0; trackID < nd280UpEvent->GetNTracks(); ++trackID) {
+    bool proton_found = false;
+    for (Int_t trackID = 1; trackID < nd280UpEvent->GetNTracks(); ++trackID) {
       TND280UpTrack* track = nd280UpEvent->GetTrack(trackID);
+
+      if (track->GetPDG() == 2112)
+        continue;
+
+      if (track->GetPoint(0)) {
+        if (DEBUG)
+          cout << "Distance to neutron end " << (end - track->GetPoint(0)->GetPrePosition()).Mag() << "\tPDG " << track->GetPDG() << "\tMom " << track->GetInitMom().Mag() << endl;
+        if ((end - track->GetPoint(0)->GetPrePosition()).Mag() < tolerance) {
+
+          if (track->GetPDG() > 1e6 || (proton_found && track->GetPDG() == 2212))
+            topology = 2;
+          
+          if (track->GetPDG() == 2212 && !proton_found && topology != 2) {
+            proton_found = true;
+            topology = 1;
+          }
+        }
+      }
+
       if (track->GetPDG() != 2212)
         continue;
 
@@ -575,8 +645,10 @@ int NeutronAnalysis(int argc,char** argv) {
                 hits_map_YZ->GetBinContent(first_binY, first_binZ);
 
     if (light_fst > 0 && DEBUG) {
-      cout << "PDG " << hit_pdg << "  light " << light_fst << "  mom " << mom_h << endl;  
+      cout << "PDG " << hit_pdg << "  light " << light_fst << "  mom " << mom_h << endl; 
     }
+    if (DEBUG)
+      cout << "Topology " << topology << endl;
 
     if (!far_away)
       ++vertex_norm;
@@ -585,6 +657,7 @@ int NeutronAnalysis(int argc,char** argv) {
 
     hits_energy->Fill(ekin, h3d->Integral());
     init_e_cos->Fill(costheta, ekin);
+    dist_true->Fill(neutron_dist_true);
     e_dist->Fill(dist, ekin);
     float mom = sqrt((939.565379 + ekin)*(939.565379 + ekin) - 939.565379*939.565379);
     if (costheta > 0.9)
@@ -632,16 +705,6 @@ int NeutronAnalysis(int argc,char** argv) {
     hits_map_XZ_cluster->SetBinContent(first_binX, first_binZ, hits_map_XZ->GetBinContent(first_binX, first_binZ));
     hits_map_YZ_cluster->SetBinContent(first_binY, first_binZ, hits_map_YZ->GetBinContent(first_binY, first_binZ));
 
-    if (DEBUG)
-      cout  << "Clustering hits 0 " << hits_map_XY->Integral() 
-                          << "\t" << hits_map_XZ->Integral()
-                          << "\t" << hits_map_YZ->Integral() << endl;
-
-    if (DEBUG)
-      cout  << "Clustering hits 1 " << hits_map_XY_cluster_N->Integral() 
-                          << "\t" << hits_map_XZ_cluster_N->Integral()
-                          << "\t" << hits_map_YZ_cluster_N->Integral() << endl;
-
     int N_prev = 0;
     light_max = -1;
 
@@ -682,12 +745,6 @@ int NeutronAnalysis(int argc,char** argv) {
         }
       }
     }
-
-    if (DEBUG)
-      cout  << "Clustering hits 2 " << hits_map_XY_cluster_N->Integral() 
-                          << "\t" << hits_map_XZ_cluster_N->Integral()
-                          << "\t" << hits_map_YZ_cluster_N->Integral() << endl;
-
 
     // map the first hit
     Double_t x = hits_map_XY->GetXaxis()->GetBinCenter(first_binX);
@@ -741,19 +798,57 @@ int NeutronAnalysis(int argc,char** argv) {
     // SELECTION IS DONE 
     // filling histoes
     neutron_time = -1.;
-    neutron_dist_true = -1.;
+
+    first_sc_reco = 0;
+    Double_t mom_ini = track_n->GetPoint(0)->GetMomentum().Mag();
+    if (DEBUG)
+      cout << "Npoints " << track_n->GetNPoints() << endl;
+    for (Int_t pointID = 0; pointID < track_n->GetNPoints(); ++pointID) {
+      TND280UpTrackPoint* point = track_n->GetPoint(pointID);
+      if (!point) continue;
+      if (DEBUG)
+        cout << "Ppoint " << point->GetMomentum().Mag() << "\t" << "Pini " << mom_ini << "\tbool" << (point->GetMomentum().Mag() != mom_ini) << endl;
+      if (point->GetMomentum().Mag() != mom_ini)
+        break;
+      if (DEBUG)
+        cout << "passed" << endl;
+
+      Int_t point_binX = hits_map_XY->GetXaxis()->FindBin(point->GetPrePosition().X());
+      Int_t point_binY = hits_map_XY->GetYaxis()->FindBin(point->GetPrePosition().Y());
+      Int_t point_binZ = hits_map_XZ->GetYaxis()->FindBin(point->GetPrePosition().Z());
+      Float_t dist_temp = sqrt(   (first_binX - point_binX) * (first_binX - point_binX) +
+                                  (first_binY - point_binY) * (first_binY - point_binY) +
+                                  (first_binZ - point_binZ) * (first_binZ - point_binZ) );
+      if (dist_temp < 2) {
+        first_sc_reco = 1;
+        break;
+      }
+
+      if (DEBUG) {
+        cout << "pointID " << pointID << "\tdist " << dist_temp << endl;
+      }
+    }
+
+    if (DEBUG) {
+      cout << "first_sc_reco " << first_sc_reco << endl; 
+    }
 
     neutron_time = first_hit_time;
-    neutron_dist_true = sqrt( (first_binX - vertex_binX) * (first_binX - vertex_binX) + 
+    /*neutron_dist_true = sqrt( (first_binX - vertex_binX) * (first_binX - vertex_binX) + 
                               (first_binY - vertex_binY) * (first_binY - vertex_binY) +
-                              (first_binZ - vertex_binZ) * (first_binZ - vertex_binZ));
+                              (first_binZ - vertex_binZ) * (first_binZ - vertex_binZ));*/
 
     if (DEBUG) {
       cout << "First light in time at " <<  first_binX << "\t" << 
                                             first_binY << "\t" << 
                                             first_binZ << "\t" <<
                                             first_hit_time << endl;
-      cout << "Neutron was there at " << neutron_time << endl;
+      cout << "Neutron last cube     " <<   hits_map_XY->GetXaxis()->FindBin(end.X()) << "\t" << 
+                                            hits_map_XY->GetYaxis()->FindBin(end.Y()) << "\t" << 
+                                            hits_map_XZ->GetYaxis()->FindBin(end.Z()) << endl;
+      cout << "Neutron last point    " <<   end.X() << "\t" <<
+                                            end.Y() << "\t" <<
+                                            end.Z() << endl;
     }
 
     outtree->Fill();
@@ -790,6 +885,7 @@ int NeutronAnalysis(int argc,char** argv) {
 
   init_e_cos->Write();
   eff_e_cos->Write();
+  dist_true->Write();
 
   vertexXZ->Scale(1./vertex_norm);
   vertexXZ->Write();

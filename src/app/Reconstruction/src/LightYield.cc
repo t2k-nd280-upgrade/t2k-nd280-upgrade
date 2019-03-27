@@ -100,9 +100,18 @@ int LightYield(int argc,char** argv)
   TH1F *hPEVsTime_y[NEvtDisplTot];
   TH1F *hPEVsTime_z[NEvtDisplTot];
 
+  TGraph *gMCHits_XY[NEvtDisplTot]; 
+  TGraph *gMCHits_XZ[NEvtDisplTot]; 
+  TGraph *gMCHits_YZ[NEvtDisplTot];
+
+  TCanvas *cMPPCHits_XY[NEvtDisplTot]; 
+  TCanvas *cMPPCHits_XZ[NEvtDisplTot]; 
+  TCanvas *cMPPCHits_YZ[NEvtDisplTot];
+
+  TRandom3* fRndm = new TRandom3(0);
+
 #if PROTO
   // L.Y. histoes
-  TRandom3* fRndm = new TRandom3(0);
 
   Int_t   ly_nbins  = 300;
   Float_t ly_first  = 0.;
@@ -430,6 +439,8 @@ int LightYield(int argc,char** argv)
 
 #endif
 
+    double measured_ct = 0.1;
+
     // channel - to - channel crosstalk
 #if CROSSTALK == 1
     TH2F* hits_map_temp[3];
@@ -442,7 +453,13 @@ int LightYield(int argc,char** argv)
     hits_map_final[1] = hits_map_XZ;
     hits_map_final[2] = hits_map_YZ;
 
-    double prob = 1. - 1./1.148;
+    //double prob = 1. - 1./1.148;
+
+    // 4 ntighbour channels
+    measured_ct *= 4.;
+    // move from ct = (LYactual - LYmesured) / LYmesured
+    // to probability prob = (LYactual - LYmesured) / LYactual
+    double prob = measured_ct / (measured_ct + 1.);
 
     double leave_prob = 0.;
     double dir_prob = 5.;
@@ -503,7 +520,7 @@ int LightYield(int argc,char** argv)
               // left
             if (i > 1) {
               rndunif = fRndm->Uniform();
-              if (rndunif < 0.037) {
+              if (rndunif < measured_ct) {
                 hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i-1), hits_map_XY->GetYaxis()->GetBinCenter(j));
                 hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i-1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
                 hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k));
@@ -512,7 +529,7 @@ int LightYield(int argc,char** argv)
               // right
             if (i < hits_map_XY->GetXaxis()->GetNbins()) {
               rndunif = fRndm->Uniform();
-              if (rndunif < 0.037) {
+              if (rndunif < measured_ct) {
                 hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i+1), hits_map_XY->GetYaxis()->GetBinCenter(j));
                 hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i+1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
                 hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k));
@@ -521,7 +538,7 @@ int LightYield(int argc,char** argv)
               // top
             if (j < hits_map_XY->GetYaxis()->GetNbins()) {
               rndunif = fRndm->Uniform();
-              if (rndunif < 0.037) {
+              if (rndunif < measured_ct) {
                 hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j+1));
                 hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k));
                 hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j+1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
@@ -530,7 +547,7 @@ int LightYield(int argc,char** argv)
               // bottom
             if (j > 1) {
               rndunif = fRndm->Uniform();
-              if (rndunif < 0.037) {
+              if (rndunif < measured_ct) {
                 hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j-1));
                 hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k));
                 hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j-1), hits_map_YZ->GetYaxis()->GetBinCenter(k));
@@ -539,7 +556,7 @@ int LightYield(int argc,char** argv)
               // forward
             if (k < hits_map_XZ->GetYaxis()->GetNbins()) {
               rndunif = fRndm->Uniform();
-              if (rndunif < 0.037) {
+              if (rndunif < measured_ct) {
                 hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j));
                 hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k+1));
                 hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k+1));
@@ -548,7 +565,7 @@ int LightYield(int argc,char** argv)
               // backward
             if (k > 1) {
               rndunif = fRndm->Uniform();
-              if (rndunif < 0.037) {
+              if (rndunif < measured_ct) {
                 hits_map_XY->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_XY->GetYaxis()->GetBinCenter(j));
                 hits_map_XZ->Fill(hits_map_XY->GetXaxis()->GetBinCenter(i), hits_map_YZ->GetYaxis()->GetBinCenter(k-1));
                 hits_map_YZ->Fill(hits_map_YZ->GetXaxis()->GetBinCenter(j), hits_map_YZ->GetYaxis()->GetBinCenter(k-1));
@@ -563,6 +580,12 @@ int LightYield(int argc,char** argv)
 #if CROSSTALK == 3
     // the most physical cross talk simulation
     // from random fiber to random fiber
+
+    // 4 ntighbour channels
+    measured_ct *= 4.;
+    // move from ct = (LYactual - LYmesured) / LYmesured
+    // to probability prob = (LYactual - LYmesured) / LYactual
+    double prob = measured_ct / (measured_ct + 1.);
 
     for (Int_t i = 1; i <= hits_map_XY->GetXaxis()->GetNbins(); ++i) {
       for (Int_t j = 1; j <= hits_map_XY->GetYaxis()->GetNbins(); ++j) {
@@ -584,8 +607,6 @@ int LightYield(int argc,char** argv)
               which_leave   = fRndm->Uniform(3.);
               which_surface = fRndm->Uniform(6.);
               which_fiber   = fRndm->Uniform(3.);
-
-              Float_t prob =  1. - 1./1.222;
 
               if (leave_prob < prob) {
                   // substract photon
@@ -738,10 +759,39 @@ int LightYield(int argc,char** argv)
   
   fileout->cd();
 
+  TString name;
+
   int last = evtfirst+Nentries-1;
   for(int ievtdispl=evtfirst;ievtdispl<=last ;ievtdispl++){  
     // Response
     if(ievtdispl<NEvtDisplTot){
+
+      name = TString::Format("gMCHits_XY_%d",ievtdispl);
+      gMCHits_XY[ievtdispl] = new TGraph(); 
+      gMCHits_XY[ievtdispl]->SetName(name);
+      gMCHits_XY[ievtdispl]->SetTitle(name);
+      gMCHits_XY[ievtdispl]->SetMarkerSize(1);
+      gMCHits_XY[ievtdispl]->SetMarkerStyle(20);
+      name = TString::Format("gMCHits_XZ_%d",ievtdispl);
+      gMCHits_XZ[ievtdispl] = new TGraph(); 
+      gMCHits_XZ[ievtdispl]->SetName(name);
+      gMCHits_XZ[ievtdispl]->SetTitle(name);
+      gMCHits_XZ[ievtdispl]->SetMarkerSize(1);
+      gMCHits_XZ[ievtdispl]->SetMarkerStyle(20);
+      name = TString::Format("gMCHits_YZ_%d",ievtdispl);
+      gMCHits_YZ[ievtdispl] = new TGraph();
+      gMCHits_YZ[ievtdispl]->SetName(name);
+      gMCHits_YZ[ievtdispl]->SetTitle(name);
+      gMCHits_YZ[ievtdispl]->SetMarkerSize(1);
+      gMCHits_YZ[ievtdispl]->SetMarkerStyle(20);
+      
+      // Initialize canvases
+      name = TString::Format("cMPPCHits_XY_%d",ievtdispl);
+      cMPPCHits_XY[ievtdispl] = new TCanvas(name,name);
+      name = TString::Format("cMPPCHits_XZ_%d",ievtdispl);
+      cMPPCHits_XZ[ievtdispl] = new TCanvas(name,name);
+      name = TString::Format("cMPPCHits_YZ_%d",ievtdispl);
+      cMPPCHits_YZ[ievtdispl] = new TCanvas(name,name);
             
       if(hMPPCHits_XY[ievtdispl]->Integral()>0 ||
 	       hMPPCHits_XZ[ievtdispl]->Integral()>0 ||
@@ -750,6 +800,17 @@ int LightYield(int argc,char** argv)
         hMPPCHits_XY[ievtdispl]->Write();  
         hMPPCHits_XZ[ievtdispl]->Write();  
         hMPPCHits_YZ[ievtdispl]->Write();
+
+        cMPPCHits_XY[ievtdispl]->cd();
+        hMPPCHits_XY[ievtdispl]->Draw("colz");  
+        cMPPCHits_XZ[ievtdispl]->cd();
+        hMPPCHits_XZ[ievtdispl]->Draw("colz");  
+        cMPPCHits_YZ[ievtdispl]->cd();
+        hMPPCHits_YZ[ievtdispl]->Draw("colz");
+
+        cMPPCHits_XY[ievtdispl]->Write();  
+        cMPPCHits_XZ[ievtdispl]->Write();  
+        cMPPCHits_YZ[ievtdispl]->Write();
       } 
     }
   }

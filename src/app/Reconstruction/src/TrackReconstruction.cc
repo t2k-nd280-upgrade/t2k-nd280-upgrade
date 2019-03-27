@@ -377,6 +377,7 @@ int TrackReconstruction(int argc,char** argv)
   const int UseViewYZ = atoi(argv[10]);
   const double MinSeparation = atof(argv[11]); // if <0 --> use the default one
   const int UseTruthFV = atoi(argv[12]);
+  const int outname = atoi (argv[13]);
 
 
   // Set the inputs
@@ -387,7 +388,7 @@ int TrackReconstruction(int argc,char** argv)
    
   //
   
-  const int NEvtDisplTot = 50; //atoi(argv[5]); // max # of evt. displays 
+  const int NEvtDisplTot = 1; //atoi(argv[5]); // max # of evt. displays 
 
   int NTOTALTRACKSALL_1stLOOP = 0;
   int NTOTALTRACKSALL_2ndLOOP = 0;
@@ -585,7 +586,7 @@ int TrackReconstruction(int argc,char** argv)
   int nbins_nue = 1000;
 
   double max = 0.;
-  if     (DetType == nd280upconv::kSuperFGD) max = 200;
+  if     (DetType == nd280upconv::kSuperFGD) max = 100;
   else if(DetType == nd280upconv::kFGDlike)  max = 50;
   
   TH1F * hMuon_Stopped_EdepOverLen = new TH1F("hMuon_Stopped_EdepOverLen","Stopping Muon energy deposit over track length",nbins,0,max);
@@ -742,8 +743,8 @@ int TrackReconstruction(int argc,char** argv)
 
   // Histograms for different reco track lengths
 
-  const int NBinsLen = 5;
-  const double BinsLen[NBinsLen+1] = {0., 200., 400., 600., 1000., 2500.}; // mm
+  const int NBinsLen = 7;
+  const double BinsLen[NBinsLen+1] = {0., 50., 100., 200., 300., 400., 500., 2000.}; // mm
   TH1F *hBinsLen = new TH1F("hBinsLen","hBinsLen",NBinsLen,BinsLen);
   
   TH1F * hMuon_Stopped_EdepOverLen_Len[NBinsLen];
@@ -846,7 +847,7 @@ int TrackReconstruction(int argc,char** argv)
 
   // Set outputs
   
-  TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),evtfirst,nevents);
+  TString outfilename = TString::Format("%s_Evt%d_NEvt%d.root",tag.c_str(),outname,nevents);
   TFile *fileout = new TFile(outfilename.Data(),"RECREATE"); 
   //TND280UpRecoEvent *fND280UpRecoEvent = new TND280UpRecoEvent(); // NOT SURE WHY!!!
   //TND280UpRecoEvent *fND280UpRecoEvent; 
@@ -1349,6 +1350,8 @@ int TrackReconstruction(int argc,char** argv)
       cout << "# of tracks: " << fRecoTrack_ID.size() << endl;
     }
 
+    // FIXME first loop over reco tracks
+
     for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
 
       NTOTALTRACKSALL_1stLOOP++;
@@ -1486,7 +1489,9 @@ int TrackReconstruction(int argc,char** argv)
       // Check the track separation
       // if the reco track is separated from all the other tracks
       
-      bool isseparated = true;      
+      bool isseparated = true; 
+
+      // FIXME loop over reco tracks     
       
       for(unsigned int itrkoth=0;itrkoth<fRecoTrack_ID.size();itrkoth++){
 	

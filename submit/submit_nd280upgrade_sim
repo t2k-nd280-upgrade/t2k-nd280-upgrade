@@ -118,6 +118,9 @@ while($irun < $nruns) { # loop over the jobs
     }
      
     $command = "$arguments";
+    $command .= "; mv EffStudy_0.root EffStudy_";
+    $file_name = $irun + 1;
+    $command .= "$file_name.root";
     
     print "\n";
     print "Job $irun \n";

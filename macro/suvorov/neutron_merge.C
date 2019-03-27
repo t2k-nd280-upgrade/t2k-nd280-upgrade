@@ -12,12 +12,14 @@
 
 const float MIP_LY_AV3 = 50;
 
+//hadd -f /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt0_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt1* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt2* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt3* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt4* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt5* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt6* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt7000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt8000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt9000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt7?000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt8?000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt9?000_NEvt1000.root
+
 using namespace std;
 
 void neutron_merge() {
-	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v12-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v18-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
 
-  const Int_t Ndist = 8;
+  const Int_t Ndist = 9;
   float distance_cut[Ndist];
   distance_cut[0] = 10.;
   distance_cut[1] = 20.;
@@ -27,6 +29,8 @@ void neutron_merge() {
   distance_cut[5] = 60.;
   distance_cut[6] = 70.;
   distance_cut[7] = 0.;
+  // 50 - 100 cm
+  distance_cut[8] = 100.;
 
   TTree* tree       = (TTree*)file->Get("neutron");
   Double_t ekin, costheta, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
@@ -34,6 +38,7 @@ void neutron_merge() {
   Double_t light_fst, light_max, light_tot;
   Double_t N_hits_XY, N_hits_XZ, N_hits_YZ; 
   Double_t HM_proton;
+  Int_t first_sc_reco;
 
   tree->SetBranchAddress("KinEnergy_true",     &ekin);
   tree->SetBranchAddress("CosTheta_true",      &costheta);
@@ -50,6 +55,7 @@ void neutron_merge() {
   tree->SetBranchAddress("First_hit_time",     &first_hit_time);
   // true distance (no smearing with cube size)
   tree->SetBranchAddress("Distance_hit_true",  &dist);
+  tree->SetBranchAddress("First_sc_reco",      &first_sc_reco);
   
   // true neutron points
   tree->SetBranchAddress("Neutron_time",       &neutron_time);
@@ -88,7 +94,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_v16.root", "RECREATE");
+  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_v24.root", "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
@@ -99,8 +105,8 @@ void neutron_merge() {
     }
   }
 
-  const Int_t time_size = 4;
-  Double_t time_sigma[time_size] = {0., 1.5/sqrt(3), 0.6/sqrt(3), 0.};
+  const Int_t time_size = 6;
+  Double_t time_sigma[time_size] = {0., 1.5/sqrt(3), 0.6/sqrt(3), 0., 0., 0.};
 
   // read tree several times in order to check
   for (Int_t distID = 0; distID < Ndist; ++distID) {
@@ -111,6 +117,9 @@ void neutron_merge() {
     TH1F* energy_acc[time_size];
 
     TH2F* beta_ekin_sm[time_size];
+
+    TH1F* reco_first = new TH1F("recp_first", "Reco 1st scatter", 400, 0., 800.);
+    TH1F* reco_first_n = new TH1F("recp_first_n", "Reco 1st scatter", 400, 0., 800.);
 
     TH1F* test_l_e   = new TH1F("ly_energy", "Averagy l.y.", 250, 0., 500.);
     TH1F* test_l_e_n = new TH1F("test1", "test", 250, 0., 500.);
@@ -138,7 +147,7 @@ void neutron_merge() {
     for (Int_t i = 0; i < time_size; ++i) {
       energy_resol[i]       = new TH2F(Form("energy_smearng_%i", i), "energy smearing matrix", 400, 0., 800, 600, 0., 1200);
       energy_resol_rebin[i] = new TH2F(Form("energy_resol_rebin_%i", i), "", Nbins-1, bins, 600, 0., 1200.);
-      energy_acc[i]         = new TH1F(Form("energy_acc_%i", i), "energy accuracy in the ROI", 120, -60., 60.);
+      energy_acc[i]         = new TH1F(Form("energy_acc_%i", i), "energy accuracy in the ROI", 120, -1., 1.);
       beta_ekin_sm[i]       = (TH2F*)beta_ekin->Clone(Form("beta_ekin_smeared_%i", i));
       beta_ekin_sm[i]->Reset();
 
@@ -156,11 +165,21 @@ void neutron_merge() {
       tree->GetEntry(entryID);
   
       // selection on distance (cm)
-      if (dist_cubes < distance_cut[distID])
+      if (distID != 8)
+        if (dist_cubes < distance_cut[distID])// || dist_cubes > distance_cut[distID+1])
+          continue;
+
+      if (distID == 8 && (dist_cubes < 50. || dist_cubes > 100.))
         continue;
 
       // selection on light
-      if (light_tot / 3. < 150)
+      if (light_tot / 3. < 50.)
+        continue;
+
+      reco_first->Fill(ekin, first_sc_reco);
+      reco_first_n->Fill(ekin);
+
+      if (first_sc_reco == 0) 
         continue;
   
       eff_e_cos->Fill(costheta, ekin);
@@ -170,19 +189,25 @@ void neutron_merge() {
       ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
       energy_resol[0]->Fill(ekin, ekin2);
       energy_resol_rebin[0]->Fill(ekin, ekin2);
-      if (ekin > 70. && ekin < 105.)
-        energy_acc[0]->Fill(ekin2 - ekin);
+      if (ekin > 90. && ekin < 110.)
+        energy_acc[0]->Fill((ekin2 - ekin) / ekin);
 
       angle_smearing->Fill(dir_true[2], dir_reco[2]);
 
       for (Int_t resID = 1; resID < time_size; ++resID ) {
   
-        if (resID == time_size - 1) {
+        if (resID > 2 ) {
           if (!light_tot)
             cout << "no light!!!  " << light_fst << endl;
           float light_fiber = light_tot / 3.;
-          float res      = 1.5 / sqrt(3);
-          res           *= sqrt(MIP_LY_AV3 / light_fiber);
+          float res;
+          if (resID == 3) {
+            res      = 1.5 / sqrt(3);
+            res           *= sqrt(MIP_LY_AV3 / light_fiber);
+          } if (resID == 4 || resID == 5) {
+            res      = 0.92 / sqrt(3);
+            res           *= sqrt(50 / light_fiber);
+          }
 
           time_resol->Fill(1000 * res);
           ly_fst->Fill(light_fst);
@@ -201,17 +226,29 @@ void neutron_merge() {
           proton_mom->Fill(HM_proton);
         }
 
+
+        float time_vertex = 0.;
+        if (resID == 5) {
+          time_vertex = gen->Gaus(0., 1.);
+        }
+
         time = gen->Gaus(first_hit_time, time_sigma[resID]);
+        time -= time_vertex;
+        if (time < 0.)
+          time = 0.;
         beta = dist_cubes / (time * 30.);
+
+        if (beta < 0)
+          continue;
         ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
 
         energy_resol[resID]->Fill(ekin, ekin2);
         energy_resol_rebin[resID]->Fill(ekin, ekin2);
         Int_t cos_bin = cos_h->FindBin(costheta);
-        energy_resol_cos[resID][cos_bin-1]->Fill(ekin, ekin2);
+        //energy_resol_cos[resID][cos_bin-1]->Fill(ekin, ekin2);
         beta_ekin_sm[resID]->Fill(ekin, beta);
-        if (ekin > 70. && ekin < 105.)
-          energy_acc[resID]->Fill(ekin2 - ekin);
+        if (ekin > 90. && ekin < 110.)
+          energy_acc[resID]->Fill((ekin2 - ekin) / ekin);
       }
     }
   
@@ -303,6 +340,8 @@ void neutron_merge() {
     ly_fst->Write();
     ly_max->Write();
     ly_tot->Write();
+    reco_first->Divide(reco_first_n);
+    reco_first->Write();
 
     TH1F* ly_cut = (TH1F*)ly_tot->Clone("ly_cut");
     ly_cut->Reset();
