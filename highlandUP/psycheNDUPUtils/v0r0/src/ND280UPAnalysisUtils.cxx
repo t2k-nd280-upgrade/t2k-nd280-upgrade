@@ -183,7 +183,7 @@ Float_t anaUtils::GetToF(const AnaTrackB* track, AnaParticleB*& seg1, AnaParticl
   for (int i=0; i<track->nTargetSegments; i++){
     if (track->TargetSegments[i]->IsReconstructed) {
       Float_t true_time = track->TargetSegments[i]->PositionStart[3];
-      Float_t     sigma = sqrt(pow(3/sqrt(track->TargetSegments[i]->SegLength/25),2)+0.6*0.6); // 3ns/sqrt(NHits)
+      Float_t     sigma = sqrt(pow(1.5/sqrt(track->TargetSegments[i]->SegLength/15),2)+0.6*0.6); // 3ns/sqrt(NHits)
       Float_t      time = gRandom->Gaus(true_time, sigma);
 
       std::vector<Float_t> vec;
