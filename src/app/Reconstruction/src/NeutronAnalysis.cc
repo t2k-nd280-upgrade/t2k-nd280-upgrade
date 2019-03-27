@@ -130,8 +130,8 @@ int NeutronAnalysis(int argc,char** argv) {
 
   int vertex_norm = 0;
 
-  TRandom3* gen = new TRandom3();
-  Float_t TIME_RES = 1.5/sqrt(3);
+  //TRandom3* gen = new TRandom3();
+  //Float_t TIME_RES = 1.5/sqrt(3);
 
   // Event displays
 #ifdef NEvtDisplTot
@@ -419,9 +419,9 @@ int NeutronAnalysis(int argc,char** argv) {
     dir_true[1]  = mom_vec.Y();
     dir_true[2]  = mom_vec.Z();
 
-    Int_t bix_X_n = h2d_xz->GetXaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().X());
-    Int_t bix_Y_n = h2d_yz->GetXaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().Y());
-    Int_t bix_Z_n = h2d_xz->GetYaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().Z());
+    //Int_t bix_X_n = h2d_xz->GetXaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().X());
+    //Int_t bix_Y_n = h2d_yz->GetXaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().Y());
+    //Int_t bix_Z_n = h2d_xz->GetYaxis()->FindBin(track_n->GetPoint(0)->GetPrePosition().Z());
     
     // Loop over the hits
     
@@ -542,6 +542,7 @@ int NeutronAnalysis(int argc,char** argv) {
       // time < first_hit_time in case of the time cut
       // dist < first_hit_dist in case of space cut
       //if (pex + pey + pez > 0 && dist_temp < first_hit_dist) {
+      (void)(dist_temp < first_hit_dist);
       if (pex + pey + pez > 0 && time < first_hit_time) {
         first_binX = hits_map_XY->GetXaxis()->FindBin(poshitX);
         first_binY = hits_map_XY->GetYaxis()->FindBin(poshitY);
