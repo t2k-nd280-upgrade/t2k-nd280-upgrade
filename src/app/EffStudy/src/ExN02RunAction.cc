@@ -76,8 +76,27 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
   //
 
   // // Creating histograms 
-  analysisManager->CreateH1("Edep_abs_tpcup","Edep in TPC Up", 100, 0., 800*CLHEP::MeV);
+  //analysisManager->CreateH1("Edep_abs_tpcup","Edep in TPC Up", 100, 0., 800*CLHEP::MeV);
+#ifdef NEUTRON_FILE
+  analysisManager->CreateH1("np", "np", 140, 0., 700.); // 1
+  analysisManager->CreateH1("nC", "nC", 140, 0., 700.); // 2
+  analysisManager->CreateH1("nInelastic", "nInelastic", 140, 0., 700.); // 3
+  analysisManager->CreateH1("B", "B", 140, 0., 700.); // 4
+  analysisManager->CreateH1("Li", "Li", 140, 0., 700.); // 5
+  analysisManager->CreateH1("3alpha", "3alpha", 140, 0., 700.); // 6
+  analysisManager->CreateH1("Be", "Be", 140, 0., 700.); // 7
 
+  analysisManager->CreateH1("0p0aE", "0p0aE", 140, 0., 700.); // 8
+  analysisManager->CreateH1("0p0aIE", "0p0aIE", 140, 0., 700.); // 9
+  analysisManager->CreateH1("0p1a", "0p1a", 140, 0., 700.); // 10
+  analysisManager->CreateH1("0pNa", "0pNa", 140, 0., 700.); // 11
+  analysisManager->CreateH1("1p0a", "1p0a", 140, 0., 700.); // 12
+  analysisManager->CreateH1("1p1a", "1p1a", 140, 0., 700.); // 13
+  analysisManager->CreateH1("1pNa", "1pNa", 140, 0., 700.); // 14
+  analysisManager->CreateH1("NpNa", "NpNa", 140, 0., 700.); // 15
+
+  analysisManager->CreateH1("XsecNorm", "XsecNorm", 140, 0., 700.); // 16
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -112,19 +131,26 @@ void ExN02RunAction::BeginOfRunAction(const G4Run* aRun)
 
 
 
-  
+#ifdef NEUTRON_FILE  
   // Get analysis manager
-  //G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   
   // Open an output file     
   //
-  //G4String fileName = "EffStudy";
-  //analysisManager->OpenFile(fileName);
+  G4String fileName = "EffStudy_" + G4UIcommand::ConvertToString(aRun->GetRunID());
+  analysisManager->OpenFile(fileName);
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void ExN02RunAction::EndOfRunAction(const G4Run*) {;}
+void ExN02RunAction::EndOfRunAction(const G4Run*) {
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+#ifdef NEUTRON_FILE  
+  analysisManager->Write();
+  analysisManager->CloseFile();
+#endif
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

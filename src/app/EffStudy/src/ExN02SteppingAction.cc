@@ -64,12 +64,12 @@ ExN02SteppingAction::~ExN02SteppingAction()
 void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
 { 
 (void)step;
-/*
+#ifdef NEUTRON_FILE  
   // Collect energy and track length step by step
 
   // energy deposit
   G4double edep = step->GetTotalEnergyDeposit();
-  if(edep==0.) return;
+  //if(edep==0.) return;
 
 
   //G4cout << "edep = " << edep << G4endl;
@@ -81,14 +81,108 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   
   G4StepPoint* prestep  = step->GetPreStepPoint();
   G4StepPoint* poststep = step->GetPostStepPoint();
-  //G4Track *track = step->GetTrack(); // it's PostStepPoint!!!
+  G4Track *track = step->GetTrack(); // it's PostStepPoint!!!
   
   // get volume of the current step
   //G4VPhysicalVolume* volume = prestep->GetTouchableHandle()->GetVolume();
 
   // step length 
   G4double stepLength = 0.;
-  if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
+
+  G4String process_name_post;
+  G4String process_name_pre;
+  G4String particle_name = track->GetParticleDefinition()->GetParticleName();
+
+  if (particle_name != "neutron")
+    return;
+
+  if(step->GetPostStepPoint()->GetProcessDefinedStep() != NULL)
+    process_name_post = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
+
+  if (process_name_post == "Transportation" || process_name_post == "")
+    return;
+
+  if(step->GetPreStepPoint()->GetProcessDefinedStep() != NULL)
+    process_name_pre = step->GetPreStepPoint()->GetProcessDefinedStep()->GetProcessName();
+
+  G4double energy_pre = step->GetPreStepPoint()->GetKineticEnergy();
+  G4double energy_post = step->GetPostStepPoint()->GetKineticEnergy();
+
+    //cout << "Particle  " << particle_name << "   Process pre" <<  process_name_pre << "   post " << process_name_post << endl;
+    //cout << "Particle  " << particle_name << "   Process " << process_name_post  << "   pre e " << energy_pre << " post " << energy_post << endl;
+  //}
+
+  // USE PRE ENERGY!!!
+
+  //const G4TrackVector* fSecondary = step->GetSecondary();
+  const std::vector<const G4Track*>* fSecondary = step->GetSecondaryInCurrentStep();
+  //size_t tN2ndariesTot = (*fSecondary).size();
+  G4int tN2ndariesTot = (*fSecondary).size();
+
+  G4int Nproton = 0;
+  G4int Nalpha  = 0;
+
+  if (process_name_post == "hadElastic" && tN2ndariesTot == 1) {
+    if ((*fSecondary)[0]->GetDefinition()->GetParticleName() == "proton") {
+      fEventAction->FH(1, energy_pre);
+      fEventAction->FH(12, energy_pre);
+    }
+    if ((*fSecondary)[0]->GetDefinition()->GetParticleName() == "C12") {
+      fEventAction->FH(2, energy_pre);
+      fEventAction->FH(8, energy_pre);
+    }
+  } 
+
+  if (process_name_post == "neutronInelastic") {
+    fEventAction->FH(3, energy_pre);
+
+    bool B = false;
+    bool Li = false;
+    G4int threealpha = 0;
+    bool Be = false;
+
+
+    for(size_t lp1=(*fSecondary).size()-tN2ndariesTot; lp1<(*fSecondary).size(); lp1++){
+      cout << (*fSecondary)[lp1]->GetDefinition()->GetParticleName() << "    " << (*fSecondary)[lp1]->GetKineticEnergy() << endl;
+      G4String particle = (*fSecondary)[lp1]->GetDefinition()->GetParticleName();
+      if (particle.contains("Li")) Li = true;
+      else if (particle.contains("B") && !particle.contains("Be")) B = true;
+      else if (particle.contains("Be")) Be = true;
+      else if (particle.contains("alpha")) {
+        ++threealpha;
+        ++Nalpha;
+      } else if (particle.contains("proton"))
+        ++Nproton;
+    }
+
+    if (Li)
+      fEventAction->FH(5, energy_pre);
+    if (B)
+      fEventAction->FH(4, energy_pre);
+    if (Be)
+      fEventAction->FH(7, energy_pre);
+    if (threealpha == 3)
+      fEventAction->FH(6, energy_pre);
+
+    if (!Nalpha && !Nproton)
+      fEventAction->FH(9, energy_pre);
+    else if (Nalpha == 1 && Nproton == 0)
+      fEventAction->FH(10, energy_pre);
+    else if (Nalpha > 1 && Nproton == 0)
+      fEventAction->FH(11, energy_pre);
+    else if (Nalpha == 0 && Nproton == 1)
+      fEventAction->FH(12, energy_pre);
+    else if (Nalpha == 1 && Nproton == 1)
+      fEventAction->FH(13, energy_pre);
+    else if (Nalpha > 1 && Nproton == 1)
+      fEventAction->FH(14, energy_pre);
+    else if (Nalpha > 1 && Nproton > 1)
+      fEventAction->FH(15, energy_pre);
+  }
+#endif
+
+
+ /* if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
     stepLength = step->GetStepLength();
 
     

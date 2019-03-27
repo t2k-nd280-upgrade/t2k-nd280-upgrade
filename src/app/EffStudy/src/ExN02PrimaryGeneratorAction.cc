@@ -156,6 +156,31 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
       }
 
+    if (fTypeMomentum=="Muon_real")
+      {
+        G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+        TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/spectra.root", "READ");
+        TH1F* h = (TH1F*)file->Get("mu_h");
+        aMomAmp = h->GetRandom();
+        fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+        cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
+        aEAmp = fParticleGun->GetParticleEnergy();
+        file->Close();
+
+      }
+
+    if (fTypeMomentum=="Proton_real")
+      {
+        G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+        TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/spectra.root", "READ");
+        TH1F* h = (TH1F*)file->Get("pr_h");
+        aMomAmp = h->GetRandom();
+        fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+        cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
+        aEAmp = fParticleGun->GetParticleEnergy();
+        file->Close();
+      }
+
     if (fTypeMomentum=="Neutron") {
       G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
       float aKinEnergy = (G4UniformRand()*(800.) );
