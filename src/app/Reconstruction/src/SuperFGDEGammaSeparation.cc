@@ -94,8 +94,8 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
  const bool isNuInt         = 0;
  const bool useElectron     = 0;
  const double RatioCriteria = 0;
- const bool writePlots      = 0;
- const int nPlotsWrite      = 1;
+ //const bool writePlots      = 0;
+ //const int nPlotsWrite      = 1;
 
  int e_trkid = 0;
  int pos_trkid = 0;
@@ -105,7 +105,8 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
     exit(1);
   }
 
-  const int NEvtDisplTot = nevents; 
+  //const int NEvtDisplTot = nevents; 
+
 
   //Defines Track ID to study (currently optimized for particle gun settings)
   if (useElectron) e_trkid = 1;
@@ -344,7 +345,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   hPE_Z_etrack->GetXaxis()->SetTitle("i-th hit of the e-like track");
   hPE_Z_etrack->GetYaxis()->SetTitle("p.e.");
 
-  for(int ievt=0;ievt<Nentries;ievt++){ // get last entry
+  for(int ievt=evtfirst;ievt<=EntryLast;ievt++){ // get last entry
     
     tinput->GetEntry(ievt);
     
@@ -514,19 +515,19 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
       int parentID = nd280UpTrack->GetParentID();
       int PDG = nd280UpTrack->GetPDG();
       double costheta = nd280UpTrack->GetInitCosTheta();
-      double charge = nd280UpTrack->GetCharge();
-      double ekin = nd280UpTrack->GetInitKinEnergy();
+      //double charge = nd280UpTrack->GetCharge();
+      //double ekin = nd280UpTrack->GetInitKinEnergy();
       double mom = nd280UpTrack->GetInitMom().Mag(); 
       double range = nd280UpTrack->GetRange(); 
       string procName = nd280UpTrack->GetProcessName();
-      int NPoints = nd280UpTrack->GetNPoints();
+      //int NPoints = nd280UpTrack->GetNPoints();
 
       TND280UpTrackPoint *nd280UpTrackPoint = nd280UpTrack->GetPoint(0); 
-      double length = nd280UpTrackPoint->GetStepLength();
+      //double length = nd280UpTrackPoint->GetStepLength();
       double PtX = nd280UpTrackPoint->GetPostPosition().X();
       double PtY = nd280UpTrackPoint->GetPostPosition().Y();
       double PtZ = nd280UpTrackPoint->GetPostPosition().Z();
-      double PtMom = nd280UpTrackPoint->GetMomentum().Mag();
+      //double PtMom = nd280UpTrackPoint->GetMomentum().Mag();
       string volname = nd280UpTrackPoint->GetLogVolName();
 
       if (parentID==0){
@@ -607,9 +608,9 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
 
     int trkid_prev = 0.;
 
-    Int_t binsX = h2d_xy->GetXaxis()->GetNbins();
-    Int_t binsY = h2d_xy->GetYaxis()->GetNbins();
-    Int_t binsZ = h2d_xz->GetYaxis()->GetNbins();
+    //Int_t binsX = h2d_xy->GetXaxis()->GetNbins();
+    //Int_t binsY = h2d_xy->GetYaxis()->GetNbins();
+    //Int_t binsZ = h2d_xz->GetYaxis()->GetNbins();
 
   
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
@@ -666,7 +667,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
       trkid = ApplyResponse.GetHitTrkID();
 
       ///                
-      int particleID = pdg;
+      //int particleID = pdg;
   
 
       //////////////////////////////////////////////////
@@ -848,7 +849,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   binJ = hMPPCHits_YZ->GetYaxis()->FindBin(poshitJ_prev);
   ith_pe =  hMPPCHits_YZ->GetBinContent(binI,binJ);
 
-  for (int i=0;i<fRecoTrack_hitYZ[0].size();i++){
+  for (uint i=0;i<fRecoTrack_hitYZ[0].size();i++){
 
     double poshitI = fRecoTrack_hitYZ[0][i][2];
     double poshitJ = fRecoTrack_hitYZ[0][i][3];
@@ -880,7 +881,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   binJ = hMPPCHits_XZ->GetYaxis()->FindBin(poshitJ_prev);
   ith_pe =  hMPPCHits_XZ->GetBinContent(binI,binJ);
 
-  for (int i=0;i<fRecoTrack_hitXZ[0].size();i++){
+  for (uint i=0;i<fRecoTrack_hitXZ[0].size();i++){
 
     double poshitI = fRecoTrack_hitXZ[0][i][2];
     double poshitJ = fRecoTrack_hitXZ[0][i][3];
@@ -912,7 +913,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   binJ = hMPPCHits_XY->GetYaxis()->FindBin(poshitJ_prev);
   ith_pe =  hMPPCHits_XY->GetBinContent(binI,binJ);
 
-  for (int i=0;i<fRecoTrack_hitXY[0].size();i++){
+  for (uint i=0;i<fRecoTrack_hitXY[0].size();i++){
 
     double poshitI = fRecoTrack_hitXY[0][i][2];
     double poshitJ = fRecoTrack_hitXY[0][i][3];
@@ -978,7 +979,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
     bool TrackSepCheckXZ = false;
     bool TrackSepCheckYZ = false;
        
-    bool TwoTrackLike = false;
+    //bool TwoTrackLike = false;
 
     cout <<"EVT:"<< ievt<<endl;
 
@@ -1002,7 +1003,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
     if (!useElectron && NSepView >= 2){
       cout << "Track Separation Cut!" << endl;
       sepcut_count++;
-      TwoTrackLike = true;
+      //TwoTrackLike = true;
       //     continue;
     }
 
@@ -1100,7 +1101,7 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
    /* if (writePlots) {
   
       for(size_t ievtdispl=0;ievtdispl<passed_evt.size();ievtdispl++){ // get last entry
-		/*
+		
 	if (ievtdispl < nPlotsWrite) {
 	  hMPPCHits_XY[passed_evt[ievtdispl]]->Write();
 	  hMPPCHits_XZ[passed_evt[ievtdispl]]->Write();
@@ -1137,6 +1138,8 @@ int SuperFGDEGammaSeparation (int argc, char** argv){
   hElecMom_CosTheta_Passed->Write();
   
   out->Close();
+
+  return 1;
 }
 
 //___________________________________________________________________________ 
@@ -1148,7 +1151,7 @@ TF1 *RatioCalc(TString name, int e_step_tot, TH1F *hPE_etrack, double &ratio){
 
     int nbinignore =1;
     int nminhits = 3;
-    bool minimumhits = false;
+    //bool minimumhits = false;
 
     double frange_hi[2] = {0.,1.};
     double fval_hi = 0.;

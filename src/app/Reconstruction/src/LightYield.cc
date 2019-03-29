@@ -109,6 +109,7 @@ int LightYield(int argc,char** argv)
   TCanvas *cMPPCHits_YZ[NEvtDisplTot];
 
   TRandom3* fRndm = new TRandom3(0);
+  (void)fRndm;
 
 #if PROTO
   // L.Y. histoes
@@ -439,7 +440,8 @@ int LightYield(int argc,char** argv)
 
 #endif
 
-    double measured_ct = 0.1;
+    double measured_ct = 0.034;
+    (void)measured_ct;
 
     // channel - to - channel crosstalk
 #if CROSSTALK == 1

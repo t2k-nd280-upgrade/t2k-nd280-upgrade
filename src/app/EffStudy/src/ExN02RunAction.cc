@@ -145,8 +145,8 @@ void ExN02RunAction::BeginOfRunAction(const G4Run* aRun)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ExN02RunAction::EndOfRunAction(const G4Run*) {
-  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-#ifdef NEUTRON_FILE  
+#ifdef NEUTRON_FILE
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();  
   analysisManager->Write();
   analysisManager->CloseFile();
 #endif
