@@ -96,7 +96,7 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
 }
 
 void ExN02EventAction::FH(G4int i, G4double e) {
-  auto analysisManager = G4AnalysisManager::Instance();
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   analysisManager->FillH1(i, e);
   if (i < 4)
     analysisManager->FillH1(16, e);
