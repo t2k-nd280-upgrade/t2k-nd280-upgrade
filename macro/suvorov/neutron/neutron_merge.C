@@ -10,14 +10,12 @@
 
 #include <iostream>
 
-const float MIP_LY_AV3 = 50;
-
-//hadd -f /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt0_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt1* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt2* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt3* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt4* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt5* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt6* /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt7000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt8000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt9000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt7?000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt8?000_NEvt1000.root /t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v15-UseXY-UseXZ-UseYZ-Separate10_na_Evt9?000_NEvt1000.root
+const float MIP_LY_AV3 = 40;
 
 using namespace std;
 
 void neutron_merge() {
-	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v18-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v20-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
 
   const Int_t Ndist = 9;
   float distance_cut[Ndist];
@@ -32,6 +30,8 @@ void neutron_merge() {
   // 50 - 100 cm
   distance_cut[8] = 100.;
 
+  TCanvas* c1 = new TCanvas("canva","",50,50,1000,800);
+
   TTree* tree       = (TTree*)file->Get("neutron");
   Double_t ekin, costheta, dist_cubes, dist, first_hit_time, neutron_time, neutron_dist_true;
   Double_t dir_true[3], dir_reco[3];
@@ -39,12 +39,14 @@ void neutron_merge() {
   Double_t N_hits_XY, N_hits_XZ, N_hits_YZ; 
   Double_t HM_proton;
   Int_t first_sc_reco;
+  Int_t n_fibers;
 
   tree->SetBranchAddress("KinEnergy_true",     &ekin);
   tree->SetBranchAddress("CosTheta_true",      &costheta);
   tree->SetBranchAddress("Light_fst",          &light_fst);
   tree->SetBranchAddress("Light_max",          &light_max);
   tree->SetBranchAddress("Light_tot",          &light_tot);
+  tree->SetBranchAddress("N_fibers",           &n_fibers);
 
   tree->SetBranchAddress("Dir_True",           dir_true);
   tree->SetBranchAddress("Dir_Reco",           dir_reco);
@@ -83,9 +85,6 @@ void neutron_merge() {
   TH1F* hits_cl_XZ = (TH1F*)file->Get("hitsN_XZ");
   TH1F* hits_cl_YZ = (TH1F*)file->Get("hitsN_YZ");
 
-  Int_t test_light_n = 0;
-  Float_t test_light = 0.;
-
   // do rebinning
   Int_t rebin_Y = 5;
   init_e_cos->RebinY(rebin_Y);
@@ -94,7 +93,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_v24.root", "RECREATE");
+  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_v25.root", "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
@@ -105,8 +104,16 @@ void neutron_merge() {
     }
   }
 
-  const Int_t time_size = 6;
-  Double_t time_sigma[time_size] = {0., 1.5/sqrt(3), 0.6/sqrt(3), 0., 0., 0.};
+  //  0) 0                       no cut
+  //  1) 1.5 / sqrt3,            > 40 p.e. in total
+  //  2) 0.95 / sqrt3,           > 40 p.e. in total
+  //  3) 1.5 * 1 / sqrt fibers   > 40 p.e per each fiber
+  //  4) 0.95 / sqrt3 * sqrt (40/total)  > 40 p.e. total
+  //  5) 1.5 * 1 / sqrt fibers   > 40 p.e per each fiber > 200 p.e.
+  //  6) 0.95 / sqrt3 * sqrt (40/total)  > 40 p.e. total > 200 p.e.
+
+  const Int_t time_size = 7;
+  Double_t time_sigma[time_size] = {0., 1.5/sqrt(3), 0.95/sqrt(3), 1.5, 0.95, 1.5, 0.95};
 
   // read tree several times in order to check
   for (Int_t distID = 0; distID < Ndist; ++distID) {
@@ -172,15 +179,8 @@ void neutron_merge() {
       if (distID == 8 && (dist_cubes < 50. || dist_cubes > 100.))
         continue;
 
-      // selection on light
-      if (light_tot / 3. < 50.)
-        continue;
-
       reco_first->Fill(ekin, first_sc_reco);
       reco_first_n->Fill(ekin);
-
-      if (first_sc_reco == 0) 
-        continue;
   
       eff_e_cos->Fill(costheta, ekin);
   
@@ -195,31 +195,32 @@ void neutron_merge() {
       angle_smearing->Fill(dir_true[2], dir_reco[2]);
 
       for (Int_t resID = 1; resID < time_size; ++resID ) {
+
+        // selection on light
+        if (light_tot / 3. < 40.)
+          continue;
   
         if (resID > 2 ) {
           if (!light_tot)
             cout << "no light!!!  " << light_fst << endl;
           float light_fiber = light_tot / 3.;
-          float res;
-          if (resID == 3) {
-            res      = 1.5 / sqrt(3);
-            res           *= sqrt(MIP_LY_AV3 / light_fiber);
-          } if (resID == 4 || resID == 5) {
-            res      = 0.92 / sqrt(3);
-            res           *= sqrt(50 / light_fiber);
+          float res = 0.;
+          if (resID == 4 || resID == 6) {
+            res      = 0.95 / sqrt(3);
+            res      *= sqrt(MIP_LY_AV3 / light_fiber);
+          } else if (resID == 3 || resID == 5) {
+            res      = 1.5;
+            res      *= sqrt(1. / n_fibers);
           }
+
+          if (resID > 4 && time_sigma[resID] < 0.2)
+            time_sigma[resID] = 0.2;
 
           time_resol->Fill(1000 * res);
           ly_fst->Fill(light_fst);
           ly_max->Fill(light_max);
           ly_tot->Fill(light_tot);
           time_sigma[resID] = res;
-
-          if (ekin > 400) {
-            test_light += light_tot;
-            ++test_light_n;
-            test_light_y->Fill(light_tot);
-          }
 
           test_l_e->Fill(ekin, light_tot);
           test_l_e_n->Fill(ekin);
@@ -228,7 +229,7 @@ void neutron_merge() {
 
 
         float time_vertex = 0.;
-        if (resID == 5) {
+        if (resID == 1e6) {
           time_vertex = gen->Gaus(0., 1.);
         }
 
@@ -236,6 +237,7 @@ void neutron_merge() {
         time -= time_vertex;
         if (time < 0.)
           time = 0.;
+
         beta = dist_cubes / (time * 30.);
 
         if (beta < 0)
@@ -247,7 +249,7 @@ void neutron_merge() {
         Int_t cos_bin = cos_h->FindBin(costheta);
         //energy_resol_cos[resID][cos_bin-1]->Fill(ekin, ekin2);
         beta_ekin_sm[resID]->Fill(ekin, beta);
-        if (ekin > 90. && ekin < 110.)
+        if (ekin > 70. && ekin < 90.)
           energy_acc[resID]->Fill((ekin2 - ekin) / ekin);
       }
     }
@@ -317,12 +319,20 @@ void neutron_merge() {
         
       }
     
+      graph_resol[resID]->Draw("ap");
+      graph_resol[resID]->GetYaxis()->SetRangeUser(0., 1.);
+      graph_resol[resID]->GetXaxis()->SetRangeUser(0., 500.);
+      c1->Write(Form("resol_canvas_%i", resID));
+
       graph[resID]->SetMaximum(600.);
       graph[resID]->SetMinimum(0.);
       graph[resID]->Draw("ap");
       gPad->Update();
       graph[resID]->Write(Form("smearing_graph_%i", resID));
       graph_resol[resID]->Write(Form("resol_graph_%i", resID));
+
+      graph_resol[resID]->Draw("ap");
+      graph_resol[resID]->GetYaxis()->SetRangeUser(0., 0.5);
     } // loop over projections to fit
     // draw resolution and efficiency for each distance
     TH2F* eff_e_cos_2 = (TH2F*)eff_e_cos->Clone("eff_ecos2");
@@ -398,7 +408,7 @@ void neutron_merge() {
 
   TF1* beta_f = new TF1("beta", "sqrt(x*x + 2*x*939)/(x+939)", 0., 500.);
   (void)beta_f;
-  TCanvas* c1 = new TCanvas("canva","",50,50,1000,800);
+  
   /*TF1* resol_100_05 = new TF1("resol_100_09", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/100*0.5*30", 0., 500.);
   resol_100_05->Draw();
   c1->Write();
