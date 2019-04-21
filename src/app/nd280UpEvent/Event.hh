@@ -1,7 +1,7 @@
 #ifndef _EVENT_H_
 #define _EVENT_H_
 
-#include <Hit.hh>
+#include "Hit.hh"
 #include <TObject.h>
 #include <TClonesArray.h>
 

@@ -21,7 +21,7 @@ include(${CMAKE_BINARY_DIR}/FindGEANT4.cmake)
 #include(${CMAKE_BINARY_DIR}/FindVGM.cmake)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -DG4VIS_USE -DWITHOUT_INGRID")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-shadow -Wno-overloaded-virtual -DG4VIS_USE")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-shadow -Wno-overloaded-virtual -DG4VIS_USE -Wno-undefined-var-template -Wno-unused-const-variable -Wno-unused-private-field")
 
 if    (_USE_CPP11 MATCHES "ON")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
