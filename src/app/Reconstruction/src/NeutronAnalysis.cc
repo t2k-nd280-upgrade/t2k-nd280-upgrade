@@ -163,6 +163,7 @@ int NeutronAnalysis(int argc,char** argv) {
 
   Int_t first_sc_reco;
   Int_t topology;
+  Int_t n_fibers;
 
   outtree->Branch("KinEnergy_true",     &ekin);
   outtree->Branch("CosTheta_true",      &costheta);
@@ -171,6 +172,7 @@ int NeutronAnalysis(int argc,char** argv) {
   outtree->Branch("Light_fst",          &light_fst);
   outtree->Branch("Light_max",          &light_max);
   outtree->Branch("Light_tot",          &light_tot);
+  outtree->Branch("N_fibers",           &n_fibers);
   outtree->Branch("Distance_cubes",     &dist_cubes);
   outtree->Branch("Distance_hit_true",  &dist);
   outtree->Branch("First_hit_time",     &first_hit_time);
@@ -391,6 +393,18 @@ int NeutronAnalysis(int argc,char** argv) {
     Double_t vertex_y = nd280UpEvent->GetVertex(0)->GetPosition().Y();
     Double_t vertex_z = nd280UpEvent->GetVertex(0)->GetPosition().Z();
 
+    if(DEBUG){
+      cout << endl;
+      cout << "//////////////////////" << endl;
+      cout << "Event:                 " << ievt << endl;
+      cout << "Vertex placed in cubes " << vertex_binX << "\t" << vertex_binY << "\t" << vertex_binZ << endl;
+      cout << "Number of tracks       " << nd280UpEvent->GetNTracks() << endl;
+      cout << "# of hits              " << nd280UpEvent->GetNHits() << endl;
+      cout << "neutron E              " << ekin << endl;
+      cout << "neutron cos            " << costheta << endl;
+    }
+
+
 
     // take for the neutron vars
     // TODO loop over trajs looking for neutron
@@ -408,7 +422,8 @@ int NeutronAnalysis(int argc,char** argv) {
 
     if (nd280UpEvent->GetNTracks() == 1) {
       topology = 0;
-      continue;
+      //std::cout << "No interactions in event" << std::endl;
+      //continue;
     }
 
     ekin      = track_n->GetInitKinEnergy();
@@ -427,15 +442,7 @@ int NeutronAnalysis(int argc,char** argv) {
     
     int NHits = nd280UpEvent->GetNHits();
 
-    if(DEBUG){
-      cout << endl;
-      cout << "//////////////////////" << endl;
-      cout << "Event: " << ievt << endl;
-      cout << "Vertex placed in cubes " << vertex_binX << "\t" << vertex_binY << "\t" << vertex_binZ << endl;
-      cout << "# of hits = " << nd280UpEvent->GetNHits() << endl;
-      cout << "neutron E   = " << ekin << endl;
-      cout << "neutron cos = " << costheta << endl;
-    }
+    
 
     first_hit_time = 1.e9;
     Float_t first_hit_dist = 1.e9;
@@ -694,6 +701,10 @@ int NeutronAnalysis(int argc,char** argv) {
     TH2F* hits_map_XZ_cluster_N = (TH2F*)h2d_xz->Clone("hits_map_XZ_cluster_N");
     TH2F* hits_map_YZ_cluster_N = (TH2F*)h2d_yz->Clone("hits_map_YZ_cluster_N");
 
+    TH2F* hits_map_XY_cluster_N_cut = (TH2F*)h2d_xy->Clone("hits_map_XY_cluster_N_cut");
+    TH2F* hits_map_XZ_cluster_N_cut = (TH2F*)h2d_xz->Clone("hits_map_XZ_cluster_N_cut");
+    TH2F* hits_map_YZ_cluster_N_cut = (TH2F*)h2d_yz->Clone("hits_map_YZ_cluster_N_cut");
+
     TH2F* hits_map_XY_cluster = (TH2F*)h2d_xy->Clone("hits_map_XY_cluster");
     TH2F* hits_map_XZ_cluster = (TH2F*)h2d_xz->Clone("hits_map_XZ_cluster");
     TH2F* hits_map_YZ_cluster = (TH2F*)h2d_yz->Clone("hits_map_YZ_cluster");
@@ -701,6 +712,13 @@ int NeutronAnalysis(int argc,char** argv) {
     hits_map_XY_cluster_N->SetBinContent(first_binX, first_binY, 1.);
     hits_map_XZ_cluster_N->SetBinContent(first_binX, first_binZ, 1.);
     hits_map_YZ_cluster_N->SetBinContent(first_binY, first_binZ, 1.);
+
+    if (hits_map_XY->GetBinContent(first_binX, first_binY) > 40.)
+      hits_map_XY_cluster_N_cut->SetBinContent(first_binX, first_binY, 1.);
+    if (hits_map_XZ->GetBinContent(first_binX, first_binZ) > 40.)
+      hits_map_XZ_cluster_N_cut->SetBinContent(first_binX, first_binZ, 1.);
+    if (hits_map_YZ->GetBinContent(first_binY, first_binZ) > 40.)
+      hits_map_YZ_cluster_N_cut->SetBinContent(first_binY, first_binZ, 1.);
 
     hits_map_XY_cluster->SetBinContent(first_binX, first_binY, hits_map_XY->GetBinContent(first_binX, first_binY));
     hits_map_XZ_cluster->SetBinContent(first_binX, first_binZ, hits_map_XZ->GetBinContent(first_binX, first_binZ));
@@ -716,6 +734,8 @@ int NeutronAnalysis(int argc,char** argv) {
           if (CloseHit(i, j, hits_map_XY) && !hits_map_XY_cluster_N->GetBinContent(i, j)){
             hits_map_XY_cluster_N->SetBinContent(i, j, 1);
             hits_map_XY_cluster->SetBinContent(i, j, hits_map_XY->GetBinContent(i, j));
+            if (hits_map_XY->GetBinContent(i, j) > 40.)
+              hits_map_XY_cluster_N_cut->SetBinContent(i, j, 1.);
           }
         }
       }
@@ -729,6 +749,8 @@ int NeutronAnalysis(int argc,char** argv) {
           if (CloseHit(i, j, hits_map_XZ) && !hits_map_XZ_cluster_N->GetBinContent(i, j)){
             hits_map_XZ_cluster_N->SetBinContent(i, j, 1);
             hits_map_XZ_cluster->SetBinContent(i, j, hits_map_XZ->GetBinContent(i, j));
+            if (hits_map_XZ->GetBinContent(i, j) > 40.)
+              hits_map_XZ_cluster_N_cut->SetBinContent(i, j, 1.);
           }
         }
       }
@@ -742,6 +764,8 @@ int NeutronAnalysis(int argc,char** argv) {
           if (CloseHit(i, j, hits_map_YZ) && !hits_map_YZ_cluster_N->GetBinContent(i, j)){
             hits_map_YZ_cluster_N->SetBinContent(i, j, 1);
             hits_map_YZ_cluster->SetBinContent(i, j, hits_map_YZ->GetBinContent(i, j));
+            if (hits_map_YZ->GetBinContent(i, j) > 40.)
+              hits_map_YZ_cluster_N_cut->SetBinContent(i, j, 1.);
           }
         }
       }
@@ -783,6 +807,7 @@ int NeutronAnalysis(int argc,char** argv) {
     }
 
     light_tot = hits_map_XY_cluster->Integral() + hits_map_XZ_cluster->Integral() + hits_map_YZ_cluster->Integral();
+    n_fibers  = hits_map_XY_cluster_N_cut->Integral() + hits_map_XZ_cluster_N_cut->Integral() + hits_map_YZ_cluster_N_cut->Integral();
 
     if (light_tot < light_fst) {
       cout << "Tot < fist" << endl;
