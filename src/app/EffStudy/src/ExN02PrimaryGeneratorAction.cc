@@ -295,13 +295,17 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
 
     if (fTypePosition == "Uniform") {
-      float targetWidth   = inxml->GetXMLTargetwidth1(); // width along X
-      float targetLength  = inxml->GetXMLTargetlength1(); // length along Z
-      float targetHeight  = inxml->GetXMLTargetheight1(); // height along Y
+      
+      double edge         = inxml->GetXMLSuperFGDCubeEdge1();
+      float targetWidth   = inxml->GetXMLSuperFGDCubeNum1_X() * edge; // width along X
+      float targetLength  = inxml->GetXMLSuperFGDCubeNum1_Z() * edge; // length along Z
+      float targetHeight  = inxml->GetXMLSuperFGDCubeNum1_Y() * edge; // height along Y
 
-      float x = G4UniformRand() * targetWidth  - targetWidth*0.5  + inxml->GetXMLTargetPos1_X();
-      float y = G4UniformRand() * targetHeight - targetHeight*0.5 + inxml->GetXMLTargetPos1_Y();
-      float z = G4UniformRand() * targetLength - targetLength*0.5 + inxml->GetXMLTargetPos1_Z();
+      float x = G4UniformRand() * targetWidth  - targetWidth*0.5  + inxml->GetXMLSuperFGDPos1_X();
+      float y = G4UniformRand() * targetHeight - targetHeight*0.5 + inxml->GetXMLSuperFGDPos1_Y();
+      float z = G4UniformRand() * targetLength - targetLength*0.5 + inxml->GetXMLSuperFGDPos1_Z();
+
+      std::cout << "New vertex position  " << x << "  " << y << "   " << z << std::endl;
 
       anEvent->GetPrimaryVertex()->SetPosition(x, y, z);
     }
