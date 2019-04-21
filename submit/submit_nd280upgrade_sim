@@ -61,10 +61,7 @@ $tag             = "test" unless defined $tag;
 #$tag             = "g4ND280Up_AltTargTPC_Only_SuperFGD"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu"    unless defined $tag;
 #$tag             = "g4ND280Up_1E21_SuperFGD_NuMu_NEUT"    unless defined $tag;
-<<<<<<< Updated upstream
-=======
 $tag              = "GENIE_G18_10b_1e22_nue_FHC"               unless defined $tag;
->>>>>>> Stashed changes
 
 
 ######################################################################################################################################
@@ -103,6 +100,11 @@ $first_expt      = 0                           unless defined $first_expt; # fir
 #$queue           = "rhel6-short"                unless defined $queue;
 $queue           = "sx"                unless defined $queue;
 
+if($resource eq "parallel"){
+    open(par_file, ">$job_dir/commands_sim.sh") or die("Can not create the sbatch script");
+    print par_file "#!/bin/bash -l  \n";
+}
+
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
     
@@ -117,10 +119,10 @@ while($irun < $nruns) { # loop over the jobs
 	$arguments = "$softw_dir/$exe_loc_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
     }
      
-    $command = "$arguments";
-    $command .= "; mv EffStudy_0.root EffStudy_";
-    $file_name = $irun + 1;
-    $command .= "$file_name.root";
+     $command = "$arguments";
+    # $command .= "; mv EffStudy_0.root EffStudy_";
+    # $file_name = $irun + 1;
+    # $command .= "$file_name.root";
     
     print "\n";
     print "Job $irun \n";
@@ -204,7 +206,15 @@ while($irun < $nruns) { # loop over the jobs
     }
     
     if($resource eq "interactive") {
-	system($command);
+    	print "$command";
+			system($command);
+    }
+
+    if($resource eq "parallel") {
+        print par_file "#!/bin/bash -l  \n";
+        print par_file "$command; echo \"job $irun from $nruns done\" \n";
+        print "Parallel\n";
+        print "$command\n";
     }
 
 
@@ -212,3 +222,11 @@ while($irun < $nruns) { # loop over the jobs
 
     $irun=$irun+1;
 } # end loop over jobs
+
+if($resource eq "parallel") {
+    close(par_file);
+    $run_command = "nice -n19 parallel -j 15 -a $job_dir/commands_sim.sh";
+    print "running parallel \n";
+    system($run_command);
+    unlink "$job_dir/commands_sim.sh";
+}
