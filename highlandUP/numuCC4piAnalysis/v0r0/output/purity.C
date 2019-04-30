@@ -60,9 +60,9 @@ int it;
 
 Float_t computePurity(TString suffix, int config, int target, int branch, int topology, int cut_level, int useTargetOnly=0) {
 
-  //return computeEvents(suffix, config, target, branch, cut_level, topology, useTargetOnly)/
-  //   computeEvents(suffix, config, target, branch, cut_level, -1, useTargetOnly);
-  return computeEvents(suffix, config, target, branch, cut_level, topology, useTargetOnly);
+  return computeEvents(suffix, config, target, branch, cut_level, topology, useTargetOnly)/
+    computeEvents(suffix, config, target, branch, cut_level, -1, useTargetOnly);
+  //return computeEvents(suffix, config, target, branch, cut_level, topology, useTargetOnly);
 }
 
 
@@ -105,9 +105,9 @@ void printTable(TString suffix, int useTargetOnly=1) {
 
       cout << " & $" << (int)computeEvents(suffix, conf[c], t, -1, 4, -1, useTargetOnly) << "$";
       for (int topo=0; topo<=2; topo++)
-	//cout << " & $" << 100*computePurity(suffix, conf[c], t, topo, topo, 4, useTargetOnly) << "\\%$";
+	       cout << " & $" << 100*computePurity(suffix, conf[c], t, topo, topo, 4, useTargetOnly) << "\\%$";
 
-  cout << " & $" << (int)computePurity(suffix, conf[c], t, topo, topo, 4, useTargetOnly) << "$";
+  //cout << " & $" << (int)computePurity(suffix, conf[c], t, topo, topo, 4, useTargetOnly) << "$";
       cout << " \\\\" << endl;
     }
   }

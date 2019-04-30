@@ -18,6 +18,7 @@
 #include "TChain.h"
 #include "TLegend.h"
 #include "TAxis.h"
+#include "TMath.h"
 
 #include "TString.h"
 #include "TLatex.h"
@@ -41,6 +42,12 @@ double BinEdges_Q2[NBins_Q2+1] = {0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0
 
 const int NBins_Enu = 14;
 double BinEdges_Enu[NBins_Enu+1] = {0, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 2000, 3000, 5000};
+
+const int NbinsZ = 100;
+double BinsZ[101];
+
+const int NbinsZang = 20;
+double BinsZang[21];
  
 double PSRes_muonMom = 400;
 double PSRes_muonCos = 0.4;
@@ -257,8 +264,8 @@ void plot2D_Truth(TString suffix, int config, int target, int categ, int cut1, i
   c->SaveAs(TString::Format("%s/2D_eff_config%i_target%i_total_%s_%s_%s%s.pdf", 
           OUTDIR.Data(), config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()));
 
-  TFile fW(TString::Format("%s/2D_eff_config%i_target%i_total_%s_%s_%s%s.root", 
-         OUTDIR.Data(), config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()), "RECREATE");
+  // TFile fW(TString::Format("%s/2D_eff_config%i_target%i_total_%s_%s_%s%s.root", 
+  //        OUTDIR.Data(), config, target, varX.Data(), varY.Data(), categName.Data(), suffixName.Data()), "CREATE");
 
   h_eff->Write();
   h_pur->Write();
@@ -279,7 +286,28 @@ void plotResolution(TString suffix, int config, int target, int categ, int cut1,
         INPDIR.Data(),target, config, target, suffix.Data()));
   TTree* t = (TTree*)f.Get("default");
 
-  TH2F* hSig    = new TH2F("h1", "h2", nbinsX, xbinsX, nbinsY, xbinsY);
+
+  for(int j=0; j<NbinsZ+1; j++){
+    BinsZ[j] = -200+j*4;
+  }
+
+  for(int j=0; j<NbinsZang+1; j++){
+    BinsZang[j] = -1+double(j)*2/NbinsZang;
+    cout << BinsZang[j] << endl;
+  }
+
+  // for(int j=0; j<NbinsZ; j++){
+  //   cout << BinsZ[j] << endl;
+  // }
+
+  TH3F* hMomRes    = new TH3F("momRes3D", "momRes3D", nbinsX, xbinsX, nbinsY, xbinsY,NbinsZ,BinsZ);
+  TH2F* hMomRes2D  = new TH2F("hMomRes2D", "hMomRes2D", nbinsX, xbinsX, nbinsY, xbinsY);
+
+  TH3F* hAngRes    = new TH3F("hAngRes", "hAngRes", nbinsX, xbinsX, nbinsY, xbinsY,NbinsZang,BinsZang);
+  TH2F* hAngRes2D  = new TH2F("hAngRes2D", "hAngRes2D", nbinsX, xbinsX, nbinsY, xbinsY);
+
+
+  TH2F* hSig   = new TH2F("h1", "h1", nbinsX, xbinsX, nbinsY, xbinsY);
   TH2F* hSelSig = new TH2F("h2", "h2", nbinsX, xbinsX, nbinsY, xbinsY);
   TH2F* hSel    = new TH2F("h3", "h3", nbinsX, xbinsX, nbinsY, xbinsY);
   TH1F *h_res_1d = new TH1F("h1", "h1", 100,-100,100);
@@ -293,11 +321,12 @@ void plotResolution(TString suffix, int config, int target, int categ, int cut1,
   Float_t selmu_truemom;
   Float_t selmu_mom;
   Int_t topology;
+  Float_t selmu_truedir[3];
   int cntTimes=0;
   
   t->SetBranchAddress("accum_level", &accum_level);
   t->SetBranchAddress(varX,          &variableX);
-  t->SetBranchAddress(varY,          &variableY);
+  t->SetBranchAddress(varX,          &variableY);
   t->SetBranchAddress("topology",    &topology);
 
   t->SetBranchAddress("accum_level", &accum_level);
@@ -309,6 +338,7 @@ void plotResolution(TString suffix, int config, int target, int categ, int cut1,
   t->SetBranchAddress("selmu_truemom", &selmu_truemom);
   t->SetBranchAddress("selmu_mom", &selmu_mom);
   t->SetBranchAddress("nu_pdg", &nu_pdg);
+  t->SetBranchAddress("selmu_truedir", &selmu_truedir);
 
   vector<int> branches;
   if (categ == -2) {
@@ -351,12 +381,19 @@ void plotResolution(TString suffix, int config, int target, int categ, int cut1,
       sel1 = sel1 || (accum_level[*it] > cut2 && topoCut);
       }
     }
+    Double_t theta = atan(selmu_truedir[1]/selmu_truedir[2]);
+    Double_t costheta;
+    if(selmu_truedir[2] < 0) costheta = -cos(theta);
+    else costheta = cos(theta);
 
     if (sel1){
-      //cout << "vX: " << selmu_truemom << endl;
-      h_res_1d->Fill(100*(selmu_truemom-selmu_mom)/selmu_truemom);
-      hSig->Fill(variableX, selmu_truemom, 100*abs(selmu_truemom-selmu_mom)/selmu_truemom);
-      hSel->Fill(variableX, selmu_truemom, 1);
+    // cout << "true_costheta: " << costheta << endl;
+    // cout << "selmu_costheta: " << variableY << endl << endl;
+      h_res_1d->Fill(selmu_truemom-selmu_mom);
+      hMomRes->Fill(costheta, selmu_truemom, selmu_truemom-selmu_mom);
+      hAngRes->Fill(costheta, selmu_truemom, costheta-variableY);
+      // cout <<"dif: " << costheta-variableY << endl;
+      hSel->Fill(costheta, selmu_truemom, 1);
     }
 
   }
@@ -392,9 +429,9 @@ void plotResolution(TString suffix, int config, int target, int categ, int cut1,
   else
     categName = branchNames[categ];
 
-  TString namehist = TString::Format("HM_%s_%s",categName.Data(),targetName.Data());
+  TString namehist = TString::Format("categ_%s_target_%s",categName.Data(),targetName.Data());
   TH2F *h_res = new TH2F(namehist, namehist, nbinsX, xbinsX, nbinsY, xbinsY);
-  h_res->Divide(hSig, hSel);
+  //h_res->Divide(hSig, hSel);
 
   h_res->SetTitle(TString::Format("%s, %s, %s", 
           config==0 ? "Current":"Upgrade",
@@ -419,10 +456,37 @@ void plotResolution(TString suffix, int config, int target, int categ, int cut1,
   c2->SaveAs(TString::Format("%s/1D_resolution_config%i_target%i_total_%s%s.pdf", 
           OUTDIR.Data(), config, target, categName.Data(), suffixName.Data()));
 
-  TFile fW(TString::Format("%s/resolution_config%i_target%i_total_%s%s.pdf", 
-          OUTDIR.Data(), config, target, categName.Data(), suffixName.Data()));
+  TFile fW(TString::Format("%s/input_FSI_%s.root", 
+          OUTDIR.Data(),namehist.Data()),"RECREATE");
 
-  h_res->Write();
+  for(int aa=0; aa<nbinsX; aa++){
+    for(int bb=0; bb<nbinsY; bb++){
+    TH1D* AuxH = hMomRes->ProjectionZ("",aa+1,aa+1,bb+1,bb+1);
+    TH1D* AuxHang = hAngRes->ProjectionZ("",aa+1,aa+1,bb+1,bb+1);
+    cout << "a:" << aa << " b: " << bb << " RMS:" <<  AuxH->GetRMS() << endl;
+    cout << "a:" << aa << " b: " << bb << " angRMS:" <<  AuxHang->GetRMS() << endl << endl;
+    hMomRes2D->SetBinContent(aa+1,bb+1, AuxH->GetRMS());
+    hAngRes2D->SetBinContent(aa+1,bb+1, AuxHang->GetRMS());
+    }
+  }
+
+  cout << endl << hMomRes2D->GetEntries() << endl << endl;
+  TCanvas *c3 = new TCanvas("c3", "c3");
+  hMomRes2D->Draw("COLZ");
+  c3->Update();
+  c3->SaveAs(TString::Format("%s/2D_mom_resolution_%s.pdf", 
+          OUTDIR.Data(), namehist.Data()));
+
+  TCanvas *c4 = new TCanvas("c4", "c4");
+  hAngRes2D->Draw("COLZ");
+  c4->Update();
+  c4->SaveAs(TString::Format("%s/2D_ang_resolution_%s.pdf", 
+          OUTDIR.Data(), namehist.Data()));
+
+  hMomRes->Write();
+  hMomRes2D->Write();
+  hAngRes->Write();
+  hAngRes2D->Write();
   h_res_1d->Write();
 
 }
@@ -507,9 +571,9 @@ void muons_resolution() {
     // "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
     // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
 
-    plotResolution("_FHC_numu", 2, 3, -6, -1, 4, 
-    "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
-    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+    // plotResolution("_FHC_numu", 2, 3, -6, -1, 4, 
+    // "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
+    // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
 
     plotResolution("_FHC_numu", 2, 3, -5, -1, 4, 
     "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
@@ -519,17 +583,17 @@ void muons_resolution() {
     "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
     NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
     
-    plotResolution("_FHC_numu", 2, 3, -3, -1, 4, 
-    "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
-    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+    // plotResolution("_FHC_numu", 2, 3, -3, -1, 4, 
+    // "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
+    // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
     
     plotResolution("_FHC_numu", 2, 3, -2, -1, 4, 
     "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
     NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
     
-    plotResolution("_FHC_numu", 2, 3, -1, -1, 4, 
-    "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
-    NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+    // plotResolution("_FHC_numu", 2, 3, -1, -1, 4, 
+    // "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 
+    // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
 
     // plot2D_Default("_FHC_numu", 2, 3, -1, -1, 4, 
     // "selmu_costheta", "true cos #theta", "selmu_truemom", "true p_{#mu} [MeV/c]", 

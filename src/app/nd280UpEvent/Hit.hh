@@ -3,9 +3,11 @@
 
 #include <TObject.h>
 #include <TClonesArray.h>
+#include <iostream>
 
 class Hit : public TObject {
 private:
+
   Int_t         fview;            //(0=XY, 1=XZ, 2=ZY)
   Int_t         fX;               //X coordinate of hit
   Int_t         fY;               //Y coordinate of hit
@@ -39,10 +41,25 @@ private:
   Double_t      fTrueY;           //true Y from MC
   Double_t      fTrueZ;           //true Z from MC
   bool          fMC;              //true if hit produced in MC, false otherwise
+  bool          fxTalkFlag;       //flag for cross talk (false=not CT, true=CT)
+  Int_t         fPDG;             //true PDG of track creating the hit
+  Int_t         fTrackId;         //true track ID from MC // 1 == primary
+  Int_t         fParentId;        //true track parent ID from MC
+  Double_t      fEdep;            //true Energy Deposit from MC
+  
+  Double_t      fTrueXPoint;      //true hit X coordinate
+  Double_t      fTrueYPoint;      //true hit Y coordinate
+  Double_t      fTrueZPoint;      //true hit Z coordainte
+
+
 
 public:
-  Hit(){ fMulti = 0; };
-  virtual ~Hit() { };
+
+  Hit(){ 
+    fMulti = 0; 
+  };
+  virtual ~Hit() {
+  };
 
   void Clear(Option_t* /*option*/="")
   {
@@ -72,6 +89,7 @@ public:
   void SetGTrigTime(Double_t p_GTrigTime) {fGTrigTime = p_GTrigTime;}
   void SetSpillTime(Double_t p_SpillTime) {fSpillTime = p_SpillTime;}
   void SetSpillTrailTime(Double_t p_SpillTrailTime) {fSpillTrailTime = p_SpillTrailTime;}
+  void SetxTalkFlag(int p_CT) {fxTalkFlag = p_CT;}
 
   void SetMultiplicity(Int_t p_fMulti) {fMulti = p_fMulti;}
   void SetTrueXTalk(bool p_fTrueXTalk) {fTrueXTalk = p_fTrueXTalk;}
@@ -83,10 +101,15 @@ public:
   void SetTrueY(Double_t p_fTrueY) {fTrueY = p_fTrueY;}
   void SetTrueZ(Double_t p_fTrueZ) {fTrueZ = p_fTrueZ;}
   void SetMC(bool p_fMC) {fMC = p_fMC;}
-
+  void SetTrueXPoint(Double_t p_Tp) {fTrueXPoint = p_Tp;}
+  void SetTrueYPoint(Double_t p_Tp) {fTrueYPoint = p_Tp;}
+  void SetTrueZPoint(Double_t p_Tp) {fTrueZPoint = p_Tp;}
+  void SetPDG(Int_t p_PDG) {fPDG = p_PDG;}
+  void SetTrackID(Int_t p_ID) {fTrackId = p_ID;}
+  void SetParentID(Int_t p_ID) {fParentId = p_ID;}
+  void SetEdep(Double_t p_E) {fEdep = p_E;}
 
   void SetAll(Hit* in);   //used to copy all hit info from one hit to another in the event selection
-
 
   //functions to retrieve data
   Int_t GetView() {return fview;}
@@ -122,6 +145,14 @@ public:
   Double_t GetTrueY() {return fTrueY;}
   Double_t GetTrueZ() {return fTrueZ;}
   bool  IsMC() {return fMC;}
+  bool  GetxTalkFlag() {return fxTalkFlag;}
+  Double_t GetTrueXPoint() {return fTrueXPoint;}
+  Double_t GetTrueYPoint() {return fTrueYPoint;}
+  Double_t GetTrueZPoint() {return fTrueZPoint;}
+  Int_t GetPDG()     {return fPDG;}
+  Int_t GetTrackID() {return fTrackId;}
+  Int_t GetParentID() {return fParentId;}
+  Double_t GetEdep() {return fEdep;}
 
   ClassDef(Hit,2);
 };

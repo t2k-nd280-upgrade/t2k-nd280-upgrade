@@ -96,6 +96,7 @@ int PrototypeMC(int argc,char** argv) {
     // Set the inputs
     nd280upconv::TargetType_t DetType = nd280upconv::kUndefined;
     if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
+    else   {std::cerr << "Detector must be SFGD!!" << std::endl; exit(1);}
 
     if(detectorID != 0) {cout << "It only works with SFGD input!" << endl; exit(0);}
     
@@ -255,7 +256,9 @@ int PrototypeMC(int argc,char** argv) {
         
         float inProtonMom=0.0;
         Int_t NTraj = nd280UpEvent->GetNTracks();
-        for (Int_t trajID = 0; trajID < NTraj; ++trajID) {
+
+        cout << "# OF TRACKS: " << nd280UpEvent->GetNTracks() << endl;
+        for (Int_t trajID = 0; trajID < NTraj; trajID++) {
             
             cout << " starting loop over tracks  " << trajID << endl;
             
@@ -263,7 +266,7 @@ int PrototypeMC(int argc,char** argv) {
             int Npoints=track->GetNPoints();
             inProtonMom=track->GetInitMom().Mag();
             cout << track->GetPDG() << "\t" << track->GetParentID() << "\t" << track->GetTrackID() << endl;
-            if (!(track->GetPDG() == 2212 && track->GetParentID() == 0 && track->GetTrackID() == 1)) continue;
+            //if (!(track->GetPDG() == 2212 && track->GetParentID() == 0 && track->GetTrackID() == 1)) continue;
 
             hProtonTrueEMeV->Fill(inProtonMom);
 
@@ -392,6 +395,8 @@ int PrototypeMC(int argc,char** argv) {
                 for(int j = 0; j <3; j++){
                     Hit* hit = event->AddHit();
                     hit->SetView(j);
+
+                    //ALTERT:: HARD-CODED for PROTOTYPE!
                     hit->SetX(poshitX/10+12);
                     hit->SetY(poshitY/10+4);
                     hit->SetZ(poshitZ/10+24);
@@ -399,6 +404,26 @@ int PrototypeMC(int argc,char** argv) {
                     hit->SetTrueX(poshitX/10+12);
                     hit->SetTrueY(poshitY/10+4);
                     hit->SetTrueZ(poshitZ/10+24);
+
+                    hit->SetTrueXPoint(posX/10+12);
+                    hit->SetTrueYPoint(posY/10+4);
+                    hit->SetTrueZPoint(posZ/10+24);
+                    hit->SetPDG(track->GetPDG());
+                    hit->SetTrackID(track->GetTrackID());
+                    hit->SetParentID(track->GetParentID());
+                    hit->SetEdep(edep);
+
+                    // cout << endl << "-------------------"      << endl;
+                    // cout << "X-cube:  " << poshitX/10+12       << endl;
+                    // cout << "X-pos:   " << posX/10+12    << endl;
+                    // cout << "Y-cube:  " << poshitY/10+4        << endl;
+                    // cout << "Y-pos:   " << posY/10+4     << endl;
+                    // cout << "Z-cube:  " << poshitZ/10+24       << endl;
+                    // cout << "Z-pos:   " << posZ/10+24    << endl << endl;
+                    // cout << "PDG:     " << track->GetPDG()     << endl;
+                    // cout << "trackID: " << track->GetTrackID() << endl;
+                    // cout << "parntID: " << track->GetParentID() << endl;
+                    // cout << "-------------------"              << endl << endl;
 
                     if(j == 0) hit->SetZ(-1);
                     if(j == 1) hit->SetY(-1);
@@ -455,6 +480,14 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueY(poshitY/10+4);
                         hit->SetTrueZ(poshitZ/10+24);
 
+                        hit->SetTrueXPoint(-999);
+                        hit->SetTrueYPoint(-999);
+                        hit->SetTrueZPoint(-999);
+                        hit->SetPDG(track->GetPDG());
+                        hit->SetTrackID(track->GetTrackID());
+                        hit->SetParentID(track->GetParentID());
+                        hit->SetEdep(-999);
+
                         if(j == 0) hit->SetZ(-1);
                         if(j == 1) hit->SetY(-1);
                         if(j == 2) hit->SetX(-1);
@@ -508,6 +541,14 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueChargeXZ(Qxz);
                         hit->SetTrueChargeYZ(Qyz);
 
+                        hit->SetTrueXPoint(-999);
+                        hit->SetTrueYPoint(-999);
+                        hit->SetTrueZPoint(-999);
+                        hit->SetPDG(track->GetPDG());
+                        hit->SetTrackID(track->GetTrackID());
+                        hit->SetParentID(track->GetParentID());
+                        hit->SetEdep(-999);
+
                         hit->SetMC(kTRUE);
                         hit->SetTrueXTalk(kTRUE);
                     }
@@ -536,6 +577,14 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueX(poshitX/10+12);
                         hit->SetTrueY(poshitY/10+4+1);
                         hit->SetTrueZ(poshitZ/10+24);
+
+                        hit->SetTrueXPoint(-999);
+                        hit->SetTrueYPoint(-999);
+                        hit->SetTrueZPoint(-999);
+                        hit->SetPDG(track->GetPDG());
+                        hit->SetTrackID(track->GetTrackID());
+                        hit->SetParentID(track->GetParentID());
+                        hit->SetEdep(-999);
 
                         if(j == 0) hit->SetZ(-1);
                         if(j == 1) hit->SetY(-1);
@@ -578,6 +627,14 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueY(poshitY/10+4-1);
                         hit->SetTrueZ(poshitZ/10+24);
 
+                        hit->SetTrueXPoint(-999);
+                        hit->SetTrueYPoint(-999);
+                        hit->SetTrueZPoint(-999);
+                        hit->SetPDG(track->GetPDG());
+                        hit->SetTrackID(track->GetTrackID());
+                        hit->SetParentID(track->GetParentID());
+                        hit->SetEdep(-999);
+
                         if(j == 0) hit->SetZ(-1);
                         if(j == 1) hit->SetY(-1);
                         if(j == 2) hit->SetX(-1);
@@ -589,6 +646,7 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueChargeXY(Qxy);
                         hit->SetTrueChargeXZ(Qxz);
                         hit->SetTrueChargeYZ(Qyz);
+
 
                         hit->SetMC(kTRUE);
                         hit->SetTrueXTalk(kTRUE);
@@ -619,6 +677,14 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueX(poshitX/10+12+1);
                         hit->SetTrueY(poshitY/10+4+1);
                         hit->SetTrueZ(poshitZ/10+24);
+
+                        hit->SetTrueXPoint(-999);
+                        hit->SetTrueYPoint(-999);
+                        hit->SetTrueZPoint(-999);
+                        hit->SetPDG(track->GetPDG());
+                        hit->SetTrackID(track->GetTrackID());
+                        hit->SetParentID(track->GetParentID());
+                        hit->SetEdep(-999);
 
                         if(j == 0) hit->SetZ(-1);
                         if(j == 1) hit->SetY(-1);
@@ -660,6 +726,14 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueY(poshitY/10+4-1);
                         hit->SetTrueZ(poshitZ/10+24);
 
+                        hit->SetTrueXPoint(-999);
+                        hit->SetTrueYPoint(-999);
+                        hit->SetTrueZPoint(-999);
+                        hit->SetPDG(track->GetPDG());
+                        hit->SetTrackID(track->GetTrackID());
+                        hit->SetParentID(track->GetParentID());
+                        hit->SetEdep(-999);
+
                         if(j == 0) hit->SetZ(-1);
                         if(j == 1) hit->SetY(-1);
                         if(j == 2) hit->SetX(-1);
@@ -699,6 +773,14 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueX(poshitX/10+12-1);
                         hit->SetTrueY(poshitY/10+4+1);
                         hit->SetTrueZ(poshitZ/10+24);
+
+                        hit->SetTrueXPoint(-999);
+                        hit->SetTrueYPoint(-999);
+                        hit->SetTrueZPoint(-999);
+                        hit->SetPDG(track->GetPDG());
+                        hit->SetTrackID(track->GetTrackID());
+                        hit->SetParentID(track->GetParentID());
+                        hit->SetEdep(-999);
 
                         if(j == 0) hit->SetZ(-1);
                         if(j == 1) hit->SetY(-1);
@@ -740,6 +822,14 @@ int PrototypeMC(int argc,char** argv) {
                         hit->SetTrueY(poshitY/10+4-1);
                         hit->SetTrueZ(poshitZ/10+24);
 
+                        hit->SetTrueXPoint(-999);
+                        hit->SetTrueYPoint(-999);
+                        hit->SetTrueZPoint(-999);
+                        hit->SetPDG(track->GetPDG());
+                        hit->SetTrackID(track->GetTrackID());
+                        hit->SetParentID(track->GetParentID());
+                        hit->SetEdep(-999);
+                        
                         if(j == 0) hit->SetZ(-1);
                         if(j == 1) hit->SetY(-1);
                         if(j == 2) hit->SetX(-1);
@@ -762,11 +852,14 @@ int PrototypeMC(int argc,char** argv) {
             // cout << " size of primary  x  " << contCnt1_X << "  y  " << contCnt1_X << endl;
             // cout << " size of primary secondary x  " << contCnt0_X << "  y  " << contCnt0_X << endl;
             } /// END LOOP OVER HITS
-            cout << " hits having same pos in an event " << nhits_withsamepos <<  endl;
-            AllEvents->Fill();
-            event->Clear();
-            break; // only primary track is considered
+            // cout << " hits having same pos in an event " << nhits_withsamepos <<  endl;
+            // AllEvents->Fill();
+            // event->Clear();
+            //break; // only primary track is considered
         } /// END LOOP OVER TRACKS
+        event->SetNumTrueTracks(nd280UpEvent->GetNTracks());
+        AllEvents->Fill();
+        event->Clear();
     } /// END LOOP OVER EVENTS LOOP
 
 

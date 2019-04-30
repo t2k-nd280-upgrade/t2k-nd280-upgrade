@@ -22,6 +22,7 @@ private:
     Double_t         fdEdz[48];               //Energy loss along Z in both XZ and ZY planes (sum)
     Int_t            fRange;                  //last layer reached by the particle
 
+    Int_t            fNumTrueTracks;        
 
 public:
 
@@ -50,6 +51,7 @@ public:
     void SetFEB12ch(Double_t p_FEB12ch) {fFEB12ch = p_FEB12ch;}
     void SetFEB12LeadTime(Int_t p_FEB12LeadTime) {fFEB12LeadTime = p_FEB12LeadTime;}
 
+    void SetNumTrueTracks(Int_t f_NTrueT) {fNumTrueTracks = f_NTrueT;}
 
     //functions to retrieve data
     TClonesArray *GetHits() const {return fHits;}
@@ -65,6 +67,8 @@ public:
     Double_t GetdEdz(Int_t p_Z) {return fdEdz[p_Z];}
     Int_t GetRange() {return fRange;}
 
+    Int_t GetNumTrueTracks() {return fNumTrueTracks;}
+
 
     //methods
     void Clear(Option_t *option="");
@@ -77,7 +81,7 @@ public:
       delete fHits;  fHits = 0;
     }
 
-    ClassDef (Event,1);
+    ClassDef (Event,2);
 
 };
 

@@ -25,8 +25,8 @@
 using namespace std;
 
 TString INPDIR = "/nfs/neutrinos/cjesus/work/jobs/files/TDR_SFGD_Updated";
-TString INPDIR2 = "c";
-TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots/GENIEv3/TDR_SFGD_Updated";
+TString INPDIR2 = "/nfs/neutrinos/cjesus/work/jobs/files/TDR_SFGD_Updated";
+TString OUTDIR = "/nfs/neutrinos/cjesus/work/jobs/plots/Resolution_FSI";
 
 int NTargets[4] = {2, 2, 3, 3};
 //int NTargets[4] = {3, 3, 3, 3}; // ONLY TO COMPARE CDR VS TDR, config0 is in reality CDR and it also has config0_Target3
@@ -95,16 +95,32 @@ TH1F* computeEff(TString suffix, int config, int target, int categ, int cut1, in
     t->SetBranchAddress("true_costheta", &res_var);
  
   vector<int> branches;
-  if (categ <= -1) {
-    branches.push_back(3); 
-    branches.push_back(4);
-    branches.push_back(5);
-    branches.push_back(7);
-    if (categ == -1)
-      branches.push_back(6);
-  }
-  else
-    branches.push_back(categ);
+  // if (categ <= -1) {
+  //   branches.push_back(3); 
+  //   branches.push_back(4);
+  //   branches.push_back(5);
+  //   branches.push_back(7);
+  //   if (categ == -1)
+  //   branches.push_back(6);
+  // }
+  // else
+  //   branches.push_back(categ);
+
+    if (categ == -2) {
+      branches.push_back(3); 
+      branches.push_back(4);
+      branches.push_back(5);
+      branches.push_back(7);
+    }
+    else if (categ == -1){
+      branches.push_back(3); 
+      branches.push_back(4);
+      branches.push_back(5);
+    }
+    else if (categ == 0){
+      branches.push_back(7);
+    }
+
     
 
   for (Int_t ient=0; ient < t->GetEntries(); ient++) {
@@ -439,23 +455,23 @@ void plot2D(TString suffix, int config, int target, int categ, int cut1, int cut
 void efficiency() {
 
   TString suffixes[1] = {"_FHC_numu"};
-  int conf[2] = {0,2};
+  // int conf[2] = {0,2};
 
-   for (int c=-2; c<8; c++) {
+   for (int c=-2; c<1; c++) {
      for (int s=0; s<1; s++) {
       plotTotal(suffixes[s], c, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh);
-      plotTotal(suffixes[s], c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
-      plotTotal(suffixes[s], c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
+      //plotTotal(suffixes[s], c, -1, 4, "true_mom", "true p_{#mu} [MeV/c]", NBins_Mom, BinEdges_Mom);
+      //plotTotal(suffixes[s], c, -1, 4, "true_Q2", "true Q^{2} [GeV^{2}/c^{2}]", NBins_Q2, BinEdges_Q2);
 
- //      for (int cc=0; cc<2; cc++) {
-	// for (int t=1; t<=NTargets[conf[cc]]; t++) {
-	//   plot2D(suffixes[s], conf[cc], t, c, -1, 4, 
-	// 	 "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-	// 	 NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
-	// }
- //       }
-    }
+           //      for (int cc=0; cc<2; cc++) {
+          	// for (int t=1; t<=NTargets[conf[cc]]; t++) {
+          	//   plot2D(suffixes[s], conf[cc], t, c, -1, 4, 
+          	// 	 "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+          	// 	 NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+          	// }
+           //       }
       }
+    }
 
  //  for (int s=0; s<3; s++) {
  //    plotTotal(suffixes[s], -2, -1, 4, "true_costheta", "true cos #theta", NBins_CosTh, BinEdges_CosTh, true);
@@ -474,9 +490,13 @@ void efficiency() {
      // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
      // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
 
-     // // plot2D("_FHC_numu", 2, 3, -2, -1, 4, 
-     // // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
-     // // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+     // plot2D("_FHC_numu", 2, 3, -1, -1, 4, 
+     // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+     // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
+
+     // plot2D("_FHC_numu", 2, 3, -2, -1, 4, 
+     // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 
+     // NBins_CosTh, BinEdges_CosTh, NBins_Mom, BinEdges_Mom);
 
      // plot2D("_RHC_numu", 2, 1, -2, -1, 4, 
      // "true_costheta", "true cos #theta", "true_mom", "true p_{#mu} [MeV/c]", 

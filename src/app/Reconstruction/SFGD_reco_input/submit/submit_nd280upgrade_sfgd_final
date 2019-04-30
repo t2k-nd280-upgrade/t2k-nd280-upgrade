@@ -1,0 +1,106 @@
+#!/usr/bin/perl
+
+
+#-------------------------------------------------------------------------------------------------------------------------------
+# Submit a GEANT4 simulation job
+#
+# Inputs
+#  --resource               : Computer resource. Default: interactive.
+#  --tag                    : Tag for output files.
+#  --config-file            : Analysis configuration file from the config/ directory.
+#
+#  --cpu-time               : Required CPU time. 
+#  --job-dir                : Directory for job scripts and outputs. Default: `pwd`.
+#  --softw-dir              : code top-level directory. 
+# D.Sgalaberna
+#-------------------------------------------------------------------------------------------------------------------------------
+#
+
+use File::Path;
+
+$iarg=0;
+foreach (@ARGV) {
+
+    if($iarg % 2 == 1) {$iarg++; next;}
+    
+    ##################################### Common ########################################
+    if   ($_ eq '--resource'         ) { $resource        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cpu-time'         ) { $cput            = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--config'           ) { $config_file     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--vis-file'         ) { $vis_file        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--first-expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
+    elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
+    elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--exe-clust-dir'    ) { $exe_clust_dir   = $ARGV[$iarg+1]; }
+    elsif($_ eq '--exe-loc-dir'      ) { $exe_loc_dir     = $ARGV[$iarg+1]; }
+
+    else {
+    print "Unrecognised argument ".$_."\n"; exit;
+    }
+    $iarg++;
+}
+
+$exe_clust_dir = "bin/" unless defined $exe_clust_dir; # path starting from $softw_dir
+$exe_loc_dir = "bin/" unless defined $exe_loc_dir; # path starting from $softw_dir
+
+$resource        = "interactive"               unless defined $resource;
+
+$tag             = "SFGD_MC_FINAL_SIZE"    unless defined $tag;
+
+$config_file     = "/config/sfgd_final.xml" unless defined $config_file; # reference: no ecal, cluster
+ 
+$vis_file        = "/mac/vis_sfgd_final.mac"           unless defined $vis_file;
+
+$nruns           = 10                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
+
+$nexpts          = 3000                        unless defined $nexpts;     # number of events per job (with ToF RHC-numubar) 
+
+$first_expt      = 0                           unless defined $first_expt; # first event
+
+$queue           = "short"                unless defined $queue;
+
+$irun = 0;
+while($irun < $nruns) { # loop over the jobs
+    
+    $evt_first = $first_expt + $irun * $nexpts;
+    $job_dir = "/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE";    
+     
+    $arguments = "$softw_dir/$exe_loc_dir/EffStudy.exe $softw_dir/src/app/Reconstruction/SFGD_reco_input/$vis_file $softw_dir/src/app/Reconstruction/SFGD_reco_input/$config_file $job_dir/$tag-$irun-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+
+    $command = "$arguments";
+    
+    print "\n";
+    print "Job $irun \n";
+    print "First event: $evt_first \n";
+    print "# of events: $nexpts \n";
+    print "$command \n";
+    print "\n////////////////////////////// \n\n";
+
+    if($resource eq "PIC") {
+
+    print "inside PIC \n";
+    $sbatchfile = "$job_dir/$tag-$evt_first-$nexpts.sbatch";
+    $outfiledir = "$job_dir/";
+    $errfiledir = "$job_dir/";
+    open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+    print PBS "#!/bin/bash -l  \n";
+    print PBS "source $softw_dir/mypath.sh $softw_dir \n";
+    print PBS "\n";
+    print PBS "env \n";
+    print PBS "\n";
+    print PBS "uname -n \n";
+    print PBS "\n";
+    print PBS "$command \n";
+    close(PBS); 
+    `qsub -q short -l nodes=1 $sbatchfile`; 
+    }
+    
+    if($resource eq "interactive") {
+    system($command);
+    }
+
+    $irun=$irun+1;
+} # end loop over jobs

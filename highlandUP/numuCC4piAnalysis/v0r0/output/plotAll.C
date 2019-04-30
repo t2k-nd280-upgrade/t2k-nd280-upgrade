@@ -93,7 +93,7 @@ TH2F* compute2D_Dis(TString suffix, int config, int target, int categ, int cut_l
     branches.push_back(3); 
     branches.push_back(4);
     branches.push_back(5);
-    branches.push_back(7);
+    //branches.push_back(7);
     if (categ == -1)
       branches.push_back(6);
   }
