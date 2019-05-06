@@ -526,7 +526,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
 
       ExN02TrackerHit* g4Hit = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));
       TND280UpHit *nd280Hit = dynamic_cast<TND280UpHit*>(g4Hit); // ExN02TrackerHit inherits from TND280UpHit
-      
+
       // G4cout << "StartX=" << nd280Hit->GetStartX() << ", "
       // 	     << "StartY=" << nd280Hit->GetStartY() << ", "
       // 	     << "StartZ=" << nd280Hit->GetStartZ() << ", "
@@ -534,8 +534,14 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       // 	     << "StopY=" << nd280Hit->GetStopY() << ", "
       // 	     << "StopZ=" << nd280Hit->GetStopZ() << ", "
       // 	     << "EnergyDeposit=" << nd280Hit->GetEnergyDeposit() << ", "
-      // 	     << "TrackLength=" << nd280Hit->GetTrackLength() << ", "
-      // 	     << "TrackID=" << nd280Hit->fContributors.front() << G4endl;
+      // 	     << "TrackLength=" << nd280Hit->GetTrackLength() << G4endl;
+
+
+      // G4cout << "Edep=" << nd280Hit->GetEnergyDeposit()  << ", "
+      //        << "PDG=" << nd280Hit->GetPDG()  << ", "
+      //        << "ParentId=" << nd280Hit->GetPrimaryId()  << ", "
+      //        << "ParentId Back=" << nd280Hit->fContributors.back()  << ", "
+      // 	     << "TrackID Front=" << nd280Hit->fContributors.front() << G4endl;
      
       /*G4int parentid = nd280Hit->GetPrimaryId(); 
       G4int detid = kBadNum; 

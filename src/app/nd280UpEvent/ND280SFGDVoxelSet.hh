@@ -8,6 +8,7 @@
 #include <Math/Vector3D.h>
 #include <TNtuple.h>
 #include <TStyle.h>
+#include <TString.h>
 
 using namespace ROOT::Math;
 
@@ -21,10 +22,7 @@ protected:
 public:
 
     ND280SFGDVoxelSet(){
-        gStyle->SetCanvasColor(0);
-        gStyle->SetMarkerStyle(21);
-        gStyle->SetMarkerSize(1.05);
-        fData = new TNtuple("fData", "fData", "x:y:z:color");
+        this->Init();
     };
 
     virtual ~ND280SFGDVoxelSet(){
@@ -40,6 +38,7 @@ public:
 
     //-----Getters------
 
+    TNtuple* GetData() { return fData; }
     std::vector  <ND280SFGDVoxel*>  GetVoxels()         { return fVoxels;      } 
     ND280SFGDVoxel*            GetVoxel(Int_t p_N)      { return fVoxels[p_N]; }
     std::vector  <ND280SFGDHit*>    GetHits()           { return fHits;        }
@@ -71,14 +70,18 @@ public:
 
     //------------------
 
-    void DrawVoxels(std::string name, Bool_t all);
+    void Init(){
+        gStyle->SetCanvasColor(0);
+        gStyle->SetMarkerStyle(21);
+        gStyle->SetMarkerSize(1.05);
+        fData = new TNtuple("fData", "fData", "x:y:z:color");
+    }
 
-    void Reset(Option_t* /*option*/="")
-    {
-        for(UInt_t i=0; i<fHits.size(); i++)   delete fHits[i];
-        for(UInt_t i=0; i<fVoxels.size(); i++) delete fVoxels[i];
-        fHits.clear();
-        fVoxels.clear();
+    void DrawHits(Bool_t p_Wait, Bool_t p_All, TString canvName);    // p_Wait = kTRUE to update canvas and Wait for click, p_All used to define DrawEvent().
+    void DrawVoxels(Bool_t p_Wait, Bool_t p_All);                // p_Wait = kTRUE to update canvas and Wait for click
+    void DrawHitsAndVoxels();                                // Draws both hits and voxels for the event.
+
+    void Reset(Option_t* /*option*/=""){
     } 
 
     ClassDef(ND280SFGDVoxelSet,1);

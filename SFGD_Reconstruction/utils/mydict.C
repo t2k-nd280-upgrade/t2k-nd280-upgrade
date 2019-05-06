@@ -42,6 +42,10 @@ namespace std {} using namespace std;
 #include "../../src/app/nd280UpEvent/ND280SFGDHit.hh"
 #include "../../src/app/nd280UpEvent/ND280SFGDTrack.hh"
 #include "../../src/app/nd280UpEvent/ND280SFGDEvent.hh"
+#include "../../src/app/nd280UpEvent/Event.hh"
+#include "../../src/app/nd280UpEvent/Hit.hh"
+#include "../src/CHit2D.hxx"
+#include "../src/CHit3D.hxx"
 
 // Header files passed via #pragma extra_include
 
@@ -122,7 +126,7 @@ namespace ROOT {
       ::ND280SFGDVoxelSet *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::ND280SFGDVoxelSet >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("ND280SFGDVoxelSet", ::ND280SFGDVoxelSet::Class_Version(), "../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh", 14,
+         instance("ND280SFGDVoxelSet", ::ND280SFGDVoxelSet::Class_Version(), "../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh", 15,
                   typeid(::ND280SFGDVoxelSet), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::ND280SFGDVoxelSet::Dictionary, isa_proxy, 4,
                   sizeof(::ND280SFGDVoxelSet) );
@@ -203,6 +207,134 @@ namespace ROOT {
    }
    // Static variable to force the class initialization
    static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::ND280SFGDEvent*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+} // end of namespace ROOT
+
+namespace ROOT {
+   static void *new_Hit(void *p = 0);
+   static void *newArray_Hit(Long_t size, void *p);
+   static void delete_Hit(void *p);
+   static void deleteArray_Hit(void *p);
+   static void destruct_Hit(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::Hit*)
+   {
+      ::Hit *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::Hit >(0);
+      static ::ROOT::TGenericClassInfo 
+         instance("Hit", ::Hit::Class_Version(), "../../src/app/nd280UpEvent/Hit.hh", 8,
+                  typeid(::Hit), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &::Hit::Dictionary, isa_proxy, 4,
+                  sizeof(::Hit) );
+      instance.SetNew(&new_Hit);
+      instance.SetNewArray(&newArray_Hit);
+      instance.SetDelete(&delete_Hit);
+      instance.SetDeleteArray(&deleteArray_Hit);
+      instance.SetDestructor(&destruct_Hit);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::Hit*)
+   {
+      return GenerateInitInstanceLocal((::Hit*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::Hit*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+} // end of namespace ROOT
+
+namespace ROOT {
+   static void *new_Event(void *p = 0);
+   static void *newArray_Event(Long_t size, void *p);
+   static void delete_Event(void *p);
+   static void deleteArray_Event(void *p);
+   static void destruct_Event(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::Event*)
+   {
+      ::Event *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::Event >(0);
+      static ::ROOT::TGenericClassInfo 
+         instance("Event", ::Event::Class_Version(), "../../src/app/nd280UpEvent/Event.hh", 8,
+                  typeid(::Event), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &::Event::Dictionary, isa_proxy, 4,
+                  sizeof(::Event) );
+      instance.SetNew(&new_Event);
+      instance.SetNewArray(&newArray_Event);
+      instance.SetDelete(&delete_Event);
+      instance.SetDeleteArray(&deleteArray_Event);
+      instance.SetDestructor(&destruct_Event);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::Event*)
+   {
+      return GenerateInitInstanceLocal((::Event*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::Event*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+} // end of namespace ROOT
+
+namespace ROOT {
+   static void *new_CHit2D(void *p = 0);
+   static void *newArray_CHit2D(Long_t size, void *p);
+   static void delete_CHit2D(void *p);
+   static void deleteArray_CHit2D(void *p);
+   static void destruct_CHit2D(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::CHit2D*)
+   {
+      ::CHit2D *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::CHit2D >(0);
+      static ::ROOT::TGenericClassInfo 
+         instance("CHit2D", ::CHit2D::Class_Version(), "../src/CHit2D.hxx", 13,
+                  typeid(::CHit2D), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &::CHit2D::Dictionary, isa_proxy, 4,
+                  sizeof(::CHit2D) );
+      instance.SetNew(&new_CHit2D);
+      instance.SetNewArray(&newArray_CHit2D);
+      instance.SetDelete(&delete_CHit2D);
+      instance.SetDeleteArray(&deleteArray_CHit2D);
+      instance.SetDestructor(&destruct_CHit2D);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::CHit2D*)
+   {
+      return GenerateInitInstanceLocal((::CHit2D*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::CHit2D*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+} // end of namespace ROOT
+
+namespace ROOT {
+   static void *new_CHit3D(void *p = 0);
+   static void *newArray_CHit3D(Long_t size, void *p);
+   static void delete_CHit3D(void *p);
+   static void deleteArray_CHit3D(void *p);
+   static void destruct_CHit3D(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::CHit3D*)
+   {
+      ::CHit3D *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::CHit3D >(0);
+      static ::ROOT::TGenericClassInfo 
+         instance("CHit3D", ::CHit3D::Class_Version(), "../src/CHit3D.hxx", 15,
+                  typeid(::CHit3D), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &::CHit3D::Dictionary, isa_proxy, 4,
+                  sizeof(::CHit3D) );
+      instance.SetNew(&new_CHit3D);
+      instance.SetNewArray(&newArray_CHit3D);
+      instance.SetDelete(&delete_CHit3D);
+      instance.SetDeleteArray(&deleteArray_CHit3D);
+      instance.SetDestructor(&destruct_CHit3D);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::CHit3D*)
+   {
+      return GenerateInitInstanceLocal((::CHit3D*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::CHit3D*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 //______________________________________________________________________________
@@ -381,6 +513,146 @@ TClass *ND280SFGDEvent::Class()
 }
 
 //______________________________________________________________________________
+atomic_TClass_ptr Hit::fgIsA(0);  // static to hold class pointer
+
+//______________________________________________________________________________
+const char *Hit::Class_Name()
+{
+   return "Hit";
+}
+
+//______________________________________________________________________________
+const char *Hit::ImplFileName()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::Hit*)0x0)->GetImplFileName();
+}
+
+//______________________________________________________________________________
+int Hit::ImplFileLine()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::Hit*)0x0)->GetImplFileLine();
+}
+
+//______________________________________________________________________________
+TClass *Hit::Dictionary()
+{
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::Hit*)0x0)->GetClass();
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+TClass *Hit::Class()
+{
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::Hit*)0x0)->GetClass(); }
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+atomic_TClass_ptr Event::fgIsA(0);  // static to hold class pointer
+
+//______________________________________________________________________________
+const char *Event::Class_Name()
+{
+   return "Event";
+}
+
+//______________________________________________________________________________
+const char *Event::ImplFileName()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::Event*)0x0)->GetImplFileName();
+}
+
+//______________________________________________________________________________
+int Event::ImplFileLine()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::Event*)0x0)->GetImplFileLine();
+}
+
+//______________________________________________________________________________
+TClass *Event::Dictionary()
+{
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::Event*)0x0)->GetClass();
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+TClass *Event::Class()
+{
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::Event*)0x0)->GetClass(); }
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+atomic_TClass_ptr CHit2D::fgIsA(0);  // static to hold class pointer
+
+//______________________________________________________________________________
+const char *CHit2D::Class_Name()
+{
+   return "CHit2D";
+}
+
+//______________________________________________________________________________
+const char *CHit2D::ImplFileName()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::CHit2D*)0x0)->GetImplFileName();
+}
+
+//______________________________________________________________________________
+int CHit2D::ImplFileLine()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::CHit2D*)0x0)->GetImplFileLine();
+}
+
+//______________________________________________________________________________
+TClass *CHit2D::Dictionary()
+{
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::CHit2D*)0x0)->GetClass();
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+TClass *CHit2D::Class()
+{
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::CHit2D*)0x0)->GetClass(); }
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+atomic_TClass_ptr CHit3D::fgIsA(0);  // static to hold class pointer
+
+//______________________________________________________________________________
+const char *CHit3D::Class_Name()
+{
+   return "CHit3D";
+}
+
+//______________________________________________________________________________
+const char *CHit3D::ImplFileName()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::CHit3D*)0x0)->GetImplFileName();
+}
+
+//______________________________________________________________________________
+int CHit3D::ImplFileLine()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::CHit3D*)0x0)->GetImplFileLine();
+}
+
+//______________________________________________________________________________
+TClass *CHit3D::Dictionary()
+{
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::CHit3D*)0x0)->GetClass();
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+TClass *CHit3D::Class()
+{
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::CHit3D*)0x0)->GetClass(); }
+   return fgIsA;
+}
+
+//______________________________________________________________________________
 void ND280SFGDHit::Streamer(TBuffer &R__b)
 {
    // Stream an object of class ND280SFGDHit.
@@ -544,6 +816,138 @@ namespace ROOT {
       ((current_t*)p)->~current_t();
    }
 } // end of namespace ROOT for class ::ND280SFGDEvent
+
+//______________________________________________________________________________
+void Hit::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class Hit.
+
+   if (R__b.IsReading()) {
+      R__b.ReadClassBuffer(Hit::Class(),this);
+   } else {
+      R__b.WriteClassBuffer(Hit::Class(),this);
+   }
+}
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_Hit(void *p) {
+      return  p ? new(p) ::Hit : new ::Hit;
+   }
+   static void *newArray_Hit(Long_t nElements, void *p) {
+      return p ? new(p) ::Hit[nElements] : new ::Hit[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_Hit(void *p) {
+      delete ((::Hit*)p);
+   }
+   static void deleteArray_Hit(void *p) {
+      delete [] ((::Hit*)p);
+   }
+   static void destruct_Hit(void *p) {
+      typedef ::Hit current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class ::Hit
+
+//______________________________________________________________________________
+void Event::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class Event.
+
+   if (R__b.IsReading()) {
+      R__b.ReadClassBuffer(Event::Class(),this);
+   } else {
+      R__b.WriteClassBuffer(Event::Class(),this);
+   }
+}
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_Event(void *p) {
+      return  p ? new(p) ::Event : new ::Event;
+   }
+   static void *newArray_Event(Long_t nElements, void *p) {
+      return p ? new(p) ::Event[nElements] : new ::Event[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_Event(void *p) {
+      delete ((::Event*)p);
+   }
+   static void deleteArray_Event(void *p) {
+      delete [] ((::Event*)p);
+   }
+   static void destruct_Event(void *p) {
+      typedef ::Event current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class ::Event
+
+//______________________________________________________________________________
+void CHit2D::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class CHit2D.
+
+   if (R__b.IsReading()) {
+      R__b.ReadClassBuffer(CHit2D::Class(),this);
+   } else {
+      R__b.WriteClassBuffer(CHit2D::Class(),this);
+   }
+}
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_CHit2D(void *p) {
+      return  p ? new(p) ::CHit2D : new ::CHit2D;
+   }
+   static void *newArray_CHit2D(Long_t nElements, void *p) {
+      return p ? new(p) ::CHit2D[nElements] : new ::CHit2D[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_CHit2D(void *p) {
+      delete ((::CHit2D*)p);
+   }
+   static void deleteArray_CHit2D(void *p) {
+      delete [] ((::CHit2D*)p);
+   }
+   static void destruct_CHit2D(void *p) {
+      typedef ::CHit2D current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class ::CHit2D
+
+//______________________________________________________________________________
+void CHit3D::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class CHit3D.
+
+   if (R__b.IsReading()) {
+      R__b.ReadClassBuffer(CHit3D::Class(),this);
+   } else {
+      R__b.WriteClassBuffer(CHit3D::Class(),this);
+   }
+}
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_CHit3D(void *p) {
+      return  p ? new(p) ::CHit3D : new ::CHit3D;
+   }
+   static void *newArray_CHit3D(Long_t nElements, void *p) {
+      return p ? new(p) ::CHit3D[nElements] : new ::CHit3D[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_CHit3D(void *p) {
+      delete ((::CHit3D*)p);
+   }
+   static void deleteArray_CHit3D(void *p) {
+      delete [] ((::CHit3D*)p);
+   }
+   static void destruct_CHit3D(void *p) {
+      typedef ::CHit3D current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class ::CHit3D
 
 namespace ROOT {
    static TClass *vectorlEvectorlEshortgRsPgR_Dictionary();
@@ -1112,6 +1516,132 @@ namespace ROOT {
    }
 } // end of namespace ROOT for class vector<ND280SFGDHit*>
 
+namespace ROOT {
+   static TClass *vectorlECHit3DgR_Dictionary();
+   static void vectorlECHit3DgR_TClassManip(TClass*);
+   static void *new_vectorlECHit3DgR(void *p = 0);
+   static void *newArray_vectorlECHit3DgR(Long_t size, void *p);
+   static void delete_vectorlECHit3DgR(void *p);
+   static void deleteArray_vectorlECHit3DgR(void *p);
+   static void destruct_vectorlECHit3DgR(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const vector<CHit3D>*)
+   {
+      vector<CHit3D> *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<CHit3D>));
+      static ::ROOT::TGenericClassInfo 
+         instance("vector<CHit3D>", -2, "vector", 447,
+                  typeid(vector<CHit3D>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &vectorlECHit3DgR_Dictionary, isa_proxy, 4,
+                  sizeof(vector<CHit3D>) );
+      instance.SetNew(&new_vectorlECHit3DgR);
+      instance.SetNewArray(&newArray_vectorlECHit3DgR);
+      instance.SetDelete(&delete_vectorlECHit3DgR);
+      instance.SetDeleteArray(&deleteArray_vectorlECHit3DgR);
+      instance.SetDestructor(&destruct_vectorlECHit3DgR);
+      instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::Pushback< vector<CHit3D> >()));
+      return &instance;
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const vector<CHit3D>*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+
+   // Dictionary for non-ClassDef classes
+   static TClass *vectorlECHit3DgR_Dictionary() {
+      TClass* theClass =::ROOT::GenerateInitInstanceLocal((const vector<CHit3D>*)0x0)->GetClass();
+      vectorlECHit3DgR_TClassManip(theClass);
+   return theClass;
+   }
+
+   static void vectorlECHit3DgR_TClassManip(TClass* ){
+   }
+
+} // end of namespace ROOT
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_vectorlECHit3DgR(void *p) {
+      return  p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) vector<CHit3D> : new vector<CHit3D>;
+   }
+   static void *newArray_vectorlECHit3DgR(Long_t nElements, void *p) {
+      return p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) vector<CHit3D>[nElements] : new vector<CHit3D>[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_vectorlECHit3DgR(void *p) {
+      delete ((vector<CHit3D>*)p);
+   }
+   static void deleteArray_vectorlECHit3DgR(void *p) {
+      delete [] ((vector<CHit3D>*)p);
+   }
+   static void destruct_vectorlECHit3DgR(void *p) {
+      typedef vector<CHit3D> current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class vector<CHit3D>
+
+namespace ROOT {
+   static TClass *vectorlECHit2DgR_Dictionary();
+   static void vectorlECHit2DgR_TClassManip(TClass*);
+   static void *new_vectorlECHit2DgR(void *p = 0);
+   static void *newArray_vectorlECHit2DgR(Long_t size, void *p);
+   static void delete_vectorlECHit2DgR(void *p);
+   static void deleteArray_vectorlECHit2DgR(void *p);
+   static void destruct_vectorlECHit2DgR(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const vector<CHit2D>*)
+   {
+      vector<CHit2D> *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<CHit2D>));
+      static ::ROOT::TGenericClassInfo 
+         instance("vector<CHit2D>", -2, "vector", 447,
+                  typeid(vector<CHit2D>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &vectorlECHit2DgR_Dictionary, isa_proxy, 4,
+                  sizeof(vector<CHit2D>) );
+      instance.SetNew(&new_vectorlECHit2DgR);
+      instance.SetNewArray(&newArray_vectorlECHit2DgR);
+      instance.SetDelete(&delete_vectorlECHit2DgR);
+      instance.SetDeleteArray(&deleteArray_vectorlECHit2DgR);
+      instance.SetDestructor(&destruct_vectorlECHit2DgR);
+      instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::Pushback< vector<CHit2D> >()));
+      return &instance;
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const vector<CHit2D>*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+
+   // Dictionary for non-ClassDef classes
+   static TClass *vectorlECHit2DgR_Dictionary() {
+      TClass* theClass =::ROOT::GenerateInitInstanceLocal((const vector<CHit2D>*)0x0)->GetClass();
+      vectorlECHit2DgR_TClassManip(theClass);
+   return theClass;
+   }
+
+   static void vectorlECHit2DgR_TClassManip(TClass* ){
+   }
+
+} // end of namespace ROOT
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_vectorlECHit2DgR(void *p) {
+      return  p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) vector<CHit2D> : new vector<CHit2D>;
+   }
+   static void *newArray_vectorlECHit2DgR(Long_t nElements, void *p) {
+      return p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) vector<CHit2D>[nElements] : new vector<CHit2D>[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_vectorlECHit2DgR(void *p) {
+      delete ((vector<CHit2D>*)p);
+   }
+   static void deleteArray_vectorlECHit2DgR(void *p) {
+      delete [] ((vector<CHit2D>*)p);
+   }
+   static void destruct_vectorlECHit2DgR(void *p) {
+      typedef vector<CHit2D> current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class vector<CHit2D>
+
 namespace {
   void TriggerDictionaryInitialization_mydict_Impl() {
     static const char* headers[] = {
@@ -1130,11 +1660,15 @@ namespace {
 extern int __Cling_Autoloading_Map;
 namespace std{inline namespace __1{template <class _Tp> class __attribute__((annotate("$clingAutoload$iosfwd")))  __attribute__((annotate("$clingAutoload$string")))  allocator;
 }}
+class __attribute__((annotate("$clingAutoload$../src/CHit2D.hxx")))  CHit2D;
+class __attribute__((annotate("$clingAutoload$../src/CHit3D.hxx")))  CHit3D;
 class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh")))  ND280SFGDHit;
 class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh")))  ND280SFGDVoxel;
 class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh")))  ND280SFGDVoxelSet;
 class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SFGDTrack.hh")))  ND280SFGDTrack;
 class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SFGDEvent.hh")))  ND280SFGDEvent;
+class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/Event.hh")))  Hit;
+class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/Event.hh")))  Event;
 )DICTFWDDCLS";
     static const char* payloadCode = R"DICTPAYLOAD(
 #line 1 "mydict dictionary payload"
@@ -1149,6 +1683,12 @@ class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SF
 #include "../../src/app/nd280UpEvent/ND280SFGDHit.hh"
 #include "../../src/app/nd280UpEvent/ND280SFGDTrack.hh"
 #include "../../src/app/nd280UpEvent/ND280SFGDEvent.hh"
+
+#include "../../src/app/nd280UpEvent/Event.hh"
+#include "../../src/app/nd280UpEvent/Hit.hh"
+
+#include "../src/CHit2D.hxx"
+#include "../src/CHit3D.hxx"
 
 #include <vector>
 
@@ -1173,11 +1713,26 @@ class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SF
 #pragma link C++ class ND280SFGDEvent+;
 #pragma link C++ class ND280SFGDTrack+;
 
+//Unpacking Classes
+#pragma link C++ class Event+;
+#pragma link C++ class Hit+;
+
+//Extra Classes
+#pragma link C++ class CHit3D+;
+#pragma link C++ class CHit2D+;
+#pragma link C++ class vector<CHit3D>+;
+#pragma link C++ class vector<CHit2D>+;
+
+
 #endif // __CINT__
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";
     static const char* classesHeaders[]={
+"CHit2D", payloadCode, "@",
+"CHit3D", payloadCode, "@",
+"Event", payloadCode, "@",
+"Hit", payloadCode, "@",
 "ND280SFGDEvent", payloadCode, "@",
 "ND280SFGDHit", payloadCode, "@",
 "ND280SFGDTrack", payloadCode, "@",

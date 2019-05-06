@@ -1,9 +1,9 @@
 #ifndef _EVENT_H_
 #define _EVENT_H_
 
-#include "Hit.hh"
 #include <TObject.h>
 #include <TClonesArray.h>
+#include "Hit.hh"
 
 class Event : public TObject {
 

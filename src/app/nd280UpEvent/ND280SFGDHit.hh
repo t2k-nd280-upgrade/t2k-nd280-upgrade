@@ -13,7 +13,9 @@ private:
   // Information filled by the unpacking on real data (Aug/Sept 2018)
 
   Int_t         fView;            //(0=XY, 1=XZ, 2=ZY)
-  XYZVector     fPos;             // X,Y,Z.  (One of them is -1, depending on the view)
+  Double_t      fX;               // X position
+  Double_t      fY;               // Y position
+  Double_t      fZ;               // Z position
   Double_t      fCharge;          //Charge_pe of hit
   Double_t      fHG_pe;           //HG_pe of hit
   Double_t      fLG_pe;           //LG_pe of hit
@@ -37,7 +39,9 @@ private:
 
   //Extra information from MC or to be filled during reconstruction
 
-  XYZVector     fTruePos;         // X,Y,Z. 
+  Double_t      fTrueX;           // X position
+  Double_t      fTrueY;           // Y position
+  Double_t      fTrueZ;           // Z position
   Bool_t        fxTalkFlag;       //Cross talk (false=not CT, true=CT)
   Int_t         fMulti;           //Number of times the hit is used to reconstruct 3D voxels
   Int_t         fPDG;             //true PDG of track creating the hit
@@ -63,14 +67,13 @@ public:
 
   //-----Setters------
 
-  void SetX               (Double_t  p_N)              { fPos.SetX(p_N);     }
-  void SetY               (Double_t  p_N)              { fPos.SetY(p_N);     }
-  void SetZ               (Double_t  p_N)              { fPos.SetZ(p_N);     }
-  void SetTrueX           (Double_t  p_N)              { fTruePos.SetX(p_N); }
-  void SetTrueY           (Double_t  p_N)              { fTruePos.SetY(p_N); }
-  void SetTrueZ           (Double_t  p_N)              { fTruePos.SetZ(p_N); }
+  void SetX               (Double_t  p_X)              { fX = p_X;           }
+  void SetY               (Double_t  p_Y)              { fY = p_Y;           }
+  void SetZ               (Double_t  p_Z)              { fZ = p_Z;           }
+  void SetTrueX           (Double_t  p_X)              { fTrueX = p_X;       }
+  void SetTrueY           (Double_t  p_Y)              { fTrueY = p_Y;       }
+  void SetTrueZ           (Double_t  p_Z)              { fTrueZ = p_Z;       }
 
-  void SetPos             (XYZVector p_Pos)            { fPos            = p_Pos;            }
   void SetView            (Int_t     p_View)           { fView           = p_View;           }
   void SetCharge          (Double_t  p_Charge)         { fCharge         = p_Charge;         }
   void SetHG_pe           (Double_t  p_HG)             { fHG_pe          = p_HG;             }
@@ -91,7 +94,6 @@ public:
   void SetSpillTime       (Double_t  p_SpillTime)      { fSpillTime      = p_SpillTime;      }
   void SetSpillTrailTime  (Double_t  p_SpillTrailTime) { fSpillTrailTime = p_SpillTrailTime; }
   
-  void SetTruePos         (XYZVector p_Pos)            { fTruePos        = p_Pos;            }
   void SetxTalkFlag       (Int_t p_CT)                 { fxTalkFlag      = p_CT;             }
   void SetMultiplicity    (Int_t p_fMulti)             { fMulti          = p_fMulti;         }
   void SetPDG             (Int_t p_PDG)                { fPDG            = p_PDG;            }
@@ -104,11 +106,10 @@ public:
 
   //-----Getters------
 
-  XYZVector GetPos()            { return fPos;            }
   Int_t     GetView()           { return fView;           }
-  Double_t  GetX()              { return fPos.X();        }
-  Double_t  GetY()              { return fPos.Y();        }
-  Double_t  GetZ()              { return fPos.Z();        }
+  Double_t  GetX()              { return fX;              }
+  Double_t  GetY()              { return fY;              }
+  Double_t  GetZ()              { return fZ;              }
   Double_t  GetCharge()         { return fCharge;         }
   Double_t  GetHG_pe()          { return fHG_pe;          }
   Double_t  GetLG_pe()          { return fLG_pe;          }
@@ -128,17 +129,16 @@ public:
   Double_t  GetSpillTime()      { return fSpillTime;      }
   Double_t  GetSpillTrailTime() { return fSpillTrailTime; }
 
-  XYZVector GetTruePos()        { return fTruePos;        }
   Bool_t    GetxTalkFlag()      { return fxTalkFlag;      }
   Int_t     GetMultiplicity()   { return fMulti;          }
-  Double_t  GetTrueX()          { return fTruePos.X();}
-  Double_t  GetTrueY()          { return fTruePos.Y();}
-  Double_t  GetTrueZ()          { return fTruePos.Z();}
-  Int_t     GetPDG()            { return fPDG;}
-  Int_t     GetTrackID()        { return fTrackId;}
-  Int_t     GetParentID()       { return fParentId;}
-  Double_t  GetEdep()           { return fEdep;}
-  Bool_t    GetTrueXTalk()      { return fTrueXTalk;}
+  Double_t  GetTrueX()          { return fTrueX;          }
+  Double_t  GetTrueY()          { return fTrueY;          }
+  Double_t  GetTrueZ()          { return fTrueZ;          }
+  Int_t     GetPDG()            { return fPDG;            }
+  Int_t     GetTrackID()        { return fTrackId;        }
+  Int_t     GetParentID()       { return fParentId;       }
+  Double_t  GetEdep()           { return fEdep;           }
+  Bool_t    GetTrueXTalk()      { return fTrueXTalk;      }
 
   //------------------
 

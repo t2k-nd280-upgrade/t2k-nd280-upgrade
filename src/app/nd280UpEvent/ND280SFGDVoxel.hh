@@ -82,6 +82,8 @@ public:
 
     void Reset(Option_t* /*option*/="")
     {
+        fHits.clear();
+        fHits.reserve(3);
         fPDG     = -999;
         fTrackID = -999;
         fEdep    = -999;

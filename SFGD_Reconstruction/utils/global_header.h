@@ -43,6 +43,9 @@ using namespace std;
 #include "../../src/app/nd280UpEvent/ND280SFGDTrack.cc"
 #include "../../src/app/nd280UpEvent/ND280SFGDEvent.cc"
 
+#include "../../src/app/nd280UpEvent/Event.cc"
+#include "../../src/app/nd280UpEvent/Hit.cc"
+
 //Add extra functionalitirs and T2kstyle
 //#include "global_tools.C"
 

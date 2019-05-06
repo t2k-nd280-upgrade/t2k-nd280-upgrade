@@ -1,4 +1,4 @@
-#define THIS_NAME ana_example
+#define THIS_NAME ana_ReadFile
 #define NOINTERACTIVE_OUTPUT
 #define OVERRIDE_OPTIONS
 
@@ -6,7 +6,7 @@
 #include <TError.h>
 #include <time.h> 
 
-void ana_example() {
+void ana_ReadFile() {
 
     cout << endl << "Staring the execution." << endl;
     cout << "The goal of this macro is to visualize selected events." << endl;
@@ -86,17 +86,28 @@ void ana_example() {
 
         data->GetEntry(iev);
 
-            for (UInt_t ite=0; ite<exampleEvent->GetVoxels().size(); ite++){
-                cout << endl << "-------------------"        << endl;
-                cout << "X-cube:  " << exampleEvent->GetVoxel(ite)->GetX()      << endl;
-                cout << "Y-cube:  " << exampleEvent->GetVoxel(ite)->GetY()      << endl;
-                cout << "Z-cube:  " << exampleEvent->GetVoxel(ite)->GetZ()      << endl;
-                cout << "PDG:     " << exampleEvent->GetVoxel(ite)->GetPDG()       << endl;
-                cout << "trackID: " << exampleEvent->GetVoxel(ite)->GetTrackID()   << endl;
-                cout << "-------------------"                << endl << endl;
+        if(!exampleEvent->GetHits().size()) continue;
 
-            }
-        exampleEvent->DrawVoxels();
+            // for (UInt_t ite=0; ite<exampleEvent->GetVoxels().size(); ite++){
+            //     cout << endl << "-------------------"        << endl;
+            //     cout << "X-cube:  " << exampleEvent->GetVoxel(ite)->GetX()      << endl;
+            //     cout << "Y-cube:  " << exampleEvent->GetVoxel(ite)->GetY()      << endl;
+            //     cout << "Z-cube:  " << exampleEvent->GetVoxel(ite)->GetZ()      << endl;
+            //     cout << "PDG:     " << exampleEvent->GetVoxel(ite)->GetPDG()       << endl;
+            //     cout << "trackID: " << exampleEvent->GetVoxel(ite)->GetTrackID()   << endl;
+            //     cout << "-------------------"                << endl << endl;
+            // }
+
+        cout << "Number of hits in the event: "   << exampleEvent->GetHits().size() << endl;
+        cout << "Number of voxels in the event: " << exampleEvent->GetVoxels().size() << endl;
+        cout << "Number of tracks in the event: " << exampleEvent->GetTracks().size() << endl;
+        exampleEvent->DrawHitsAndVoxels();
+        //exampleEvent->GetData()->Reset();
+
+        // if(exampleEvent->GetTracks().size() > 0){
+        //     ND280SFGDTrack * auxTrack = exampleEvent->GetTracks()[0];
+        //     auxTrack->DrawHitsAndVoxels();
+        // }
 
     }
 

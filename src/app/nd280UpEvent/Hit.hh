@@ -51,7 +51,7 @@ private:
   Double_t      fTrueYPoint;      //true hit Y coordinate
   Double_t      fTrueZPoint;      //true hit Z coordainte
 
-
+  
 
 public:
 
@@ -154,7 +154,7 @@ public:
   Int_t GetParentID() {return fParentId;}
   Double_t GetEdep() {return fEdep;}
 
-  ClassDef(Hit,2);
+  ClassDef(Hit,3);
 };
 
 #endif

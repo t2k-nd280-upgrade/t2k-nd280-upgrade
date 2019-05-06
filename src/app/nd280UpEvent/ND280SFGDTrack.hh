@@ -12,6 +12,7 @@ class ND280SFGDTrack: public ND280SFGDVoxelSet{
 
 private:
     Int_t     fPDG;          // PDG from GEANT4
+    Int_t     fTrackID;      // trackID from GEANT4
 public:
 
     //constructors
@@ -27,13 +28,15 @@ public:
 
     //-----Setters------
 
-    void SetPDG     (Int_t     p_PDG)     { fPDG = p_PDG; }
+    void SetPDG         (Int_t     p_PDG)     { fPDG = p_PDG; }
+    void SetTrackID     (Int_t     p_ID )     { fTrackID = p_ID; }
 
     //------------------
 
     //-----Getters------
 
-    Int_t     GetPDG()      { return fPDG; }
+    Int_t     GetPDG()      { return fPDG;     }
+    Int_t     GetTrackID()  { return fTrackID; }
 
     //------------------
 

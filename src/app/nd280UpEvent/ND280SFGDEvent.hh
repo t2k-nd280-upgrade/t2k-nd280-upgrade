@@ -22,7 +22,7 @@ public:
 
     ND280SFGDEvent(std::vector <ND280SFGDTrack*> listOfTracks){
         this->SetTracks(listOfTracks);
-        vector <ND280SFGDVoxel*> listOfVoxels;
+        std::vector <ND280SFGDVoxel*> listOfVoxels;
         Int_t numOfVoxels = 0;
         for(UInt_t i=0; i<listOfTracks.size(); i++){
             numOfVoxels += listOfTracks[i]->GetVoxels().size();
@@ -59,8 +59,11 @@ public:
 
     void ResetEvent(Option_t* /*option*/="")
     {
-        this->Reset();
+        for ( UInt_t i=0; i<fHits.size(); i++)   delete fHits[i];
+        for ( UInt_t i=0; i<fVoxels.size(); i++) delete fVoxels[i];
         for ( UInt_t i=0; i<fTracks.size(); i++ ) delete fTracks[i];
+        fHits.clear();
+        fVoxels.clear();
         fTracks.clear();
     } 
 
