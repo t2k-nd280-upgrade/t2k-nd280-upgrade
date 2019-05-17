@@ -115,6 +115,7 @@ find_package(GCCXML)
 #                                    OPTIONS opt1...)
 function(ROOT_GENERATE_DICTIONARY dictionary)
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINKDEF;OPTIONS" "" ${ARGN})
+  MESSAGE (STATUS "ejnfksjdnfkjnsdkjfhsdjnfsh")
   #---Get the list of include directories------------------
   get_directory_property(incdirs INCLUDE_DIRECTORIES)
   set(includedirs)
@@ -149,6 +150,7 @@ function(ROOT_GENERATE_DICTIONARY dictionary)
                      COMMAND ${ROOTCLING_EXECUTABLE} -f ${dictionary}.cxx
                                           -c ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs}
                      DEPENDS ${headerfiles} ${linkdefs} VERBATIM)
+  MESSAGE(STATUS ${ROOTCLING_EXECUTABLE})
 endfunction()
 
 #----------------------------------------------------------------------------

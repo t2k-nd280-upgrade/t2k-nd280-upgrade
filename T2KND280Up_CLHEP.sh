@@ -1,10 +1,13 @@
 #!bin/sh
 
 # Specify all the environment variables here!
-export GEANT4_DIR=/Users/suvorov/SOFT/CERN/GEANT4/geant4.10.01.p03-install/
-export CLHEP_DIR=/Users/suvorov/SOFT/CERN/CLHEP/2.4.0.4-install/
-export CMT_DIR=/Users/suvorov/SOFT/OTHER/CMT/
-export ROOT_DIR=/Users/suvorov/SOFT/CERN/ROOT/root-6.12.06-build/
+export GEANT4_DIR=$COMMON_BUILD_PREFIX
+export CLHEP_DIR=$COMMON_BUILD_PREFIX
+export CMT_DIR=$COMMON_BUILD_PREFIX
+export ROOT_DIR=$COMMON_BUILD_PREFIX
+
+# setup ROOT
+source $ROOT_DIR/bin/thisroot.sh
 
 # setup GEANT4
 source $GEANT4_DIR/bin/geant4.sh
@@ -12,9 +15,8 @@ export GEANT4_INCLUDE=$GEANT4_DIR/include/Geant4/
 export GEANT4_INSTALL_BIN=$GEANT4_DIR/bin/
 export GEANT4_LIBRARY=$GEANT4_DIR/lib/
 export GEANT4_LIBRARY_DIR=$GEANT4_DIR/lib/
+export LD_LIBRARY_PATH=$GEANT4_LIBRARY_DIR:$GEANT4_LIBRARY_DIR:$LD_LIBRARY_PATH
 
-# setup ROOT
-source $ROOT_DIR/bin/thisroot.sh
 
 # setup CMT
 source $CMT_DIR/setup.sh
@@ -32,8 +34,8 @@ export CMTPATH=$1
 #export CLHEP_INCLUDE_DIR=/atlas/users/dsgalabe/CLHEP/clhep_install/include
 export CLHEP_BASE_DIR=$CLHEP_DIR/
 export CLHEP_INCLUDE_DIR=$CLHEP_DIR/include/
-export CLHEP_LIBRARY_DIR=$CLHEP_DIR/lib/
-export CLHEP_LIB_DIR=$CLHEP_DIR/lib/
+export CLHEP_LIBRARY_DIR=$CLHEP_DIR/lib64/
+export CLHEP_LIB_DIR=$CLHEP_DIR/lib64/
 export LD_LIBRARY_PATH=$CLHEP_INCLUDE_DIR:$CLHEP_LIBRARY_DIR:$LD_LIBRARY_PATH
 
 # # setup VGM

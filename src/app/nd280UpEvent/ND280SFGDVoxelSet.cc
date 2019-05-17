@@ -2,6 +2,8 @@
 #include <TH3.h>
 #include <TROOT.h>
 
+#include <cstring>
+
 #include "ND280SFGDVoxelSet.hh"
 #include "ND280SFGDHit.hh"
 #include <TH2.h>

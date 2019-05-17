@@ -44,3 +44,4 @@ mypath.sh
 #output files
 *.wrl
 *.root
+mybuild
