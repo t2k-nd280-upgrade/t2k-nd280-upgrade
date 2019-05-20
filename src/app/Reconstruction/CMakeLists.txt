@@ -1,4 +1,4 @@
-message(STATUS "app ...")
+message(STATUS "Reconstruction ...")
 
 
 file (GLOB RECONSTRUCTION_SOURCEFILES 

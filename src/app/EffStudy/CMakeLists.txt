@@ -1,4 +1,4 @@
-message(STATUS "app ...")
+message(STATUS "EffStudy ...")
 
 #message( STATUS "installing libs: ${ARGN}" )
 # set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
