@@ -16,7 +16,8 @@ RUN source $COMMON_BUILD_PREFIX/setup.sh &&\
     # source docker/T2KND280Up_CLHEP.sh $PWD &&\
     cd mybuild &&\
     cmake ../src &&\
-    make -j3
+    make -j3 &&\
+    make install
 
 RUN echo 'source $COMMON_BUILD_PREFIX/setup.sh' >> /nd280upgrade/setup.sh &&\
     echo 'export PATH=/nd280upgrade/bin:$PATH' >> /nd280upgrade/setup.sh &&\
