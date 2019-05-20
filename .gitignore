@@ -45,3 +45,4 @@ mypath.sh
 *.wrl
 *.root
 mybuild
+.vscode
