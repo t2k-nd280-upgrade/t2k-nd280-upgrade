@@ -171,7 +171,7 @@ void ND280CubeScintConstructor::Init() {
   SetFiberRadius(0.5*CLHEP::mm);
   SetHoleRadius(0.75*CLHEP::mm);
   
-  //SetCoatingThickness(0.1*CLHEP::mm);
+  SetCoatingThickness(0.1*CLHEP::mm);
 
 
   // SetFiberRadius(0.*CLHEP::mm);
