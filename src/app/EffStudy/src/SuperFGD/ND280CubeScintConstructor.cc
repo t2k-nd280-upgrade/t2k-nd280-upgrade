@@ -186,7 +186,7 @@ void ND280CubeScintConstructor::Init() {
   //SetSensitiveDetector(NULL);
   SetVisibility(false);
 
-  SetCoatingMaterial("ScintillatorCoating");
+  SetCoatingMaterial("Scintillator");
   //SetScintillatorMaterial("Scintillator");
 
   //SetScintillatorMaterial("GasMixtureTPC");  // CHANGED!!!
