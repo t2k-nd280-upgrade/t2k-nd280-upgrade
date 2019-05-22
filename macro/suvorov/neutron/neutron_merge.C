@@ -15,7 +15,7 @@ const float MIP_LY_AV3 = 40;
 using namespace std;
 
 void neutron_merge() {
-	TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/SuperFGD-neutron_v20-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+  TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v20-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
 
   const Int_t Ndist = 9;
   float distance_cut[Ndist];
@@ -85,6 +85,9 @@ void neutron_merge() {
   TH1F* hits_cl_XZ = (TH1F*)file->Get("hitsN_XZ");
   TH1F* hits_cl_YZ = (TH1F*)file->Get("hitsN_YZ");
 
+  TH2F* LeverArm_time     = new TH2F("LAvsTime", "time vs Lever arm vs ", 300, 0., 300., 120, 0., 60.);
+  TH2F* LeverArm_time_ly  = new TH2F("LAvsTime_c", "time vs Lever arm vs ", 300, 0., 300., 120, 0., 60.);
+
   // do rebinning
   Int_t rebin_Y = 5;
   init_e_cos->RebinY(rebin_Y);
@@ -93,7 +96,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot_neutron_v25.root", "RECREATE");
+  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v27.root", "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
@@ -170,6 +173,18 @@ void neutron_merge() {
     Int_t NEntries = tree->GetEntries();
     for (Int_t entryID = 0; entryID < NEntries; ++entryID) {
       tree->GetEntry(entryID);
+
+      // fill histo 1 time
+      if (distID == 0) {
+         
+        Float_t res_l      = 0.95  / sqrt(3);
+        res_l      *= sqrt(3 * MIP_LY_AV3 / light_tot);
+        Float_t fht = gen->Gaus(first_hit_time, res_l);
+        //Float_t fht = first_hit_time;
+        LeverArm_time->Fill(dist_cubes, fht);
+        if (light_tot / 3. > 40.)
+          LeverArm_time_ly->Fill(dist_cubes, fht);
+      }
   
       // selection on distance (cm)
       if (distID != 8)
@@ -209,12 +224,12 @@ void neutron_merge() {
             res      = 0.95 / sqrt(3);
             res      *= sqrt(MIP_LY_AV3 / light_fiber);
           } else if (resID == 3 || resID == 5) {
-            res      = 1.5;
+            res      = 0.95;
             res      *= sqrt(1. / n_fibers);
           }
 
-          if (resID > 4 && time_sigma[resID] < 0.2)
-            time_sigma[resID] = 0.2;
+          if (resID > 4 && res < 0.2)
+            res = 0.2;
 
           time_resol->Fill(1000 * res);
           ly_fst->Fill(light_fst);
@@ -464,6 +479,9 @@ void neutron_merge() {
   gPad->Modified();
   gPad->Update();
   mom_forward->Write();
+
+  LeverArm_time->Write();
+  LeverArm_time_ly->Write();
 
   file_out->Close();
   file->Close();

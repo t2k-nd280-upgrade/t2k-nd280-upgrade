@@ -9,7 +9,7 @@
   <Dependency>
   
   <StoreGeometry>
-    1
+    0
   </StoreGeometry>
   
   <IsRandomSeed>
@@ -21,11 +21,11 @@
   </Generator>
 
   <Path2file>
-    /t2k/users/suvorov/AnalysisResults/ndUP/PileUp/
+    /t2k/users/suvorov/AnalysisResults/ndUP/PileUp/gRooTracker_v2/
   </Path2file>
 
   <filename>
-    gRooTracher_gamma_4w.root
+    gamma_7b.root
   </filename>
  <!--GENIE/14_3_17/GENIE_geometry_alt_targ_ftpc_1E21POT.root -->
 
@@ -84,15 +84,15 @@
    </TargetMaterial1>
 
    <Targetlength1>
-     1920
+     1880
    </Targetlength1>
    <Targetwidth1>  
-     1920
+     2040
    </Targetwidth1>
    <Targetheight1> 
-     560
+     520
    </Targetheight1>
-   
+ 
    <TargetPos1_X>
      0
    </TargetPos1_X>
@@ -100,7 +100,7 @@
      0
    </TargetPos1_Y>
    <TargetPos1_Z>
-     -1760.412
+     -1707
    </TargetPos1_Z>
 
    
@@ -201,13 +201,13 @@
      10
    </SuperFGDCubeEdge1>
    <SuperFGDCubeNum1_X>
-     192
+     204
    </SuperFGDCubeNum1_X>
    <SuperFGDCubeNum1_Y>
-     56
+     52
    </SuperFGDCubeNum1_Y>
    <SuperFGDCubeNum1_Z>
-     192
+     188
    </SuperFGDCubeNum1_Z>
    <SuperFGDPos1_X>
      0
@@ -216,7 +216,7 @@
      0
    </SuperFGDPos1_Y>
    <SuperFGDPos1_Z>
-     -1760.412
+     -1707
    </SuperFGDPos1_Z>
 
    <!-- SuperFGD CF Box -->
@@ -241,13 +241,12 @@
      5
    </CFBoxOuterClearanceThickness>
 
-
    <!-- SuperFGD Flat Cable -->
    
    <FlatCableThickness>
      0.101
    </FlatCableThickness>
- 
+
    <FlatCableN>
      6
    </FlatCableN>
@@ -259,17 +258,17 @@
    </SuperFGDCubeEdge2>
 
    <SuperFGDCubeNum2_X>
-     96
+     103
    </SuperFGDCubeNum2_X>
    <SuperFGDCubeNum2_Y>
-     56
+     52
    </SuperFGDCubeNum2_Y>
    <SuperFGDCubeNum2_Z>
-     192
+     188
    </SuperFGDCubeNum2_Z>
 
    <SuperFGDPos2_X>
-     480.
+     532.785
    </SuperFGDPos2_X>
    <SuperFGDPos2_Y>
      0
@@ -280,6 +279,12 @@
 
 
 
+   <!-- HATPCFC -->
+
+   <HATPCFCName>
+     FC
+   </HATPCFCName>
+   
    <!-- HATPCFC -->
 
    <HATPCFCName>
@@ -336,10 +341,10 @@
      0 
    </HATPCUpPos_X>
    <HATPCUpPos_Y>
-     724.676
+     712
    </HATPCUpPos_Y>
    <HATPCUpPos_Z>
-     -1760.412
+     -1707
    </HATPCUpPos_Z>
 
    <!-- HATPCDown -->
@@ -400,10 +405,10 @@
      0  
    </HATPCDownPos_X>
    <HATPCDownPos_Y>
-     -722.5
+     -707
    </HATPCDownPos_Y>
    <HATPCDownPos_Z>
-     -1760.412
+     -1707
    </HATPCDownPos_Z>
 
    <!-- FGD3D 1 -->
@@ -482,7 +487,7 @@
    <ToFPlaneXYNum_TopUp>
      21
    </ToFPlaneXYNum_TopUp>
-
+   </ToFLayerHorizNBar_TopUp>   
    <ToFBarwidth_TopUp>
      10
    </ToFBarwidth_TopUp>
@@ -508,7 +513,7 @@
      +1245
    </ToFPosY_TopUp>
    <ToFPosZ_TopUp>
-     -1760.412
+     -1707
    </ToFPosZ_TopUp>
 
    <!-- ToF Bottom Upstream -->
@@ -543,7 +548,7 @@
      -1265
    </ToFPosY_BotUp>
    <ToFPosZ_BotUp>
-     -1760.412
+     -1707
    </ToFPosZ_BotUp>
 
    <!-- ToF Right Upstream -->
@@ -578,7 +583,7 @@
      0
    </ToFPosY_RightUp>
    <ToFPosZ_RightUp>
-     -1760.412
+     -1707
    </ToFPosZ_RightUp>
 
    <!-- ToF Left Upstream -->
@@ -613,7 +618,7 @@
      0
    </ToFPosY_LeftUp>
    <ToFPosZ_LeftUp>
-     -1760.412
+     -1707
    </ToFPosZ_LeftUp>
 
    <!-- ToF Back Upstream -->
@@ -776,22 +781,22 @@
    </UseDegrader>
    
    <UseToF_TopUp>
-     true
+     false
    </UseToF_TopUp>
    <UseToF_BotUp>
-     true
+     false
    </UseToF_BotUp>
    <UseToF_RightUp>
-     true
+     false
    </UseToF_RightUp>
    <UseToF_LeftUp>
-     true
+     false
    </UseToF_LeftUp>
    <UseToF_BackUp>
-     true
+     false
    </UseToF_BackUp>
    <UseToF_FrontUp>
-     true
+     false
    </UseToF_FrontUp>
 
    <UseMagnet>
@@ -801,17 +806,17 @@
    <!-- true --> 
    <!-- </UseSMRD> -->
    <UseBasket>
-     true
+     false
    </UseBasket>
    
    <UseDsECal>
-     true
+     false
    </UseDsECal>
    <UseBrlECal>
-     true
+     false
    </UseBrlECal>
    <UseP0DECal>
-     true
+     false
    </UseP0DECal>
    
    <UseP0D>
@@ -845,13 +850,13 @@
    </InvisFGD2>
 
    <InvisSuperFGD>
-     true
+     false
    </InvisSuperFGD>
    <InvisFGD3D>
-     true
+     false
    </InvisFGD3D> 
    <InvisFGDlike>
-     true
+     false
    </InvisFGDlike>
    
    <InvisToF_TopUp>
@@ -874,11 +879,11 @@
    </InvisToF_FrontUp>
 
    <InvisMagnet>
-     true
+     false
    </InvisMagnet>
    
    <InvisBasket>
-     true
+     false
    </InvisBasket>
 
    <!-- To fix visualization for detectors below -->

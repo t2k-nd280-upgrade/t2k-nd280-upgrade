@@ -103,14 +103,14 @@ int NeutronAnalysis(int argc,char** argv) {
   TH2F* hits_energy = new TH2F("hitsE", "Hits vs Energy", 250, 0., 500., 50, 0., 50.);
 
   // initial energy versus cos theta
-  TH2F* init_e_cos  = new TH2F("ini_ET", "Initial", 10, -1., 1., 250, 0., 500);
-  TH2F* eff_e_cos   = new TH2F("eff_ET", "Efficiency", 10, -1., 1., 250, 0., 500);
+  TH2F* init_e_cos  = new TH2F("ini_ET", "Initial", 10, -1., 1., 250, 0., 800);
+  TH2F* eff_e_cos   = new TH2F("eff_ET", "Efficiency", 10, -1., 1., 250, 0., 800);
   // p.e. vs theta and energy
-  TH2F* pe_e_cos    = new TH2F("pe_ET", "PE from 1st hit", 10, -1., 1., 250, 0., 500);
+  TH2F* pe_e_cos    = new TH2F("pe_ET", "PE from 1st hit", 10, -1., 1., 250, 0., 800);
   // p.e. vs energy
-  TH2F* pe_e        = new TH2F("pe_E", "PE from 1st hit", 250., 0., 500, 250, 0., 500.);
+  TH2F* pe_e        = new TH2F("pe_E", "PE from 1st hit", 250., 0., 500, 250, 0., 800.);
   // distance from born position towards 1st hit
-  TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 300, 0., 1500, 250, 0., 500.);
+  TH2F* e_dist      = new TH2F("e_dist", "Energy vs distance", 300, 0., 1500, 250, 0., 800.);
 
   TH1F* dist_true   = new TH1F("dist_true", "true neutron distance", 300, 0., 1500);
   // momentum for forward going
