@@ -63,6 +63,8 @@ ExN02TrackerHit::ExN02TrackerHit(double maxSagitta, double maxLength, G4int dID0
   fTrackID = trkid;
   fParentID = parentid;
   fEdep = e;
+  fEdep_min = e;
+  fEdep_max = e;
   fCharge = charge;
   fParticle = P0;
   fPosition = pos;
@@ -88,6 +90,8 @@ ExN02TrackerHit::ExN02TrackerHit(G4int dID0, G4double e,G4int P0)
 {
   fDetID = dID0;
   fEdep = e;
+  fEdep_min = e;
+  fEdep_max = e;
   fParticle = P0;
 }
 
@@ -97,6 +101,8 @@ ExN02TrackerHit::ExN02TrackerHit(G4int dID0, G4double e)
 {
   fDetID = dID0;
   fEdep = e;
+  fEdep_min = e;
+  fEdep_max = e;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -114,6 +120,8 @@ ExN02TrackerHit::ExN02TrackerHit(const ExN02TrackerHit& right)
 {
   fDetID = right.fDetID;
   fEdep     = right.fEdep;
+  fEdep_min   = right.fEdep;
+  fEdep_max   = right.fEdep;
   fCharge     = right.fCharge;
   fParticle = right.fParticle; 
   for(int i=0;i<3;i++) fPosition[i] = right.fPosition[i];
@@ -127,6 +135,8 @@ const ExN02TrackerHit& ExN02TrackerHit::operator=(const ExN02TrackerHit& right)
 {
   fDetID = right.fDetID;
   fEdep       = right.fEdep;
+  fEdep_min   = right.fEdep;
+  fEdep_max   = right.fEdep;
   fCharge      = right.fCharge;
   fParticle = right.fParticle; 
   for(int i=0;i<3;i++) fPosition[i] = right.fPosition[i];
@@ -257,6 +267,16 @@ bool ExN02TrackerHit::SameHit(G4Step* theStep) {
         double separation = FindSeparation(theStep);
         if (separation > fMaxSagitta) return false;
     }
+
+    // study the min/max energy deposition in the hit
+    if (fEdep_max < theStep->GetTotalEnergyDeposit())
+      fEdep_max = theStep->GetTotalEnergyDeposit();
+
+    if (fEdep_min > theStep->GetTotalEnergyDeposit())
+      fEdep_min = theStep->GetTotalEnergyDeposit();
+
+    if (abs(fEdep_max - fEdep_min) / CLHEP::MeV > 1.) // 1. MeV
+      return false;
 
     return true;
 }

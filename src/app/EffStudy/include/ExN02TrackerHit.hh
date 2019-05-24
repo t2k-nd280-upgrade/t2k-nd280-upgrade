@@ -95,6 +95,9 @@ private:
   G4ThreeVector fPosition;
   G4double fTime;
 
+  G4double fEdep_min;
+  G4double fEdep_max;
+
 public:
 
   void SetNameDet     (G4String name)    { fNameDet = name; };
