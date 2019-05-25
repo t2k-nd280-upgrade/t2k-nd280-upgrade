@@ -139,7 +139,7 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void) {
   cube.SetHeight(fEdge);  
   cube.SetHoleRadius(0.75*CLHEP::mm);
   cube.SetFiberRadius(0.5*CLHEP::mm);
-  cube.SetCoatingThickness(0.25*CLHEP::mm);
+  cube.SetCoatingThickness(0.1*CLHEP::mm);
   cube.SetGap(0.0*CLHEP::mm);
   
   double shift = 2.*CLHEP::mm; //cube.GetHoleRadius();
