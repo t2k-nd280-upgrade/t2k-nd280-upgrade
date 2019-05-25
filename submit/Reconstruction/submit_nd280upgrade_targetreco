@@ -58,15 +58,7 @@ $useviewYZ      = 1 unless defined $useviewYZ; # (0 or 1)
 
 $min_trk_dist    = 10 unless defined $min_trk_dist; # if <0 --> use default (mm)
 
-#$inputfile        = "g4ND280Up_1E21_SuperFGD_NuE-Exp0-Nexpt1000_GasAr.root" unless defined $inputfile;
-#$inputfile        = "g4ND280Up_1E21_SuperFGD_NuMu-Exp0-Nexpt1000_GasAr.root" unless defined $inputfile;
-
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E22_SuperFGD_NuE.root" unless defined $inputfile;
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E22_FGDXZ_NuE.root" unless defined $inputfile;
-
-#$inputfile        = "/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype/SFGD_MC_dev-0-Exp0-Nexpt100.root" unless defined $inputfile;
 $inputfile        = "/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype/SFGD_MC_dev-0-Exp0-Nexpt5000.root" unless defined $inputfile;
-#$inputfile        = "/neutrino/data7/davide/out_cluster/PROVA/production/TEST_TARGET/5_10_17/g4ND280Up_1E21_FGDXZ_NuMu.root" unless defined $inputfile;
 
 $first_expt      = 0                             unless defined $first_expt;
 $nruns           = 6                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)

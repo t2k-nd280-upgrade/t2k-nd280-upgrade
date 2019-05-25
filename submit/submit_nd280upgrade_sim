@@ -44,61 +44,20 @@ foreach (@ARGV) {
     $iarg++;
 }
 
-$exe_clust_dir = "bin/" unless defined $exe_clust_dir; # path starting from $softw_dir
-$exe_loc_dir = "bin/" unless defined $exe_loc_dir; # path starting from $softw_dir
+$exe_clust_dir 		= "bin/"											unless defined $exe_clust_dir; # path starting from $softw_dir
+$exe_loc_dir 			= "new_build/app/EffStudy/" 	unless defined $exe_loc_dir; # path starting from $softw_dir
 
-$resource        = "interactive"               unless defined $resource;
+$resource        	= "interactive"               unless defined $resource;
 
-$tag             = "test" unless defined $tag;
-#$tag             = "g4ND280Up_NoNorm_Alternative_Targ_TPC_ECal_ToF_oofv"                 unless defined $tag;  
-#$tag             = "g4ND280Up_1E21_Reference_ECal_RHC_numu"                 unless defined $tag;
-#$tag             = "g4ND280Up_1E21_Current_ECal_numu"               unless defined $tag;
-#$tag             = "g4ND280Up_1E22_Reference_ECal_nue"               unless defined $tag;
-#$tag             = "g4ND280Up_1E22_Alternative_Targ_TPC_ECal_ToF_nue"               unless defined $tag;
-#$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF"    unless defined $tag;
-#$tag             = "g4ND280Up_1E21_Alternative_Targ_TPC_ECal_ToF_RHC_numu"    unless defined $tag;
-#$tag             = "g4ND280Up_1E21_Alternative_TPC_Targ_ECal_ToF_RHC_numu"    unless defined $tag;
-#$tag             = "g4ND280Up_AltTargTPC_Only_SuperFGD"    unless defined $tag;
-#$tag             = "g4ND280Up_1E21_SuperFGD_NuMu"    unless defined $tag;
-#$tag             = "g4ND280Up_1E21_SuperFGD_NuMu_NEUT"    unless defined $tag;
-$tag              = "GENIE_G18_10b_1e22_nue_FHC"               unless defined $tag;
+$tag             	= "test" unless defined $tag;
+$config_file     	= "config/configuration_cluster_ref_sfgdonly.xml" unless defined $config_file;
+$vis_file        	= "mac/vis_pgun.mac"          unless defined $vis_file;
+$nruns           	= 1                          	unless defined $nruns;      # number of jobs
+$nexpts          	= 100                        	unless defined $nexpts;     # number of events per job 
 
+$first_expt      	= 0                           unless defined $first_expt; # first event
 
-######################################################################################################################################
-#
-# Real Target 
-#$config_file     = "config/configuration_cluster_ref_uniform.xml" unless defined $config_file;
-#$config_file     = "config/configuration_cluster_ref.xml" unless defined $config_file;
-#$config_file     = "config/configuration_cluster_ref_fgdxz.xml" unless defined $config_file;
-
-$config_file     = "config/configuration_cluster_ref_sfgdonly.xml" unless defined $config_file;
-#$config_file     = "config/configuration_cluster_ref_fgdxzonly.xml" unless defined $config_file;
-#$config_file     = "config/configuration_cluster_ref_uniform_NEUT.xml" unless defined $config_file;
-#$config_file     = "config/SuperFGDBox/configuration_cluster_SuperFGDBox.xml" unless defined $config_file;
-#$config_file     = "config/HATPC/configuration_cluster_targ_ftpc_2fgd_tof_ecal_hatpc.xml" unless defined $config_file;
-
-######################################################################################################################################
-
-#$vis_file        = "mac/vis_test.mac"           unless defined $vis_file;  
-$vis_file        = "mac/vis_pgun.mac"           unless defined $vis_file;
-#$vis_file        = "mac/vis.mac"           unless defined $vis_file;
-#$vis_file        = "mac/vis_cluster.mac"           unless defined $vis_file;
-
-
-#$nruns           = 80                          unless defined $nruns;      # number of jobs (current and reference)
-#$nruns           = 127                          unless defined $nruns;      # number of jobs (alternative)
-$nruns           = 204                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
-#$nruns           = 133                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
-#$nexpts          = 5000                        unless defined $nexpts;     # number of events per job (w/o ToF)
-#$nexpts          = 2000                        unless defined $nexpts;     # number of events per job (with ToF RHC-numu) 
-$nexpts          = 3000                        unless defined $nexpts;     # number of events per job (with ToF RHC-numubar) 
-#$nexpts          = 1000                        unless defined $nexpts;     # number of events per job (nue with ToF)
-
-$first_expt      = 0                           unless defined $first_expt; # first event
-
-#$queue           = "veryshort"                unless defined $queue;
-#$queue           = "rhel6-short"                unless defined $queue;
-$queue           = "sx"                unless defined $queue;
+$queue           = "sx"                					unless defined $queue;
 
 if($resource eq "parallel"){
     open(par_file, ">$job_dir/commands_sim.sh") or die("Can not create the sbatch script");
@@ -112,14 +71,13 @@ while($irun < $nruns) { # loop over the jobs
     
  
     if($resource eq "interactive") {
-	$arguments = "$softw_dir/$exe_loc_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+			$arguments = "$softw_dir/$exe_loc_dir/EffStudyApp $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
     }
     else{
-	#$arguments = "$softw_dir/$exe_clust_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
-	$arguments = "$softw_dir/$exe_loc_dir/EffStudy.exe $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
+			$arguments = "$softw_dir/$exe_loc_dir/EffStudyApp $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
     }
      
-     $command = "$arguments";
+    $command = "$arguments";
     # $command .= "; mv EffStudy_0.root EffStudy_";
     # $file_name = $irun + 1;
     # $command .= "$file_name.root";
