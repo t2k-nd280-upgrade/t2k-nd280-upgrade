@@ -45,6 +45,7 @@
 #include "G4BlineEventAction.hh"
 #include "G4BlineSteppingAction.hh"
 #include "G4BlineEquation.hh"
+#include "G4MagIntegratorDriver.hh"
 
 #include "G4RunManager.hh"
 #include "G4TransportationManager.hh"

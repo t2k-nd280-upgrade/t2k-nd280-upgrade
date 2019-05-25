@@ -113,7 +113,7 @@ ExN02PhysicsList::ExN02PhysicsList() :
 
   G4LossTableManager::Instance();
 
-  defaultCutValue = 1.*mm;
+  defaultCutValue = 1.*CLHEP::mm;
   fCutForGamma     = defaultCutValue;
   fCutForElectron  = defaultCutValue;
   fCutForPositron  = defaultCutValue;
@@ -551,10 +551,18 @@ void ExN02PhysicsList::AddStepMax(){
   // Step limitation seen as a process
    
   fStepMaxProcess = new ExN02StepMax();
+
+  G4ParticleTable::G4PTblDicIterator* ParticleIterator;
+
+#ifndef NEW_G4
+  ParticleIterator = theParticleIterator;
+#else 
+  ParticleIterator = GetParticleIterator();
+#endif
   
-  theParticleIterator->reset();
-  while ((*theParticleIterator)()){
-    G4ParticleDefinition* particle = theParticleIterator->value();
+  ParticleIterator->reset();
+  while ((*ParticleIterator)()){
+    G4ParticleDefinition* particle = ParticleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
     G4String particleType = particle->GetParticleType();
