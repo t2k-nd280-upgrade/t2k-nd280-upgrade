@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 
 # Set name of our project
-project(t2k-nd280-upgrade)
+project(t2k_nd280_upgrade)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake )
 MESSAGE(STATUS ${PROJECT_SOURCE_DIR}/../cmake)
@@ -77,6 +77,9 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/Reconstruction/src/ReadOutSim
 
 #########################################
 
+# remove plenty of warnings from ROOT source code
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overloaded-virtual -Wno-shadow ")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ")
 
 message(STATUS "C flags      : " ${CMAKE_C_FLAGS})
 message(STATUS "CXX flags    : " ${CMAKE_CXX_FLAGS})
