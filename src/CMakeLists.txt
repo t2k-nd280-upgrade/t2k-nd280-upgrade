@@ -36,7 +36,7 @@ pbuilder_add_ext_libraries( ${GEANT4_LIBRARIES} )
 if (${GEANT_VERSION} VERSION_GREATER_EQUAL 10.02.03)
 	MESSAGE(STATUS "Geant4 version > 10.01p05 detected. Special flag will added for compilation")
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNEW_G4")
-endif (${GEANT_VERSION} VERSION_GREATER 10.01.05)
+endif (${GEANT_VERSION} VERSION_GREATER_EQUAL 10.02.03)
 
 find_package(CLHEP)
 pbuilder_add_ext_libraries( ${CHLEP_LIBRARIES} )

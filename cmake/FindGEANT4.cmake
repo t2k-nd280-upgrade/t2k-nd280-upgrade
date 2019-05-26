@@ -16,7 +16,7 @@ message("GEANT4_INCLUDE_DIRS : ${GEANT4_INCLUDE_DIR}")
 
 FIND_PATH(GEANT4_LIBRARY_DIR NAMES ${libname}                PATHS
                                                              $ENV{G4LIB}/$ENV{G4SYSTEM}/
-							     $ENV{GEANT4_LIBRARY}
+							     $ENV{GEANT4_LIBRARY} $ENV{GEANT4_LIBRARY64}
 							     NO_DEFAULT_PATH)
 							     
 message("GEANT4_LIBRARY_DIR : ${GEANT4_LIBRARY_DIR}")
