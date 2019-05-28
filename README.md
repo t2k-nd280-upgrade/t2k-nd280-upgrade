@@ -10,15 +10,21 @@ export CMT_DIR=
 export ROOT_DIR=
 ```
 all the other paths will be assigned automatically. CLHEP could be taken from the GEANT4 installation. CMT is really necessary only if you will use highland. For the G4 sim and read out the CMT installation is not obligate.
+
 2. Run 
 ```bash
 source T2KND280Up_CLHEP.sh $PWD
 ```
-3. Compile the package
+3. Configure the cmake installation
 ```bash
-cd build
-source cmake_compile.sh
+mkdir build_dir; cd builddir;
+cmake t2k-nd280-upgrade/src/;
 ```
+4. Run the installation
+```bash
+make
+```
+We strongly recomend use multicore compilation for speed up, e.g. `make -J6`
 
 ## Run the code
 
@@ -73,104 +79,3 @@ For more information see
 http://nd280.lancs.ac.uk/devel/invariant/highlandND280Doc/
 and 
 https://indico.cern.ch/event/724624/contributions/3083209/attachments/1693650/2725603/highlandUp_documentation_v1.pdf
-
-
-
-
-
-## Obsolete README
-
-go to t2k-nd280-upgrade and do:
-
-0.) Set the environment
-
-source T2KND280Up_CLHEP.sh $PWD --> for external CLHEP
-
-1.) To build the code do:
-
-cd build
-source cmake_compile.sh
-
-2.) To run the code do:
-
-cd /PATH/TO/OUTPUT/DIRECTORY
-
-$T2KND280UP/submit/submit_nd280upgrade_sim --softw-dir $T2KND280UP --job-dir $PWD --resource interactive --nexpts 1 --nruns 1
-
-It runs the executable file in $T2KND280UP/bin
-Depending on the options chosen in submit_nd280upgrade_sim The following output files are produced:
-- EffStudy.root: root file containing the GEANT4 output tree
-- g4_*.wrl: VRML files with event display
-- geometry.root: root file containing the detector geometry
-
-Then also the simplified selection on the primary tracks can be run as following:
-
-$T2KND280UP/submit/submit_nd280upgrade_sel --softw-dir $T2KND280UP --job-dir $PWD --resource interactive --nexpts 1 --nruns 1
-
-It's a simple ROOT macro in $T2KND280UP/macro that is run through a bash scripts.
-Both scripts can be run on cluster to parallelize jobs.
-
-All the macros (e.g. read submit_nd280upgrade_sel output) are in $T2KND280UP/macros
-
-
-3.) Add packages
-
-In order to add packages to be compiled you need to:
-
-open $T2KND280UP/src/CMakeLists.txt and add (or replace)
-
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/PATH_TO_INCLUDE) ### header files
-
-open  $T2KND280UP/src/app/CMakeLists.txt and add (or replace)
-
-AUX_SOURCE_DIRECTORY(EffStudy/src sourcefile) ###
-
-ADD_EXECUTABLE(EffStudy.exe          EffStudy/Main.cc ${sourcefile}) ###
-
-TARGET_LINK_LIBRARIES(EffStudy.exe   ${ROOT_LIBRARIES}
-				     ...           )
-
-
-5.) Installation
-
-In order to get this framework working the following software need to be installed in the following order:
-
-- Xerces-C++: needed to store the geometry in GDML format. Installed xerces-c-3.1.3 with default configuration options (CURRENTLY NOT NEEDED) 
- 
-- CLHEP: Install version 2.2.0.4 (recommended for GEANT4.10.1.3)
-
-- GEANT4: the cmake must be configured with the following options: USE_GDML=ON, INSTALL_DATA=ON, XERCESC_ROOT_DIR=/path/to/install (contains lib, bin and include directories), DGEANT4_USE_SYSTEM_CLHEP and DCLHEP_ROOT_DIR. For this framework the version geant4.10.01.p03 is recommended.
-
-Enabling GDML --> need Xerces-c 
-cmake -DCMAKE_INSTALL_PREFIX=/atlas/users/dsgalabe/GEANT4/geant4.10.01.p03-install -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=/atlas/users/dsgalabe/xerces-c-3.1.3/xerces-c-3.1.3-install -XERCESC_INCLUDE_DIR=/atlas/users/dsgalabe/xerces-c-3.1.3/xerces-c-3.1.3-install/include -XERCESC_LIBRARY=/atlas/users/dsgalabe/xerces-c-3.1.3/xerces-c-3.1.3-install/lib/libxerces-c-3.1.so -DGEANT4_USE_SYSTEM_CLHEP=ON -DCLHEP_ROOT_DIR=/atlas/users/dsgalabe/CLHEP/clhep_install/ /atlas/users/dsgalabe/GEANT4/geant4.10.01.p03
-
-Without GDML --> don't need Xerces-c (RECOMMENDED)
-cmake -DCMAKE_INSTALL_PREFIX=/atlas/users/dsgalabe/GEANT4/geant4.10.01.p03-install -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_SYSTEM_CLHEP=ON -DCLHEP_ROOT_DIR=/atlas/users/dsgalabe/CLHEP/clhep_install/ /atlas/users/dsgalabe/GEANT4/geant4.10.01.p03
-
-
-
-
-
-
-
-6.) Running NEUT (using 5.3.6 version)
-
-cd /path_to_neut/src/neutgeom
-source setup.sh
-
-./event_rate -f /neutrino/data7/davide/files/ND280Upgrade/JNUBEAM/RHC_fluxfiles/nd5/hadd/nu.nd5_flukain.0-0.root -g /neutrino/data7/davide/files/ND280Upgrade/G4geometry/geometry_classic.root -v +Basket -o /atlas/users/dsgalabe/STUFF_T2KREWEIGHT/NEUT/neut_5.3.6/src/neutgeom/setup_output.root -d 5
-
-./genev -j /neutrino/data7/davide/files/ND280Upgrade/JNUBEAM/RHC_fluxfiles/nd5/hadd/nu.nd5_flukain.0-0.root -g /neutrino/data7/davide/files/ND280Upgrade/G4geometry/geometry_classic.root -v +Basket -o genev_output.root -i /atlas/users/dsgalabe/STUFF_T2KREWEIGHT/NEUT/neut_5.3.6/src/neutgeom/setup_output.root -f rootracker
-
-More detailed instructions can be found at http://www.t2k.org/asg/xsec/niwgdocs/neut/neut_nd280
-
-
-
-
-7.) Running highlandUp 
-
-see instruction at the following link:
-
-http://www.t2k.org/nd280/physics/xsec/meetings/2016/pre-collaboration-meeting-workshop/highland/view
-
-and the README.txt file in /highlandUp

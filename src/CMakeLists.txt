@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 
 # Set name of our project
-project(t2k-nd280-upgrade)
+project(t2k_nd280_upgrade)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake )
 MESSAGE(STATUS ${PROJECT_SOURCE_DIR}/../cmake)
@@ -33,6 +33,11 @@ include_directories (${ROOT_INCLUDE_DIR})
 find_package(GEANT4 REQUIRED ui_all vis_all)
 pbuilder_add_ext_libraries( ${GEANT4_LIBRARIES} )
 
+if (${GEANT_VERSION} VERSION_GREATER_EQUAL 10.02.03)
+	MESSAGE(STATUS "Geant4 version > 10.01p05 detected. Special flag will added for compilation")
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNEW_G4")
+endif (${GEANT_VERSION} VERSION_GREATER_EQUAL 10.02.03)
+
 find_package(CLHEP)
 pbuilder_add_ext_libraries( ${CHLEP_LIBRARIES} )
 
@@ -51,32 +56,35 @@ pbuilder_add_ext_libraries( ${CHLEP_LIBRARIES} )
 
 #####
 
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/nd280UpEvent) ### include nd280UpEvent class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/BlineTracer/include) ### include GEANT4 package to visualize magnetic field
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc) ### include nd280mc class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc/ecal) ### include nd280mc/ecal class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/nd280mc/p0d) ### include nd280mc/p0d class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src) ### include GEANT4 simulation
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/CFBox) ### include CFBox class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/FGD3D) ### include FGD3D class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/FGDlike) ### include FGDlike class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/FlatCable) ### include FlatCable class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/HATPC) ### include SuperFGD class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/PCB) ### include PCB class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/SuperFGD) ### include SuperFGD class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/SciFi) ### include SciFi class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/ToF) ### include ToF class
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/WAGASCI) ### include WAGASCI class
-# INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/EffStudy/src/ReadOutSim) ### include ReadOutSim class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/nd280UpEvent) ### include nd280UpEvent class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/BlineTracer/include) ### include GEANT4 package to visualize magnetic field
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/nd280mc) ### include nd280mc class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/nd280mc/ecal) ### include nd280mc/ecal class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/nd280mc/p0d) ### include nd280mc/p0d class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src) ### include GEANT4 simulation
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/CFBox) ### include CFBox class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/FGD3D) ### include FGD3D class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/FGDlike) ### include FGDlike class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/FlatCable) ### include FlatCable class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/HATPC) ### include SuperFGD class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/PCB) ### include PCB class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/SuperFGD) ### include SuperFGD class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/SciFi) ### include SciFi class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/ToF) ### include ToF class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/WAGASCI) ### include WAGASCI class
+# INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/EffStudy/src/ReadOutSim) ### include ReadOutSim class
 
 
 ########### FOR RECONSTRUCTION ##########
 
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/Reconstruction/src/) ### include general classes
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/../src/app/Reconstruction/src/ReadOutSim) ### include ReadOutSim class
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/Reconstruction/src/) ### include general classes
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/Reconstruction/src/ReadOutSim) ### include ReadOutSim class
 
 #########################################
 
+# remove plenty of warnings from ROOT source code
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overloaded-virtual -Wno-shadow ")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ")
 
 message(STATUS "C flags      : " ${CMAKE_C_FLAGS})
 message(STATUS "CXX flags    : " ${CMAKE_CXX_FLAGS})

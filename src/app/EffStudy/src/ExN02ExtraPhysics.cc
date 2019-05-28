@@ -21,11 +21,20 @@ void ExN02ExtraPhysics::ConstructParticle() { }
 
 void ExN02ExtraPhysics::ConstructProcess() {
   G4cout << "ExN02ExtraPhysics:: Add Extra Physics Processes" << G4endl;
-  
-  aParticleIterator->reset();
-  while ((*aParticleIterator)()) {
+
+G4ParticleTable::G4PTblDicIterator* ParticleIterator;
+
+#ifndef NEW_G4
+  ParticleIterator = aParticleIterator;
+#else 
+  ParticleIterator = GetParticleIterator();
+#endif
+
+  ParticleIterator->reset();
+  while ((*ParticleIterator)()) {
     
-    G4ParticleDefinition* particle = aParticleIterator->value();
+    G4ParticleDefinition* particle = ParticleIterator->value();
+
     G4ProcessManager* pman = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
     G4String particleType = particle->GetParticleType();

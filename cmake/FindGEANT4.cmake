@@ -16,7 +16,7 @@ message("GEANT4_INCLUDE_DIRS : ${GEANT4_INCLUDE_DIR}")
 
 FIND_PATH(GEANT4_LIBRARY_DIR NAMES ${libname}                PATHS
                                                              $ENV{G4LIB}/$ENV{G4SYSTEM}/
-							     $ENV{GEANT4_LIBRARY}
+							     $ENV{GEANT4_LIBRARY} $ENV{GEANT4_LIBRARY64}
 							     NO_DEFAULT_PATH)
 							     
 message("GEANT4_LIBRARY_DIR : ${GEANT4_LIBRARY_DIR}")
@@ -35,6 +35,11 @@ FIND_PROGRAM(GEANT4_CONFIG_EXECUTABLE NAMES  geant4-config    PATHS
 								 $ENV{GEANT4_INSTALL_BIN}
 								 #/afs/cern.ch/user/d/dsgalabe/GEANT4/v10r1p03/geant4.10.01.p03-install/bin/
 								 NO_DEFAULT_PATH)
+
+execute_process(
+    COMMAND ${GEANT4_CONFIG_EXECUTABLE} --version
+    OUTPUT_VARIABLE GEANT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 message("GEANT4_CONFIG_EXECUTABLES : ${GEANT4_CONFIG_EXECUTABLE_CPP}")
 
