@@ -46,3 +46,4 @@ mypath.sh
 *.root
 mybuild
 .vscode
+t2k_nd280-upgrade.code-workspace

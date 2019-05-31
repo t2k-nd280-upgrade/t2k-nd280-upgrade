@@ -1,4 +1,4 @@
-FROM gitlab-registry.in2p3.fr/guiguem/nd280upgrade
+FROM gitlab-registry.in2p3.fr/guiguem/nd280upgrade:v0.0.3
 
 COPY cmake /nd280upgrade/cmake
 COPY docker /nd280upgrade/docker

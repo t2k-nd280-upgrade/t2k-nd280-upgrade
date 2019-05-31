@@ -14,7 +14,7 @@ RUN yum -y install centos-release-scl-rh &&\
         libXext-devel \
         wget
 
-ENV COMMON_TAG=v0.0.2
+ENV COMMON_TAG=v0.0.3
 ENV COMMON_BUILD_PREFIX=/usr/local/t2k/common/$COMMON_TAG
 
 # Create the setup.sh script
@@ -161,17 +161,17 @@ RUN yum install -y qt-devel libxmu-devel
 RUN yum install -y libX11-devel libXaw-devel
 RUN source $COMMON_BUILD_PREFIX/setup.sh &&\
     cd /tmp_install &&\
-    wget http://geant4.cern.ch/support/source/geant4.10.02.p01.tar.gz &&\
+    wget http://geant4.cern.ch/support/source/geant4.10.02.p03.tar.gz &&\
     mkdir source &&\
-    tar -xzf geant4.10.02.p01.tar.gz -C source &&\
-    mkdir -p build/geant4.10.02.p01 &&\
-    cd build/geant4.10.02.p01 &&\
+    tar -xzf geant4.10.02.p03.tar.gz -C source &&\
+    mkdir -p build/geant4.10.02.p03 &&\
+    cd build/geant4.10.02.p03 &&\
     cmake -DCMAKE_INSTALL_PREFIX=$COMMON_BUILD_PREFIX \
     -DGEANT4_USE_SYSTEM_CLHEP=ON \
-    -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_OPENGL_X11=ON -DGEANT4_USE_RAYTRACER_X11=ON -DGEANT4_USE_GDML=ON ../../source/geant4.10.02.p01 &&\
+    -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_OPENGL_X11=ON -DGEANT4_USE_RAYTRACER_X11=ON -DGEANT4_USE_GDML=ON ../../source/geant4.10.02.p03 &&\
     cmake -DCMAKE_INSTALL_PREFIX=$COMMON_BUILD_PREFIX \
     -DGEANT4_USE_SYSTEM_CLHEP=ON \
-    -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_OPENGL_X11=ON -DGEANT4_USE_RAYTRACER_X11=ON -DGEANT4_USE_GDML=ON ../../source/geant4.10.02.p01 &&\
+    -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_OPENGL_X11=ON -DGEANT4_USE_RAYTRACER_X11=ON -DGEANT4_USE_GDML=ON ../../source/geant4.10.02.p03 &&\
     make -j6 install &&\
     rm -rf /tmp_install &&\
     /bin/true
