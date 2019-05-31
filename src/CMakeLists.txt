@@ -33,13 +33,10 @@ include_directories (${ROOT_INCLUDE_DIR})
 find_package(GEANT4 REQUIRED ui_all vis_all)
 pbuilder_add_ext_libraries( ${GEANT4_LIBRARIES} )
 
-# if (${GEANT_VERSION} VERSION_GREATER_EQUAL 10.2.3)
 if (NOT ${GEANT_VERSION} VERSION_LESS 10.02.03)
-	MESSAGE(STATUS "Geant4 version > 10.02p03 detected. Special flag will added for compilation")
+	MESSAGE(STATUS "Geant4 version > 10.02p03 detected. Special flag is added for compilation")
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNEW_G4")
-# endif (${GEANT_VERSION} VERSION_GREATER_EQUAL 10.2.3)
 endif (NOT ${GEANT_VERSION} VERSION_LESS 10.02.03)
-
 
 find_package(CLHEP)
 pbuilder_add_ext_libraries( ${CHLEP_LIBRARIES} )
