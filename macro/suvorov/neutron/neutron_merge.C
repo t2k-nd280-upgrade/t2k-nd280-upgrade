@@ -88,6 +88,8 @@ void neutron_merge() {
   TH2F* LeverArm_time     = new TH2F("LAvsTime", "time vs Lever arm vs ", 300, 0., 300., 120, 0., 60.);
   TH2F* LeverArm_time_ly  = new TH2F("LAvsTime_c", "time vs Lever arm vs ", 300, 0., 300., 120, 0., 60.);
 
+  TH1F* n_fibers_h        = new TH1F("n_fibers", "number of channels", 500, 0., 500.);
+
   // do rebinning
   Int_t rebin_Y = 5;
   init_e_cos->RebinY(rebin_Y);
@@ -136,7 +138,8 @@ void neutron_merge() {
 
     TH2F* angle_smearing = new TH2F("angle_smearing", "Angle smearing", 50, -1., 1., 50, -1., 1.);
 
-    TH1F* time_resol  = new TH1F("time_res", "Time resolution", 500, 0., 6000.);
+    TH1F* time_resol_1  = new TH1F("time_res_fib", "Time resolution", 500, 0., 6000.);
+    TH1F* time_resol_2  = new TH1F("time_res_ly", "Time resolution", 500, 0., 6000.);
     TH1F* ly_fst     = new TH1F("ly_fst", "Light yield first", 250, 0., 6000.);
     TH1F* ly_tot     = new TH1F("ly_tot", "Light yield total", 250, 0., 6000.);
     TH1F* ly_max     = new TH1F("ly_max", "Light yield max", 250, 0., 6000.);
@@ -228,10 +231,18 @@ void neutron_merge() {
             res      *= sqrt(1. / n_fibers);
           }
 
+          if (resID == 3)
+            time_resol_1->Fill(1000 * res);
+
+          if (resID == 4)
+            time_resol_2->Fill(1000 * res);
+
           if (resID > 4 && res < 0.2)
             res = 0.2;
 
-          time_resol->Fill(1000 * res);
+          if (resID == 3)
+            n_fibers_h->Fill(n_fibers);
+
           ly_fst->Fill(light_fst);
           ly_max->Fill(light_max);
           ly_tot->Fill(light_tot);
@@ -361,10 +372,12 @@ void neutron_merge() {
     }
     eff_e_cos_2->Write("efficiency_vs_Ekin_theta");
     angle_smearing->Write();
-    time_resol->Write();
+    time_resol_1->Write();
+    time_resol_2->Write();
     ly_fst->Write();
     ly_max->Write();
     ly_tot->Write();
+    n_fibers_h->Write();
     reco_first->Divide(reco_first_n);
     reco_first->Write();
 
