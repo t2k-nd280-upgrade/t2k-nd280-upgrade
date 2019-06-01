@@ -83,8 +83,10 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..//src/app/Reconstruction/src/ReadOut
 #########################################
 
 # remove plenty of warnings from ROOT source code
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overloaded-virtual -Wno-shadow ")
-set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overloaded-virtual -Wno-shadow -Wno-unused-const-variable")
+if (APPLE)
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-private-field -Wno-pointer-bool-conversion")
+endif (APPLE)
 
 message(STATUS "C flags      : " ${CMAKE_C_FLAGS})
 message(STATUS "CXX flags    : " ${CMAKE_CXX_FLAGS})
