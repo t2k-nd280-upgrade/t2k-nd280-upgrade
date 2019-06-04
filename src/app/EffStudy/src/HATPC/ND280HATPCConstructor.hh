@@ -108,11 +108,17 @@ public:
     /// Get the ActiveHATPCVerticalOffset of the HATPC detector
     double GetActiveHATPCVerticalOffset(void) { return fActiveHATPCVerticalOffset; }
 
-
 private:
     G4String fHATPCParentName;
     G4String fHATPCName;
     G4String fHATPCFCName;
+
+    // Visible pieces
+    G4bool fVisible;
+
+    double fBoxXsize;
+    double fBoxYsize;
+    double fBoxZsize;
 
     //Size of the HATPC
     double fHATPCWidth;
@@ -140,20 +146,20 @@ private:
     //bool DebugHATPCMass;
 
     /// Method to build the FC geometry
-    void BuildFCGeometry();
+    void BuildFCGeometry(G4LogicalVolume *logVolume, double &FCthickness);
     /// Method to build the Nexus geometry (depreciated)
-    void BuildNexusGeometry();
+    void BuildNexusGeometry(G4LogicalVolume *logVolume, double &FCthickness);
     /// Method to build the GFiber geometry (depreciated)
-    void BuildGFiberGeometry();
+    void BuildGFiberGeometry(G4LogicalVolume *logVolume, double &FCthickness);
     /// Method to build the Solid geometry (depreciated)
-    void BuildSolidGeometry();
+    void BuildSolidGeometry(G4LogicalVolume *logVolume, double &FCthickness);
     /// Method to build the drift volume
-    void BuildDriftVolume();
+    void BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *driftVolume, double &FCthickness);
     /// Method to build the Micromegas volumes
     void BuildMicromegasVolume();
 
     /// Method to build the TPC Central Cathode.
-    void BuildHATPCCentralCathode(G4LogicalVolume *v, double t);
+    void BuildHATPCCentralCathode(G4LogicalVolume *v, double  t);
     /// Method to build the HATPC Cages.
     void BuildHATPCCages(G4LogicalVolume *v);
 

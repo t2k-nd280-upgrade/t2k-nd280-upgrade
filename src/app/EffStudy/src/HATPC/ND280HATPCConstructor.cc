@@ -32,7 +32,9 @@ ND280HATPCConstructor::ND280HATPCConstructor(G4String n, ExN02DetectorConstructi
       fHATPCOuterBoxWall(1 * CLHEP::cm),
       fHATPCSteppingLimit(1 * CLHEP::cm),
       fActiveHATPCVerticalOffset(1 * CLHEP::cm),
-      fHATPCFCName(""){};
+      fHATPCFCName("")
+{
+}
 ND280HATPCConstructor::ND280HATPCConstructor(G4String n, ND280Constructor *p)
     : ND280Constructor(n, p),
       fHATPCWidth(1 * CLHEP::cm),
@@ -46,7 +48,9 @@ ND280HATPCConstructor::ND280HATPCConstructor(G4String n, ND280Constructor *p)
       fHATPCOuterBoxWall(1 * CLHEP::cm),
       fHATPCSteppingLimit(1 * CLHEP::cm),
       fActiveHATPCVerticalOffset(1 * CLHEP::cm),
-      fHATPCFCName(""){};
+      fHATPCFCName("")
+{
+}
 
 ND280HATPCConstructor::~ND280HATPCConstructor() { ; }
 
@@ -56,23 +60,26 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     // Specifications and definitions
 
     //G4bool DebugHATPCMass = true;
-    G4bool Vis = true;
+    // G4bool fVisible = true;
 
-    G4String parentname = GetHATPCParentName();
-    G4String name = GetHATPCName();
+    // G4String parentname = GetHATPCParentName();
+    // G4String name = GetHATPCName();
 
     G4LogicalVolume *logVolume;
+    G4LogicalVolume *driftVolume;
 
-    fHATPCwidth = GetHATPCWidth();
-    fHATPCheight = GetHATPCHeight();
-    fHATPClength = GetHATPCLength();
+    fHATPCWidth = GetHATPCWidth();
+    fHATPCHeight = GetHATPCHeight();
+    fHATPCLength = GetHATPCLength();
     // double HATPCwidth = GetHATPCWidth();
     // double HATPCheight = GetHATPCHeight();
     // double HATPClength = GetHATPCLength();
 
-    cout << "HATPCwidht is: " << fHATPCwidth << endl;
-    cout << "HATPCheight is: " << fHATPCheight << endl;
-    cout << "HATPClength is: " << fHATPClength << endl;
+    cout << "HATPCwidht is: " << fHATPCWidth << endl;
+    cout << "HATPCheight is: " << fHATPCHeight << endl;
+    cout << "HATPClength is: " << fHATPCLength << endl;
+
+    double FCthickness;
 
     G4String FCName = GetHATPCFCName();
 
@@ -82,26 +89,26 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
 
     if (FCName == "FC")
     {
-        BuildFCGeometry();
+        BuildFCGeometry(logVolume, FCthickness);
     }
     else if (FCName == "Nexus")
     {
-        BuildNexusGeometry();
+        BuildNexusGeometry(logVolume, FCthickness);
     }
     else if (FCName == "GFiber")
     {
-        BuildGFiberGeometry();
+        BuildGFiberGeometry(logVolume, FCthickness);
     }
     else if (FCName == "Solid")
     {
-        BuildSolidGeometry();
+        BuildSolidGeometry(logVolume, FCthickness);
     }
 
     ///////////////
     ///////////////
     ///////////////
 
-    BuildDriftVolume();
+    BuildDriftVolume(logVolume, driftVolume, FCthickness);
     BuildMicromegasVolume();
 
     // add 12 Micromegas Modules to readout-plane
@@ -279,23 +286,23 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     //   G4cout << extragap10Thickness/mm << "mm of " << extragap10Material->GetName() << " with a Radiation Length of " << (100*extragap10Thickness/mm)/extragap10Material->GetRadlen () << "%" << "\n";}
     G4cout << "\n------------------------------------------------------------\n";
 
-    BuildHATPCCentralCathode(logDrift, FCthickness);
+    BuildHATPCCentralCathode(driftVolume, FCthickness);
     // BuildHATPCCages(logGasGap);
 
     return logVolume;
 }
 
-void ND280HATPCConstructor::BuildHATPCCentralCathode(G4LogicalVolume *logVolume, double FCthickness)
+void ND280HATPCConstructor::BuildHATPCCentralCathode(G4LogicalVolume *driftVolume, double FCthickness)
 {
 
     //G4bool DebugHATPCMass = true;
-    //G4bool Vis = false;
+    //G4bool fVisible= false;
 
     //double y, z;
 
-    G4String parentname = logVolume->GetName();
+    // G4String parentname = driftVolume->GetName();
 
-    MyND280BeamConstructor middleG10RoPlate(parentname + "/CentralCathode");
+    MyND280BeamConstructor middleG10RoPlate(GetHATPCParentName() + "/CentralCathode");
     middleG10RoPlate.SetWidth(GetHATPCCathodeThickness());
     middleG10RoPlate.SetHeight(GetHATPCHeight() - 2. * FCthickness);
     middleG10RoPlate.SetLength(GetHATPCLength() - 2. * FCthickness);
@@ -311,7 +318,7 @@ void ND280HATPCConstructor::BuildHATPCCentralCathode(G4LogicalVolume *logVolume,
                       G4ThreeVector(0, 0, 0),
                       log_middleG10RoPlate,
                       middleG10RoPlate.GetName(),
-                      logVolume,
+                      driftVolume,
                       false,
                       0);
 
@@ -388,13 +395,13 @@ void ND280HATPCConstructor::BuildHATPCCentralCathode(G4LogicalVolume *logVolume,
       G4cout << "Sum of central cathode parts: "<<(log_middleG10RoPlate->GetMass()+2*log_frbaCon1->GetMass()+2*log_toboCon1->GetMass())/CLHEP::kg<<" kg" << G4endl;
     }
 */
+    return;
 }
 
-void ND280HATPCConstructor::BuildFCGeometry()
+void ND280HATPCConstructor::BuildFCGeometry(G4LogicalVolume *logVolume, double &FCthickness)
 {
     double thickness;
-    double FCthickness;
-    double boxX, boxY, boxZ;
+    // double fBoxXsize, fBoxYsize, fBoxZsize;
 
     double layer1thickness = 0.05 * CLHEP::mm; //Katpon
     double layer2thickness = 0.1 * CLHEP::mm;  // Copper
@@ -410,15 +417,15 @@ void ND280HATPCConstructor::BuildFCGeometry()
     // No G4PVPlacement for logVolume in HATPCConstructor.
     // The HATPCs are placed in DetectorConstruction (Up and Down).
 
-    logVolume = new G4LogicalVolume(new G4Box(parentname + "/" + name,
-                                              fHATPCwidth / 2.,
-                                              fHATPCheight / 2.,
-                                              fHATPClength / 2.),
+    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
+                                              fHATPCWidth / 2.,
+                                              fHATPCHeight / 2.,
+                                              fHATPCLength / 2.),
                                     FindMaterial("Galactic"),
-                                    parentname + "/FC/" + name);
+                                    GetHATPCParentName() + "/FC/" + GetHATPCName());
 
     logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         logVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
     // Field Cage, definition and placement layer by layer.
@@ -426,17 +433,17 @@ void ND280HATPCConstructor::BuildFCGeometry()
 
     FCthickness = layer1thickness + layer2thickness + layer3thickness + layer4thickness + layer5thickness + layer6thickness + layer7thickness;
 
-    boxX = fHATPCwidth;
-    boxY = fHATPCheight;
-    boxZ = fHATPClength;
+    fBoxXsize = fHATPCWidth;
+    fBoxYsize = fHATPCHeight;
+    fBoxZsize = fHATPCLength;
 
-    G4Box *outerFCBox = new G4Box("Outer FC Box", boxX / 2., boxY / 2., boxZ / 2.);
-    G4Box *innerFCBox = new G4Box("Inner FC Box", (boxX - 2. * FCthickness) / 2., (boxY - 2. * FCthickness) / 2., (boxZ - 2. * FCthickness) / 2.);
+    G4Box *outerFCBox = new G4Box("Outer FC Box", fBoxXsize / 2., fBoxYsize / 2., fBoxZsize / 2.);
+    G4Box *innerFCBox = new G4Box("Inner FC Box", (fBoxXsize - 2. * FCthickness) / 2., (fBoxYsize - 2. * FCthickness) / 2., (fBoxZsize - 2. * FCthickness) / 2.);
     G4SubtractionSolid *solidFC = new G4SubtractionSolid("Hollow FC Box", outerFCBox, innerFCBox);
 
     G4LogicalVolume *logFC = new G4LogicalVolume(solidFC,
                                                  FindMaterial("Galactic"),
-                                                 parentname + "/FC/" + name);
+                                                 GetHATPCParentName() + "/FC/" + GetHATPCName());
 
     logFC->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
 
@@ -445,7 +452,7 @@ void ND280HATPCConstructor::BuildFCGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       logFC,
-                      parentname + "/FC/" + name,
+                      GetHATPCParentName() + "/FC/" + GetHATPCName(),
                       logVolume,
                       false,
                       0);
@@ -454,16 +461,16 @@ void ND280HATPCConstructor::BuildFCGeometry()
 
     thickness = layer1thickness;
 
-    G4Box *outerFClayer1Box = new G4Box("Outer FC layer1 Box", boxX / 2., boxY / 2., boxZ / 2.);
-    G4Box *innerFClayer1Box = new G4Box("Inner FC layer1 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *outerFClayer1Box = new G4Box("Outer FC layer1 Box", fBoxXsize / 2., fBoxYsize / 2., fBoxZsize / 2.);
+    G4Box *innerFClayer1Box = new G4Box("Inner FC layer1 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer1 = new G4SubtractionSolid("Hollow FC layer1 Box", outerFClayer1Box, innerFClayer1Box);
 
     G4LogicalVolume *loglayer1 = new G4LogicalVolume(solidlayer1,
                                                      FindMaterial("G4_KAPTON"),
-                                                     parentname + "/FC/layer1");
+                                                     GetHATPCParentName() + "/FC/layer1");
 
     loglayer1->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer1->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer1 thickness is:  " << layer1thickness << endl;
@@ -471,7 +478,7 @@ void ND280HATPCConstructor::BuildFCGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer1,
-                      parentname + "/FC/layer1",
+                      GetHATPCParentName() + "/FC/layer1",
                       logFC,
                       false,
                       0);
@@ -480,15 +487,15 @@ void ND280HATPCConstructor::BuildFCGeometry()
 
     thickness += layer2thickness;
 
-    G4Box *innerFClayer2Box = new G4Box("Inner FC layer2 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer2Box = new G4Box("Inner FC layer2 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer2 = new G4SubtractionSolid("Hollow FC layer2 Box", innerFClayer1Box, innerFClayer2Box);
 
     G4LogicalVolume *loglayer2 = new G4LogicalVolume(solidlayer2,
                                                      FindMaterial("Copper"),
-                                                     parentname + "/FC/layer2");
+                                                     GetHATPCParentName() + "/FC/layer2");
 
     loglayer2->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer2->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer2 thickness is:  " << layer2thickness << endl;
@@ -496,7 +503,7 @@ void ND280HATPCConstructor::BuildFCGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer2,
-                      parentname + "/FC/layer2",
+                      GetHATPCParentName() + "/FC/layer2",
                       logFC,
                       false,
                       0);
@@ -505,15 +512,15 @@ void ND280HATPCConstructor::BuildFCGeometry()
 
     thickness += layer3thickness;
 
-    G4Box *innerFClayer3Box = new G4Box("Inner FC layer3 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer3Box = new G4Box("Inner FC layer3 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer3 = new G4SubtractionSolid("Hollow FC layer3 Box", innerFClayer2Box, innerFClayer3Box);
 
     G4LogicalVolume *loglayer3 = new G4LogicalVolume(solidlayer3,
                                                      FindMaterial("G4_KEVLAR"),
-                                                     parentname + "/FC/layer3");
+                                                     GetHATPCParentName() + "/FC/layer3");
 
     loglayer3->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer3->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer3 thickness is:  " << layer3thickness << endl;
@@ -521,7 +528,7 @@ void ND280HATPCConstructor::BuildFCGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer3,
-                      parentname + "/FC/layer3",
+                      GetHATPCParentName() + "/FC/layer3",
                       logFC,
                       false,
                       0);
@@ -530,15 +537,15 @@ void ND280HATPCConstructor::BuildFCGeometry()
 
     thickness += layer4thickness;
 
-    G4Box *innerFClayer4Box = new G4Box("Inner FC layer4 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer4Box = new G4Box("Inner FC layer4 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer4 = new G4SubtractionSolid("Hollow FC layer4 Box", innerFClayer3Box, innerFClayer4Box);
 
     G4LogicalVolume *loglayer4 = new G4LogicalVolume(solidlayer4,
                                                      FindMaterial("NOMEX"),
-                                                     parentname + "/FC/layer4");
+                                                     GetHATPCParentName() + "/FC/layer4");
 
     loglayer4->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer4->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer4 thickness is:  " << layer4thickness << endl;
@@ -546,7 +553,7 @@ void ND280HATPCConstructor::BuildFCGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer4,
-                      parentname + "/FC/layer4",
+                      GetHATPCParentName() + "/FC/layer4",
                       logFC,
                       false,
                       0);
@@ -555,15 +562,15 @@ void ND280HATPCConstructor::BuildFCGeometry()
 
     thickness += layer5thickness;
 
-    G4Box *innerFClayer5Box = new G4Box("Inner FC layer5 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer5Box = new G4Box("Inner FC layer5 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer5 = new G4SubtractionSolid("Hollow FC layer5 Box", innerFClayer4Box, innerFClayer5Box);
 
     G4LogicalVolume *loglayer5 = new G4LogicalVolume(solidlayer5,
                                                      FindMaterial("G4_KEVLAR"),
-                                                     parentname + "/FC/layer5");
+                                                     GetHATPCParentName() + "/FC/layer5");
 
     loglayer5->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer5->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer5 thickness is:  " << layer5thickness << endl;
@@ -571,7 +578,7 @@ void ND280HATPCConstructor::BuildFCGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer5,
-                      parentname + "/FC/layer5",
+                      GetHATPCParentName() + "/FC/layer5",
                       logFC,
                       false,
                       0);
@@ -580,15 +587,15 @@ void ND280HATPCConstructor::BuildFCGeometry()
 
     thickness += layer6thickness;
 
-    G4Box *innerFClayer6Box = new G4Box("Inner FC layer6 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer6Box = new G4Box("Inner FC layer6 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer6 = new G4SubtractionSolid("Hollow FC layer6 Box", innerFClayer5Box, innerFClayer6Box);
 
     G4LogicalVolume *loglayer6 = new G4LogicalVolume(solidlayer6,
                                                      FindMaterial("G4_KAPTON"),
-                                                     parentname + "/FC/layer6");
+                                                     GetHATPCParentName() + "/FC/layer6");
 
     loglayer6->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer6->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer6 thickness is:  " << layer6thickness << endl;
@@ -596,7 +603,7 @@ void ND280HATPCConstructor::BuildFCGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer6,
-                      parentname + "/FC/layer6",
+                      GetHATPCParentName() + "/FC/layer6",
                       logFC,
                       false,
                       0);
@@ -605,15 +612,15 @@ void ND280HATPCConstructor::BuildFCGeometry()
 
     thickness += layer7thickness;
 
-    G4Box *innerFClayer7Box = new G4Box("Inner FC layer7 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer7Box = new G4Box("Inner FC layer7 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer7 = new G4SubtractionSolid("Hollow FC layer7 Box", innerFClayer6Box, innerFClayer7Box);
 
     G4LogicalVolume *loglayer7 = new G4LogicalVolume(solidlayer7,
                                                      FindMaterial("Copper"),
-                                                     parentname + "/FC/layer7");
+                                                     GetHATPCParentName() + "/FC/layer7");
 
     loglayer7->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer7->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer7 thickness is:  " << layer7thickness << endl;
@@ -621,18 +628,18 @@ void ND280HATPCConstructor::BuildFCGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer7,
-                      parentname + "/FC/layer7",
+                      GetHATPCParentName() + "/FC/layer7",
                       logFC,
                       false,
                       0);
     return;
 }
 
-void ND280HATPCConstructor::BuildNexusGeometry()
+void ND280HATPCConstructor::BuildNexusGeometry(G4LogicalVolume *logVolume, double &FCthickness)
 {
     double thickness;
-    double FCthickness;
-    double boxX, boxY, boxZ;
+    // double FCthickness;
+    // double fBoxXsize, fBoxYsize, fBoxZsize;
 
     double layer1thickness = 0.7 * CLHEP::mm;  // Glue
     double layer2thickness = 0.25 * CLHEP::mm; // Kapton
@@ -649,15 +656,15 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     // No G4PVPlacement for logVolume in HATPCConstructor.
     // The HATPCs are placed in DetectorConstruction (Up and Down).
 
-    logVolume = new G4LogicalVolume(new G4Box(parentname + "/" + name,
-                                              fHATPCwidth / 2.,
-                                              fHATPCheight / 2.,
-                                              fHATPClength / 2.),
+    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
+                                              fHATPCWidth / 2.,
+                                              fHATPCHeight / 2.,
+                                              fHATPCLength / 2.),
                                     FindMaterial("Galactic"),
-                                    parentname + "/" + name);
+                                    GetHATPCParentName() + "/" + GetHATPCName());
 
     logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         logVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
     // Field Cage, definition and placement layer by layer.
@@ -665,17 +672,17 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     FCthickness = layer1thickness + layer2thickness + layer3thickness + layer4thickness + layer5thickness + layer6thickness + layer7thickness + layer8thickness;
 
-    boxX = fHATPCwidth;
-    boxY = fHATPCheight;
-    boxZ = fHATPClength;
+    fBoxXsize = fHATPCWidth;
+    fBoxYsize = fHATPCHeight;
+    fBoxZsize = fHATPCLength;
 
-    G4Box *outerFCBox = new G4Box("Outer FC Box", boxX / 2., boxY / 2., boxZ / 2.);
-    G4Box *innerFCBox = new G4Box("Inner FC Box", (boxX - 2. * FCthickness) / 2., (boxY - 2. * FCthickness) / 2., (boxZ - 2. * FCthickness) / 2.);
+    G4Box *outerFCBox = new G4Box("Outer FC Box", fBoxXsize / 2., fBoxYsize / 2., fBoxZsize / 2.);
+    G4Box *innerFCBox = new G4Box("Inner FC Box", (fBoxXsize - 2. * FCthickness) / 2., (fBoxYsize - 2. * FCthickness) / 2., (fBoxZsize - 2. * FCthickness) / 2.);
     G4SubtractionSolid *solidFC = new G4SubtractionSolid("Hollow FC Box", outerFCBox, innerFCBox);
 
     G4LogicalVolume *logFC = new G4LogicalVolume(solidFC,
                                                  FindMaterial("Galactic"),
-                                                 parentname + "/" + name + "/FC");
+                                                 GetHATPCParentName() + "/" + GetHATPCName() + "/FC");
 
     logFC->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
 
@@ -684,7 +691,7 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       logFC,
-                      parentname + "/" + name + "/FC",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC",
                       logVolume,
                       false,
                       0);
@@ -693,17 +700,17 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     thickness = layer1thickness;
 
-    G4Box *outerFClayer1Box = new G4Box("Outer FC layer1 Box", boxX / 2., boxY / 2., boxZ / 2.);
-    G4Box *innerFClayer1Box = new G4Box("Inner FC layer1 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *outerFClayer1Box = new G4Box("Outer FC layer1 Box", fBoxXsize / 2., fBoxYsize / 2., fBoxZsize / 2.);
+    G4Box *innerFClayer1Box = new G4Box("Inner FC layer1 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer1 = new G4SubtractionSolid("Hollow FC layer1 Box", outerFClayer1Box, innerFClayer1Box);
 
     G4LogicalVolume *loglayer1 = new G4LogicalVolume(solidlayer1,
                                                      FindMaterial("G4_POLYVINYL_ACETATE"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Nexus/layer1");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Nexus/layer1");
 
     loglayer1->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer1->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer1 thickness is:  " << layer1thickness << endl;
@@ -711,8 +718,8 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer1,
-                      parentname + "/" + name + "/FC"
-                                                "Nexus/layer1",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Nexus/layer1",
                       logFC,
                       false,
                       0);
@@ -721,16 +728,16 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     thickness += layer2thickness;
 
-    G4Box *innerFClayer2Box = new G4Box("Inner FC layer2 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer2Box = new G4Box("Inner FC layer2 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer2 = new G4SubtractionSolid("Hollow FC layer2 Box", innerFClayer1Box, innerFClayer2Box);
 
     G4LogicalVolume *loglayer2 = new G4LogicalVolume(solidlayer2,
                                                      FindMaterial("G4_KAPTON"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Nexus/layer2");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Nexus/layer2");
 
     loglayer2->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer2->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer2 thickness is:  " << layer2thickness << endl;
@@ -738,8 +745,8 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer2,
-                      parentname + "/" + name + "/FC"
-                                                "Nexus/layer2",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Nexus/layer2",
                       logFC,
                       false,
                       0);
@@ -748,16 +755,16 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     thickness += layer3thickness;
 
-    G4Box *innerFClayer3Box = new G4Box("Inner FC layer3 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer3Box = new G4Box("Inner FC layer3 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer3 = new G4SubtractionSolid("Hollow FC layer3 Box", innerFClayer2Box, innerFClayer3Box);
 
     G4LogicalVolume *loglayer3 = new G4LogicalVolume(solidlayer3,
                                                      FindMaterial("AramidHoneycomb"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Nexus/layer3");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Nexus/layer3");
 
     loglayer3->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer3->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer3 thickness is:  " << layer3thickness << endl;
@@ -765,8 +772,8 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer3,
-                      parentname + "/" + name + "/FC"
-                                                "Nexus/layer3",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Nexus/layer3",
                       logFC,
                       false,
                       0);
@@ -775,16 +782,16 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     thickness += layer4thickness;
 
-    G4Box *innerFClayer4Box = new G4Box("Inner FC layer4 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer4Box = new G4Box("Inner FC layer4 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer4 = new G4SubtractionSolid("Hollow FC layer4 Box", innerFClayer3Box, innerFClayer4Box);
 
     G4LogicalVolume *loglayer4 = new G4LogicalVolume(solidlayer4,
                                                      FindMaterial("CarbonFiber"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Nexus/layer4");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Nexus/layer4");
 
     loglayer4->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer4->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer4 thickness is:  " << layer4thickness << endl;
@@ -792,8 +799,8 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer4,
-                      parentname + "/" + name + "/FC"
-                                                "Nexus/layer4",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Nexus/layer4",
                       logFC,
                       false,
                       0);
@@ -802,16 +809,16 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     thickness += layer5thickness;
 
-    G4Box *innerFClayer5Box = new G4Box("Inner FC layer5 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer5Box = new G4Box("Inner FC layer5 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer5 = new G4SubtractionSolid("Hollow FC layer5 Box", innerFClayer4Box, innerFClayer5Box);
 
     G4LogicalVolume *loglayer5 = new G4LogicalVolume(solidlayer5,
                                                      FindMaterial("AramidHoneycomb"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Nexus/layer5");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Nexus/layer5");
 
     loglayer5->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer5->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer5 thickness is:  " << layer5thickness << endl;
@@ -819,8 +826,8 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer5,
-                      parentname + "/" + name + "/FC"
-                                                "Nexus/layer5",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Nexus/layer5",
                       logFC,
                       false,
                       0);
@@ -829,16 +836,16 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     thickness += layer6thickness;
 
-    G4Box *innerFClayer6Box = new G4Box("Inner FC layer6 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer6Box = new G4Box("Inner FC layer6 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer6 = new G4SubtractionSolid("Hollow FC layer6 Box", innerFClayer5Box, innerFClayer6Box);
 
     G4LogicalVolume *loglayer6 = new G4LogicalVolume(solidlayer6,
                                                      FindMaterial("CarbonFiber"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Nexus/layer6");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Nexus/layer6");
 
     loglayer6->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer6->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer6 thickness is:  " << layer6thickness << endl;
@@ -846,8 +853,8 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer6,
-                      parentname + "/" + name + "/FC"
-                                                "Nexus/layer6",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Nexus/layer6",
                       logFC,
                       false,
                       0);
@@ -856,16 +863,16 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     thickness += layer7thickness;
 
-    G4Box *innerFClayer7Box = new G4Box("Inner FC layer7 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer7Box = new G4Box("Inner FC layer7 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer7 = new G4SubtractionSolid("Hollow FC layer7 Box", innerFClayer6Box, innerFClayer7Box);
 
     G4LogicalVolume *loglayer7 = new G4LogicalVolume(solidlayer7,
                                                      FindMaterial("G4_KAPTON"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Nexus/layer7");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Nexus/layer7");
 
     loglayer7->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer7->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer7 thickness is:  " << layer7thickness << endl;
@@ -873,8 +880,8 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer7,
-                      parentname + "/" + name + "/FC"
-                                                "Nexus/layer7",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Nexus/layer7",
                       logFC,
                       false,
                       0);
@@ -883,16 +890,16 @@ void ND280HATPCConstructor::BuildNexusGeometry()
 
     thickness += layer8thickness;
 
-    G4Box *innerFClayer8Box = new G4Box("Inner FC layer8 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer8Box = new G4Box("Inner FC layer8 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer8 = new G4SubtractionSolid("Hollow FC layer8 Box", innerFClayer7Box, innerFClayer8Box);
 
     G4LogicalVolume *loglayer8 = new G4LogicalVolume(solidlayer8,
                                                      FindMaterial("Copper"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Nexus/layer8");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Nexus/layer8");
 
     loglayer8->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer8->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer8 thickness is:  " << layer8thickness << endl;
@@ -900,19 +907,19 @@ void ND280HATPCConstructor::BuildNexusGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer8,
-                      parentname + "/" + name + "/FC"
-                                                "Nexus/layer8",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Nexus/layer8",
                       logFC,
                       false,
                       0);
     return;
 }
 
-void ND280HATPCConstructor::BuildSolidGeometry()
+void ND280HATPCConstructor::BuildSolidGeometry(G4LogicalVolume *logVolume, double &FCthickness)
 {
     double thickness;
-    double FCthickness;
-    double boxX, boxY, boxZ;
+    // double FCthickness;
+    // double fBoxXsize, fBoxYsize, fBoxZsize;
 
     double layer1thickness = 0.7 * CLHEP::mm;  // Glue
     double layer2thickness = 8 * CLHEP::mm;    // Aramid (No Honeycomb)
@@ -926,15 +933,15 @@ void ND280HATPCConstructor::BuildSolidGeometry()
     // No G4PVPlacement for logVolume in HATPCConstructor.
     // The HATPCs are placed in DetectorConstruction (Up and Down).
 
-    logVolume = new G4LogicalVolume(new G4Box(parentname + "/" + name,
-                                              fHATPCwidth / 2.,
-                                              fHATPCheight / 2.,
-                                              fHATPClength / 2.),
+    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
+                                              fHATPCWidth / 2.,
+                                              fHATPCHeight / 2.,
+                                              fHATPCLength / 2.),
                                     FindMaterial("Galactic"),
-                                    parentname + "/" + name);
+                                    GetHATPCParentName() + "/" + GetHATPCName());
 
     logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         logVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
     // Field Cage, definition and placement layer by layer.
@@ -942,17 +949,17 @@ void ND280HATPCConstructor::BuildSolidGeometry()
 
     FCthickness = layer1thickness + layer2thickness + layer3thickness + layer4thickness + layer5thickness;
 
-    boxX = fHATPCwidth;
-    boxY = fHATPCheight;
-    boxZ = fHATPClength;
+    fBoxXsize = fHATPCWidth;
+    fBoxYsize = fHATPCHeight;
+    fBoxZsize = fHATPCLength;
 
-    G4Box *outerFCBox = new G4Box("Outer FC Box", boxX / 2., boxY / 2., boxZ / 2.);
-    G4Box *innerFCBox = new G4Box("Inner FC Box", (boxX - 2. * FCthickness) / 2., (boxY - 2. * FCthickness) / 2., (boxZ - 2. * FCthickness) / 2.);
+    G4Box *outerFCBox = new G4Box("Outer FC Box", fBoxXsize / 2., fBoxYsize / 2., fBoxZsize / 2.);
+    G4Box *innerFCBox = new G4Box("Inner FC Box", (fBoxXsize - 2. * FCthickness) / 2., (fBoxYsize - 2. * FCthickness) / 2., (fBoxZsize - 2. * FCthickness) / 2.);
     G4SubtractionSolid *solidFC = new G4SubtractionSolid("Hollow FC Box", outerFCBox, innerFCBox);
 
     G4LogicalVolume *logFC = new G4LogicalVolume(solidFC,
                                                  FindMaterial("Galactic"),
-                                                 parentname + "/" + name + "/FC");
+                                                 GetHATPCParentName() + "/" + GetHATPCName() + "/FC");
 
     logFC->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
 
@@ -961,7 +968,7 @@ void ND280HATPCConstructor::BuildSolidGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       logFC,
-                      parentname + "/" + name + "/FC",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC",
                       logVolume,
                       false,
                       0);
@@ -970,17 +977,17 @@ void ND280HATPCConstructor::BuildSolidGeometry()
 
     thickness = layer1thickness;
 
-    G4Box *outerFClayer1Box = new G4Box("Outer FC layer1 Box", boxX / 2., boxY / 2., boxZ / 2.);
-    G4Box *innerFClayer1Box = new G4Box("Inner FC layer1 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *outerFClayer1Box = new G4Box("Outer FC layer1 Box", fBoxXsize / 2., fBoxYsize / 2., fBoxZsize / 2.);
+    G4Box *innerFClayer1Box = new G4Box("Inner FC layer1 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer1 = new G4SubtractionSolid("Hollow FC layer1 Box", outerFClayer1Box, innerFClayer1Box);
 
     G4LogicalVolume *loglayer1 = new G4LogicalVolume(solidlayer1,
                                                      FindMaterial("G4_POLYVINYL_ACETATE"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Solid/layer1");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Solid/layer1");
 
     loglayer1->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer1->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer1 thickness is:  " << layer1thickness << endl;
@@ -988,8 +995,8 @@ void ND280HATPCConstructor::BuildSolidGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer1,
-                      parentname + "/" + name + "/FC"
-                                                "Solid/layer1",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Solid/layer1",
                       logFC,
                       false,
                       0);
@@ -998,16 +1005,16 @@ void ND280HATPCConstructor::BuildSolidGeometry()
 
     thickness += layer2thickness;
 
-    G4Box *innerFClayer2Box = new G4Box("Inner FC layer2 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer2Box = new G4Box("Inner FC layer2 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer2 = new G4SubtractionSolid("Hollow FC layer2 Box", innerFClayer1Box, innerFClayer2Box);
 
     G4LogicalVolume *loglayer2 = new G4LogicalVolume(solidlayer2,
                                                      FindMaterial("G4_KEVLAR"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Solid/layer2");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Solid/layer2");
 
     loglayer2->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer2->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer2 thickness is:  " << layer2thickness << endl;
@@ -1015,8 +1022,8 @@ void ND280HATPCConstructor::BuildSolidGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer2,
-                      parentname + "/" + name + "/FC"
-                                                "Solid/layer2",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Solid/layer2",
                       logFC,
                       false,
                       0);
@@ -1025,16 +1032,16 @@ void ND280HATPCConstructor::BuildSolidGeometry()
 
     thickness += layer3thickness;
 
-    G4Box *innerFClayer3Box = new G4Box("Inner FC layer3 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer3Box = new G4Box("Inner FC layer3 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer3 = new G4SubtractionSolid("Hollow FC layer3 Box", innerFClayer2Box, innerFClayer3Box);
 
     G4LogicalVolume *loglayer3 = new G4LogicalVolume(solidlayer3,
                                                      FindMaterial("AramidHoneycomb"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Solid/layer3");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Solid/layer3");
 
     loglayer3->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer3->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer3 thickness is:  " << layer3thickness << endl;
@@ -1042,8 +1049,8 @@ void ND280HATPCConstructor::BuildSolidGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer3,
-                      parentname + "/" + name + "/FC"
-                                                "Solid/layer3",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Solid/layer3",
                       logFC,
                       false,
                       0);
@@ -1052,16 +1059,16 @@ void ND280HATPCConstructor::BuildSolidGeometry()
 
     thickness += layer4thickness;
 
-    G4Box *innerFClayer4Box = new G4Box("Inner FC layer4 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer4Box = new G4Box("Inner FC layer4 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer4 = new G4SubtractionSolid("Hollow FC layer4 Box", innerFClayer3Box, innerFClayer4Box);
 
     G4LogicalVolume *loglayer4 = new G4LogicalVolume(solidlayer4,
                                                      FindMaterial("G4_KAPTON"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Solid/layer4");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Solid/layer4");
 
     loglayer4->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer4->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer4 thickness is:  " << layer4thickness << endl;
@@ -1069,8 +1076,8 @@ void ND280HATPCConstructor::BuildSolidGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer4,
-                      parentname + "/" + name + "/FC"
-                                                "Solid/layer4",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Solid/layer4",
                       logFC,
                       false,
                       0);
@@ -1079,16 +1086,16 @@ void ND280HATPCConstructor::BuildSolidGeometry()
 
     thickness += layer5thickness;
 
-    G4Box *innerFClayer5Box = new G4Box("Inner FC layer5 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer5Box = new G4Box("Inner FC layer5 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer5 = new G4SubtractionSolid("Hollow FC layer5 Box", innerFClayer4Box, innerFClayer5Box);
 
     G4LogicalVolume *loglayer5 = new G4LogicalVolume(solidlayer5,
                                                      FindMaterial("Copper"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "Solid/layer5");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "Solid/layer5");
 
     loglayer5->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer5->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer5 thickness is:  " << layer5thickness << endl;
@@ -1096,19 +1103,19 @@ void ND280HATPCConstructor::BuildSolidGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer5,
-                      parentname + "/" + name + "/FC"
-                                                "Solid/layer5",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "Solid/layer5",
                       logFC,
                       false,
                       0);
     return;
 }
 
-void ND280HATPCConstructor::BuildGFiberGeometry()
+void ND280HATPCConstructor::BuildGFiberGeometry(G4LogicalVolume *logVolume, double &FCthickness)
 {
     double thickness;
-    double FCthickness;
-    double boxX, boxY, boxZ;
+    // double FCthickness;
+    // double fBoxXsize, fBoxYsize, fBoxZsize;
 
     double layer1thickness = 0.7 * CLHEP::mm;  // Glue
     double layer2thickness = 0.25 * CLHEP::mm; // Kapton
@@ -1124,15 +1131,15 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     // No G4PVPlacement for logVolume in HATPCConstructor.
     // The HATPCs are placed in DetectorConstruction (Up and Down).
 
-    logVolume = new G4LogicalVolume(new G4Box(parentname + "/" + name,
-                                              fHATPCwidth / 2.,
-                                              fHATPCheight / 2.,
-                                              fHATPClength / 2.),
+    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
+                                              fHATPCWidth / 2.,
+                                              fHATPCHeight / 2.,
+                                              fHATPCLength / 2.),
                                     FindMaterial("Galactic"),
-                                    parentname + "/" + name);
+                                    GetHATPCParentName() + "/" + GetHATPCName());
 
     logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         logVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
     // Field Cage, definition and placement layer by layer.
@@ -1140,17 +1147,17 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
 
     FCthickness = layer1thickness + layer2thickness + layer3thickness + layer4thickness + layer5thickness + layer6thickness + layer7thickness;
 
-    boxX = fHATPCwidth;
-    boxY = fHATPCheight;
-    boxZ = fHATPClength;
+    fBoxXsize = fHATPCWidth;
+    fBoxYsize = fHATPCHeight;
+    fBoxZsize = fHATPCLength;
 
-    G4Box *outerFCBox = new G4Box("Outer FC Box", boxX / 2., boxY / 2., boxZ / 2.);
-    G4Box *innerFCBox = new G4Box("Inner FC Box", (boxX - 2. * FCthickness) / 2., (boxY - 2. * FCthickness) / 2., (boxZ - 2. * FCthickness) / 2.);
+    G4Box *outerFCBox = new G4Box("Outer FC Box", fBoxXsize / 2., fBoxYsize / 2., fBoxZsize / 2.);
+    G4Box *innerFCBox = new G4Box("Inner FC Box", (fBoxXsize - 2. * FCthickness) / 2., (fBoxYsize - 2. * FCthickness) / 2., (fBoxZsize - 2. * FCthickness) / 2.);
     G4SubtractionSolid *solidFC = new G4SubtractionSolid("Hollow FC Box", outerFCBox, innerFCBox);
 
     G4LogicalVolume *logFC = new G4LogicalVolume(solidFC,
                                                  FindMaterial("Galactic"),
-                                                 parentname + "/" + name + "/FC");
+                                                 GetHATPCParentName() + "/" + GetHATPCName() + "/FC");
 
     logFC->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
 
@@ -1159,7 +1166,7 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       logFC,
-                      parentname + "/" + name + "/FC",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC",
                       logVolume,
                       false,
                       0);
@@ -1168,17 +1175,17 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
 
     thickness = layer1thickness;
 
-    G4Box *outerFClayer1Box = new G4Box("Outer FC layer1 Box", boxX / 2., boxY / 2., boxZ / 2.);
-    G4Box *innerFClayer1Box = new G4Box("Inner FC layer1 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *outerFClayer1Box = new G4Box("Outer FC layer1 Box", fBoxXsize / 2., fBoxYsize / 2., fBoxZsize / 2.);
+    G4Box *innerFClayer1Box = new G4Box("Inner FC layer1 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer1 = new G4SubtractionSolid("Hollow FC layer1 Box", outerFClayer1Box, innerFClayer1Box);
 
     G4LogicalVolume *loglayer1 = new G4LogicalVolume(solidlayer1,
                                                      FindMaterial("G4_POLYVINYL_ACETATE"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "GF/layer1");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "GF/layer1");
 
     loglayer1->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer1->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer1 thickness is:  " << layer1thickness << endl;
@@ -1186,8 +1193,8 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer1,
-                      parentname + "/" + name + "/FC"
-                                                "GF/layer1",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "GF/layer1",
                       logFC,
                       false,
                       0);
@@ -1196,16 +1203,16 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
 
     thickness += layer2thickness;
 
-    G4Box *innerFClayer2Box = new G4Box("Inner FC layer2 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer2Box = new G4Box("Inner FC layer2 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer2 = new G4SubtractionSolid("Hollow FC layer2 Box", innerFClayer1Box, innerFClayer2Box);
 
     G4LogicalVolume *loglayer2 = new G4LogicalVolume(solidlayer2,
                                                      FindMaterial("G4_KAPTON"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "GF/layer2");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "GF/layer2");
 
     loglayer2->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer2->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer2 thickness is:  " << layer2thickness << endl;
@@ -1213,8 +1220,8 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer2,
-                      parentname + "/" + name + "/FC"
-                                                "GF/layer2",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "GF/layer2",
                       logFC,
                       false,
                       0);
@@ -1223,16 +1230,16 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
 
     thickness += layer3thickness;
 
-    G4Box *innerFClayer3Box = new G4Box("Inner FC layer3 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer3Box = new G4Box("Inner FC layer3 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer3 = new G4SubtractionSolid("Hollow FC layer3 Box", innerFClayer2Box, innerFClayer3Box);
 
     G4LogicalVolume *loglayer3 = new G4LogicalVolume(solidlayer3,
                                                      FindMaterial("GlassFiber"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "GF/layer3");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "GF/layer3");
 
     loglayer3->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer3->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer3 thickness is:  " << layer3thickness << endl;
@@ -1240,8 +1247,8 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer3,
-                      parentname + "/" + name + "/FC"
-                                                "GF/layer3",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "GF/layer3",
                       logFC,
                       false,
                       0);
@@ -1250,16 +1257,16 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
 
     thickness += layer4thickness;
 
-    G4Box *innerFClayer4Box = new G4Box("Inner FC layer4 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer4Box = new G4Box("Inner FC layer4 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer4 = new G4SubtractionSolid("Hollow FC layer4 Box", innerFClayer3Box, innerFClayer4Box);
 
     G4LogicalVolume *loglayer4 = new G4LogicalVolume(solidlayer4,
                                                      FindMaterial("AramidHoneycomb"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "GF/layer4");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "GF/layer4");
 
     loglayer4->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer4->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer4 thickness is:  " << layer4thickness << endl;
@@ -1267,8 +1274,8 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer4,
-                      parentname + "/" + name + "/FC"
-                                                "GF/layer4",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "GF/layer4",
                       logFC,
                       false,
                       0);
@@ -1277,16 +1284,16 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
 
     thickness += layer5thickness;
 
-    G4Box *innerFClayer5Box = new G4Box("Inner FC layer5 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer5Box = new G4Box("Inner FC layer5 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer5 = new G4SubtractionSolid("Hollow FC layer5 Box", innerFClayer4Box, innerFClayer5Box);
 
     G4LogicalVolume *loglayer5 = new G4LogicalVolume(solidlayer5,
                                                      FindMaterial("GlassFiber"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "GF/layer5");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "GF/layer5");
 
     loglayer5->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer5->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer5 thickness is:  " << layer5thickness << endl;
@@ -1294,8 +1301,8 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer5,
-                      parentname + "/" + name + "/FC"
-                                                "GF/layer5",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "GF/layer5",
                       logFC,
                       false,
                       0);
@@ -1304,16 +1311,16 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
 
     thickness += layer6thickness;
 
-    G4Box *innerFClayer6Box = new G4Box("Inner FC layer6 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer6Box = new G4Box("Inner FC layer6 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer6 = new G4SubtractionSolid("Hollow FC layer6 Box", innerFClayer5Box, innerFClayer6Box);
 
     G4LogicalVolume *loglayer6 = new G4LogicalVolume(solidlayer6,
                                                      FindMaterial("G4_KAPTON"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "GF/layer6");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "GF/layer6");
 
     loglayer6->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer6->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer6 thickness is:  " << layer6thickness << endl;
@@ -1321,8 +1328,8 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer6,
-                      parentname + "/" + name + "/FC"
-                                                "GF/layer6",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "GF/layer6",
                       logFC,
                       false,
                       0);
@@ -1331,16 +1338,16 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
 
     thickness += layer7thickness;
 
-    G4Box *innerFClayer7Box = new G4Box("Inner FC layer7 Box", (boxX - 2. * thickness) / 2., (boxY - 2. * thickness) / 2., (boxZ - 2. * thickness) / 2.);
+    G4Box *innerFClayer7Box = new G4Box("Inner FC layer7 Box", (fBoxXsize - 2. * thickness) / 2., (fBoxYsize - 2. * thickness) / 2., (fBoxZsize - 2. * thickness) / 2.);
     G4SubtractionSolid *solidlayer7 = new G4SubtractionSolid("Hollow FC layer7 Box", innerFClayer6Box, innerFClayer7Box);
 
     G4LogicalVolume *loglayer7 = new G4LogicalVolume(solidlayer7,
                                                      FindMaterial("Copper"),
-                                                     parentname + "/" + name + "/FC"
-                                                                               "GF/layer7");
+                                                     GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                                                   "GF/layer7");
 
     loglayer7->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    if (Vis != true)
+    if (fVisible != true)
         loglayer7->SetVisAttributes(G4VisAttributes::Invisible);
 
     cout << "The FC layer7 thickness is:  " << layer7thickness << endl;
@@ -1348,33 +1355,33 @@ void ND280HATPCConstructor::BuildGFiberGeometry()
     new G4PVPlacement(0,
                       G4ThreeVector(0, 0, 0),
                       loglayer7,
-                      parentname + "/" + name + "/FC"
-                                                "GF/layer7",
+                      GetHATPCParentName() + "/" + GetHATPCName() + "/FC"
+                                                                    "GF/layer7",
                       logFC,
                       false,
                       0);
     return;
 }
 
-void ND280HATPCConstructor::BuildDriftVolume()
+void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *driftVolume, double &FCthickness)
 {
 
     //Drift Volume
 
-    G4VSolid *solidDrift = new G4Box("InnerBox", (boxX - 2 * FCthickness) / 2., (boxY - 2 * FCthickness) / 2., (boxZ - 2 * FCthickness) / 2.);
+    G4VSolid *solidDrift = new G4Box("InnerBox", (fBoxXsize - 2 * FCthickness) / 2., (fBoxYsize - 2 * FCthickness) / 2., (fBoxZsize - 2 * FCthickness) / 2.);
 
-    G4LogicalVolume *logDrift = new G4LogicalVolume(solidDrift,
-                                                    FindMaterial("GasMixtureTPC"),
-                                                    parentname + "/FC/" + name + "/Drift");
+    driftVolume = new G4LogicalVolume(solidDrift,
+                                      FindMaterial("GasMixtureTPC"),
+                                      GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift");
 
-    logDrift->SetVisAttributes(G4Colour(0.0, 0.0, 1.0));
+    driftVolume->SetVisAttributes(G4Colour(0.0, 0.0, 1.0));
 
     fActiveHATPCVerticalOffset = 0;
 
     new G4PVPlacement(0,
                       G4ThreeVector(0, fActiveHATPCVerticalOffset, 0),
-                      logDrift,
-                      parentname + "/FC/" + name + "/Drift",
+                      driftVolume,
+                      GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift",
                       logVolume,
                       false,
                       0);
@@ -1382,18 +1389,18 @@ void ND280HATPCConstructor::BuildDriftVolume()
     // Divide drift volume into two halves (readout planes)
     // Make 2 separate halves (instead of 2 copies), so that each of 24 MM can be modified.
 
-    double width = (boxX - 2 * FCthickness) / 2.;
+    double width = (fBoxXsize - 2 * FCthickness) / 2.;
 
     width -= GetHATPCCathodeThickness() / 2.;
 
-    G4VSolid *innerHalf = new G4Box("InnerHalf", (boxZ - 2 * FCthickness) / 2., (boxY - 2 * FCthickness) / 2, width / 2.);
+    G4VSolid *innerHalf = new G4Box("InnerHalf", (fBoxZsize - 2 * FCthickness) / 2., (fBoxYsize - 2 * FCthickness) / 2, width / 2.);
 
     G4LogicalVolume *logHalf0 = new G4LogicalVolume(innerHalf,
                                                     FindMaterial("GasMixtureTPC"),
-                                                    parentname + "/FC/" + name + "/Drift" + "/Half0");
+                                                    GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half0");
     G4LogicalVolume *logHalf1 = new G4LogicalVolume(innerHalf,
                                                     FindMaterial("GasMixtureTPC"),
-                                                    parentname + "/FC/" + name + "/Drift" + "/Half1");
+                                                    GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half1");
     logHalf0->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
     logHalf1->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
 
@@ -1407,8 +1414,8 @@ void ND280HATPCConstructor::BuildDriftVolume()
 
     new G4PVPlacement(G4Transform3D(rm, G4ThreeVector(-delta, 0, 0)),
                       logHalf0,
-                      parentname + "/FC/" + name + "/Drift" + "/Half0",
-                      logDrift,
+                      GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half0",
+                      driftVolume,
                       false,
                       0);
 
@@ -1416,8 +1423,8 @@ void ND280HATPCConstructor::BuildDriftVolume()
 
     new G4PVPlacement(G4Transform3D(rm, G4ThreeVector(delta, 0, 0)),
                       logHalf1,
-                      parentname + "/FC/" + name + "/Drift" + "/Half1",
-                      logDrift,
+                      GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half1",
+                      driftVolume,
                       false,
                       1);
 
