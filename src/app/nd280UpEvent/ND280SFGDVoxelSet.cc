@@ -101,7 +101,7 @@ void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, 
     if(p_All){
         cc->cd(4);
         cc->Update();
-        this->DrawVoxels(kTRUE,kTRUE);
+        this->DrawVoxels(kTRUE,kTRUE,0,0);
     }
 
 
@@ -117,10 +117,18 @@ void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, 
 
 
 //********************************************************************
-void ND280SFGDVoxelSet::DrawVoxels(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE){
+void ND280SFGDVoxelSet::DrawVoxels(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, Int_t color=0, Int_t mode = 0){
 //********************************************************************
 
-    this->Init();
+    if(!mode || mode == 3) {this->Init(); fData = (TNtuple*) gROOT->FindObject("fData"); fData->Reset();}
+    if(mode){
+        fData = (TNtuple*) gROOT->FindObject("fData");
+        std::cout << "Entries in fData: " << fData->GetEntries() << std::endl;
+        if(!fData) {
+            std::cout << "fData not found!!!" << std::endl;
+            return;
+        }
+    }
 
     if(!fVoxels.size()) return;
 
@@ -139,7 +147,8 @@ void ND280SFGDVoxelSet::DrawVoxels(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE
 
     for(UInt_t i=0; i<x.size(); i++){
         //fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetTrackID());
-        fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetEdep());
+        if(!color) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetEdep());
+        else       fData->Fill(x[i], y[i], z[i], color);
 
         if(x[i]>maxX) maxX = x[i];
         if(x[i]<minX) minX = x[i];
@@ -147,6 +156,17 @@ void ND280SFGDVoxelSet::DrawVoxels(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE
         if(y[i]<minY) minY = y[i];
         if(z[i]>maxZ) maxZ = z[i];
         if(z[i]<minZ) minZ = z[i];
+    }
+
+    if(mode == 1 || mode == 3) {return;}
+
+    if(color){
+        minX = -100;
+        minY = -100;
+        minZ = -100;
+        maxX =  100;
+        maxY =  100;
+        maxZ =  100;
     }
 
     if(p_All){    

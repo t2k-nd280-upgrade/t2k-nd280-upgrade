@@ -40,44 +40,169 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ND280SFGDVoxel* AddCrossTalkVoxel(ND280SFGDVoxel* parentVoxel, Double_t newXpos, Double_t newYpos, Double_t newZpos){
-
-    TRandom3* fRndm = new TRandom3(0);
-    ND280SFGDVoxel* auxVoxel = new ND280SFGDVoxel(newXpos,newYpos,newZpos);
-
-    auxVoxel->SetPDG(parentVoxel->GetPDG());
-    auxVoxel->SetTrackID(parentVoxel->GetTrackID());
-    auxVoxel->SetParentID(0);
-    auxVoxel->SetEdep(0.05*fRndm->Gaus(parentVoxel->GetEdep(),sqrt(parentVoxel->GetEdep())));
-
-    auxVoxel->SetTrueXTalk(kTRUE);
-
-    vector <ND280SFGDHit*> auxHitList;
-    for(int j = 0; j <3; j++){
-        ND280SFGDHit* hit = new ND280SFGDHit();
-        hit->SetView(j);
-
-        hit->SetX(newXpos);
-        hit->SetY(newYpos);
-        hit->SetZ(newZpos);
-
-        if(j == 0) hit->SetZ(-1);
-        if(j == 1) hit->SetY(-1);
-        if(j == 2) hit->SetX(-1);
-
-        if(j == 0) hit->SetCharge(1);
-        if(j == 1) hit->SetCharge(1);
-        if(j == 2) hit->SetCharge(1);
-
-        hit->SetTrackID(auxVoxel->GetTrackID());
-        hit->SetTrueXTalk(kTRUE);
-        auxHitList.push_back(hit);
-    }
-
-    auxVoxel->SetHits(auxHitList);
-    delete fRndm;
-    return auxVoxel;
+double BirksSaturation(double edep, double steplength)
+{
+  const double CBIRKS = 0.0208 * CLHEP::cm/CLHEP::MeV; // used in SciBooNE MC
+  double dedx = edep/steplength;
+  return edep/(1. + CBIRKS*dedx);
 }
+
+int ComputeToT(double time, double q)
+{
+  double analogToT = q*0.43;
+  int ToT = int((analogToT+1.25)/2.5);
+
+  return ToT;
+}
+
+
+double FibAtt(double ell) {
+    // const double LongCompFrac_FGD = 0.816;
+    // const double LongAtt_FGD = 11926.; //*CLHEP::mm;
+    // const double ShortAtt_FGD = 312.; //*CLHEP::mm;
+
+    const double LongCompFrac_FGD = 0.77;
+    const double LongAtt_FGD = 4634.*CLHEP::mm;
+    const double ShortAtt_FGD = 332.*CLHEP::mm;
+
+    return ( LongCompFrac_FGD*exp((-ell)/LongAtt_FGD) + (1-LongCompFrac_FGD)*exp((-ell)/ShortAtt_FGD) );
+}
+
+Double_t probCrosstalk(Double_t Q){
+    return (1/(1+exp(-(Q-300)/100)))+0.1;
+}
+
+// New crosstalk hit probability:
+Double_t AboveThreshold(Double_t Q){
+    TRandom3 fRndm = TRandom3(0);
+    Double_t CT_PE = fRndm.Poisson(Q); //crosstalk #p.e ... change gauss by poisson to account Lor low #p.e
+    // if( CT_PE >= 1) return CT_PE;
+    // return 0;
+    return CT_PE;
+}
+
+Double_t CrosstalkPE(Double_t Q){
+    TRandom3 fRndm = TRandom3(0);
+    Double_t CT_PE = fRndm.Poisson(Q); //crosstalk #p.e ... change gauss by poisson to account Lor low #p.e
+    if( CT_PE < 0) return 0;
+    // return 0;
+    return CT_PE;
+}
+
+
+// ND280SFGDHit* AddCrossTalkHit(Double_t posA, Double_t posB, Double_t Q, Int_t view){
+//     TRandom3* fRndm = new TRandom3(0);
+//     ND280SFGDHit* crosstalkHit = new ND280SFGDHit();
+//     if(view == 0){
+//         crosstalkHit->SetX(posA);
+//         crosstalkHit->SetY(posB);
+//         crosstalkHit->SetZ(-999);
+//         crosstalkHit->SetView(0);
+//         Double_t hitQ = 0.05*fRndm->Gaus(Q,sqrt(Q));
+//         hitQ = hitQ > 0 ? hitQ : 0;
+//         crosstalkHit->SetCharge(hitQ);
+//         crosstalkHit->SetxTalkFlag(kTRUE);
+//     }
+//     if(view == 1){
+//         crosstalkHit->SetX(posA);
+//         crosstalkHit->SetY(-999);
+//         crosstalkHit->SetZ(posB);
+//         crosstalkHit->SetView(1);
+//         Double_t hitQ = 0.05*fRndm->Gaus(Q,sqrt(Q));
+//         hitQ = hitQ > 0 ? hitQ : 0;
+//         crosstalkHit->SetCharge(hitQ);
+//         crosstalkHit->SetxTalkFlag(kTRUE);
+//     }
+//     if(view == 2){
+//         crosstalkHit->SetX(-999);
+//         crosstalkHit->SetY(posA);
+//         crosstalkHit->SetZ(posB);
+//         crosstalkHit->SetView(2);
+//         Double_t hitQ = 0.05*fRndm->Gaus(Q,sqrt(Q));
+//         hitQ = hitQ > 0 ? hitQ : 0;
+//         crosstalkHit->SetCharge(hitQ);
+//         crosstalkHit->SetxTalkFlag(kTRUE);
+//     }
+//     return crosstalkHit;
+// }
+
+ND280SFGDHit*AddCrossTalkHit(Double_t posA, Double_t posB, Double_t Q, Int_t view){
+    TRandom3* fRndm = new TRandom3(0);
+    ND280SFGDHit* crosstalkHit = new ND280SFGDHit();
+    if(view == 0){
+        crosstalkHit->SetX(posA);
+        crosstalkHit->SetY(posB);
+        crosstalkHit->SetZ(-999);
+        crosstalkHit->SetView(0);
+        crosstalkHit->SetCharge(Q);
+        crosstalkHit->SetxTalkFlag(kTRUE);
+    }
+    if(view == 1){
+        crosstalkHit->SetX(posA);
+        crosstalkHit->SetY(-999);
+        crosstalkHit->SetZ(posB);
+        crosstalkHit->SetView(1);
+        crosstalkHit->SetCharge(Q);
+        crosstalkHit->SetxTalkFlag(kTRUE);
+    }
+    if(view == 2){
+        crosstalkHit->SetX(-999);
+        crosstalkHit->SetY(posA);
+        crosstalkHit->SetZ(posB);
+        crosstalkHit->SetView(2);
+        crosstalkHit->SetCharge(Q);
+        crosstalkHit->SetxTalkFlag(kTRUE);
+    }
+    return crosstalkHit;
+}
+
+
+// bool NoHitFoundInNewPos(Double_t posA, Double_t posB, Int_t view, vector <ND280SFGDVoxel*> listOfVoxels){
+
+//         if(view == 0){        
+//             for(UInt_t v=0; v<listOfVoxels.size(); v++){
+//                 if (listOfVoxels[v]->GetHits()[0]->GetX() == posA && listOfVoxels[v]->GetHits()[0]->GetY() == posB)  return kFALSE;
+//             }
+//         }
+
+//         if(view == 1){        
+//             for(UInt_t v=0; v<listOfVoxels.size(); v++){
+//                 if (listOfVoxels[v]->GetHits()[1]->GetX() == posA && listOfVoxels[v]->GetHits()[1]->GetZ() == posB)  return kFALSE;
+//             }
+//         }
+
+//         if(view == 2){        
+//             for(UInt_t v=0; v<listOfVoxels.size(); v++){
+//                 if (listOfVoxels[v]->GetHits()[2]->GetY() == posA && listOfVoxels[v]->GetHits()[2]->GetZ() == posB)  return kFALSE;
+//             }
+//         }
+
+//     return kTRUE;
+// }
+
+bool NoHitFoundInNewPos(Double_t posA, Double_t posB, Int_t view, vector <ND280SFGDHit*> listOfHit){
+
+        if(view == 0){        
+            for(UInt_t i=0; i<listOfHit.size(); i++){
+                if (listOfHit[i]->GetX() == posA && listOfHit[i]->GetY() == posB)  return kFALSE;
+            }
+        }
+
+        if(view == 1){        
+            for(UInt_t i=0; i<listOfHit.size(); i++){
+                if (listOfHit[i]->GetX() == posA && listOfHit[i]->GetZ() == posB)  return kFALSE;
+            }
+        }
+
+        if(view == 2){        
+            for(UInt_t i=0; i<listOfHit.size(); i++){
+                if (listOfHit[i]->GetY() == posA && listOfHit[i]->GetZ() == posB)  return kFALSE;
+            }
+        }
+
+    return kTRUE;
+}
+
 
 int SFGD_Reconstruction(int argc,char** argv) {
     if (argc!=14){   // batch mode
@@ -98,10 +223,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
         exit(1);
     }
 
-    Double_t const xTalkProbX = 0.45;
-    Double_t const xTalkProbY = 0.45;
-    Double_t const xTalkProbZ = 0.45;
-    Double_t const xTalkFact = 0.05;
+    Double_t const f_lateral_CT  = 0.01;  // attenuation of charge in the lateral fiber 1u dist
+    Double_t const f_lateral2_CT = f_lateral_CT*f_lateral_CT;  // attenuation of charge in the lateral fiber 1u dist
+    Double_t const f_diagonal_CT = 0.45; // attenuation of charge in the diagonal fiber 1.5u dist
+
     TRandom3* fRndm = new TRandom3(0);
 
     TString outfilename = "/nfs/neutrinos/cjesus/work/MC_output.root";
@@ -131,6 +256,14 @@ int SFGD_Reconstruction(int argc,char** argv) {
     nd280upconv::TargetType_t DetType = nd280upconv::kUndefined;
     if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
     else   {std::cerr << "Detector must be SFGD!!" << std::endl; exit(1);}
+
+
+    TH1D* h_chargeTrue        = new TH1D("h_chargeTrue","h_chargeTrue",100,0,300);
+    TH1D* h_chargeReco        = new TH1D("h_chargeReco","h_chargeReco",100,0,300);
+
+    TH1D* h_chargeRes       = new TH1D("h_chargeRes","h_chargeRes",300,-30,30);
+
+    h_chargeTrue->SetLineColor(kRed);
 
     /////////////////////////////
     //                         //
@@ -228,10 +361,16 @@ int SFGD_Reconstruction(int argc,char** argv) {
     vector <ND280SFGDVoxel*> listOfVoxels;
     vector <ND280SFGDHit*> listOfHit;
 
+    Double_t C_true_Tot = 0;
+    Double_t C_reco_Tot = 0;
+
     ///////////  Loop over events //////////////////////
     for(int ievt=evtfirst;ievt<=EntryLast;ievt++){
         tinput->GetEntry(ievt);
         evt_vec.push_back(ievt);
+
+        C_true_Tot = 0;
+        C_reco_Tot = 0;
         
         int nhits_withsamepos=0;
         
@@ -247,7 +386,6 @@ int SFGD_Reconstruction(int argc,char** argv) {
             cout << " --> CPU time = " << CPUtime << endl;
         }
         
-        listOfVoxels.reserve(200+nd280UpEvent->GetNHits()); // +200 to add some crosstalk latter...
         vector <ND280SFGDTrack*> listOfTracks;
 
         float inProtonMom=0.0;
@@ -256,28 +394,55 @@ int SFGD_Reconstruction(int argc,char** argv) {
         int NHits = nd280UpEvent->GetNHits();
         for(int ihit=0;ihit<NHits;ihit++){ // get last entry
             TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
-
-            //cout << " =======--------- starting hit loop ------=========" << endl;
-            // I think we should consider only the hits from Proton by looking at the contributers
             
-            double charge = 1.; // Apply alway Birks!
+            double charge = 1.;
             double time = (nd280UpHit->GetStartT() + nd280UpHit->GetStopT())/2.; // middle step time
             double posX = (nd280UpHit->GetStartX() + nd280UpHit->GetStopX())/2.; // middle step X
             double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y
             double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
-            TVector3 lightPos(posX,posY,posZ); // already in local position
+            TVector3 lightPos(posX,posY,posZ);
             
             double edep = nd280UpHit->GetEnergyDeposit();
-            double steplength = nd280UpHit->GetTrackLength(); // check how it's calculated in geant4
+            double steplength = nd280UpHit->GetTrackLength();
             string detname = nd280UpHit->GetDetName();
             
             ApplyResponse.SetTargetID(DetType);
             ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);
+
             
             double pex = ApplyResponse.GetHitPE().x();
             double pey = ApplyResponse.GetHitPE().y();
             double pez = ApplyResponse.GetHitPE().z();
-            
+
+            double sat_edep = BirksSaturation(nd280UpHit->GetEnergyDeposit(),steplength);
+
+            // cout << "True saturated Edep in #p.e: " << sat_edep << endl;
+            // cout << " ... raw ... " << endl;
+            // cout << "XY -- #p.e: " << pez << endl;
+            // cout << "XZ -- #p.e: " << pey << endl;
+            // cout << "YZ -- #p.e: " << pex  << endl;
+            // cout << " ... corrected ... " << endl;
+            // cout << "POS: " << posX << "," << posY << "," << posZ << endl;
+            // cout << "fact_reco: " << FibAtt(posX+10*102) << endl;
+            // cout << "fact_reco: " << FibAtt(posY+10*26) << endl;
+            // cout << "fact_reco: " << FibAtt(posZ+10*94) << endl;
+            double c_PE_xy = (1/0.35)*pez / FibAtt(posZ+10*94);
+            double c_PE_xz = (1/0.35)*pey / FibAtt(posY+10*26);
+            double c_PE_yz = (1/0.35)*pex / FibAtt(posX+10*102);
+            // cout << "XY -- #p.e: " << c_PE_xy << endl;
+            // cout << "XZ -- #p.e: " << c_PE_xz<< endl;
+            // cout << "YZ -- #p.e: " << c_PE_yz << endl;
+            // cout << "Expected Reco Edep in #p.e: " << (c_PE_xy+c_PE_xz+c_PE_yz)/3 << endl;
+
+            // h_chargeRes->Fill( (sat_edep*156.42 - (c_PE_xy+c_PE_xz+c_PE_yz)/3 ) / ( sat_edep*156.42 ) );
+
+            // h_chargeTrue->Fill(sat_edep*156.42);
+            // h_chargeReco->Fill((c_PE_xy+c_PE_xz+c_PE_yz)/3 );
+
+            C_true_Tot += sat_edep*156.42;
+            C_reco_Tot += (c_PE_xy+c_PE_xz+c_PE_yz)/3 ;
+
+
             if(!UseViewXY) pez = 0;
             if(!UseViewYZ) pex = 0;
             if(!UseViewXZ) pey = 0;
@@ -295,7 +460,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             auxVoxel->SetPDG(nd280UpHit->GetPDG());
             auxVoxel->SetTrackID(nd280UpHit->GetPrimaryId());
             auxVoxel->SetParentID(0);
-            auxVoxel->SetEdep(edep);
+            auxVoxel->SetEdep((c_PE_xy+c_PE_xz+c_PE_yz)/3);  /// FROM THE TIME BEING USS SATURATED VALUE AS TRUE!
 
             listOfVoxels.push_back(auxVoxel);
 
@@ -326,8 +491,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(j == 2) hit->SetCharge(pex);
 
                 hit->SetTrackID(auxVoxel->GetTrackID());
-                hit->SetTrueXTalk(kFALSE);
-                listOfHit.push_back(hit);
+                hit->SetxTalkFlag(kFALSE);
                 auxHitList.push_back(hit);
             } 
 
@@ -336,150 +500,294 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         } /// END LOOP OVER 3D HITS
 
-        vector <ND280SFGDVoxel*> newVoxelList;   // remove duplicated voxels!
+        // ADD ALL DEPOSITS IN THE SAME XYZ
+        vector <ND280SFGDVoxel*> newVoxelList;   
         vector <Int_t> analyzedVoxels(listOfVoxels.size(),0);
-
         for(UInt_t ivox=0; ivox<listOfVoxels.size(); ivox++){
             if(analyzedVoxels[ivox]) continue;
             analyzedVoxels[ivox] = 1;
             for(UInt_t jvox=0; jvox<listOfVoxels.size(); jvox++){
                 if(analyzedVoxels[jvox]) continue;
-                else if(listOfVoxels[ivox]->GetX() == listOfVoxels[jvox]->GetX() && listOfVoxels[ivox]->GetY() == listOfVoxels[jvox]->GetY() && listOfVoxels[ivox]->GetZ() == listOfVoxels[jvox]->GetZ() && listOfVoxels[ivox]->GetTrackID() == listOfVoxels[jvox]->GetTrackID() ){
-                    analyzedVoxels[jvox] = 1;
-                    listOfVoxels[ivox]->SetEdep( listOfVoxels[ivox]->GetEdep() + listOfVoxels[jvox]->GetEdep() );
-                    listOfVoxels[ivox]->GetHits()[0]->SetCharge( listOfVoxels[ivox]->GetHits()[0]->GetCharge() + listOfVoxels[jvox]->GetHits()[0]->GetCharge() );
-                    listOfVoxels[ivox]->GetHits()[1]->SetCharge( listOfVoxels[ivox]->GetHits()[1]->GetCharge() + listOfVoxels[jvox]->GetHits()[1]->GetCharge() );
-                    listOfVoxels[ivox]->GetHits()[2]->SetCharge( listOfVoxels[ivox]->GetHits()[2]->GetCharge() + listOfVoxels[jvox]->GetHits()[2]->GetCharge() );
+                else if(listOfVoxels[ivox]->GetX() == listOfVoxels[jvox]->GetX() && listOfVoxels[ivox]->GetY() == listOfVoxels[jvox]->GetY() && listOfVoxels[ivox]->GetZ() == listOfVoxels[jvox]->GetZ()){
+                    if(listOfVoxels[ivox]->GetTrackID() == listOfVoxels[jvox]->GetTrackID()){                    
+                        analyzedVoxels[jvox] = 1;
+                        listOfVoxels[ivox]->SetEdep( listOfVoxels[ivox]->GetEdep() + listOfVoxels[jvox]->GetEdep() );
+                        listOfVoxels[ivox]->GetHits()[0]->SetCharge( listOfVoxels[ivox]->GetHits()[0]->GetCharge() + listOfVoxels[jvox]->GetHits()[0]->GetCharge() );
+                        listOfVoxels[ivox]->GetHits()[1]->SetCharge( listOfVoxels[ivox]->GetHits()[1]->GetCharge() + listOfVoxels[jvox]->GetHits()[1]->GetCharge() );
+                        listOfVoxels[ivox]->GetHits()[2]->SetCharge( listOfVoxels[ivox]->GetHits()[2]->GetCharge() + listOfVoxels[jvox]->GetHits()[2]->GetCharge() );
+                    }
+                    else if(listOfVoxels[ivox]->GetTrackID() != listOfVoxels[jvox]->GetTrackID()){
+                        analyzedVoxels[jvox] = 1;
+                        listOfVoxels[ivox]->SetEdep( listOfVoxels[ivox]->GetEdep() + listOfVoxels[jvox]->GetEdep() );
+                        listOfVoxels[ivox]->GetHits()[0]->SetCharge( listOfVoxels[ivox]->GetHits()[0]->GetCharge() + listOfVoxels[jvox]->GetHits()[0]->GetCharge() );
+                        listOfVoxels[ivox]->GetHits()[1]->SetCharge( listOfVoxels[ivox]->GetHits()[1]->GetCharge() + listOfVoxels[jvox]->GetHits()[1]->GetCharge() );
+                        listOfVoxels[ivox]->GetHits()[2]->SetCharge( listOfVoxels[ivox]->GetHits()[2]->GetCharge() + listOfVoxels[jvox]->GetHits()[2]->GetCharge() );
+                        if(!listOfVoxels[ivox]->GetContributors().size()) listOfVoxels[ivox]->AddContributor(listOfVoxels[ivox]->GetTrackID());    // only if it is the first time, add also the ivox contributor, this avoids ivox double counting.
+                        listOfVoxels[ivox]->AddContributor(listOfVoxels[jvox]->GetTrackID());
+                    }
                 }
+                if(!listOfVoxels[ivox]->GetContributors().size()) listOfVoxels[ivox]->AddContributor(listOfVoxels[ivox]->GetTrackID());
             }
             newVoxelList.push_back(listOfVoxels[ivox]);
         }
 
+        // UPDATE VOXEL LIST
         listOfVoxels.clear();
         listOfVoxels = newVoxelList;
         newVoxelList.clear();
+
+        for(UInt_t ivox=0; ivox<listOfVoxels.size(); ivox++){
+            // cout << "True Edep in #p.e: " << listOfVoxels[ivox]->GetEdep()*156.42 << endl;
+            // cout << " ... raw ... " << endl;
+            // cout << "XY -- #p.e: " << listOfVoxels[ivox]->GetHits()[0]->GetCharge() << endl;
+            // cout << "XZ -- #p.e: " << listOfVoxels[ivox]->GetHits()[1]->GetCharge()  << endl;
+            // cout << "YZ -- #p.e: " << listOfVoxels[ivox]->GetHits()[2]->GetCharge()  << endl;
+            // cout << " ... corrected ... " << endl;
+            double c_PE_xy = (1/0.35)*listOfVoxels[ivox]->GetHits()[0]->GetCharge() / FibAtt(10*(listOfVoxels[ivox]->GetZ()+94));
+            double c_PE_xz = (1/0.35)*listOfVoxels[ivox]->GetHits()[1]->GetCharge() / FibAtt(10*(listOfVoxels[ivox]->GetY()+26));
+            double c_PE_yz = (1/0.35)*listOfVoxels[ivox]->GetHits()[2]->GetCharge() / FibAtt(10*(listOfVoxels[ivox]->GetX()+102));
+
+            vector <Double_t> auxLocalHits;
+
+            auxLocalHits.push_back(c_PE_xy);
+            auxLocalHits.push_back(c_PE_xz);
+            auxLocalHits.push_back(c_PE_yz);
+
+            listOfVoxels[ivox]->SetLocalHitsQ(auxLocalHits);
+
+            // cout << "XY -- #p.e: " << c_PE_xy << endl;
+            // cout << "XZ -- #p.e: " << c_PE_xz<< endl;
+            // cout << "YZ -- #p.e: " << c_PE_yz << endl;
+            // cout << "Expected Reco Edep in #p.e: " << (c_PE_xy+c_PE_xz+c_PE_yz)/3 << endl;
+
+            h_chargeRes->Fill( 100*(listOfVoxels[ivox]->GetEdep() - (c_PE_xy+c_PE_xz+c_PE_yz)/3 ) / ( listOfVoxels[ivox]->GetEdep()*156.42 ) );
+
+            h_chargeTrue->Fill(listOfVoxels[ivox]->GetEdep());
+            h_chargeReco->Fill((c_PE_xy+c_PE_xz+c_PE_yz)/3 );
+
+            C_true_Tot += listOfVoxels[ivox]->GetEdep();
+            C_reco_Tot += (c_PE_xy+c_PE_xz+c_PE_yz)/3 ;
+        }
 
         cout << "# of core-voxles: " << listOfVoxels.size() << endl;
 
+        // MAKE A HIT LIST
         for(UInt_t vx=0; vx<listOfVoxels.size(); vx++){
+            listOfHit.push_back(listOfVoxels[vx]->GetHits()[0]);
+            listOfHit.push_back(listOfVoxels[vx]->GetHits()[1]);
+            listOfHit.push_back(listOfVoxels[vx]->GetHits()[2]);
+        }
 
-            newVoxelList.push_back(listOfVoxels[vx]);
-
-            Double_t poshitX = 10*listOfVoxels[vx]->GetX();
-            Double_t poshitY = 10*listOfVoxels[vx]->GetY();
-            Double_t poshitZ = 10*listOfVoxels[vx]->GetZ();
-
-            Double_t newXpos;
-            Double_t newYpos;
-            Double_t newZpos;
-
-            if(fRndm->Uniform() < xTalkProbX){
-                newXpos = poshitX/10+1;
-                newYpos = poshitY/10;
-                newZpos = poshitZ/10;
-                Bool_t foundVoxel = kFALSE;
-                for(UInt_t jvx=0; jvx<listOfVoxels.size(); jvx++){
-                    if(newXpos == listOfVoxels[jvx]->GetX() && newYpos == listOfVoxels[jvx]->GetY() && newZpos == listOfVoxels[jvx]->GetZ()) foundVoxel = kTRUE;
+        // MERGE HITS --- Latter on add time conditions ... !!!
+        cout << "# of hits before merging: " << listOfHit.size() << endl;
+        vector <ND280SFGDHit*> newListOfHits;
+        vector <Int_t> analyzedHits(listOfHit.size(),0);
+        for(UInt_t ahit=0; ahit<listOfHit.size(); ahit++){
+            listOfHit[ahit]->SetxTalkFlag(0);
+            if(analyzedHits[ahit]) continue;
+            newListOfHits.push_back(listOfHit[ahit]);
+            analyzedHits[ahit]=1;
+            for(UInt_t bhit=0; bhit<listOfHit.size(); bhit++){
+                if(analyzedHits[bhit]) continue;
+                if(listOfHit[ahit]->GetView() == listOfHit[bhit]->GetView() && listOfHit[ahit]->GetX() == listOfHit[bhit]->GetX() && listOfHit[ahit]->GetY() == listOfHit[bhit]->GetY() && listOfHit[ahit]->GetZ() == listOfHit[bhit]->GetZ() ){
+                    analyzedHits[bhit] = 1;
+                    listOfHit[ahit]->SetCharge( listOfHit[ahit]->GetCharge() + listOfHit[bhit]->GetCharge() );
                 }
-                if(!foundVoxel) newVoxelList.push_back(AddCrossTalkVoxel(listOfVoxels[vx],newXpos,newYpos,newZpos));
             }
+        }
+        listOfHit = newListOfHits;
+        cout << "hits after merging: " << listOfHit.size() << endl;
+        newListOfHits.clear();
 
-            if(fRndm->Uniform() < xTalkProbX){
-                newXpos = poshitX/10-1;
-                newYpos = poshitY/10;
-                newZpos = poshitZ/10;
-                Bool_t foundVoxel = kFALSE;
-                for(UInt_t jvx=0; jvx<listOfVoxels.size(); jvx++){
-                    if(newXpos == listOfVoxels[jvx]->GetX() && newYpos == listOfVoxels[jvx]->GetY() && newZpos == listOfVoxels[jvx]->GetZ()) foundVoxel = kTRUE;
+        // ASSIGN MERGED HITS TO VOXELS
+        // ONLY KEEP VOXELS WITH HITS WITH Q > 0.
+        for(UInt_t ivox=0; ivox<listOfVoxels.size(); ivox++){
+            vector <ND280SFGDHit*> auxHit;
+            auxHit.resize(3);
+            for(UInt_t ahit=0; ahit<listOfHit.size(); ahit++){
+                if(listOfHit[ahit]->GetView() == 0 && listOfVoxels[ivox]->GetX() == listOfHit[ahit]->GetX() && listOfVoxels[ivox]->GetY() == listOfHit[ahit]->GetY()){
+                    auxHit[0] = listOfHit[ahit];
+                } 
+                if(listOfHit[ahit]->GetView() == 1 && listOfVoxels[ivox]->GetX() == listOfHit[ahit]->GetX() && listOfVoxels[ivox]->GetZ() == listOfHit[ahit]->GetZ()){
+                    auxHit[1] = listOfHit[ahit];
+                } 
+                if(listOfHit[ahit]->GetView() == 2 && listOfVoxels[ivox]->GetY() == listOfHit[ahit]->GetY() && listOfVoxels[ivox]->GetZ() == listOfHit[ahit]->GetZ()){
+                    auxHit[2] = listOfHit[ahit];
                 }
-                if(!foundVoxel) newVoxelList.push_back(AddCrossTalkVoxel(listOfVoxels[vx],newXpos,newYpos,newZpos));
             }
-
-            if(fRndm->Uniform() < xTalkProbY){
-                newXpos = poshitX/10;
-                newYpos = poshitY/10+1;
-                newZpos = poshitZ/10;
-                Bool_t foundVoxel = kFALSE;
-                for(UInt_t jvx=0; jvx<listOfVoxels.size(); jvx++){
-                    if(newXpos == listOfVoxels[jvx]->GetX() && newYpos == listOfVoxels[jvx]->GetY() && newZpos == listOfVoxels[jvx]->GetZ()) foundVoxel = kTRUE;
-                }
-                if(!foundVoxel) newVoxelList.push_back(AddCrossTalkVoxel(listOfVoxels[vx],newXpos,newYpos,newZpos));
-            }
-
-            if(fRndm->Uniform() < xTalkProbY){
-                newXpos = poshitX/10;
-                newYpos = poshitY/10-1;
-                newZpos = poshitZ/10;
-                Bool_t foundVoxel = kFALSE;
-                for(UInt_t jvx=0; jvx<listOfVoxels.size(); jvx++){
-                    if(newXpos == listOfVoxels[jvx]->GetX() && newYpos == listOfVoxels[jvx]->GetY() && newZpos == listOfVoxels[jvx]->GetZ()) foundVoxel = kTRUE;
-                }
-                if(!foundVoxel) newVoxelList.push_back(AddCrossTalkVoxel(listOfVoxels[vx],newXpos,newYpos,newZpos));
-            }
-
-            if(fRndm->Uniform() < xTalkProbZ){
-                newXpos = poshitX/10;
-                newYpos = poshitY/10;
-                newZpos = poshitZ/10+1;
-                Bool_t foundVoxel = kFALSE;
-                for(UInt_t jvx=0; jvx<listOfVoxels.size(); jvx++){
-                    if(newXpos == listOfVoxels[jvx]->GetX() && newYpos == listOfVoxels[jvx]->GetY() && newZpos == listOfVoxels[jvx]->GetZ()) foundVoxel = kTRUE;
-                }
-                if(!foundVoxel) newVoxelList.push_back(AddCrossTalkVoxel(listOfVoxels[vx],newXpos,newYpos,newZpos));
-            }
-
-            if(fRndm->Uniform() < xTalkProbZ){
-                newXpos = poshitX/10;
-                newYpos = poshitY/10;
-                newZpos = poshitZ/10-1;
-                Bool_t foundVoxel = kFALSE;
-                for(UInt_t jvx=0; jvx<listOfVoxels.size(); jvx++){
-                    if(newXpos == listOfVoxels[jvx]->GetX() && newYpos == listOfVoxels[jvx]->GetY() && newZpos == listOfVoxels[jvx]->GetZ()) foundVoxel = kTRUE;
-                }
-                if(!foundVoxel) newVoxelList.push_back(AddCrossTalkVoxel(listOfVoxels[vx],newXpos,newYpos,newZpos));
+            if(auxHit[0] == nullptr || auxHit[1] == nullptr || auxHit[2] == nullptr ){cerr << "check hit filling associated to voxels!" << endl; exit(1);}
+            listOfVoxels[ivox]->SetHits(auxHit);
+            if(auxHit[0]->GetCharge() > 0 && auxHit[1]->GetCharge() > 0  && auxHit[2]->GetCharge() > 0 ){
+                 newVoxelList.push_back(listOfVoxels[ivox]);
+                 newListOfHits.push_back(auxHit[0]);
+                 newListOfHits.push_back(auxHit[1]);
+                 newListOfHits.push_back(auxHit[2]);
             }
         }
 
+        if(newListOfHits.size()){
+            std::sort   (newListOfHits.begin(), newListOfHits.end());
+            newListOfHits.erase(std::unique (newListOfHits.begin(), newListOfHits.end()), newListOfHits.end()); 
+        }
+
+        cout << "# of unique non-zero hits: " << newListOfHits.size() << endl;
+
+        //ONLY KEEP VOXELS AND HITS THAT ARE DIFFERENT FROM 0
+        // for(UInt_t vx=0; vx<listOfVoxels.size(); vx++){
+        //     if(listOfVoxels[vx]->GetHits()[0]->GetCharge() == 0 || listOfVoxels[vx]->GetHits()[1]->GetCharge() == 0 || listOfVoxels[vx]->GetHits()[2]->GetCharge() == 0) {cout << "skipping voxel" << endl; continue;}  // for the time being, store only voxels with 3 hits with #p.e > 0
+        //     newVoxelList.push_back(listOfVoxels[vx]);
+        // }
         listOfVoxels.clear();
         listOfVoxels = newVoxelList;
         newVoxelList.clear();
 
-        cout << "total # of voxels: " << listOfVoxels.size() << endl;        
+        listOfHit.clear();
+        listOfHit = newListOfHits;
+        newListOfHits.clear();
+
+        // ADD CROSSTALK HITS:
+        for(UInt_t hidx=0; hidx<listOfHit.size(); hidx++){
+
+            Double_t posX = listOfHit[hidx]->GetX();
+            Double_t posY = listOfHit[hidx]->GetY();
+            Double_t posZ = listOfHit[hidx]->GetZ();
+
+            Double_t pex = f_lateral_CT*listOfHit[hidx]->GetCharge();
+            Double_t pey = f_lateral_CT*listOfHit[hidx]->GetCharge();
+            Double_t pez = f_lateral_CT*listOfHit[hidx]->GetCharge();
+
+            Double_t CT_Q = 0;
+
+            // add conditions to avoid hits out of plane!
+
+            if(listOfHit[hidx]->GetView() == 0){
+                CT_Q = CrosstalkPE(pez);
+                    if ( NoHitFoundInNewPos(posX+1,posY,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posX+1,posY,CT_Q,0));
+
+                CT_Q = CrosstalkPE(pez);
+                    if ( NoHitFoundInNewPos(posX-1,posY,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posX-1,posY,CT_Q,0));
+
+                CT_Q = CrosstalkPE(pez);
+                    if ( NoHitFoundInNewPos(posX,posY+1,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posX,posY+1,CT_Q,0));
+
+                CT_Q = CrosstalkPE(pez);
+                    if ( NoHitFoundInNewPos(posX,posY-1,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posX,posY-1,CT_Q,0));
+            }
+        
+            if(listOfHit[hidx]->GetView() == 1){
+                CT_Q = CrosstalkPE(pey);
+                    if ( NoHitFoundInNewPos(posX+1,posZ,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posX+1,posZ,CT_Q,1));
+
+                CT_Q = CrosstalkPE(pey);
+                    if ( NoHitFoundInNewPos(posX-1,posZ,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posX-1,posZ,CT_Q,1));
+
+                CT_Q = CrosstalkPE(pey);
+                    if ( NoHitFoundInNewPos(posX,posZ+1,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posX,posZ+1,CT_Q,1));
+
+                CT_Q = CrosstalkPE(pey);
+                    if ( NoHitFoundInNewPos(posX,posZ-1,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posX,posZ-1,CT_Q,1));
+            }
+
+            if(listOfHit[hidx]->GetView() == 2){
+                CT_Q = CrosstalkPE(pex);
+                    if ( NoHitFoundInNewPos(posY+1,posZ,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posY+1,posZ,CT_Q,2));
+
+                CT_Q = CrosstalkPE(pex);
+                    if ( NoHitFoundInNewPos(posY-1,posZ,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posY-1,posZ,CT_Q,2));
+
+                CT_Q = CrosstalkPE(pex);
+                    if ( NoHitFoundInNewPos(posY,posZ+1,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posY,posZ+1,CT_Q,2));
+
+                CT_Q = CrosstalkPE(pex);
+                    if ( NoHitFoundInNewPos(posY,posZ-1,0,listOfHit) )
+                        newListOfHits.push_back(AddCrossTalkHit(posY,posZ-1,CT_Q,2));
+            }
+
+        }
+
+        cout << "# of unmerged crosstalk hits: " << newListOfHits.size() << endl;
+
+        vector <ND280SFGDHit*> crosstalkHits;
+        analyzedHits.clear();
+        analyzedHits.resize(newListOfHits.size(),0);
+        for(UInt_t ahit=0; ahit<newListOfHits.size(); ahit++){
+            if(analyzedHits[ahit]) continue;
+            crosstalkHits.push_back(newListOfHits[ahit]);
+            analyzedHits[ahit]=1;
+            for(UInt_t bhit=0; bhit<newListOfHits.size(); bhit++){
+                if(analyzedHits[bhit]) continue;
+                if(newListOfHits[ahit]->GetView() == newListOfHits[bhit]->GetView() && newListOfHits[ahit]->GetX() == newListOfHits[bhit]->GetX() && newListOfHits[ahit]->GetY() == newListOfHits[bhit]->GetY() && newListOfHits[ahit]->GetZ() == newListOfHits[bhit]->GetZ() ){
+                    analyzedHits[bhit] = 1;
+                    newListOfHits[ahit]->SetCharge( newListOfHits[ahit]->GetCharge() + newListOfHits[bhit]->GetCharge() );
+                }
+            }
+        }
+
+        cout << "# of merged crosstalk hits: " << crosstalkHits.size() << endl;
+
+        for(UInt_t ahit=0; ahit<crosstalkHits.size(); ahit++){
+            if(crosstalkHits[ahit]->GetCharge() >= 1) listOfHit.push_back(crosstalkHits[ahit]);
+        }
+        
+        cout << "# of hits including crosstalk: " << listOfHit.size() << endl;
+
+        cout << "total # of voxels: " << listOfVoxels.size() << endl;   
+        if(!listOfVoxels.size()) continue;     
 
         event->SetVoxels(listOfVoxels);
-        //event->SetHits(listOfHit);
+        event->SetHits(listOfHit);
 
         std::vector <ND280SFGDHit*> totalListOfHits;
         std::vector <Int_t> listOfTrackID;
 
-        if(listOfTrackID.size()) listOfTrackID.reserve(listOfVoxels.size());
+        listOfTrackID.reserve(listOfVoxels.size());
 
         for(UInt_t i=0; i<listOfVoxels.size(); i++){
-            listOfTrackID.push_back(listOfVoxels[i]->GetTrackID());
+            for(size_t icont = 0; icont < listOfVoxels[i]->GetContributors().size(); icont++){
+                listOfTrackID.push_back(listOfVoxels[i]->GetContributors()[icont]);
+            }
         }
 
         //keep only unique track IDs:
         if(listOfTrackID.size()){
             std::sort   (listOfTrackID.begin(), listOfTrackID.end());
+            for(size_t itrkID = 0; itrkID < listOfTrackID.size(); itrkID++){
+            }
             listOfTrackID.erase(std::unique (listOfTrackID.begin(), listOfTrackID.end()), listOfTrackID.end()); 
             //group hits and voxels with the same track ID:
             event->GetTracks().reserve(listOfTrackID.size());
         }
 
+        ////// ADD TRACK INFO
         std::vector <ND280SFGDVoxel*> listOfTrackVoxels;
         std::vector <ND280SFGDHit*> listOfTrackHits;
         Int_t trackPDG = -999;
         for(UInt_t i=0; i<listOfTrackID.size(); i++){
+            trackPDG = -999;
             for(UInt_t j=0; j<listOfVoxels.size(); j++){
-                if(listOfVoxels[j]->GetTrackID() == listOfTrackID[i]){
-                    trackPDG = listOfVoxels[j]->GetPDG();
-                    listOfTrackVoxels.push_back(listOfVoxels[j]);
-                    listOfTrackHits.push_back(listOfVoxels[j]->GetHits()[0]);
-                    listOfTrackHits.push_back(listOfVoxels[j]->GetHits()[1]);
-                    listOfTrackHits.push_back(listOfVoxels[j]->GetHits()[2]);
-                    totalListOfHits.push_back(listOfVoxels[j]->GetHits()[0]);
-                    totalListOfHits.push_back(listOfVoxels[j]->GetHits()[1]);
-                    totalListOfHits.push_back(listOfVoxels[j]->GetHits()[2]);
+                for(size_t icont = 0; icont < listOfVoxels[j]->GetContributors().size(); icont++){
+                    if(listOfVoxels[j]->GetContributors().size() == 1) trackPDG = listOfVoxels[j]->GetPDG();
+                    if(listOfVoxels[j]->GetContributors()[icont] == listOfTrackID[i]){
+                        trackPDG = listOfVoxels[j]->GetPDG();
+                        listOfTrackVoxels.push_back(listOfVoxels[j]);
+                        listOfTrackHits.push_back(listOfVoxels[j]->GetHits()[0]);
+                        listOfTrackHits.push_back(listOfVoxels[j]->GetHits()[1]);
+                        listOfTrackHits.push_back(listOfVoxels[j]->GetHits()[2]);
+                        totalListOfHits.push_back(listOfVoxels[j]->GetHits()[0]);
+                        totalListOfHits.push_back(listOfVoxels[j]->GetHits()[1]);
+                        totalListOfHits.push_back(listOfVoxels[j]->GetHits()[2]);
+                    }
                 }
             }
             ND280SFGDTrack* auxTrack = new ND280SFGDTrack(listOfTrackVoxels);
@@ -490,15 +798,17 @@ int SFGD_Reconstruction(int argc,char** argv) {
             listOfTrackHits.clear();
             listOfTrackVoxels.clear();
         }
+        ////////
 
-        event->SetHits(totalListOfHits);
         event->SetTracks(listOfTracks);
-
-        cout << "total # of hits: " << totalListOfHits.size() << endl;    
 
         cout << "Real # Tracks in the event:    " << nd280UpEvent->GetNTracks() << endl;
         cout << "Stroed # Tracks in the event:  " << event->GetTracks().size() << endl;
         cout << "Stroed # Tracks in the vector: " << listOfTracks.size() << endl;
+        cout << "Total True Q: " << C_true_Tot << endl;
+        cout << "Total Reco Q: " << C_reco_Tot << endl;
+
+        cout << endl << endl << endl << endl;
 
         if(listOfTracks.size()) AllEvents->Fill();  
         // cout << "voxels: " << event->GetVoxels().size() << endl;     
@@ -521,7 +831,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
     fileout->cd();
     AllEvents->Write();
+    h_chargeTrue->Write();
+    h_chargeReco->Write();
+    h_chargeRes->Write();
     fileout->Close();
-    
+
     return 1;
 }

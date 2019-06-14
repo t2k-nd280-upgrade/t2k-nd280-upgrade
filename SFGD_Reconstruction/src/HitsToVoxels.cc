@@ -152,8 +152,6 @@ vector <ND280SFGDVoxel*> HitsToVoxels_version0(vector <ND280SFGDHit*> listOfHits
         }
     }
 
-    cout << "# of recoVoxels: " << listOfVoxels.size() << endl;
-
     if(DEBUG){        
         cout << "Voxels:" << endl;
         for(UInt_t ivox=0; ivox<listOfVoxels.size(); ivox++){
@@ -184,7 +182,6 @@ vector <ND280SFGDVoxel*> HitsToVoxels_version0(vector <ND280SFGDHit*> listOfHits
     // }
 
     return listOfVoxels;
-
 }
 
 
@@ -198,6 +195,9 @@ vector <ND280SFGDVoxel*> HitsToVoxels(vector <ND280SFGDHit*> listOfHits, Int_t v
         listOfVoxels = HitsToVoxels_version0(listOfHits,listOfVoxels);
     }
     else if ( version == 1){
+        listOfVoxels = HitsToVoxels_version0(listOfHits,listOfVoxels,kTRUE);
+    }
+    else if ( version == 2){
         listOfVoxels = HitsToVoxels_version0(listOfHits,listOfVoxels,kTRUE);
     }
     else{

@@ -8,7 +8,13 @@ vector <ND280SFGDHit*> MergeHits_version0(vector <ND280SFGDHit*> listOfHits){
     vector <ND280SFGDHit*> newListOfHits;
     vector <Int_t> analyzedHits(listOfHits.size(),0);
 
+
     std::cout << "Original # of hits: " << listOfHits.size() << std::endl;
+
+    // TH2F* hTvsQ = new TH2F("TvsQ","TvsQ",40,-100,-60,100,0,300);
+    // for(UInt_t ihit=0; ihit<listOfHits.size(); ihit++){
+    //     hTvsQ->Fill(listOfHits[ihit]->GetDt(),listOfHits[ihit]->GetCharge());
+    // }
 
     for(UInt_t ihit=0; ihit<listOfHits.size(); ihit++){
         listOfHits[ihit]->SetxTalkFlag(0);
@@ -24,7 +30,26 @@ vector <ND280SFGDHit*> MergeHits_version0(vector <ND280SFGDHit*> listOfHits){
         }
     }
 
+    // TCanvas* canvasTvsQ = new TCanvas("TvsQ");
+    // canvasTvsQ->cd();
+    // hTvsQ->Draw("COLZ");
+    // canvasTvsQ->Update();
+    // canvasTvsQ->WaitPrimitive();
+    // delete canvasTvsQ;
+    // delete hTvsQ;
+
     std::cout << "# of merged hits: " << newListOfHits.size() << std::endl;
+
+    Double_t Qxy = 0;
+    Double_t Qxz = 0;
+    Double_t Qyz = 0;
+
+
+    for(UInt_t ihit=0; ihit<listOfHits.size(); ihit++){
+        if(listOfHits[ihit]->GetView() == 0) Qxy+=listOfHits[ihit]->GetCharge();
+        if(listOfHits[ihit]->GetView() == 1) Qxz+=listOfHits[ihit]->GetCharge();
+        if(listOfHits[ihit]->GetView() == 2) Qyz+=listOfHits[ihit]->GetCharge();
+    }
 
     return newListOfHits;
 }

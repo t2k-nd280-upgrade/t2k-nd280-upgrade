@@ -30,6 +30,7 @@ private:
  
   void BirksSaturation(double &edeposit,double steplength,double charge);
   double EdepToPhot(double edep);
+  void ComputeHitTime(double &time, double x, double q);
   
   void ApplyFiberAttenuation(double &nphot,double x, double DetSize = 0.);
   void ApplyFiberTime(double &time,double x);

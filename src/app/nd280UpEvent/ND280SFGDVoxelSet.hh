@@ -9,6 +9,7 @@
 #include <TNtuple.h>
 #include <TStyle.h>
 #include <TString.h>
+#include <cstring>
 
 using namespace ROOT::Math;
 
@@ -86,8 +87,9 @@ public:
         fData = new TNtuple("fData", "fData", "x:y:z:color");
     }
 
+
     void DrawHits(Bool_t p_Wait, Bool_t p_All, TString canvName); // p_Wait = kTRUE to update canvas and Wait for click, p_All used to define DrawEvent().
-    void DrawVoxels(Bool_t p_Wait, Bool_t p_All);                 // p_Wait = kTRUE to update canvas and Wait for click
+    void DrawVoxels(Bool_t p_Wait, Bool_t p_All, Int_t color, Int_t mode);                 // p_Wait = kTRUE to update canvas and Wait for click
     void DrawHitsAndVoxels();                                     // Draws both hits and voxels for the event.
 
     void Reset(Option_t * /*option*/ = "")

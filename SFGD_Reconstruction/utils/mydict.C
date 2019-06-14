@@ -44,8 +44,10 @@ namespace std {} using namespace std;
 #include "../../src/app/nd280UpEvent/ND280SFGDEvent.hh"
 #include "../../src/app/nd280UpEvent/Event.hh"
 #include "../../src/app/nd280UpEvent/Hit.hh"
-#include "../src/CHit2D.hxx"
-#include "../src/CHit3D.hxx"
+#include "../src/extraClasses/CHit2D.hxx"
+#include "../src/extraClasses/CHit3D.hxx"
+#include "../src/extraClasses/CBond3D.hxx"
+#include "../src/extraClasses/CCluster3D.hxx"
 
 // Header files passed via #pragma extra_include
 
@@ -126,7 +128,7 @@ namespace ROOT {
       ::ND280SFGDVoxelSet *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::ND280SFGDVoxelSet >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("ND280SFGDVoxelSet", ::ND280SFGDVoxelSet::Class_Version(), "../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh", 15,
+         instance("ND280SFGDVoxelSet", ::ND280SFGDVoxelSet::Class_Version(), "../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh", 16,
                   typeid(::ND280SFGDVoxelSet), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::ND280SFGDVoxelSet::Dictionary, isa_proxy, 4,
                   sizeof(::ND280SFGDVoxelSet) );
@@ -286,7 +288,7 @@ namespace ROOT {
       ::CHit2D *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::CHit2D >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("CHit2D", ::CHit2D::Class_Version(), "../src/CHit2D.hxx", 13,
+         instance("CHit2D", ::CHit2D::Class_Version(), "../src/extraClasses/CHit2D.hxx", 13,
                   typeid(::CHit2D), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::CHit2D::Dictionary, isa_proxy, 4,
                   sizeof(::CHit2D) );
@@ -318,7 +320,7 @@ namespace ROOT {
       ::CHit3D *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::CHit3D >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("CHit3D", ::CHit3D::Class_Version(), "../src/CHit3D.hxx", 15,
+         instance("CHit3D", ::CHit3D::Class_Version(), "../src/extraClasses/CHit3D.hxx", 15,
                   typeid(::CHit3D), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::CHit3D::Dictionary, isa_proxy, 4,
                   sizeof(::CHit3D) );
@@ -335,6 +337,70 @@ namespace ROOT {
    }
    // Static variable to force the class initialization
    static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::CHit3D*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+} // end of namespace ROOT
+
+namespace ROOT {
+   static void *new_CBond3D(void *p = 0);
+   static void *newArray_CBond3D(Long_t size, void *p);
+   static void delete_CBond3D(void *p);
+   static void deleteArray_CBond3D(void *p);
+   static void destruct_CBond3D(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::CBond3D*)
+   {
+      ::CBond3D *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::CBond3D >(0);
+      static ::ROOT::TGenericClassInfo 
+         instance("CBond3D", ::CBond3D::Class_Version(), "../src/extraClasses/CBond3D.hxx", 14,
+                  typeid(::CBond3D), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &::CBond3D::Dictionary, isa_proxy, 4,
+                  sizeof(::CBond3D) );
+      instance.SetNew(&new_CBond3D);
+      instance.SetNewArray(&newArray_CBond3D);
+      instance.SetDelete(&delete_CBond3D);
+      instance.SetDeleteArray(&deleteArray_CBond3D);
+      instance.SetDestructor(&destruct_CBond3D);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::CBond3D*)
+   {
+      return GenerateInitInstanceLocal((::CBond3D*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::CBond3D*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+} // end of namespace ROOT
+
+namespace ROOT {
+   static void *new_CCluster3D(void *p = 0);
+   static void *newArray_CCluster3D(Long_t size, void *p);
+   static void delete_CCluster3D(void *p);
+   static void deleteArray_CCluster3D(void *p);
+   static void destruct_CCluster3D(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::CCluster3D*)
+   {
+      ::CCluster3D *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::CCluster3D >(0);
+      static ::ROOT::TGenericClassInfo 
+         instance("CCluster3D", ::CCluster3D::Class_Version(), "../src/extraClasses/CCluster3D.hxx", 15,
+                  typeid(::CCluster3D), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &::CCluster3D::Dictionary, isa_proxy, 4,
+                  sizeof(::CCluster3D) );
+      instance.SetNew(&new_CCluster3D);
+      instance.SetNewArray(&newArray_CCluster3D);
+      instance.SetDelete(&delete_CCluster3D);
+      instance.SetDeleteArray(&deleteArray_CCluster3D);
+      instance.SetDestructor(&destruct_CCluster3D);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::CCluster3D*)
+   {
+      return GenerateInitInstanceLocal((::CCluster3D*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::CCluster3D*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 //______________________________________________________________________________
@@ -653,6 +719,76 @@ TClass *CHit3D::Class()
 }
 
 //______________________________________________________________________________
+atomic_TClass_ptr CBond3D::fgIsA(0);  // static to hold class pointer
+
+//______________________________________________________________________________
+const char *CBond3D::Class_Name()
+{
+   return "CBond3D";
+}
+
+//______________________________________________________________________________
+const char *CBond3D::ImplFileName()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::CBond3D*)0x0)->GetImplFileName();
+}
+
+//______________________________________________________________________________
+int CBond3D::ImplFileLine()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::CBond3D*)0x0)->GetImplFileLine();
+}
+
+//______________________________________________________________________________
+TClass *CBond3D::Dictionary()
+{
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::CBond3D*)0x0)->GetClass();
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+TClass *CBond3D::Class()
+{
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::CBond3D*)0x0)->GetClass(); }
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+atomic_TClass_ptr CCluster3D::fgIsA(0);  // static to hold class pointer
+
+//______________________________________________________________________________
+const char *CCluster3D::Class_Name()
+{
+   return "CCluster3D";
+}
+
+//______________________________________________________________________________
+const char *CCluster3D::ImplFileName()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::CCluster3D*)0x0)->GetImplFileName();
+}
+
+//______________________________________________________________________________
+int CCluster3D::ImplFileLine()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::CCluster3D*)0x0)->GetImplFileLine();
+}
+
+//______________________________________________________________________________
+TClass *CCluster3D::Dictionary()
+{
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::CCluster3D*)0x0)->GetClass();
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+TClass *CCluster3D::Class()
+{
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::CCluster3D*)0x0)->GetClass(); }
+   return fgIsA;
+}
+
+//______________________________________________________________________________
 void ND280SFGDHit::Streamer(TBuffer &R__b)
 {
    // Stream an object of class ND280SFGDHit.
@@ -948,6 +1084,72 @@ namespace ROOT {
       ((current_t*)p)->~current_t();
    }
 } // end of namespace ROOT for class ::CHit3D
+
+//______________________________________________________________________________
+void CBond3D::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class CBond3D.
+
+   if (R__b.IsReading()) {
+      R__b.ReadClassBuffer(CBond3D::Class(),this);
+   } else {
+      R__b.WriteClassBuffer(CBond3D::Class(),this);
+   }
+}
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_CBond3D(void *p) {
+      return  p ? new(p) ::CBond3D : new ::CBond3D;
+   }
+   static void *newArray_CBond3D(Long_t nElements, void *p) {
+      return p ? new(p) ::CBond3D[nElements] : new ::CBond3D[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_CBond3D(void *p) {
+      delete ((::CBond3D*)p);
+   }
+   static void deleteArray_CBond3D(void *p) {
+      delete [] ((::CBond3D*)p);
+   }
+   static void destruct_CBond3D(void *p) {
+      typedef ::CBond3D current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class ::CBond3D
+
+//______________________________________________________________________________
+void CCluster3D::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class CCluster3D.
+
+   if (R__b.IsReading()) {
+      R__b.ReadClassBuffer(CCluster3D::Class(),this);
+   } else {
+      R__b.WriteClassBuffer(CCluster3D::Class(),this);
+   }
+}
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_CCluster3D(void *p) {
+      return  p ? new(p) ::CCluster3D : new ::CCluster3D;
+   }
+   static void *newArray_CCluster3D(Long_t nElements, void *p) {
+      return p ? new(p) ::CCluster3D[nElements] : new ::CCluster3D[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_CCluster3D(void *p) {
+      delete ((::CCluster3D*)p);
+   }
+   static void deleteArray_CCluster3D(void *p) {
+      delete [] ((::CCluster3D*)p);
+   }
+   static void destruct_CCluster3D(void *p) {
+      typedef ::CCluster3D current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class ::CCluster3D
 
 namespace ROOT {
    static TClass *vectorlEvectorlEshortgRsPgR_Dictionary();
@@ -1642,6 +1844,132 @@ namespace ROOT {
    }
 } // end of namespace ROOT for class vector<CHit2D>
 
+namespace ROOT {
+   static TClass *vectorlECCluster3DgR_Dictionary();
+   static void vectorlECCluster3DgR_TClassManip(TClass*);
+   static void *new_vectorlECCluster3DgR(void *p = 0);
+   static void *newArray_vectorlECCluster3DgR(Long_t size, void *p);
+   static void delete_vectorlECCluster3DgR(void *p);
+   static void deleteArray_vectorlECCluster3DgR(void *p);
+   static void destruct_vectorlECCluster3DgR(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const vector<CCluster3D>*)
+   {
+      vector<CCluster3D> *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<CCluster3D>));
+      static ::ROOT::TGenericClassInfo 
+         instance("vector<CCluster3D>", -2, "vector", 447,
+                  typeid(vector<CCluster3D>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &vectorlECCluster3DgR_Dictionary, isa_proxy, 4,
+                  sizeof(vector<CCluster3D>) );
+      instance.SetNew(&new_vectorlECCluster3DgR);
+      instance.SetNewArray(&newArray_vectorlECCluster3DgR);
+      instance.SetDelete(&delete_vectorlECCluster3DgR);
+      instance.SetDeleteArray(&deleteArray_vectorlECCluster3DgR);
+      instance.SetDestructor(&destruct_vectorlECCluster3DgR);
+      instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::Pushback< vector<CCluster3D> >()));
+      return &instance;
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const vector<CCluster3D>*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+
+   // Dictionary for non-ClassDef classes
+   static TClass *vectorlECCluster3DgR_Dictionary() {
+      TClass* theClass =::ROOT::GenerateInitInstanceLocal((const vector<CCluster3D>*)0x0)->GetClass();
+      vectorlECCluster3DgR_TClassManip(theClass);
+   return theClass;
+   }
+
+   static void vectorlECCluster3DgR_TClassManip(TClass* ){
+   }
+
+} // end of namespace ROOT
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_vectorlECCluster3DgR(void *p) {
+      return  p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) vector<CCluster3D> : new vector<CCluster3D>;
+   }
+   static void *newArray_vectorlECCluster3DgR(Long_t nElements, void *p) {
+      return p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) vector<CCluster3D>[nElements] : new vector<CCluster3D>[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_vectorlECCluster3DgR(void *p) {
+      delete ((vector<CCluster3D>*)p);
+   }
+   static void deleteArray_vectorlECCluster3DgR(void *p) {
+      delete [] ((vector<CCluster3D>*)p);
+   }
+   static void destruct_vectorlECCluster3DgR(void *p) {
+      typedef vector<CCluster3D> current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class vector<CCluster3D>
+
+namespace ROOT {
+   static TClass *vectorlECBond3DgR_Dictionary();
+   static void vectorlECBond3DgR_TClassManip(TClass*);
+   static void *new_vectorlECBond3DgR(void *p = 0);
+   static void *newArray_vectorlECBond3DgR(Long_t size, void *p);
+   static void delete_vectorlECBond3DgR(void *p);
+   static void deleteArray_vectorlECBond3DgR(void *p);
+   static void destruct_vectorlECBond3DgR(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const vector<CBond3D>*)
+   {
+      vector<CBond3D> *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<CBond3D>));
+      static ::ROOT::TGenericClassInfo 
+         instance("vector<CBond3D>", -2, "vector", 447,
+                  typeid(vector<CBond3D>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &vectorlECBond3DgR_Dictionary, isa_proxy, 4,
+                  sizeof(vector<CBond3D>) );
+      instance.SetNew(&new_vectorlECBond3DgR);
+      instance.SetNewArray(&newArray_vectorlECBond3DgR);
+      instance.SetDelete(&delete_vectorlECBond3DgR);
+      instance.SetDeleteArray(&deleteArray_vectorlECBond3DgR);
+      instance.SetDestructor(&destruct_vectorlECBond3DgR);
+      instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::Pushback< vector<CBond3D> >()));
+      return &instance;
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const vector<CBond3D>*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+
+   // Dictionary for non-ClassDef classes
+   static TClass *vectorlECBond3DgR_Dictionary() {
+      TClass* theClass =::ROOT::GenerateInitInstanceLocal((const vector<CBond3D>*)0x0)->GetClass();
+      vectorlECBond3DgR_TClassManip(theClass);
+   return theClass;
+   }
+
+   static void vectorlECBond3DgR_TClassManip(TClass* ){
+   }
+
+} // end of namespace ROOT
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_vectorlECBond3DgR(void *p) {
+      return  p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) vector<CBond3D> : new vector<CBond3D>;
+   }
+   static void *newArray_vectorlECBond3DgR(Long_t nElements, void *p) {
+      return p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) vector<CBond3D>[nElements] : new vector<CBond3D>[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_vectorlECBond3DgR(void *p) {
+      delete ((vector<CBond3D>*)p);
+   }
+   static void deleteArray_vectorlECBond3DgR(void *p) {
+      delete [] ((vector<CBond3D>*)p);
+   }
+   static void destruct_vectorlECBond3DgR(void *p) {
+      typedef vector<CBond3D> current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class vector<CBond3D>
+
 namespace {
   void TriggerDictionaryInitialization_mydict_Impl() {
     static const char* headers[] = {
@@ -1660,8 +1988,10 @@ namespace {
 extern int __Cling_Autoloading_Map;
 namespace std{inline namespace __1{template <class _Tp> class __attribute__((annotate("$clingAutoload$iosfwd")))  __attribute__((annotate("$clingAutoload$string")))  allocator;
 }}
-class __attribute__((annotate("$clingAutoload$../src/CHit2D.hxx")))  CHit2D;
-class __attribute__((annotate("$clingAutoload$../src/CHit3D.hxx")))  CHit3D;
+class __attribute__((annotate("$clingAutoload$../src/extraClasses/CCluster3D.hxx")))  CCluster3D;
+class __attribute__((annotate("$clingAutoload$../src/extraClasses/CBond3D.hxx")))  CBond3D;
+class __attribute__((annotate("$clingAutoload$../src/extraClasses/CHit2D.hxx")))  CHit2D;
+class __attribute__((annotate("$clingAutoload$../src/extraClasses/CHit3D.hxx")))  CHit3D;
 class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh")))  ND280SFGDHit;
 class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh")))  ND280SFGDVoxel;
 class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh")))  ND280SFGDVoxelSet;
@@ -1687,8 +2017,10 @@ class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/Event.h
 #include "../../src/app/nd280UpEvent/Event.hh"
 #include "../../src/app/nd280UpEvent/Hit.hh"
 
-#include "../src/CHit2D.hxx"
-#include "../src/CHit3D.hxx"
+#include "../src/extraClasses/CHit2D.hxx"
+#include "../src/extraClasses/CHit3D.hxx"
+#include "../src/extraClasses/CBond3D.hxx"
+#include "../src/extraClasses/CCluster3D.hxx"
 
 #include <vector>
 
@@ -1723,12 +2055,21 @@ class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/Event.h
 #pragma link C++ class vector<CHit3D>+;
 #pragma link C++ class vector<CHit2D>+;
 
+#pragma link C++ class CBond3D+;
+#pragma link C++ class vector<CBond3D>+;
+#pragma link C++ class CHit3D+;
+
+#pragma link C++ class CCluster3D+;
+#pragma link C++ class vector<CCluster3D>+;
+
 
 #endif // __CINT__
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";
     static const char* classesHeaders[]={
+"CBond3D", payloadCode, "@",
+"CCluster3D", payloadCode, "@",
 "CHit2D", payloadCode, "@",
 "CHit3D", payloadCode, "@",
 "Event", payloadCode, "@",

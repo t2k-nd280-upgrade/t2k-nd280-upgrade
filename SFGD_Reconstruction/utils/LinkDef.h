@@ -7,8 +7,10 @@
 #include "../../src/app/nd280UpEvent/Event.hh"
 #include "../../src/app/nd280UpEvent/Hit.hh"
 
-#include "../src/CHit2D.hxx"
-#include "../src/CHit3D.hxx"
+#include "../src/extraClasses/CHit2D.hxx"
+#include "../src/extraClasses/CHit3D.hxx"
+#include "../src/extraClasses/CBond3D.hxx"
+#include "../src/extraClasses/CCluster3D.hxx"
 
 #include <vector>
 
@@ -42,6 +44,13 @@
 #pragma link C++ class CHit2D+;
 #pragma link C++ class vector<CHit3D>+;
 #pragma link C++ class vector<CHit2D>+;
+
+#pragma link C++ class CBond3D+;
+#pragma link C++ class vector<CBond3D>+;
+#pragma link C++ class CHit3D+;
+
+#pragma link C++ class CCluster3D+;
+#pragma link C++ class vector<CCluster3D>+;
 
 
 #endif // __CINT__

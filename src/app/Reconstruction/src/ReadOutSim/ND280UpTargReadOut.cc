@@ -166,7 +166,8 @@ void ND280UpTargReadOut::ApplyFiberResponse(double &nphot, double &time, double 
   ApplyFiberAttenuation(nphot,x, DetSize);
 
   // Get the time when the photons reach the MPPC
-  ApplyFiberTime(time,x);
+  ComputeHitTime(time,x,nphot);
+  //ApplyFiberTime(time,x);
   
   return;
 }
@@ -193,7 +194,7 @@ void ND280UpTargReadOut::ApplyFiberAttenuation(double &nphot, double x, double D
 double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize){
   
   // Used for official FGD reconstruction: Eq. (4) in TN-103
-  
+
   double a=0.;        // long attenuation component fraction
   double d=0.;        // distance MPPC-scint outside the bar
   double LongAtt=0.;  // long attenuation length
@@ -205,22 +206,24 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize
   ShortAtt = ShortAtt_FGD;  
 
   double Nphot = Nphot0;
-
 #ifdef ELECSIM
     if (!DetSize){
       std::cout << "ERROR: ND280UpTargReadOut::GetPhotAtt_FGD(): Detector size is not defined." << std::endl;
       exit(1);
     }
 
-    Nphot *= 1. / 2.;
-    Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+    // Nphot *= 1. / 2.;
+    // Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 
-    x += 2. * (2 * DetSize - x);
-    for (int i = 0; i < int(Nphot0/2. + 0.5); ++i) {
-      double rndunif = fRndm->Uniform();
-      if (rndunif < FGDreflection)
-        Nphot += ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
-    }
+    // x += 2. * (2 * DetSize - x);
+    // for (int i = 0; i < int(Nphot0/2. + 0.5); ++i) {
+    //   double rndunif = fRndm->Uniform();
+    //   if (rndunif < FGDreflection)
+    //     Nphot += ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+    // }
+    d=0;
+    //cout << "fact_true: " << ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) ) << endl;
+    Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 #else
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 #endif
@@ -230,25 +233,61 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize
 
 void ND280UpTargReadOut::ApplyFiberTime(double &time, double x)
 {
-  time += TransTimeInFiber*x;
+
+  //add time in fiber
+  time += TransTimeInFiber*x/10;
+}
+
+void ND280UpTargReadOut::ComputeHitTime(double &time, double x, double q)
+{
+
+  bool DEBUG = kFALSE;
+
+  if(DEBUG) cout << "x: " << x << endl;
+  if(DEBUG) cout << "original time: " << time << endl;
+  //add time in fiber
+  time += TransTimeInFiber*x/10;
+  if(DEBUG) cout << "time  after travel: " << time << endl;
+
+  //time walk correction
+  double A = 10.6055;
+  double B = 0.0426767;
+  double C = 4554.06;
+  double D = 538.252;
+  if(DEBUG) cout << "time walk correction: " << A*exp(-B*q) + C/(q+D) << endl;
+  time += A*exp(-B*q) + C/(q+D);
+  if(DEBUG) cout << "time  after time walk: " << time << endl;
+  
+  //smearing
+  double timeResolution = 1.4;
+  double timeSmearing = fRndm->Gaus(0, timeResolution);
+  if(DEBUG) cout << "time  smearing: " << timeSmearing << endl;
+  time+= timeSmearing;
+  if(DEBUG) cout << "smeared time:   " << time << endl;
+
+  // make the time binned:
+  // We will assume time trigger is = 0.
+  // assume 2.5ns sampling time
+
+  double triggerTime = 0.;
+  time -= triggerTime; 
+  int timeBin = int((time+1.25)/2.5);
+  time = 2.5*timeBin;
+  if(DEBUG) cout << "binned time:  " << time << endl;
+
 }
 
 
 void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
 {
-
   double rndunif =0.;
   double npe_passed = 0.;
-  
   int npe_integer = (int) (npe+0.5);
-  
   for (int i=0;i<npe_integer;i++){
     rndunif = fRndm->Uniform();
     if (rndunif < MPPCEff_SuperFGD) npe_passed++;
   }
-  
   npe = npe_passed;
-  
   return;
 }
 
