@@ -1,5 +1,5 @@
 # CMake files
-Makefile
+#Makefile
 build/app/*
 build/CMakeFiles
 CMakeCache.txt
