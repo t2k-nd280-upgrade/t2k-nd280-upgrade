@@ -230,7 +230,7 @@ ND280SFGDEvent* Reconstruct(vector <ND280SFGDHit*> listOfHits, vector <ND280SFGD
     RecoEvent->SetVoxels(listOfVoxels);
     RecoEvent->SetHits(newListOfHits);
 
-    //if (SHOW_RECO) RecoEvent->DrawHits(kTRUE,kTRUE,"cc2");
+    if (SHOW_RECO) RecoEvent->DrawHits(kTRUE,kTRUE,"cc2");
 
     //RecoEvent->SetTracks(listOfTracks);
     //RecoEvent->DrawVoxels(kTRUE,kFALSE,1,0);

@@ -80,6 +80,10 @@ void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, 
     hXZ->GetZaxis()->SetRangeUser(0.1,1.05*Qmax2);
     hYZ->GetZaxis()->SetRangeUser(0.1,1.05*Qmax3);
 
+    // hXY->GetZaxis()->SetRangeUser(0.1,25);
+    // hXZ->GetZaxis()->SetRangeUser(0.1,25);
+    // hYZ->GetZaxis()->SetRangeUser(0.1,25);
+
     cc->cd(1);
     hXY->Draw("COLZ");
     hXY->GetXaxis()->SetRangeUser(minX-tolerance,maxX+tolerance);

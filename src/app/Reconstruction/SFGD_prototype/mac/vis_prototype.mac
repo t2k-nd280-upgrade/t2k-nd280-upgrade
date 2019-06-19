@@ -15,16 +15,16 @@
 /generator/type ParticleGun
         
 # Set the particle gun 
-/gun/particle pi+
-/gun/energy 800 MeV  # kinetic energy
-#/gun/momentum  0 0 0.4 GeV # momentum
+/gun/particle e-
+#/gun/energy 800 MeV  # kinetic energy
+/gun/momentum  0 0 0.75 GeV # momentum
 /gun/direction 0 0 1 # momentum direction     
-#/gun/position  5 5 -400 mm  # starting position
-/gun/position  0 0 0 mm  # starting position
+/gun/position  0 0 -300 mm  # starting position
+#/gun/position  0 0 0 mm  # starting position
 #/gun/position  0 0 -3000 mm  # starting position
 /gun/number   1      # number of particles
 
-#/generator/typedir Uniform
+/generator/typedir Gaus
 
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:

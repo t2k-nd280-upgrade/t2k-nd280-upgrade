@@ -85,8 +85,8 @@ void ComputeVoxelCharge_version0(vector <ND280SFGDVoxel*> listOfVoxels){
             }
             gHits->push_back(voxel);
         }
-    cout << "alive" << endl;
     CSharedCharge(gHits,gHitsYZ,gHitsXZ,gHitsXY,listOfVoxels);
+    cout << "alive" << endl;
 
     // for(UInt_t i=0; i<listOfVoxels.size(); i++){
     //     cout << listOfVoxels[i]->GetHits()[0]->GetMultiplicity() << endl;

@@ -36,7 +36,11 @@ void applyReconstruction() {
     Int_t dataType   = 0; // 0 for MC, 1 for beam test Data. 
 
     TString fileIn;
-    if(!dataType)  fileIn   = "/Users/cjesus/Desktop/MC_output.root";
+    //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/MC_output.root";
+    //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_proton.root";
+    if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_piplus.root";
+    if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_electron.root";
+
     //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/newXtalk_MC_output.root";
     //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/noCT_MC_output.root";
     //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/smallSFGD_output.root";

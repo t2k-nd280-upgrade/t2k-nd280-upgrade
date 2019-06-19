@@ -7,9 +7,9 @@ set s=1
 set name="/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype/SFGD_MC_-0-Exp0-Nexpt1000.root"
 
       while ($j < $s)
-      echo " $T2KND280UP/src/app/Reconstruction/SFGD_prototype/submit/submit_nd280upgrade_targetreco --softw-dir $T2KND280UP --job-dir $PWD  --resource interactive --nexpts $n --nruns $f --inputfile ${name}"
+      echo " $T2KND280UP/src/app/Reconstruction/SFGD_reco_input/submit/submit_nd280upgrade_targetreco --softw-dir $T2KND280UP --job-dir $PWD  --resource interactive --nexpts $n --nruns $f --inputfile ${name}"
 
-      $T2KND280UP/src/app/Reconstruction/SFGD_prototype/submit/submit_nd280upgrade_targetreco --softw-dir $T2KND280UP --job-dir $PWD  --resource interactive --nexpts $n --nruns $f --inputfile ${name}
+      $T2KND280UP/src/app/Reconstruction/SFGD_reco_input/submit/submit_nd280upgrade_targetreco --softw-dir $T2KND280UP --job-dir $PWD  --resource interactive --nexpts $n --nruns $f --inputfile ${name}
 
       @ j = $j + 1
       end

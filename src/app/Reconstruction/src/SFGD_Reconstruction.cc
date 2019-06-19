@@ -645,6 +645,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
         listOfHit = newListOfHits;
         newListOfHits.clear();
 
+/*
         // ADD CROSSTALK HITS:
         for(UInt_t hidx=0; hidx<listOfHit.size(); hidx++){
 
@@ -739,7 +740,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
         for(UInt_t ahit=0; ahit<crosstalkHits.size(); ahit++){
             if(crosstalkHits[ahit]->GetCharge() >= 1) listOfHit.push_back(crosstalkHits[ahit]);
         }
-        
+*/     
         cout << "# of hits including crosstalk: " << listOfHit.size() << endl;
 
         cout << "total # of voxels: " << listOfVoxels.size() << endl;   
