@@ -111,7 +111,7 @@ while($irun < $nruns) { # loop over the jobs
  
    
 
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
+    $arguments = "$softw_dir/build/app/Reconstruction/ReconstructionApp $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
     $command = "$arguments";
     
     print "\n";
@@ -140,7 +140,7 @@ while($irun < $nruns) { # loop over the jobs
     }
     if($resource eq "parallel") {
         $inputfile_new = "$inputfile-Exp$evt_first-Nexpt$nexpts.root";
-        $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile_new 0 $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
+        $arguments = "$softw_dir/new_build/app/Reconstruction/ReconstructionApp $inputfile_new 0 $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
         print par_file "$arguments; echo \"job $irun from $nruns done\" \n";
         print "Parallel\n";
         print "$arguments\n";
@@ -152,7 +152,7 @@ while($irun < $nruns) { # loop over the jobs
 
 if($resource eq "parallel") {
     close(par_file);
-    $run_command = "nice -n19 parallel -j 10 -a $job_dir/commands_reco.sh";
+    $run_command = "nice -n19 parallel -j 15 -a $job_dir/commands_reco.sh";
     print "running parallel \n";
     system($run_command);
     unlink "$job_dir/commands_reco.sh";

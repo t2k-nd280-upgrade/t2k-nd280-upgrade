@@ -7,6 +7,8 @@
 #include "TGraphAsymmErrors.h"
 #include "TCanvas.h"
 #include "TRandom3.h"
+#include "TMultiGraph.h"
+#include "TLegend.h"
 
 #include <iostream>
 
@@ -15,18 +17,18 @@ const float MIP_LY_AV3 = 40;
 using namespace std;
 
 void neutron_merge() {
-  TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v20-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+  TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v21-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
 
   const Int_t Ndist = 9;
   float distance_cut[Ndist];
-  distance_cut[0] = 10.;
-  distance_cut[1] = 20.;
-  distance_cut[2] = 30.;
-  distance_cut[3] = 40.;
-  distance_cut[4] = 50.;
-  distance_cut[5] = 60.;
-  distance_cut[6] = 70.;
-  distance_cut[7] = 0.;
+  distance_cut[0] = 0.;
+  distance_cut[1] = 10.;
+  distance_cut[2] = 20.;
+  distance_cut[3] = 30.;
+  distance_cut[4] = 40.;
+  distance_cut[5] = 50.;
+  distance_cut[6] = 60.;
+  distance_cut[7] = 70.;
   // 50 - 100 cm
   distance_cut[8] = 100.;
 
@@ -85,8 +87,8 @@ void neutron_merge() {
   TH1F* hits_cl_XZ = (TH1F*)file->Get("hitsN_XZ");
   TH1F* hits_cl_YZ = (TH1F*)file->Get("hitsN_YZ");
 
-  TH2F* LeverArm_time     = new TH2F("LAvsTime", "time vs Lever arm vs ", 300, 0., 300., 120, 0., 60.);
-  TH2F* LeverArm_time_ly  = new TH2F("LAvsTime_c", "time vs Lever arm vs ", 300, 0., 300., 120, 0., 60.);
+  TH2F* LeverArm_time     = new TH2F("LAvsTime", "time vs Lever arm vs ", 300, 0., 300., 500, -200., 300.);
+  TH2F* LeverArm_time_ly  = new TH2F("LAvsTime_c", "time vs Lever arm vs ", 300, 0., 300., 500, -200., 300.);
 
   TH1F* n_fibers_h        = new TH1F("n_fibers", "number of channels", 500, 0., 500.);
 
@@ -98,7 +100,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v27.root", "RECREATE");
+  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v30.root", "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
@@ -119,6 +121,13 @@ void neutron_merge() {
 
   const Int_t time_size = 7;
   Double_t time_sigma[time_size] = {0., 1.5/sqrt(3), 0.95/sqrt(3), 1.5, 0.95, 1.5, 0.95};
+
+  TMultiGraph* graph_fb = new TMultiGraph();
+  TLegend* leg_fb = new TLegend(0.1,0.7,0.48,0.9);
+  graph_fb->SetName("graph_fiber");
+  TMultiGraph* graph_ly = new TMultiGraph();
+  TLegend* leg_ly = new TLegend(0.1,0.7,0.48,0.9);
+  graph_ly->SetName("graph_lightY");
 
   // read tree several times in order to check
   for (Int_t distID = 0; distID < Ndist; ++distID) {
@@ -180,8 +189,10 @@ void neutron_merge() {
       // fill histo 1 time
       if (distID == 0) {
          
-        Float_t res_l      = 0.95  / sqrt(3);
-        res_l      *= sqrt(3 * MIP_LY_AV3 / light_tot);
+        //Float_t res_l      = 0.95  / sqrt(3);
+        //res_l      *= sqrt(3 * MIP_LY_AV3 / light_tot);
+        Float_t res_l      = 0.95;
+        res_l      *= sqrt(1. / n_fibers);
         Float_t fht = gen->Gaus(first_hit_time, res_l);
         //Float_t fht = first_hit_time;
         LeverArm_time->Fill(dist_cubes, fht);
@@ -211,6 +222,9 @@ void neutron_merge() {
         energy_acc[0]->Fill((ekin2 - ekin) / ekin);
 
       angle_smearing->Fill(dir_true[2], dir_reco[2]);
+
+      Int_t cos_bin = cos_h->FindBin(costheta);
+      energy_resol_cos[0][cos_bin-1]->Fill(ekin, ekin2);
 
       for (Int_t resID = 1; resID < time_size; ++resID ) {
 
@@ -243,14 +257,8 @@ void neutron_merge() {
           if (resID == 3)
             n_fibers_h->Fill(n_fibers);
 
-          ly_fst->Fill(light_fst);
-          ly_max->Fill(light_max);
-          ly_tot->Fill(light_tot);
+          
           time_sigma[resID] = res;
-
-          test_l_e->Fill(ekin, light_tot);
-          test_l_e_n->Fill(ekin);
-          proton_mom->Fill(HM_proton);
         }
 
 
@@ -272,12 +280,19 @@ void neutron_merge() {
 
         energy_resol[resID]->Fill(ekin, ekin2);
         energy_resol_rebin[resID]->Fill(ekin, ekin2);
-        Int_t cos_bin = cos_h->FindBin(costheta);
-        //energy_resol_cos[resID][cos_bin-1]->Fill(ekin, ekin2);
+        cos_bin = cos_h->FindBin(costheta);
+        energy_resol_cos[resID][cos_bin-1]->Fill(ekin, ekin2);
         beta_ekin_sm[resID]->Fill(ekin, beta);
         if (ekin > 70. && ekin < 90.)
           energy_acc[resID]->Fill((ekin2 - ekin) / ekin);
       }
+      ly_fst->Fill(light_fst);
+      ly_max->Fill(light_max);
+      ly_tot->Fill(light_tot);
+
+      test_l_e->Fill(ekin, light_tot);
+      test_l_e_n->Fill(ekin);
+      proton_mom->Fill(HM_proton);
     }
   
     TGraphAsymmErrors* graph[time_size];
@@ -299,7 +314,7 @@ void neutron_merge() {
       graph[resID] = new TGraphAsymmErrors();
       graph[resID]->SetName("smearing_graph");
       graph_resol[resID] = new TGraphAsymmErrors();
-      graph_resol[resID]->SetName("resol_graph");
+      graph_resol[resID]->SetName(Form("%f", distance_cut[distID]));
 
       gStyle->SetOptFit(1);
       for (Int_t i = 2; i <= Nbins; ++i) {
@@ -359,7 +374,21 @@ void neutron_merge() {
 
       graph_resol[resID]->Draw("ap");
       graph_resol[resID]->GetYaxis()->SetRangeUser(0., 0.5);
+
     } // loop over projections to fit
+
+    if (distID < 8) {
+      graph_resol[5]->SetMarkerColor(distID+1);
+      graph_resol[5]->SetLineColor(distID+1);
+      //graph_resol[5]->SetName();
+      graph_fb->Add(graph_resol[5], "p");
+      //leg_fb->Add(graph_resol[5], )
+
+      graph_resol[6]->SetMarkerColor(distID+1);
+      graph_resol[6]->SetLineColor(distID+1);
+      graph_ly->Add(graph_resol[6], "p");
+    }
+
     // draw resolution and efficiency for each distance
     TH2F* eff_e_cos_2 = (TH2F*)eff_e_cos->Clone("eff_ecos2");
 
@@ -474,6 +503,9 @@ void neutron_merge() {
   c1->SetTitle("Analytical resol for > 20 cm. .9, .7, .5, .3 ns time resol");
   c1->Write();
 
+  graph_fb->Write();
+  graph_ly->Write();
+
   init_e_cos->Write();
   eff_e_cos->Write();
   pe_e_cos->Write();
@@ -498,4 +530,6 @@ void neutron_merge() {
 
   file_out->Close();
   file->Close();
+
+  exit(1);
 }

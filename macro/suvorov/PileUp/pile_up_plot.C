@@ -1,6 +1,6 @@
 void pile_up_plot() {
-	TString prefix    = "/t2k/users/suvorov/figure/ndUP/PileUp/";
-  TString file_name = prefix + "plot_sand_muon.root";
+	TString prefix    = "/t2k/users/suvorov/figure/ndUP/PileUp/plot/";
+  TString file_name = prefix + "neutron_4w.root";
   TFile* file       = new TFile(file_name.Data(), "READ");
 
   TCanvas c1("canva","",50,50,1000,800);
@@ -17,5 +17,5 @@ void pile_up_plot() {
   cubes_pileup->SetBinContent(1, 0.);
   cubes_pileup->Draw();
   c1.Print((prefix + "hits.pdf").Data());
-
+  exit(1);
 }

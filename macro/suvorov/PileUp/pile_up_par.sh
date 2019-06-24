@@ -1,7 +1,7 @@
 back=$PWD
-prefix=/t2k/users/suvorov/figure/ndUP/PileUp/
-out_name="plot_sand_muon"
-in_name_def="/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/sand_muon_all_hits-Exp"
+prefix=/t2k/users/suvorov/figure/ndUP/PileUp/plot/
+out_name="neutron_4w"
+in_name_def="/t2k/users/suvorov/AnalysisResults/ndUP/PileUp/G4/neutron_4w_v3/g4_neutron_4w-Exp"
 
 #cd $bars/dev/t2k-nd280-upgrade/macro/suvorov/
 
@@ -15,8 +15,11 @@ first=0
 # 7b - 168 925
 # sand
 # 3  - 689 053
-last=690000
-segm=370
+last=868000
+segm=868
+
+#last=2000
+#segm=2
 
 step=$(((last-first) / segm))
 
@@ -34,7 +37,7 @@ do
   in_name="$in_name_def"
   in_name+="$(((i*1000)))"
   in_name+="-Nexpt1000.root"
-  echo "root -J1 -l -q -b /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+ /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+ /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpHit.cc+ /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+ \"macro/suvorov/pile_up.C(0, $step, $i, \\\"${out_name}\\\", \\\"${in_name}\\\", 0)\"" > $name
+  echo "root -J1 -l -q -b /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrackPoint.cc+ /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpTrack.cc+ /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpVertex.cc+ /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpHit.cc+ /t2k/users/suvorov/dev/t2k-nd280-upgrade/src/app/nd280UpEvent/TND280UpEvent.cc+ \"macro/suvorov/PileUp/pile_up.C(0, $step, $i, \\\"${out_name}\\\", \\\"${in_name}\\\", 0)\"" > $name
   #first=$((first+step))
 
   if [ "$i" -eq "0" ]
@@ -46,13 +49,13 @@ do
 done
 
 echo "Running parallel"
-nice -n19 parallel -j 6 -a $bars/tmp/$name_dir/command.sh
+nice -n19 parallel -j 15 -a $bars/tmp/$name_dir/command.sh
 rm -r $bars/tmp/$name_dir
 
 echo "done"
 
-#hadd -f "$prefix/${out_name}.root" "$prefix/${out_name)}_*"
-#rm "$prefix/${out_name}_"*
+hadd -f "${prefix}/${out_name}.root" "${prefix}/${out_name}_"*
+rm "$prefix/${out_name}_"*
 
 cd $back
 

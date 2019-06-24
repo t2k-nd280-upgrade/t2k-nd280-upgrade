@@ -18,6 +18,7 @@ void GENIE_analyser() {
 
 	TH1F* prot_h = new TH1F("pr_h", "", 200, 0., 5000.);
 	TH1F* muon_h = new TH1F("mu_h", "", 200, 0., 5000.);
+	TH2F* muon_2h = new TH2F("muon_2d", "", 100, -1., 1., 200, 0., 5000.);
 
 	const Int_t StdHepN_max = 300;
 
@@ -41,22 +42,27 @@ void GENIE_analyser() {
 
     Double_t pr_max = 0.;
     Double_t mu_max = 0.;
+    Double_t mu_cos = 0.;
 
 		for (Int_t id = 0; id < StdHepN; ++id) {
 			TVector3 vec(StdHepP4[id][0], StdHepP4[id][1], StdHepP4[id][2]);
 			if (StdHepPdg[id] == 2212 && vec.Mag() > pr_max) {
 				pr_max = vec.Mag();
 			}
-			if (StdHepPdg[id] == 13 && vec.Mag() > mu_max)
+			if (StdHepPdg[id] == 13 && vec.Mag() > mu_max) {
 				mu_max = vec.Mag();
+				mu_cos = cos(vec.Theta());
+			}
 		}
 
 		//cout << pr_max << "  " << mu_max << endl;
 
 		if (pr_max)
 			prot_h->Fill(pr_max * 1000.);
-		if (mu_max)
+		if (mu_max) {
 			muon_h->Fill(mu_max * 1000.);
+			muon_2h->Fill(mu_cos, mu_max * 1000.);
+		}
 	}
 
 	cout << endl;
@@ -64,5 +70,6 @@ void GENIE_analyser() {
 	out_file->cd();
 	prot_h->Write();
 	muon_h->Write();
+	muon_2h->Write();
 	out_file->Close();
 }

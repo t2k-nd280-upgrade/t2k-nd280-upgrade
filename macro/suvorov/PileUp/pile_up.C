@@ -1,7 +1,7 @@
 void pile_up(Int_t first_entry, Int_t Nentries, Int_t run, TString  out_file_name, TString input_file, Int_t use_time) {
   TFile* file = new TFile(input_file.Data(), "READ");
 
-  TString prefix = "/t2k/users/suvorov/figure/ndUP/PileUp/";
+  TString prefix = "/t2k/users/suvorov/figure/ndUP/PileUp/plot/";
 
   TTree* tree = (TTree*)file->Get("ND280upEvents");
   TCanvas c1("canva","",50,50,1000,800);
@@ -78,8 +78,8 @@ void pile_up(Int_t first_entry, Int_t Nentries, Int_t run, TString  out_file_nam
       if (bunch < 0 || bunch > 7) continue;
 
       Int_t bin = h3d[0]->FindBin(posX, posY, posZ);
-      if (!h3d[bunch]->GetBinContent(bin) && !timing) {
-        h3d[bunch]->Fill(posX, posY, posZ);
+      if (!h3d[0]->GetBinContent(bin) && !timing) {
+        h3d[0]->Fill(posX, posY, posZ);
       }
 
       if (!timing) continue;
@@ -99,8 +99,8 @@ void pile_up(Int_t first_entry, Int_t Nentries, Int_t run, TString  out_file_nam
 
 
     } // loop over hit
-    for (Int_t i = 0; i < 8; ++i)
-      cubes_pileup->Fill(h3d[i]->Integral());
+    //for (Int_t i = 0; i < 8; ++i)
+    cubes_pileup->Fill(h3d[0]->Integral());
 
     
   } // loop over events
@@ -111,9 +111,10 @@ void pile_up(Int_t first_entry, Int_t Nentries, Int_t run, TString  out_file_nam
   out_file_name = prefix + "/" + out_file_name + "_";
   out_file_name += run;
   out_file_name += ".root";
+  cout << "Writing to file " << out_file_name << endl;
   TFile* out = new TFile(out_file_name.Data(), "RECREATE");
   cubes_pileup->Write();
   out->Close();
 
-  exit();
+  //exit(1);
 }

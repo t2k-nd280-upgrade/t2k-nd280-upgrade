@@ -164,6 +164,10 @@ int NeutronAnalysis(int argc,char** argv) {
   Int_t first_sc_reco;
   Int_t topology;
   Int_t n_fibers;
+  Int_t n_fibers_not_cut;
+
+  Double_t vertex_pos[3];
+  Double_t hit_pos[3];
 
   outtree->Branch("KinEnergy_true",     &ekin);
   outtree->Branch("CosTheta_true",      &costheta);
@@ -173,11 +177,14 @@ int NeutronAnalysis(int argc,char** argv) {
   outtree->Branch("Light_max",          &light_max);
   outtree->Branch("Light_tot",          &light_tot);
   outtree->Branch("N_fibers",           &n_fibers);
+  outtree->Branch("N_fibers_not_cut",   &n_fibers_not_cut);
   outtree->Branch("Distance_cubes",     &dist_cubes);
   outtree->Branch("Distance_hit_true",  &dist);
   outtree->Branch("First_hit_time",     &first_hit_time);
   outtree->Branch("Neutron_time",       &neutron_time);
   outtree->Branch("Neutron_dist",       &neutron_dist_true);
+  outtree->Branch("Vertex_pos",         vertex_pos, "vertex_pos[3]/D");
+  outtree->Branch("Hit_pos",            hit_pos, "hit_pos[3]/D");
 
   outtree->Branch("First_sc_reco",      &first_sc_reco);
 
@@ -393,6 +400,10 @@ int NeutronAnalysis(int argc,char** argv) {
     Double_t vertex_y = nd280UpEvent->GetVertex(0)->GetPosition().Y();
     Double_t vertex_z = nd280UpEvent->GetVertex(0)->GetPosition().Z();
 
+    vertex_pos[0] = vertex_x;
+    vertex_pos[1] = vertex_y;
+    vertex_pos[2] = vertex_z;
+
     if(DEBUG){
       cout << endl;
       cout << "//////////////////////" << endl;
@@ -466,9 +477,9 @@ int NeutronAnalysis(int argc,char** argv) {
     // artificially fill the vertex activity region considering the worst case
     for (Int_t i = -VERTEX_ACTIVITY/2; i < VERTEX_ACTIVITY/2; ++i) {
       for (Int_t j = -VERTEX_ACTIVITY/2; j < VERTEX_ACTIVITY/2; ++j) {
-        hits_map_XY->Fill(vertex_binX + i, vertex_binY + j, 100.);
-        hits_map_XZ->Fill(vertex_binX + i, vertex_binZ + j, 100.);
-        hits_map_YZ->Fill(vertex_binY + i, vertex_binZ + j, 100.);
+        //hits_map_XY->Fill(vertex_binX + i, vertex_binY + j, 100.);
+        //hits_map_XZ->Fill(vertex_binX + i, vertex_binZ + j, 100.);
+        //hits_map_YZ->Fill(vertex_binY + i, vertex_binZ + j, 100.);
       }
     }
 
@@ -562,6 +573,10 @@ int NeutronAnalysis(int argc,char** argv) {
         dist_cubes = sqrt(  (first_binX - vertex_binX) * (first_binX - vertex_binX) +
                             (first_binY - vertex_binY) * (first_binY - vertex_binY) +
                             (first_binZ - vertex_binZ) * (first_binZ - vertex_binZ) );
+
+        hit_pos[0] = poshitX;
+        hit_pos[1] = poshitY;
+        hit_pos[2] = poshitZ;
 
         hit_pdg = nd280UpHit->GetPDG();
         if (nd280UpHit->GetPrimaryId() < nd280UpEvent->GetNTracks() && nd280UpEvent->GetTrack(nd280UpHit->GetPrimaryId()))
@@ -797,23 +812,43 @@ int NeutronAnalysis(int argc,char** argv) {
     for (Int_t i = 1; i <= hits_map_XY_cluster_N->GetXaxis()->GetNbins(); ++i) {
       for (Int_t j = 1; j <= hits_map_XY_cluster_N->GetYaxis()->GetNbins(); ++j) {
         for (Int_t k = 1; k <= hits_map_XZ_cluster_N->GetYaxis()->GetNbins(); ++k) {
-          double ll = hits_map_XY_cluster->GetBinContent(i, j) +
+          if (hits_map_XY_cluster->GetBinContent(i, j) > light_max)
+            light_max = hits_map_XY_cluster->GetBinContent(i, j);
+          if (hits_map_XZ_cluster->GetBinContent(i, k) > light_max)
+            light_max = hits_map_XZ_cluster->GetBinContent(i, k);
+          if (hits_map_YZ_cluster->GetBinContent(j, k) > light_max)
+            light_max = hits_map_YZ_cluster->GetBinContent(j, k);
+          // was wrong by definition
+          /*double ll = hits_map_XY_cluster->GetBinContent(i, j) +
                       hits_map_XZ_cluster->GetBinContent(i, k) + 
                       hits_map_YZ_cluster->GetBinContent(j, k);
           if (ll > light_max)
-            light_max = ll;
+            light_max = ll;*/
+          /*if (hits_map_YZ_cluster->GetBinContent(j, k) * hits_map_XZ_cluster->GetBinContent(i, k) * hits_map_XY_cluster->GetBinContent(i, j)) {
+            cout << "x:y:z\t" << i << ":" << j << ":" << k << endl;
+            cout << "XY : XZ : YZ\t" << hits_map_XY_cluster->GetBinContent(i, j) << " : " << hits_map_XZ_cluster->GetBinContent(i, k) << " : " << hits_map_YZ_cluster->GetBinContent(j, k) << endl;
+          }*/
         }
       }
     }
 
-    light_tot = hits_map_XY_cluster->Integral() + hits_map_XZ_cluster->Integral() + hits_map_YZ_cluster->Integral();
-    n_fibers  = hits_map_XY_cluster_N_cut->Integral() + hits_map_XZ_cluster_N_cut->Integral() + hits_map_YZ_cluster_N_cut->Integral();
+    light_tot         = hits_map_XY_cluster->Integral() + 
+                        hits_map_XZ_cluster->Integral() + 
+                        hits_map_YZ_cluster->Integral();
+    n_fibers_not_cut  = hits_map_XY_cluster_N->Integral() + 
+                        hits_map_XZ_cluster_N->Integral() + 
+                        hits_map_YZ_cluster_N->Integral();
+    n_fibers          = hits_map_XY_cluster_N_cut->Integral() + 
+                        hits_map_XZ_cluster_N_cut->Integral() + 
+                        hits_map_YZ_cluster_N_cut->Integral();
 
-    if (light_tot < light_fst) {
-      cout << "Tot < fist" << endl;
-      cout << "tot: " << light_tot << "   fst " << light_fst << endl;
-      cout << "proj " << hits_map_XY_cluster->Integral() << "  " << hits_map_XZ_cluster->Integral() << "  " << hits_map_YZ_cluster->Integral() << endl;
-    }
+    //if (light_tot < light_fst) {
+      //cout << "Tot < fist" << endl;
+      /*cout << "tot: \t" << light_tot << "\tfst\t" << light_fst  << "\tmax\t" << light_max << endl;
+      cout << "proj \t" << hits_map_XY_cluster->Integral() << "  " << hits_map_XZ_cluster->Integral() << "  " << hits_map_YZ_cluster->Integral() << endl;
+      cout << "proj N \t" << hits_map_XY_cluster_N->Integral() << "  " << hits_map_XZ_cluster_N->Integral() << "  " << hits_map_YZ_cluster_N->Integral() << endl;
+      cout << "proj N cut \t" << hits_map_XY_cluster_N_cut->Integral() << "  " << hits_map_XZ_cluster_N_cut->Integral() << "  " << hits_map_YZ_cluster_N_cut->Integral() << endl;*/
+    //}
 
     TVector3 reco_vec(first_binX - vertex_binX, first_binY - vertex_binY, first_binZ - vertex_binZ);
     reco_vec    = reco_vec.Unit();
