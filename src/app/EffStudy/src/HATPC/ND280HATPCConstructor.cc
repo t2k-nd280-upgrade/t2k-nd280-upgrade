@@ -65,8 +65,8 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     // G4String parentname = GetHATPCParentName();
     // G4String name = GetHATPCName();
 
-    G4LogicalVolume *logVolume;
-    G4LogicalVolume *driftVolume;
+    G4LogicalVolume *logVolume    = NULL;
+    G4LogicalVolume *driftVolume  = NULL;
 
     fHATPCWidth = GetHATPCWidth();
     fHATPCHeight = GetHATPCHeight();

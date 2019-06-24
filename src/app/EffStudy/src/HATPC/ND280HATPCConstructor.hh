@@ -109,9 +109,7 @@ public:
     double GetActiveHATPCVerticalOffset(void) { return fActiveHATPCVerticalOffset; }
 
 private:
-    G4String fHATPCParentName;
-    G4String fHATPCName;
-    G4String fHATPCFCName;
+    
 
     // Visible pieces
     G4bool fVisible;
@@ -138,6 +136,10 @@ private:
 
     double fHATPCSteppingLimit;
     double fActiveHATPCVerticalOffset;
+
+    G4String fHATPCParentName;
+    G4String fHATPCName;
+    G4String fHATPCFCName;
 
     G4ThreeVector tpcMMTrans[2][12];
     G4RotationMatrix *tpcMMRot[2][12];
