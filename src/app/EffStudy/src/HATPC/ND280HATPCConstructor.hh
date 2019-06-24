@@ -18,10 +18,8 @@ class G4LogicalVolume;
 class ND280HATPCConstructor : public ND280Constructor
 {
 public:
-    ND280HATPCConstructor(G4String n, ExN02DetectorConstruction *c)
-        : ND280Constructor(n, c) { Init(); };
-    ND280HATPCConstructor(G4String n, ND280Constructor *p)
-        : ND280Constructor(n, p) { Init(); };
+    ND280HATPCConstructor(G4String n, ExN02DetectorConstruction *c);
+    ND280HATPCConstructor(G4String n, ND280Constructor *p);
     virtual ~ND280HATPCConstructor();
 
     /// Construct and return a G4 volume for the object.  This is a pure
@@ -110,15 +108,15 @@ public:
     /// Get the ActiveHATPCVerticalOffset of the HATPC detector
     double GetActiveHATPCVerticalOffset(void) { return fActiveHATPCVerticalOffset; }
 
-    /// Method to build the TPC Central Cathode.
-    void BuildHATPCCentralCathode(G4LogicalVolume *v, double t);
-    /// Method to build the HATPC Cages.
-    void BuildHATPCCages(G4LogicalVolume *v);
-
 private:
-    G4String fHATPCParentName;
-    G4String fHATPCName;
-    G4String fHATPCFCName;
+    
+
+    // Visible pieces
+    G4bool fVisible;
+
+    double fBoxXsize;
+    double fBoxYsize;
+    double fBoxZsize;
 
     //Size of the HATPC
     double fHATPCWidth;
@@ -139,13 +137,33 @@ private:
     double fHATPCSteppingLimit;
     double fActiveHATPCVerticalOffset;
 
+    G4String fHATPCParentName;
+    G4String fHATPCName;
+    G4String fHATPCFCName;
+
     G4ThreeVector tpcMMTrans[2][12];
     G4RotationMatrix *tpcMMRot[2][12];
     G4ThreeVector tpcMMRotAxis;
 
     //bool DebugHATPCMass;
 
-    void Init(void);
+    /// Method to build the FC geometry
+    void BuildFCGeometry(G4LogicalVolume *logVolume, double &FCthickness);
+    /// Method to build the Nexus geometry (depreciated)
+    void BuildNexusGeometry(G4LogicalVolume *logVolume, double &FCthickness);
+    /// Method to build the GFiber geometry (depreciated)
+    void BuildGFiberGeometry(G4LogicalVolume *logVolume, double &FCthickness);
+    /// Method to build the Solid geometry (depreciated)
+    void BuildSolidGeometry(G4LogicalVolume *logVolume, double &FCthickness);
+    /// Method to build the drift volume
+    void BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *driftVolume, double &FCthickness);
+    /// Method to build the Micromegas volumes
+    void BuildMicromegasVolume();
+
+    /// Method to build the TPC Central Cathode.
+    void BuildHATPCCentralCathode(G4LogicalVolume *v, double  t);
+    /// Method to build the HATPC Cages.
+    void BuildHATPCCages(G4LogicalVolume *v);
 
     //  ExN02ND280XML *fND280XMLInput;
 };
