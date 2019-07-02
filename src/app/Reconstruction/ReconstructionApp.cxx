@@ -1,22 +1,59 @@
-// #include "TrackReconstruction.hh"
-// #include "LightYield.hh"
-// #include "NeutronAnalysis.hh"
-// #include "StoppingProton.hh"
-// #include "PrototypeMC.hh"
+#include "TrackReconstruction.hh"
+#include "LightYield.hh"
+#include "NeutronAnalysis.hh"
+#include "StoppingProton.hh"
+#include "PrototypeMC.hh"
 #include "SFGD_Reconstruction.hh"
+
+#include <iostream>
+
+/** @brief Method that transforms a const char into int (useful for switch logic) */
+constexpr unsigned int
+str2int(const char *str, int h = 0)
+{
+    return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
+}
 
 int main(int argc, char **argv)
 {
-    // 1) leave one or several analysis uncommented
-    // 2) recompile
-    // 3) run
+    if (argc < 2)
+    {
+        std::cout << "Missing option: trackrecon, lightyield, neutron, stopproton, protomc, sfgrrecon" << std::endl;
+        return 1;
+    }
 
-    //TrackReconstruction(argc, argv);
-    //LightYield(argc, argv);
-    //NeutronAnalysis(argc, argv);
-    //StoppingProton(argc, argv);
-    //PrototypeMC(argc, argv);
-    SFGD_Reconstruction(argc, argv);
+    char **subArgv = new char *[argc - 1];
+    subArgv[0] = argv[0];
+    // Skip 2nd argument which is the main option
+    for (int i = 2; i < argc; i++)
+    {
+        subArgv[i - 1] = argv[i];
+    }
+
+    switch (str2int(argv[1]))
+    {
+    case str2int("trackrecon"):
+        TrackReconstruction(argc - 1, subArgv);
+        break;
+    case str2int("lightyield"):
+        LightYield(argc - 1, subArgv);
+        break;
+    case str2int("neutron"):
+        NeutronAnalysis(argc - 1, subArgv);
+        break;
+    case str2int("stopproton"):
+        StoppingProton(argc - 1, subArgv);
+        break;
+    case str2int("protomc"):
+        PrototypeMC(argc - 1, subArgv);
+        break;
+    case str2int("sfgrrecon"):
+        SFGD_Reconstruction(argc - 1, subArgv);
+        break;
+    default:
+        std::cerr << "Usage: ReconstructionApp <option> <arguments...>\nOption: trackrecon, lightyield, neutron, stopproton, protomc, sfgrrecon" << std::endl;
+        return 0;
+    }
 
     return 1;
 }
