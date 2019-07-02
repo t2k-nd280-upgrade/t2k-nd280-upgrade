@@ -1,29 +1,62 @@
 # T2K ND280 upgrade simulation package
 
-## Installation
+## Installation via cmake
+
+1. Inside this folder, create an "installation" folder
+
+```bash
+mkdir build; cd build
+```
+
+1. Run the installation
+
+```bash
+cmake ../src
+make -j3
+make install
+```
+
+The last command (`make install`) will create the executables, libraries etc and place them into the `build folder`.
+If for some reasons (clean-ness, for example) you wish to move the result of the installation (bin, include, lib) elsewhere, run (instead of `cmake ../src`)
+
+```bash
+cmake -DCMAKE_INSTALL_PREFIX=<path/to/new/location> ../src
+```
+
+## Installation (OLD -- POTENTIALLY DEPRECIATED)
+
+(Now using cmake FindPackage to find ROOT, GEANT4, so no need to setup environment variables)
 
 1. At T2KND280Up_CLHEP.sh specify 4 correct paths at the beginning of the file:
+
 ```bash
 export GEANT4_DIR=
 export CLHEP_DIR=
 export CMT_DIR=
 export ROOT_DIR=
 ```
+
 all the other paths will be assigned automatically. CLHEP could be taken from the GEANT4 installation. CMT is really necessary only if you will use highland. For the G4 sim and read out the CMT installation is not obligate.
 
-2. Run 
+1. Run 
+
 ```bash
 source T2KND280Up_CLHEP.sh $PWD
 ```
-3. Configure the cmake installation
+
+1. Configure the cmake installation
+
 ```bash
 mkdir build_dir; cd builddir;
 cmake t2k-nd280-upgrade/src/;
 ```
-4. Run the installation
+
+1. Run the installation
+
 ```bash
 make
 ```
+
 We strongly recomend use multicore compilation for speed up, e.g. `make -J6`
 
 ## Run the code
