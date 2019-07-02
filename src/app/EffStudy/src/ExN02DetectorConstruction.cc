@@ -2122,6 +2122,7 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
         SetHATPCUpPos(x, y, z);
 
         logicHATPCUp = fHATPCUpConstructor->GetPiece();
+        cout << "LOGIC NAME -> " << logicHATPCUp->GetName() << endl;
 
         new G4PVPlacement(0,
                           GetHATPCUpPos(),
@@ -2131,7 +2132,7 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
                           false,
                           0);
 
-        cout << "LOGIC NAME: " << logicHATPCUp->GetName() << endl;
+        // cout << "LOGIC NAME: " << logicHATPCUp->GetName() << endl;
     }
 
     //

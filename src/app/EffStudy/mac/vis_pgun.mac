@@ -61,10 +61,10 @@
 /generator/typegun FCTest
 
 # viewing in a VRML viewer:
-#/vis/open VRML2FILE
+/vis/open VRML2FILE
 
 # Draw geometry:
-#/vis/drawVolume
+/vis/drawVolume
 
 # Set the particle gun 
 #/gun/particle pi+

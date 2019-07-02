@@ -289,6 +289,9 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     BuildHATPCCentralCathode(driftVolume, FCthickness);
     // BuildHATPCCages(logGasGap);
 
+    G4cout << "\n-----------------------------DONE-------------------------------\n";
+
+
     return logVolume;
 }
 
