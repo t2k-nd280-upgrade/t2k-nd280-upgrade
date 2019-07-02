@@ -1,6 +1,6 @@
 # T2K ND280 upgrade simulation package
 
-## Installation via cmake
+## Installation
 
 1. Inside this folder, create an "installation" folder
 
