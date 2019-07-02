@@ -66,6 +66,23 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     // G4String name = GetHATPCName();
 
     G4LogicalVolume *logVolume    = NULL;
+
+    // Volumes
+
+    // Only logVolume for the HATPC.
+    // No G4PVPlacement for logVolume in HATPCConstructor.
+    // The HATPCs are placed in DetectorConstruction (Up and Down).
+
+    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
+                                              fHATPCWidth / 2.,
+                                              fHATPCHeight / 2.,
+                                              fHATPCLength / 2.),
+                                    FindMaterial("Galactic"),
+                                    GetHATPCParentName() + "/" + GetHATPCName());
+    logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
+    if (fVisible != true)
+        logVolume->SetVisAttributes(G4VisAttributes::Invisible);
+
     G4LogicalVolume *driftVolume  = NULL;
 
     fHATPCWidth = GetHATPCWidth();
@@ -104,192 +121,86 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
         BuildSolidGeometry(logVolume, FCthickness);
     }
 
-    ///////////////
-    ///////////////
-    ///////////////
+//     ///////////////
+//     ///////////////
+//     ///////////////
 
     BuildDriftVolume(logVolume, driftVolume, FCthickness);
     BuildMicromegasVolume();
 
-    // add 12 Micromegas Modules to readout-plane
+//     double layer1thickness = 0.05 * CLHEP::mm; //Katpon
+//     double layer2thickness = 0.1 * CLHEP::mm;  // Copper
+//     double layer3thickness = 2.0 * CLHEP::mm;  // Kevlar
+//     double layer4thickness = 25.0 * CLHEP::mm; // Aramid HoneyComb
+//     double layer5thickness = 2.0 * CLHEP::mm;  // Kevlar
+//     double layer6thickness = 0.15 * CLHEP::mm; //Katpon
+//     double layer7thickness = 0.1 * CLHEP::mm;  // Copper
 
-    /*  
-  double mmWidth  = 38*CLHEP::cm;
-  double mmHeight = 33.61*CLHEP::cm;
-  double mmLength = width;
-  
-  G4LogicalVolume* logMM
-    = new G4LogicalVolume(new G4Box("MicromegasModule",
-				    mmWidth/2.,
-				    mmHeight/2.,
-				    mmLength/2.),
-			  FindMaterial("GasMixtureTPC"),
-			  parentname+"/"+name+"/MM");
-  
+//     std::setprecision(2);
 
-  G4VisAttributes* visual = new G4VisAttributes();
-  visual->SetColor(0.1,0.6,0.1,1);
-  logMM->SetVisAttributes(visual);
+//     G4cout << "\n------------------------------------------------------------"
+//            << "\n\n The Field Cage Wall is made of: \n ";
+//     G4cout << layer1thickness << "mm of " << FindMaterial("G4_KAPTON")->GetName() << " with a Radiation Length of " << (100 * layer1thickness) / FindMaterial("G4_KAPTON")->GetRadlen() << "%"
+//                                                                                                                                                                                            "\n"
+//            << " + ";
+//     G4cout << layer2thickness << "mm of " << FindMaterial("Copper")->GetName() << " with a Radiation Length of " << (100 * layer2thickness) / FindMaterial("Copper")->GetRadlen() << "%"
+//                                                                                                                                                                                      "\n"
+//            << " + ";
+//     G4cout << layer3thickness << "mm of " << FindMaterial("G4_KEVLAR")->GetName() << " with a Radiation Length of " << (100 * layer3thickness) / FindMaterial("G4_KEVLAR")->GetRadlen() << "%"
+//                                                                                                                                                                                            "\n"
+//            << " + ";
+//     G4cout << layer4thickness << "mm of " << FindMaterial("NOMEX")->GetName() << " with a Radiation Length of " << (100 * layer4thickness) / FindMaterial("NOMEX")->GetRadlen() << "%"
+//                                                                                                                                                                                    "\n"
+//            << " + ";
+//     G4cout << layer5thickness << "mm of " << FindMaterial("G4_KEVLAR")->GetName() << " with a Radiation Length of " << (100 * layer5thickness) / FindMaterial("G4_KEVLAR")->GetRadlen() << "%"
+//                                                                                                                                                                                            "\n"
+//            << " + ";
+//     G4cout << layer6thickness << "mm of " << FindMaterial("G4_KAPTON")->GetName() << " with a Radiation Length of " << (100 * layer6thickness) / FindMaterial("G4_KAPTON")->GetRadlen() << "%"
+//                                                                                                                                                                                            "\n"
+//            << " + ";
+//     G4cout << layer7thickness << "mm of " << FindMaterial("Copper")->GetName() << " with a Radiation Length of " << (100 * layer7thickness) / FindMaterial("Copper")->GetRadlen() << "%"
+//                                                                                                                                                                                      "\n";
 
-  // Initialize all translations and rotations to 0.
-  for (int rp = 0; rp < 2; rp++)
-    {
-      for (int imm = 0; imm < 12; imm++)
-	{
-	  tpcMMTrans[rp][imm] = G4ThreeVector(0., 0., 0.);
-	  tpcMMRot[rp][imm] = new G4RotationMatrix (G4ThreeVector(0, 0, 1), 0);
-	}
-    }
-  // Define the rotation axis to +x in TPC coordinate system (+z in the interface).
-  tpcMMRotAxis = G4ThreeVector(0, 0, 1);
+//     G4cout << "\n------------------------------------------------------------\n";
 
-  int nmod = 8;
-  double xMM = 208*CLHEP::mm;
-  double yMM = 173*CLHEP::mm;  
-  double xmod[8] = {  3*xMM ,  3*xMM ,  xMM , xMM ,
-		       -xMM ,   -xMM ,  -3*xMM , -3*xMM };
-  
-  double ymod[8] = {  yMM ,  -yMM ,  yMM ,  -yMM ,
-		      yMM ,  -yMM ,  yMM ,  -yMM  };
-  
-  // Translations and rotations get applied in this version
-  // Placement in first readout plane
-  for (int imod=0; imod<nmod; imod++ ) {
-    
-    if ( imod < 4 ) {
-      new G4PVPlacement(tpcMMRot[0][imod],
-			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(), 0.),
-			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf0,
-			false,
-			imod);
-    }
-    else {
-      tpcMMRot[0][imod]->rotateZ(180.0*CLHEP::deg);
-      new G4PVPlacement(tpcMMRot[0][imod],
-			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(),0.),
-			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf0,
-			false,
-			imod);
-    }
-  }
-  // Placement in second readout plane
-  for (int imod=0; imod<nmod; imod++ ) {
-    
-    if ( imod < 4 ) {
-      new G4PVPlacement(tpcMMRot[1][imod],
-			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
-			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf1,
-			false,
-			imod);
-    }
-    else {
-      tpcMMRot[1][imod]->rotateZ(180.0*CLHEP::deg);
-      new G4PVPlacement(tpcMMRot[1][imod],
-			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
-			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf1,
-			false,
-			imod);
-    }
-  }
-*/
-    /*
-  if (DebugHATPCMass){
-    G4cout << "DriftGas (2) mass="<<logHalf0->GetMass()/CLHEP::kg<<" kg" << G4endl;
-    G4cout << "FC mass="<<(loglayer1->GetMass()+loglayer2->GetMass()+loglayer3->GetMass()+loglayer4->GetMass()+loglayer5->GetMass()+loglayer6->GetMass()+loglayer7->GetMass()+loglayer8->GetMass())/CLHEP::kg<<" kg" << G4endl;
-    G4cout << "MM (8) mass="<<logMM->GetMass()/CLHEP::kg<<" kg" << G4endl;
-    G4cout << "Sum of gases and MM :"<< (2*logHalf0->GetMass()+8*logMM->GetMass()+loglayer1->GetMass()+loglayer2->GetMass()+loglayer3->GetMass()+loglayer4->GetMass()+loglayer5->GetMass()+loglayer6->GetMass()+loglayer7->GetMass()+loglayer8->GetMass())/CLHEP::kg << " kg" << G4endl;
-  }
-*/
+//     G4cout << " Kapton radiation Length of " << FindMaterial("G4_KAPTON")->GetRadlen() << " cm"
+//                                                                                           "\n";
+//     G4cout << " Copper radiation Length of " << FindMaterial("Copper")->GetRadlen() << " cm"
+//                                                                                        "\n";
+//     G4cout << " Kevlar radiation Length of " << FindMaterial("G4_KEVLAR")->GetRadlen() << " cm"
+//                                                                                           "\n";
+//     G4cout << " Nomex Honeycomb radiation Length of " << FindMaterial("NOMEX")->GetRadlen() << " cm"
+//                                                                                                "\n";
 
-    double layer1thickness = 0.05 * CLHEP::mm; //Katpon
-    double layer2thickness = 0.1 * CLHEP::mm;  // Copper
-    double layer3thickness = 2.0 * CLHEP::mm;  // Kevlar
-    double layer4thickness = 25.0 * CLHEP::mm; // Aramid HoneyComb
-    double layer5thickness = 2.0 * CLHEP::mm;  // Kevlar
-    double layer6thickness = 0.15 * CLHEP::mm; //Katpon
-    double layer7thickness = 0.1 * CLHEP::mm;  // Copper
+//     // if(extragap3Material->GetName() != "Galactic"){
+//     //   G4cout << extragap3Thickness/mm << "mm of " << extragap3Material->GetName() << " with a Radiation Length of " << (100*extragap3Thickness/mm)/extragap3Material->GetRadlen () << "%" "\n"
+//     //          << " + "; }
+//     // if(extragap4Material->GetName() != "Galactic"){
+//     //   G4cout << extragap4Thickness/mm << "mm of " << extragap4Material->GetName() << " with a Radiation Length of " << (100*extragap4Thickness/mm)/extragap4Material->GetRadlen () << "%" "\n"
+//     //          << " + "; }
+//     // if(extragap5Material->GetName() != "Galactic"){
+//     //   G4cout << extragap5Thickness/mm << "mm of " << extragap5Material->GetName() << " with a Radiation Length of " << (100*extragap5Thickness/mm)/extragap5Material->GetRadlen () << "%" "\n"
+//     //          << " + "; }
+//     // if(extragap6Material->GetName() != "Galactic"){
+//     //   G4cout << extragap6Thickness/mm << "mm of " << extragap6Material->GetName() << " with a Radiation Length of " << (100*extragap6Thickness/mm)/extragap6Material->GetRadlen () << "%" "\n"
+//     //          << " + "; }
+//     // if(extragap7Material->GetName() != "Galactic"){
+//     //   G4cout << extragap7Thickness/mm << "mm of " << extragap7Material->GetName() << " with a Radiation Length of " << (100*extragap7Thickness/mm)/extragap7Material->GetRadlen () << "%" "\n"
+//     //          << " + "; }
+//     // if(extragap8Material->GetName() != "Galactic"){
+//     //   G4cout << extragap8Thickness/mm << "mm of " << extragap8Material->GetName() << " with a Radiation Length of " << (100*extragap8Thickness/mm)/extragap8Material->GetRadlen () << "%" << "\n"
+//     //          << " + "; }
+//     // if(extragap9Material->GetName() != "Galactic"){
+//     //   G4cout << extragap9Thickness/mm << "mm of " << extragap9Material->GetName() << " with a Radiation Length of " << (100*extragap9Thickness/mm)/extragap9Material->GetRadlen () << "%"<< "\n"
+//     //          << " + "; }
+//     // if(extragap10Material->GetName() != "Galactic"){
+//     //   G4cout << extragap10Thickness/mm << "mm of " << extragap10Material->GetName() << " with a Radiation Length of " << (100*extragap10Thickness/mm)/extragap10Material->GetRadlen () << "%" << "\n";}
+//     G4cout << "\n------------------------------------------------------------\n";
 
-    std::setprecision(2);
+    // BuildHATPCCentralCathode(driftVolume, FCthickness);
+//     // BuildHATPCCages(logGasGap);
 
-    G4cout << "\n------------------------------------------------------------"
-           << "\n\n The Field Cage Wall is made of: \n ";
-    G4cout << layer1thickness << "mm of " << FindMaterial("G4_KAPTON")->GetName() << " with a Radiation Length of " << (100 * layer1thickness) / FindMaterial("G4_KAPTON")->GetRadlen() << "%"
-                                                                                                                                                                                           "\n"
-           << " + ";
-    G4cout << layer2thickness << "mm of " << FindMaterial("Copper")->GetName() << " with a Radiation Length of " << (100 * layer2thickness) / FindMaterial("Copper")->GetRadlen() << "%"
-                                                                                                                                                                                     "\n"
-           << " + ";
-    G4cout << layer3thickness << "mm of " << FindMaterial("G4_KEVLAR")->GetName() << " with a Radiation Length of " << (100 * layer3thickness) / FindMaterial("G4_KEVLAR")->GetRadlen() << "%"
-                                                                                                                                                                                           "\n"
-           << " + ";
-    G4cout << layer4thickness << "mm of " << FindMaterial("NOMEX")->GetName() << " with a Radiation Length of " << (100 * layer4thickness) / FindMaterial("NOMEX")->GetRadlen() << "%"
-                                                                                                                                                                                   "\n"
-           << " + ";
-    G4cout << layer5thickness << "mm of " << FindMaterial("G4_KEVLAR")->GetName() << " with a Radiation Length of " << (100 * layer5thickness) / FindMaterial("G4_KEVLAR")->GetRadlen() << "%"
-                                                                                                                                                                                           "\n"
-           << " + ";
-    G4cout << layer6thickness << "mm of " << FindMaterial("G4_KAPTON")->GetName() << " with a Radiation Length of " << (100 * layer6thickness) / FindMaterial("G4_KAPTON")->GetRadlen() << "%"
-                                                                                                                                                                                           "\n"
-           << " + ";
-    G4cout << layer7thickness << "mm of " << FindMaterial("Copper")->GetName() << " with a Radiation Length of " << (100 * layer7thickness) / FindMaterial("Copper")->GetRadlen() << "%"
-                                                                                                                                                                                     "\n";
-
-    G4cout << "\n------------------------------------------------------------\n";
-
-    G4cout << " Kapton radiation Length of " << FindMaterial("G4_KAPTON")->GetRadlen() << " cm"
-                                                                                          "\n";
-    G4cout << " Copper radiation Length of " << FindMaterial("Copper")->GetRadlen() << " cm"
-                                                                                       "\n";
-    G4cout << " Kevlar radiation Length of " << FindMaterial("G4_KEVLAR")->GetRadlen() << " cm"
-                                                                                          "\n";
-    G4cout << " Nomex Honeycomb radiation Length of " << FindMaterial("NOMEX")->GetRadlen() << " cm"
-                                                                                               "\n";
-
-    // if(extragap3Material->GetName() != "Galactic"){
-    //   G4cout << extragap3Thickness/mm << "mm of " << extragap3Material->GetName() << " with a Radiation Length of " << (100*extragap3Thickness/mm)/extragap3Material->GetRadlen () << "%" "\n"
-    //          << " + "; }
-    // if(extragap4Material->GetName() != "Galactic"){
-    //   G4cout << extragap4Thickness/mm << "mm of " << extragap4Material->GetName() << " with a Radiation Length of " << (100*extragap4Thickness/mm)/extragap4Material->GetRadlen () << "%" "\n"
-    //          << " + "; }
-    // if(extragap5Material->GetName() != "Galactic"){
-    //   G4cout << extragap5Thickness/mm << "mm of " << extragap5Material->GetName() << " with a Radiation Length of " << (100*extragap5Thickness/mm)/extragap5Material->GetRadlen () << "%" "\n"
-    //          << " + "; }
-    // if(extragap6Material->GetName() != "Galactic"){
-    //   G4cout << extragap6Thickness/mm << "mm of " << extragap6Material->GetName() << " with a Radiation Length of " << (100*extragap6Thickness/mm)/extragap6Material->GetRadlen () << "%" "\n"
-    //          << " + "; }
-    // if(extragap7Material->GetName() != "Galactic"){
-    //   G4cout << extragap7Thickness/mm << "mm of " << extragap7Material->GetName() << " with a Radiation Length of " << (100*extragap7Thickness/mm)/extragap7Material->GetRadlen () << "%" "\n"
-    //          << " + "; }
-    // if(extragap8Material->GetName() != "Galactic"){
-    //   G4cout << extragap8Thickness/mm << "mm of " << extragap8Material->GetName() << " with a Radiation Length of " << (100*extragap8Thickness/mm)/extragap8Material->GetRadlen () << "%" << "\n"
-    //          << " + "; }
-    // if(extragap9Material->GetName() != "Galactic"){
-    //   G4cout << extragap9Thickness/mm << "mm of " << extragap9Material->GetName() << " with a Radiation Length of " << (100*extragap9Thickness/mm)/extragap9Material->GetRadlen () << "%"<< "\n"
-    //          << " + "; }
-    // if(extragap10Material->GetName() != "Galactic"){
-    //   G4cout << extragap10Thickness/mm << "mm of " << extragap10Material->GetName() << " with a Radiation Length of " << (100*extragap10Thickness/mm)/extragap10Material->GetRadlen () << "%" << "\n";}
-    G4cout << "\n------------------------------------------------------------\n";
-
-    BuildHATPCCentralCathode(driftVolume, FCthickness);
-    // BuildHATPCCages(logGasGap);
-
-    G4cout << "\n-----------------------------DONE-------------------------------\n";
+//     G4cout << "\n-----------------------------DONE-------------------------------\n";
 
 
     return logVolume;
@@ -413,23 +324,6 @@ void ND280HATPCConstructor::BuildFCGeometry(G4LogicalVolume *logVolume, double &
     double layer5thickness = 2.0 * CLHEP::mm;  // Kevlar
     double layer6thickness = 0.15 * CLHEP::mm; //Katpon
     double layer7thickness = 0.1 * CLHEP::mm;  // Copper
-
-    // Volumes
-
-    // Only logVolume for the HATPC.
-    // No G4PVPlacement for logVolume in HATPCConstructor.
-    // The HATPCs are placed in DetectorConstruction (Up and Down).
-
-    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
-                                              fHATPCWidth / 2.,
-                                              fHATPCHeight / 2.,
-                                              fHATPCLength / 2.),
-                                    FindMaterial("Galactic"),
-                                    GetHATPCParentName() + "/FC/" + GetHATPCName());
-
-    logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
-    if (fVisible != true)
-        logVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
     // Field Cage, definition and placement layer by layer.
     // FC
@@ -652,23 +546,6 @@ void ND280HATPCConstructor::BuildNexusGeometry(G4LogicalVolume *logVolume, doubl
     double layer6thickness = 1.2 * CLHEP::mm;  // CarbonFiber
     double layer7thickness = 0.05 * CLHEP::mm; //Katpon
     double layer8thickness = 0.01 * CLHEP::mm; // Copper
-
-    // Volumes
-
-    // Only logVolume for the HATPC.
-    // No G4PVPlacement for logVolume in HATPCConstructor.
-    // The HATPCs are placed in DetectorConstruction (Up and Down).
-
-    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
-                                              fHATPCWidth / 2.,
-                                              fHATPCHeight / 2.,
-                                              fHATPCLength / 2.),
-                                    FindMaterial("Galactic"),
-                                    GetHATPCParentName() + "/" + GetHATPCName());
-
-    logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
-    if (fVisible != true)
-        logVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
     // Field Cage, definition and placement layer by layer.
     // FC
@@ -930,23 +807,6 @@ void ND280HATPCConstructor::BuildSolidGeometry(G4LogicalVolume *logVolume, doubl
     double layer4thickness = 0.25 * CLHEP::mm; // Kapton
     double layer5thickness = 0.01 * CLHEP::mm; // Copper
 
-    // Volumes
-
-    // Only logVolume for the HATPC.
-    // No G4PVPlacement for logVolume in HATPCConstructor.
-    // The HATPCs are placed in DetectorConstruction (Up and Down).
-
-    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
-                                              fHATPCWidth / 2.,
-                                              fHATPCHeight / 2.,
-                                              fHATPCLength / 2.),
-                                    FindMaterial("Galactic"),
-                                    GetHATPCParentName() + "/" + GetHATPCName());
-
-    logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
-    if (fVisible != true)
-        logVolume->SetVisAttributes(G4VisAttributes::Invisible);
-
     // Field Cage, definition and placement layer by layer.
     // FC
 
@@ -1127,23 +987,6 @@ void ND280HATPCConstructor::BuildGFiberGeometry(G4LogicalVolume *logVolume, doub
     double layer5thickness = 1.2 * CLHEP::mm;  // GlassFiber
     double layer6thickness = 0.05 * CLHEP::mm; // Kapton
     double layer7thickness = 0.01 * CLHEP::mm; //Copper
-
-    // Volumes
-
-    // Only logVolume for the HATPC.
-    // No G4PVPlacement for logVolume in HATPCConstructor.
-    // The HATPCs are placed in DetectorConstruction (Up and Down).
-
-    logVolume = new G4LogicalVolume(new G4Box(GetHATPCParentName() + "/" + GetHATPCName(),
-                                              fHATPCWidth / 2.,
-                                              fHATPCHeight / 2.,
-                                              fHATPCLength / 2.),
-                                    FindMaterial("Galactic"),
-                                    GetHATPCParentName() + "/" + GetHATPCName());
-
-    logVolume->SetVisAttributes(G4Colour(1.0, 1.0, 0.0));
-    if (fVisible != true)
-        logVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
     // Field Cage, definition and placement layer by layer.
     // FC

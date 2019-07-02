@@ -30,8 +30,8 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef ExN02DetectorConstruction_h
-#define ExN02DetectorConstruction_h 1
+#ifndef ExN02DetectorConstruction_h_
+#define ExN02DetectorConstruction_h_ 1
 
 #include "ExN02ND280XML.hh"
 #include "ExN02TrackerSD.hh"
