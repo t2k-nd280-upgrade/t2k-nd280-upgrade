@@ -1,10 +1,10 @@
 # CMake files
 #Makefile
-build/app/*
-build/CMakeFiles
-build/Makefile
+build
+mybuild
 CMakeCache.txt
 cmake_install.cmake
+highlandUP/*/*/cmt/Makefile
 
 # root dictionaries
 *Dict.cxx
@@ -45,7 +45,4 @@ mypath.sh
 #output files
 *.wrl
 *.root
-mybuild
 .vscode
-t2k_nd280-upgrade.code-workspace
-build_mac

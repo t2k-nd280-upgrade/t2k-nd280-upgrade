@@ -9,6 +9,7 @@
 #include "TRandom3.h"
 #include "TMultiGraph.h"
 #include "TLegend.h"
+#include "TVector3.h"
 
 #include <iostream>
 
@@ -100,7 +101,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v30.root", "RECREATE");
+  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v31.root", "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
@@ -123,10 +124,8 @@ void neutron_merge() {
   Double_t time_sigma[time_size] = {0., 1.5/sqrt(3), 0.95/sqrt(3), 1.5, 0.95, 1.5, 0.95};
 
   TMultiGraph* graph_fb = new TMultiGraph();
-  TLegend* leg_fb = new TLegend(0.1,0.7,0.48,0.9);
   graph_fb->SetName("graph_fiber");
   TMultiGraph* graph_ly = new TMultiGraph();
-  TLegend* leg_ly = new TLegend(0.1,0.7,0.48,0.9);
   graph_ly->SetName("graph_lightY");
 
   // read tree several times in order to check
@@ -145,7 +144,8 @@ void neutron_merge() {
     TH1F* test_l_e   = new TH1F("ly_energy", "Averagy l.y.", 250, 0., 500.);
     TH1F* test_l_e_n = new TH1F("test1", "test", 250, 0., 500.);
 
-    TH2F* angle_smearing = new TH2F("angle_smearing", "Angle smearing", 50, -1., 1., 50, -1., 1.);
+    TH2F* angle_smearing_T = new TH2F("cosThetaSmear", "Cos#Theta smearing", 200, -1., 1., 200, -1., 1.);
+    TH2F* angle_smearing_P = new TH2F("PhiSmear", "Phi smearing", 200, 0., 2*TMath::Pi(), 200, 0., 2*TMath::Pi());
 
     TH1F* time_resol_1  = new TH1F("time_res_fib", "Time resolution", 500, 0., 6000.);
     TH1F* time_resol_2  = new TH1F("time_res_ly", "Time resolution", 500, 0., 6000.);
@@ -221,7 +221,10 @@ void neutron_merge() {
       if (ekin > 90. && ekin < 110.)
         energy_acc[0]->Fill((ekin2 - ekin) / ekin);
 
-      angle_smearing->Fill(dir_true[2], dir_reco[2]);
+      angle_smearing_T->Fill(dir_true[2], dir_reco[2]);
+      TVector3 d_true(dir_true[1], dir_true[2], dir_true[0]);
+      TVector3 d_reco(dir_reco[1], dir_reco[2], dir_reco[0]);
+      angle_smearing_P->Fill(d_true.Phi() + TMath::Pi(), d_reco.Phi() + TMath::Pi());
 
       Int_t cos_bin = cos_h->FindBin(costheta);
       energy_resol_cos[0][cos_bin-1]->Fill(ekin, ekin2);
@@ -400,7 +403,8 @@ void neutron_merge() {
       }
     }
     eff_e_cos_2->Write("efficiency_vs_Ekin_theta");
-    angle_smearing->Write();
+    angle_smearing_T->Write();
+    angle_smearing_P->Write();
     time_resol_1->Write();
     time_resol_2->Write();
     ly_fst->Write();

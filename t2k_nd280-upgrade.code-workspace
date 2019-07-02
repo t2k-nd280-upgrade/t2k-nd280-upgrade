@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+    ],
+    "settings": {
+        "files.associations": {
+            "iostream": "cpp",
+            "*.icc": "cpp",
+            "SelND280UpEvent.C": "cpp",
+            "gamma.C": "cpp"
+        }
+    }
+}
