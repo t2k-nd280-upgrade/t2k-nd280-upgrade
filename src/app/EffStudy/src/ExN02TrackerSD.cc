@@ -97,20 +97,11 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   G4double edep = aStep->GetTotalEnergyDeposit();
   if(edep==0.) return false;
 
-  
-  //G4cout << "ExN02TrackerSD::ProcessHits" << G4endl;
+  ND280RootPersistencyManager* persistencyManager
+    = ND280RootPersistencyManager::GetInstance();
 
-  //return false;
-
-  // COMMENT this line to store all the hits
-  //if(aStep->GetTrack()->GetParentID()>0) return false; // Look only at Primary Tracks!!!
-  
-  //if(aStep->GetTrack()->GetParentID()==0){
-  
-      
-  
-  
-  //NSteps_++;
+  if (!persistencyManager->GetSaveAllHits() && aStep->GetTrack()->GetParentID()>0)
+    return false;
   
   ///// NEW ND280 HitSegment
 
@@ -159,9 +150,6 @@ G4bool ExN02TrackerSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
  
   
   // Take the position in the local coordinate system (defined in DetectorConstruction)
-
-  ND280RootPersistencyManager* persistencyManager
-    = ND280RootPersistencyManager::GetInstance();
 
   if( persistencyManager->doNavigDetExist() ){
 

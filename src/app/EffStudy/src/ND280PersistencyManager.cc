@@ -38,7 +38,10 @@ ND280PersistencyManager::ND280PersistencyManager()
     fGammaThreshold(20*CLHEP::MeV), // default nd280mc is 50*MeV 
     fNeutronThreshold(50*CLHEP::MeV),
     fTrajectoryPointAccuracy(1*CLHEP::cm), 
+    fSaveAllTraj(false), // not to store all the traj by default
+    fSaveAllHits(false), // not to store all the hits by default
     fSaveAllPrimaryTrajectories(true) //default nd280mc is false
+
 {
   fPersistencyMessenger = new ND280PersistencyMessenger(this);
 }
@@ -118,15 +121,6 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
   
   G4String detname_curr = ndPoint->GetLogVolName();
 
-  // uncomment this to store all points in the target
-  
-  /*if (detname_curr.contains("/t2k/OA/Magnet/Basket/target1")) {
-    ndPoint->MarkPoint();
-    return;
-  } else
-    return;*/
-  
-
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
   int NSDRootVolumes =  SDRegion->GetNumberOfRootVolumes();
@@ -163,12 +157,11 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
 void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Event *event) {
   (void)event;
   //G4cout << "ND280PersistencyManager::MarkTrajectory" << G4endl;
-
-  // Uncomment this to store all trajectories 
   
-  //ndTraj->MarkTrajectory();
-  //return;
-  
+  if (GetSaveAllTraj()) {
+    ndTraj->MarkTrajectory();
+    return;
+  }  
   
   // Go through all of the trajectories and save:
   //

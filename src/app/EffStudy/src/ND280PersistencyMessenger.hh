@@ -48,6 +48,8 @@ private:
     G4UIcmdWithAnInteger*      fMaxTrajectoryStepsCMD;   
     G4UIcmdWithADoubleAndUnit* fMinimumStepLengthCMD;
     G4UIcmdWithADoubleAndUnit* fMinimumNeutralStepCMD;
+    G4UIcmdWithABool*          fSaveAllHitsCMD;
+    G4UIcmdWithABool*          fSaveAllTrajCMD;
     G4UIcmdWithABool*          fSaveAllPrimaryTrajectoriesCMD;
     G4UIcmdWithADoubleAndUnit* fTrajectoryPointAccuracyCMD;
     G4UIcmdWithAString*        fTrajectoryBoundaryCMD;
