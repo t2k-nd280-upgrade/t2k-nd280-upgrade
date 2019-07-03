@@ -35,7 +35,9 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
   fCurrEntry = 0;
   fneutfile = 0;
   fneutree = 0;
-  
+}
+
+void ExN02RooTrackerKinematicsGenerator::Initialize() {
   // Take inputs
 
   //ND280InputPersistencyManager* InputPersistencyManager
@@ -66,11 +68,11 @@ ExN02RooTrackerKinematicsGenerator::ExN02RooTrackerKinematicsGenerator()
     msg << "TODO: NEED TO FILL THE REACTION MODE FOR NEUT";
     G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
                 "MyCode0002",FatalException, msg);
-  }
-  else if(inxml->GetXMLGenerTypeName()=="GENIE"){*/
+  }*/
+  if(inxml->GetXMLGenerTypeName()=="GENIE"){
     this->ReadGENIE(inputfile);
-  /*}
-  else{
+  }
+  /*else{
     G4ExceptionDescription msg;
     msg << "The generator type "<< inxml->GetXMLGenerTypeName() << " is not available";
     G4Exception("ExN02RooTrackerKinematicsGenerator::~ExN02RooTrackerKinematicsGenerator",
