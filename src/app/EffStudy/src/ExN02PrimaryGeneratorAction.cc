@@ -189,7 +189,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
       aEAmp = fParticleGun->GetParticleEnergy();
 
-      G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
+      /*G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
       G4double cosTheta = G4UniformRand()*2. - 1; //cosTheta in [-1,1] --> theta in [0,pi]
       G4double phi = G4UniformRand()*360*CLHEP::deg; //flat in [0,2pi]
       G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
@@ -199,7 +199,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       G4cout << "Direction of the gun: " 
        << dir[0] << ", " << dir[1] << ", " << dir[2] 
        << G4endl;
-      fParticleGun->SetParticleMomentumDirection(dir);
+      fParticleGun->SetParticleMomentumDirection(dir);*/
     }
 
     if (fTypeMomentum=="Neutron_real") {

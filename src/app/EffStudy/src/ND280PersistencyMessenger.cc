@@ -94,6 +94,20 @@ ND280PersistencyMessenger::ND280PersistencyMessenger(
         "  True: Save all prim. part. trajectories.\n"
         "  False: Save prim. that ultimately deposit energy in SD.");
 
+    fSaveAllTrajCMD 
+        = new G4UIcmdWithABool("/db/set/saveAllTraj", this);
+    fSaveAllTrajCMD->SetGuidance(
+        "Control to save all the trajectories.\n"
+        "  True: Save all trajectories.\n"
+        "  False: Save prim. traj (see saveAllPrimTraj)");
+
+    fSaveAllHitsCMD 
+        = new G4UIcmdWithABool("/db/set/saveAllHits", this);
+    fSaveAllHitsCMD->SetGuidance(
+        "Control to save all hits.\n"
+        "  True: Save all hits from all the trajs.\n"
+        "  False: Save hits only from prim. trajs");
+
     fTrajectoryPointAccuracyCMD 
         = new G4UIcmdWithADoubleAndUnit("/db/set/trajectoryAccuracy", this);
     fTrajectoryPointAccuracyCMD->SetGuidance(
@@ -130,6 +144,8 @@ ND280PersistencyMessenger::~ND280PersistencyMessenger() {
     delete fMaxTrajectoryStepsCMD;
     delete fMinimumStepLengthCMD;
     delete fMinimumNeutralStepCMD;
+    delete fSaveAllHitsCMD;
+    delete fSaveAllTrajCMD;
     delete fSaveAllPrimaryTrajectoriesCMD;
     delete fTrajectoryPointAccuracyCMD;
     delete fTrajectoryBoundaryCMD;
@@ -180,6 +196,14 @@ void ND280PersistencyMessenger::SetNewValue(G4UIcommand* command,
         fPersistencyManager->SetSaveAllPrimaryTrajectories(
             fSaveAllPrimaryTrajectoriesCMD->GetNewBoolValue(newValue));
     }
+    else if (command == fSaveAllTrajCMD) {
+        fPersistencyManager->SetSaveAllTraj(
+            fSaveAllTrajCMD->GetNewBoolValue(newValue));
+    }
+    else if (command == fSaveAllHitsCMD) {
+        fPersistencyManager->SetSaveAllHits(
+            fSaveAllHitsCMD->GetNewBoolValue(newValue));
+    }
     else if (command == fTrajectoryPointAccuracyCMD) {
         fPersistencyManager->SetTrajectoryPointAccuracy(
             fTrajectoryPointAccuracyCMD->GetNewDoubleValue(newValue));
@@ -214,6 +238,14 @@ G4String ND280PersistencyMessenger::GetCurrentValue(G4UIcommand * command) {
     else if (command==fSaveAllPrimaryTrajectoriesCMD) {
         currentValue = fSaveAllPrimaryTrajectoriesCMD->ConvertToString(
             fPersistencyManager->GetSaveAllPrimaryTrajectories());
+    }
+    else if (command==fSaveAllTrajCMD) {
+        currentValue = fSaveAllTrajCMD->ConvertToString(
+            fPersistencyManager->GetSaveAllTraj());
+    }
+    else if (command==fSaveAllHitsCMD) {
+        currentValue = fSaveAllHitsCMD->ConvertToString(
+            fPersistencyManager->GetSaveAllHits());
     }
     else if (command==fTrajectoryPointAccuracyCMD) {
         currentValue = fTrajectoryPointAccuracyCMD->ConvertToString(
