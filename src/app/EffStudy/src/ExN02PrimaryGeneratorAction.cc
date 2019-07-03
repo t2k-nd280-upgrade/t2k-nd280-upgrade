@@ -81,6 +81,9 @@ ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
   ND280RootPersistencyManager* InputPersistencyManager
     = ND280RootPersistencyManager::GetInstance();
   inxml = InputPersistencyManager->GetXMLInput();
+
+  if(fGeneratorType == "Generator")
+    RooTrackerNEUT.Initialize();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

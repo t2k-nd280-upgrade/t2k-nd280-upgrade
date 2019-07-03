@@ -133,22 +133,6 @@ int main(int argc,char** argv)
   G4String inputfile = ND280XMLInput->GetXMLPathFiles();
   inputfile.append(ND280XMLInput->GetXMLGenerFileName());
 
-  TFile *myfile = new TFile(inputfile,"READ"); 
-  if (!myfile->IsOpen()) {
-    const char *msg = "NEUT file is not open!";
-    const char *origin = "Main function";
-    const char *code = "if (!myfile->IsOpen())";
-    G4Exception(origin,code,FatalException,msg);
-  }
-  TTree *mytree = (TTree*)myfile->Get(ND280XMLInput->GetXMLGenerTreeName());
-  if (!mytree) {
-    const char *msg = "NEUT tree is not open!";
-    const char *origin = "Main function";
-    const char *code = "if (!mytree->IsOpen())";
-    G4Exception(origin,code,FatalException,msg);
-  }    
-
-  
   // Set BeamOn to total # of events in the tree - first event
   
   G4int MyFirstEvent = atoi(argv[4]);
@@ -156,34 +140,51 @@ int main(int argc,char** argv)
 
   G4int NEvtStep = MyStepEvent;
   G4int NEvtTot = MyFirstEvent+NEvtStep;
-  
-  if(MyFirstEvent > (mytree->GetEntries()-1)){ // MyFirstEvent starts from 0
-    G4cout << G4endl;
-    G4cout << "MyFirstEvent = " << MyFirstEvent << G4endl;
-    G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
-    const char *msg = "First event Id exceeds the last tree event ID!";
-    const char *origin = "Main function";
-    const char *code = " if(MyFirstEvent>mytree->GetEntries())";
-    G4Exception(origin,code,FatalException,msg);
-  }
-  
-  if(NEvtTot > mytree->GetEntries()){
-    G4cout << G4endl;
-    G4cout << "MyFirstEvent = " << MyFirstEvent << G4endl;
-    G4cout << "NEvtTot = " << NEvtTot << G4endl;
-    G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
-    const char *msg = "Tot # of simulated events > tree->GetEntries()!";
-    const char *origin = "Main function";
-    const char *code = " if(NEvtTot>mytree->GetEntries())";
-    //G4Exception(origin,code,FatalException,msg);
-    G4Exception(origin,code,JustWarning,msg);
+
+  if (ND280XMLInput->GetXMLGenerTypeName() != "ParticleGun") {
+    TFile *myfile = new TFile(inputfile,"READ"); 
+    if (!myfile->IsOpen()) {
+      const char *msg = "NEUT file is not open!";
+      const char *origin = "Main function";
+      const char *code = "if (!myfile->IsOpen())";
+      G4Exception(origin,code,FatalException,msg);
+    }
+    TTree *mytree = (TTree*)myfile->Get(ND280XMLInput->GetXMLGenerTreeName());
+    if (!mytree) {
+      const char *msg = "NEUT tree is not open!";
+      const char *origin = "Main function";
+      const char *code = "if (!mytree->IsOpen())";
+      G4Exception(origin,code,FatalException,msg);
+    }    
     
-    NEvtStep = mytree->GetEntries() - MyFirstEvent; // no -1, first event ID is 0
+    if(MyFirstEvent > (mytree->GetEntries()-1)){ // MyFirstEvent starts from 0
+      G4cout << G4endl;
+      G4cout << "MyFirstEvent = " << MyFirstEvent << G4endl;
+      G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
+      const char *msg = "First event Id exceeds the last tree event ID!";
+      const char *origin = "Main function";
+      const char *code = " if(MyFirstEvent>mytree->GetEntries())";
+      G4Exception(origin,code,FatalException,msg);
+    }
     
-    G4cout << "Set tot # of simul events to: " << NEvtStep << G4endl;
-    G4cout << "First event: " << MyFirstEvent << G4endl;
-    G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
-    G4cout << G4endl;
+    if(NEvtTot > mytree->GetEntries()){
+      G4cout << G4endl;
+      G4cout << "MyFirstEvent = " << MyFirstEvent << G4endl;
+      G4cout << "NEvtTot = " << NEvtTot << G4endl;
+      G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
+      const char *msg = "Tot # of simulated events > tree->GetEntries()!";
+      const char *origin = "Main function";
+      const char *code = " if(NEvtTot>mytree->GetEntries())";
+      //G4Exception(origin,code,FatalException,msg);
+      G4Exception(origin,code,JustWarning,msg);
+      
+      NEvtStep = mytree->GetEntries() - MyFirstEvent; // no -1, first event ID is 0
+      
+      G4cout << "Set tot # of simul events to: " << NEvtStep << G4endl;
+      G4cout << "First event: " << MyFirstEvent << G4endl;
+      G4cout << "mytree->GetEntries() = " << mytree->GetEntries() << G4endl;
+      G4cout << G4endl;
+    }
   }
 
   persistencyManager->SetEventFirst(MyFirstEvent);

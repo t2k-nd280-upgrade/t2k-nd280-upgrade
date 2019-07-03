@@ -27,6 +27,8 @@ public :
   
   ExN02RooTrackerKinematicsGenerator();
   virtual ~ExN02RooTrackerKinematicsGenerator();
+
+  void Initialize();
   
   void GeneratePrimaryVertex(G4Event *anEvent);      // Use NEUT output
 
