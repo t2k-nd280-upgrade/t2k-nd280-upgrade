@@ -986,7 +986,7 @@ void ND280HATPCConstructor::BuildGFiberGeometry(G4LogicalVolume *logVolume, doub
     double layer4thickness = 20.0 * CLHEP::mm; // Aramid HoneyComb
     double layer5thickness = 1.2 * CLHEP::mm;  // GlassFiber
     double layer6thickness = 0.05 * CLHEP::mm; // Kapton
-    double layer7thickness = 0.01 * CLHEP::mm; //Copper
+    double layer7thickness = 0.01 * CLHEP::mm; // Copper
 
     // Field Cage, definition and placement layer by layer.
     // FC

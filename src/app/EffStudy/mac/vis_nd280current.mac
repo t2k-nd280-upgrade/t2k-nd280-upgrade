@@ -40,7 +40,7 @@
 #/N02/det/setTargetMate1 FGDScintillator
 #/N02/det/setTargetMate2 FGD2Uniform #ActiveWater
 
-# Test geometry (overlaps...)	
+# Test geometry (overlaps...)
 /geometry/test/run
 
 

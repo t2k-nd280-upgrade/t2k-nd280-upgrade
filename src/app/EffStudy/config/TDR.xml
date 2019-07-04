@@ -292,12 +292,6 @@
      FC
    </HATPCFCName>
    
-   <!-- HATPCFC -->
-
-   <HATPCFCName>
-     FC
-   </HATPCFCName>
-   
    <!-- HATPCUp -->
 
    <HATPCUpWidth>
@@ -722,10 +716,10 @@
    <!-- Include detectors -->
 
    <UseHATPCUp>
-     true
+     false
    </UseHATPCUp>
    <UseHATPCDown>
-     true
+     false
    </UseHATPCDown>
 
    <UseForwTPC1>
