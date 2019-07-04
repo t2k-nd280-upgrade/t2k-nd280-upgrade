@@ -2,6 +2,10 @@
 
 ## Installation
 
+0. Make sure you have sourced root and geant4 using "this_root.sh" and "geant4.sh"
+
+1. Source env_setup.sh: `source env_setup.sh` (additionnal GEANT4/CLHEP environment variables)
+
 1. Inside this folder, create an "installation" folder
 
 ```bash
