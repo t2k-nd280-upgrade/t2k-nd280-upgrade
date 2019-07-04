@@ -2,6 +2,18 @@
 
 ## Installation
 
+1. Source your ROOT and Geant4, e.g.:
+```bash
+source ${MY_ROOT_INSTALL}/bin/thisroot.sh
+source ${MY_GEANT4_INSTALL}/bin/geant4.sh
+```
+
+1. Source the setup script env_setup.sh:
+```bash
+cd t2k-nd280-upgrade
+source env_setup.sh
+```
+
 1. Inside this folder, create an "installation" folder
 
 ```bash
