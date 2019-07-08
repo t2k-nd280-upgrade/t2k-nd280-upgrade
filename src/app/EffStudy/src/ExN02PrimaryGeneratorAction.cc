@@ -125,7 +125,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       msg << "Perhaps you have changed geometry." << G4endl;
       msg << "The gun will be place in the center.";
       G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
-		  "MyCode0002",FatalException, msg);
+      "MyCode0002",FatalException, msg);
     } 
 
     /*
@@ -142,7 +142,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       msg << "Perhaps you have changed geometry." << G4endl;
       msg << "The gun will be place in the center.";
       G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
-		  "MyCode0002",FatalException, msg);
+      "MyCode0002",FatalException, msg);
     } 
     */
 
@@ -238,8 +238,8 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       //G4cout << "direction of the gun before update = " << aDir[0] << ", " << aDir[1] << ", " << aDir[2] <<endl;
       //G4cout << "After update (favour foward going particles)= " << dir[0] << ", " << dir[1] << ", " << dir[2] <<endl;
       G4cout << "Direction of the gun: " 
-	     << dir[0] << ", " << dir[1] << ", " << dir[2] 
-	     << G4endl;
+       << dir[0] << ", " << dir[1] << ", " << dir[2] 
+       << G4endl;
       fParticleGun->SetParticleMomentumDirection(dir);
       //B.Q end
     }
@@ -263,7 +263,7 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4ThreeVector dir(0,-sinTheta*std::sin(phi),sinTheta*std::cos(phi));
     G4cout << "Direction of the gun: " 
            << dir[0] << ", " << -dir[1] << ", " << dir[2] 
-	   << G4endl;
+     << G4endl;
     fParticleGun->SetParticleMomentumDirection(dir);
 
     //Particle Type
@@ -279,6 +279,20 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4ParticleDefinition* particleDefinition 
     = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
     fParticleGun->SetParticleDefinition(particleDefinition);
+    }
+
+    if(fTypeGun=="BeamTest"){
+      G4double particlerandom = 4*G4UniformRand();
+      G4String particlename;
+    
+      if(particlerandom < 1) particlename = "e+"; 
+      if(particlerandom >=1 && particlerandom <2) particlename = "mu+"; 
+      if(particlerandom >=2 && particlerandom <3) particlename = "pi+";
+      if(particlerandom >=3 && particlerandom <=4) particlename = "proton";
+
+      G4ParticleDefinition* particleDefinition 
+      = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
+      fParticleGun->SetParticleDefinition(particleDefinition);
     }
     
     fParticleGun->GeneratePrimaryVertex(anEvent);
@@ -339,10 +353,9 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4ExceptionDescription msg;
     msg << "Generator type has not been set!!!" << G4endl;
     G4Exception("ExN02PrimaryGeneratorAction::GeneratePrimaries()",
-		"MyCode0002",FatalException, msg);        
+    "MyCode0002",FatalException, msg);        
   }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 

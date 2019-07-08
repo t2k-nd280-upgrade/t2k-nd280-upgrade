@@ -15,7 +15,7 @@
 /generator/type ParticleGun
         
 # Set the particle gun 
-/gun/particle e-
+/gun/particle proton
 #/gun/energy 800 MeV  # kinetic energy
 /gun/momentum  0 0 0.75 GeV # momentum
 /gun/direction 0 0 1 # momentum direction     
@@ -24,6 +24,7 @@
 #/gun/position  0 0 -3000 mm  # starting position
 /gun/number   1      # number of particles
 
+/generator/typegun FCTest
 /generator/typedir Gaus
 
 # Disable auto refresh and quieten vis messages whilst scene and

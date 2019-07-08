@@ -28,7 +28,7 @@ DllSuf        = so
 OutPutOpt     = -o
 
 ##turning on debuging 6/11/13
-CXXFLAGS += -g
+CXXFLAGS += -g 
 
 .SUFFIXES: .$(SrcSuf) .$(ObjSuf) .$(DllSuf)
 

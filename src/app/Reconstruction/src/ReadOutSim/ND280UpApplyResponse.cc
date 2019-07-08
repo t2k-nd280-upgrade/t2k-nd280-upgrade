@@ -133,7 +133,10 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
   
   // light attenuation (Birks' formula)
   double pe = TargetReadOut.ApplyScintiResponse(edep_q,steplength,charge); 
-  
+  if(steplength == -1){
+    pe = edep;
+  }
+
   if( ftargetid==nd280upconv::kSuperFGD ){ // SuperFGD
     peX = pe;
     peY = pe;
