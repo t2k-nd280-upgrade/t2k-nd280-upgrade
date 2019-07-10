@@ -173,8 +173,8 @@ ND280SFGDEvent* Reconstruct(vector <ND280SFGDHit*> listOfHits, vector <ND280SFGD
         uniqueID++;
     }
 
-    cout << "# OF RECO VOXELS: " << listOfVoxels.size() << endl;
-    ComputeVoxelCharge(listOfVoxels,0);    
+    //cout << "# OF RECO VOXELS: " << listOfVoxels.size() << endl;
+    //ComputeVoxelCharge(listOfVoxels,0);    
 
     // Int_t CNT = 0;
     // for(size_t ivox=0; ivox<listOfVoxels.size(); ivox++){        

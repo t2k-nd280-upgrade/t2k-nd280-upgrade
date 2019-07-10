@@ -571,7 +571,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("IsRandomSeed",fIsRandomSeed);
     XML2Bool("StoreGeometry",fStoreGeometry);
     XML2String("Generator",fGenerType);
-    XML2String("Path2file",fPathFiles);
+    // XML2String("Path2file",fPathFiles); /// todo: momentarly removing this as this is custom option different between each user
     XML2String("filename",fGenerFileName);  
     XML2String("treename",fGenerTreeName);      
     

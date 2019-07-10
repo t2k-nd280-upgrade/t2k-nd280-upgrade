@@ -67,7 +67,9 @@ while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
+    $job_dir = "/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/ROOT"; 
+
+    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $tag";
     $command = "$arguments";
     
     print "\n";
@@ -79,6 +81,24 @@ while($irun < $nruns) { # loop over the jobs
 
     ################################### Submit the job ##################################
     
+    if($resource eq "PIC") {
+
+    print "inside PIC \n";
+    $sbatchfile = "$tag-$evt_first-$nexpts.sbatch";
+    $outfiledir = "$job_dir/";
+    $errfiledir = "$job_dir/";
+    open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+    print PBS "#!/bin/bash -l  \n";
+    print PBS "\n";
+    print PBS "env \n";
+    print PBS "\n";
+    print PBS "uname -n \n";
+    print PBS "\n";
+    print PBS "$command \n";
+    close(PBS); 
+    `qsub -q short -l nodes=1 $sbatchfile`; 
+    }
+
     if($resource eq "interactive") {
     system($command);
     }

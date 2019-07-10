@@ -24,24 +24,51 @@ void crosstalkAna() {
     // NOTE: In case of using option -s || --save it is necessary to update harcoded paths.
 
     gStyle->SetOptStat(0);
-    //TString fileIn = "/Users/cjesus/Documents/PhD/SFGD/25August_8/25August_8_MCR0_hadrons_0pt8Gev_0pt0T_Beam___NewStructure.root";
-    TString fileIn = "/Users/cjesus/Documents/Data/SFGD_BTEST_2018/25August_11_MCR0_hadrons_0pt8Gev_0pt0T_Beam___NewStructure.root";
+    TString fileIn = "/Users/cjesus/Documents/Data/SFGD_BTEST_2018/25August_11_12_0pt8GeV_0pt0T.root";
+    TString fileMC [2];
+    //fileMC[0]  = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_proton.root";
+    //fileMC[1]  = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_piplus.root";
+    //fileMC[0]  = "/Users/cjesus/Documents/Data/SFGD_MC/pr_v1.root";
+    fileMC[0]  = "/Users/cjesus/Documents/Data/MC_output.root";
+    //fileMC[0]  = "/nfs/neutrinos/cjesus/work/MC_output.root";
+    
+    TString prefix = "/Users/cjesus/Desktop/";
 
     int maxEvents    = std::numeric_limits<int>::max();
     int maxSelEvents = std::numeric_limits<int>::max();
     int maxStore     = 100;
-    int q_Cut        = 100;
+    int q_Cut        = 50;
     int selEvents    = 0;
     int selLI        = 0;
     int selHI        = 0;
-    int selSP        = 0;
-    int jobMode      = 0;
+    int selSP        = 0;    
+    int jobMode      = 0;    // 1 closes program at termination.
+    int dataType     = 1;    // 0 is MC.
     bool SAVE_EVENTS = false;
     bool SHOW_EVENTS = false;
+    bool RM_CROSSTALK= false;
     float time       = clock();
+
+    // Counter to stimate crosstalk amount
+    int LI_HIT_CNT = 0;
+    int LI_CT_CNT = 0;
+    int LI_CT_CNT2 = 0;
+    int HI_HIT_CNT = 0;
+    int HI_CT_CNT = 0;
+    int HI_CT_CNT2 = 0;
+    int SP_F_HIT_CNT = 0;
+    int SP_F_CT_CNT = 0;
+    int SP_F_CT_CNT2 = 0;
+    int SP_A_HIT_CNT = 0;
+    int SP_A_CT_CNT = 0;
+    int SP_A_CT_CNT2 = 0;
+    int SP_S_HIT_CNT = 0;
+    int SP_S_CT_CNT = 0;
+    int SP_S_CT_CNT2 = 0;
 
     // Canvas for plots:
 
+    // dEdZ:
     TH1F* h_dedz = new TH1F("dedz","dedz",100,0,250);
 
     // LI == Low Ionizing track
@@ -101,6 +128,8 @@ void crosstalkAna() {
             cout << "Macros run options:" << endl;
             cout << "   -h || --help      print help info." << endl;
             cout << "   -i || --input     input file (*.root)." << endl;
+            cout << "   -m || --MC        Allows to MC inoput." << endl;
+            cout << "   -p || --ptype     Requires an extra argument. 1: proton, 2:pion, 3:electron, 4:muon." << endl;
             cout << "   -j || --job       Closes the macro at the end of the execution." << endl;
             cout << "   -s || --save      Save hits of selected events." << endl;
             cout << "   -d || --display   Interactive display of selected events." << endl;
@@ -116,6 +145,19 @@ void crosstalkAna() {
                 cerr << "input file must be a .root file!" << endl;
                 exit(1);
             }
+        }
+        else if (string( gApplication->Argv(iarg))=="-m" || string( gApplication->Argv(iarg))=="--MC" ){
+            dataType = 0;
+            fileIn    = fileMC[0];
+        }
+        else if (string( gApplication->Argv(iarg))=="-p" || string( gApplication->Argv(iarg))=="--ptype" ){
+            iarg++;
+            cout << atoi(gApplication->Argv(iarg)) << endl;
+            fileIn = fileMC[atoi(gApplication->Argv(iarg))];
+        }
+        else if (string( gApplication->Argv(iarg))=="-c" || string( gApplication->Argv(iarg))=="--clean" ){
+            cout << "Crosstalk removal is ON. This only does somethig on MC input. All hits that are true crosstalk will be erased." << endl;
+            RM_CROSSTALK = true;
         }
         else if (string( gApplication->Argv(iarg))=="-j" || string( gApplication->Argv(iarg))=="--job" ){
             jobMode = 1;
@@ -133,7 +175,9 @@ void crosstalkAna() {
         }
     }
 
-    if(!SAVE_EVENTS and !SHOW_EVENTS){
+    // I disabled this for the moment, I don't like COLZ option with this Style...
+    // TODO: Change default colormap the make own style.
+    if(!SAVE_EVENTS and !SHOW_EVENTS and false){
         Int_t T2KstyleIndex = 1;
         // Official T2K style as described in http://www.t2k.org/comm/pubboard/style/index_html
         TString localStyleName = "T2K";
@@ -148,14 +192,26 @@ void crosstalkAna() {
         gROOT->ForceStyle(t2kstyle);
     }
 
-    // The input file TTree of events is linked to 'unpackEvent' variable.
+    // The input file TTree of events is linked to 'inputBranch'.
     TFile *FileInput  = new TFile(fileIn.Data(),"update");
     TTree* data = (TTree*) FileInput->Get("AllEvents");
     Int_t nEvents = data->GetEntries();
+
     TBranch *inputBranch;
     inputBranch = data->GetBranch("Event");
+    ND280SFGDEvent* inputEvent = new ND280SFGDEvent();
     Event* unpackEvent = new Event();
-    inputBranch->SetAddress(&unpackEvent);
+
+    //MC
+    if(!dataType){
+        cout << "MC FILE" << endl;
+        inputBranch->SetAddress(&inputEvent);
+    }
+    //Data
+    else{
+        cout << "DATA FILE" << endl;
+        inputBranch->SetAddress(&unpackEvent);
+    }
 
     cout << "Total # of Events: " << nEvents << endl << endl; 
 
@@ -166,39 +222,74 @@ void crosstalkAna() {
         std::cout << "**** Evt " << iev << " ****" << std::endl;
 
         data->GetEntry(iev);
+        cout << "NUMHITS:" << endl;
+        cout << "numhits:" << inputEvent->GetHits().size() <<endl;
 
-        if(iev < 20) continue;
+        vector <ND280SFGDHit*> listOfHits;
 
-        bool jumpNextEvent;
-        int maxQYZ = 0;
-        TClonesArray * unpackHits = unpackEvent->GetHits();
-        vector <ND280SFGDHit*> auxHits;
-        for(Int_t ihit=0; ihit<unpackEvent->GetNHits(); ihit++){
-            jumpNextEvent = false;
-            Hit *hit = (Hit*) unpackHits->At(ihit);
-            if(hit->GetDt() < -100 || hit->GetDt() > -60) continue;
-            if(hit->GetCharge() <= 0 ) {/*cout << "Q: " << hit->GetCharge() << endl; hit->SetCharge(10000);*/ jumpNextEvent = true; break;}
+        if(!dataType) {
+            listOfHits = inputEvent->GetHits();
+            for (auto hit : listOfHits){
+                if(hit->GetView() == 0){
+                    hit->SetX(hit->GetX()-0.5+12);
+                    hit->SetY(hit->GetY()-0.5+4);
+                }
+                if(hit->GetView() == 1){
+                    hit->SetX(hit->GetX()-0.5+12);
+                    hit->SetZ(hit->GetZ()-0.5+24);
+                }
+                if(hit->GetView() == 2){
+                    hit->SetY(hit->GetY()-0.5+4);
+                    hit->SetZ(hit->GetZ()-0.5+24);
+                }
+            }
 
-            if(hit->GetView() == 2 && maxQYZ < hit->GetCharge() ) maxQYZ = hit->GetCharge();
-
-            ND280SFGDHit* sfgdHit = new ND280SFGDHit();
-            sfgdHit->SetX(hit->GetX());
-            sfgdHit->SetY(hit->GetY());
-            sfgdHit->SetZ(hit->GetZ());
-            sfgdHit->SetDt(hit->GetDt());
-            sfgdHit->SetCharge(hit->GetCharge());
-            sfgdHit->SetView(hit->GetView());
-            sfgdHit->SetMultiplicity(0);
-            sfgdHit->SetTrueXTalk(kFALSE);
-            sfgdHit->SetPDG(-999);
-            sfgdHit->SetTrackID(-999);
-            auxHits.push_back(sfgdHit);
+            if(RM_CROSSTALK){
+                vector <ND280SFGDHit*> inputHits = inputEvent->GetHits();
+                cout << "REMOVING CROSSTALK." << endl;
+                cout << "Hits before removal: " << inputHits.size() << endl;
+                inputHits.clear();
+                for(size_t ihits=0; ihits<inputEvent->GetHits().size(); ihits++){
+                    if(!inputEvent->GetHits()[ihits]->GetxTalkFlag()) inputHits.push_back(inputEvent->GetHits()[ihits]);
+                }
+                cout << "Hits after removal: " << inputHits.size() << endl;
+                listOfHits = inputHits;
+            }
         }
-        if(jumpNextEvent) {auxHits.clear();continue;} // cout << "FIFO problem, jumping to next event." << endl; 
-        if(auxHits.size() < 60) {auxHits.clear();continue;}  // not interested in small tracks, we want long ones.
+        else{
+            if(iev < 20) continue;
+
+            bool jumpNextEvent;
+            int maxQYZ = 0;
+            TClonesArray * unpackHits = unpackEvent->GetHits();
+            for(Int_t ihit=0; ihit<unpackEvent->GetNHits(); ihit++){
+                jumpNextEvent = false;
+                Hit *hit = (Hit*) unpackHits->At(ihit);
+                if(hit->GetDt() < -100 || hit->GetDt() > -60) continue;
+                if(hit->GetCharge() <= 0 ) {/*cout << "Q: " << hit->GetCharge() << endl; hit->SetCharge(10000);*/ jumpNextEvent = true; break;}
+
+                if(hit->GetView() == 2 && maxQYZ < hit->GetCharge() ) maxQYZ = hit->GetCharge();
+
+                ND280SFGDHit* sfgdHit = new ND280SFGDHit();
+                sfgdHit->SetX(hit->GetX());
+                sfgdHit->SetY(hit->GetY());
+                sfgdHit->SetZ(hit->GetZ());
+                sfgdHit->SetDt(hit->GetDt());
+                sfgdHit->SetCharge(hit->GetCharge());
+                sfgdHit->SetView(hit->GetView());
+                sfgdHit->SetMultiplicity(0);
+                sfgdHit->SetTrueXTalk(kFALSE);
+                sfgdHit->SetPDG(-999);
+                sfgdHit->SetTrackID(-999);
+                listOfHits.push_back(sfgdHit);
+            }
+            if(jumpNextEvent) {listOfHits.clear();continue;} // cout << "FIFO problem, jumping to next event." << endl; 
+        }
+        cout << "size: " << listOfHits.size() << endl;
+        if(listOfHits.size() < 60) {listOfHits.clear();continue;}  // not interested in small tracks, we want long ones.
         
-        int sizeOfX = 24;
-        int sizeOfY = 8;
+        int sizeOfX = 204;
+        int sizeOfY = 56;
         int sizeOfZ = 48;
 
         int aboveCutXZ [sizeOfX];
@@ -211,7 +302,7 @@ void crosstalkAna() {
         for (auto i = 0; i<sizeOfZ; i++) lineZ_xz[i] = 0;
         for (auto i = 0; i<sizeOfZ; i++) lineZ_yz[i] = 0;
 
-        bool debug = false;
+        bool debug = true;
 
         double maxXZ = 0;
         double maxYZ = 0;
@@ -221,36 +312,39 @@ void crosstalkAna() {
         ND280SFGDHit hitmaxXZ;
         ND280SFGDHit hitmaxYZ;
 
-        for(uint ihit=0; ihit<auxHits.size(); ihit++){
-            if(auxHits[ihit]->GetView() == 1){
-                lineZ_xz[int(auxHits[ihit]->GetZ())] = 1;
-                if(auxHits[ihit]->GetCharge()>maxXZ) {
-                    maxXZ = auxHits[ihit]->GetCharge(); 
-                    maxZ_xz = auxHits[ihit]->GetZ();
-                    hitmaxXZ = *auxHits[ihit];
+        for(uint ihit=0; ihit<listOfHits.size(); ihit++){
+            if(listOfHits[ihit]->GetView() == 1){
+                lineZ_xz[int(listOfHits[ihit]->GetZ())] = 1;
+                if(listOfHits[ihit]->GetCharge()>maxXZ) {
+                    maxXZ = listOfHits[ihit]->GetCharge(); 
+                    maxZ_xz = listOfHits[ihit]->GetZ();
+                    hitmaxXZ = *listOfHits[ihit];
                 }
-                if(aboveCutXZ[int(auxHits[ihit]->GetX())] == 2) continue;
-                if(auxHits[ihit]->GetCharge() > q_Cut) aboveCutXZ[int(auxHits[ihit]->GetX())] = 2;
-                else aboveCutXZ[int(auxHits[ihit]->GetX())] = 1;
+                if(aboveCutXZ[int(listOfHits[ihit]->GetX())] == 2) continue;
+                if(listOfHits[ihit]->GetCharge() > q_Cut) aboveCutXZ[int(listOfHits[ihit]->GetX())] = 2;
+                else aboveCutXZ[int(listOfHits[ihit]->GetX())] = 1;
             }
 
-            if(auxHits[ihit]->GetView() == 2){
-                lineZ_yz[int(auxHits[ihit]->GetZ())] = 1;
-                if(auxHits[ihit]->GetCharge()>maxYZ) {
-                    maxYZ = auxHits[ihit]->GetCharge(); 
-                    maxZ_yz = auxHits[ihit]->GetZ();
-                    hitmaxYZ = *auxHits[ihit];
+            if(listOfHits[ihit]->GetView() == 2){
+                lineZ_yz[int(listOfHits[ihit]->GetZ())] = 1;
+                if(listOfHits[ihit]->GetCharge()>maxYZ) {
+                    maxYZ = listOfHits[ihit]->GetCharge(); 
+                    maxZ_yz = listOfHits[ihit]->GetZ();
+                    hitmaxYZ = *listOfHits[ihit];
                 }
-                if(aboveCutYZ[int(auxHits[ihit]->GetY())] == 2) continue;
-                if(auxHits[ihit]->GetCharge() > q_Cut) aboveCutYZ[int(auxHits[ihit]->GetY())] = 2;
-                else aboveCutYZ[int(auxHits[ihit]->GetY())] = 1;
+                if(aboveCutYZ[int(listOfHits[ihit]->GetY())] == 2) continue;
+                if(listOfHits[ihit]->GetCharge() > q_Cut) aboveCutYZ[int(listOfHits[ihit]->GetY())] = 2;
+                else aboveCutYZ[int(listOfHits[ihit]->GetY())] = 1;
             }
         }
+
+        // veto condition:
+        //if(aboveCutXZ[0] == 2 or aboveCutXZ[sizeOfX-1] == 2) continue;
 
         int cntXZ = 0;
         int cntYZ = 0;
         for(auto s = 0; s<sizeOfX; s++) if(aboveCutXZ[s] == 2) cntXZ++;
-        for(auto s = 0; s<sizeOfX; s++) if(aboveCutYZ[s] == 2) cntYZ++;
+        for(auto s = 0; s<sizeOfY; s++) if(aboveCutYZ[s] == 2) cntYZ++;
 
         int maxLineZ_xz = 0;
         int temp_maxLineZ_xz = 0;
@@ -264,12 +358,13 @@ void crosstalkAna() {
             }
         }
         double dedz = 0;
-        for(uint ihit=0; ihit<auxHits.size(); ihit++){
-            if(auxHits[ihit]->GetView() == 1){
-                dedz += auxHits[ihit]->GetCharge();
+        for(uint ihit=0; ihit<listOfHits.size(); ihit++){
+            if(listOfHits[ihit]->GetView() == 1){
+                dedz += listOfHits[ihit]->GetCharge();
             }
         }
         if (maxLineZ_xz) dedz /= maxLineZ_xz;
+        if(!dataType) dedz /= 1.5;
 
         int maxLineZ_yz = 0;
         int temp_maxLineZ_yz = 0;
@@ -291,8 +386,12 @@ void crosstalkAna() {
             cout << endl;
         }
 
-        if(cntXZ > 2 or cntYZ > 3) continue;
-        if(maxLineZ_xz < 30 or maxLineZ_yz < 30) continue;
+        // if(cntXZ > 1 or cntYZ > 1) continue;
+        // if(maxLineZ_xz < 30 or maxLineZ_yz < 30) continue;
+
+        int xPos = -1;
+        for(auto s = 0; s<sizeOfX; s++) if(aboveCutXZ[s] == 2)  xPos = int(s);
+        if (xPos < 0) continue;
 
         if(debug){        
             cout << endl << "XZ: " << endl;
@@ -314,98 +413,182 @@ void crosstalkAna() {
         if(mode <0) continue;
 
         bool stopping = false;
-        if(lineZ_xz[sizeOfZ-1] == 0 && lineZ_xz[sizeOfZ] == 0) stopping = true;
+        if(/*lineZ_xz[sizeOfZ-1] == 0 && */lineZ_xz[sizeOfZ] == 0) stopping = true;
         if( stopping && mode == 1) selSP++;
 
-        for(uint ihit = 0; ihit < auxHits.size(); ihit++){
-            if( auxHits[ihit]->GetView() == 0 ) continue;
-            else if( auxHits[ihit]->GetView() == 1 ){
+        // Stopping and HI sample, far from stopping point
+        if(mode == 1 && cntXZ == 1 && cntYZ == 1 && stopping){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                if(hit->GetView() != 1) continue;
+                if(hit->GetX() != xPos) continue;
+                if(hit->GetCharge() < q_Cut) continue;
+                if( abs(maxZ_xz - hit->GetZ()) <3) continue; 
+                SP_F_HIT_CNT++;
+                for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
+                    if(listOfHits[jhit]->GetView() != 1) continue;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) SP_F_CT_CNT++;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) SP_F_CT_CNT2++;
+                }
+            }
+        }
+
+        // Stopping and HI sample, 1 cube before stopping point
+        if(mode == 1 && cntXZ == 1 && cntYZ == 1 && stopping){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                if(hit->GetView() != 1) continue;
+                if(hit->GetX() != xPos) continue;
+                if(hit->GetCharge() < q_Cut) continue;
+                if( maxZ_xz - hit->GetZ() != -1) continue; 
+                SP_A_HIT_CNT++;
+                for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
+                    if(listOfHits[jhit]->GetView() != 1) continue;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) SP_A_CT_CNT++;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) SP_A_CT_CNT2++;
+                }
+            }
+        }
+
+        // Stopping and HI sample, at stopping point
+        if(mode == 1 && cntXZ == 1 && cntYZ == 1 && stopping){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                if(hit->GetView() != 1) continue;
+                if(hit->GetX() != xPos) continue;
+                if(hit->GetCharge() < q_Cut) continue;
+                if( maxZ_xz - hit->GetZ() != 0) continue; 
+                SP_S_HIT_CNT++;
+                for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
+                    if(listOfHits[jhit]->GetView() != 1) continue;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) SP_S_CT_CNT++;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) SP_S_CT_CNT2++;
+                }
+            }
+        }
+
+        // Not stopping and HI
+        if(mode == 1 && cntXZ == 1 && cntYZ == 1 && !stopping){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                if(hit->GetView() != 1) continue;
+                if(hit->GetX() != xPos) continue;
+                if(hit->GetCharge() < q_Cut) continue;
+                if( abs(maxZ_xz - hit->GetZ()) <3) continue; 
+                HI_HIT_CNT++;
+                for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
+                    if(listOfHits[jhit]->GetView() != 1) continue;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) HI_CT_CNT++;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) HI_CT_CNT2++;
+                }
+            }
+        }
+
+        // Not stopping and LI
+        if(mode == 0 && cntXZ == 1 && cntYZ == 1 && !stopping){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                if(hit->GetView() != 1) continue;
+                if(hit->GetX() != xPos) continue;
+                if(hit->GetCharge() < q_Cut) continue;
+                LI_HIT_CNT++;
+                for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
+                    if(listOfHits[jhit]->GetView() != 1) continue;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) LI_CT_CNT++;
+                    if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) LI_CT_CNT2++;
+                }
+            }
+        }
+
+        for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+            if( listOfHits[ihit]->GetView() == 0 ) continue;
+            else if( listOfHits[ihit]->GetView() == 1 ){
 
                 // hit at maxZ:
-                if(abs(maxZ_xz - auxHits[ihit]->GetZ()) == 0){
+                if(abs(maxZ_xz - listOfHits[ihit]->GetZ()) == 0){
                     // continue if it is crosstalk:
-                    if(aboveCutXZ[int(auxHits[ihit]->GetX())] == 2) continue; 
+                    if(aboveCutXZ[int(listOfHits[ihit]->GetX())] == 2) continue; 
                     // fill crosstalk PE distribution for the XZ plane
-                    if(mode == 1 && stopping) h_SP_PE_xz[2]->Fill(auxHits[ihit]->GetCharge()); 
+                    if(mode == 1 && stopping) h_SP_PE_xz[2]->Fill(listOfHits[ihit]->GetCharge()); 
                     // search hits in X-1 and X+1:
-                    for(uint jhit=0; jhit<auxHits.size(); jhit++){
-                        if (auxHits[ihit]->GetView() != 1) continue;
-                        if( abs(auxHits[ihit]->GetX()-auxHits[jhit]->GetX()) == 1 && abs(auxHits[ihit]->GetZ()-auxHits[jhit]->GetZ()) == 0 && auxHits[jhit]->GetCharge() > q_Cut){
-                            if(mode == 1 && stopping) h_SP_RQ_xz[2]->Fill( 100.*auxHits[ihit]->GetCharge()/auxHits[jhit]->GetCharge()); 
+                    for(uint jhit=0; jhit<listOfHits.size(); jhit++){
+                        if (listOfHits[ihit]->GetView() != 1) continue;
+                        if( abs(listOfHits[ihit]->GetX()-listOfHits[jhit]->GetX()) == 1 && abs(listOfHits[ihit]->GetZ()-listOfHits[jhit]->GetZ()) == 0 && listOfHits[jhit]->GetCharge() > q_Cut){
+                            if(mode == 1 && stopping) h_SP_RQ_xz[2]->Fill( 100.*listOfHits[ihit]->GetCharge()/listOfHits[jhit]->GetCharge()); 
                         }
                     }
                 }
-                else if( maxZ_xz - auxHits[ihit]->GetZ()  == 1){
+                else if( maxZ_xz - listOfHits[ihit]->GetZ()  == 1){
                     // continue if it is crosstalk:
-                    if(aboveCutXZ[int(auxHits[ihit]->GetX())] == 2) continue; 
+                    if(aboveCutXZ[int(listOfHits[ihit]->GetX())] == 2) continue; 
                     // fill crosstalk PE distribution for the XZ plane
-                    if(mode == 1 && stopping) h_SP_PE_xz[1]->Fill(auxHits[ihit]->GetCharge()); 
+                    if(mode == 1 && stopping) h_SP_PE_xz[1]->Fill(listOfHits[ihit]->GetCharge()); 
                     // search hits in X-1 and X+1:
-                    for(uint jhit=0; jhit<auxHits.size(); jhit++){
-                        if (auxHits[ihit]->GetView() != 1) continue;
-                        if( abs(auxHits[ihit]->GetX()-auxHits[jhit]->GetX()) == 1 && abs(auxHits[ihit]->GetZ()-auxHits[jhit]->GetZ()) == 0 && auxHits[jhit]->GetCharge() > q_Cut){
-                            if(mode == 1 && stopping) h_SP_RQ_xz[1]->Fill( 100.*auxHits[ihit]->GetCharge()/auxHits[jhit]->GetCharge()); 
+                    for(uint jhit=0; jhit<listOfHits.size(); jhit++){
+                        if (listOfHits[ihit]->GetView() != 1) continue;
+                        if( abs(listOfHits[ihit]->GetX()-listOfHits[jhit]->GetX()) == 1 && abs(listOfHits[ihit]->GetZ()-listOfHits[jhit]->GetZ()) == 0 && listOfHits[jhit]->GetCharge() > q_Cut){
+                            if(mode == 1 && stopping) h_SP_RQ_xz[1]->Fill( 100.*listOfHits[ihit]->GetCharge()/listOfHits[jhit]->GetCharge()); 
                         }
                     }
                 }
 
-                else if(abs(maxZ_xz - auxHits[ihit]->GetZ()) > 2){
+                else if(abs(maxZ_xz - listOfHits[ihit]->GetZ()) > 2){
                     // continue if it is crosstalk:
-                    if(aboveCutXZ[int(auxHits[ihit]->GetX())] == 2) continue; 
+                    if(aboveCutXZ[int(listOfHits[ihit]->GetX())] == 2) continue; 
                     // fill crosstalk PE distribution for the XZ plane
-                    h_PE_xz[mode]->Fill(auxHits[ihit]->GetCharge());
-                    if(mode == 1 && stopping) h_SP_PE_xz [0]->Fill(auxHits[ihit]->GetCharge()); 
+                    h_PE_xz[mode]->Fill(listOfHits[ihit]->GetCharge());
+                    if(mode == 1 && stopping) h_SP_PE_xz [0]->Fill(listOfHits[ihit]->GetCharge()); 
                     // search hits in X-1 and X+1:
-                    for(uint jhit=0; jhit<auxHits.size(); jhit++){
-                        if (auxHits[ihit]->GetView() != 1) continue;
-                        if( abs(auxHits[ihit]->GetX()-auxHits[jhit]->GetX()) == 1 && abs(auxHits[ihit]->GetZ()-auxHits[jhit]->GetZ()) == 0 && auxHits[jhit]->GetCharge() > q_Cut){
-                            h_RQ_xz[mode]->Fill( 100.*auxHits[ihit]->GetCharge()/auxHits[jhit]->GetCharge());
-                            if(mode == 1 && stopping) h_SP_RQ_xz[0]->Fill( 100.*auxHits[ihit]->GetCharge()/auxHits[jhit]->GetCharge());
+                    for(uint jhit=0; jhit<listOfHits.size(); jhit++){
+                        if (listOfHits[ihit]->GetView() != 1) continue;
+                        if( abs(listOfHits[ihit]->GetX()-listOfHits[jhit]->GetX()) == 1 && abs(listOfHits[ihit]->GetZ()-listOfHits[jhit]->GetZ()) == 0 && listOfHits[jhit]->GetCharge() > q_Cut){
+                            h_RQ_xz[mode]->Fill( 100.*listOfHits[ihit]->GetCharge()/listOfHits[jhit]->GetCharge());
+                            if(mode == 1 && stopping) h_SP_RQ_xz[0]->Fill( 100.*listOfHits[ihit]->GetCharge()/listOfHits[jhit]->GetCharge());
                         }
                     }
                 }
             }
-            else if( auxHits[ihit]->GetView() == 2 ){
+            else if( listOfHits[ihit]->GetView() == 2 ){
                 // hit at maxZ:
-                if(abs(maxZ_yz - auxHits[ihit]->GetZ()) == 0){
+                if(abs(maxZ_yz - listOfHits[ihit]->GetZ()) == 0){
                     // continue if it is crosstalk:
-                    if(aboveCutYZ[int(auxHits[ihit]->GetY())] == 2) continue; 
+                    if(aboveCutYZ[int(listOfHits[ihit]->GetY())] == 2) continue; 
                     // fill crosstalk PE distribution for the YZ plane
-                    if(mode == 1 && stopping) h_SP_PE_yz[2]->Fill(auxHits[ihit]->GetCharge()); 
+                    if(mode == 1 && stopping) h_SP_PE_yz[2]->Fill(listOfHits[ihit]->GetCharge()); 
                     // search hits in Y-1 and Y+1:
-                    for(uint jhit=0; jhit<auxHits.size(); jhit++){
-                        if (auxHits[ihit]->GetView() != 2) continue;
-                        if( abs(auxHits[ihit]->GetY()-auxHits[jhit]->GetY()) == 1 && abs(auxHits[ihit]->GetZ()-auxHits[jhit]->GetZ()) == 0 && auxHits[jhit]->GetCharge() > q_Cut){
-                            if(mode == 1 && stopping) h_SP_RQ_yz [2]->Fill( 100.*auxHits[ihit]->GetCharge()/auxHits[jhit]->GetCharge()); 
+                    for(uint jhit=0; jhit<listOfHits.size(); jhit++){
+                        if (listOfHits[ihit]->GetView() != 2) continue;
+                        if( abs(listOfHits[ihit]->GetY()-listOfHits[jhit]->GetY()) == 1 && abs(listOfHits[ihit]->GetZ()-listOfHits[jhit]->GetZ()) == 0 && listOfHits[jhit]->GetCharge() > q_Cut){
+                            if(mode == 1 && stopping) h_SP_RQ_yz [2]->Fill( 100.*listOfHits[ihit]->GetCharge()/listOfHits[jhit]->GetCharge()); 
                         }
                     }
                 }
-                else if( maxZ_yz - auxHits[ihit]->GetZ()  == 1){
+                else if( maxZ_yz - listOfHits[ihit]->GetZ()  == 1){
                     // continue if it is crosstalk:
-                    if(aboveCutYZ[int(auxHits[ihit]->GetY())] == 2) continue; 
+                    if(aboveCutYZ[int(listOfHits[ihit]->GetY())] == 2) continue; 
                     // fill crosstalk PE distribution for the YZ plane
-                    if(mode == 1 && stopping) h_SP_PE_yz[1]->Fill(auxHits[ihit]->GetCharge()); 
+                    if(mode == 1 && stopping) h_SP_PE_yz[1]->Fill(listOfHits[ihit]->GetCharge()); 
                     // search hits in Y-1 and Y+1:
-                    for(uint jhit=0; jhit<auxHits.size(); jhit++){
-                        if (auxHits[ihit]->GetView() != 2) continue;
-                        if( abs(auxHits[ihit]->GetY()-auxHits[jhit]->GetY()) == 1 && abs(auxHits[ihit]->GetZ()-auxHits[jhit]->GetZ()) == 0 && auxHits[jhit]->GetCharge() > q_Cut){
-                            if(mode == 1 && stopping) h_SP_RQ_yz[1]->Fill( 100.*auxHits[ihit]->GetCharge()/auxHits[jhit]->GetCharge()); 
+                    for(uint jhit=0; jhit<listOfHits.size(); jhit++){
+                        if (listOfHits[ihit]->GetView() != 2) continue;
+                        if( abs(listOfHits[ihit]->GetY()-listOfHits[jhit]->GetY()) == 1 && abs(listOfHits[ihit]->GetZ()-listOfHits[jhit]->GetZ()) == 0 && listOfHits[jhit]->GetCharge() > q_Cut){
+                            if(mode == 1 && stopping) h_SP_RQ_yz[1]->Fill( 100.*listOfHits[ihit]->GetCharge()/listOfHits[jhit]->GetCharge()); 
                         }
                     }
                 }
 
-                else if(abs(maxZ_yz - auxHits[ihit]->GetZ()) > 2){
+                else if(abs(maxZ_yz - listOfHits[ihit]->GetZ()) > 2){
                     // continue if it is crosstalk:
-                    if(aboveCutYZ[int(auxHits[ihit]->GetY())] == 2) continue; 
+                    if(aboveCutYZ[int(listOfHits[ihit]->GetY())] == 2) continue; 
                     // fill crosstalk PE distribution for the YZ plane
-                    h_PE_yz[mode]->Fill(auxHits[ihit]->GetCharge());
-                    if(mode == 1 && stopping) h_SP_PE_yz [0]->Fill(auxHits[ihit]->GetCharge()); 
+                    h_PE_yz[mode]->Fill(listOfHits[ihit]->GetCharge());
+                    if(mode == 1 && stopping) h_SP_PE_yz [0]->Fill(listOfHits[ihit]->GetCharge()); 
                     // search hits in Y-1 and Y+1:
-                    for(uint jhit=0; jhit<auxHits.size(); jhit++){
-                        if (auxHits[ihit]->GetView() != 2) continue;
-                        if( abs(auxHits[ihit]->GetY()-auxHits[jhit]->GetY()) == 1 && abs(auxHits[ihit]->GetZ()-auxHits[jhit]->GetZ()) == 0 && auxHits[jhit]->GetCharge() > q_Cut){
-                            h_RQ_yz[mode]->Fill( 100.*auxHits[ihit]->GetCharge()/auxHits[jhit]->GetCharge());
-                            if(mode == 1 && stopping) h_SP_RQ_yz[0]->Fill( 100.*auxHits[ihit]->GetCharge()/auxHits[jhit]->GetCharge());
+                    for(uint jhit=0; jhit<listOfHits.size(); jhit++){
+                        if (listOfHits[ihit]->GetView() != 2) continue;
+                        if( abs(listOfHits[ihit]->GetY()-listOfHits[jhit]->GetY()) == 1 && abs(listOfHits[ihit]->GetZ()-listOfHits[jhit]->GetZ()) == 0 && listOfHits[jhit]->GetCharge() > q_Cut){
+                            h_RQ_yz[mode]->Fill( 100.*listOfHits[ihit]->GetCharge()/listOfHits[jhit]->GetCharge());
+                            if(mode == 1 && stopping) h_SP_RQ_yz[0]->Fill( 100.*listOfHits[ihit]->GetCharge()/listOfHits[jhit]->GetCharge());
                         }
                     }
                 }
@@ -437,8 +620,8 @@ void crosstalkAna() {
 
             Int_t tolerance = 0;
 
-            for(size_t i=0; i<auxHits.size(); i++){
-                ND280SFGDHit* hit = auxHits[i];
+            for(size_t i=0; i<listOfHits.size(); i++){
+                ND280SFGDHit* hit = listOfHits[i];
 
                 if(hit->GetView() == 0){
                     hXY->Fill(hit->GetX(),hit->GetY(),hit->GetCharge());
@@ -573,8 +756,45 @@ void crosstalkAna() {
     cout << "Selected HI events: " << selHI << endl;
     cout << "Selected SP events: " << selSP << endl;
 
-    TCanvas* b_1 = new TCanvas("SP_1");
-    b_1->Divide(3,2); 
+    cout << endl << "CROSSTALK SUMMARY: " << endl;
+    cout << "SC: 'Stopping Cube' " << endl << endl;cout << "SC: 'Stopping Cube' " << endl;
+    cout << "SP: 'Stopping proton track.' " << endl;
+    cout << "LI: 'Low ionizing tracks.' " << endl;
+    cout << "LI: 'High ionizing tracks.' " << endl << endl;
+
+    if(SP_F_HIT_CNT > 0){
+        cout << "SP TOT HITS far from SC:            " << SP_F_HIT_CNT << endl;
+        cout << "SP HITS     far from SC  CT at 1cm: " << SP_F_CT_CNT  << ", " << 0.5*100.*SP_F_CT_CNT/SP_F_HIT_CNT << "%" << endl;
+        cout << "SP HITS     far from SC  CT at 2cm: " << SP_F_CT_CNT2 << ", " << 0.5*100.*SP_F_CT_CNT2/SP_F_HIT_CNT << "%"<< endl << endl;
+    }
+
+    if(SP_A_HIT_CNT > 0){
+        cout << "SP TOT HITS 1cube before SC:             " << SP_A_HIT_CNT << endl;
+        cout << "SP HITS     1cube before SC  CT at 1cm: " << SP_A_CT_CNT  << ", " << 0.5*100.*SP_A_CT_CNT/SP_A_HIT_CNT << "%" << endl;
+        cout << "SP HITS     1cube before SC  CT at 2cm: " << SP_A_CT_CNT2 << ", " << 0.5*100.*SP_A_CT_CNT2/SP_A_HIT_CNT << "%"<< endl << endl;
+    }
+
+    if(SP_S_HIT_CNT > 0){
+        cout << "SP TOT HITS at SC:            " << SP_S_HIT_CNT << endl;
+        cout << "SP HITS     at SC  CT at 1cm: " << SP_S_CT_CNT  << ", " << 0.5*100.*SP_S_CT_CNT/SP_S_HIT_CNT << "%" << endl;
+        cout << "SP HITS     at SC  CT at 2cm: " << SP_S_CT_CNT2 << ", " << 0.5*100.*SP_S_CT_CNT2/SP_S_HIT_CNT << "%"<< endl << endl;
+    }
+
+    if(HI_HIT_CNT > 0){
+        cout << "HI TOT HITS            " << HI_HIT_CNT << endl;
+        cout << "HI HITS     CT at 1cm: " << HI_CT_CNT  << ", " << 0.5*100.*HI_CT_CNT/HI_HIT_CNT << "%" << endl;
+        cout << "HI HITS     CT at 2cm: " << HI_CT_CNT2 << ", " << 0.5*100.*HI_CT_CNT2/HI_HIT_CNT << "%"<< endl << endl;
+    }
+
+    if(LI_HIT_CNT > 0){
+        cout << "LI TOT HITS            " << LI_HIT_CNT << endl;
+        cout << "LI HITS     CT at 1cm: " << LI_CT_CNT  << ", " << 0.5*100.*LI_CT_CNT/LI_HIT_CNT << "%" << endl;
+        cout << "LI HITS     CT at 2cm: " << LI_CT_CNT2 << ", " << 0.5*100.*LI_CT_CNT2/LI_HIT_CNT << "%"<< endl << endl;
+    }
+    cout << endl; 
+
+    TCanvas* c1 = new TCanvas("SP1");
+    c1->Divide(3,2); 
 
     if(h_SP_PE_xz[0]->GetEntries()) h_SP_PE_xz[0]->Scale(1/h_SP_PE_xz[0]->GetEntries(), "width");
     if(h_SP_PE_xz[1]->GetEntries()) h_SP_PE_xz[1]->Scale(1/h_SP_PE_xz[1]->GetEntries(), "width");
@@ -596,52 +816,55 @@ void crosstalkAna() {
     h_SP_PE_yz[1]->SetLineWidth(2);
     h_SP_PE_xz[2]->SetLineWidth(2);
     h_SP_PE_yz[2]->SetLineWidth(2);
-    h_SP_PE_xz[0]->SetLineColor(kBlack);
-    h_SP_PE_yz[0]->SetLineColor(kRed);
+    h_SP_PE_yz[0]->SetLineColor(kBlack);
+    h_SP_PE_xz[0]->SetLineColor(kGreen+1);
+    h_SP_PE_yz[1]->SetLineColor(kCyan);
     h_SP_PE_xz[1]->SetLineColor(kBlue);
-    h_SP_PE_yz[1]->SetLineColor(kGreen+1);
-    h_SP_PE_xz[2]->SetLineColor(kCyan);
     h_SP_PE_yz[2]->SetLineColor(kOrange);
+    h_SP_PE_xz[2]->SetLineColor(kRed);
 
-    b_1->cd(1);
+    c1->cd(1);
     h_SP_PE_yz[0]->Draw("HIST");
 
-    b_1->cd(2);
+    c1->cd(2);
     h_SP_PE_yz[1]->Draw("HIST");
 
-    b_1->cd(3);
+    c1->cd(3);
     h_SP_PE_yz[2]->Draw("HIST");
 
-    b_1->cd(4);
+    c1->cd(4);
     h_SP_PE_xz[0]->Draw("HIST");
 
-    b_1->cd(5);
+    c1->cd(5);
     h_SP_PE_xz[1]->Draw("HIST");
 
-    b_1->cd(6);
+    c1->cd(6);
     h_SP_PE_xz[2]->Draw("HIST");
 
-    b_1->Update();
+    c1->Update();
+    TString c1_name = prefix + "SP1.pdf";
+    c1->SaveAs(c1_name.Data());
 
-    TCanvas* b_2 = new TCanvas("SP_2");
-    b_2->Divide(2,1); 
+    TCanvas* c2 = new TCanvas("SP2");
+    c2->Divide(2,1); 
 
-    b_2->cd(1);
-    gPad->SetTitle("");
+    c2->cd(1);
     h_SP_PE_yz[0]->Draw("HIST");
     h_SP_PE_yz[1]->Draw("HIST same");
     h_SP_PE_yz[2]->Draw("HIST same");
 
-    b_2->cd(2);
+    c2->cd(2);
     gPad->SetTitle("");
     h_SP_PE_xz[0]->Draw("HIST");
     h_SP_PE_xz[1]->Draw("HIST same");
     h_SP_PE_xz[2]->Draw("HIST same");
 
-    b_2->Update();
+    c2->Update();
+    TString c2_name = prefix + "SP2.pdf";
+    c2->SaveAs(c2_name.Data());
 
-    TCanvas* c = new TCanvas("PE");
-    c->Divide(4,2); 
+    TCanvas* c3 = new TCanvas("PE");
+    c3->Divide(4,2); 
 
     if(h_PE_xz[0]->GetEntries()) h_PE_xz[0]->Scale(1/h_PE_xz[0]->GetEntries(), "width");
     if(h_PE_xz[1]->GetEntries()) h_PE_xz[1]->Scale(1/h_PE_xz[1]->GetEntries(), "width");
@@ -657,56 +880,58 @@ void crosstalkAna() {
     h_PE_yz[0]->SetLineWidth(2);
     h_PE_xz[1]->SetLineWidth(2);
     h_PE_yz[1]->SetLineWidth(2);
-    h_PE_xz[0]->SetLineColor(kBlack);
+    h_PE_xz[0]->SetLineColor(kCyan);
     h_PE_yz[0]->SetLineColor(kRed);
-    h_PE_xz[1]->SetLineColor(kBlue);
-    h_PE_yz[1]->SetLineColor(kGreen+1);
+    h_PE_xz[1]->SetLineColor(kGreen+1);
+    h_PE_yz[1]->SetLineColor(kBlue);
 
-    TF1 *f1 = new TF1("f1","[0]*TMath::Power(([1]/[2]),(x/[2]))*(TMath::Exp(-([1]/[2])))/TMath::Gamma((x/[2])+1) + [3]*TMath::Power(([4]/[5]),(x/[5]))*(TMath::Exp(-([4]/[5])))/TMath::Gamma((x/[5])+1)",0,20);
-    f1->SetParameters(0.2, 3.3, 1.35, 0.1,5,2);
+    // TF1 *f1 = new TF1("f1","[0]*TMath::Power(([1]/[2]),(x/[2]))*(TMath::Exp(-([1]/[2])))/TMath::Gamma((x/[2])+1) + [3]*TMath::Power(([4]/[5]),(x/[5]))*(TMath::Exp(-([4]/[5])))/TMath::Gamma((x/[5])+1)",0,20);
+    // f1->SetParameters(0.2, 3.3, 1.35, 0.1,5,2);
     
-    TF1 *f2 = new TF1("f2","[0]*TMath::Power(([1]/[2]),(x/[2]))*(TMath::Exp(-([1]/[2])))/TMath::Gamma((x/[2])+1)",0,20);
-    f2->SetParameters(0.2, 3.3, 1.35);
+    // TF1 *f2 = new TF1("f2","[0]*TMath::Power(([1]/[2]),(x/[2]))*(TMath::Exp(-([1]/[2])))/TMath::Gamma((x/[2])+1)",0,20);
+    // f2->SetParameters(0.2, 3.3, 1.35);
 
-    c->cd(1);
+    c3->cd(1);
     h_PE_yz[0]->Draw("HIST");
 
-    c->cd(2);
+    c3->cd(2);
     h_PE_yz[1]->Draw("HIST");
-    h_PE_yz[1]->Fit("f2","",0,8);
-    f2->DrawCopy("same");
+    //h_PE_yz[1]->Fit("f2","",0,8);
+    //f2->DrawCopy("same");
 
-    c->cd(3);
+    c3->cd(3);
     h_PE_xz[0]->Draw("HIST");
-    h_PE_xz[0]->Fit("f1","",0,6);
-    f1->DrawCopy("same");
+    //h_PE_xz[0]->Fit("f1","",0,6);
+    //f1->DrawCopy("same");
 
-    c->cd(4);
+    c3->cd(4);
     h_PE_xz[1]->Draw("HIST");
-    f1->SetParameters(0.13, 4.7,1.93,0.1,5,2);
-    h_PE_xz[1]->Fit("f1","",0,8);
-    f1->DrawCopy("same");
+    //f1->SetParameters(0.13, 4.7,1.93,0.1,5,2);
+    //h_PE_xz[1]->Fit("f1","",0,8);
+    //f1->DrawCopy("same");
 
-    c->cd(5);
+    c3->cd(5);
     h_PE_yz[1]->Draw("HIST");
     h_PE_yz[0]->Draw("HIST same");
 
-    c->cd(6);
-    h_PE_xz[1]->Draw("HIST");
-    h_PE_xz[0]->Draw("HIST same");
+    c3->cd(6);
+    h_PE_xz[0]->Draw("HIST");
+    h_PE_xz[1]->Draw("HIST same");
 
-    c->cd(7);
+    c3->cd(7);
     h_PE_xz[0]->Draw("HIST");
     h_PE_yz[0]->Draw("HIST same");
 
-    c->cd(8);
+    c3->cd(8);
     h_PE_yz[1]->Draw("HIST");
     h_PE_xz[1]->Draw("HIST same");
 
-    c->Update();
+    c3->Update();
+    TString c3_name = prefix + "PE.pdf";
+    c3->SaveAs(c3_name.Data());
 
-    TCanvas* d = new TCanvas("RQ");
-    d->Divide(4,2); 
+    TCanvas* c4 = new TCanvas("RQ");
+    c4->Divide(4,2); 
 
     if(h_RQ_xz[0]->GetEntries()) h_RQ_xz[0]->Scale(1/h_RQ_xz[0]->GetEntries(), "width");
     if(h_RQ_xz[1]->GetEntries()) h_RQ_xz[1]->Scale(1/h_RQ_xz[1]->GetEntries(), "width");
@@ -727,37 +952,46 @@ void crosstalkAna() {
     h_RQ_xz[1]->SetLineColor(kBlue);
     h_RQ_yz[1]->SetLineColor(kGreen+1);
 
-    d->cd(1);
+    c4->cd(1);
     gPad->SetTitle("");
     h_RQ_yz[0]->Draw("HIST");
 
-    d->cd(2);
+    c4->cd(2);
     h_RQ_yz[1]->Draw("HIST");
 
-    d->cd(3);
+    c4->cd(3);
     h_RQ_xz[0]->Draw("HIST");
 
-    d->cd(4);
+    c4->cd(4);
     h_RQ_xz[1]->Draw("HIST");
 
-    d->cd(5);
+    c4->cd(5);
     h_RQ_yz[1]->Draw("HIST");
     h_RQ_yz[0]->Draw("HIST same");
 
-    d->cd(6);
+    c4->cd(6);
     h_RQ_xz[1]->Draw("HIST");
     h_RQ_xz[0]->Draw("HIST same");
 
-    d->cd(7);
+    c4->cd(7);
     h_RQ_xz[0]->Draw("HIST");
     h_RQ_yz[0]->Draw("HIST same");
 
-    d->cd(8);
+    c4->cd(8);
     h_RQ_yz[1]->Draw("HIST");
     h_RQ_xz[1]->Draw("HIST same");
 
-    d->Update();
-    d->WaitPrimitive();
+    c4->Update();
+    TString c4_name = prefix + "RQ.pdf";
+    c4->SaveAs(c4_name.Data());
+
+    TCanvas* c5 = new TCanvas("dEdL");
+    c5->cd(); 
+    h_dedz->Draw("HIS");
+    TString fname = prefix + "dEdL.pdf";
+    c5->SaveAs(fname.Data());
+    c5->Update();
+    c5->WaitPrimitive();
 
     /// ------------END--------------
     FileInput->Close();

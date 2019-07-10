@@ -59,6 +59,8 @@ public:
 
     void DrawTracks();
 
+    void MergeHits();
+
     void ResetEvent(Option_t* /*option*/="")
     {
         for ( UInt_t i=0; i<fHits.size(); i++)   delete fHits[i];

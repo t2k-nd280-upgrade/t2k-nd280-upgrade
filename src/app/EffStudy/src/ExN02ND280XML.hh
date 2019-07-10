@@ -34,6 +34,7 @@ public :
   G4bool   GetXMLStoreGeometry(){return fStoreGeometry;};
   G4String GetXMLGenerTypeName(){return fGenerType;};
   G4String GetXMLPathFiles()    {return fPathFiles;};
+  void SetXMLPathFiles(string path) { fPathFiles = path; cout << "here" << fPathFiles << endl;};
   G4String GetXMLGenerTreeName(){return fGenerTreeName;};
   G4String GetXMLGenerFileName(){return fGenerFileName;};
   G4int    GetXMLStepEvent()    {return fGenerStepEvent;};

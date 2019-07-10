@@ -38,8 +38,8 @@ if (NOT ${GEANT_VERSION} VERSION_LESS 10.02.03)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNEW_G4")
 endif (NOT ${GEANT_VERSION} VERSION_LESS 10.02.03)
 
-find_package(CLHEP)
-pbuilder_add_ext_libraries( ${CHLEP_LIBRARIES} )
+# find_package(CLHEP)
+# pbuilder_add_ext_libraries( ${CHLEP_LIBRARIES} )
 
 #if    (VGM_FOUND)
 #  INCLUDE_DIRECTORIES(${VGM_INCLUDE_DIR})

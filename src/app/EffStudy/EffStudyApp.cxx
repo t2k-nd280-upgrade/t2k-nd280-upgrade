@@ -87,7 +87,7 @@
 int main(int argc, char **argv)
 {
 
-    if (argc != 6)
+    if (argc != 7)
     { // batch mode
         cout << "You need to provide the following arguments:" << endl;
         cout << " 1) input G4 macro file name" << endl;
@@ -95,6 +95,7 @@ int main(int argc, char **argv)
         cout << " 3) output ROOT file name" << endl;
         cout << " 4) first event in the generator tree" << endl;
         cout << " 5) total number of events to run" << endl;
+        cout << " 6) path to files (GENIE...)" << endl;
         exit(1);
     }
 
@@ -123,13 +124,17 @@ int main(int argc, char **argv)
                     "The file is not open");
     }
 
+    std::cout << "HELLO" << std::endl;
     //
     // Set the input configuration file
     //
     G4String xmlfilename = argv[2];
     persistencyManager->OpenXML(xmlfilename);
+    std::cout << "HELLO" << std::endl;
 
     ExN02ND280XML *ND280XMLInput = persistencyManager->GetXMLInput();
+
+    ND280XMLInput->SetXMLPathFiles(argv[6]);
 
     G4cout << "File name: " << ND280XMLInput->GetXMLFileName() << G4endl;
     G4cout << "Generator: " << ND280XMLInput->GetXMLGenerTypeName() << G4endl;

@@ -38,7 +38,10 @@ ND280PersistencyManager::ND280PersistencyManager()
     fGammaThreshold(20*CLHEP::MeV), // default nd280mc is 50*MeV 
     fNeutronThreshold(50*CLHEP::MeV),
     fTrajectoryPointAccuracy(1*CLHEP::cm), 
+    fSaveAllTraj(false), // not to store all the traj by default
+    fSaveAllHits(false), // not to store all the hits by default
     fSaveAllPrimaryTrajectories(true) //default nd280mc is false
+
 {
   fPersistencyMessenger = new ND280PersistencyMessenger(this);
 }
@@ -100,13 +103,13 @@ bool ND280PersistencyManager::SaveTrajectoryBoundary(G4VTrajectory* g4Traj,
          ++r) {
         // Check if a watched volume is being entered.
         if ((*r)->Match(current)>0 && (*r)->Match(previous)<1) {
-	  //ND280NamedDebug("boundary","Entering " << current);
-	  return true;
+    //ND280NamedDebug("boundary","Entering " << current);
+    return true;
         }
         // Check if a watched volume is being exited.
         if ((*r)->Match(current)<1 && (*r)->Match(previous)>0) {
-	  //ND280NamedDebug("boundary","Exiting " << current);
-	  return true;
+    //ND280NamedDebug("boundary","Exiting " << current);
+    return true;
         }
     }
     return false;
@@ -118,15 +121,6 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
   
   G4String detname_curr = ndPoint->GetLogVolName();
 
-  // uncomment this to store all points in the target
-  
-  /*if (detname_curr.contains("/t2k/OA/Magnet/Basket/target1")) {
-    ndPoint->MarkPoint();
-    return;
-  } else
-    return;*/
-  
-
   G4Region* SDRegion = G4RegionStore::GetInstance()->
     GetRegion("SDRegion",false);
   int NSDRootVolumes =  SDRegion->GetNumberOfRootVolumes();
@@ -136,8 +130,8 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
   //G4String detname_curr = ndPoint->GetPhysVolName();
 
   // G4cout << "Point in Phys Vol: " << detname_curr 
-  // 	 << " --> Log Vol: " << ndPoint->GetLogVolName()
-  // 	 << G4endl;
+  //   << " --> Log Vol: " << ndPoint->GetLogVolName()
+  //   << G4endl;
   // // G4cout << "     Eloss = " << ndPoint->GetEdep() / MeV << G4endl;
   
   for(int i = 0; i < NSDRootVolumes ; i++, it_logicalVolumeInRegion++){  
@@ -150,7 +144,7 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
     //
     
     //if(detname_curr == SDLogVolName){
-    if(detname_curr.contains(SDLogVolName)){	  
+    if(detname_curr.contains(SDLogVolName)){    
       //G4cout << " --> SDLogVolName = " << SDLogVolName << G4endl;
       ndPoint->MarkPoint();
       break;
@@ -163,12 +157,11 @@ void ND280PersistencyManager::MarkPoint(ND280TrajectoryPoint* ndPoint) {
 void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Event *event) {
   (void)event;
   //G4cout << "ND280PersistencyManager::MarkTrajectory" << G4endl;
-
-  // Uncomment this to store all trajectories 
   
-  //ndTraj->MarkTrajectory();
-  //return;
-  
+  if (GetSaveAllTraj()) {
+    ndTraj->MarkTrajectory();
+    return;
+  }  
   
   // Go through all of the trajectories and save:
   //
@@ -321,8 +314,8 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   if (particleName == "e+" || particleName == "e-"){
     if (processName == "conv"){
       if(initialMomentum > 100*CLHEP::MeV){
-	ndTraj->MarkTrajectory(false); 
-     	return;
+  ndTraj->MarkTrajectory(false); 
+      return;
       }
     }
   }
@@ -364,9 +357,9 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   // hadronic elastic processes
   if (processName == "hadElastic"){
     if ( particleName == "proton" ||
-	 particleName == "pi-"    ||
-	 particleName == "pi+"
-	 ){
+   particleName == "pi-"    ||
+   particleName == "pi+"
+   ){
       ndTraj->MarkTrajectory(false);
       return;    
     }
@@ -400,27 +393,27 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   //   if (g4Hits->GetSize()<1) continue;  
   //   for (unsigned int h=0; h<g4Hits->GetSize(); ++h) {
   //     ExN02TrackerHit* g4Hit
-  // 	= dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));      
+  //  = dynamic_cast<ExN02TrackerHit*>(g4Hits->GetHit(h));      
   //     if (!g4Hit) {
-  // 	G4ExceptionDescription msg;
-  // 	msg << "Not a hit." << G4endl; 
-  // 	G4Exception("ND280Persistency::MarkTrajectory()",
-  // 		    "ExN02Code001", FatalException, msg);
-  // 	continue;
+  //  G4ExceptionDescription msg;
+  //  msg << "Not a hit." << G4endl; 
+  //  G4Exception("ND280Persistency::MarkTrajectory()",
+  //        "ExN02Code001", FatalException, msg);
+  //  continue;
   //     }      
   //     // Make sure that the primary trajectory associated with this hit
   //     // is saved.  The primary trajectories are defined by
   //     // ND280TrajectoryMap::FindPrimaryId(      int primaryId = g4Hit->GetTrackID();
   //     ND280Trajectory* ndTraj 
-  // 	= dynamic_cast<ND280Trajectory*>(
-  // 					 ND280TrajectoryMap::Get(primaryId));
+  //  = dynamic_cast<ND280Trajectory*>(
+  //           ND280TrajectoryMap::Get(primaryId));
   //     // primaryId is the track ID (see nd280mc ND280TrajectoryMap)      
   //     if (ndTraj) ndTraj->MarkTrajectory(false);
   //     else{
-  // 	G4ExceptionDescription msg;
-  // 	msg << "Primary trajectory not found" << G4endl; 
-  // 	G4Exception("ND280Persistency::MarkTrajectories()",
-  // 		    "ExN02Code001", FatalException, msg);
+  //  G4ExceptionDescription msg;
+  //  msg << "Primary trajectory not found" << G4endl; 
+  //  G4Exception("ND280Persistency::MarkTrajectories()",
+  //        "ExN02Code001", FatalException, msg);
   //     } 
   //   }
   // } 
@@ -479,11 +472,11 @@ int ND280PersistencyManager::SplitTrajectory(
 
     int point3 = 0.5*(point1 + point2);
     if (point3 <= point1){
-	//G4Exception("Points too close to split");
-	G4ExceptionDescription msg;
-	msg << "Points too close to split" << G4endl; 
-	G4Exception("ND280Persistency::SplitTrajectory()",
-		    "ExN02Code001", JustWarning, msg);
+  //G4Exception("Points too close to split");
+  G4ExceptionDescription msg;
+  msg << "Points too close to split" << G4endl; 
+  G4Exception("ND280Persistency::SplitTrajectory()",
+        "ExN02Code001", JustWarning, msg);
     } 
     
     if (point2 <= point3){
@@ -491,7 +484,7 @@ int ND280PersistencyManager::SplitTrajectory(
       G4ExceptionDescription msg;
       msg << "Points too close to split" << G4endl; 
       G4Exception("ND280Persistency::SplitTrajectory()",
-		  "ExN02Code001", JustWarning, msg);
+      "ExN02Code001", JustWarning, msg);
     }
     double bestAccuracy = FindTrajectoryAccuracy(g4Traj, point1, point3);
 
@@ -550,8 +543,8 @@ void ND280PersistencyManager::SelectTrajectoryPoints(
     for (int tp = 1; tp < lastIndex; ++tp) {
         nd280Point = dynamic_cast<ND280TrajectoryPoint*>(g4Traj->GetPoint(tp));
         
-	G4String volumeName = nd280Point->GetPhysVolName();
-	
+  G4String volumeName = nd280Point->GetPhysVolName();
+  
         // Save the point on a boundary crossing for volumes where we are
         // saving the entry and exit points.
         if (SaveTrajectoryBoundary(g4Traj,nd280Point->GetStepStatus(),

@@ -17,15 +17,19 @@ void applyReconstruction() {
     //      << "events can be used later to evaluate the perfomance of the reconstruction methods if the original input comes from MC,"   << endl 
     //      << "or to perform physics studies if the orignal input comes from beam test data."  << endl;
 
-    Int_t maxEvents   = 10000;
-    Int_t maxSelEvents= 1000;
+    Int_t maxEvents   = 100000;
+    Int_t maxSelEvents= 100000;
     Int_t selEvents   = 0;
 
-
+    TH1F* threshold_v = new TH1F("tXZ_1D","tXZ_1D",50,0,5);
+    TH2F* threshold = new TH2F("tXZ","tXZ",24,0,24,48,0,48);
+    for(int i = 0; i < 24; i++)
+        for(int j = 0; j < 48; j++)
+            threshold->SetBinContent(i+1,j+1,1000);
 
     TH1F* hitsQ = new TH1F("hQ","hQ",202,-1,200);
     TH1F* hitsRecoQ = new TH1F("hRQ","hRQ",202,-1,200);
-    TH1F* QvsToTratio = new TH1F("hQ","hQ",100,0,1);
+    TH1F* QvsToTratio = new TH1F("hQ","hQ",100,0,10);
 
     TString fileOut  = "/Users/cjesus/Desktop/Reconstruction_output.root";
 
@@ -38,8 +42,10 @@ void applyReconstruction() {
     TString fileIn;
     //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/MC_output.root";
     //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_proton.root";
-    if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_piplus.root";
-    if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_electron.root";
+    if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/MC_output.root";
+    //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_piplus_rot.root";
+    //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/CT_output.root";
+    //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_electron.root";
 
     //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/newXtalk_MC_output.root";
     //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/noCT_MC_output.root";
@@ -73,6 +79,7 @@ void applyReconstruction() {
         }
         else if (string( gApplication->Argv(iarg))=="-d" || string( gApplication->Argv(iarg))=="--data" ){
             dataType = 1;
+            fileIn    = "/Users/cjesus/Documents/PhD/SFGD/25August_8/25August_8_MCR0_hadrons_0pt8Gev_0pt0T_Beam___NewStructure.root";
         }
         else if (string( gApplication->Argv(iarg))=="-i" || string( gApplication->Argv(iarg))=="--input" ){
             iarg++;
@@ -197,7 +204,10 @@ void applyReconstruction() {
                 // cout << "Q" << hit->GetCharge() << endl;
                 // cout << "ToT" << hit->GetToT() << endl;
                 // cout << "ratio: " << hit->GetToT() / hit->GetCharge() << endl;
-                QvsToTratio->Fill(hit->GetToT() / hit->GetCharge());
+                QvsToTratio->Fill(hit->GetCharge());
+
+                if(hit->GetView()==1 && threshold->GetBinContent(hit->GetX()+1,hit->GetZ()+1) > hit->GetCharge() && hit->GetCharge() > 0)
+                    threshold->SetBinContent(hit->GetX()+1,hit->GetZ()+1,hit->GetCharge());
 
                 sfgdHit->SetDt(hit->GetDt());
                 sfgdHit->SetCharge(hit->GetCharge());
@@ -213,7 +223,7 @@ void applyReconstruction() {
             rawEvent->SetHits(auxHits);
             
             listOfHitsCopy.clear();
-            recoEvent = Reconstruct(auxHits,listOfHitsCopy,rawEvent->GetVoxels());
+            //recoEvent = Reconstruct(auxHits,listOfHitsCopy,rawEvent->GetVoxels());
 
             //// ------ What to do with the reconstructed event -------////
 
@@ -254,13 +264,22 @@ void applyReconstruction() {
 
      cout << "final number of selected events: " << selEvents << endl;
 
+    for(int i = 0; i < 24; i++)
+        for(int j = 0; j < 48; j++)
+            threshold_v->Fill(threshold->GetBinContent(i+1,j+1));
+
      TCanvas* c = new TCanvas("C");
-     c->cd();
+     c->Divide(1,2);
      // hitsRecoQ->SetLineColor(kRed);
      // hitsRecoQ->Draw("HIST");
      // hitsQ->Draw("same");
      //QvsToTratio->Fit("landau","", "",0.3,1);
      //QvsToTratio->Draw("HIST");
+     c->cd(1);
+     threshold->GetZaxis()->SetRangeUser(0,4);
+     threshold->Draw("COLZ");
+     c->cd(2);
+     threshold_v->Draw("COLZ");
 
      c->Update();
 

@@ -105,6 +105,22 @@ public:
   virtual void SetSaveAllPrimaryTrajectories(bool val) {
     fSaveAllPrimaryTrajectories = val;
   }
+
+  virtual bool GetSaveAllTraj(void) const {
+    return fSaveAllTraj;
+  }
+
+  virtual void SetSaveAllTraj(bool val) {
+    fSaveAllTraj = val;
+  }
+
+  virtual bool GetSaveAllHits(void) const {
+    return fSaveAllHits;
+  }
+
+  virtual void SetSaveAllHits(bool val) {
+    fSaveAllHits = val;
+  }
   
   /// Get the flag to save primary particle trajectories.  If this flag is
   /// true, then the trajectories for primary particles are saved even if
@@ -191,6 +207,12 @@ private:
   /// The maximum distance between the interpolated trajectory position and
   /// an unsaved trajectory point.
   double fTrajectoryPointAccuracy;
+
+  /// Flag to determine if all the generated trajectories should be stored
+  bool fSaveAllTraj;
+
+  /// Flag to store hits from all the trajs onstead of storing only from prim ones
+  bool fSaveAllHits;
   
   /// Flag to determine if all primary trajectories are saved, or only those
   /// that ultimately create energy in a sensitive detector.  The primary
