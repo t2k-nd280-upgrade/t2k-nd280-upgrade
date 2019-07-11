@@ -2,6 +2,7 @@
 #include <TH2F.h>
 #include <TH1F.h>
 #include <TH3F.h>
+#include <TH3I.h>
 #include <TGraph.h>
 #include <TMultiGraph.h>
 #include <TTree.h>
@@ -41,6 +42,7 @@ bool PLOT = false;
 int thr = 50;
 
 bool CloseHit(int i, int j, TH2F* h_ini);
+bool CloseHit(int i, int j, int k, TH3I* h_ini);
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -102,6 +104,8 @@ int NeutronAnalysis(int argc,char** argv) {
   // hits versus energy
   TH2F* hits_energy = new TH2F("hitsE", "Hits vs Energy", 250, 0., 500., 50, 0., 50.);
 
+  // hits distribution in a time
+  TH1F* hits_time = new TH1F("hits_time", "Time in the cluster", 100, 0., 200.);
   // initial energy versus cos theta
   TH2F* init_e_cos  = new TH2F("ini_ET", "Initial", 10, -1., 1., 250, 0., 800);
   TH2F* eff_e_cos   = new TH2F("eff_ET", "Efficiency", 10, -1., 1., 250, 0., 800);
@@ -222,18 +226,20 @@ int NeutronAnalysis(int argc,char** argv) {
   Int_t binY = h2d_xy->GetYaxis()->GetNbins();
   Int_t binZ = h2d_xz->GetYaxis()->GetNbins();
 
-  Float_t X_min = h2d_xy->GetXaxis()->GetBinLowEdge(0);
+  Float_t X_min = h2d_xy->GetXaxis()->GetBinLowEdge(1);
   Float_t X_max = h2d_xy->GetXaxis()->GetBinUpEdge(binX);
-  Float_t Y_min = h2d_xy->GetYaxis()->GetBinLowEdge(0);
-  Float_t Y_max = h2d_xy->GetYaxis()->GetBinUpEdge(binX);
-  Float_t Z_min = h2d_xz->GetYaxis()->GetBinLowEdge(0);
-  Float_t Z_max = h2d_xz->GetYaxis()->GetBinUpEdge(binX);
+  Float_t Y_min = h2d_xy->GetYaxis()->GetBinLowEdge(1);
+  Float_t Y_max = h2d_xy->GetYaxis()->GetBinUpEdge(binY);
+  Float_t Z_min = h2d_xz->GetYaxis()->GetBinLowEdge(1);
+  Float_t Z_max = h2d_xz->GetYaxis()->GetBinUpEdge(binZ);
 
   TH2F* first_bin_XY = (TH2F*)h2d_xy->Clone("fb_XY");
   TH2F* first_bin_XZ = (TH2F*)h2d_xz->Clone("fb_XZ");
   TH2F* first_bin_YZ = (TH2F*)h2d_yz->Clone("fb_YZ");
 
-  TH3F* h3d = new TH3F("3d", "", binX, X_min, X_max, binY, Y_min, Y_max, binZ, Z_min, Z_max);
+  TH3I* h3d = new TH3I("3d", "", binX, X_min, X_max, binY, Y_min, Y_max, binZ, Z_min, Z_max);
+  TH3I* h3d_c = new TH3I("3d_c", "", binX, X_min, X_max, binY, Y_min, Y_max, binZ, Z_min, Z_max);
+  TH3F* h3d_f = new TH3F("3d_f", "", binX, X_min, X_max, binY, Y_min, Y_max, binZ, Z_min, Z_max);
 
   // Take the World origin position in the target (local) reference system
   TPolyMarker3D *WorldOrigInLocal = (TPolyMarker3D*)finput->Get("WorldOrigInLocal");
@@ -336,6 +342,8 @@ int NeutronAnalysis(int argc,char** argv) {
     }
 
     h3d->Reset();
+    h3d_c->Reset();
+    h3d_f->Reset();
     
    // Initialize histograms
     
@@ -418,7 +426,6 @@ int NeutronAnalysis(int argc,char** argv) {
 
 
     // take for the neutron vars
-    // TODO loop over trajs looking for neutron
     topology = -1;
 
     if (nd280UpEvent->GetNTracks() < 1) {
@@ -474,15 +481,6 @@ int NeutronAnalysis(int argc,char** argv) {
         vertex_binZ < VERTEX_ACTIVITY || vertex_binZ > binZ - VERTEX_ACTIVITY)
       far_away = true;
 
-    // artificially fill the vertex activity region considering the worst case
-    for (Int_t i = -VERTEX_ACTIVITY/2; i < VERTEX_ACTIVITY/2; ++i) {
-      for (Int_t j = -VERTEX_ACTIVITY/2; j < VERTEX_ACTIVITY/2; ++j) {
-        //hits_map_XY->Fill(vertex_binX + i, vertex_binY + j, 100.);
-        //hits_map_XZ->Fill(vertex_binX + i, vertex_binZ + j, 100.);
-        //hits_map_YZ->Fill(vertex_binY + i, vertex_binZ + j, 100.);
-      }
-    }
-
     for(int ihit=0;ihit<NHits;ihit++){ // get last entry
       TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
 
@@ -514,9 +512,9 @@ int NeutronAnalysis(int argc,char** argv) {
       ApplyResponse.SetTargetID(DetType);
       ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);
       
-      double pex = ApplyResponse.GetHitPE().x();
-      double pey = ApplyResponse.GetHitPE().y();
-      double pez = ApplyResponse.GetHitPE().z();
+      int pex = (int)ApplyResponse.GetHitPE().x();
+      int pey = (int)ApplyResponse.GetHitPE().y();
+      int pez = (int)ApplyResponse.GetHitPE().z();
 
 
       // ommit the vertex activity in VERTEX_ACTIVITY
@@ -550,11 +548,15 @@ int NeutronAnalysis(int argc,char** argv) {
       Int_t binZ = hits_map_YZ->GetYaxis()->FindBin(poshitZ);
 
       if (DEBUG) 
-        cout << "   # hit " << ihit << "  pos "<< binX << "\t" << binY << "\t" << binZ  << "\t" << time << " ly " << pex + pey + pez << endl;
+        cout << "   # hit " << ihit  << "\t pdg " << nd280UpHit->GetPDG() << " \tpos "<< binX << "\t" << binY << "\t" << binZ  << "\t" << time << " ly " << pex + pey + pez << endl;
 
       Float_t dist_temp = sqrt( (binX - vertex_binX) * (binX - vertex_binX) + 
                                 (binY - vertex_binY) * (binY - vertex_binY) +
                                 (binZ - vertex_binZ) * (binZ - vertex_binZ));
+
+      h3d->Fill(poshitX, poshitY, poshitZ, pez + pex + pey);
+      if (!h3d_f->GetBinContent(binX, binY, binZ) || h3d_f->GetBinContent(binX, binY, binZ) > time)
+        h3d_f->SetBinContent(binX, binY, binZ, time);
 
       // HERE THE FIRST HIT IS SELECTED
       // time < first_hit_time in case of the time cut
@@ -583,10 +585,11 @@ int NeutronAnalysis(int argc,char** argv) {
           mom_h =  nd280UpEvent->GetTrack(nd280UpHit->GetPrimaryId())->GetInitMom().Mag();
       }
 
-      Int_t bin = h3d->FindBin(poshitX, poshitY, poshitZ);
+      /*Int_t bin = h3d->FindBin(poshitX, poshitY, poshitZ);
       if (!h3d->GetBinContent(bin)) {
         h3d->Fill(poshitX, poshitY, poshitZ);
-      }
+      }*/
+
 
       if(ievt<NEvtDisplTot){
         gMCHits_XY[ievt]->SetPoint(gMCHits_XY[ievt]->GetN(), poshitX, poshitY);
@@ -603,6 +606,9 @@ int NeutronAnalysis(int argc,char** argv) {
       }
     } // end loop over the hits
 
+    //cout << "2d " << first_binX << "  " << first_binY << "     " << first_binZ << endl;
+    //cout << "3d " << h3d->GetXaxis()->FindBin(hit_pos[0]) << "  " << h3d->GetYaxis()->FindBin(hit_pos[1]) << "     " << h3d->GetZaxis()->FindBin(hit_pos[2]) << endl;
+
     neutron_dist_true = -1.;
     TVector3 start( track_n->GetPoint(0)->GetPrePosition().X(), 
                     track_n->GetPoint(0)->GetPrePosition().Y(),
@@ -616,7 +622,7 @@ int NeutronAnalysis(int argc,char** argv) {
     neutron_dist_true = (end - start).Mag();
 
     // define the topology
-    HM_proton = 0;
+    /*HM_proton = 0;
     bool proton_found = false;
     for (Int_t trackID = 1; trackID < nd280UpEvent->GetNTracks(); ++trackID) {
       TND280UpTrack* track = nd280UpEvent->GetTrack(trackID);
@@ -662,6 +668,7 @@ int NeutronAnalysis(int argc,char** argv) {
       if (track->GetInitMom().Mag() > HM_proton)
         HM_proton = track->GetInitMom().Mag();
     } // loop over tracks
+    */
 
     light_fst = hits_map_XY->GetBinContent(first_binX, first_binY) +
                 hits_map_XZ->GetBinContent(first_binX, first_binZ) +
@@ -678,13 +685,13 @@ int NeutronAnalysis(int argc,char** argv) {
 
     hits_number->Fill(h3d->Integral());
 
-    hits_energy->Fill(ekin, h3d->Integral());
+    //hits_energy->Fill(ekin, h3d->Integral());
     init_e_cos->Fill(costheta, ekin);
     dist_true->Fill(neutron_dist_true);
     e_dist->Fill(dist, ekin);
-    float mom = sqrt((939.565379 + ekin)*(939.565379 + ekin) - 939.565379*939.565379);
-    if (costheta > 0.9)
-      mom_norm->Fill(mom);
+    //float mom = sqrt((939.565379 + ekin)*(939.565379 + ekin) - 939.565379*939.565379);
+    //if (costheta > 0.9)
+    //  mom_norm->Fill(mom);
 
     // END OF FILLING HITS MAP
 
@@ -709,10 +716,75 @@ int NeutronAnalysis(int argc,char** argv) {
     // The analysis
 
     // at least one hit should exists
+    //cout << "FHT " << first_hit_time << endl;
     if (first_hit_time == 1.e9) 
       continue;
 
-    TH2F* hits_map_XY_cluster_N = (TH2F*)h2d_xy->Clone("hits_map_XY_cluster_N");
+    // do the clustering of the neutron event from the 1st hit
+    h3d_c->SetBinContent(first_binX, first_binY, first_binZ, 
+      h3d->GetBinContent(first_binX, first_binY, first_binZ));
+    Int_t prev_pe = 0;
+    while (prev_pe != h3d_c->Integral()) {
+      prev_pe = h3d_c->Integral();
+      for (Int_t i = 1; i <= h3d->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j <= h3d->GetYaxis()->GetNbins(); ++j) {
+          for (Int_t k = 1; k <= h3d->GetZaxis()->GetNbins(); ++k) {
+            if (CloseHit(i, j, k, h3d_c) && h3d->GetBinContent(i, j, k)) {
+              h3d_c->SetBinContent(i, j, k, h3d->GetBinContent(i, j, k));
+              hits_time->Fill(h3d_f->GetBinContent(i, j, k) - first_hit_time);
+              //cout << "time " << h3d_f->GetBinContent(i, j, k) - first_hit_time << endl;
+            }
+          }
+        }
+      }
+    }
+
+    TH2I* hits_map_XY_cluster_i = (TH2I*)h3d_c->Project3D("xy");
+    TH2I* hits_map_XZ_cluster_i = (TH2I*)h3d_c->Project3D("xz");
+    TH2I* hits_map_YZ_cluster_i = (TH2I*)h3d_c->Project3D("yz");
+
+    //cout << "3D inegrals " << h3d->Integral() << "\t" << h3d_c->Integral() << endl;
+    //cout << "first hit amp " << h3d->GetBinContent(first_binX, first_binY, first_binZ) << endl;
+    //cout << "Proj integrals" << endl;
+    //cout << hits_map_XY_cluster_i->Integral() << "\t" << hits_map_XZ_cluster_i->Integral() << "\t" << hits_map_YZ_cluster_i->Integral() << endl;
+
+    n_fibers_not_cut  = 0;
+    n_fibers          = 0;
+    float light_max_i         = 0;
+    for (Int_t i = 1; i < hits_map_XY_cluster_i->GetXaxis()->GetNbins(); ++i) {
+      for (Int_t j = 1; j < hits_map_XY_cluster_i->GetYaxis()->GetNbins(); ++j) {
+        if (hits_map_XY_cluster_i->GetBinContent(i, j))
+          ++n_fibers;
+        if (hits_map_XY_cluster_i->GetBinContent(i, j) > 40)
+          ++n_fibers_not_cut;
+        if (hits_map_XY_cluster_i->GetBinContent(i, j) > light_max_i)
+          light_max_i = hits_map_XY_cluster_i->GetBinContent(i, j);
+      }
+    }
+
+    for (Int_t i = 1; i < hits_map_XZ_cluster_i->GetXaxis()->GetNbins(); ++i) {
+      for (Int_t j = 1; j < hits_map_XZ_cluster_i->GetYaxis()->GetNbins(); ++j) {
+        if (hits_map_XZ_cluster_i->GetBinContent(i, j))
+          ++n_fibers;
+        if (hits_map_XZ_cluster_i->GetBinContent(i, j) > 40)
+          ++n_fibers_not_cut;
+        if (hits_map_XZ_cluster_i->GetBinContent(i, j) > light_max_i)
+          light_max_i = hits_map_XZ_cluster_i->GetBinContent(i, j);
+      }
+    }
+
+    for (Int_t i = 1; i < hits_map_YZ_cluster_i->GetXaxis()->GetNbins(); ++i) {
+      for (Int_t j = 1; j < hits_map_YZ_cluster_i->GetYaxis()->GetNbins(); ++j) {
+        if (hits_map_YZ_cluster_i->GetBinContent(i, j))
+          ++n_fibers;
+        if (hits_map_YZ_cluster_i->GetBinContent(i, j) > 40)
+          ++n_fibers_not_cut;
+        if (hits_map_YZ_cluster_i->GetBinContent(i, j) > light_max_i)
+          light_max_i = hits_map_YZ_cluster_i->GetBinContent(i, j);
+      }
+    }
+
+    /*TH2F* hits_map_XY_cluster_N = (TH2F*)h2d_xy->Clone("hits_map_XY_cluster_N");
     TH2F* hits_map_XZ_cluster_N = (TH2F*)h2d_xz->Clone("hits_map_XZ_cluster_N");
     TH2F* hits_map_YZ_cluster_N = (TH2F*)h2d_yz->Clone("hits_map_YZ_cluster_N");
 
@@ -818,16 +890,6 @@ int NeutronAnalysis(int argc,char** argv) {
             light_max = hits_map_XZ_cluster->GetBinContent(i, k);
           if (hits_map_YZ_cluster->GetBinContent(j, k) > light_max)
             light_max = hits_map_YZ_cluster->GetBinContent(j, k);
-          // was wrong by definition
-          /*double ll = hits_map_XY_cluster->GetBinContent(i, j) +
-                      hits_map_XZ_cluster->GetBinContent(i, k) + 
-                      hits_map_YZ_cluster->GetBinContent(j, k);
-          if (ll > light_max)
-            light_max = ll;*/
-          /*if (hits_map_YZ_cluster->GetBinContent(j, k) * hits_map_XZ_cluster->GetBinContent(i, k) * hits_map_XY_cluster->GetBinContent(i, j)) {
-            cout << "x:y:z\t" << i << ":" << j << ":" << k << endl;
-            cout << "XY : XZ : YZ\t" << hits_map_XY_cluster->GetBinContent(i, j) << " : " << hits_map_XZ_cluster->GetBinContent(i, k) << " : " << hits_map_YZ_cluster->GetBinContent(j, k) << endl;
-          }*/
         }
       }
     }
@@ -842,13 +904,13 @@ int NeutronAnalysis(int argc,char** argv) {
                         hits_map_XZ_cluster_N_cut->Integral() + 
                         hits_map_YZ_cluster_N_cut->Integral();
 
-    //if (light_tot < light_fst) {
-      //cout << "Tot < fist" << endl;
-      /*cout << "tot: \t" << light_tot << "\tfst\t" << light_fst  << "\tmax\t" << light_max << endl;
-      cout << "proj \t" << hits_map_XY_cluster->Integral() << "  " << hits_map_XZ_cluster->Integral() << "  " << hits_map_YZ_cluster->Integral() << endl;
-      cout << "proj N \t" << hits_map_XY_cluster_N->Integral() << "  " << hits_map_XZ_cluster_N->Integral() << "  " << hits_map_YZ_cluster_N->Integral() << endl;
-      cout << "proj N cut \t" << hits_map_XY_cluster_N_cut->Integral() << "  " << hits_map_XZ_cluster_N_cut->Integral() << "  " << hits_map_YZ_cluster_N_cut->Integral() << endl;*/
-    //}
+    cout << "LY total new old " << h3d_c->Integral() << "\t" << light_tot << endl;
+    cout << "LY maxim new old " << light_max_i << "\t" << light_max << endl;
+
+    light_tot = h3d_c->Integral();
+    light_max = h3d_c->GetMaximum();*/
+    light_tot = h3d_c->Integral();
+    light_max = light_max_i;
 
     TVector3 reco_vec(first_binX - vertex_binX, first_binY - vertex_binY, first_binZ - vertex_binZ);
     reco_vec    = reco_vec.Unit();
@@ -856,13 +918,12 @@ int NeutronAnalysis(int argc,char** argv) {
     dir_reco[1] = reco_vec.Y();
     dir_reco[2] = reco_vec.Z();
 
-    // SELECTION IS DONE 
     // filling histoes
     neutron_time = -1.;
 
     first_sc_reco = 0;
-    Double_t mom_ini = track_n->GetPoint(0)->GetMomentum().Mag();
-    if (DEBUG)
+    //Double_t mom_ini = track_n->GetPoint(0)->GetMomentum().Mag();
+    /*if (DEBUG)
       cout << "Npoints " << track_n->GetNPoints() << endl;
     for (Int_t pointID = 0; pointID < track_n->GetNPoints(); ++pointID) {
       TND280UpTrackPoint* point = track_n->GetPoint(pointID);
@@ -892,9 +953,9 @@ int NeutronAnalysis(int argc,char** argv) {
 
     if (DEBUG) {
       cout << "first_sc_reco " << first_sc_reco << endl; 
-    }
+    }*/
 
-    neutron_time = first_hit_time;
+    //neutron_time = first_hit_time;
     /*neutron_dist_true = sqrt( (first_binX - vertex_binX) * (first_binX - vertex_binX) + 
                               (first_binY - vertex_binY) * (first_binY - vertex_binY) +
                               (first_binZ - vertex_binZ) * (first_binZ - vertex_binZ));*/
@@ -919,11 +980,16 @@ int NeutronAnalysis(int argc,char** argv) {
     pe_e_cos->Fill( costheta, ekin, light_fst);
 
     pe_e->Fill(ekin, light_fst);
-    if (costheta > 0.9)
-      mom_forward->Fill(mom);
+    //if (costheta > 0.9)
+    //  mom_forward->Fill(mom);
 
     float beta = dist_cubes / (first_hit_time * 30.);
     beta_ekin->Fill(ekin, beta);
+
+    // deleters 
+    delete hits_map_XY;
+    delete hits_map_XZ;
+    delete hits_map_YZ;
 
   } // loop over events
 
@@ -933,6 +999,7 @@ int NeutronAnalysis(int argc,char** argv) {
 
   hits_number->Write();
   hits_energy->Write();
+  hits_time->Write();
   e_dist->Write();
 
   //diff->Write();
@@ -1010,6 +1077,71 @@ bool CloseHit(int i, int j, TH2F* h_ini) {
   if (i > 2 && j < h_ini->GetYaxis()->GetNbins() && h_ini->GetBinContent(i - 1, j + 1))
     return true;
   if (i > 2 && j > 2 && h_ini->GetBinContent(i - 1, j - 1))
+    return true;
+
+  return false;
+}
+
+bool CloseHit(int i, int j, int k, TH3I* h_ini) {
+  //if (!h_ini->GetBinContent(i, j, k))
+  //  return false;
+
+  // k == 0
+  if (i > 1 && h_ini->GetBinContent(i - 1, j, k))
+    return true;
+  if (i < h_ini->GetXaxis()->GetNbins() && h_ini->GetBinContent(i + 1, j, k))
+    return true;
+  if (j > 1 && h_ini->GetBinContent(i, j - 1, k))
+    return true;
+  if (j < h_ini->GetYaxis()->GetNbins() && h_ini->GetBinContent(i, j + 1, k))
+    return true;
+
+  if (i < h_ini->GetXaxis()->GetNbins() && j < h_ini->GetYaxis()->GetNbins() && h_ini->GetBinContent(i + 1, j + 1, k))
+    return true;
+  if (i < h_ini->GetXaxis()->GetNbins() && j > 1 && h_ini->GetBinContent(i + 1, j - 1, k))
+    return true;
+  if (i > 2 && j < h_ini->GetYaxis()->GetNbins() && h_ini->GetBinContent(i - 1, j + 1, k))
+    return true;
+  if (i > 2 && j > 2 && h_ini->GetBinContent(i - 1, j - 1, k))
+    return true;
+
+  // k == -1
+  if (i > 1 && k > 2 && h_ini->GetBinContent(i - 1, j, k - 1))
+    return true;
+  if (i < h_ini->GetXaxis()->GetNbins() && k > 2 && h_ini->GetBinContent(i + 1, j, k - 1))
+    return true;
+  if (j > 1 && h_ini->GetBinContent(i, j - 1, k))
+    return true;
+  if (j < h_ini->GetYaxis()->GetNbins() && k > 2 && h_ini->GetBinContent(i, j + 1, k - 1))
+    return true;
+
+  if (i < h_ini->GetXaxis()->GetNbins() && j < h_ini->GetYaxis()->GetNbins() && k > 2 && h_ini->GetBinContent(i + 1, j + 1, k - 1))
+    return true;
+  if (i < h_ini->GetXaxis()->GetNbins() && j > 1 && k > 2 && h_ini->GetBinContent(i + 1, j - 1, k - 1))
+    return true;
+  if (i > 2 && j < h_ini->GetYaxis()->GetNbins() && k > 2 && h_ini->GetBinContent(i - 1, j + 1, k - 1))
+    return true;
+  if (i > 2 && j > 2 && k > 2 && h_ini->GetBinContent(i - 1, j - 1, k - 1))
+    return true;
+
+  // k == +1
+
+  if (i > 1 && k < h_ini->GetZaxis()->GetNbins() && h_ini->GetBinContent(i - 1, j, k + 1))
+    return true;
+  if (i < h_ini->GetXaxis()->GetNbins() && k < h_ini->GetZaxis()->GetNbins() && h_ini->GetBinContent(i + 1, j, k + 1))
+    return true;
+  if (j > 1 && h_ini->GetBinContent(i, j - 1, k))
+    return true;
+  if (j < h_ini->GetYaxis()->GetNbins() && k < h_ini->GetZaxis()->GetNbins() && h_ini->GetBinContent(i, j + 1, k + 1))
+    return true;
+
+  if (i < h_ini->GetXaxis()->GetNbins() && j < h_ini->GetYaxis()->GetNbins() && k < h_ini->GetZaxis()->GetNbins() && h_ini->GetBinContent(i + 1, j + 1, k + 1))
+    return true;
+  if (i < h_ini->GetXaxis()->GetNbins() && j > 1 && k < h_ini->GetZaxis()->GetNbins() && h_ini->GetBinContent(i + 1, j - 1, k + 1))
+    return true;
+  if (i > 2 && j < h_ini->GetYaxis()->GetNbins() && k < h_ini->GetZaxis()->GetNbins() && h_ini->GetBinContent(i - 1, j + 1, k + 1))
+    return true;
+  if (i > 2 && j > 2 && k < h_ini->GetZaxis()->GetNbins() && h_ini->GetBinContent(i - 1, j - 1, k + 1))
     return true;
 
   return false;

@@ -28,7 +28,7 @@ void OOFV_signal_merge_v2() {
   //tree_bg->SetBranchAddress("N_fibers_cut",       &n_fibers_cut);
   tree_bg->SetBranchAddress("Light_tot",          &light_tot);
 
-  TFile* signal_file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v22-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+  TFile* signal_file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v23-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
   TTree* tree       = (TTree*)signal_file->Get("neutron");
 
   Double_t ekin, costheta, LA_s, dist, dt_s, neutron_time, neutron_dist_true;
@@ -101,8 +101,8 @@ void OOFV_signal_merge_v2() {
     res /= sqrt(n_fibers_s);
   	first_hit_time_signal = gen->Gaus(dt_s, res) + vertex_time;
 
-  	vertex_pos[1] -= 18.;
-    vertex_pos[2] -= 1707.;
+  	//vertex_pos[1] -= 18.;
+    //vertex_pos[2] -= 1707.;
 
     Double_t Fst_time = first_hit_time;
     res = 0.95 / sqrt(n_fibers_cut);
@@ -129,7 +129,8 @@ void OOFV_signal_merge_v2() {
     TVector3 hit(hit_pos[0], hit_pos[1], hit_pos[2]);
 
     dt_bg = Fst_time - vertex_time;
-    LA_bg = (hit-vertex).Mag();
+    LA_bg = (hit-vertex).Mag() / 10;
+    cout << "LA bg " << LA_bg << endl;
 
     /*if (LA_bg < 500.) {
     	++BG_spoiled;
