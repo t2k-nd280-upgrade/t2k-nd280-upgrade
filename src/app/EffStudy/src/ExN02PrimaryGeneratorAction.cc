@@ -82,7 +82,8 @@ ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
     = ND280RootPersistencyManager::GetInstance();
   inxml = InputPersistencyManager->GetXMLInput();
 
-  if(fGeneratorType == "Generator")
+  
+  if(inxml->GetXMLGenerTypeName() != "ParticleGun")
     RooTrackerNEUT.Initialize();
 }
 
