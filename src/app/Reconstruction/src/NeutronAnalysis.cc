@@ -44,6 +44,8 @@ int thr = 50;
 bool CloseHit(int i, int j, TH2F* h_ini);
 bool CloseHit(int i, int j, int k, TH3I* h_ini);
 
+void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_c, TH1F* h_c_t);
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int NeutronAnalysis(int argc,char** argv) {
@@ -105,7 +107,7 @@ int NeutronAnalysis(int argc,char** argv) {
   TH2F* hits_energy = new TH2F("hitsE", "Hits vs Energy", 250, 0., 500., 50, 0., 50.);
 
   // hits distribution in a time
-  TH1F* hits_time = new TH1F("hits_time", "Time in the cluster", 100, 0., 200.);
+  TH1F* hits_time = new TH1F("hits_time", "Time in the cluster", 100, 0., 10.);
   // initial energy versus cos theta
   TH2F* init_e_cos  = new TH2F("ini_ET", "Initial", 10, -1., 1., 250, 0., 800);
   TH2F* eff_e_cos   = new TH2F("eff_ET", "Efficiency", 10, -1., 1., 250, 0., 800);
@@ -332,7 +334,7 @@ int NeutronAnalysis(int argc,char** argv) {
   for(int ievt=evtfirst;ievt<=EntryLast;ievt++){ // get last entry
     tinput->GetEntry(ievt);
 
-    if(!(ievt%500)){
+    if(!(ievt%100)){
       cout << "Event " << ievt;
       sw_event.Stop();
       double CPUtime = sw_event.CpuTime();
@@ -724,7 +726,10 @@ int NeutronAnalysis(int argc,char** argv) {
     h3d_c->SetBinContent(first_binX, first_binY, first_binZ, 
       h3d->GetBinContent(first_binX, first_binY, first_binZ));
     Int_t prev_pe = 0;
-    while (prev_pe != h3d_c->Integral()) {
+
+    find_connected(first_binX, first_binY, first_binZ, h3d, h3d_f, h3d_c, hits_time);
+
+    /*while (prev_pe != h3d_c->Integral()) {
       prev_pe = h3d_c->Integral();
       for (Int_t i = 1; i <= h3d->GetXaxis()->GetNbins(); ++i) {
         for (Int_t j = 1; j <= h3d->GetYaxis()->GetNbins(); ++j) {
@@ -732,21 +737,22 @@ int NeutronAnalysis(int argc,char** argv) {
             if (CloseHit(i, j, k, h3d_c) && h3d->GetBinContent(i, j, k)) {
               h3d_c->SetBinContent(i, j, k, h3d->GetBinContent(i, j, k));
               hits_time->Fill(h3d_f->GetBinContent(i, j, k) - first_hit_time);
-              //cout << "time " << h3d_f->GetBinContent(i, j, k) - first_hit_time << endl;
             }
           }
         }
       }
-    }
+    }*/
 
     TH2I* hits_map_XY_cluster_i = (TH2I*)h3d_c->Project3D("xy");
     TH2I* hits_map_XZ_cluster_i = (TH2I*)h3d_c->Project3D("xz");
     TH2I* hits_map_YZ_cluster_i = (TH2I*)h3d_c->Project3D("yz");
 
-    //cout << "3D inegrals " << h3d->Integral() << "\t" << h3d_c->Integral() << endl;
-    //cout << "first hit amp " << h3d->GetBinContent(first_binX, first_binY, first_binZ) << endl;
-    //cout << "Proj integrals" << endl;
-    //cout << hits_map_XY_cluster_i->Integral() << "\t" << hits_map_XZ_cluster_i->Integral() << "\t" << hits_map_YZ_cluster_i->Integral() << endl;
+    if (DEBUG) {
+      cout << "3D inegrals " << h3d->Integral() << "\t" << h3d_c->Integral() << endl;
+      cout << "first hit amp " << h3d->GetBinContent(first_binX, first_binY, first_binZ) << endl;
+      cout << "Proj integrals" << endl;
+      cout << hits_map_XY_cluster_i->Integral() << "\t" << hits_map_XZ_cluster_i->Integral() << "\t" << hits_map_YZ_cluster_i->Integral() << endl;
+    }
 
     n_fibers_not_cut  = 0;
     n_fibers          = 0;
@@ -1055,6 +1061,29 @@ int NeutronAnalysis(int argc,char** argv) {
   fileout->Close();
   
   return 0;
+}
+
+void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_fin, TH1F* h_c_t) {
+  (void)h_ini;
+  for (int inc_i = -1; inc_i < 2; ++inc_i) {
+    for (int inc_j = -1; inc_j < 2; ++inc_j) {
+      for (int inc_k = -1; inc_k < 2; ++inc_k) {
+        if (i + inc_i < 1 || j + inc_j < 1 || k + inc_k < 1 ||
+            i + inc_i > h_ini->GetXaxis()->GetNbins() || 
+            j + inc_j > h_ini->GetYaxis()->GetNbins() || 
+            k + inc_k > h_ini->GetZaxis()->GetNbins())
+          continue;
+
+        if (h_ini->GetBinContent(i + inc_i, j + inc_i, k + inc_k) &&
+           !h_fin->GetBinContent(i + inc_i, j + inc_i, k + inc_k)) {
+          h_fin->SetBinContent(i + inc_i, j + inc_i, k + inc_k,
+            h_ini->GetBinContent(i + inc_i, j + inc_i, k + inc_k));
+          h_c_t->Fill(h_time->GetBinContent(i + inc_i, j + inc_i, k + inc_k));
+          find_connected(i + inc_i, j + inc_i, k + inc_k, h_ini, h_time, h_fin, h_c_t);
+        }
+      }
+    }
+  }
 }
 
 bool CloseHit(int i, int j, TH2F* h_ini) {
