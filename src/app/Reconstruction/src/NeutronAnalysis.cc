@@ -44,7 +44,7 @@ int thr = 50;
 bool CloseHit(int i, int j, TH2F* h_ini);
 bool CloseHit(int i, int j, int k, TH3I* h_ini);
 
-void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_c, TH1F* h_c_t);
+void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_c, TH1F* h_c_t, const Float_t t_zero);
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -662,7 +662,7 @@ int NeutronAnalysis(int argc,char** argv) {
     h3d_c->SetBinContent(first_binX, first_binY, first_binZ, 
       h3d->GetBinContent(first_binX, first_binY, first_binZ));
 
-    find_connected(first_binX, first_binY, first_binZ, h3d, h3d_f, h3d_c, hits_time);
+    find_connected(first_binX, first_binY, first_binZ, h3d, h3d_f, h3d_c, hits_time, first_hit_time);
 
     TH2I* hits_map_XY_cluster_i = (TH2I*)h3d_c->Project3D("xy");
     TH2I* hits_map_XZ_cluster_i = (TH2I*)h3d_c->Project3D("xz");
@@ -818,7 +818,7 @@ int NeutronAnalysis(int argc,char** argv) {
   return 0;
 }
 
-void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_fin, TH1F* h_c_t) {
+void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_fin, TH1F* h_c_t, const Float_t t_zero) {
   (void)h_ini;
   for (int inc_i = -1; inc_i < 2; ++inc_i) {
     for (int inc_j = -1; inc_j < 2; ++inc_j) {
@@ -833,8 +833,8 @@ void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, 
            !h_fin->GetBinContent(i + inc_i, j + inc_j, k + inc_k)) {
           h_fin->SetBinContent(i + inc_i, j + inc_j, k + inc_k,
             h_ini->GetBinContent(i + inc_i, j + inc_j, k + inc_k));
-          h_c_t->Fill(h_time->GetBinContent(i + inc_i, j + inc_j, k + inc_k));
-          find_connected(i + inc_i, j + inc_j, k + inc_k, h_ini, h_time, h_fin, h_c_t);
+          h_c_t->Fill(h_time->GetBinContent(i + inc_i, j + inc_j, k + inc_k) - t_zero);
+          find_connected(i + inc_i, j + inc_j, k + inc_k, h_ini, h_time, h_fin, h_c_t, t_zero);
         }
       }
     }
