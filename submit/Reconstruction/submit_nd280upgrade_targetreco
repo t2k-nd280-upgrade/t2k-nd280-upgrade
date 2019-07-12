@@ -32,6 +32,7 @@ foreach (@ARGV) {
     elsif($_ eq '--use-view-yz'      ) { $useviewYZ       = $ARGV[$iarg+1]; }
     elsif($_ eq '--min-track-dist'   ) { $min_trk_dist    = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-truth-fv'     ) { $cut_truthfv     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--reco-app'         ) { $reco_app        = $ARGV[$iarg+1]; }
 
     # where to put the output files
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
@@ -63,6 +64,8 @@ $inputfile        = "/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype/SFGD_MC_dev-0-
 $first_expt      = 0                             unless defined $first_expt;
 $nruns           = 6                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
 $nexpts          = 5000                          unless defined $nexpts;
+
+$reco_app        = "trackrecon"                  unless defined $reco_app;
 
 $detector        = 0   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
 
@@ -111,7 +114,7 @@ while($irun < $nruns) { # loop over the jobs
  
    
 
-    $arguments = "$softw_dir/build/app/Reconstruction/ReconstructionApp $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
+    $arguments = "$softw_dir/build/app/Reconstruction/ReconstructionApp $reco_app $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
     $command = "$arguments";
     
     print "\n";
@@ -127,20 +130,20 @@ while($irun < $nruns) { # loop over the jobs
     # UNIGE (Atlas cluster), $job_dir not used, $tag gives path/name of output file
     #
     if($resource eq "UNIGE-Atlas") {
-	open(PBS, ">$job_dir/$newtag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
-	print PBS "#!/bin/bash -l  \n";
-	print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
-	print PBS "$command \n";
-	close(PBS);	
-	#`qsub -q short -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
-	`qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
+	   open(PBS, ">$job_dir/$newtag-$evt_first-$nexpts.sbatch") or die("Can not create the sbatch script");
+	   print PBS "#!/bin/bash -l  \n";
+	   print PBS "source $softw_dir/T2KND280Up_CLHEP.sh $softw_dir \n";
+	   print PBS "$command \n";
+	   close(PBS);	
+	   #`qsub -q short -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
+	   `qsub -q veryshort -l vmem=6000mb -l mem=6000mb $job_dir/$newtag-$evt_first-$nexpts.sbatch`;
     }
     if($resource eq "interactive") {
-	system($command);
+	   system($command);
     }
     if($resource eq "parallel") {
         $inputfile_new = "$inputfile-Exp$evt_first-Nexpt$nexpts.root";
-        $arguments = "$softw_dir/new_build/app/Reconstruction/ReconstructionApp $inputfile_new 0 $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
+        $arguments = "$softw_dir/build/app/Reconstruction/ReconstructionApp $reco_app $inputfile_new 0 $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
         print par_file "$arguments; echo \"job $irun from $nruns done\" \n";
         print "Parallel\n";
         print "$arguments\n";

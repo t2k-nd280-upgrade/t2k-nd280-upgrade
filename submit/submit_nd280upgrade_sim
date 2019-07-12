@@ -45,7 +45,7 @@ foreach (@ARGV) {
 }
 
 $exe_clust_dir 		= "bin/"											unless defined $exe_clust_dir; # path starting from $softw_dir
-$exe_loc_dir 			= "new_build/app/EffStudy/" 	unless defined $exe_loc_dir; # path starting from $softw_dir
+$exe_loc_dir 			= "build/app/EffStudy/" 			unless defined $exe_loc_dir; # path starting from $softw_dir
 
 $resource        	= "interactive"               unless defined $resource;
 
@@ -69,13 +69,7 @@ while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
- 
-    if($resource eq "interactive") {
-			$arguments = "$softw_dir/$exe_loc_dir/EffStudyApp $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
-    }
-    else{
-			$arguments = "$softw_dir/$exe_loc_dir/EffStudyApp $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
-    }
+		$arguments = "$softw_dir/$exe_loc_dir/EffStudyApp $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
      
     $command = "$arguments";
     # $command .= "; mv EffStudy_0.root EffStudy_";
