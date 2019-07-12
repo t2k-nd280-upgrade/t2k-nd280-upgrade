@@ -18,7 +18,10 @@ const float MIP_LY_AV3 = 40;
 using namespace std;
 
 void neutron_merge() {
-  TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v25-UseXY-UseXZ-UseYZ-Separate10_na_200000.root", "READ");
+  string file_in_str    = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v26-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root";
+  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v33.root";
+
+  TFile* file = new TFile(file_in_str.c_str(), "READ");
 
   const Int_t Ndist = 9;
   float distance_cut[Ndist];
@@ -102,7 +105,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v33.root", "RECREATE");
+  TFile* file_out = new TFile(file_out_str.c_str(), "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
