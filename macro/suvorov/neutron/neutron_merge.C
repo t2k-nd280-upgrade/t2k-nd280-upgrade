@@ -72,6 +72,7 @@ void neutron_merge() {
 
 	TH2F* init_e_cos  = (TH2F*)file->Get("ini_ET");
 	TH2F* eff_e_cos   = (TH2F*)file->Get("eff_ET");
+  TH2F* hits_time   = (TH2F*)file->Get("hits_time");
 	TH2F* pe_e_cos    = (TH2F*)file->Get("pe_ET");
 	TH2F* hits_energy = (TH2F*)file->Get("hitsE");
 	TH2F* hits_number = (TH2F*)file->Get("hitsN");
@@ -543,6 +544,7 @@ void neutron_merge() {
 
   init_e_cos->Write();
   eff_e_cos->Write();
+  hits_time->Write();
   pe_e_cos->Write();
   pe_e->Write();
   hits_energy->Write();
