@@ -281,7 +281,7 @@ void ND280UpTargReadOut::ComputeHitTime(double &time, double x, double q)
 
 }
 
-void ND280UpTargReadOut::ApplyMPPCResponse(G4double &nphot, int MPPC_type)
+int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
 {
   double rndunif =0.;
   double nphot_passed = 0.;
@@ -290,6 +290,6 @@ void ND280UpTargReadOut::ApplyMPPCResponse(G4double &nphot, int MPPC_type)
     rndunif = fRndm->Uniform();
     if (rndunif < MPPCEff_SuperFGD) nphot_passed++;
   }
-  nphot = nphot_passed;
-  return;
+  double pe = nphot_passed;
+  return pe;
 }

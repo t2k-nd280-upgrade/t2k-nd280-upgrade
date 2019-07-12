@@ -30,7 +30,7 @@ void ND280UpApplyResponse::Init(){
   ftargetid = nd280upconv::kUndefined;
 
   fHitPos = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
-  fHitPhot = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
+  fHitPE = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
   fHitTime = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
   fHitTrkID = nd280upconv::kBadNum;
 
@@ -41,7 +41,7 @@ void ND280UpApplyResponse::Init(){
 
 void ND280UpApplyResponse::Delete(){
   fHitPos = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
-  fHitPhot = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
+  fHitPE = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
   fHitTime = TVector3(nd280upconv::kBadNum,nd280upconv::kBadNum,nd280upconv::kBadNum);
   fHitTrkID = nd280upconv::kBadNum;
 }
@@ -91,10 +91,11 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
   
   // Calculate the # of photons that reach the MPPCs (X,Y,Z)
     
-  double photX=0.; double distX=0.; double timephotX=0.;// photons along fiber X; distance to MPPC from photons' source along X; time photons reach the MPPC
-  double photY=0.; double distY=0.; double timephotY=0.;// photons along fiber Y; distance to MPPC from photons' source along Y; time photons reach the MPPC 
-  double photZ=0.; double distZ=0.; double timephotZ=0.;// photons along fiber Z; distance to MPPC from photons' source along Z; time photons reach the MPPC  
-
+  double photX=0.; double distX=0.; // photons along fiber X; distance to MPPC from photons' source along X
+  double photY=0.; double distY=0.; // photons along fiber Y; distance to MPPC from photons' source along Y
+  double photZ=0.; double distZ=0.; // photons along fiber Z; distance to MPPC from photons' source along Z 
+  double peX=0.; double peY=0.; double peZ=0.;// photoelectons produced in X, Y and Z MPPCs
+  double timepeX=0.; double timepeY=0.; double timepeZ=0.;// time photoelectrons were produced in X, Y and Z MPPCs
   // Calculate the distance from the photons' origin to the MPPCs 
   if( ftargetid==nd280upconv::kSuperFGD ||
       ftargetid==nd280upconv::kProto ){ // SuperFGD
@@ -145,19 +146,19 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     photY = photons;
     photZ = photons;
     
-    timephotX = prestepTime;
-    timephotY = prestepTime;
-    timephotZ = prestepTime;
+    timepeX = prestepTime;
+    timepeY = prestepTime;
+    timepeZ = prestepTime;
     
     // light collection + attenuation
-    TargetReadOut.ApplyFiberResponse(photX,timephotX,distX, fDetectorXsize); // along X fiber
-    TargetReadOut.ApplyFiberResponse(photY,timephotY,distY, fDetectorYsize); // along Y fiber
-    TargetReadOut.ApplyFiberResponse(photZ,timephotZ,distZ, fDetectorZsize); // along Z fiber
+    TargetReadOut.ApplyFiberResponse(photX,timepeX,distX, fDetectorXsize); // along X fiber
+    TargetReadOut.ApplyFiberResponse(photY,timepeY,distY, fDetectorYsize); // along Y fiber
+    TargetReadOut.ApplyFiberResponse(photZ,timepeZ,distZ, fDetectorZsize); // along Z fiber
     
-    // MPPC efficiency
-    TargetReadOut.ApplyMPPCResponse(photX, 1);
-    TargetReadOut.ApplyMPPCResponse(photY, GetMPPCType(hitZ));
-    TargetReadOut.ApplyMPPCResponse(photZ, 1);
+    // MPPC efficiency. Converts photons to PE
+    peX = TargetReadOut.ApplyMPPCResponse(photX, 1);
+    peY = TargetReadOut.ApplyMPPCResponse(photY, GetMPPCType(hitZ));
+    peZ = TargetReadOut.ApplyMPPCResponse(photZ, 1);
     
   }
   else if( ftargetid==nd280upconv::kSciFi ||
@@ -171,23 +172,23 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     
     // Propagation only along X
     if(touch_namedet.Contains(DetNameAlongX)){ // "FiberScintHoriz"
-      photX = photons; timephotX = prestepTime;
-      photY = 0.; timephotY = 0.;
-      photZ = 0.; timephotZ = 0.;	
+      peX = photons; timepeX = prestepTime;
+      peY = 0.; timepeY = 0.;
+      peZ = 0.; timepeZ = 0.;	
       // light collection + attenuation
-      TargetReadOut.ApplyFiberResponse(photX,timephotX,distX);	
-      // MPPC efficiency
-      TargetReadOut.ApplyMPPCResponse(photX);
+      TargetReadOut.ApplyFiberResponse(photX,timepeX,distX);	
+      // MPPC efficiency. Converts photons to PE
+      peX = TargetReadOut.ApplyMPPCResponse(photX);
     }
     // Propagation only along Z
     else if(touch_namedet.Contains(DetNameAlongZ)){ //"FiberScintVert"
-      photX = 0.; timephotX = 0.;
-      photY = 0.; timephotY = 0.;
-      photZ = photons; timephotZ = prestepTime;	
+      peX = 0.; timepeX = 0.;
+      peY = 0.; timepeY = 0.;
+      photZ = photons; timepeZ = prestepTime;	
       // light collection + attenuation
-      TargetReadOut.ApplyFiberResponse(photZ,timephotZ,distZ);	
+      TargetReadOut.ApplyFiberResponse(photZ,timepeZ,distZ);	
       // MPPC efficiency
-      TargetReadOut.ApplyMPPCResponse(photZ);
+      peZ = TargetReadOut.ApplyMPPCResponse(photZ);
     }
     else{
       cout << "ND280UpApplyResponse::ProcessHits" << endl;
@@ -199,8 +200,8 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
   int trackid = trkid; 
   
   fHitPos = TVector3(hitX,hitY,hitZ); 
-  fHitPhot = TVector3(photX,photY,photZ);
-  fHitTime = TVector3(timephotX,timephotY,timephotZ);
+  fHitPE = TVector3(peX,peY,peZ);
+  fHitTime = TVector3(timepeX,timepeY,timepeZ);
   fHitTrkID = trackid;
 }
 

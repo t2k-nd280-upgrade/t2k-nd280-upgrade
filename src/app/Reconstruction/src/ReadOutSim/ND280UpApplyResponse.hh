@@ -16,7 +16,7 @@ public:
   void CalcResponse(TVector3 lightPos,int trkid,int parid,double charge,double time,double steplength, double edep, TString touch_namedet);
 
   TVector3 GetHitPos(){return fHitPos;}
-  TVector3 GetHitPE(){return fHitPhot;}
+  TVector3 GetHitPE(){return fHitPE;}
   TVector3 GetHitTime(){return fHitTime;}
   double GetHitTrkID(){return fHitTrkID;}
 
@@ -75,7 +75,7 @@ private:
   // ND280RootPersistencyManager* persistencyManager;
 
   TVector3 fHitPos;
-  TVector3 fHitPhot;
+  TVector3 fHitPE;
   TVector3 fHitTime;
 
   nd280upconv::TargetType_t ftargetid;
