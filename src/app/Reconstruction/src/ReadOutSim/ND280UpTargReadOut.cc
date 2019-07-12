@@ -101,6 +101,7 @@ ND280UpTargReadOut::~ND280UpTargReadOut()
 TString ND280UpTargReadOut::AsStringTargType(TargetType_t targetid){  
   if(targetid == nd280upconv::kUndefined)     return "Undefined"; 
   else if(targetid == nd280upconv::kSuperFGD) return "SuperFGD";
+  else if(targetid == nd280upconv::kProto)    return "Prototype";
   else if(targetid == nd280upconv::kFGD)      return "FGD";
   else if(targetid == nd280upconv::kFGDlike)  return "FGDlike";
   else if(targetid == nd280upconv::kWAGASCI)  return "WAGASCI";
@@ -130,7 +131,9 @@ void ND280UpTargReadOut::BirksSaturation(double &edep, double steplength, double
 
 double ND280UpTargReadOut::EdepToPhot(double edep)
 {
-  if(GetTargType() == nd280upconv::kSuperFGD){        
+  if(GetTargType() == nd280upconv::kSuperFGD ||
+     GetTargType() == nd280upconv::kProto
+     ){        
     /*
     // Account for the 3 fibers in the same scintillator cube
     double collfact = CollFactor_DoubleClad;
@@ -175,12 +178,13 @@ void ND280UpTargReadOut::ApplyFiberResponse(double &nphot, double &time, double 
 void ND280UpTargReadOut::ApplyFiberAttenuation(double &nphot, double x, double DetSize)
 {
   if(GetTargType() == nd280upconv::kSuperFGD ||
-     GetTargType() == nd280upconv::kFGDlike
+     GetTargType() == nd280upconv::kFGDlike ||
+     GetTargType() == nd280upconv::kProto
      ){
     nphot = GetPhotAtt_FGD(nphot,x, DetSize);
   }
   else if(GetTargType() == nd280upconv::kSciFi){    
-    //nphot = GetPhotAtt_SciFi(nphot,x); // not available yet
+    //npe = GetPhotAtt_SciFi(nphot,x); // not available yet
     nphot = GetPhotAtt_FGD(nphot,x);    
   }
   else{
@@ -259,7 +263,7 @@ void ND280UpTargReadOut::ComputeHitTime(double &time, double x, double q)
   if(DEBUG) cout << "time  after time walk: " << time << endl;
   
   //smearing
-  double timeResolution = 1.4;
+  double timeResolution = 0.9;
   double timeSmearing = fRndm->Gaus(0, timeResolution);
   if(DEBUG) cout << "time  smearing: " << timeSmearing << endl;
   time+= timeSmearing;
@@ -277,18 +281,15 @@ void ND280UpTargReadOut::ComputeHitTime(double &time, double x, double q)
 
 }
 
-
-void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
+void ND280UpTargReadOut::ApplyMPPCResponse(G4double &nphot, int MPPC_type)
 {
   double rndunif =0.;
-  double npe_passed = 0.;
-  int npe_integer = (int) (npe+0.5);
-  for (int i=0;i<npe_integer;i++){
+  double nphot_passed = 0.;
+  int nphot_integer = (int) (nphot+0.5);
+  for (int i=0;i<nphot_integer;i++){
     rndunif = fRndm->Uniform();
-    if (rndunif < MPPCEff_SuperFGD) npe_passed++;
+    if (rndunif < MPPCEff_SuperFGD) nphot_passed++;
   }
-  npe = npe_passed;
+  nphot = nphot_passed;
   return;
 }
-
-

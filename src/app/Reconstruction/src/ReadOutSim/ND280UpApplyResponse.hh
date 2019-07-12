@@ -16,7 +16,7 @@ public:
   void CalcResponse(TVector3 lightPos,int trkid,int parid,double charge,double time,double steplength, double edep, TString touch_namedet);
 
   TVector3 GetHitPos(){return fHitPos;}
-  TVector3 GetHitPE(){return fHitPE;}
+  TVector3 GetHitPE(){return fHitPhot;}
   TVector3 GetHitTime(){return fHitTime;}
   double GetHitTrkID(){return fHitTrkID;}
 
@@ -45,9 +45,12 @@ public:
 
   // Assume the MPPC read-out plane is at x,y,z<0
   // Assume at least 2 projections exist
-  double GetMPPCPosX();
-  double GetMPPCPosY();
-  double GetMPPCPosZ();
+  double GetMPPCPosX(double Zpos);
+  double GetMPPCPosY(double Zpos);
+  double GetMPPCPosZ(double Xpos);
+
+  // return the MPPC type in the XZ plane based on its Z postion
+  int GetMPPCType(double Z);
 
   // Position of the MPPC hits
   void GetHitPosXY(double lightX, double lightY, double &mppcX, double &mppcY);
@@ -72,7 +75,7 @@ private:
   // ND280RootPersistencyManager* persistencyManager;
 
   TVector3 fHitPos;
-  TVector3 fHitPE;
+  TVector3 fHitPhot;
   TVector3 fHitTime;
 
   nd280upconv::TargetType_t ftargetid;
