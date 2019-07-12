@@ -936,7 +936,10 @@ void ExN02ND280XML::XML2String(string tmp_app,string &dest){
   if(dest==""){
     std::cout << "Path is : " << tmp_app << std::endl;
     std::cout << "Path not found" << std::endl;
-    exit(1);
+    const char *msg = "Path to the GENIE file is empty";
+    const char *origin = "ExN02ND280XML::XML2String";
+    const char *code = "if(dest==""){";
+    G4Exception(origin,code,FatalException,msg);
   }
   
   return;

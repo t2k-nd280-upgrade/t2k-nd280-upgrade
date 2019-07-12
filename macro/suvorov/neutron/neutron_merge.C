@@ -18,7 +18,7 @@ const float MIP_LY_AV3 = 40;
 using namespace std;
 
 void neutron_merge() {
-  TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v21-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+  TFile* file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v25-UseXY-UseXZ-UseYZ-Separate10_na_200000.root", "READ");
 
   const Int_t Ndist = 9;
   float distance_cut[Ndist];
@@ -72,6 +72,7 @@ void neutron_merge() {
 
 	TH2F* init_e_cos  = (TH2F*)file->Get("ini_ET");
 	TH2F* eff_e_cos   = (TH2F*)file->Get("eff_ET");
+  TH2F* hits_time   = (TH2F*)file->Get("hits_time");
 	TH2F* pe_e_cos    = (TH2F*)file->Get("pe_ET");
 	TH2F* hits_energy = (TH2F*)file->Get("hitsE");
 	TH2F* hits_number = (TH2F*)file->Get("hitsN");
@@ -101,7 +102,7 @@ void neutron_merge() {
   mom_forward->Rebin(rebin_Y);
   mom_norm->Rebin(rebin_Y);
 
-  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v31.root", "RECREATE");
+  TFile* file_out = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v33.root", "RECREATE");
   file_out->cd();
 
   for (Int_t i = 1; i <= pe_e_cos->GetXaxis()->GetNbins(); ++i) {
@@ -115,9 +116,9 @@ void neutron_merge() {
   //  0) 0                       no cut
   //  1) 1.5 / sqrt3,            > 40 p.e. in total
   //  2) 0.95 / sqrt3,           > 40 p.e. in total
-  //  3) 1.5 * 1 / sqrt fibers   > 40 p.e per each fiber
+  //  3) 0.95 * 1 / sqrt fibers   > 40 p.e per each fiber
   //  4) 0.95 / sqrt3 * sqrt (40/total)  > 40 p.e. total
-  //  5) 1.5 * 1 / sqrt fibers   > 40 p.e per each fiber > 200 p.e.
+  //  5) 0.95 * 1 / sqrt fibers   > 40 p.e per each fiber > 200 p.e.
   //  6) 0.95 / sqrt3 * sqrt (40/total)  > 40 p.e. total > 200 p.e.
 
   const Int_t time_size = 7;
@@ -144,8 +145,13 @@ void neutron_merge() {
     TH1F* test_l_e   = new TH1F("ly_energy", "Averagy l.y.", 250, 0., 500.);
     TH1F* test_l_e_n = new TH1F("test1", "test", 250, 0., 500.);
 
-    TH2F* angle_smearing_T = new TH2F("cosThetaSmear", "Cos#Theta smearing", 200, -1., 1., 200, -1., 1.);
-    TH2F* angle_smearing_P = new TH2F("PhiSmear", "Phi smearing", 200, 0., 2*TMath::Pi(), 200, 0., 2*TMath::Pi());
+    TH2F* angle_smearing_T = new TH2F("cosThetaSmear", "Cos#Theta smearing", 199, -1., 1., 199, -1., 1.);
+    //TH2F* angle_smearing_P = new TH2F("PhiSmear", "Phi smearing", 200, 0., 2*TMath::Pi(), 200, 0., 2*TMath::Pi());
+    //TH2F* angle_smearing_P2 = new TH2F("PhiSmear2", "Phi smearing", 200, 0., 2*TMath::Pi(), 200, 0., 2*TMath::Pi());
+    TH2F* angle_smearing_P = new TH2F("PhiSmear", "Phi smearing", 200, 0., 7., 200, 0., 7.);
+    TH2F* angle_smearing_P2 = new TH2F("PhiSmear2", "Phi smearing", 200, 0., 7., 200, 0., 7.);
+
+    TH2F* angle_energy     = new TH2F("angle_energy", "Angle vs energy", 400, 0., 800., 200, -1., 1.);
 
     TH1F* time_resol_1  = new TH1F("time_res_fib", "Time resolution", 500, 0., 6000.);
     TH1F* time_resol_2  = new TH1F("time_res_ly", "Time resolution", 500, 0., 6000.);
@@ -160,8 +166,8 @@ void neutron_merge() {
     const Int_t Nbins = 31;
     Double_t bins[Nbins] = {0., 5., 10., 15., 20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 120., 130., 140., 150., 170.  , 190., 210., 230., 250., 300., 350., 400., 450., 500., 600., 700., 800.};
 
-    const Int_t Nbins_cos = 11;
-    Double_t bins_cos[Nbins_cos] = {-1., -0.8, -0.6, -0.4, -0.2, 0., 0.2, 0.4, 0.6, 0.8, 1.};
+    const Int_t Nbins_cos = 13;
+    Double_t bins_cos[Nbins_cos] = {-1.1, -1., -0.8, -0.6, -0.4, -0.2, 0., 0.2, 0.4, 0.6, 0.8, 1., 1.1};
     TH1F* cos_h = new TH1F("cos_h", "", Nbins_cos-1, bins_cos);
 
     TH2F* energy_resol_cos[time_size][Nbins_cos-1];
@@ -222,12 +228,32 @@ void neutron_merge() {
         energy_acc[0]->Fill((ekin2 - ekin) / ekin);
 
       angle_smearing_T->Fill(dir_true[2], dir_reco[2]);
-      TVector3 d_true(dir_true[1], dir_true[2], dir_true[0]);
-      TVector3 d_reco(dir_reco[1], dir_reco[2], dir_reco[0]);
+      TVector3 d_true(dir_true[2], dir_true[0], dir_true[1]);
+      TVector3 d_reco(dir_reco[2], dir_reco[0], dir_reco[1]);
       angle_smearing_P->Fill(d_true.Phi() + TMath::Pi(), d_reco.Phi() + TMath::Pi());
 
+      Float_t phi_true;
+      Float_t angle = TMath::ACos(dir_true[2] / sqrt(dir_true[2]*dir_true[2] + dir_true[0]*dir_true[0]));
+      if (!TMath::SignBit(dir_true[0]))
+        phi_true = angle;
+      else 
+        phi_true = 2*TMath::Pi() - angle;
+
+      Float_t phi_reco;
+
+      angle = TMath::ACos(dir_reco[2] / sqrt(dir_reco[2]*dir_reco[2] + dir_reco[0]*dir_reco[0]));
+      if (!TMath::SignBit(dir_reco[0]))
+        phi_reco = angle;
+      else 
+        phi_reco = 2*TMath::Pi() - angle;
+
+      angle_smearing_P2->Fill(phi_true, phi_reco);
+
+      angle_energy->Fill(ekin, dir_reco[2]);
+
       Int_t cos_bin = cos_h->FindBin(costheta);
-      energy_resol_cos[0][cos_bin-1]->Fill(ekin, ekin2);
+      if (cos_bin > 0 && cos_bin < cos_h->GetXaxis()->GetNbins())
+        energy_resol_cos[0][cos_bin-1]->Fill(ekin, ekin2);
 
       for (Int_t resID = 1; resID < time_size; ++resID ) {
 
@@ -245,7 +271,9 @@ void neutron_merge() {
             res      *= sqrt(MIP_LY_AV3 / light_fiber);
           } else if (resID == 3 || resID == 5) {
             res      = 0.95;
-            res      *= sqrt(1. / n_fibers);
+            if (n_fibers)
+              res      *= sqrt(1. / n_fibers);
+            else res = -1.;
           }
 
           if (resID == 3)
@@ -270,21 +298,23 @@ void neutron_merge() {
           time_vertex = gen->Gaus(0., 1.);
         }
 
+        if (time_sigma[resID] < 0.)
+          continue;
         time = gen->Gaus(first_hit_time, time_sigma[resID]);
         time -= time_vertex;
+        //cout << resID << "\t" << time << endl;
         if (time < 0.)
-          time = 0.;
+          continue;;
 
         beta = dist_cubes / (time * 30.);
 
-        if (beta < 0)
-          continue;
         ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
 
         energy_resol[resID]->Fill(ekin, ekin2);
         energy_resol_rebin[resID]->Fill(ekin, ekin2);
         cos_bin = cos_h->FindBin(costheta);
-        energy_resol_cos[resID][cos_bin-1]->Fill(ekin, ekin2);
+        if (cos_bin > 0 && cos_bin < cos_h->GetXaxis()->GetNbins())
+          energy_resol_cos[resID][cos_bin-1]->Fill(ekin, ekin2);
         beta_ekin_sm[resID]->Fill(ekin, beta);
         if (ekin > 70. && ekin < 90.)
           energy_acc[resID]->Fill((ekin2 - ekin) / ekin);
@@ -405,6 +435,8 @@ void neutron_merge() {
     eff_e_cos_2->Write("efficiency_vs_Ekin_theta");
     angle_smearing_T->Write();
     angle_smearing_P->Write();
+    angle_smearing_P2->Write();
+    angle_energy->Write();
     time_resol_1->Write();
     time_resol_2->Write();
     ly_fst->Write();
@@ -512,6 +544,7 @@ void neutron_merge() {
 
   init_e_cos->Write();
   eff_e_cos->Write();
+  hits_time->Write();
   pe_e_cos->Write();
   pe_e->Write();
   hits_energy->Write();
