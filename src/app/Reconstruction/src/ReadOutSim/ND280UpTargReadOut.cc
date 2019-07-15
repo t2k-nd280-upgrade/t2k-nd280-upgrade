@@ -292,15 +292,31 @@ int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
   }
   double pe = nphot_passed;
 
+  //account for different MPPC types (values from SFGD prototype beam test)
+
+  //type 1 MIP mean and sigma
+  double 1mip=50.
+  double 1sigma=8.;
+
   double gain;
+  double mip;
+  double sigma;
   if (MPPC_type == 1){
-    gain = 1.;
+    mip = 50.
+    gain = mip/1mip;
+    sigma = 8.;
   }
   else if (MPPC_type == 2){
-    gain = 47./50.;
+    gain = mip/1mip;
+    sigma = 9.3;
   }
   else if (MPPC_type == 3){
-    gain = 38./50.;
+    gain = mip/1mip;
+    sigma = 10.;
   }
-  return gain*pe;
+  else{
+    cout << "MPPC type not recognised" << endl;
+    exit(1);
+  }
+  return gain*pe+(gain*pe-mip)*(sigma/1sigma-1);
 }
