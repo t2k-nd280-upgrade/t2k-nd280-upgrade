@@ -407,8 +407,12 @@ int ND280UpApplyResponse::GetMPPCType(double Z){
       return 2;
     else if (Z < 24.)
       return 3;
-    else
+    else if (Z < 48.)
       return 1;
+    else{
+      cout << "Z value outside of possible range" << endl;
+      exit(1);
+    }
   }
   else
     return 1;

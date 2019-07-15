@@ -291,5 +291,16 @@ int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
     if (rndunif < MPPCEff_SuperFGD) nphot_passed++;
   }
   double pe = nphot_passed;
-  return pe;
+
+  double gain;
+  if (MPPC_type == 1){
+    gain = 1.;
+  }
+  else if (MPPC_type == 2){
+    gain = 47./50.;
+  }
+  else if (MPPC_type == 3){
+    gain = 38./50.;
+  }
+  return gain*pe;
 }
