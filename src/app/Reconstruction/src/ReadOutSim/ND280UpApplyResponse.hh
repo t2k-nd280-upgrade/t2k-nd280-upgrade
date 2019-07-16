@@ -45,9 +45,12 @@ public:
 
   // Assume the MPPC read-out plane is at x,y,z<0
   // Assume at least 2 projections exist
-  double GetMPPCPosX();
-  double GetMPPCPosY();
-  double GetMPPCPosZ();
+  double GetMPPCPosX(double Zpos);
+  double GetMPPCPosY(double Zpos);
+  double GetMPPCPosZ(double Xpos);
+
+  // return the MPPC type in the XZ plane based on its Z postion
+  int GetMPPCType(double Z);
 
   // Position of the MPPC hits
   void GetHitPosXY(double lightX, double lightY, double &mppcX, double &mppcY);

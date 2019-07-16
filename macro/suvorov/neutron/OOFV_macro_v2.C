@@ -26,6 +26,10 @@ int OOFV_macro_v2() {
   TH2F* LeverArm_time     = new TH2F("LAvsTime", "Time vs Lever arm", 300, 0., 300., 500, -200., 300.);
   TH2F* LeverArm_time_true= new TH2F("LAvsTime_true", "Time vs Lever arm", 300, 0., 300., 500, -200., 300.);
 
+  TH2F* hits_XY = new TH2F("hits_XY", "", 192, -96, 96., 58, -29, 29.);
+  TH2F* hits_XZ = new TH2F("hits_XZ", "", 192, -96, 96., 210, -105, 105.);
+  TH2F* hits_YZ = new TH2F("hits_YZ", "", 58, -29, 29., 210, -105, 105.);
+
   TH1F* pt = new TH1F("pt", "Transverse momentum", 500, 0., 500.);
 
   Int_t n_fibers_cut;
@@ -57,11 +61,11 @@ int OOFV_macro_v2() {
     Float_t v_y     = (gen->Uniform() - 0.5)* 520.;
     Float_t v_z     = (gen->Uniform() - 0.5)* 1880.;
 
-    v_y -= 18.;
-    v_z -= 1707.;
-
     TVector3 vertex(v_x, v_y, v_z);
     TVector3 hit(hit_pos[0], hit_pos[1], hit_pos[2]);
+
+    //cout << "v " << v_x << "\t" << v_y << "\t" << v_z << endl;
+    //cout << "h " << hit_pos[0] << "\t" << hit_pos[1] << "\t" << hit_pos[2] << endl;
 
     Float_t LA = (hit - vertex).Mag() / 10.;
     Float_t T  = first_hit_time - v_time;
@@ -79,6 +83,10 @@ int OOFV_macro_v2() {
     T  = first_time - v_time;
 
     LeverArm_time->Fill(LA, T);
+
+    hits_XY->Fill(hit_pos[0] / 10, (hit_pos[1]) / 10);
+    hits_XZ->Fill(hit_pos[0] / 10, (hit_pos[2]) / 10);
+    hits_YZ->Fill((hit_pos[1]) / 10, (hit_pos[2]) / 10);
 
     // STV studies
 
@@ -109,6 +117,10 @@ int OOFV_macro_v2() {
   LeverArm_time->Write();
   LeverArm_time_true->Write();
   pt->Write();
+
+  hits_XY->Write();
+  hits_XZ->Write();
+  hits_YZ->Write();
 
   file_out->Close();
 

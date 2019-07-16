@@ -24,7 +24,7 @@ public:
   
   double ApplyScintiResponse(double &edep,double steplength,double charge);  
   void ApplyFiberResponse(double &nphot,double &time,double x, double DetSize = 0.);
-  void ApplyMPPCResponse(double &npe);
+  int ApplyMPPCResponse(double npe, int MPPC_type = 1);
 
 private:
  

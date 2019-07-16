@@ -10,6 +10,7 @@ namespace nd280upconv {
     {
       kUndefined = -999999,
       kSuperFGD = 0,
+      kProto,
       kFGD,
       kFGD3D,
       kWAGASCI,
