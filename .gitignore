@@ -50,3 +50,7 @@ mybuild
 .vscode
 t2k_nd280-upgrade.code-workspace
 build
+
+#editor files
+*.backup
+*.undodir

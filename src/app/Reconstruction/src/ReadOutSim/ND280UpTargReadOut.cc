@@ -294,7 +294,7 @@ int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
 
   //account for different MPPC types (values from SFGD prototype beam test)
 
-  //type 1 MIP mean and sigma
+  //type 1 MPPC mean MIP and standard deviation
   double mip1=50.;
   double sigma1=8.;
 
@@ -318,5 +318,6 @@ int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
     cout << "MPPC type not recognised" << endl;
     exit(1);
   }
-  return (int)gain*pe+(gain*pe-mip)*(sigma/sigma1-1.);
+  //an attempt to account for the different gain and variance of MPPC types
+  return (int)(mip+(gain*pe-mip)*pow(sigma,2)/pow(sigma1,2));
 }
