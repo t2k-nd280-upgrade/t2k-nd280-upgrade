@@ -18,8 +18,8 @@ const float MIP_LY_AV3 = 40;
 using namespace std;
 
 void neutron_merge() {
-  string file_in_str    = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v26-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root";
-  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v33.root";
+  string file_in_str    = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v29-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root";
+  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v35.root";
 
   TFile* file = new TFile(file_in_str.c_str(), "READ");
 
@@ -413,7 +413,7 @@ void neutron_merge() {
 
     } // loop over projections to fit
 
-    if (distID < 8) {
+    if (distID == 1 || distID == 2 || distID == 3 || distID == 4 || distID == 7) {
       graph_resol[5]->SetMarkerColor(distID+1);
       graph_resol[5]->SetLineColor(distID+1);
       //graph_resol[5]->SetName();
