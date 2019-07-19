@@ -303,15 +303,15 @@ int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
   double sigma;
   if (MPPC_type == 1){
     mip = 50.;
-    gain = mip/mip1;
+    gain = mip1/mip;
     sigma = 8.;
   }
   else if (MPPC_type == 2){
-    gain = mip/mip1;
+    gain = mip1/mip;
     sigma = 9.3;
   }
   else if (MPPC_type == 3){
-    gain = mip/mip1;
+    gain = mip1/mip;
     sigma = 10.;
   }
   else{
