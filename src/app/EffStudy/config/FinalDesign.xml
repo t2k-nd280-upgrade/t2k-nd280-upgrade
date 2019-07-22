@@ -403,7 +403,7 @@
      0  
    </HATPCDownPos_X>
    <HATPCDownPos_Y>
-     -707
+     -712
    </HATPCDownPos_Y>
    <HATPCDownPos_Z>
      -1707
@@ -713,7 +713,7 @@
    <!-- Include detectors -->
 
    <UseHATPCUp>
-     true
+     false
    </UseHATPCUp>
    <UseHATPCDown>
      true
@@ -730,7 +730,7 @@
    </UseForwTPC3>
 
    <UseTarget1>
-     true
+     false
    </UseTarget1>
    <UseTarget2>
      false
@@ -744,7 +744,7 @@
    </UseFGD2>
 
    <UseSuperFGD1>
-     false
+     true
    </UseSuperFGD1>
 
    <UseSuperFGD2>
