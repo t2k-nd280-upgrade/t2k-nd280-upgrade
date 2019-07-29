@@ -111,9 +111,9 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     //distX = lightX - persistencyManager->GetMPPCPosX(); 
     //distY = lightY - persistencyManager->GetMPPCPosY(); 
     //distZ = lightZ - persistencyManager->GetMPPCPosZ();     
-    distX = abs(lightX - GetMPPCPosX(hitZ)); 
-    distY = abs(lightY - GetMPPCPosY(hitZ)); 
-    distZ = abs(lightZ - GetMPPCPosZ(hitX));     
+    distX = lightX - GetMPPCPosX(hitZ); 
+    distY = lightY - GetMPPCPosY(hitZ); 
+    distZ = lightZ - GetMPPCPosZ(hitX);     
   }
   
   //////////////////////////////////////////////
@@ -122,14 +122,14 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
   //
   //////////////////////////////////////////////
   
-  if( (distX>240 && distX!=nd280upconv::kUndefined) || 
-      (distY>80 && distY!=nd280upconv::kUndefined) || 
-      (distZ>480 && distZ!=nd280upconv::kUndefined) ){
+  if( (distX<0 && distX!=nd280upconv::kUndefined) || 
+      (distY<0 && distY!=nd280upconv::kUndefined) || 
+      (distZ<0 && distZ!=nd280upconv::kUndefined) ){
     cout << "distX = " << distX 
 	 << ", distY = " << distY 
 	 << ", distZ = " << distZ 
 	 << endl;
-    cout << "ND280UpApplyResponse::CalcResponse" << endl;
+    cout << "ND280UpApplyResponse::ProcessHits" << endl;
     cout << "The hit is outside the target!!!" << endl;
     exit(1);
   }
@@ -403,14 +403,13 @@ double ND280UpApplyResponse::GetMPPCPosZ(double Xpos){
 // return the MPPC type in the XZ plane using the Z position of the MPPC
 int ND280UpApplyResponse::GetMPPCType(double Z){
   if (ftargetid==nd280upconv::kProto){
-    if (Z < -80.)
+    if (Z < 16.)
       return 2;
-    else if (Z < 0.)
+    else if (Z < 24.)
       return 3;
-    else if (Z < 240.)
+    else if (Z < 48.)
       return 1;
     else{
-      cout << "ND280UpApplyResponse::GetMPPCType" << endl;
       cout << "Z value outside of possible range" << endl;
       exit(1);
     }
