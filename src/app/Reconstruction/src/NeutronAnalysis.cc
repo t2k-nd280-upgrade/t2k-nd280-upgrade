@@ -44,7 +44,8 @@ int thr = 50;
 bool CloseHit(int i, int j, TH2F* h_ini);
 bool CloseHit(int i, int j, int k, TH3I* h_ini);
 
-void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_c, TH1F* h_c_t, const Float_t t_zero);
+void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_c, TH1F* h_c_t, const Float_t t_zero,
+                    int i_f, int j_f, int k_f, TH2F* time_dist, TH2F* time_light);
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -108,6 +109,9 @@ int NeutronAnalysis(int argc,char** argv) {
 
   // hits distribution in a time
   TH1F* hits_time = new TH1F("hits_time", "Time in the cluster", 200, 0., 10.);
+  // hits time vs distance distribution
+  TH2F* hits_time_dist  = new TH2F("hits_time_dist", "", 150, 0., 150, 200, 0., 10.);
+  TH2F* hits_time_light = new TH2F("hits_time_light", "", 150, 0., 3000., 200, 0., 10.);
   // initial energy versus cos theta
   TH2F* init_e_cos  = new TH2F("ini_ET", "Initial", 10, -1., 1., 250, 0., 800);
   TH2F* eff_e_cos   = new TH2F("eff_ET", "Efficiency", 10, -1., 1., 250, 0., 800);
@@ -662,7 +666,8 @@ int NeutronAnalysis(int argc,char** argv) {
     h3d_c->SetBinContent(first_binX, first_binY, first_binZ, 
       h3d->GetBinContent(first_binX, first_binY, first_binZ));
 
-    find_connected(first_binX, first_binY, first_binZ, h3d, h3d_f, h3d_c, hits_time, first_hit_time);
+    find_connected(first_binX, first_binY, first_binZ, h3d, h3d_f, h3d_c, hits_time, first_hit_time, 
+      first_binX, first_binY, first_binZ, hits_time_dist, hits_time_light);
 
     TH2I* hits_map_XY_cluster_i = (TH2I*)h3d_c->Project3D("xy");
     TH2I* hits_map_XZ_cluster_i = (TH2I*)h3d_c->Project3D("xz");
@@ -762,8 +767,11 @@ int NeutronAnalysis(int argc,char** argv) {
 
   hits_number->Write();
   hits_energy->Write();
-  hits_time->Write();
   e_dist->Write();
+
+  hits_time->Write();
+  hits_time_dist->Write();
+  hits_time_light->Write();
 
   first_bin_XY->Write();
   first_bin_YZ->Write();
@@ -818,7 +826,8 @@ int NeutronAnalysis(int argc,char** argv) {
   return 0;
 }
 
-void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_fin, TH1F* h_c_t, const Float_t t_zero) {
+void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, TH3I* h_fin, TH1F* h_c_t, const Float_t t_zero,
+                    int i_f, int j_f, int k_f, TH2F* time_dist, TH2F* time_light) {
   (void)h_ini;
   for (int inc_i = -1; inc_i < 2; ++inc_i) {
     for (int inc_j = -1; inc_j < 2; ++inc_j) {
@@ -830,11 +839,16 @@ void find_connected(int i, int j, int k, const TH3I* h_ini, const TH3F* h_time, 
           continue;
 
         if (h_ini->GetBinContent(i + inc_i, j + inc_j, k + inc_k) &&
-           !h_fin->GetBinContent(i + inc_i, j + inc_j, k + inc_k)) {
+           !h_fin->GetBinContent(i + inc_i, j + inc_j, k + inc_k) &&
+           h_time->GetBinContent(i + inc_i, j + inc_j, k + inc_k) - t_zero < 0.2) {
           h_fin->SetBinContent(i + inc_i, j + inc_j, k + inc_k,
             h_ini->GetBinContent(i + inc_i, j + inc_j, k + inc_k));
-          h_c_t->Fill(h_time->GetBinContent(i + inc_i, j + inc_j, k + inc_k) - t_zero);
-          find_connected(i + inc_i, j + inc_j, k + inc_k, h_ini, h_time, h_fin, h_c_t, t_zero);
+          Float_t time_delay = h_time->GetBinContent(i + inc_i, j + inc_j, k + inc_k) - t_zero;
+          h_c_t->Fill(time_delay);
+          Float_t dist = sqrt( (i_f-i)*(i_f-i) + (j_f-j)*(j_f-j) + (k_f-k)*(k_f-k));
+          time_dist->Fill(dist, time_delay);
+          time_light->Fill(h_ini->GetBinContent(i + inc_i, j + inc_j, k + inc_k), time_delay);
+          find_connected(i + inc_i, j + inc_j, k + inc_k, h_ini, h_time, h_fin, h_c_t, t_zero, i_f, j_f, k_f, time_dist, time_light);
         }
       }
     }
