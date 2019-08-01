@@ -10,6 +10,7 @@
 using namespace std;
 
 const double PileUp_proc = 0.02133;
+const double Dist_cut = 20.;
 
 void OOFV_signal_merge_v2() {
 
@@ -28,7 +29,7 @@ void OOFV_signal_merge_v2() {
   //tree_bg->SetBranchAddress("N_fibers_cut",       &n_fibers_cut);
   tree_bg->SetBranchAddress("Light_tot",          &light_tot);
 
-  TFile* signal_file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v23-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
+  TFile* signal_file = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v30-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root", "READ");
   TTree* tree       = (TTree*)signal_file->Get("neutron");
 
   Double_t ekin, costheta, LA_s, dist, dt_s, neutron_time, neutron_dist_true;
@@ -44,25 +45,32 @@ void OOFV_signal_merge_v2() {
 
   TRandom3* gen = new TRandom3(0);
 
-  TFile* out_f = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_pur_merge.root", "RECREATE");
+  TFile* out_f = new TFile("/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_pur_merge_v2.root", "RECREATE");
 
   TH2F* LeverArm_time_s     = new TH2F("LAvsTime_s", "Time vs Lever arm signal", 300, 0., 300., 500, -200., 300.);
   TH2F* LeverArm_time_bg     = new TH2F("LAvsTime_bg", "Time vs Lever arm signal", 300, 0., 300., 500, -200., 300.);
+  TH2F* LeverArm_time_bg_signal_free     = new TH2F("LAvsTime_bg_signal_free", "Time vs Lever arm signal", 300, 0., 300., 500, -200., 300.);
 
 
   // Strategy:
-  // 1) take vertex position from signal
-  // 2) Bias time and position for signal
-  // 3) take first hit in time from both signal && BG
-  //		3.1 first time from signal 		--> 'ok'
-  //		3.2 first timw for BG
-  //			3.2.1 < 50 cm
-  //				BG 			--> 'spoiled' event
-  //			3.2.1 > 50 cm
-  //				BG 			--> pile up
+  // Loop over 1e6 signal events (w/ and w/o hits from neutron)
+  //
+  // 1) take "neutrino" vertex position from signal
+  // 2) is the signal (neutron) reconstructed?
+  //    2.1 yes
+  //      2.1.1 signal or BG hit close to vertex (< 20cm)     --> skip
+  //      2.1.2 first hit in time (AFTER THE VERTEX) is low light (< 40 p.e.) --> skip
+  //      2.1.3 first time hit from signal                    --> fill signal histo
+  //      2.2.4 first time hit from BG (After the vetrex)     --> fill BG histo
+  //
+  //    2.2 no  --> Fill BG histo, fil BG_signal_free_histo
+  //
+  // 3) Normolise BG and BG_signal_free with the pile up factor (2.3%)
 
+  // What is missing: 
+  // 1st BG happens before the vertex, more BG clusters happens after the vertex
+  // happens quite rarely
 
-  // BG < Signal???
 
   Int_t BG_spoiled 			= 0;
   Int_t BG_pileup 			= 0;
@@ -71,82 +79,93 @@ void OOFV_signal_merge_v2() {
   float vertex_time;
   float first_hit_time_signal;
   float LA_bg, dt_bg;
+  float res;
 
   Int_t Nev_bg = tree_bg->GetEntries();
   Int_t Nev_s = 1000000;
-  cout << "[                     ] N = " << Nev_bg << "\r[";
   int it_s = 0;
   int it_bg = 0;
+
+  int Nsignal = 0;
+  int Total_signal = 0;
 
   while (true) {
     if (it_bg >= Nev_bg || it_s >= 1000000)
       break;
-  	//if (i%(int(Nev_bg/20)) == 0)
-    //  cout << "." << flush;
-  	tree_bg->GetEntry(it_bg);
-    if (!n_fibers_cut || light_tot / 3 < 40) {
-      ++it_bg;
-      continue;
-    }
 
     tree->GetEntry(it_s);
-    if (!n_fibers_s || light_tot_s / 3 < 40) {
-      ++it_s;
-      continue;
-    }
+    ++it_s;
 
-  	// time count from 0, so through the real time around 200 +-18 ns
-  	vertex_time = gen->Gaus(200., 18.);
-    float res = 0.95;
-    res /= sqrt(n_fibers_s);
-  	first_hit_time_signal = gen->Gaus(dt_s, res) + vertex_time;
+    tree_bg->GetEntry(it_bg);
+    ++it_bg;
 
-  	//vertex_pos[1] -= 18.;
-    //vertex_pos[2] -= 1707.;
-
-    Double_t Fst_time = first_hit_time;
-    res = 0.95 / sqrt(n_fibers_cut);
-    first_hit_time = gen->Gaus(first_hit_time, res);
-    /*for(int ihit = 0; ihit < nd280UpEvent->GetNHits(); ++ihit) { // get last entry
-      TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
-      double time = nd280UpHit->GetStartT();
-
-      if (time < Fst_time) {
-      	Fst_time = time;
-      	first_in_time_id = ihit;
-      }
-    }*/
-
-    if (Fst_time > first_hit_time_signal) {
-    	++Signal_ok;
-    	LeverArm_time_s->Fill(LA_s, dt_s);
-      ++it_s;
-      ++it_bg;
-    	continue;
-    }
+    vertex_time = gen->Gaus(200., 18.);
 
     TVector3 vertex(vertex_pos[0], vertex_pos[1], vertex_pos[2]);
     TVector3 hit(hit_pos[0], hit_pos[1], hit_pos[2]);
+    LA_bg = (hit-vertex).Mag() / 10;    
 
-    dt_bg = Fst_time - vertex_time;
-    LA_bg = (hit-vertex).Mag() / 10;
-    cout << "LA bg " << LA_bg << endl;
+    // 2.2
+    if (dt_s == 1.e9) {
+      if (LA_bg > Dist_cut && light_tot / 3 > 40 && n_fibers_cut && first_hit_time > vertex_time) {
+        res = 0.95 / sqrt(n_fibers_cut);
+        first_hit_time = gen->Gaus(first_hit_time, res);
 
-    /*if (LA_bg < 500.) {
-    	++BG_spoiled;
-    	continue;     
-  	}*/
+        dt_bg = first_hit_time - vertex_time;
 
-  	++BG_pileup;
-  	LeverArm_time_bg->Fill(LA_bg, dt_bg, PileUp_proc);
-    ++it_bg;
-    ++it_s;
-  } // loop over signal events
+        LeverArm_time_bg_signal_free->Fill(LA_bg, dt_bg);
+        LeverArm_time_bg->Fill(LA_bg, dt_bg);
+      }
+      continue;
+    }
 
-  cout << "]" << endl;
+    // 2.1.1
+    if (LA_bg < Dist_cut || LA_s < Dist_cut)
+      continue;
+
+    // 2.1.2
+    // both low light
+    if (!n_fibers_s && !n_fibers_cut)
+      continue;
+
+    // signal low light but signal first
+    if (!n_fibers_s && dt_s + vertex_time < first_hit_time)
+      continue;
+
+    // bg low light but bg first and AFTER the vertex
+    if (!n_fibers_cut && dt_s + vertex_time > first_hit_time && first_hit_time > vertex_time)
+      continue;
+
+    res = 0.95 / sqrt(n_fibers_cut);
+    first_hit_time = gen->Gaus(first_hit_time, res);
+    dt_bg = first_hit_time - vertex_time;
+
+    res = 0.95;
+    res /= sqrt(n_fibers_s);
+    dt_s = gen->Gaus(dt_s, res);
+    first_hit_time_signal = dt_s + vertex_time;
+
+    // 2.1.3
+    // signal first
+    if (first_hit_time > first_hit_time_signal) {
+      LeverArm_time_s->Fill(LA_s, dt_s);
+      continue;
+    }
+
+    // 2.1.4
+    // BG first
+    if (first_hit_time < first_hit_time_signal && first_hit_time > vertex_time) {
+      LeverArm_time_bg->Fill(LA_bg, dt_bg);
+      continue;
+    }
+  }
+
+  LeverArm_time_bg->Scale(PileUp_proc);
+  LeverArm_time_bg_signal_free->Scale(PileUp_proc);
 
   LeverArm_time_s->Write();
   LeverArm_time_bg->Write();
+  LeverArm_time_bg_signal_free->Write();
 
   TH2F* pur = (TH2F*)LeverArm_time_s->Clone("Purity");
 	TH2F* tot = (TH2F*)LeverArm_time_s->Clone("tot");

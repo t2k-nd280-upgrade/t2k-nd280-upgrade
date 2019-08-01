@@ -19,7 +19,10 @@ using namespace std;
 
 void neutron_merge() {
   string file_in_str    = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v29-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root";
-  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v35.root";
+  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v36.root";
+
+  TFile* f = new TFile("/t2k/users/suvorov/AnalysisResults/neutron_ekin_spectrum.root", "READ");
+  TH1F* h = (TH1F*)f->Get("h1");
 
   TFile* file = new TFile(file_in_str.c_str(), "READ");
 
@@ -136,6 +139,7 @@ void neutron_merge() {
   for (Int_t distID = 0; distID < Ndist; ++distID) {
 
     TH2F* energy_resol[time_size];
+    TH2F* energy_resol_rel[time_size];
     TH2F* energy_resol_rebin[time_size];
 
     TH1F* energy_acc[time_size];
@@ -177,6 +181,7 @@ void neutron_merge() {
   
     for (Int_t i = 0; i < time_size; ++i) {
       energy_resol[i]       = new TH2F(Form("energy_smearng_%i", i), "energy smearing matrix", 400, 0., 800, 600, 0., 1200);
+      energy_resol_rel[i]   = new TH2F(Form("energy_smearng_rel_%i", i), "energy smearing matrix", 400, 0., 800, 1000, -1.1, 4.9);
       energy_resol_rebin[i] = new TH2F(Form("energy_resol_rebin_%i", i), "", Nbins-1, bins, 600, 0., 1200.);
       energy_acc[i]         = new TH1F(Form("energy_acc_%i", i), "energy accuracy in the ROI", 120, -1., 1.);
       beta_ekin_sm[i]       = (TH2F*)beta_ekin->Clone(Form("beta_ekin_smeared_%i", i));
@@ -226,6 +231,7 @@ void neutron_merge() {
       beta = dist_cubes / (first_hit_time * 30.);
       ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
       energy_resol[0]->Fill(ekin, ekin2);
+      energy_resol_rel[0]->Fill(ekin, ekin2/ekin - 1.);
       energy_resol_rebin[0]->Fill(ekin, ekin2);
       if (ekin > 90. && ekin < 110.)
         energy_acc[0]->Fill((ekin2 - ekin) / ekin);
@@ -305,7 +311,6 @@ void neutron_merge() {
           continue;
         time = gen->Gaus(first_hit_time, time_sigma[resID]);
         time -= time_vertex;
-        //cout << resID << "\t" << time << endl;
         if (time < 0.)
           continue;;
 
@@ -314,6 +319,7 @@ void neutron_merge() {
         ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
 
         energy_resol[resID]->Fill(ekin, ekin2);
+        energy_resol_rel[resID]->Fill(ekin, ekin2/ekin - 1.);
         energy_resol_rebin[resID]->Fill(ekin, ekin2);
         cos_bin = cos_h->FindBin(costheta);
         if (cos_bin > 0 && cos_bin < cos_h->GetXaxis()->GetNbins())
@@ -345,7 +351,6 @@ void neutron_merge() {
     
     // loop over projections to fit
     for (Int_t resID = 0; resID < time_size; ++resID ) {
-      TH1D* fitted_histo[Nbins+5];
 
       graph[resID] = new TGraphAsymmErrors();
       graph[resID]->SetName("smearing_graph");
@@ -353,23 +358,26 @@ void neutron_merge() {
       graph_resol[resID]->SetName(Form("%f", distance_cut[distID]));
 
       gStyle->SetOptFit(1);
-      for (Int_t i = 2; i <= Nbins; ++i) {
-        fitted_histo[i] = energy_resol_rebin[resID]-> ProjectionY(Form("projections_%i_%i", resID, i), i, i);
-        if (i > 8 && i < 19)
-          fitted_histo[i]->Rebin(2);
-        if (i > 18)
-          fitted_histo[i]->Rebin(5);
+      energy_resol_rel[resID]->RebinX(10);
+      energy_resol_rel[resID]->RebinY(10);
+      for (Int_t i = 0; i <= energy_resol_rel[resID]->GetXaxis()->GetNbins(); ++i) {
+        TH1D* fitted_histo = energy_resol_rel[resID]-> ProjectionY(Form("projections_%i_%i", resID, i), i, i);
+
   
         float pre_mean = energy_resol_rebin[resID]->GetXaxis()->GetBinCenter(i);
     
-        f1->SetParameters(100, pre_mean, pre_mean*0.1, pre_mean*0.1);
-        fitted_histo[i]->Fit("f1", "Q");
-        fitted_histo[i]->Draw();
+        //f1->SetParameters(100, pre_mean, pre_mean*0.1, pre_mean*0.1);
+        f1->SetParameters(fitted_histo->GetMaximum(), 0., 0.1, 0.3);
+        fitted_histo->Fit("f1", "Q");
+        fitted_histo->Draw();
         gPad->Update();
     
-        TF1 *fit = fitted_histo[i]->GetFunction("f1");
+        TF1 *fit = fitted_histo->GetFunction("f1");
     
         if (!fit) continue;
+
+        if (distID > 5 && i < 2)
+          continue;
     
         Float_t mean      = fit->GetParameter(1);
         Float_t sigmaL    = fit->GetParameter(2);
@@ -377,22 +385,14 @@ void neutron_merge() {
         Float_t mean_e     = fit->GetParError(1);
         Float_t sigma_e    = fit->GetParError(3);
   
-        if (sigmaL < 0)
-          sigmaL = 0;
-        if (sigmaR > 500)
-          sigmaR = 0;
-  
-        if (mean < 0)
+        if (sigmaR < 0 || sigma_e > 0.3)
           continue;
-    
-        Double_t x_center = energy_resol_rebin[resID]->GetXaxis()->GetBinCenter(i);
-    
+
+        Double_t x_center = energy_resol_rel[resID]->GetXaxis()->GetBinCenter(i);
         graph[resID]->SetPoint(graph[resID]->GetN(), x_center, mean);
         graph[resID]->SetPointError(graph[resID]->GetN()-1, 0., 0., sigmaL, sigmaR);
-        
-        graph_resol[resID]->SetPoint(graph_resol[resID]->GetN(), x_center, sigmaR/mean);
-        float err = sigmaR/mean * sqrt(mean_e * mean_e / mean /mean + sigma_e * sigma_e / sigmaR / sigmaR);
-        graph_resol[resID]->SetPointError(graph_resol[resID]->GetN()-1, 0., 0., err, err);
+        graph_resol[resID]->SetPoint(graph_resol[resID]->GetN(), x_center, sigmaR);
+        graph_resol[resID]->SetPointError(graph_resol[resID]->GetN()-1, 0., 0., sigma_e, sigma_e);
         
       }
     
@@ -413,15 +413,21 @@ void neutron_merge() {
 
     } // loop over projections to fit
 
-    if (distID == 1 || distID == 2 || distID == 3 || distID == 4 || distID == 7) {
-      graph_resol[5]->SetMarkerColor(distID+1);
-      graph_resol[5]->SetLineColor(distID+1);
+    if (distID == 1 || distID == 2 || distID == 3 || distID == 7) {
+      int color;
+      if (distID == 1) color = 2;
+      if (distID == 2) color = 3;
+      if (distID == 3) color = 4;
+      if (distID == 7) color = 6;
+
+      graph_resol[5]->SetMarkerColor(color);
+      graph_resol[5]->SetLineColor(color);
       //graph_resol[5]->SetName();
       graph_fb->Add(graph_resol[5], "p");
       //leg_fb->Add(graph_resol[5], )
 
-      graph_resol[6]->SetMarkerColor(distID+1);
-      graph_resol[6]->SetLineColor(distID+1);
+      graph_resol[6]->SetMarkerColor(color);
+      graph_resol[6]->SetLineColor(color);
       graph_ly->Add(graph_resol[6], "p");
     }
 
@@ -458,6 +464,7 @@ void neutron_merge() {
 
     for (Int_t i = 0; i < time_size; ++i) {
       energy_resol[i]->Write();
+      energy_resol_rel[i]->Write();
       energy_acc[i]->Write();
       beta_ekin_sm[i]->Write();
       //energy_resol_rebin[i]->Write();
@@ -505,12 +512,6 @@ void neutron_merge() {
   TF1* beta_f = new TF1("beta", "sqrt(x*x + 2*x*939)/(x+939)", 0., 500.);
   (void)beta_f;
   
-  /*TF1* resol_100_05 = new TF1("resol_100_09", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/100*0.5*30", 0., 500.);
-  resol_100_05->Draw();
-  c1->Write();
-  TF1* resol_20_09 = new TF1("resol_20_09", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/20*0.9*30", 0., 500.);
-  resol_20_09->Draw();
-  c1->Write();*/
 
   TF1* resol_50_09 = new TF1("resol_50_09", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/50*0.9*30", 0., 500.);
   TF1* resol_50_07 = new TF1("resol_50_07", "1/x * 939* TMath::Power((1-beta(x)*beta(x)), -1.5) * TMath::Power(beta(x), 3)/50*0.7*30", 0., 500.);
@@ -544,6 +545,15 @@ void neutron_merge() {
 
   graph_fb->Write();
   graph_ly->Write();
+
+  c1->Clear();
+  graph_ly->Draw("ap");
+  h->Scale(0.5 / h->GetMaximum());
+  h->SetFillColor(17);
+  h->SetLineColor(17);
+  h->SetFillStyle(3004);
+  h->Draw("same hist");
+  c1->Write("last");
 
   init_e_cos->Write();
   eff_e_cos->Write();

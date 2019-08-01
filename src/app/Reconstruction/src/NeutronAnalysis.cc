@@ -658,101 +658,100 @@ int NeutronAnalysis(int argc,char** argv) {
     // The analysis
 
     // at least one hit should exists
-    //cout << "FHT " << first_hit_time << endl;
-    if (first_hit_time == 1.e9) 
-      continue;
+    if (first_hit_time != 1.e9) {
 
-    // do the clustering of the neutron event from the 1st hit
-    h3d_c->SetBinContent(first_binX, first_binY, first_binZ, 
-      h3d->GetBinContent(first_binX, first_binY, first_binZ));
+      // do the clustering of the neutron event from the 1st hit
+      h3d_c->SetBinContent(first_binX, first_binY, first_binZ, 
+        h3d->GetBinContent(first_binX, first_binY, first_binZ));
 
-    find_connected(first_binX, first_binY, first_binZ, h3d, h3d_f, h3d_c, hits_time, first_hit_time, 
-      first_binX, first_binY, first_binZ, hits_time_dist, hits_time_light);
+      find_connected(first_binX, first_binY, first_binZ, h3d, h3d_f, h3d_c, hits_time, first_hit_time, 
+        first_binX, first_binY, first_binZ, hits_time_dist, hits_time_light);
 
-    TH2I* hits_map_XY_cluster_i = (TH2I*)h3d_c->Project3D("xy");
-    TH2I* hits_map_XZ_cluster_i = (TH2I*)h3d_c->Project3D("xz");
-    TH2I* hits_map_YZ_cluster_i = (TH2I*)h3d_c->Project3D("yz");
+      TH2I* hits_map_XY_cluster_i = (TH2I*)h3d_c->Project3D("xy");
+      TH2I* hits_map_XZ_cluster_i = (TH2I*)h3d_c->Project3D("xz");
+      TH2I* hits_map_YZ_cluster_i = (TH2I*)h3d_c->Project3D("yz");
 
-    if (DEBUG) {
-      cout << "3D inegrals " << h3d->Integral() << "\t" << h3d_c->Integral() << endl;
-      cout << "first hit amp " << h3d->GetBinContent(first_binX, first_binY, first_binZ) << endl;
-      cout << "Proj integrals" << endl;
-      cout << hits_map_XY_cluster_i->Integral() << "\t" << hits_map_XZ_cluster_i->Integral() << "\t" << hits_map_YZ_cluster_i->Integral() << endl;
-    }
-
-    n_fibers_not_cut  = 0;
-    n_fibers          = 0;
-    float light_max_i         = 0;
-    for (Int_t i = 1; i < hits_map_XY_cluster_i->GetXaxis()->GetNbins(); ++i) {
-      for (Int_t j = 1; j < hits_map_XY_cluster_i->GetYaxis()->GetNbins(); ++j) {
-        if (hits_map_XY_cluster_i->GetBinContent(i, j))
-          ++n_fibers;
-        if (hits_map_XY_cluster_i->GetBinContent(i, j) > 40)
-          ++n_fibers_not_cut;
-        if (hits_map_XY_cluster_i->GetBinContent(i, j) > light_max_i)
-          light_max_i = hits_map_XY_cluster_i->GetBinContent(i, j);
+      if (DEBUG) {
+        cout << "3D inegrals " << h3d->Integral() << "\t" << h3d_c->Integral() << endl;
+        cout << "first hit amp " << h3d->GetBinContent(first_binX, first_binY, first_binZ) << endl;
+        cout << "Proj integrals" << endl;
+        cout << hits_map_XY_cluster_i->Integral() << "\t" << hits_map_XZ_cluster_i->Integral() << "\t" << hits_map_YZ_cluster_i->Integral() << endl;
       }
-    }
 
-    for (Int_t i = 1; i < hits_map_XZ_cluster_i->GetXaxis()->GetNbins(); ++i) {
-      for (Int_t j = 1; j < hits_map_XZ_cluster_i->GetYaxis()->GetNbins(); ++j) {
-        if (hits_map_XZ_cluster_i->GetBinContent(i, j))
-          ++n_fibers;
-        if (hits_map_XZ_cluster_i->GetBinContent(i, j) > 40)
-          ++n_fibers_not_cut;
-        if (hits_map_XZ_cluster_i->GetBinContent(i, j) > light_max_i)
-          light_max_i = hits_map_XZ_cluster_i->GetBinContent(i, j);
+      n_fibers_not_cut  = 0;
+      n_fibers          = 0;
+      float light_max_i         = 0;
+      for (Int_t i = 1; i < hits_map_XY_cluster_i->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j < hits_map_XY_cluster_i->GetYaxis()->GetNbins(); ++j) {
+          if (hits_map_XY_cluster_i->GetBinContent(i, j))
+            ++n_fibers;
+          if (hits_map_XY_cluster_i->GetBinContent(i, j) > 40)
+            ++n_fibers_not_cut;
+          if (hits_map_XY_cluster_i->GetBinContent(i, j) > light_max_i)
+            light_max_i = hits_map_XY_cluster_i->GetBinContent(i, j);
+        }
       }
-    }
 
-    for (Int_t i = 1; i < hits_map_YZ_cluster_i->GetXaxis()->GetNbins(); ++i) {
-      for (Int_t j = 1; j < hits_map_YZ_cluster_i->GetYaxis()->GetNbins(); ++j) {
-        if (hits_map_YZ_cluster_i->GetBinContent(i, j))
-          ++n_fibers;
-        if (hits_map_YZ_cluster_i->GetBinContent(i, j) > 40)
-          ++n_fibers_not_cut;
-        if (hits_map_YZ_cluster_i->GetBinContent(i, j) > light_max_i)
-          light_max_i = hits_map_YZ_cluster_i->GetBinContent(i, j);
+      for (Int_t i = 1; i < hits_map_XZ_cluster_i->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j < hits_map_XZ_cluster_i->GetYaxis()->GetNbins(); ++j) {
+          if (hits_map_XZ_cluster_i->GetBinContent(i, j))
+            ++n_fibers;
+          if (hits_map_XZ_cluster_i->GetBinContent(i, j) > 40)
+            ++n_fibers_not_cut;
+          if (hits_map_XZ_cluster_i->GetBinContent(i, j) > light_max_i)
+            light_max_i = hits_map_XZ_cluster_i->GetBinContent(i, j);
+        }
       }
-    }
 
-    light_tot = h3d_c->Integral();
-    light_max = light_max_i;
+      for (Int_t i = 1; i < hits_map_YZ_cluster_i->GetXaxis()->GetNbins(); ++i) {
+        for (Int_t j = 1; j < hits_map_YZ_cluster_i->GetYaxis()->GetNbins(); ++j) {
+          if (hits_map_YZ_cluster_i->GetBinContent(i, j))
+            ++n_fibers;
+          if (hits_map_YZ_cluster_i->GetBinContent(i, j) > 40)
+            ++n_fibers_not_cut;
+          if (hits_map_YZ_cluster_i->GetBinContent(i, j) > light_max_i)
+            light_max_i = hits_map_YZ_cluster_i->GetBinContent(i, j);
+        }
+      }
 
-    TVector3 reco_vec(first_binX - vertex_binX, first_binY - vertex_binY, first_binZ - vertex_binZ);
-    reco_vec    = reco_vec.Unit();
-    dir_reco[0] = reco_vec.X();
-    dir_reco[1] = reco_vec.Y();
-    dir_reco[2] = reco_vec.Z();
+      light_tot = h3d_c->Integral();
+      light_max = light_max_i;
 
-    // filling histoes
-    neutron_time = -1.;
+      TVector3 reco_vec(first_binX - vertex_binX, first_binY - vertex_binY, first_binZ - vertex_binZ);
+      reco_vec    = reco_vec.Unit();
+      dir_reco[0] = reco_vec.X();
+      dir_reco[1] = reco_vec.Y();
+      dir_reco[2] = reco_vec.Z();
 
-    first_sc_reco = 0;
+      // filling histoes
+      neutron_time = -1.;
 
-    if (DEBUG) {
-      cout << "First light in time at " <<  first_binX << "\t" << 
-                                            first_binY << "\t" << 
-                                            first_binZ << "\t" <<
-                                            first_hit_time << endl;
-      cout << "Neutron last cube     " <<   hits_map_XY->GetXaxis()->FindBin(end.X()) << "\t" << 
-                                            hits_map_XY->GetYaxis()->FindBin(end.Y()) << "\t" << 
-                                            hits_map_XZ->GetYaxis()->FindBin(end.Z()) << endl;
-      cout << "Neutron last point    " <<   end.X() << "\t" <<
-                                            end.Y() << "\t" <<
-                                            end.Z() << endl;
+      first_sc_reco = 0;
+
+      if (DEBUG) {
+        cout << "First light in time at " <<  first_binX << "\t" << 
+                                              first_binY << "\t" << 
+                                              first_binZ << "\t" <<
+                                              first_hit_time << endl;
+        cout << "Neutron last cube     " <<   hits_map_XY->GetXaxis()->FindBin(end.X()) << "\t" << 
+                                              hits_map_XY->GetYaxis()->FindBin(end.Y()) << "\t" << 
+                                              hits_map_XZ->GetYaxis()->FindBin(end.Z()) << endl;
+        cout << "Neutron last point    " <<   end.X() << "\t" <<
+                                              end.Y() << "\t" <<
+                                              end.Z() << endl;
+      }
+      eff_e_cos->Fill(costheta, ekin);
+    
+      pe_e_cos->Fill( costheta, ekin, light_fst);
+
+      pe_e->Fill(ekin, light_fst);
+
+      float beta = dist_cubes / (first_hit_time * 30.);
+      beta_ekin->Fill(ekin, beta);
+
     }
 
     outtree->Fill();
-
-    eff_e_cos->Fill(costheta, ekin);
-    
-    pe_e_cos->Fill( costheta, ekin, light_fst);
-
-    pe_e->Fill(ekin, light_fst);
-
-    float beta = dist_cubes / (first_hit_time * 30.);
-    beta_ekin->Fill(ekin, beta);
 
     // deleters 
     delete hits_map_XY;
