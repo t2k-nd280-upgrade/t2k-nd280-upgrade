@@ -385,7 +385,10 @@ void neutron_merge() {
         Float_t mean_e     = fit->GetParError(1);
         Float_t sigma_e    = fit->GetParError(3);
   
-        if (sigmaR < 0 || sigma_e > 0.3)
+        if (sigmaR < 0)
+          sigmaR *= -1;
+
+        if (sigmaR < 0 || sigma_e > 0.6)
           continue;
 
         Double_t x_center = energy_resol_rel[resID]->GetXaxis()->GetBinCenter(i);

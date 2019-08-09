@@ -41,7 +41,7 @@ void neutron_ploter() {
   TGraphAsymmErrors* t2_40 = (TGraphAsymmErrors*)f->Get("CutValue_40/resol_graph_6");
   TGraphAsymmErrors* t2_70 = (TGraphAsymmErrors*)f->Get("CutValue_70/resol_graph_6");
 
-  t1_20->GetXaxis()->SetTitle("Neutron kinetic energy [MeV]");
+  t1_20->GetXaxis()->SetTitle("T_{neutron} [MeV]");
   t1_20->GetYaxis()->SetTitle("Resolution");
 
   int g_color = kGreen+3;
@@ -94,10 +94,8 @@ void neutron_ploter() {
   h->SetFillStyle(3004);
   h->Draw("same hist");
 
-  leg->AddEntry(t1_20, "20 cm, Eq.1", "p");
-  leg->AddEntry(t2_20, "20 cm, Eq.2", "p");
-  leg->AddEntry(t1_70, "70 cm, Eq.1", "p");
-  leg->AddEntry(t2_70, "70 cm, Eq.2", "p");
+  leg->AddEntry(t1_20, "20 cm", "p");
+  leg->AddEntry(t1_70, "70 cm", "p");
 
   leg->AddEntry(h, "Neutron spectrum", "f");
   leg->Draw();
