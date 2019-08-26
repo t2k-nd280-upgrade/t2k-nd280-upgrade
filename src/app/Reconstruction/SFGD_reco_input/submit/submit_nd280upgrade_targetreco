@@ -69,7 +69,7 @@ while($irun < $nruns) { # loop over the jobs
     
     $job_dir = "/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/ROOT"; 
 
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $tag";
+    $arguments = "$softw_dir/bin/Reconstruction.exe sfgrrecon $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $tag";
     $command = "$arguments";
     
     print "\n";

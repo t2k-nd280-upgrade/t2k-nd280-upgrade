@@ -110,8 +110,10 @@ while($irun < $nruns) { # loop over the jobs
  
    
 
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
+    $arguments = "$softw_dir/bin/Reconstruction.exe sfgrrecon $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv  $tag";
     $command = "$arguments";
+
+    print "$command\n";
     
     print "\n";
     print "Job $irun \n";

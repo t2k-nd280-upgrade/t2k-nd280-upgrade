@@ -198,39 +198,46 @@ void ND280UpTargReadOut::ApplyFiberAttenuation(double &nphot, double x, double D
 double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize){
   
   // Used for official FGD reconstruction: Eq. (4) in TN-103
-
+  
   double a=0.;        // long attenuation component fraction
   double d=0.;        // distance MPPC-scint outside the bar
   double LongAtt=0.;  // long attenuation length
   double ShortAtt=0.; // short attenuation length
+  double Ldecay=0.;   // decay length
+  double Lbar=0.;     // bar length
 
   a = LongCompFrac_FGD;
   d = DistMPPCscint_FGD; 
   LongAtt = LongAtt_FGD;
   ShortAtt = ShortAtt_FGD;  
+  Ldecay= DecayLength_FGD;
+  Lbar = Lbar_FGD;
 
-  double Nphot = Nphot0;
+  double Nphot;
+
 #ifdef ELECSIM
     if (!DetSize){
       std::cout << "ERROR: ND280UpTargReadOut::GetPhotAtt_FGD(): Detector size is not defined." << std::endl;
       exit(1);
     }
 
-    // Nphot *= 1. / 2.;
-    // Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
-
-    // x += 2. * (2 * DetSize - x);
-    // for (int i = 0; i < int(Nphot0/2. + 0.5); ++i) {
-    //   double rndunif = fRndm->Uniform();
-    //   if (rndunif < FGDreflection)
-    //     Nphot += ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
-    // }
-    d=0;
-    //cout << "fact_true: " << ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) ) << endl;
+    Nphot = Nphot0 / 2.;
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+
+    x += 2. * (2 * DetSize - x);
+    for (int i = 0; i < int(Nphot0/2. + 0.5); ++i) {
+      double rndunif = fRndm->Uniform();
+      if (rndunif < FGDreflection)
+        Nphot += ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+    }
 #else
+    Nphot = Nphot0;
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 #endif
+
+  // Add fall-off in light intensity in end of bars
+  // where the scint light doesn't make it into the fibers
+  // Nphot *= (1 - 0.5*(exp(-Ldecay*x) + exp(-Ldecay*(Lbar-x))));
 
   return Nphot;
 }
@@ -283,6 +290,7 @@ void ND280UpTargReadOut::ComputeHitTime(double &time, double x, double q)
 
 int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
 {
+  cout << "here!" << endl;
   double rndunif =0.;
   double nphot_passed = 0.;
   int nphot_integer = (int) (nphot+0.5);
@@ -294,30 +302,32 @@ int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
 
   //account for different MPPC types (values from SFGD prototype beam test)
 
-  //type 1 MPPC mean MIP and standard deviation
-  double mip1=50.;
-  double sigma1=8.;
+  return pe;
 
-  double gain;
-  double mip;
-  double sigma;
-  if (MPPC_type == 1){
-    mip = 50.;
-    gain = mip/mip1;
-    sigma = 8.;
-  }
-  else if (MPPC_type == 2){
-    gain = mip/mip1;
-    sigma = 9.3;
-  }
-  else if (MPPC_type == 3){
-    gain = mip/mip1;
-    sigma = 10.;
-  }
-  else{
-    cout << "MPPC type not recognised" << endl;
-    exit(1);
-  }
-  //an attempt to account for the different gain and variance of MPPC types
-  return (int)(mip+(gain*pe-mip)*pow(sigma,2)/pow(sigma1,2));
+  // //type 1 MPPC mean MIP and standard deviation
+  // double mip1=50.;
+  // double sigma1=8.;
+
+  // double gain;
+  // double mip;
+  // double sigma;
+  // if (MPPC_type == 1){
+  //   mip = 50.;
+  //   gain = mip/mip1;
+  //   sigma = 8.;
+  // }
+  // else if (MPPC_type == 2){
+  //   gain = mip/mip1;
+  //   sigma = 9.3;
+  // }
+  // else if (MPPC_type == 3){
+  //   gain = mip/mip1;
+  //   sigma = 10.;
+  // }
+  // else{
+  //   cout << "MPPC type not recognised" << endl;
+  //   exit(1);
+  // }
+  // //an attempt to account for the different gain and variance of MPPC types
+  // return (int)(mip+(gain*pe-mip)*pow(sigma,2)/pow(sigma1,2));
 }

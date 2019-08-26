@@ -23,13 +23,15 @@ void crosstalkAna() {
 
     // NOTE: In case of using option -s || --save it is necessary to update harcoded paths.
 
-    gStyle->SetOptStat(0);
+    //gStyle->SetOptStat(0);
     TString fileIn = "/Users/cjesus/Documents/Data/SFGD_BTEST_2018/25August_11_12_0pt8GeV_0pt0T.root";
+    TString fileOut  = "/Users/cjesus/Documents/Data/MCvsData/ana_output";
     TString fileMC [2];
     //fileMC[0]  = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_proton.root";
-    //fileMC[1]  = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_piplus.root";
+    //fileMC[0]  = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_piplus.root";
     //fileMC[0]  = "/Users/cjesus/Documents/Data/SFGD_MC/pr_v1.root";
     fileMC[0]  = "/Users/cjesus/Documents/Data/MC_output.root";
+    //fileMC[1]  = "/Users/cjesus/Documents/Data/MC_pr.root";
     //fileMC[0]  = "/nfs/neutrinos/cjesus/work/MC_output.root";
     
     TString prefix = "/Users/cjesus/Desktop/";
@@ -74,6 +76,13 @@ void crosstalkAna() {
     // LI == Low Ionizing track
     // HI == High Ionizing track
 
+    TH1F*  h_PE_ALL_0 = new TH1F("h_PE_ALL_xy_LI","",150,0,150);
+    TH1F*  h_PE_ALL_1 = new TH1F("h_PE_ALL_xz_LI","",150,0,150);
+    TH1F*  h_PE_ALL_2 = new TH1F("h_PE_ALL_yz_LI","",150,0,150);
+    TH1F*  h_PE_ALL_3 = new TH1F("h_PE_ALL_xy_HI","",100,0,700);
+    TH1F*  h_PE_ALL_4 = new TH1F("h_PE_ALL_xz_HI","",100,0,700);
+    TH1F*  h_PE_ALL_5 = new TH1F("h_PE_ALL_yz_HI","",100,0,700);
+
     // Bins of 1 PE
 
     TH1F* h_PE_xz [2];
@@ -92,6 +101,19 @@ void crosstalkAna() {
     TH1F* h_RQ_yz [2]; 
     h_RQ_yz [0] = new TH1F("h_RQ_yz_LI","",50,0,50);
     h_RQ_yz [1] = new TH1F("h_RQ_yz_HI","",50,0,50);
+
+    TH1F*  h_PE_ch[10];
+    h_PE_ch[0] = new TH1F("h_PE_ch_0","",100,0,500);
+    h_PE_ch[1] = new TH1F("h_PE_ch_1","",100,0,500);
+    h_PE_ch[2] = new TH1F("h_PE_ch_2","",100,0,500);
+    h_PE_ch[3] = new TH1F("h_PE_ch_3","",100,0,500);
+    h_PE_ch[4] = new TH1F("h_PE_ch_4","",100,0,500);
+    h_PE_ch[5] = new TH1F("h_PE_ch_5","",100,0,500);
+    h_PE_ch[6] = new TH1F("h_PE_ch_6","",100,0,500);
+    h_PE_ch[7] = new TH1F("h_PE_ch_7","",100,0,500);
+    h_PE_ch[8] = new TH1F("h_PE_ch_8","",100,0,500);
+    h_PE_ch[9] = new TH1F("h_PE_ch_9","",100,0,500);
+
 
     // SP: Stopping protons
 
@@ -197,6 +219,11 @@ void crosstalkAna() {
     TTree* data = (TTree*) FileInput->Get("AllEvents");
     Int_t nEvents = data->GetEntries();
 
+    cout << "nEvents: " << nEvents << endl;
+
+    if(!dataType) fileOut += "_MC.root";
+    else fileOut += "_Data.root";
+
     TBranch *inputBranch;
     inputBranch = data->GetBranch("Event");
     ND280SFGDEvent* inputEvent = new ND280SFGDEvent();
@@ -222,6 +249,7 @@ void crosstalkAna() {
         std::cout << "**** Evt " << iev << " ****" << std::endl;
 
         data->GetEntry(iev);
+        inputEvent->MergeHits();
         cout << "NUMHITS:" << endl;
         cout << "numhits:" << inputEvent->GetHits().size() <<endl;
 
@@ -287,9 +315,9 @@ void crosstalkAna() {
         }
         cout << "size: " << listOfHits.size() << endl;
         if(listOfHits.size() < 60) {listOfHits.clear();continue;}  // not interested in small tracks, we want long ones.
-        
-        int sizeOfX = 204;
-        int sizeOfY = 56;
+
+        int sizeOfX = 24;
+        int sizeOfY = 8;
         int sizeOfZ = 48;
 
         int aboveCutXZ [sizeOfX];
@@ -302,7 +330,7 @@ void crosstalkAna() {
         for (auto i = 0; i<sizeOfZ; i++) lineZ_xz[i] = 0;
         for (auto i = 0; i<sizeOfZ; i++) lineZ_yz[i] = 0;
 
-        bool debug = true;
+        bool debug = false;
 
         double maxXZ = 0;
         double maxYZ = 0;
@@ -364,7 +392,6 @@ void crosstalkAna() {
             }
         }
         if (maxLineZ_xz) dedz /= maxLineZ_xz;
-        if(!dataType) dedz /= 1.5;
 
         int maxLineZ_yz = 0;
         int temp_maxLineZ_yz = 0;
@@ -386,8 +413,17 @@ void crosstalkAna() {
             cout << endl;
         }
 
-        // if(cntXZ > 1 or cntYZ > 1) continue;
-        // if(maxLineZ_xz < 30 or maxLineZ_yz < 30) continue;
+
+        // for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+        //     ND280SFGDHit* hit = listOfHits[ihit];
+        //     if(!(hit->GetView() == 1 && hit->GetX() == 12 && hit->GetZ() < 30  && hit->GetZ() >= 20) ) continue;
+        //     int view = hit->GetView();
+        //     int qhit = hit->GetCharge();
+        //     h_PE_ch[(int) hit->GetZ()-20]->Fill(qhit);
+        // }
+
+        if(cntXZ > 1 or cntYZ > 1) continue;
+        if(maxLineZ_xz < 30 or maxLineZ_yz < 30) continue;
 
         int xPos = -1;
         for(auto s = 0; s<sizeOfX; s++) if(aboveCutXZ[s] == 2)  xPos = int(s);
@@ -408,12 +444,12 @@ void crosstalkAna() {
         TString evt_tag = "";
         int mode = -1;        // 0 is LI, 1 is HI, 2 is SP
         if(dedz < 80) {evt_tag = "LI"; selLI++; mode = 0;}
-        else if(dedz > 130) {evt_tag = "HI"; selHI++; mode = 1;}
+        else if(dedz > 80) {evt_tag = "HI"; selHI++; mode = 1;}
         else continue;
         if(mode <0) continue;
 
         bool stopping = false;
-        if(/*lineZ_xz[sizeOfZ-1] == 0 && */lineZ_xz[sizeOfZ] == 0) stopping = true;
+        if(lineZ_xz[sizeOfZ-1] == 0 && lineZ_xz[sizeOfZ] == 0) stopping = true;
         if( stopping && mode == 1) selSP++;
 
         // Stopping and HI sample, far from stopping point
@@ -459,6 +495,11 @@ void crosstalkAna() {
                 if(hit->GetCharge() < q_Cut) continue;
                 if( maxZ_xz - hit->GetZ() != 0) continue; 
                 SP_S_HIT_CNT++;
+                // int view = hit->GetView();
+                // int qhit = hit->GetCharge();
+                // if(hit->GetView() == 0) h_PE_ALL_3->Fill(qhit);
+                // if(hit->GetView() == 1) h_PE_ALL_4->Fill(qhit);
+                // if(hit->GetView() == 2) h_PE_ALL_5->Fill(qhit);
                 for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
                     if(listOfHits[jhit]->GetView() != 1) continue;
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) SP_S_CT_CNT++;
@@ -467,7 +508,30 @@ void crosstalkAna() {
             }
         }
 
+         if(mode == 0 && cntXZ == 1 && cntYZ == 1){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                int view = hit->GetView();
+                int qhit = hit->GetCharge();
+                if(hit->GetView() == 0) h_PE_ALL_0->Fill(qhit);
+                if(hit->GetView() == 1) h_PE_ALL_1->Fill(qhit);
+                if(hit->GetView() == 2) h_PE_ALL_2->Fill(qhit);
+            }
+        }
+
+         if(mode == 1 && cntXZ == 1 && cntYZ == 1){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                int view = hit->GetView();
+                int qhit = hit->GetCharge();
+                if(hit->GetView() == 0)  h_PE_ALL_3->Fill(qhit);
+                if(hit->GetView() == 1)  h_PE_ALL_4->Fill(qhit);
+                if(hit->GetView() == 2)  h_PE_ALL_5->Fill(qhit);
+            }
+        }
+
         // Not stopping and HI
+        cout << "mode " << mode << ", cntXZ " << cntXZ << ", cntYZ " << cntYZ << ", stopping " << stopping << endl;
         if(mode == 1 && cntXZ == 1 && cntYZ == 1 && !stopping){
             for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
                 ND280SFGDHit* hit = listOfHits[ihit];
@@ -485,7 +549,7 @@ void crosstalkAna() {
         }
 
         // Not stopping and LI
-        if(mode == 0 && cntXZ == 1 && cntYZ == 1 && !stopping){
+        if(mode == 0 && cntXZ == 1 && cntYZ == 1 /*&& !stopping*/){
             for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
                 ND280SFGDHit* hit = listOfHits[ihit];
                 if(hit->GetView() != 1) continue;
@@ -987,14 +1051,62 @@ void crosstalkAna() {
 
     TCanvas* c5 = new TCanvas("dEdL");
     c5->cd(); 
-    h_dedz->Draw("HIS");
+    h_dedz->Draw("HIST");
     TString fname = prefix + "dEdL.pdf";
     c5->SaveAs(fname.Data());
     c5->Update();
-    c5->WaitPrimitive();
+
+    TCanvas* c6 = new TCanvas("RQ");
+    c6->Divide(2,1);
+    c6->cd(1);
+
+    h_PE_ALL_0->SetLineColor(kBlack);
+    h_PE_ALL_1->SetLineColor(kBlue);
+    h_PE_ALL_2->SetLineColor(kRed);
+    h_PE_ALL_3->SetLineColor(kBlack);
+    h_PE_ALL_4->SetLineColor(kBlue);
+    h_PE_ALL_5->SetLineColor(kRed);
+
+    h_PE_ALL_2->Draw("HIST"); 
+    h_PE_ALL_0->Draw("HIST same"); 
+    h_PE_ALL_1->Draw("HIST same"); 
+
+    c6->cd(2);
+    h_PE_ALL_4->Draw("HIST"); 
+    h_PE_ALL_3->Draw("HIST same"); 
+    h_PE_ALL_5->Draw("HIST same"); 
+    // h_PE_ch[0]->SetLineColor(kBlack);
+    // h_PE_ch[1]->SetLineColor(kRed);
+    // h_PE_ch[2]->SetLineColor(kBlue);
+    // h_PE_ch[3]->SetLineColor(kGreen);
+
+    // h_PE_ch[0]->Draw("HIST");
+    // h_PE_ch[1]->Draw("HIST same");
+    // h_PE_ch[2]->Draw("HIST same");
+    // h_PE_ch[3]->Draw("HIST same");
+
+
+    // for(auto x : h_PE_ch)
+    //     x->Draw("HIST same");
+
+    TString c6_name = prefix + "dEdL.pdf";
+    c6->Update();
+    c6->SaveAs(c6_name.Data());
 
     /// ------------END--------------
     FileInput->Close();
+    TFile *FileOutput  = new TFile(fileOut.Data(),"RECREATE");
+    FileOutput->cd();
+    h_PE_ALL_0->Write();
+    h_PE_ALL_1->Write();
+    h_PE_ALL_2->Write();
+    h_PE_ALL_3->Write();
+    h_PE_ALL_4->Write();
+    h_PE_ALL_5->Write();
+    for(auto x:h_PE_ch) x->Write();
+    FileOutput->Close();
+
+    c6->WaitPrimitive();
 
     time = ( clock() - time ) / CLOCKS_PER_SEC;
     cout << std::setprecision(8) << "Elapsed time: " << time << endl;

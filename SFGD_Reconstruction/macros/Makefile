@@ -38,7 +38,7 @@ CXXFLAGS += -g
 EXE =  exe
 
 OBJS= $(SRC:.$(SrcSuf)=.$(ObjSuf)) 
-RLXX=$(LFLAGS) $(ROOTLIBS) -lMinuit -lTreePlayer -lMathMore
+RLXX=$(LFLAGS) $(ROOTLIBS) -lMinuit -lTreePlayer #-lMathMore
 
 ##turning on debuging 9/26/2016
 RLXX +=  -g

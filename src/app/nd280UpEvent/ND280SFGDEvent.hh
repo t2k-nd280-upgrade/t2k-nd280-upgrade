@@ -60,6 +60,7 @@ public:
     void DrawTracks();
 
     void MergeHits();
+    void MergeVoxels();
 
     void ResetEvent(Option_t* /*option*/="")
     {

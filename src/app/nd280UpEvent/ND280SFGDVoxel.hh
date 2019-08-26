@@ -25,7 +25,7 @@ private:
     Double_t  fPosX;
     Double_t  fPosY;
     Double_t  fPosZ;
-//    Bool_t    fTrueXTalk;     // xTalk from MC
+    Bool_t    fTrueXTalk;     // xTalk from MC
     std::vector    <ND280SFGDHit*> fHits; //MPPCHits
     std::vector    <Double_t> fLocalHitsQ; //Hits charge before merging
     std::vector    <Int_t>  fContributorsID;
@@ -55,7 +55,7 @@ public:
     void SetParentID  (Int_t     p_ParentID){ fParentID  = p_ParentID; }
     void SetEdep      (Double_t  p_Edep)    { fEdep      = p_Edep;    }
     // void SetPos       (XYZVector p_Pos)     { fPos       = p_Pos;     }
-//    void SetTrueXTalk (Bool_t p_Xtalk)      { fTrueXTalk = p_Xtalk;   }
+    void SetTrueXTalk (Bool_t p_Xtalk)      { fTrueXTalk = p_Xtalk;   }
     // void SetX         (Double_t  p_N)       { fPos.SetX(p_N); }
     // void SetY         (Double_t  p_N)       { fPos.SetY(p_N); }
     // void SetZ         (Double_t  p_N)       { fPos.SetZ(p_N); }
@@ -77,7 +77,7 @@ public:
     Int_t     GetTrackID()   { return fTrackID;   }
     Int_t     GetParentID()  { return fParentID;  }
     // XYZVector GetPos()       { return fPos;       }
-//    Bool_t    GetTrueXTalk() { return fTrueXTalk; }
+    Bool_t    GetTrueXTalk() { return fTrueXTalk; }
     // Double_t  GetX()         { return fPos.X();   }
     // Double_t  GetY()         { return fPos.Y();   }
     // Double_t  GetZ()         { return fPos.Z();   }

@@ -10,7 +10,7 @@ set name="/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/SFGD_MC_FINAL_SIZE-0-Exp
 set outname="/nfs/neutrinos/cjesus/work/MC_output.root"
 
 if( $1 == job ) then
-    set s=420
+    set s=200
     set r=PIC
 endif
 

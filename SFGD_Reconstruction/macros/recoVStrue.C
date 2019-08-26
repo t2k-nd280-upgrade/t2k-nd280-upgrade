@@ -24,11 +24,12 @@
 // }
 
 double FiberAttenuation(double ell) {
-    const double LongCompFrac_FGD = 0.77;
-    const double LongAtt_FGD = 4634.;//*CLHEP::mm;
-    const double ShortAtt_FGD = 332.;//*CLHEP::mm;
+    // const double LongCompFrac_FGD = 0.77;
+    // const double LongAtt_FGD = 4634.;//*CLHEP::mm;
+    // const double ShortAtt_FGD = 332.;//*CLHEP::mm;
 
-    return ( LongCompFrac_FGD*exp((-ell)/LongAtt_FGD) + (1-LongCompFrac_FGD)*exp((-ell)/ShortAtt_FGD) );
+    // return ( LongCompFrac_FGD*exp((-ell)/LongAtt_FGD) + (1-LongCompFrac_FGD)*exp((-ell)/ShortAtt_FGD) );
+    return ell;
 }
 
 void recoVStrue() {
@@ -76,12 +77,12 @@ void recoVStrue() {
 
     Int_t NtrueVox = 0;
     Int_t NrecoVox = 0;
+    
     // counters for efficiencies:
-
-    Int_t total_hits                  = 0;
-    Int_t good_flag                   = 0;
-    Int_t bad_flag_on_true_core_hit   = 0;
-    Int_t bad_flag_on_true_crosstalk  = 0;
+    int good_core = 0;  // true core correctly flagged
+    int bad_core  = 0;  // true core incorrectly flagged 
+    int good_crss = 0;  // true crosstalk correctly flagged
+    int bad_crss  = 0;  // true crosstalk incorrectly flagged
 
     /// ------------START--------------
 
@@ -136,15 +137,16 @@ void recoVStrue() {
 
     for (int iev=0; iev<nEvents; iev++){
 
+        cout << "alive!" << endl;
         data->GetEntry(iev);
         if(!TrueEvent || !RecoEvent){cerr << "No event in the branch!" << endl; continue;}
 
         cout << "*****   Evt " << iev <<  "   *****" << endl;   
 
-    vector <ND280SFGDVoxel*> listOfVoxels = RecoEvent->GetVoxels();
+        vector <ND280SFGDVoxel*> listOfVoxels = RecoEvent->GetVoxels();
 
-        //TrueEvent->DrawHits(kTRUE,kTRUE,"cc1");
-        //RecoEvent->DrawHits(kTRUE,kTRUE,"cc2");
+        // TrueEvent->DrawHits(kTRUE,kTRUE,"cc1");
+        // RecoEvent->DrawHits(kTRUE,kTRUE,"cc2");
  
         vector <ND280SFGDHit*> listOfTrueHit = TrueEvent->GetHits();
         vector <ND280SFGDHit*> listOfRecoHit = RecoEvent->GetHits();
@@ -160,8 +162,14 @@ void recoVStrue() {
                 if(listOfTrueHit[ihit]->GetX()== listOfRecoHit[jhit]->GetX() && listOfTrueHit[ihit]->GetY()== listOfRecoHit[jhit]->GetY() && listOfTrueHit[ihit]->GetZ()== listOfRecoHit[jhit]->GetZ()){
                     if(listOfTrueHit[ihit]->GetCharge() != listOfRecoHit[jhit]->GetCharge()){                    
                     }
-                    if (listOfTrueHit[ihit]->GetxTalkFlag() == listOfRecoHit[jhit]->GetxTalkFlag()) good_flag++;
+                    if (listOfTrueHit[ihit]->GetxTalkFlag() == listOfRecoHit[jhit]->GetxTalkFlag()){
+                        good_flag++;
+                        if(listOfTrueHit[ihit]->GetxTalkFlag() == 0) good_core++;
+                        if(listOfTrueHit[ihit]->GetxTalkFlag() == 1) good_crss++;
+                    }
                     else{
+                        if(listOfTrueHit[ihit]->GetxTalkFlag() == 0) bad_core++;
+                        if(listOfTrueHit[ihit]->GetxTalkFlag() == 1) bad_crss++;
                         if(listOfTrueHit[ihit]->GetxTalkFlag() == kTRUE) bad_flag_on_true_crosstalk++;
                         else bad_flag_on_true_core_hit++;
                     }
@@ -175,80 +183,80 @@ void recoVStrue() {
         cout << "# of true voxels: " <<  listOfTrueVox.size() << endl; 
         cout << "# of reco voxels: " <<  listOfRecoVox.size() << endl;
 
-        NtrueVox += listOfTrueVox.size();
-        NrecoVox += listOfRecoVox.size();
+        // NtrueVox += listOfTrueVox.size();
+        // NrecoVox += listOfRecoVox.size();
 
-        for(size_t ivox=0; ivox< listOfTrueVox.size(); ivox++){
+        // for(size_t ivox=0; ivox< listOfTrueVox.size(); ivox++){
 
-            double distX = 10*(listOfTrueVox[ivox]->GetX() + 102);
-            double distY = 10*(listOfTrueVox[ivox]->GetY() + 26);
-            double distZ = 10*(listOfTrueVox[ivox]->GetZ() + 94);
+        //     double distX = 10*(listOfTrueVox[ivox]->GetX() + 102);
+        //     double distY = 10*(listOfTrueVox[ivox]->GetY() + 26);
+        //     double distZ = 10*(listOfTrueVox[ivox]->GetZ() + 94);
 
-            double reco_pex = listOfTrueVox[ivox]->GetHits()[2]->GetCharge() / (FiberAttenuation(distX));
-            double reco_pey = listOfTrueVox[ivox]->GetHits()[1]->GetCharge() / (FiberAttenuation(distY));
-            double reco_pez = listOfTrueVox[ivox]->GetHits()[0]->GetCharge() / (FiberAttenuation(distZ));
+        //     double reco_pex = listOfTrueVox[ivox]->GetHits()[2]->GetCharge() / (FiberAttenuation(distX));
+        //     double reco_pey = listOfTrueVox[ivox]->GetHits()[1]->GetCharge() / (FiberAttenuation(distY));
+        //     double reco_pez = listOfTrueVox[ivox]->GetHits()[0]->GetCharge() / (FiberAttenuation(distZ));
 
-            Qyz_c->Fill(reco_pex);
-            Qxz_c->Fill(reco_pey);
-            Qxy_c->Fill(reco_pez);
+        //     Qyz_c->Fill(reco_pex);
+        //     Qxz_c->Fill(reco_pey);
+        //     Qxy_c->Fill(reco_pez);
 
-            Qyz->Fill(listOfTrueVox[ivox]->GetHits()[2]->GetCharge());
-            Qxz->Fill(listOfTrueVox[ivox]->GetHits()[1]->GetCharge());
-            Qxy->Fill(listOfTrueVox[ivox]->GetHits()[0]->GetCharge());
+        //     Qyz->Fill(listOfTrueVox[ivox]->GetHits()[2]->GetCharge());
+        //     Qxz->Fill(listOfTrueVox[ivox]->GetHits()[1]->GetCharge());
+        //     Qxy->Fill(listOfTrueVox[ivox]->GetHits()[0]->GetCharge());
 
 
-            for(size_t jvox=0; jvox< listOfRecoVox.size(); jvox++){
-                if(listOfTrueVox[ivox]->GetX() == listOfRecoVox[jvox]->GetX() && listOfTrueVox[ivox]->GetY() == listOfRecoVox[jvox]->GetY() && listOfTrueVox[ivox]->GetZ() == listOfRecoVox[jvox]->GetZ()){  
-                    cout << endl << "expected: " << listOfTrueVox[ivox]->GetEdep() << endl;
-                    cout << "reconstructed: " << listOfRecoVox[jvox]->GetEdep() << endl;
-                    cout << listOfRecoVox[jvox]->GetHits()[0]->GetCharge() << ", " << listOfRecoVox[jvox]->GetHits()[1]->GetCharge() << ", " << listOfRecoVox[jvox]->GetHits()[2]->GetCharge() << endl;
-                    h_charge->Fill(listOfTrueVox[ivox]->GetEdep(), listOfRecoVox[jvox]->GetEdep());
-                    h_Qresolution->Fill( 100*(listOfTrueVox[ivox]->GetEdep()-listOfRecoVox[jvox]->GetEdep())/listOfRecoVox[jvox]->GetEdep());
-                    if(listOfRecoVox[jvox]->GetHits()[0]->GetMultiplicity() == 1 || listOfRecoVox[jvox]->GetHits()[1]->GetMultiplicity() == 1 || listOfRecoVox[jvox]->GetHits()[2]->GetMultiplicity() == 1) {
-                        h_Qresolution_m1->Fill( 100*(listOfTrueVox[ivox]->GetEdep()-listOfRecoVox[jvox]->GetEdep())/(listOfTrueVox[ivox]->GetEdep()));
-                        h_chargeTrue->Fill(listOfTrueVox[ivox]->GetEdep());
-                        h_chargeReco->Fill(listOfRecoVox[jvox]->GetEdep());
-                        h_chargeTrue_m1->Fill(listOfTrueVox[ivox]->GetEdep());
-                        h_chargeReco_m1->Fill(listOfRecoVox[jvox]->GetEdep());
-                    }
-                    else {
-                        h_chargeTrue->Fill(listOfTrueVox[ivox]->GetEdep());
-                        h_chargeReco->Fill(listOfRecoVox[jvox]->GetEdep());
-                        h_chargeTrue_m2->Fill(listOfTrueVox[ivox]->GetEdep());
-                        h_chargeReco_m2->Fill(listOfRecoVox[jvox]->GetEdep());
-                        h_Qresolution_m2->Fill( 100*(listOfTrueVox[ivox]->GetEdep()-listOfRecoVox[jvox]->GetEdep())/(listOfTrueVox[ivox]->GetEdep()));
-                    }
-                }
-            }
-        }
+        //     for(size_t jvox=0; jvox< listOfRecoVox.size(); jvox++){
+        //         if(listOfTrueVox[ivox]->GetX() == listOfRecoVox[jvox]->GetX() && listOfTrueVox[ivox]->GetY() == listOfRecoVox[jvox]->GetY() && listOfTrueVox[ivox]->GetZ() == listOfRecoVox[jvox]->GetZ()){  
+        //             cout << endl << "expected: " << listOfTrueVox[ivox]->GetEdep() << endl;
+        //             cout << "reconstructed: " << listOfRecoVox[jvox]->GetEdep() << endl;
+        //             cout << listOfRecoVox[jvox]->GetHits()[0]->GetCharge() << ", " << listOfRecoVox[jvox]->GetHits()[1]->GetCharge() << ", " << listOfRecoVox[jvox]->GetHits()[2]->GetCharge() << endl;
+        //             h_charge->Fill(listOfTrueVox[ivox]->GetEdep(), listOfRecoVox[jvox]->GetEdep());
+        //             h_Qresolution->Fill( 100*(listOfTrueVox[ivox]->GetEdep()-listOfRecoVox[jvox]->GetEdep())/listOfRecoVox[jvox]->GetEdep());
+        //             if(listOfRecoVox[jvox]->GetHits()[0]->GetMultiplicity() == 1 || listOfRecoVox[jvox]->GetHits()[1]->GetMultiplicity() == 1 || listOfRecoVox[jvox]->GetHits()[2]->GetMultiplicity() == 1) {
+        //                 h_Qresolution_m1->Fill( 100*(listOfTrueVox[ivox]->GetEdep()-listOfRecoVox[jvox]->GetEdep())/(listOfTrueVox[ivox]->GetEdep()));
+        //                 h_chargeTrue->Fill(listOfTrueVox[ivox]->GetEdep());
+        //                 h_chargeReco->Fill(listOfRecoVox[jvox]->GetEdep());
+        //                 h_chargeTrue_m1->Fill(listOfTrueVox[ivox]->GetEdep());
+        //                 h_chargeReco_m1->Fill(listOfRecoVox[jvox]->GetEdep());
+        //             }
+        //             else {
+        //                 h_chargeTrue->Fill(listOfTrueVox[ivox]->GetEdep());
+        //                 h_chargeReco->Fill(listOfRecoVox[jvox]->GetEdep());
+        //                 h_chargeTrue_m2->Fill(listOfTrueVox[ivox]->GetEdep());
+        //                 h_chargeReco_m2->Fill(listOfRecoVox[jvox]->GetEdep());
+        //                 h_Qresolution_m2->Fill( 100*(listOfTrueVox[ivox]->GetEdep()-listOfRecoVox[jvox]->GetEdep())/(listOfTrueVox[ivox]->GetEdep()));
+        //             }
+        //         }
+        //     }
+        // }
 
-        cout << "#TRUE: " << listOfTrueVox.size() <<endl;
-        cout << "#RECO: " << listOfRecoVox.size() <<endl;
-        // if(  listOfRecoVox.size()*1./listOfTrueVox.size() -1 > 0.4){
-        //   //TrueEvent->DrawHits(kTRUE,kTRUE,"cc3");
-        //   RecoEvent->DrawHits(kTRUE,kTRUE,"cc4");  
-        // } 
-        Int_t CNT_seen = 0;
+        // cout << "#TRUE: " << listOfTrueVox.size() <<endl;
+        // cout << "#RECO: " << listOfRecoVox.size() <<endl;
+        // // if(  listOfRecoVox.size()*1./listOfTrueVox.size() -1 > 0.4){
+        // //   //TrueEvent->DrawHits(kTRUE,kTRUE,"cc3");
+        // //   RecoEvent->DrawHits(kTRUE,kTRUE,"cc4");  
+        // // } 
+        // Int_t CNT_seen = 0;
         
-        for(size_t jvox=0; jvox< listOfRecoVox.size(); jvox++){
-            bool seen = false;
-            for(size_t ivox=0; ivox< listOfTrueVox.size(); ivox++){
-                if(listOfTrueVox[ivox]->GetX() == listOfRecoVox[jvox]->GetX() && listOfTrueVox[ivox]->GetY() == listOfRecoVox[jvox]->GetY() && listOfTrueVox[ivox]->GetZ() == listOfRecoVox[jvox]->GetZ()){
-                    seen = true;
-                    CNT_seen++;
-                    break;
-                }
-            }
-            if(!seen){
-                h_ghosts->Fill(listOfRecoVox[jvox]->GetEdep());
-                h_chargeReco->Fill(listOfRecoVox[jvox]->GetEdep());
-                if(listOfRecoVox[jvox]->GetHits()[0]->GetMultiplicity() == 1 || listOfRecoVox[jvox]->GetHits()[1]->GetMultiplicity() == 1 || listOfRecoVox[jvox]->GetHits()[2]->GetMultiplicity() == 1) {
-                        h_chargeReco_m1->Fill(listOfRecoVox[jvox]->GetEdep());
-                }
-                else    h_chargeReco_m2->Fill(listOfRecoVox[jvox]->GetEdep());
-            }
-        }
-        cout << "#GHOSTS: " << listOfRecoVox.size() - CNT_seen << endl;
+        // for(size_t jvox=0; jvox< listOfRecoVox.size(); jvox++){
+        //     bool seen = false;
+        //     for(size_t ivox=0; ivox< listOfTrueVox.size(); ivox++){
+        //         if(listOfTrueVox[ivox]->GetX() == listOfRecoVox[jvox]->GetX() && listOfTrueVox[ivox]->GetY() == listOfRecoVox[jvox]->GetY() && listOfTrueVox[ivox]->GetZ() == listOfRecoVox[jvox]->GetZ()){
+        //             seen = true;
+        //             CNT_seen++;
+        //             break;
+        //         }
+        //     }
+        //     if(!seen){
+        //         h_ghosts->Fill(listOfRecoVox[jvox]->GetEdep());
+        //         h_chargeReco->Fill(listOfRecoVox[jvox]->GetEdep());
+        //         if(listOfRecoVox[jvox]->GetHits()[0]->GetMultiplicity() == 1 || listOfRecoVox[jvox]->GetHits()[1]->GetMultiplicity() == 1 || listOfRecoVox[jvox]->GetHits()[2]->GetMultiplicity() == 1) {
+        //                 h_chargeReco_m1->Fill(listOfRecoVox[jvox]->GetEdep());
+        //         }
+        //         else    h_chargeReco_m2->Fill(listOfRecoVox[jvox]->GetEdep());
+        //     }
+        // }
+        // cout << "#GHOSTS: " << listOfRecoVox.size() - CNT_seen << endl;
 
 
         // for(size_t ivox=0; ivox< listOfTrueVox.size(); ivox++){
@@ -318,6 +326,10 @@ void recoVStrue() {
     h_ghosts->Draw("HIST");
     //results->WaitPrimitive();
 
+    double precision  = 1.0 * good_core / (good_core+bad_crss);  // true core positive / total flagged as core
+    double recall     = 1.0 * good_core / (good_core+bad_core);            // true core positive / total core sample
+    double f1Score = 2*(precision*recall)/(precision+recall);
+
     cout << endl << endl << "-- Ghosts --" << endl;
     cout << "Total True Vox: " << NtrueVox << endl; 
     cout << "Total Reco Vox: " << NrecoVox << endl;
@@ -325,11 +337,13 @@ void recoVStrue() {
     cout << "Missing true voxels: " << NtrueVox-(NrecoVox-h_ghosts->GetEntries()) << endl << endl;
 
     cout << "-- Flag efficiency --" << endl;
-    cout << "-- Total hits:       " << total_hits << endl;
-    cout << "-- Total flagged:    " << good_flag + bad_flag_on_true_crosstalk + bad_flag_on_true_core_hit << endl;
-    cout << "-- Good:             " << good_flag << endl;
-    cout << "-- Bad on core:      " << bad_flag_on_true_core_hit << endl;
-    cout << "-- Bad on crosstalk: " << bad_flag_on_true_crosstalk << endl;
+    cout << "total core: " << good_core+bad_core << endl;
+    cout << "total crss: " << good_crss+bad_crss << endl;
+    cout << "good  core: " << good_core << endl;
+    cout << "bad   core: " << bad_core  << endl;
+    cout << "precision:  " << precision << endl;
+    cout << "recall:     " << recall << endl;
+    cout << "F1 score:   " << f1Score << endl;
 
     /// ------------END--------------
 

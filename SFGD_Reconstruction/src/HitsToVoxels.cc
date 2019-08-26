@@ -189,6 +189,15 @@ vector <ND280SFGDVoxel*> HitsToVoxels_version0(vector <ND280SFGDHit*> listOfHits
 vector <ND280SFGDVoxel*> HitsToVoxels(vector <ND280SFGDHit*> listOfHits, Int_t version){
 //***********************************************************************************************
 
+    // HitsToVoxels
+    //
+    // 2D Hits, are matches to form 3D voxels. Multiplicity of each hit is also computed.
+    //
+    // version0: Algorithm by [CJ].   Compared the 2D views. A XYZ voxel is created if it can be formed from 2
+    //                                different 2D views. The number of reconstructed voxels is equal or larger 
+    //                                than the real one.
+    //
+
     vector <ND280SFGDVoxel*> listOfVoxels;
 
     if( version == 0 ){

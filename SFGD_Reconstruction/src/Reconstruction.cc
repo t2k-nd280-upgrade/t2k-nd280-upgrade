@@ -46,85 +46,53 @@ ND280SFGDEvent* Reconstruct(vector <ND280SFGDHit*> listOfHits, vector <ND280SFGD
 
     ND280SFGDEvent* RecoEvent = new ND280SFGDEvent();
  
+    // try to improve this... using more elegant way.
+    // use copies to not overwritte pointer information! -----
     for(size_t nhits=0; nhits<listOfHits.size(); nhits++){
         ND280SFGDHit* auxHit = new ND280SFGDHit();
         *auxHit = *listOfHits[nhits];
-
-        // cout << listOfHits[nhits] << endl;
-        // cout << auxHit << endl;
-        // cout << listOfHits[nhits]->GetCharge() << endl;
-        // cout << auxHit->GetCharge() << endl << endl;
         listOfHitsCopy.push_back(auxHit);
     }
 
-    ///// All the functions for reconstruction should contain as the last input the 'version' number.
-    ///// In this way, if someone wants, can latter on add a new algorithm version for a particular task.
+    if (!listOfHitsCopy.size()) return RecoEvent;
 
-    vector <ND280SFGDHit*> newListOfHits;
-
-    newListOfHits = MergeHits(listOfHitsCopy,0);
-
-    // for(uint iii=0; iii<listOfHits.size(); iii++){
-    //     cout << listOfHits[iii]->GetCharge() << endl;
+    // vector<Voxel*> listOfVoxelsCopy;
+    // for(size_t nvoxs=0; nvoxs<listOfTrueVoxels.size(); nvoxs++){
+    //     ND280SFGDVoxel* auxVox = new ND280SFGDHit();
+    //     *auxVox = *listOfTrueVoxels[nvox];
+    //     listOfVoxelsCopy.push_back(auxVox);
     // }
+    // ------------------------------------------------------
 
-    ND280SFGDEvent* OriginalEvent = new ND280SFGDEvent();
-    OriginalEvent->SetHits(listOfHits);
 
-    if(SHOW_TRUE) OriginalEvent->DrawHits(kTRUE,kFALSE,"cc1");
-    // MergeHits summary:
-    //
-    // Hits, either coming from data or MC are merged (Summed) if they are in the same fiber and not well separated
-    // in time. In reality, we can not distinguish two hits if they happen closer than a time 'T'.  
-    //
-    // Hits in the same fiber but separated by a time larger than 'T' must be stored as separated hits as they are 
-    // often related to relevant physics, as Michel electron decay.
-    //
-    // version0: Algorithm by [CJ].   Sums all hits in the same fiber irrespectively of its time. Time is still not stored
-    //                                in the MC. It returns a list of the merged hits.
-    //
-    // version1: ...
-    //    
+    // ---- start the reconstruction
+    // All the functions for reconstruction should contain as the last input the 'version' number.
+    // In this way, if someone wants, can latter on add a new algorithm version for a particular task.
+    // ------------------------------------------------------
 
-    FlagCrosstalk(newListOfHits,0);
+    // add drawability for the original event:
+    if(SHOW_TRUE){
+        ND280SFGDEvent* OriginalEvent = new ND280SFGDEvent();
+        OriginalEvent->SetHits(listOfHitsCopy);
+        OriginalEvent->DrawHits(kTRUE,kFALSE,"cc1");
+    }
 
-    // FlagCrosstalk summary:
-    //
-    // The goal of this algorithm is to flag the hits as crosstalk.
-    // This flag helps reducing ambiguities when going from 2D hits to voxels.
-    // 
-    // version0: Algorithm by [DD].   Check 2D hits in Z-layers, search first main hits, afterwards flag as crosstalk
-    //                                those hits with a main hit in the same Z-layer and less than 20p.e.                                  
-    // version1: Algorithm by [CJ].   First call MergeHitsToVoxels, then 3D fits reconstructed voxels with a straight
-    //                                line and flags as crosstalk those hits further away than a distance 'D' to the fit.
-    // version2: ...
+    // flag the list of hits:
+    FlagCrosstalk(listOfHitsCopy,0);
 
-    vector <ND280SFGDVoxel*> listOfVoxels;
-    if (USE_CROSSTALK_FLAG)  listOfVoxels = HitsToVoxels(newListOfHits,1);
-    else listOfVoxels = HitsToVoxels(newListOfHits,0);
+    // vector <ND280SFGDVoxel*> listOfVoxels;
+    // if (USE_CROSSTALK_FLAG)  listOfVoxels = HitsToVoxels(newListOfHits,1);
+    // else listOfVoxels = HitsToVoxels(newListOfHits,0);
 
-    // HitsToVoxels
-    //
-    // 2D Hits, are matches to form 3D voxels. Multiplicity of each hit is also computed.
-    //
-    // version0: Algorithm by [CJ].   Compared the 2D views. A XYZ voxel is created if it can be formed from 2
-    //                                different 2D views. The number of reconstructed voxels is equal or larger 
-    //                                than the real one.
-    //
-    // version1: ...
-    //
+    //vector <ND280SFGDVoxel*> listOfVoxels_wFlag;
+    //vector <ND280SFGDVoxel*> listOfVoxels_woFlag;
 
-    // vector <ND280SFGDVoxel*> newListOfVoxels;
-    // for(size_t ivox=0; ivox<listOfVoxels.size(); ivox++){        
-    //     for(size_t jvox=0; jvox<listOfTrueVoxels.size(); jvox++){
-    //         if( listOfVoxels[ivox] == listOfVoxels[jvox]){
-    //             newListOfVoxels.push_back(listOfVoxels[ivox]);
-    //         }
-    //     }
-    // }
+    //listOfVoxels_wFlag  = HitsToVoxels(listOfHitsCopy,1);
+    //listOfVoxels_woFlag = HitsToVoxels(listOfHitsCopy,0);
 
-    // listOfVoxels = newListOfVoxels;
-    // newListOfVoxels.clear();
+    // add some member variable to the voxel to store 'core','xtalk','ghost' true info.
+
+    //for(auto woFvox:listOfVoxels_woFlag){}
     
     //--------
             //Keep only those hits that are associated to reconstructed voxels:
@@ -163,15 +131,15 @@ ND280SFGDEvent* Reconstruct(vector <ND280SFGDHit*> listOfHits, vector <ND280SFGD
     //     uniqueID++;
     // }
 
-    Int_t uniqueID = 0;
-    for(size_t ivox = 0; ivox < listOfVoxels.size(); ivox++){
-        listOfVoxels[ivox]->GetHits()[0]->SetCh(uniqueID);
-        uniqueID++;
-        listOfVoxels[ivox]->GetHits()[1]->SetCh(uniqueID);
-        uniqueID++;
-        listOfVoxels[ivox]->GetHits()[2]->SetCh(uniqueID);
-        uniqueID++;
-    }
+    // Int_t uniqueID = 0;
+    // for(size_t ivox = 0; ivox < listOfVoxels.size(); ivox++){
+    //     listOfVoxels[ivox]->GetHits()[0]->SetCh(uniqueID);
+    //     uniqueID++;
+    //     listOfVoxels[ivox]->GetHits()[1]->SetCh(uniqueID);
+    //     uniqueID++;
+    //     listOfVoxels[ivox]->GetHits()[2]->SetCh(uniqueID);
+    //     uniqueID++;
+    // }
 
     //cout << "# OF RECO VOXELS: " << listOfVoxels.size() << endl;
     //ComputeVoxelCharge(listOfVoxels,0);    
@@ -227,10 +195,11 @@ ND280SFGDEvent* Reconstruct(vector <ND280SFGDHit*> listOfHits, vector <ND280SFGD
     //
     //
 
-    RecoEvent->SetVoxels(listOfVoxels);
-    RecoEvent->SetHits(newListOfHits);
+    //RecoEvent->SetVoxels(listOfVoxels);
+    //cout << "size of newListOfHits: " << listOfHitsCopy.size() << endl;
+    RecoEvent->SetHits(listOfHitsCopy);
 
-    if (SHOW_RECO) RecoEvent->DrawHits(kTRUE,kTRUE,"cc2");
+    //if (SHOW_RECO) RecoEvent->DrawHits(kTRUE,kTRUE,"cc2");
 
     //RecoEvent->SetTracks(listOfTracks);
     //RecoEvent->DrawVoxels(kTRUE,kFALSE,1,0);

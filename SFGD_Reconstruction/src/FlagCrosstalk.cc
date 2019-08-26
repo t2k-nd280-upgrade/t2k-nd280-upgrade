@@ -171,11 +171,22 @@ void FlagCrosstalk_version1(vector <ND280SFGDHit*> listOfHits){
 void FlagCrosstalk(vector <ND280SFGDHit*> listOfHits, Int_t version){
 //***********************************************************************************************
 
+    // FlagCrosstalk summary:
+    //
+    // The goal of this algorithm is to flag the hits as crosstalk.
+    // This flag helps reducing ambiguities when going from 2D hits to voxels.
+    // 
+    // version0: Algorithm by [DD-CJ].   Check 2D hits in Z-layers, search first main hits, afterwards flag as crosstalk
+    //                                those hits with a main hit in the same Z-layer and less than 20p.e.                                  
+    // version1: Algorithm by [CJ].   First call MergeHitsToVoxels, then 3D fits reconstructed voxels with a straight
+    //                                line and flags as crosstalk those hits further away than a distance 'D' to the fit.
+    // version2: ...
+
     if( version == 0 ){
         FlagCrosstalk_version0(listOfHits);
     }
     else if ( version == 1){
-        FlagCrosstalk_version1(listOfHits);
+        FlagCrosstalk_version1(listOfHits); // not implemented...
     }
     else{
         cerr << "Version" << version << "does not exist in FlagCrosstalk function!" << endl;

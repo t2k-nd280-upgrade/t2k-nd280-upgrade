@@ -21,16 +21,6 @@ void applyReconstruction() {
     Int_t maxSelEvents= 100000;
     Int_t selEvents   = 0;
 
-    TH1F* threshold_v = new TH1F("tXZ_1D","tXZ_1D",50,0,5);
-    TH2F* threshold = new TH2F("tXZ","tXZ",24,0,24,48,0,48);
-    for(int i = 0; i < 24; i++)
-        for(int j = 0; j < 48; j++)
-            threshold->SetBinContent(i+1,j+1,1000);
-
-    TH1F* hitsQ = new TH1F("hQ","hQ",202,-1,200);
-    TH1F* hitsRecoQ = new TH1F("hRQ","hRQ",202,-1,200);
-    TH1F* QvsToTratio = new TH1F("hQ","hQ",100,0,10);
-
     TString fileOut  = "/Users/cjesus/Desktop/Reconstruction_output.root";
 
     Int_t jobMode    = 0;
@@ -40,18 +30,8 @@ void applyReconstruction() {
     Int_t dataType   = 0; // 0 for MC, 1 for beam test Data. 
 
     TString fileIn;
-    //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/MC_output.root";
-    //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_proton.root";
-    if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/MC_output.root";
-    //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_piplus_rot.root";
-    //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/CT_output.root";
-    //if(!dataType)  fileIn   = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_electron.root";
-
-    //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/newXtalk_MC_output.root";
-    //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/noCT_MC_output.root";
-    //if(!dataType)  fileIn   = "/Users/cjesus/Desktop/smallSFGD_output.root";
+    if(!dataType)  fileIn    ="/Users/cjesus/Documents/Data/SFGD_MC/MC_output.root";
     else           fileIn    = "/Users/cjesus/Documents/PhD/SFGD/25August_8/25August_8_MCR0_hadrons_0pt8Gev_0pt0T_Beam___NewStructure.root";
-    //else           fileIn    = "/Users/cjesus/Documents/PhD/SFGD/1September_13_MCR0_hadrons_neg0pt8Gev_0pt2T_4trigg_0deg___NewStructure.root";
 
     float time = clock();
 
@@ -160,26 +140,34 @@ void applyReconstruction() {
 
         data->GetEntry(iev);
 
-        //if(iev < 10) continue;
-
         std::cout << "original # of Voxels: " << inputEvent->GetVoxels().size() << std::endl;
+        inputEvent->MergeHits();
+        inputEvent->MergeVoxels();
 
         if(!dataType){
             rawEvent = inputEvent;
             listOfHitsCopy.clear();
 
-
             vector <ND280SFGDHit*> inputHits = inputEvent->GetHits();
+
+            // clean 0 hits!
+            inputHits.clear();
+            for(size_t ihits=0; ihits<inputEvent->GetHits().size(); ihits++){
+                if(inputEvent->GetHits()[ihits]->GetCharge() > 0) inputHits.push_back(inputEvent->GetHits()[ihits]);
+            }
+            cout << "total hits: " << inputHits.size() << endl;
 
             if(RM_CROSSTALK){
                 cout << "REMOVING CROSSTALK." << endl;
                 cout << "Hits before removal: " << inputHits.size() << endl;
                 inputHits.clear();
                 for(size_t ihits=0; ihits<inputEvent->GetHits().size(); ihits++){
-                    if(!inputEvent->GetHits()[ihits]->GetxTalkFlag()) inputHits.push_back(inputEvent->GetHits()[ihits]);
+                    if(!inputEvent->GetHits()[ihits]->GetxTalkFlag()) if(inputEvent->GetHits()[ihits]->GetCharge() > 0) inputHits.push_back(inputEvent->GetHits()[ihits]);
                 }
                 cout << "Hits after removal: " << inputHits.size() << endl;
             }
+
+            cout << "True voxels size: " << inputEvent->GetVoxels().size() << endl;
 
             recoEvent = Reconstruct(inputHits,listOfHitsCopy,inputEvent->GetVoxels());
         }
@@ -194,20 +182,6 @@ void applyReconstruction() {
                 sfgdHit->SetX(hit->GetX()+0.5 - 12);
                 sfgdHit->SetY(hit->GetY()+0.5 - 4);
                 sfgdHit->SetZ(hit->GetZ()+0.5 -24);
-                // cout << "fTfromSpill: " << hit->GetTfromSpill() << endl;
-                // cout << "fGTrigTag: " << hit->GetGTrigTag()<< endl;
-                // cout << "fGTrigTime: " << hit->GetGTrigTime() << endl;
-                // cout << "fSpillTime: " << hit->GetSpillTime()<< endl;
-                // cout << "fDt: " << hit->GetDt()<< endl;
-                // cout << "fSpillTrailTime: " << hit->GetSpillTrailTime() << endl << endl;
-
-                // cout << "Q" << hit->GetCharge() << endl;
-                // cout << "ToT" << hit->GetToT() << endl;
-                // cout << "ratio: " << hit->GetToT() / hit->GetCharge() << endl;
-                QvsToTratio->Fill(hit->GetCharge());
-
-                if(hit->GetView()==1 && threshold->GetBinContent(hit->GetX()+1,hit->GetZ()+1) > hit->GetCharge() && hit->GetCharge() > 0)
-                    threshold->SetBinContent(hit->GetX()+1,hit->GetZ()+1,hit->GetCharge());
 
                 sfgdHit->SetDt(hit->GetDt());
                 sfgdHit->SetCharge(hit->GetCharge());
@@ -217,7 +191,6 @@ void applyReconstruction() {
                 sfgdHit->SetPDG(-999);
                 sfgdHit->SetTrackID(-999);
                 auxHits.push_back(sfgdHit);
-                hitsQ->Fill(hit->GetCharge());
             }
             if(auxHits.size() < 10) continue;
             rawEvent->SetHits(auxHits);
@@ -238,50 +211,16 @@ void applyReconstruction() {
             auxHits.clear();
         }
 
-        // for(size_t sh=0;sh<recoEvent->GetHits().size();sh++){
-        //     cout << "Q: " << recoEvent->GetHits()[sh]->GetCharge() << endl;
-        // }
-
-        for(size_t sh=0;sh<recoEvent->GetHits().size();sh++){
-            hitsRecoQ->Fill(recoEvent->GetHits()[sh]->GetCharge());
-        }
-
-
         std::cout << "reconstructed # of Voxels: " << recoEvent->GetVoxels().size() << std::endl;
         std::cout << "reconstructed # of Hits: " <<   recoEvent->GetHits().size() << std::endl;
-
-        //recoEvent->DrawHits(kTRUE,kTRUE,"cc1");
 
         std::cout << "**********************" << std::endl << std::endl;
 
         dataOut->Fill();
-        // if(!dataType){
-        //     for(size_t nhits=0; nhits<listOfHitsCopy.size(); nhits++) delete listOfHitsCopy[nhits];
-        // }
-
         selEvents++;
     }
 
      cout << "final number of selected events: " << selEvents << endl;
-
-    for(int i = 0; i < 24; i++)
-        for(int j = 0; j < 48; j++)
-            threshold_v->Fill(threshold->GetBinContent(i+1,j+1));
-
-     TCanvas* c = new TCanvas("C");
-     c->Divide(1,2);
-     // hitsRecoQ->SetLineColor(kRed);
-     // hitsRecoQ->Draw("HIST");
-     // hitsQ->Draw("same");
-     //QvsToTratio->Fit("landau","", "",0.3,1);
-     //QvsToTratio->Draw("HIST");
-     c->cd(1);
-     threshold->GetZaxis()->SetRangeUser(0,4);
-     threshold->Draw("COLZ");
-     c->cd(2);
-     threshold_v->Draw("COLZ");
-
-     c->Update();
 
     FileOutput->cd();
     dataOut->Write("",TObject::kOverwrite);

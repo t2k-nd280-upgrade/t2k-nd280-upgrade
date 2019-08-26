@@ -10,21 +10,24 @@
 /field/setField 0.0001 0 0 tesla
 /field/update
 
+/db/set/saveAllTraj 1
+/db/set/saveAllHits 1
+
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
 #/generator/type Generator
 /generator/type ParticleGun
         
 # Set the particle gun 
-/gun/particle proton
+/gun/particle mu-
 #/gun/energy 800 MeV  # kinetic energy
 /gun/momentum  0 0 0.75 GeV # momentum
 /gun/direction 0 0 1 # momentum direction     
-/gun/position  0 0 -300 mm  # starting position
+/gun/position  2 2 -300 mm  # starting position
 #/gun/position  0 0 0 mm  # starting position
 #/gun/position  0 0 -3000 mm  # starting position
 /gun/number   1      # number of particles
 
-/generator/typegun FCTest
+/generator/typegun BeamTest
 /generator/typedir Gaus
 
 # Disable auto refresh and quieten vis messages whilst scene and
