@@ -109,7 +109,7 @@ public:
     double GetActiveHATPCVerticalOffset(void) { return fActiveHATPCVerticalOffset; }
 
 private:
-    
+
 
     // Visible pieces
     G4bool fVisible;
@@ -148,7 +148,7 @@ private:
     //bool DebugHATPCMass;
 
     /// Method to build the FC geometry
-    void BuildFCGeometry(G4LogicalVolume *logVolume, double &FCthickness);
+    void BuildFCGeometry(G4LogicalVolume *&logVolume, double &FCthickness);
     /// Method to build the Nexus geometry (depreciated)
     void BuildNexusGeometry(G4LogicalVolume *logVolume, double &FCthickness);
     /// Method to build the GFiber geometry (depreciated)

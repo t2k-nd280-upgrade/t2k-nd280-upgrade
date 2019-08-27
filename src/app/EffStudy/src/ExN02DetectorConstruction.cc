@@ -2122,6 +2122,7 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
         SetHATPCUpPos(x, y, z);
 
         logicHATPCUp = fHATPCUpConstructor->GetPiece();
+        //logicHATPCUp = new G4LogicalVolume(new G4Box(cParentNameTPC + "/" + "HATPCUp", HATPCUpWidth * CLHEP::mm / 2., HATPCUpHeight * CLHEP::mm / 2., HATPCUpLength * CLHEP::mm / 2.), FindMaterial("Galactic"), cParentNameTPC + "/FC/" + "HATPCUp");
 
         new G4PVPlacement(0,
                           GetHATPCUpPos(),
@@ -2183,6 +2184,7 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
         SetHATPCDownPos(x, y, z);
 
         logicHATPCDown = fHATPCDownConstructor->GetPiece();
+        //logicHATPCDown = new G4LogicalVolume(new G4Box(cParentNameTPC + "/" + "HATPCDown", HATPCDownWidth * CLHEP::mm / 2., HATPCDownHeight * CLHEP::mm / 2., HATPCDownLength * CLHEP::mm / 2.), FindMaterial("Galactic"), cParentNameTPC + "/FC/" + "HATPCDown");
 
         new G4PVPlacement(0,
                           GetHATPCDownPos(),
@@ -2191,6 +2193,7 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
                           logicBasket,
                           false,
                           0);
+
     }
 
     //
@@ -5232,8 +5235,8 @@ void ExN02DetectorConstruction::DefineDimensions()
 
     /*G4double cBasketInnerWidth    = 2320.0 * CLHEP::mm;
   G4double cBasketSideThickness = 100.0  * CLHEP::mm;
-  G4double cBasketOuterWidth    = 
-    cBasketInnerWidth + 
+  G4double cBasketOuterWidth    =
+    cBasketInnerWidth +
     cBasketSideThickness * 2.;
   */
     G4double cBasketOuterHeight = 2480.0 * CLHEP::mm;
