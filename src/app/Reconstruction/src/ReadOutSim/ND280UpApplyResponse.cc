@@ -79,7 +79,7 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
   }
   else if( ftargetid==nd280upconv::kSciFi ||
-     ftargetid==nd280upconv::kFGDlike ){ // SciFi_XZ or FGDlike_XZ
+	   ftargetid==nd280upconv::kFGDlike ){ // SciFi_XZ or FGDlike_XZ
     //persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
     //persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
     GetHitPosXY(lightX,lightY,mppcX,mppcY);
@@ -104,7 +104,7 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     distZ = lightZ - GetMPPCPosZ(); 
   }
   else if( ftargetid==nd280upconv::kSciFi ||
-     ftargetid==nd280upconv::kFGDlike ){ // SciFi_XZ or FGDlike_XZ    
+	   ftargetid==nd280upconv::kFGDlike ){ // SciFi_XZ or FGDlike_XZ    
     //distX = lightX - persistencyManager->GetMPPCPosX(); 
     //distY = lightY - persistencyManager->GetMPPCPosY(); 
     //distZ = lightZ - persistencyManager->GetMPPCPosZ();     
@@ -123,9 +123,9 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
       (distY<0 && distY!=nd280upconv::kUndefined) || 
       (distZ<0 && distZ!=nd280upconv::kUndefined) ){
     cout << "distX = " << distX 
-   << ", distY = " << distY 
-   << ", distZ = " << distZ 
-   << endl;
+	 << ", distY = " << distY 
+	 << ", distZ = " << distZ 
+	 << endl;
     cout << "ND280UpApplyResponse::ProcessHits" << endl;
     cout << "The hit is outside the target!!!" << endl;
     exit(1);
@@ -133,10 +133,10 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
   
   // light attenuation (Birks' formula)
   double pe = TargetReadOut.ApplyScintiResponse(edep_q,steplength,charge); 
-  if(steplength == -1){
+  if( steplength == -1){
     pe = edep;
   }
-
+  
   if( ftargetid==nd280upconv::kSuperFGD ){ // SuperFGD
     peX = pe;
     peY = pe;
@@ -158,7 +158,7 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     
   }
   else if( ftargetid==nd280upconv::kSciFi ||
-     ftargetid==nd280upconv::kFGDlike ){ // SciFi_XZ or FGDlike_XZ
+	   ftargetid==nd280upconv::kFGDlike ){ // SciFi_XZ or FGDlike_XZ
     
     // SciFi_XZ or FGDlike_XZ (i.e. built in XY and rotated by 90deg on X axis)
 
@@ -170,9 +170,9 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     if(touch_namedet.Contains(DetNameAlongX)){ // "FiberScintHoriz"
       peX = pe; timepeX = prestepTime;
       peY = 0.; timepeY = 0.;
-      peZ = 0.; timepeZ = 0.; 
+      peZ = 0.; timepeZ = 0.;	
       // light collection + attenuation
-      TargetReadOut.ApplyFiberResponse(peX,timepeX,distX);  
+      TargetReadOut.ApplyFiberResponse(peX,timepeX,distX);	
       // MPPC efficiency
       TargetReadOut.ApplyMPPCResponse(peX);
     }
@@ -180,16 +180,16 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     else if(touch_namedet.Contains(DetNameAlongZ)){ //"FiberScintVert"
       peX = 0.; timepeX = 0.;
       peY = 0.; timepeY = 0.;
-      peZ = pe; timepeZ = prestepTime;  
+      peZ = pe; timepeZ = prestepTime;	
       // light collection + attenuation
-      TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ);  
+      TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ);	
       // MPPC efficiency
       TargetReadOut.ApplyMPPCResponse(peZ);
     }
     else{
       cout << "ND280UpApplyResponse::ProcessHits" << endl;
       cout << "The hit is outside both direction fibers!!!" << endl;
-      exit(1);    
+      //exit(1);    
     }            
   } // if SuperFGD || SciFi ...
   
@@ -244,7 +244,7 @@ void ND280UpApplyResponse::GetHitPosXY(double lightX,double lightY, double &mppc
     exit(1);
   }
 }
-                  
+								  
 void ND280UpApplyResponse::GetHitPosXZ(double lightX,double lightZ, double &mppcX,double &mppcZ){
   if(fMPPCProj2D_XZ){
     int binX = fMPPCProj2D_XZ->GetXaxis()->FindBin(lightX);

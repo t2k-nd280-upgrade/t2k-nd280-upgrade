@@ -62,12 +62,12 @@ $first_expt      = 0                           unless defined $first_expt; # fir
 
 $queue           = "short"                unless defined $queue;
 
+$job_dir = "/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype" unless defined $job_dir;    
+
 $irun = 0;
 while($irun < $nruns) { # loop over the jobs
     
-    $evt_first = $first_expt + $irun * $nexpts;
-    $job_dir = "/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype";    
-     
+    $evt_first = $first_expt + $irun * $nexpts;   
     $arguments = "$softw_dir/$exe_loc_dir/EffStudy.exe $softw_dir/src/app/Reconstruction/SFGD_prototype/$vis_file $softw_dir/src/app/Reconstruction/SFGD_prototype/$config_file $job_dir/$tag-$irun-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
 
     $command = "$arguments";

@@ -32,15 +32,15 @@
 
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
-/vis/viewer/set/autoRefresh false
-/vis/verbose errors
+#/vis/viewer/set/autoRefresh false
+#/vis/verbose errors
 
 
 # Use this open statement to create a .wrl file suitable for
 # viewing in a VRML viewer:
-#/vis/open VRML2FILE
+/vis/open VRML2FILE
 # Draw geometry:
-#/vis/drawVolume
+/vis/drawVolume
 
 # Specify view angle:
 /vis/viewer/set/viewpointThetaPhi 0. 0.

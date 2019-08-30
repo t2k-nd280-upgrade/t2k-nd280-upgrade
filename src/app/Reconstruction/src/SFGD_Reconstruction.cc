@@ -40,6 +40,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//#define CROSSTALK_OFF
+
 const int maxTracks = 1000;
 const int maxHits = 5000;
 const int maxCont = 1000;
@@ -394,50 +396,37 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
             ApplyResponse.SetTargetID(DetType);
 
-
-            // #ifdef ELECSIM
-            //     cout << "ELECSIM!" << endl;
-            // #else
-            //     cout << "NO ELECSIM!" << endl;
-            // #endif
-
             ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);//ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,sat_edep*156.42,"kSuperFGD");
             PE_expect += (ApplyResponse.GetHitPE().x() +  ApplyResponse.GetHitPE().y() +  ApplyResponse.GetHitPE().z());
 
-            // for(int view=0; view<3; view++){                
-            //     ND280SFGDHit* hit = event->AddHit();
-            //     hit->SetView(view);
+#ifdef CROSSTALK_OFF
+            for(int view=0; view<3; view++){                
+                ND280SFGDHit* hit = event->AddHit();
+                hit->SetView(view);
 
-            //     hit->SetX(ApplyResponse.GetHitPos().x()/10);
-            //     hit->SetY(ApplyResponse.GetHitPos().y()/10);
-            //     hit->SetZ(ApplyResponse.GetHitPos().z()/10);
+                hit->SetX(ApplyResponse.GetHitPos().x()/10);
+                hit->SetY(ApplyResponse.GetHitPos().y()/10);
+                hit->SetZ(ApplyResponse.GetHitPos().z()/10);
 
-            //     if(view == 0) hit->SetZ(-1);
-            //     if(view == 1) hit->SetY(-1);
-            //     if(view == 2) hit->SetX(-1);
-            //     if(view == 0) hit->SetCharge(ApplyResponse.GetHitPE().z());
-            //     if(view == 1) hit->SetCharge(ApplyResponse.GetHitPE().y());
-            //     if(view == 2) hit->SetCharge(ApplyResponse.GetHitPE().x());
+                if(view == 0) hit->SetZ(-1);
+                if(view == 1) hit->SetY(-1);
+                if(view == 2) hit->SetX(-1);
+                if(view == 0) hit->SetCharge(ApplyResponse.GetHitPE().z());
+                if(view == 1) hit->SetCharge(ApplyResponse.GetHitPE().y());
+                if(view == 2) hit->SetCharge(ApplyResponse.GetHitPE().x());
 
-            //     listOfHits.push_back(hit);
-            // }
-            // index++;
-
-            #ifdef ELECSIM
-                cout << "ELECSIM ON" << endl;
-                double EdepToPhot = 156.42;
-            #else
-                cout << "ELECSIM OFF" << endl;
-                double EdepToPhot = 70.8;
-            #endif
-
-            //cout << "EdepToPhot" << EdepToPhot << endl;
-            EdepToPhot *= 0.58; // ????
-            //cout << "EdepToPhotfinal" << EdepToPhot << endl;
-            cout << "Edep: " << nd280UpHit->GetEnergyDeposit() << endl;
-            double probLatCT = 0.032*6;
-            double sat_edep = BirksSaturation(nd280UpHit->GetEnergyDeposit(),steplength);
-            int numPE = sat_edep*EdepToPhot*20;
+                listOfHits.push_back(hit);
+            }
+            index++;
+#else
+            double corr_factor = 1.21;
+            double edeposit = nd280UpHit->GetEnergyDeposit();
+            ND280UpTargReadOut TargetReadOut;
+            TargetReadOut.SetTargType(DetType);
+            int nphot = TargetReadOut.ApplyScintiResponse(edeposit,steplength,1)*corr_factor;
+            double probLatCT = 0.037*6;
+            if(WriteText) cout << "nphot= " << nphot << endl;
+            int numPE = nphot*20;
             if(numPE < 0) numPE = 0;
             int numPE_CT[6] = {0};           // photons flowing to sourrounding elements
             for (int i=0;i<numPE;i++){
@@ -446,8 +435,6 @@ int SFGD_Reconstruction(int argc,char** argv) {
             }
             int totCT = 0;
             for (auto p : numPE_CT) totCT += p;
-            if(WriteText) cout << "Original # of Abs PE: " << (int) (sat_edep*EdepToPhot) << endl;
-            if(WriteText) cout << "Original PE in Cube: " << (int)  (sat_edep*EdepToPhot*20) << endl;
             if(WriteText) cout << "Flowed PE: " << totCT << endl;
             if(WriteText) cout << "Number of remaining PE: " << numPE-totCT << endl;
 
@@ -457,17 +444,16 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(m==0) numPE_fiber = FiberAbs(numPE-totCT);
                 else numPE_fiber = FiberAbs(numPE_CT[m-1]);
 
-                /*if(WriteText)*/ cout << "New # of Abs PE: " << numPE_fiber << endl;
+                //cout << m <<", New # of Abs PE: " << numPE_fiber << endl;
 
-                ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,numPE_fiber,"kSuperFGD");
-
-                int PE_in_Cube = hitEdep[ihit]/0.05;  // photons in the cube
+                ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,numPE_fiber,detname);
 
                 double pex = ApplyResponse.GetHitPE().x();
                 double pey = ApplyResponse.GetHitPE().y();
                 double pez = ApplyResponse.GetHitPE().z();
-                cout << pex << "," << pey << "," << pez << endl;
 
+                //cout << pex << "," << pey << "," << pez << endl;
+ 
                 PE_found += (pex+pey+pez);
 
                 double timepex = ApplyResponse.GetHitTime().x();
@@ -496,27 +482,19 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 hitPE[index][0]       = pez;
                 hitPE[index][1]       = pey;
                 hitPE[index][2]       = pex;
-                hitEdep[index]        = sat_edep;
+                hitEdep[index]        = edeposit;
                 hitTraj[index]        = nd280UpHit->GetPrimaryId();
 
-                //cout << "bef: " << hitPE[index][0] << "," <<  hitPE[index][1] << "," << hitPE[index][2] <<endl;
-                // if(hitPE[index][0]>0) hitPE[index][0] = hitPE[index][0] + fRndm.Gaus(0, 0.2*hitPE[index][0]);
-                // if(hitPE[index][1]>0) hitPE[index][1] = hitPE[index][1] + fRndm.Gaus(0, 0.2*hitPE[index][1]);
-                // if(hitPE[index][2]>0) hitPE[index][2] = hitPE[index][2] + fRndm.Gaus(0, 0.2*hitPE[index][2]);
-                //cout << "aft: " << hitPE[index][0] << "," <<  hitPE[index][1] << "," << hitPE[index][2] <<endl;
-                //cout << aux_threshold(hitPE[index][0]) << "," << hitPE[index][0] << endl;
                 threshold[index][0] = aux_threshold(hitPE[index][0]);
                 threshold[index][1] = aux_threshold(hitPE[index][1]);
                 threshold[index][2] = aux_threshold(hitPE[index][2]);
-
-                //cout << "threshold: " << threshold[index][0] <<","<< threshold[index][1] <<","<< threshold[index][2] << endl;
 
                 if(!threshold[index][0]) hitPE[index][0] = 0;
                 if(!threshold[index][1]) hitPE[index][1] = 0;
                 if(!threshold[index][2]) hitPE[index][2] = 0;
 
                 ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],hitLocation[index][1],hitLocation[index][2]);
-                Voxel->SetEdep(PE_in_Cube);
+                Voxel->SetEdep(edeposit);
                 vector <double> localQ;
                 localQ.push_back(timepez);
                 localQ.push_back(timepey);
@@ -564,10 +542,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(WriteText) cout << "hit at: " << hitLocation[index][0] << ", " << hitLocation[index][1] << ", " << hitLocation[index][2] << endl;
                 if(WriteText) cout << "PE (YZ,XZ,XY): " << pex << ", " << pey << ", " << pez << endl;
             }
+            if(WriteText) cout << "PE_expect: " << PE_expect << "PE_found: " << PE_found << endl;
             if(WriteText) cout << endl;
+#endif
         } /// END LOOP OVER 3D HITS
-        cout << "EXPECTED PE: " << PE_expect << endl;
-        cout << "FOUND    PE: " << PE_found << endl;
 
         if(WriteText) cout << "total g4hits:   " << NHits << endl;
         if(WriteText) cout << "total g4hits*7: " << NHits*7 << endl;

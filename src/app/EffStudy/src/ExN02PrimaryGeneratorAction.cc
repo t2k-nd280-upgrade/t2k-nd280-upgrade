@@ -83,6 +83,7 @@ ExN02PrimaryGeneratorAction::ExN02PrimaryGeneratorAction()
   inxml = InputPersistencyManager->GetXMLInput();
 
   
+  std::cout << inxml->GetXMLGenerTypeName() << std::endl;
   if(inxml->GetXMLGenerTypeName() != "ParticleGun")
     RooTrackerNEUT.Initialize();
 }
