@@ -1,6 +1,6 @@
-// 
+//
 // Class to get inputs other than GEANT4 ones
-// 
+//
 // 4/7/16 Davide Sgalaberna
 //
 
@@ -27,9 +27,9 @@ public :
 
   ExN02ND280XML(const G4String inxmlname="");
   ~ExN02ND280XML();
-    
+
   G4String GetXMLFileName()     {return fXMLFile;};
-  
+
   G4bool   GetXMLIsRandomSeed(){return fIsRandomSeed;};
   G4bool   GetXMLStoreGeometry(){return fStoreGeometry;};
   G4String GetXMLGenerTypeName(){return fGenerType;};
@@ -37,7 +37,7 @@ public :
   G4String GetXMLGenerTreeName(){return fGenerTreeName;};
   G4String GetXMLGenerFileName(){return fGenerFileName;};
   G4int    GetXMLStepEvent()    {return fGenerStepEvent;};
-  
+
   G4bool   GetXMLForwTPCdefault(){return fForwTPCdefault;};
   G4double GetXMLForwTPCPos1_X()  {return fForwTPCPos1_X;};
   G4double GetXMLForwTPCPos1_Y()  {return fForwTPCPos1_Y;};
@@ -58,7 +58,7 @@ public :
   G4double GetXMLHATPCDownPos_X()  {return fHATPCDownPos_X;};
   G4double GetXMLHATPCDownPos_Y()  {return fHATPCDownPos_Y;};
   G4double GetXMLHATPCDownPos_Z()  {return fHATPCDownPos_Z;};
-  
+
   G4bool   GetXMLTargetdefault1() {return fTargetdefault1;};
   G4String GetXMLTargetMaterial1(){return fTargetMaterial1;};
   G4double GetXMLTargetlength1()  {return fTargetlength1;};
@@ -148,7 +148,11 @@ public :
   G4double GetXMLHATPCDownOuterBoxWall() {return fHATPCDownOuterBoxWall;};
   G4double GetXMLHATPCDownSteppingLimit() {return fHATPCDownSteppingLimit;};
   G4double GetXMLActiveHATPCDownVerticalOffset() {return fActiveHATPCDownVerticalOffset;};
-  
+
+  G4double GetXMLHATPCMMHeight() {return fHATPCMMHeight;};
+  G4double GetXMLHATPCMMLength() {return fHATPCMMLength;};
+  G4double GetXMLHATPCMMSpacing() {return fHATPCMMSpacing;};
+
   G4double GetXMLFGD3Dlength1()   {return fFGD3Dlength1;};
   G4double GetXMLFGD3Dwidth1()    {return fFGD3Dwidth1;};
   G4double GetXMLFGD3Dheight1()   {return fFGD3Dheight1;};
@@ -266,7 +270,7 @@ public :
   // PCB
   G4bool   GetXMLUseFlatCable()      {return fUseFlatCable;};
   //
-  
+
   //
   G4bool   GetXMLUseHATPCUp()    {return fUseHATPCUp;}; // Edited
   G4bool   GetXMLUseHATPCDown()    {return fUseHATPCDown;}; // Edited
@@ -296,7 +300,7 @@ public :
   G4bool   GetXMLUseBasket()     {return fUseBasket;};
   G4bool   GetXMLUseDsECal()     {return fUseDsECal;};
   G4bool   GetXMLUseBrlECal()    {return fUseBrlECal;};
-  G4bool   GetXMLUseP0DECal()    {return fUseP0DECal;};  
+  G4bool   GetXMLUseP0DECal()    {return fUseP0DECal;};
   G4bool   GetXMLUseP0D()        {return fUseP0D;};
 
   G4bool   GetXMLInvisForwTPC1()  {return fInvisForwTPC1;};
@@ -309,12 +313,12 @@ public :
   G4bool   GetXMLInvisSuperFGD(){return fInvisSuperFGD;};
   G4bool   GetXMLInvisFGD3D(){return fInvisFGD3D;};
   G4bool   GetXMLInvisFGDlike(){return fInvisFGDlike;};
-  G4bool   GetXMLInvisToF_TopUp()     {return fInvisToF_TopUp;};  
-  G4bool   GetXMLInvisToF_BotUp()     {return fInvisToF_BotUp;};  
-  G4bool   GetXMLInvisToF_RightUp()     {return fInvisToF_RightUp;};  
-  G4bool   GetXMLInvisToF_LeftUp()     {return fInvisToF_LeftUp;};  
-  G4bool   GetXMLInvisToF_BackUp()     {return fInvisToF_BackUp;};  
-  G4bool   GetXMLInvisToF_FrontUp()     {return fInvisToF_FrontUp;};  
+  G4bool   GetXMLInvisToF_TopUp()     {return fInvisToF_TopUp;};
+  G4bool   GetXMLInvisToF_BotUp()     {return fInvisToF_BotUp;};
+  G4bool   GetXMLInvisToF_RightUp()     {return fInvisToF_RightUp;};
+  G4bool   GetXMLInvisToF_LeftUp()     {return fInvisToF_LeftUp;};
+  G4bool   GetXMLInvisToF_BackUp()     {return fInvisToF_BackUp;};
+  G4bool   GetXMLInvisToF_FrontUp()     {return fInvisToF_FrontUp;};
 
   G4bool   GetXMLInvisMagnet()   {return fInvisMagnet;};
   G4bool   GetXMLInvisSMRD()     {return fInvisSMRD;};
@@ -323,7 +327,7 @@ public :
   G4bool   GetXMLInvisBrlECal()  {return fInvisBrlECal;};
   G4bool   GetXMLInvisP0DECal()  {return fInvisP0DECal;};
   G4bool   GetXMLInvisP0D()      {return fInvisP0D;};
-  
+
   void SetInputs();
 
 private :
@@ -393,7 +397,7 @@ private :
   G4double fFGDPos2_X;
   G4double fFGDPos2_Y;
   G4double fFGDPos2_Z;
-  
+
   G4double fSuperFGDCubeEdge1;
   G4int    fSuperFGDCubeNum1_X;
   G4int    fSuperFGDCubeNum1_Y;
@@ -401,7 +405,7 @@ private :
   G4double fSuperFGDPos1_X;
   G4double fSuperFGDPos1_Y;
   G4double fSuperFGDPos1_Z;
-  
+
   //CF Box Thickness
   G4double fCFBoxCFRPThickness;
   G4double fCFBoxAIREXThickness;
@@ -415,7 +419,7 @@ private :
 
   //
 
-  
+
  G4double fSuperFGDCubeEdge2;
  G4int    fSuperFGDCubeNum2_X;
  G4int    fSuperFGDCubeNum2_Y;
@@ -447,6 +451,10 @@ private :
  G4double fHATPCDownOuterBoxWall;
  G4double fHATPCDownSteppingLimit;
  G4double fActiveHATPCDownVerticalOffset;
+
+ G4double fHATPCMMHeight;
+ G4double fHATPCMMLength;
+ G4double fHATPCMMSpacing;
 
   G4double fFGD3Dlength1;
   G4double fFGD3Dwidth1;
@@ -569,7 +577,7 @@ private :
   G4bool fUseFlatCable;
   //
 
-  
+
   G4bool fUseHATPCUp;
   G4bool fUseHATPCDown;
   G4bool fUseForwTPC1;
@@ -604,7 +612,7 @@ private :
   G4bool fUseBrlECal;
   G4bool fUseP0DECal;
   G4bool fUseP0D;
-  
+
   G4bool fInvisForwTPC1;
   G4bool fInvisForwTPC2;
   G4bool fInvisForwTPC3;
@@ -633,7 +641,7 @@ private :
   void XML2Double(string tmp_app,double &dest);
   void XML2Int   (string tmp_app,int &dest);
   void XML2Bool  (string tmp_app,bool &dest);
-  
+
   // XMLNodePointer_t FindNode          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   // bool             NodeExists        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
@@ -646,7 +654,7 @@ private :
 
   // vector<string> Tokens             (string input, string delimiter);
   string TrimSpaces(string input);
-  
+
 };
 
 #endif

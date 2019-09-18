@@ -1,7 +1,7 @@
 
-// 
+//
 // Class to get inputs other than GEANT4 ones
-// 
+//
 // 4/7/16 Davide Sgalaberna
 //
 
@@ -78,7 +78,7 @@ ExN02ND280XML::~ExN02ND280XML(){
   fFGDPos2_X = 0.;
   fFGDPos2_Y = 0.;
   fFGDPos2_Z = 0.;
-  
+
 
  fSuperFGDCubeEdge1 = 0.;
  fSuperFGDCubeNum1_X = 0;
@@ -113,7 +113,7 @@ ExN02ND280XML::~ExN02ND280XML(){
 
  //
 
- 
+
  fHATPCFCName = "";
 
  fHATPCUpPos_X = 0.;
@@ -135,6 +135,10 @@ ExN02ND280XML::~ExN02ND280XML(){
  fHATPCDownOuterBoxWall = 0.;
  fHATPCDownSteppingLimit = 0.;
  fActiveHATPCDownVerticalOffset = 0.;
+
+ fHATPCMMHeight = 0.;
+ fHATPCMMLength = 0.;
+ fHATPCMMSpacing = 0.;
 
   fFGD3Dlength1 = 0.;
   fFGD3Dwidth1 = 0.;
@@ -253,7 +257,7 @@ ExN02ND280XML::~ExN02ND280XML(){
   fToFPosZ_FrontUp = 0.;
 
   //
-  
+
   fUseForwTPC1 = false;
   fUseForwTPC2 = false;
   fUseForwTPC3 = false;
@@ -377,7 +381,7 @@ void ExN02ND280XML::SetInputs(){
   fFGDPos2_X = 0.;
   fFGDPos2_Y = 0.;
   fFGDPos2_Z = 0.;
-  
+
  fSuperFGDCubeEdge1 = 0.;
  fSuperFGDCubeNum1_X = 0;
  fSuperFGDCubeNum1_Y = 0;
@@ -503,7 +507,7 @@ void ExN02ND280XML::SetInputs(){
   fToFPosZ_FrontUp = 0.;
 
   //
-  
+
   fUseForwTPC1 = false;
   fUseForwTPC2 = false;
   fUseForwTPC3 = false;
@@ -529,7 +533,7 @@ void ExN02ND280XML::SetInputs(){
   fUseBrlECal = false;
   fUseP0DECal = false;
   fUseP0D = false;
-  
+
   fInvisForwTPC1 = false;
   fInvisForwTPC2 = false;
   fInvisForwTPC3 = false;
@@ -557,25 +561,25 @@ void ExN02ND280XML::SetInputs(){
 
 
 
-  
+
   G4cout << G4endl;
-  G4cout << "Reading inputs from XML file: " 
-	 << GetXMLFileName() 
+  G4cout << "Reading inputs from XML file: "
+	 << GetXMLFileName()
 	 << G4endl;
   G4cout << G4endl;
-  
+
   string line;
   ifstream myfile (fXMLFile);
-  if(myfile.is_open()){    
-    
+  if(myfile.is_open()){
+
     XML2Bool("IsRandomSeed",fIsRandomSeed);
     XML2Bool("StoreGeometry",fStoreGeometry);
     XML2String("Generator",fGenerType);
     XML2String("Path2file",fPathFiles);
-    XML2String("filename",fGenerFileName);  
-    XML2String("treename",fGenerTreeName);      
-    
-    // Forward TPCs 
+    XML2String("filename",fGenerFileName);
+    XML2String("treename",fGenerTreeName);
+
+    // Forward TPCs
     XML2Bool("forwTPCdefault" ,fForwTPCdefault);
     XML2Double("forwTPCPos1_X" ,fForwTPCPos1_X);
     XML2Double("forwTPCPos1_Y" ,fForwTPCPos1_Y);
@@ -586,7 +590,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("forwTPCPos3_X" ,fForwTPCPos3_X);
     XML2Double("forwTPCPos3_Y" ,fForwTPCPos3_Y);
     XML2Double("forwTPCPos3_Z" ,fForwTPCPos3_Z);
-    
+
     // Target 1
     XML2Bool("Targetdefault1"   ,fTargetdefault1);
     XML2String("TargetMaterial1",fTargetMaterial1);
@@ -596,7 +600,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("TargetPos1_X"   ,fTargetPos1_X);
     XML2Double("TargetPos1_Y"   ,fTargetPos1_Y);
     XML2Double("TargetPos1_Z"   ,fTargetPos1_Z);
-    
+
     // Target 2
     XML2Bool("Targetdefault2"   ,fTargetdefault2);
     XML2String("TargetMaterial2",fTargetMaterial2);
@@ -616,7 +620,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("FGDPos1_X"   ,fFGDPos1_X);
     XML2Double("FGDPos1_Y"   ,fFGDPos1_Y);
     XML2Double("FGDPos1_Z"   ,fFGDPos1_Z);
-    
+
     // FGD 2
     XML2Bool("FGDdefault2"   ,fFGDdefault2);
     XML2String("FGDMaterial2",fFGDMaterial2);
@@ -626,7 +630,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("FGDPos2_X"   ,fFGDPos2_X);
     XML2Double("FGDPos2_Y"   ,fFGDPos2_Y);
     XML2Double("FGDPos2_Z"   ,fFGDPos2_Z);
-    
+
     // SuperFGD 1
     XML2Double("SuperFGDCubeEdge1" ,fSuperFGDCubeEdge1);
     XML2Int("SuperFGDCubeNum1_X",fSuperFGDCubeNum1_X);
@@ -655,8 +659,8 @@ void ExN02ND280XML::SetInputs(){
     //FlatCable
     XML2Double("FlatCableThickness", fFlatCableThickness);
     XML2Int("FlatCableN", fFlatCableN);
-    
-    
+
+
     //HATPC Up
 
     XML2String("HATPCFCName",fHATPCFCName);
@@ -693,6 +697,11 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("HATPCDownSteppingLimit", fHATPCDownSteppingLimit);
     XML2Double("ActiveHATPCDownVerticalOffset", fActiveHATPCDownVerticalOffset);
 
+    //HATPC MM
+    XML2Double("HATPCMMHeight",  fHATPCMMHeight);
+    XML2Double("HATPCMMLength",  fHATPCMMLength);
+    XML2Double("HATPCMMSpacing", fHATPCMMSpacing);
+
     // FGD3D 1
     XML2Double("FGD3Dlength1"   ,fFGD3Dlength1);
     XML2Double("FGD3Dwidth1"    ,fFGD3Dwidth1);
@@ -717,7 +726,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("FGDlikePos_Y"    ,fFGDlikePos_Y);
     XML2Double("FGDlikePos_Z"    ,fFGDlikePos_Z);
 
-    // ToF Top Upstream 
+    // ToF Top Upstream
     XML2Bool("ToFdefault_TopUp"      ,fToFdefault_TopUp);
     XML2Int("ToFPlaneXYNum_TopUp"    ,fToFPlaneXYNum_TopUp);
     XML2Double("ToFBarwidth_TopUp"      ,fToFBarwidth_TopUp);
@@ -730,7 +739,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("ToFPosY_TopUp"         ,fToFPosY_TopUp);
     XML2Double("ToFPosZ_TopUp"         ,fToFPosZ_TopUp);
 
-    // ToF Bottom Upstream 
+    // ToF Bottom Upstream
     XML2Bool("ToFdefault_BotUp"      ,fToFdefault_BotUp);
     XML2Int("ToFPlaneXYNum_BotUp"    ,fToFPlaneXYNum_BotUp);
     XML2Double("ToFBarwidth_BotUp"      ,fToFBarwidth_BotUp);
@@ -743,7 +752,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("ToFPosY_BotUp"         ,fToFPosY_BotUp);
     XML2Double("ToFPosZ_BotUp"         ,fToFPosZ_BotUp);
 
-    // ToF Right Upstream 
+    // ToF Right Upstream
     XML2Bool("ToFdefault_RightUp"      ,fToFdefault_RightUp);
     XML2Int("ToFPlaneXYNum_RightUp"    ,fToFPlaneXYNum_RightUp);
     XML2Double("ToFBarwidth_RightUp"      ,fToFBarwidth_RightUp);
@@ -756,7 +765,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("ToFPosY_RightUp"         ,fToFPosY_RightUp);
     XML2Double("ToFPosZ_RightUp"         ,fToFPosZ_RightUp);
 
-    // ToF Left Upstream 
+    // ToF Left Upstream
     XML2Bool("ToFdefault_LeftUp"      ,fToFdefault_LeftUp);
     XML2Int("ToFPlaneXYNum_LeftUp"    ,fToFPlaneXYNum_LeftUp);
     XML2Double("ToFBarwidth_LeftUp"      ,fToFBarwidth_LeftUp);
@@ -769,7 +778,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("ToFPosY_LeftUp"         ,fToFPosY_LeftUp);
     XML2Double("ToFPosZ_LeftUp"         ,fToFPosZ_LeftUp);
 
-    // ToF Back Upstream 
+    // ToF Back Upstream
     XML2Bool("ToFdefault_BackUp"      ,fToFdefault_BackUp);
     XML2Int("ToFPlaneXYNum_BackUp"    ,fToFPlaneXYNum_BackUp);
     XML2Double("ToFBarwidth_BackUp"      ,fToFBarwidth_BackUp);
@@ -782,7 +791,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("ToFPosY_BackUp"         ,fToFPosY_BackUp);
     XML2Double("ToFPosZ_BackUp"         ,fToFPosZ_BackUp);
 
-    // ToF Front Upstream 
+    // ToF Front Upstream
     XML2Bool("ToFdefault_FrontUp"      ,fToFdefault_FrontUp);
     XML2Int("ToFPlaneXYNum_FrontUp"    ,fToFPlaneXYNum_FrontUp);
     XML2Double("ToFBarwidth_FrontUp"      ,fToFBarwidth_FrontUp);
@@ -804,7 +813,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseHATPCDown",fUseHATPCDown);
     // Use CFBox
     XML2Bool("UseCFBox" ,fUseCFBox);
-   
+
      // Use PCB
     XML2Bool("UsePCB", fUsePCB);
 
@@ -849,7 +858,7 @@ void ExN02ND280XML::SetInputs(){
     XML2Bool("UseP0DECal",fUseP0DECal);
     // Use P0D
     XML2Bool("UseP0D",fUseP0D);
-    
+
     XML2Bool("UseDegrader",fUseDegrader);
     XML2Double("DegraderLength", fDegraderlength);
     XML2Double("DegraderWidth", fDegraderwidth);
@@ -857,8 +866,8 @@ void ExN02ND280XML::SetInputs(){
     XML2Double("DegraderPositionX", fDegraderPos_X);
     XML2Double("DegraderPositionY", fDegraderPos_Y);
     XML2Double("DegraderPositionZ", fDegraderPos_Z);
-    
-    // Set invisible detectors 
+
+    // Set invisible detectors
     XML2Bool("InvisForwTPC1"  ,fInvisForwTPC1);
     XML2Bool("InvisForwTPC2"  ,fInvisForwTPC2);
     XML2Bool("InvisForwTPC3"  ,fInvisForwTPC3);
@@ -886,19 +895,19 @@ void ExN02ND280XML::SetInputs(){
 
     myfile.close();
   }
-  else cout << "Unable to open file"; 
+  else cout << "Unable to open file";
   myfile.close();
 }
 
 
 void ExN02ND280XML::XML2String(string tmp_app,string &dest){
-  
+
   string line;
   ifstream in(fXMLFile);
-    
+
   bool begin_tag = false;
   while (getline(in,line)){
-    
+
     std::string tmp; // strip whitespaces from the beginning
     for (uint i = 0; i < line.length(); i++){
       if (line[i] == ' ' && tmp.size() == 0){
@@ -907,31 +916,31 @@ void ExN02ND280XML::XML2String(string tmp_app,string &dest){
 	tmp += line[i];
       }
     }
-    
+
     tmp = TrimSpaces(tmp); // remove spaces
-    
+
     string First = Form("<%s>",tmp_app.c_str());
     string Last = Form("</%s>",tmp_app.c_str());
-     
+
     if ( tmp == First ){
       //if( tmp.find(First) != std::string::npos ){
       begin_tag = true;
       //cout << "Found " << First << endl;
       //TXMLEngine * xml_eng;
       continue;
-    }    
+    }
     else if ( tmp == Last ){
       //if( tmp.find(Last) != std::string::npos ){
       begin_tag = false;
       //cout << "Found " << Last << endl;
       //break;
     }
-    
+
     if (begin_tag){
       dest = tmp;
       //cout << "dest = " << dest << endl;
     }
-    
+
   } // end while
   if(dest==""){
     std::cout << "Path is : " << tmp_app << std::endl;
@@ -941,7 +950,7 @@ void ExN02ND280XML::XML2String(string tmp_app,string &dest){
     const char *code = "if(dest==""){";
     G4Exception(origin,code,FatalException,msg);
   }
-  
+
   return;
 }
 
@@ -967,18 +976,18 @@ void ExN02ND280XML::XML2Bool(string tmp_app,bool &dest){
   //else cout << "dest = false" << endl;
   //if(dest) exit(1);
 
-  if(dest_string == "true" || 
-     dest_string == "TRUE" || 
-     dest_string == "True" || 
-     dest_string == "1"    || 
+  if(dest_string == "true" ||
+     dest_string == "TRUE" ||
+     dest_string == "True" ||
+     dest_string == "1"    ||
      dest_string == "I") dest=true;
-  
-  else if(dest_string == "false" || 
-	  dest_string == "FALSE" || 
-	  dest_string == "False" || 
-	  dest_string == "0"    || 
+
+  else if(dest_string == "false" ||
+	  dest_string == "FALSE" ||
+	  dest_string == "False" ||
+	  dest_string == "0"    ||
 	  dest_string == "O") dest=false;
-  
+
   else{
     G4ExceptionDescription msg;
     msg << "Use either True or False" << G4endl;

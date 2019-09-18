@@ -32,6 +32,9 @@ ND280HATPCConstructor::ND280HATPCConstructor(G4String n, ExN02DetectorConstructi
       fHATPCOuterBoxWall(1 * CLHEP::cm),
       fHATPCSteppingLimit(1 * CLHEP::cm),
       fActiveHATPCVerticalOffset(1 * CLHEP::cm),
+      fHATPCMMHeight(1 * CLHEP::cm),
+      fHATPCMMLength(1 * CLHEP::cm),
+      fHATPCMMSpacing(1 * CLHEP::cm),
       fHATPCFCName("")
 {
 }
@@ -48,6 +51,9 @@ ND280HATPCConstructor::ND280HATPCConstructor(G4String n, ND280Constructor *p)
       fHATPCOuterBoxWall(1 * CLHEP::cm),
       fHATPCSteppingLimit(1 * CLHEP::cm),
       fActiveHATPCVerticalOffset(1 * CLHEP::cm),
+      fHATPCMMHeight(1 * CLHEP::cm),
+      fHATPCMMLength(1 * CLHEP::cm),
+      fHATPCMMSpacing(1 * CLHEP::cm),
       fHATPCFCName("")
 {
 }
@@ -67,6 +73,8 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
 
     G4LogicalVolume *logVolume    = NULL;
     G4LogicalVolume *driftVolume  = NULL;
+    G4LogicalVolume *logHalf0Volume = NULL;
+    G4LogicalVolume *logHalf1Volume = NULL;
 
     fHATPCWidth = GetHATPCWidth();
     fHATPCHeight = GetHATPCHeight();
@@ -96,9 +104,9 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     ///////////////
     ///////////////
 
-    //BuildDriftVolume(logVolume, driftVolume, FCthickness);
-    //BuildMicromegasVolume();
-    //BuildHATPCCentralCathode(driftVolume, FCthickness);
+    BuildDriftVolume(logVolume, driftVolume, logHalf0Volume, logHalf1Volume, FCthickness);
+    BuildMicromegasVolume(logHalf0Volume, logHalf1Volume);
+    BuildHATPCCentralCathode(driftVolume, FCthickness);
     // BuildHATPCCages(logGasGap);
 
     return logVolume;
@@ -1233,7 +1241,7 @@ void ND280HATPCConstructor::BuildGFiberGeometry(G4LogicalVolume *logVolume, doub
 }
 
 
-void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *driftVolume, double &FCthickness)
+void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *&driftVolume, G4LogicalVolume *&logHalf0Volume, G4LogicalVolume *&logHalf1Volume, double &FCthickness)
 {
 
     //Drift Volume
@@ -1260,19 +1268,22 @@ void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4Logic
     // Make 2 separate halves (instead of 2 copies), so that each of 24 MM can be modified.
 
     double width = (fBoxXsize - 2 * FCthickness) / 2.;
-
     width -= GetHATPCCathodeThickness() / 2.;
+
+    SetHATPCDriftWidth(width);
+    SetHATPCDriftHeight((fBoxYsize - 2 * FCthickness) / 2);
+    SetHATPCDriftLength((fBoxZsize - 2 * FCthickness) / 2.);
 
     G4VSolid *innerHalf = new G4Box("InnerHalf", (fBoxZsize - 2 * FCthickness) / 2., (fBoxYsize - 2 * FCthickness) / 2, width / 2.);
 
-    G4LogicalVolume *logHalf0 = new G4LogicalVolume(innerHalf,
+    logHalf0Volume = new G4LogicalVolume(innerHalf,
                                                     FindMaterial("GasMixtureTPC"),
                                                     GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half0");
-    G4LogicalVolume *logHalf1 = new G4LogicalVolume(innerHalf,
+    logHalf1Volume = new G4LogicalVolume(innerHalf,
                                                     FindMaterial("GasMixtureTPC"),
                                                     GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half1");
-    logHalf0->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
-    logHalf1->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
+    logHalf0Volume->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
+    logHalf1Volume->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
 
     //logHalf0->SetUserLimits(new G4UserLimits(GetHATPCSteppingLimit()));
     //logHalf1->SetUserLimits(new G4UserLimits(GetHATPCSteppingLimit()));
@@ -1283,7 +1294,7 @@ void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4Logic
     rm.rotateY(90.0 * CLHEP::deg);
 
     new G4PVPlacement(G4Transform3D(rm, G4ThreeVector(-delta, 0, 0)),
-                      logHalf0,
+                      logHalf0Volume,
                       GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half0",
                       driftVolume,
                       false,
@@ -1292,7 +1303,7 @@ void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4Logic
     rm.rotateY(180.0 * CLHEP::deg);
 
     new G4PVPlacement(G4Transform3D(rm, G4ThreeVector(delta, 0, 0)),
-                      logHalf1,
+                      logHalf1Volume,
                       GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half1",
                       driftVolume,
                       false,
@@ -1301,23 +1312,21 @@ void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4Logic
     return;
 }
 
-void ND280HATPCConstructor::BuildMicromegasVolume()
+void ND280HATPCConstructor::BuildMicromegasVolume(G4LogicalVolume *logHalf0Volume, G4LogicalVolume *logHalf1Volume)
 {
 
-    // add 12 Micromegas Modules to readout-plane
-
-    /*
-  double mmWidth  = 38*CLHEP::cm;
-  double mmHeight = 33.61*CLHEP::cm;
-  double mmLength = width;
+    // add Micromegas Modules to readout-plane
+  double mmWidth  = GetHATPCDriftWidth();
+  double mmHeight = GetHATPCMMHeight();
+  double mmLength = GetHATPCMMLength();
 
   G4LogicalVolume* logMM
     = new G4LogicalVolume(new G4Box("MicromegasModule",
-				    mmWidth/2.,
+				    mmLength/2.,
 				    mmHeight/2.,
-				    mmLength/2.),
+				    mmWidth/2.),
 			  FindMaterial("GasMixtureTPC"),
-			  parentname+"/"+name+"/MM");
+			  GetHATPCParentName() + "/FC/" + GetHATPCName() + "/MM");
 
 
   G4VisAttributes* visual = new G4VisAttributes();
@@ -1325,23 +1334,22 @@ void ND280HATPCConstructor::BuildMicromegasVolume()
   logMM->SetVisAttributes(visual);
 
   // Initialize all translations and rotations to 0.
-  for (int rp = 0; rp < 2; rp++)
-    {
-      for (int imm = 0; imm < 12; imm++)
-	{
-	  tpcMMTrans[rp][imm] = G4ThreeVector(0., 0., 0.);
-	  tpcMMRot[rp][imm] = new G4RotationMatrix (G4ThreeVector(0, 0, 1), 0);
-	}
-    }
+  for (int rp = 0; rp < 2; rp++) {
+      for (int imm = 0; imm < 12; imm++) {
+	       tpcMMTrans[rp][imm] = G4ThreeVector(0., 0., 0.);
+	       tpcMMRot[rp][imm] = new G4RotationMatrix (G4ThreeVector(0, 0, 1), 0);
+	    }
+  }
   // Define the rotation axis to +x in TPC coordinate system (+z in the interface).
   tpcMMRotAxis = G4ThreeVector(0, 0, 1);
 
   int nmod = 8;
-  double xMM = 208*CLHEP::mm;
-  double yMM = 173*CLHEP::mm;
+  double xMM = ( GetHATPCMMLength() + GetHATPCMMSpacing() )/2.;
+  double yMM = ( GetHATPCMMHeight() + GetHATPCMMSpacing() )/2.;
+  std::cout << "xMM, yMM = " << xMM << ", " << yMM << std::endl;
+
   double xmod[8] = {  3*xMM ,  3*xMM ,  xMM , xMM ,
 		       -xMM ,   -xMM ,  -3*xMM , -3*xMM };
-
   double ymod[8] = {  yMM ,  -yMM ,  yMM ,  -yMM ,
 		      yMM ,  -yMM ,  yMM ,  -yMM  };
 
@@ -1353,22 +1361,18 @@ void ND280HATPCConstructor::BuildMicromegasVolume()
       new G4PVPlacement(tpcMMRot[0][imod],
 			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(), 0.),
 			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf0,
+			GetHATPCParentName() + "/FC/" + GetHATPCName() + "/MM",
+			logHalf0Volume,
 			false,
 			imod);
     }
     else {
       tpcMMRot[0][imod]->rotateZ(180.0*CLHEP::deg);
       new G4PVPlacement(tpcMMRot[0][imod],
-			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(),0.),
+			G4ThreeVector(xmod[imod]-tpcMMTrans[0][imod].z(),ymod[imod]+tpcMMTrans[0][imod].y(), 0.),
 			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf0,
+			GetHATPCParentName() + "/FC/" + GetHATPCName() + "/MM",
+			logHalf0Volume,
 			false,
 			imod);
     }
@@ -1380,10 +1384,8 @@ void ND280HATPCConstructor::BuildMicromegasVolume()
       new G4PVPlacement(tpcMMRot[1][imod],
 			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
 			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf1,
+			GetHATPCParentName() + "/FC/" + GetHATPCName() + "/MM",
+			logHalf1Volume,
 			false,
 			imod);
     }
@@ -1392,14 +1394,12 @@ void ND280HATPCConstructor::BuildMicromegasVolume()
       new G4PVPlacement(tpcMMRot[1][imod],
 			G4ThreeVector(xmod[imod]+tpcMMTrans[1][imod].z(),ymod[imod]+tpcMMTrans[1][imod].y(),0.),
 			logMM,
-			//GetName()+"/MM",
-			//"TPC1/MM",
-			parentname+"/"+name+"/MM",
-			logHalf1,
+			GetHATPCParentName() + "/FC/" + GetHATPCName() + "/MM",
+			logHalf1Volume,
 			false,
 			imod);
     }
   }
-*/
+
     return;
 }

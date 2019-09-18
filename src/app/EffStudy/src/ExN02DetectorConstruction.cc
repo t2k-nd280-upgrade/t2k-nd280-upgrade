@@ -2097,6 +2097,9 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
         double HATPCUpOuterBoxWall = ND280XMLInput->GetXMLHATPCUpOuterBoxWall();
         double HATPCUpSteppingLimit = ND280XMLInput->GetXMLHATPCUpSteppingLimit();
         double ActiveHATPCUpVerticalOffset = ND280XMLInput->GetXMLActiveHATPCUpVerticalOffset();
+        double HATPCMMHeight = ND280XMLInput->GetXMLHATPCMMHeight();
+        double HATPCMMLength = ND280XMLInput->GetXMLHATPCMMLength();
+        double HATPCMMSpacing = ND280XMLInput->GetXMLHATPCMMSpacing();
 
         G4String FCNameUp = ND280XMLInput->GetXMLHATPCFCName();
 
@@ -2118,6 +2121,9 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
         fHATPCUpConstructor->SetHATPCOuterBoxWall(HATPCUpOuterBoxWall * CLHEP::mm);
         fHATPCUpConstructor->SetHATPCSteppingLimit(HATPCUpSteppingLimit * CLHEP::mm);
         fHATPCUpConstructor->SetActiveHATPCVerticalOffset(ActiveHATPCUpVerticalOffset * CLHEP::mm);
+        fHATPCUpConstructor->SetHATPCMMHeight(HATPCMMHeight * CLHEP::mm);
+        fHATPCUpConstructor->SetHATPCMMLength(HATPCMMLength * CLHEP::mm);
+        fHATPCUpConstructor->SetHATPCMMSpacing(HATPCMMSpacing * CLHEP::mm);
 
         SetHATPCUpPos(x, y, z);
 
@@ -2159,6 +2165,9 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
         double HATPCDownOuterBoxWall = ND280XMLInput->GetXMLHATPCDownOuterBoxWall();
         double HATPCDownSteppingLimit = ND280XMLInput->GetXMLHATPCDownSteppingLimit();
         double ActiveHATPCDownVerticalOffset = ND280XMLInput->GetXMLActiveHATPCDownVerticalOffset();
+        double HATPCMMHeight = ND280XMLInput->GetXMLHATPCMMHeight();
+        double HATPCMMLength = ND280XMLInput->GetXMLHATPCMMLength();
+        double HATPCMMSpacing = ND280XMLInput->GetXMLHATPCMMSpacing();
 
         G4String FCNameDown = ND280XMLInput->GetXMLHATPCFCName();
 
@@ -2180,6 +2189,9 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
         fHATPCDownConstructor->SetHATPCOuterBoxWall(HATPCDownOuterBoxWall * CLHEP::mm);
         fHATPCDownConstructor->SetHATPCSteppingLimit(HATPCDownSteppingLimit * CLHEP::mm);
         fHATPCDownConstructor->SetActiveHATPCVerticalOffset(ActiveHATPCDownVerticalOffset * CLHEP::mm);
+        fHATPCDownConstructor->SetHATPCMMHeight(HATPCMMHeight * CLHEP::mm);
+        fHATPCDownConstructor->SetHATPCMMLength(HATPCMMLength * CLHEP::mm);
+        fHATPCDownConstructor->SetHATPCMMSpacing(HATPCMMSpacing * CLHEP::mm);
 
         SetHATPCDownPos(x, y, z);
 

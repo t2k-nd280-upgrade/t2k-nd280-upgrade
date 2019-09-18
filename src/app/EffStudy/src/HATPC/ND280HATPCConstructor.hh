@@ -108,6 +108,21 @@ public:
     /// Get the ActiveHATPCVerticalOffset of the HATPC detector
     double GetActiveHATPCVerticalOffset(void) { return fActiveHATPCVerticalOffset; }
 
+    /// Set the HATPCMMHeight of the HATPC detector
+    void SetHATPCMMHeight(double w) { fHATPCMMHeight = w; }
+    /// Get the HATPCMMHeight of the HATPC detector
+    double GetHATPCMMHeight(void) { return fHATPCMMHeight; }
+
+    /// Set the HATPCMMLength of the HATPC detector
+    void SetHATPCMMLength(double w) { fHATPCMMLength = w; }
+    /// Get the HATPCMMLength of the HATPC detector
+    double GetHATPCMMLength(void) { return fHATPCMMLength; }
+
+    /// Set the HATPCMMSpacing of the HATPC detector
+    void SetHATPCMMSpacing(double w) { fHATPCMMSpacing = w; }
+    /// Get the HATPCMMLength of the HATPC detector
+    double GetHATPCMMSpacing(void) { return fHATPCMMSpacing; }
+
 private:
 
 
@@ -137,6 +152,10 @@ private:
     double fHATPCSteppingLimit;
     double fActiveHATPCVerticalOffset;
 
+    double fHATPCMMHeight;
+    double fHATPCMMLength;
+    double fHATPCMMSpacing;
+
     G4String fHATPCParentName;
     G4String fHATPCName;
     G4String fHATPCFCName;
@@ -156,9 +175,9 @@ private:
     /// Method to build the Solid geometry (depreciated)
     void BuildSolidGeometry(G4LogicalVolume *logVolume, double &FCthickness);
     /// Method to build the drift volume
-    void BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *driftVolume, double &FCthickness);
+    void BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *&driftVolume, G4LogicalVolume *&logHalf0Volume, G4LogicalVolume *&logHalf1Volume, double &FCthickness);
     /// Method to build the Micromegas volumes
-    void BuildMicromegasVolume();
+    void BuildMicromegasVolume(G4LogicalVolume *logHalf0Volume, G4LogicalVolume *logHalf1Volume);
 
     /// Method to build the TPC Central Cathode.
     void BuildHATPCCentralCathode(G4LogicalVolume *v, double  t);
