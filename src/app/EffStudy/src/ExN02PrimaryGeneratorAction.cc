@@ -291,9 +291,9 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       G4String particlename;
     
       if(particlerandom < 1) particlename = "proton"; 
-      if(particlerandom >=1 && particlerandom <2) particlename = "pi+"; 
+      if(particlerandom >=1 && particlerandom <2) particlename = "mu+"; 
       if(particlerandom >=2 && particlerandom <3) particlename = "e+";
-      if(particlerandom >=3 && particlerandom <=4) particlename = "mu+";
+      if(particlerandom >=3 && particlerandom <=4) particlename = "pi+";
 
       G4ParticleDefinition* particleDefinition 
       = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
@@ -317,6 +317,25 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       anEvent->GetPrimaryVertex()->SetPosition(x, y, z);
     }
 
+    if (fTypePosition=="PrototypeGaus") {
+
+      G4double x = anEvent->GetPrimaryVertex()->GetX0();
+      G4double y = anEvent->GetPrimaryVertex()->GetY0();
+      G4double z = anEvent->GetPrimaryVertex()->GetZ0();
+
+      std::cout << "Old vertex position  " << x << "  " << y << "   " << z << std::endl;
+      G4RandGauss* gaus_rand = new G4RandGauss(G4Random::getTheEngine(), 0, 20);
+
+      do {
+          x = 3*gaus_rand->fire();
+          y = -10 + gaus_rand->fire();
+      } while (abs(x) > 120 or abs(y) > 40);
+ 
+
+      std::cout << "New vertex position  " << x << "  " << y << "   " << z << std::endl;
+      anEvent->GetPrimaryVertex()->SetPosition(x, y, z);
+    }
+
     if (fTypePosition == "Uniform") {
       
       double edge         = inxml->GetXMLSuperFGDCubeEdge1();
@@ -329,7 +348,6 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       float z = G4UniformRand() * targetLength - targetLength*0.5 + inxml->GetXMLSuperFGDPos1_Z();
 
       std::cout << "New vertex position  " << x << "  " << y << "   " << z << std::endl;
-
       anEvent->GetPrimaryVertex()->SetPosition(x, y, z);
     }
 

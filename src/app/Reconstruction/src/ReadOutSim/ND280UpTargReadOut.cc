@@ -50,11 +50,13 @@ const int sideview = 0;
 
 // FGD Constants
 #ifdef ELECSIM
-  const double EdepToPhotConv_FGD = 156.42 / CLHEP::MeV;
-  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
 #if PROTO == 2
+  const double EdepToPhotConv_FGD = 156.42*0.96 / CLHEP::MeV;
+  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
   const double FGDreflection = 0.; // 0.4 - based on proto1 expectations
 #else
+  const double EdepToPhotConv_FGD = 156.42 / CLHEP::MeV;
+  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
   const double FGDreflection = 0.4; // 0.4 - based on proto1 expectations
 #endif
   const double LongCompFrac_FGD = 0.77;
@@ -78,7 +80,11 @@ const double DecayLength_FGD = 0.0858 / CLHEP::mm;
 const double Lbar_FGD = 1864.3 * CLHEP::mm;
 
 // SuperFGD constants
-const double MPPCEff_SuperFGD = 0.35;
+#if PROTO == 2
+  const double MPPCEff_SuperFGD = 0.25;
+#else 
+  const double MPPCEff_SuperFGD = 0.35;
+#endif
 
 // SciFi constants
 const double EdepToPhotConv_SciFi_SingleClad_2mm = 23.7 / CLHEP::MeV; 
@@ -207,13 +213,15 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize
 
   double Nphot = Nphot0;
 
+  //std::cout << "original Photons: " << Nphot << endl;
+
 #ifdef ELECSIM
     if (!DetSize){
       std::cout << "ERROR: ND280UpTargReadOut::GetPhotAtt_FGD(): Detector size is not defined." << std::endl;
       exit(1);
     }
 
-    Nphot *= 1. / 2.;
+    //Nphot *= 1. / 2.;
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 
     x += 2. * (2 * DetSize - x);
@@ -226,6 +234,7 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 #endif
 
+  //std::cout << "attenuated Photons: " << Nphot << endl;
   return Nphot;
 }
 
@@ -240,6 +249,8 @@ void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
 
   double rndunif =0.;
   double npe_passed = 0.;
+
+  //std::cout << "pe before mppc eff: " << npe << endl;
   
   int npe_integer = (int) (npe+0.5);
   
@@ -248,6 +259,7 @@ void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
     if (rndunif < MPPCEff_SuperFGD) npe_passed++;
   }
   
+  //std::cout << "npe_passed: " << npe_passed << std::endl;
   npe = npe_passed;
   
   return;

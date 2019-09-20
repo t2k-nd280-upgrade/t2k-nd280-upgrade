@@ -155,6 +155,8 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     TargetReadOut.ApplyMPPCResponse(peX);
     TargetReadOut.ApplyMPPCResponse(peY);
     TargetReadOut.ApplyMPPCResponse(peZ);
+
+    //std::cout << "peX: " << peX << ",peY: " << peY << ",peZ: " << peZ << std::endl;
     
   }
   else if( ftargetid==nd280upconv::kSciFi ||

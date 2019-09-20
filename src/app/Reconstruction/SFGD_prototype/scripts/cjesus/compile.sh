@@ -1,13 +1,15 @@
-#!/bin/sh -f
+#!/bin/bash -f
 
-hostname_var="`hostname`"
+hostname="`hostname`"
+echo "hostname is: $hostname"
 
-if [ $hostname_var == "ifae-pc" ]; then
-	echo "working @ $hostname_var"
-	source $T2KND280UP/build/compile_script.sh -n -d
+original_pwd="`pwd`"
+
+if [ $hostname == "ifae-pc" ]; then
+  source $T2KND280UP/build/compile_script.sh -n -d
+  cd $original_pwd
 else
-	source /software/neutrinos/t2k-nd280-upgrade/mypath.sh /software/neutrinos/t2k-nd280-upgrade/ /software/neutrinos/t2k-nd280-upgrade/build 
-	source /software/neutrinos/t2k-nd280-upgrade/build/compile_script.sh
+  source /software/neutrinos/t2k-nd280-upgrade/mypath.sh /software/neutrinos/t2k-nd280-upgrade/ /software/neutrinos/t2k-nd280-upgrade/build 
+  source /software/neutrinos/t2k-nd280-upgrade/build/compile_script.sh
+  cd $original_pwd
 fi
-
-cd $T2KND280UP/src/app/Reconstruction/SFGD_prototype/scripts/cjesus

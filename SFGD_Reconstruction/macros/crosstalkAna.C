@@ -8,6 +8,8 @@
 #include <TMath.h>
 #include <TF1.h>
 
+//#define ONLY_MPPC_I
+
 void crosstalkAna() {
 
     cout << endl << "Staring the execution." << endl;
@@ -172,7 +174,7 @@ void crosstalkAna() {
         }
         else if (string( gApplication->Argv(iarg))=="-l" || string( gApplication->Argv(iarg))=="--local" ){
             cout << "Using local paths." << endl;
-            fileIn  = "/home/cjesus/Work/Data/SFGD_prototype/DATA/30August_14_MCR0_hadrons_1pt0Gev_0pt2T_4trigg___NewStructure.root";//25August_8_MCR0_hadrons_0pt8Gev_0pt0T_Beam___NewStructure.root";
+            fileIn  = "/home/cjesus/Work/Data/SFGD_prototype/DATA/25August_ALL/25AugustAll.root";
             fileOut = "/home/cjesus/Work/Data/SFGD_prototype/ANALYSIS/ana_output";
             fileMC  = "/home/cjesus/Work/Data/SFGD_prototype/MC/RECO/MC_output.root";
             prefix  = "/home/cjesus/Work/Data/SFGD_prototype/ANALYSIS";
@@ -250,7 +252,7 @@ void crosstalkAna() {
         std::cout << "**** Evt " << iev << " ****" << std::endl;
 
         data->GetEntry(iev);
-        inputEvent->MergeHits();
+        if(!dataType) inputEvent->MergeHits();
         cout << "NUMHITS:" << endl;
         cout << "numhits:" << inputEvent->GetHits().size() <<endl;
 
@@ -469,6 +471,9 @@ void crosstalkAna() {
                 SP_F_HIT_CNT++;
                 for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
                     if(listOfHits[jhit]->GetView() != 1) continue;
+                    #ifdef ONLY_MPPC_I
+                        if (hit->GetZ() < 24) continue;
+                    #endif
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) SP_F_CT_CNT++;
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) SP_F_CT_CNT2++;
                 }
@@ -514,22 +519,28 @@ void crosstalkAna() {
             }
         }
 
+        // LI sample
          if(mode == 0 && cntXZ == 1 && cntYZ == 1){
             for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
                 ND280SFGDHit* hit = listOfHits[ihit];
                 int view = hit->GetView();
                 double qhit = hit->GetCharge();
                 if(dataType){
+                    #ifdef ONLY_MPPC_I
+                        if (hit->GetZ() < 24) continue;
+                    #endif
                     if(qhit == hit->GetLG_pe()) {LG++; h_ChargeType[0]->Fill(hit->GetLG_pe());}
                     if(qhit == hit->GetHG_pe()) {HG++; h_ChargeType[1]->Fill(hit->GetHG_pe());}
                     if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()) {ToT++; h_ChargeType[2]->Fill(hit->GetCharge());}
-                    //if(qhit == hit->GetHG_pe() || qhit == hit->GetLG_pe()){
+                    if(qhit == hit->GetLG_pe()){
+                        if(qhit<20) continue;
                         if(hit->GetView() == 0) h_PE_ALL_0->Fill(qhit);
                         if(hit->GetView() == 1) h_PE_ALL_1->Fill(qhit);
                         if(hit->GetView() == 2) h_PE_ALL_2->Fill(qhit);
-                    //}
+                    }
                 }
                 else{
+                    if(qhit<20) continue;
                     if(hit->GetView() == 0) h_PE_ALL_0->Fill(qhit);
                     if(hit->GetView() == 1) h_PE_ALL_1->Fill(qhit);
                     if(hit->GetView() == 2) h_PE_ALL_2->Fill(qhit);
@@ -546,13 +557,15 @@ void crosstalkAna() {
                     if(qhit == hit->GetLG_pe()) {LG++; h_ChargeType[0]->Fill(hit->GetLG_pe());}
                     if(qhit == hit->GetHG_pe()) {HG++; h_ChargeType[1]->Fill(hit->GetHG_pe());}
                     if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()) {ToT++; h_ChargeType[2]->Fill(hit->GetCharge());}
-                    //if(qhit == hit->GetHG_pe() || qhit == hit->GetLG_pe()){
+                    if(qhit == hit->GetLG_pe()){//if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()){
+                        if(qhit<20) continue;
                         if(hit->GetView() == 0) h_PE_ALL_3->Fill(qhit);
                         if(hit->GetView() == 1) h_PE_ALL_4->Fill(qhit);
                         if(hit->GetView() == 2) h_PE_ALL_5->Fill(qhit);
-                    //}
+                    }
                 }
                 else{
+                    if(qhit<20) continue;
                     if(hit->GetView() == 0) h_PE_ALL_3->Fill(qhit);
                     if(hit->GetView() == 1) h_PE_ALL_4->Fill(qhit);
                     if(hit->GetView() == 2) h_PE_ALL_5->Fill(qhit);
@@ -572,6 +585,9 @@ void crosstalkAna() {
                 HI_HIT_CNT++;
                 for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
                     if(listOfHits[jhit]->GetView() != 1) continue;
+                    #ifdef ONLY_MPPC_I
+                        if (hit->GetZ() < 24) continue;
+                    #endif
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) HI_CT_CNT++;
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) HI_CT_CNT2++;
                 }
@@ -588,6 +604,9 @@ void crosstalkAna() {
                 LI_HIT_CNT++;
                 for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
                     if(listOfHits[jhit]->GetView() != 1) continue;
+                    #ifdef ONLY_MPPC_I
+                        if (hit->GetZ() < 24) continue;
+                    #endif
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) LI_CT_CNT++;
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) LI_CT_CNT2++;
                 }

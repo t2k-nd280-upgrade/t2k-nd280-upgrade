@@ -22,13 +22,13 @@
 #/gun/energy 800 MeV  # kinetic energy
 /gun/momentum  0 0 0.75 GeV # momentum
 /gun/direction 0 0 1 # momentum direction     
-/gun/position  2 2 -300 mm  # starting position
+/gun/position  0 0 -300 mm  # starting position
 #/gun/position  0 0 0 mm  # starting position
 #/gun/position  0 0 -3000 mm  # starting position
 /gun/number   1      # number of particles
 
 /generator/typegun BeamTest
-/generator/typedir Gaus
+/generator/typepos PrototypeGaus
 
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:

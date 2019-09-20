@@ -9,12 +9,17 @@ set r=interactive
 set hostname="`hostname`"
 echo "hostname is: $hostname"
 
+if ($hostname == "ifae-pc") then
+        rm /home/cjesus/Work/Data/SFGD_prototype/MC/RECO/*MC_output*
+endif
+
+
 set name="/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype/SFGD_MC_-0-Exp0-Nexpt1000.root"
-set outname="/nfs/neutrinos/cjesus/work/MC_output.root"
+set outname="/nfs/neutrinos/cjesus/work/MC_output"
 
 if ($hostname == "ifae-pc") then
-	set name="/home/cjesus/Work/Data/SFGD_prototype/MC/PROD/SFGD_MC_-0-Exp0-Nexpt1000.root"
-	set outname="/home/cjesus/Work/Data/SFGD_prototype/MC/RECO/MC_output.root"
+	set name="/home/cjesus/Work/Data/SFGD_prototype/MC/PROD/SFGD_MC_-0-Exp0-Nexpt10000.root"
+	set outname="/home/cjesus/Work/Data/SFGD_prototype/MC/RECO/MC_output"
 endif
 
 if( $1 == job ) then
@@ -31,3 +36,9 @@ while ($j < $s)
     perl ${command}
     @ j = $j + 1
 end
+
+if ($hostname == "ifae-pc") then
+    cd /home/cjesus/Work/Data/SFGD_prototype/MC/RECO/
+    hadd MC_output.root *MC_output*
+    cd -
+endif

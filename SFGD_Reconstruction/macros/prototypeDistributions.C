@@ -7,7 +7,7 @@
 #include <time.h> 
 #include <TMath.h>
 #include <TF1.h>
-#include <TGraph.h>
+#include <TGraphErrors.h>
 
 void prototypeDistributions() {
 
@@ -31,7 +31,7 @@ void prototypeDistributions() {
     TString prefix = "/Users/cjesus/Desktop/";
 
     int maxEvents    = std::numeric_limits<int>::max();
-    int maxSelEvents = 100;//std::numeric_limits<int>::max();
+    int maxSelEvents = std::numeric_limits<int>::max();
     int maxStore     = 100;
     int q_Cut        = 50;
     int selEvents    = 0;
@@ -53,17 +53,39 @@ void prototypeDistributions() {
     h_ChargeType [1] = new TH1F("h_PE_yz_LG","", 100,0,100);
     h_ChargeType [2] = new TH1F("h_PE_yz_ToT","",100,0,100);
 
+    TH2F* h_heatMap_EnterPoint_L = new TH2F("XY_L","",24,0,24,8,0,8); // low dedz
+    TH2F* h_heatMap_EnterPoint_H = new TH2F("XY_H","",24,0,24,8,0,8); // high dedz
+
     TH1F* h_Xdistribution;
     h_Xdistribution = new TH1F("h_Xdistribution","", 24,0,24);
 
-    TH1F* h_Attenuation[24];
+    TH1F* h_Attenuation_Even[24];
     for(int hst=0; hst<24; hst++){
-        TString hist_name  = "h_Att_";
+        TString hist_name  = "h_Att_Even";
         hist_name += hst;
-        h_Attenuation[hst] = new TH1F(hist_name.Data(),"", 100,0,300);  
+        h_Attenuation_Even[hst] = new TH1F(hist_name.Data(),"", 100,0,300);  
     } 
 
-    TGraph* gr_Att = new TGraph();
+    TH1F* h_Attenuation_Odd[24];
+    for(int hst=0; hst<24; hst++){
+        TString hist_name  = "h_Att_Odd";
+        hist_name += hst;
+        h_Attenuation_Odd[hst] = new TH1F(hist_name.Data(),"", 100,0,300);  
+    } 
+
+    TH1F* h_Attenuation_MC[24];
+    for(int hst=0; hst<24; hst++){
+        TString hist_name  = "h_Att_MC";
+        hist_name += hst;
+        h_Attenuation_MC[hst] = new TH1F(hist_name.Data(),"", 100,0,300);  
+    } 
+
+    // MC and data must be treated in different ways since both are not read in the same way. Data is read in different ends for odd or even X,Z positions.
+    TGraphErrors* gr_Att_even = new TGraphErrors();
+    TGraphErrors* gr_Att_odd = new TGraphErrors();
+    TGraphErrors* gr_Att_data = new TGraphErrors();
+    TGraphErrors* gr_Att_mc = new TGraphErrors();
+    
     /// ------------START--------------
 
     // The command line arguments are parsed
@@ -93,7 +115,7 @@ void prototypeDistributions() {
         }
         else if (string( gApplication->Argv(iarg))=="-l" || string( gApplication->Argv(iarg))=="--local" ){
             cout << "Using local paths." << endl;
-            fileIn  = "/home/cjesus/Work/Data/SFGD_prototype/DATA/25August_8_MCR0_hadrons_0pt8Gev_0pt0T_Beam___NewStructure.root";//30August_14_MCR0_hadrons_1pt0Gev_0pt2T_4trigg___NewStructure.root";//
+            fileIn  = "/home/cjesus/Work/Data/SFGD_prototype/DATA/25August_ALL/25AugustAll.root";//fileIn  = "/home/cjesus/Work/Data/SFGD_prototype/DATA/25August_8_MCR0_hadrons_0pt8Gev_0pt0T_Beam___NewStructure.root";//30August_14_MCR0_hadrons_1pt0Gev_0pt2T_4trigg___NewStructure.root";//
             fileOut = "/home/cjesus/Work/Data/SFGD_prototype/ANALYSIS/ana_output";
             fileMC  = "/home/cjesus/Work/Data/SFGD_prototype/MC/RECO/MC_output.root";
             prefix  = "/home/cjesus/Work/Data/SFGD_prototype/ANALYSIS";
@@ -325,36 +347,37 @@ void prototypeDistributions() {
             }
         }
 
-        if(dedz > 60) continue;
-
-        cout << endl;
-        cout << "length XZ: " << maxLineZ_xz << endl;
-        cout << "length YZ: " << maxLineZ_yz << endl;
-        cout << "width  XZ: " << cntXZ << endl;
-        cout << "width  YZ: " << cntYZ << endl;
-        cout << "dedz : "     << dedz << endl;
-        cout << endl;
-
-
         if(cntXZ > 1 or cntYZ > 3) continue;
         if(maxLineZ_xz < 30 or maxLineZ_yz < 30) continue;
+
+        // cout << endl;
+        // cout << "length XZ: " << maxLineZ_xz << endl;
+        // cout << "length YZ: " << maxLineZ_yz << endl;
+        // cout << "width  XZ: " << cntXZ << endl;
+        // cout << "width  YZ: " << cntYZ << endl;
+        // cout << "dedz : "     << dedz << endl;
+        // cout << endl;
 
         int X_pos = -10;
         for(auto s = 0; s<sizeOfX; s++) if(aboveCutXZ[s] == 2) X_pos = s;
         if(X_pos < 0 ) continue;
+
+        if(dedz > 110) for(auto s = 0; s<sizeOfY; s++) if(aboveCutYZ[s] == 2) h_heatMap_EnterPoint_H->Fill(X_pos,s);
+        if(dedz < 65) for(auto s = 0; s<sizeOfY; s++) if(aboveCutYZ[s] == 2) h_heatMap_EnterPoint_L->Fill(X_pos,s);
+
+        if(dedz > 65) continue;
         h_Xdistribution->Fill(X_pos);
 
         for(auto sfgdhit:listOfHits){
             if(sfgdhit->GetView() != 2) continue;
-            cout << sfgdhit->GetX() << "," << X_pos << endl;
-            cout << int(sfgdhit->GetZ()) << ",,," << int(sfgdhit->GetY()) << endl;
-            cout << int(sfgdhit->GetZ())%2 << ",,," << int(sfgdhit->GetY())%2 << endl;
-            cout << (int(sfgdhit->GetZ())%2 == 0 && int(sfgdhit->GetY())%2 == 0 ) << endl << endl;
-            if(!(int(sfgdhit->GetZ())%2 == 0 && int(sfgdhit->GetY())%2 == 0 )) continue;
-            h_Attenuation[X_pos]->Fill(sfgdhit->GetCharge());
+            if(dataType){
+                if((int(sfgdhit->GetZ())%2 == 0 && int(sfgdhit->GetY())%2 == 0 )) h_Attenuation_Even[X_pos]->Fill(sfgdhit->GetCharge());
+                if((int(sfgdhit->GetZ())%2 == 1 && int(sfgdhit->GetY())%2 == 1 )) h_Attenuation_Odd[X_pos]->Fill(sfgdhit->GetCharge());
+            }
+            else h_Attenuation_MC[X_pos]->Fill(sfgdhit->GetCharge());
             if(sfgdhit->GetCharge() == sfgdhit->GetHG_pe()) {HG++; h_ChargeType[0]->Fill(sfgdhit->GetCharge());}
-            else if(sfgdhit->GetCharge() == sfgdhit->GetLG_pe()) {HG++; h_ChargeType[1]->Fill(sfgdhit->GetCharge());}
-            else {HG++; h_ChargeType[2]->Fill(sfgdhit->GetCharge());}
+            else if(sfgdhit->GetCharge() == sfgdhit->GetLG_pe()) {LG++; h_ChargeType[1]->Fill(sfgdhit->GetCharge());}
+            else {ToT++; h_ChargeType[2]->Fill(sfgdhit->GetCharge());}
             if(sfgdhit->GetView() == 1)cout << "X: " << sfgdhit->GetX() << ", Y: " << sfgdhit->GetY() << ",Z :" << sfgdhit->GetZ() << endl; 
         }
 
@@ -378,35 +401,169 @@ void prototypeDistributions() {
     c2->cd();
     h_Xdistribution->Draw("HIST");
     c2->Update();
-
-    TCanvas *c3 = new TCanvas("Att");
-    c3->Divide(4,6);
-    for(int i=1; i<25;i++){
-        c3->cd(i);
-        h_Attenuation[i-1]->Fit("gaus");
-        TF1 *gfit = h_Attenuation[i-1]->GetFunction("gaus");
-        if(!gfit) continue;
-        double fmean = gfit->GetParameter(1);
-        double fsigma = gfit->GetParameter(2);
-        cout << gr_Att->GetN() << "," << i << "," << fmean << endl;
-        if(gfit->GetParError(1) < 3) gr_Att->SetPoint(gr_Att->GetN(),i,fmean);
-        cout << "alive" << endl;
-    }
-    c3->Update();
     
-    TCanvas *c4 = new TCanvas("graph Att");
-    c4->cd();
-    gr_Att->SetMarkerStyle(22);
-    gr_Att->SetMarkerSize(3);
-    if(gr_Att->GetN())gr_Att->Draw("AP");
-    c4->Update();
 
-    c4->WaitPrimitive();
+    if(dataType){
+        double att_even[24]={0};
+        double att_odd[24] ={0};
 
 
-    cout << "HG: " << HG << endl;
-    cout << "LG: " << LG << endl;
-    cout << "ToT: " << ToT << endl;
+        TCanvas *c3 = new TCanvas("Att even");
+        c3->Divide(4,6);
+        for(int i=1; i<25;i++){
+            c3->cd(i);
+            h_Attenuation_Even[i-1]->Fit("gaus");
+            TF1 *gfit = h_Attenuation_Even[i-1]->GetFunction("gaus");
+            if(!gfit) continue;
+            double fmean = gfit->GetParameter(1);
+            double fsigma = gfit->GetParameter(2);
+            cout << gr_Att_even->GetN() << "," << i << "," << fmean << endl;
+            if(gfit->GetParError(1) < 3 && fmean > 30){
+                att_even[24-i+1] = fmean;
+                gr_Att_even->SetPoint(gr_Att_even->GetN(),24-i+1,fmean);
+                gr_Att_even->SetPointError(gr_Att_even->GetN()-1,0,gfit->GetParError(1));
+            }
+        }
+        c3->Update();
+        
+        TCanvas *c4 = new TCanvas("Att odd");
+        c4->Divide(4,6);
+        for(int i=1; i<25;i++){
+            c4->cd(i);
+            h_Attenuation_Odd[i-1]->Fit("gaus");
+            TF1 *gfit = h_Attenuation_Odd[i-1]->GetFunction("gaus");
+            if(!gfit) continue;
+            double fmean = gfit->GetParameter(1);
+            double fsigma = gfit->GetParameter(2);
+            cout << gr_Att_odd->GetN() << "," << i << "," << fmean << endl;
+            if(gfit->GetParError(1) < 3 && fmean > 30){
+                att_odd[i] = fmean;
+                gr_Att_odd->SetPoint(gr_Att_odd->GetN(),i,fmean);
+                gr_Att_odd->SetPointError(gr_Att_odd->GetN()-1,0,gfit->GetParError(1));
+            }
+        }
+        c4->Update();
+
+        TCanvas *c5 = new TCanvas("graph Att");
+        c5->cd();
+        gr_Att_even->SetMarkerStyle(22);
+        gr_Att_even->SetMarkerSize(1);
+        gr_Att_odd->SetMarkerStyle(22);
+        gr_Att_odd->SetMarkerSize(1);
+        gr_Att_even->SetMarkerColor(kRed);
+        gr_Att_odd->SetMarkerColor(kBlue);
+        if(gr_Att_even->GetN()){
+            gr_Att_even->Draw("AP");
+            gr_Att_even->GetXaxis()->SetTitle("Distance to MPPC [cm]");
+        }
+        if(gr_Att_even->GetN() && gr_Att_odd->GetN() ) gr_Att_odd->Draw("P same");
+        auto legend = new TLegend(0.7,0.8,0.9,0.9);
+        legend->AddEntry(gr_Att_even,"Even positions");
+        legend->AddEntry(gr_Att_odd,"Odd positions");
+        legend->Draw("same");
+        c5->Update();
+
+        for(int it=0; it<24; it++){
+            if(att_even[it] && att_odd[it]){
+                cout << "i: " << it << ", odd:" << att_odd[it] << ", even: " << att_even[it] << endl;
+                double average = (att_even[it]+att_odd[it])/2; 
+                cout << "average: " << average << endl << endl;
+                gr_Att_data->SetPoint(gr_Att_data->GetN(),it+1,average);
+            }
+        }
+
+        TCanvas* c_data = new TCanvas("graph att data");
+        c_data->cd();
+        // gr_Att_data->SetMarkerStyle(22);
+        // gr_Att_data->SetMarkerSize(1);
+        // gr_Att_data->SetMarkerColor(kGreen+1);
+        // gr_Att_data->Draw("AP");
+        TF1 *gfitatt = new TF1("gfitatt","[3]*([0]*exp ( (-10*x-20) /[1]) + (1-[0])*exp( (-10*x-20) /[2] )) ",0,25);
+        gfitatt->SetParameters(0.77,4634,332,60);
+/*        TF1 *gfitatt = new TF1("gfitatt","[0]*exp ( (-10*x-[1]) /[2])",2,15);
+        gfitatt->SetParameters(60,20,800);*/
+/*        TF1 *gfitatt = new TF1("gfitatt","[0]*exp ( (-10*x) /[1])",2,20);
+        gfitatt->SetParameters(60,800);*/
+
+        TF1 *gfitatt2 = new TF1("gfitatt","[4]*([0]*exp ( (-10*x-[1]) /[2]) + (1-[0])*exp( (-10*x-[1]) /[3] )) ",0,25);
+        gfitatt2->SetLineColor(kBlue);
+        gfitatt2->SetParameters(0.77,41,4634,332,60);
+        gfitatt2->Draw("same");
+
+        // gr_Att_data->Fit(gfitatt,"R");
+        // c_data->Update();
+
+
+/*        TCanvas* c_data = new TCanvas("graph att data");
+        c_data->cd();
+        TF1 *gfitatt = new TF1("gfitatt","[4]*([0]*exp ( (-10*x-[1]) /[2]) + (1-[0])*exp( (-10*x-[1]) /[3] )) ",5,15);
+        gfitatt->SetParameters(0.77,41,4634,332,60);
+        gfitatt->Draw();
+        c_data->Update();*/
+    }
+    else{
+        TCanvas *c4 = new TCanvas("Att MC");
+        c4->Divide(4,6);
+        for(int i=1; i<25;i++){
+            c4->cd(i);
+            h_Attenuation_MC[i-1]->Fit("gaus");
+            TF1 *gfit = h_Attenuation_MC[i-1]->GetFunction("gaus");
+            if(!gfit) continue;
+            double fmean = gfit->GetParameter(1);
+            double fsigma = gfit->GetParameter(2);
+            cout << gr_Att_mc->GetN() << "," << i << "," << fmean << endl;
+            if(gfit->GetParError(1) < 3 && fmean > 30){
+                gr_Att_mc->SetPoint(gr_Att_mc->GetN(),i,fmean);
+                gr_Att_mc->SetPointError(gr_Att_mc->GetN()-1,0,gfit->GetParError(1));
+            }
+        }
+        c4->Update();
+
+        TCanvas *c5 = new TCanvas("graph Att");
+        c5->cd();
+        gr_Att_mc->SetMarkerStyle(22);
+        gr_Att_mc->SetMarkerSize(1);
+        gr_Att_mc->SetMarkerColor(kGreen+1);
+        if(gr_Att_mc->GetN()){
+            gr_Att_mc->Draw("AP");
+            gr_Att_mc->GetXaxis()->SetTitle("Distance to MPPC [cm]");
+        }
+        TF1 *gfitatt = new TF1("gfitatt","[0]*exp ( (-10*x) /[1])",2,20);
+        gfitatt->SetParameters(60,800);
+        gr_Att_data->Fit(gfitatt,"R");
+        auto legend = new TLegend(0.7,0.85,0.9,0.9);
+        legend->AddEntry(gr_Att_mc,"MC data");
+        legend->Draw("same");
+
+        TF1 *gfitatt3 = new TF1("gfitatt3","[3]*([0]*exp ( (-10*x-20) /[1]) + (1-[0])*exp( (-10*x-20) /[2] )) ",0,25);
+        gfitatt3->SetParameters(0.77,4634,332,60);
+
+        TF1 *gfitatt4 = new TF1("gfitatt","[3]*([0]*exp ( (-10*x-20) /[1]) + (1-[0])*exp( (-10*x-20) /[2] )) ",0,25);
+        gfitatt4->SetLineColor(kBlue);
+        gfitatt4->SetParameters(0.77,4634,332,61.5);
+        gfitatt4->Draw("same");
+
+        gr_Att_mc->Fit(gfitatt3,"R");
+
+        c5->Update();
+    }
+
+    TCanvas *c6 = new TCanvas("Entrance Point");
+    c6->Divide(3,1);
+    c6->cd(1);
+    h_heatMap_EnterPoint_L->Draw("COLZ");
+    c6->cd(2);
+    h_heatMap_EnterPoint_H->Draw("COLZ");
+    c6->cd(3);
+    h_heatMap_EnterPoint_L->Draw("COLZ");
+    h_heatMap_EnterPoint_H->Draw("COLZ same");
+    c6->Update();
+    c6->WaitPrimitive();
+
+
+    cout << "HG: " <<  1.*HG/(HG+LG+ToT) << endl;
+    cout << "LG: " <<  1.*LG/(HG+LG+ToT) << endl;
+    cout << "ToT: " << 1.*ToT/(HG+LG+ToT) << endl;
 
     /// ------------END--------------
     // FileInput->Close();

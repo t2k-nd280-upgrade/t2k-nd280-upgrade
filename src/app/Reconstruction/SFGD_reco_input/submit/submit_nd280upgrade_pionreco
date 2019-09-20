@@ -1,0 +1,108 @@
+#!/usr/bin/perl
+
+use File::Path;
+
+$iarg=0;
+foreach (@ARGV) {
+
+    if($iarg % 2 == 1) {$iarg++; next;}
+    
+    ##################################### Common ########################################
+    if   ($_ eq '--resource'         ) { $resource        = $ARGV[$iarg+1]; }
+    elsif($_ eq '--tag'              ) { $tag             = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nruns'            ) { $nruns           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--inputfile'        ) { $inputfile       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--first-expt'       ) { $first_expt      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--nexpts'           ) { $nexpts          = $ARGV[$iarg+1]; }
+    elsif($_ eq '--detector'         ) { $detector        = $ARGV[$iarg+1]; } 
+    elsif($_ eq '--debug'            ) { $debug           = $ARGV[$iarg+1]; }
+    elsif($_ eq '--debug-plot'       ) { $debug_plot      = $ARGV[$iarg+1]; }
+    elsif($_ eq '--use-view-xy'      ) { $useviewXY       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--use-view-xz'      ) { $useviewXZ       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--use-view-yz'      ) { $useviewYZ       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--min-track-dist'   ) { $min_trk_dist    = $ARGV[$iarg+1]; }
+    elsif($_ eq '--cut-truth-fv'     ) { $cut_truthfv     = $ARGV[$iarg+1]; }
+
+    # where to put the output files
+    elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
+    # where is the software (/t2k-nd280-upgrade)
+    elsif($_ eq '--softw-dir'        ) { $softw_dir       = $ARGV[$iarg+1]; }    
+    else {
+    print "Unrecognised argument ".$_."\n"; exit;
+    }
+    $iarg++;
+}
+
+# wheter you want to merge all files into one and delete all the other output
+$merge_output = 1;
+
+$resource        = "interactive"                 unless defined $resource;
+
+$tag            = "SFGD_RECO_INPUT" unless defined $tag;
+
+$useviewXY      = 1 unless defined $useviewXY; # (0 or 1)
+$useviewXZ      = 1 unless defined $useviewXZ; # (0 or 1)
+$useviewYZ      = 1 unless defined $useviewYZ; # (0 or 1)
+
+$min_trk_dist    = 10 unless defined $min_trk_dist; # if <0 --> use default (mm)
+
+
+$inputfile        = "/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype/SFGD_MC_dev-0-Exp0-Nexpt5000.root" unless defined $inputfile;
+
+$first_expt      = 0                             unless defined $first_expt;
+$nruns           = 0                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
+$nexpts          = 5000                          unless defined $nexpts;
+
+$detector        = 0   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
+
+$debug           = 0   unless defined $debug; # flag for debugging output: 0 --> NO printout, 1 --> printout
+$debug_plot      = 0   unless defined $debug_plot; # flag for debugging plots: 0 --> NO, 1 --> YES
+
+$cut_truthfv     = 1   unless defined $cut_truthfv;
+
+$job_dir = "/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/ROOT" unless defined $job_dir;
+  
+##################################
+
+$irun = 0;
+while($irun < $nruns) { # loop over the jobs
+    
+    $evt_first = $first_expt + $irun * $nexpts; 
+
+    $arguments = "$softw_dir/bin/Reconstruction.exe trackrecon $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $tag";
+    $command = "$arguments";
+    
+    print "\n";
+    print "Job $irun \n";
+    print "First event: $evt_first \n";
+    print "# of events: $nexpts \n";
+    print "$command \n";
+    print "\n////////////////////////////// \n\n";
+
+    ################################### Submit the job ##################################
+    
+    if($resource eq "PIC") {
+
+    print "inside PIC \n";
+    $sbatchfile = "$tag-$evt_first-$nexpts.sbatch";
+    $outfiledir = "$job_dir/";
+    $errfiledir = "$job_dir/";
+    open(PBS, ">$sbatchfile") or die("Can not create the sbatch script");
+    print PBS "#!/bin/bash -l  \n";
+    print PBS "\n";
+    print PBS "env \n";
+    print PBS "\n";
+    print PBS "uname -n \n";
+    print PBS "\n";
+    print PBS "$command \n";
+    close(PBS); 
+    `qsub -q short -l nodes=1 $sbatchfile`; 
+    }
+
+    if($resource eq "interactive") {
+    system($command);
+    }
+    
+    $irun=$irun+1; # increment job id
+    
+} # loop over jobs

@@ -7,7 +7,7 @@
 #include <TRandom3.h>
 
 // 0 - Full size SuperFGD 1 - 5x5x5 2 - 24x8x48
-#define PROTO 0
+#define PROTO 2
 #define ELECSIM
 #define CROSSTALK 0
 

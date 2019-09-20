@@ -46,6 +46,8 @@ const int maxTracks = 1000;
 const int maxHits = 5000;
 const int maxCont = 1000;
 
+const double fib_abs_const = 0.2;
+
 Int_t numTracks;
 Int_t all_numTracks; 
 Int_t numHits;
@@ -86,7 +88,10 @@ bool aux_threshold(double x){
     if(x*4==2) prob = 0.35;
     if(x*4==3) prob = 0.60;
     if(x>=1) return true;
+
     return fRndm.Uniform() < prob;
+    // if(x>=1) return true;
+    // return false;
 }
 
 void ResetVariables(){
@@ -131,7 +136,7 @@ int FiberAbs(int numPE){
     int numPE_fiber = 0;
     for (int i=0;i<numPE;i++){
         double rndunif = fRndm.Uniform();
-        if (rndunif < 0.05) numPE_fiber++;
+        if (rndunif < fib_abs_const) numPE_fiber++;
     }
     return numPE_fiber;
 }
@@ -232,6 +237,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
     const int detectorID = atoi(argv[5]);
     outfilename = argv[13];
 
+    cout << "evtfirst: " << evtfirst << ",nevents: " << nevents << endl;
+
     TFile *fileout = new TFile(outfilename.Data(),"RECREATE");
     TTree *AllEvents = new TTree("AllEvents", "The ROOT tree of events");
     ND280SFGDEvent* event = new ND280SFGDEvent();
@@ -273,33 +280,34 @@ int SFGD_Reconstruction(int argc,char** argv) {
     cout << " z min " << Z_min << " z max " << Z_max << "  nbins " << binZ << endl;
 
     AllEvents->Branch("Event", "Event", event);
-    AllEvents->Branch( "numTracks",      &numTracks,     "numTracks/I"                     );
-    AllEvents->Branch( "numHits",        &numHits,       "numHits/I"                       );
-    AllEvents->Branch( "all_numTracks",  &all_numTracks, "all_numTracks/I"                 );
 
-    AllEvents->Branch( "crosstalk",      crosstalk,      "crosstalk[numHits]/B"            );
-    AllEvents->Branch( "hitLocation",    hitLocation,    "hitLocation[numHits][3]/F"       );
-    AllEvents->Branch( "hitPE",          hitPE,          "hitPE[numHits][3]/I"             );
-    AllEvents->Branch( "threshold",      threshold,      "threshold[numHits][3]/I"         );
-    AllEvents->Branch( "hitTime",        hitTime,        "hitTime[numHits][3]/I"           );
-    AllEvents->Branch( "hitTraj",        hitTraj,        "hitTraj[numHits]/I"              );
-    AllEvents->Branch( "hitCont",        hitCont,        "hitCont[numHits][1000]/I"     );
+    bool fillAll = false;
+    if(fillAll){
+        AllEvents->Branch( "numTracks",      &numTracks,     "numTracks/I"                     );
+        AllEvents->Branch( "numHits",        &numHits,       "numHits/I"                       );
+        AllEvents->Branch( "all_numTracks",  &all_numTracks, "all_numTracks/I"                 );
+        AllEvents->Branch( "crosstalk",      crosstalk,      "crosstalk[numHits]/B"            );
+        AllEvents->Branch( "hitLocation",    hitLocation,    "hitLocation[numHits][3]/F"       );
+        AllEvents->Branch( "hitPE",          hitPE,          "hitPE[numHits][3]/I"             );
+        AllEvents->Branch( "threshold",      threshold,      "threshold[numHits][3]/I"         );
+        AllEvents->Branch( "hitTime",        hitTime,        "hitTime[numHits][3]/I"           );
+        AllEvents->Branch( "hitTraj",        hitTraj,        "hitTraj[numHits]/I"              );
+        AllEvents->Branch( "hitCont",        hitCont,        "hitCont[numHits][1000]/I"     );
+        AllEvents->Branch( "trajID",         trajID,         "trajID[numTracks]/I"             );
+        AllEvents->Branch( "trajPDG",        trajPDG,        "trajPDG[numTracks]/I"            );
+        // AllEvents->Branch( "trajStartHit",   trajStartHit,   "trajStartHit[numTracks]/I"       );
+        // AllEvents->Branch( "trajEndHit",     trajEndHit,     "trajEndHit[numTracks]/I"         );
+        AllEvents->Branch( "trajEdep",       trajEdep,       "trajEdep[numTracks]/I"           );
+        AllEvents->Branch( "trajParent",     trajParent,     "trajParent[numTracks]/I"         );
+        AllEvents->Branch( "trajHitsNum",    trajHitsNum,    "trajHitsNum[numTracks]/I"        );
+        AllEvents->Branch( "trajHits",       trajHits,       "trajHits[numTracks][5000]/I"  );
+        AllEvents->Branch( "all_trajID",         all_trajID,         "all_trajID[1000]/I"             );
+        AllEvents->Branch( "all_trajPDG",        all_trajPDG,        "all_trajPDG[1000]/I"            );
+        // AllEvents->Branch( "all_trajStartHit",   all_trajStartHit,   "all_trajStartHit[numTracks]/I"       );
+        // AllEvents->Branch( "all_trajEndHit",     all_trajEndHit,     "all_trajEndHit[numTracks]/I"         );
+        AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[1000]/I"         );       
+    }
 
-    AllEvents->Branch( "trajID",         trajID,         "trajID[numTracks]/I"             );
-    AllEvents->Branch( "trajPDG",        trajPDG,        "trajPDG[numTracks]/I"            );
-    // AllEvents->Branch( "trajStartHit",   trajStartHit,   "trajStartHit[numTracks]/I"       );
-    // AllEvents->Branch( "trajEndHit",     trajEndHit,     "trajEndHit[numTracks]/I"         );
-    AllEvents->Branch( "trajEdep",       trajEdep,       "trajEdep[numTracks]/I"           );
-    AllEvents->Branch( "trajParent",     trajParent,     "trajParent[numTracks]/I"         );
-    AllEvents->Branch( "trajHitsNum",    trajHitsNum,    "trajHitsNum[numTracks]/I"        );
-    AllEvents->Branch( "trajHits",       trajHits,       "trajHits[numTracks][5000]/I"  );
-    
-
-    AllEvents->Branch( "all_trajID",         all_trajID,         "all_trajID[1000]/I"             );
-    AllEvents->Branch( "all_trajPDG",        all_trajPDG,        "all_trajPDG[1000]/I"            );
-    // AllEvents->Branch( "all_trajStartHit",   all_trajStartHit,   "all_trajStartHit[numTracks]/I"       );
-    // AllEvents->Branch( "all_trajEndHit",     all_trajEndHit,     "all_trajEndHit[numTracks]/I"         );
-    AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[1000]/I"         );
     
     TTree *tinput = (TTree*) finput->Get("ND280upEvents");
     
@@ -419,14 +427,13 @@ int SFGD_Reconstruction(int argc,char** argv) {
             }
             index++;
 #else
-            double corr_factor = 1.21;
             double edeposit = nd280UpHit->GetEnergyDeposit();
             ND280UpTargReadOut TargetReadOut;
             TargetReadOut.SetTargType(DetType);
-            int nphot = TargetReadOut.ApplyScintiResponse(edeposit,steplength,1)*corr_factor;
-            double probLatCT = 0.037*6;
+            int nphot = TargetReadOut.ApplyScintiResponse(edeposit,steplength,1);
+            double probLatCT = 0.01*fRndm.Poisson(2.8)*6;//0.025*6;//0.037*6;
             if(WriteText) cout << "nphot= " << nphot << endl;
-            int numPE = nphot*20;
+            int numPE = nphot*(1./fib_abs_const);
             if(numPE < 0) numPE = 0;
             int numPE_CT[6] = {0};           // photons flowing to sourrounding elements
             for (int i=0;i<numPE;i++){
@@ -447,12 +454,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 //cout << m <<", New # of Abs PE: " << numPE_fiber << endl;
 
                 ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,numPE_fiber,detname);
-
+                
                 double pex = ApplyResponse.GetHitPE().x();
                 double pey = ApplyResponse.GetHitPE().y();
                 double pez = ApplyResponse.GetHitPE().z();
-
-                //cout << pex << "," << pey << "," << pez << endl;
  
                 PE_found += (pex+pey+pez);
 
@@ -514,9 +519,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     if(view == 0) hit->SetZ(-1);
                     if(view == 1) hit->SetY(-1);
                     if(view == 2) hit->SetX(-1);
-                    if(view == 0) hit->SetCharge(hitPE[index][2]);
+                    if(view == 0) hit->SetCharge(hitPE[index][0]);
                     if(view == 1) hit->SetCharge(hitPE[index][1]);
-                    if(view == 2) hit->SetCharge(hitPE[index][0]);
+                    if(view == 2) hit->SetCharge(hitPE[index][2]);
 
                     hit->SetTrackID(hitTraj[index]);
                     hit->SetxTalkFlag(crosstalk[index]);

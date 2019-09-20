@@ -30,6 +30,9 @@ void chargeDist() {
         prefix = gApplication->Argv(iarg);
         cout << "path to analysis files: " << prefix << endl;
     }
+    else if (string( gApplication->Argv(iarg))=="-l" || string( gApplication->Argv(iarg))=="--local" ){
+      prefix = "/home/cjesus/Work/Data/SFGD_prototype/ANALYSIS/";
+    }
   }
 
   TString fname1   = prefix + "ana_output_MC.root";

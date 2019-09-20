@@ -976,7 +976,6 @@ int TrackReconstruction(int argc,char** argv)
   for(int ievt=evtfirst;ievt<=EntryLast;ievt++){ // get last entry
     tinput->GetEntry(ievt);
 
-
     if(!(ievt%500)){
       cout << "Event " << ievt;
       sw_event.Stop();
@@ -986,6 +985,7 @@ int TrackReconstruction(int argc,char** argv)
       sw_event.Start(0);
       cout << " --> CPU time = " << CPUtime << endl;
     }
+    cout << "event: " << ievt << endl;
     
     int EvtID = nd280UpEvent->GetEventID();
 
