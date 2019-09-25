@@ -5,9 +5,24 @@ set f=1
 set n=1000
 set s=1
 set r=interactive
+set mode="pion"
+
+set hostname="`hostname`"
+echo "hostname is: $hostname"
 
 set name="/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/SFGD_MC_FINAL_SIZE-0-Exp0-Nexpt1000.root"
 set outname="/nfs/neutrinos/cjesus/work/MC_output.root"
+
+if ($hostname == "ifae-pc") then
+	set name="/home/cjesus/Work/Data/SFGD_final/MC/PROD/PION_RECON/SFGD_MC.root"
+	set outname="/home/cjesus/Work/Data/SFGD_final/MC/RECO/MC_output"
+endif
+
+if($mode == "pion") then
+	if ($hostname == "ifae-pc") then
+        rm /home/cjesus/Work/Data/SFGD_final/MC/RECO/PION_RECON/*MC_output*
+	endif
+endif
 
 if( $1 == job ) then
     set s=200
@@ -23,3 +38,13 @@ while ($j < $s)
     ${command}
     @ j = $j + 1
 end
+
+if ($hostname == "ifae-pc") then
+    cd /home/cjesus/Work/Data/SFGD_final/MC/RECO/PION_RECON
+    hadd Reconstructed_SFGD_MC.root *MC_output*
+    cd -
+endif
+
+
+
+

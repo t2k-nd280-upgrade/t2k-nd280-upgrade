@@ -252,7 +252,8 @@ void crosstalkAna() {
         std::cout << "**** Evt " << iev << " ****" << std::endl;
 
         data->GetEntry(iev);
-        if(!dataType) inputEvent->MergeHits();
+        //if(!dataType) 
+        inputEvent->MergeHits();
         cout << "NUMHITS:" << endl;
         cout << "numhits:" << inputEvent->GetHits().size() <<endl;
 

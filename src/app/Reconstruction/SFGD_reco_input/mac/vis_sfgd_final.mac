@@ -14,25 +14,24 @@
 /db/set/saveAllHits 1
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
-/generator/type Generator
-#/generator/type ParticleGun
+#/generator/type Generator
+/generator/type ParticleGun
         
 # Set the particle gun 
-/gun/particle pi+
-/gun/energy 800 MeV  # kinetic energy
-#/gun/momentum  0 0 0.4 GeV # momentum
+/gun/particle pi-
+#/gun/energy 800 MeV  # kinetic energy
+/gun/momentum  0 0 0.75 GeV # momentum
 /gun/direction 0 0 1 # momentum direction     
-#/gun/position  5 5 -400 mm  # starting position
-/gun/position  0 0 0 mm  # starting position
-#/gun/position  0 0 -3000 mm  # starting position
+/gun/position  0 0 -2907 mm  # starting position
 /gun/number   1      # number of particles
 
-#/generator/typedir Uniform
+#/generator/typegun BeamTest
+/generator/typepos PrototypeGaus
 
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
-/vis/viewer/set/autoRefresh false
-/vis/verbose errors
+#/vis/viewer/set/autoRefresh false
+#/vis/verbose errors
 
 
 # Use this open statement to create a .wrl file suitable for
