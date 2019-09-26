@@ -1,8 +1,8 @@
 #!/bin/csh -f
 
 set j=0
-set f=1
-set n=1000
+set f=30
+set n=5000
 set s=1
 set mode="pion"
 set remove="yes"

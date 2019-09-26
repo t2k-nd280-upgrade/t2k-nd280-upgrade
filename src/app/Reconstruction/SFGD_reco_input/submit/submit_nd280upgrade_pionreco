@@ -64,7 +64,7 @@ $job_dir = "/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/ROOT" unless defined $
   
 ##################################
 
-$irun = 0;
+$irun = 0
 while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts; 
