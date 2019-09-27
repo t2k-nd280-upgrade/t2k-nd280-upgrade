@@ -1,6 +1,7 @@
 // Do NOT change. Changes will be lost next time file is generated
 
 #define R__DICTIONARY_FILENAME mydict
+#define R__NO_DEPRECATION
 
 /*******************************************************************/
 #include <stddef.h>
@@ -33,7 +34,7 @@
 
 #include "TDataMember.h"
 
-// Since CINT ignores the std namespace, we need to do so in this file.
+// The generated code does not explicitly qualifies STL entities
 namespace std {} using namespace std;
 
 // Header files passed as explicit arguments
@@ -1166,7 +1167,7 @@ namespace ROOT {
       vector<vector<short> > *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<vector<short> >));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<vector<short> >", -2, "vector", 447,
+         instance("vector<vector<short> >", -2, "vector", 216,
                   typeid(vector<vector<short> >), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEvectorlEshortgRsPgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<vector<short> >) );
@@ -1229,7 +1230,7 @@ namespace ROOT {
       vector<vector<int> > *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<vector<int> >));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<vector<int> >", -2, "vector", 447,
+         instance("vector<vector<int> >", -2, "vector", 216,
                   typeid(vector<vector<int> >), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEvectorlEintgRsPgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<vector<int> >) );
@@ -1292,7 +1293,7 @@ namespace ROOT {
       vector<vector<double> > *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<vector<double> >));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<vector<double> >", -2, "vector", 447,
+         instance("vector<vector<double> >", -2, "vector", 216,
                   typeid(vector<vector<double> >), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEvectorlEdoublegRsPgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<vector<double> >) );
@@ -1355,7 +1356,7 @@ namespace ROOT {
       vector<short> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<short>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<short>", -2, "vector", 447,
+         instance("vector<short>", -2, "vector", 216,
                   typeid(vector<short>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEshortgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<short>) );
@@ -1418,7 +1419,7 @@ namespace ROOT {
       vector<int> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<int>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<int>", -2, "vector", 447,
+         instance("vector<int>", -2, "vector", 216,
                   typeid(vector<int>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEintgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<int>) );
@@ -1481,7 +1482,7 @@ namespace ROOT {
       vector<double> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<double>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<double>", -2, "vector", 447,
+         instance("vector<double>", -2, "vector", 216,
                   typeid(vector<double>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEdoublegR_Dictionary, isa_proxy, 4,
                   sizeof(vector<double>) );
@@ -1544,7 +1545,7 @@ namespace ROOT {
       vector<ND280SFGDVoxel*> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<ND280SFGDVoxel*>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<ND280SFGDVoxel*>", -2, "vector", 447,
+         instance("vector<ND280SFGDVoxel*>", -2, "vector", 216,
                   typeid(vector<ND280SFGDVoxel*>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEND280SFGDVoxelmUgR_Dictionary, isa_proxy, 0,
                   sizeof(vector<ND280SFGDVoxel*>) );
@@ -1607,7 +1608,7 @@ namespace ROOT {
       vector<ND280SFGDTrack*> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<ND280SFGDTrack*>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<ND280SFGDTrack*>", -2, "vector", 447,
+         instance("vector<ND280SFGDTrack*>", -2, "vector", 216,
                   typeid(vector<ND280SFGDTrack*>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEND280SFGDTrackmUgR_Dictionary, isa_proxy, 0,
                   sizeof(vector<ND280SFGDTrack*>) );
@@ -1670,7 +1671,7 @@ namespace ROOT {
       vector<ND280SFGDHit*> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<ND280SFGDHit*>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<ND280SFGDHit*>", -2, "vector", 447,
+         instance("vector<ND280SFGDHit*>", -2, "vector", 216,
                   typeid(vector<ND280SFGDHit*>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEND280SFGDHitmUgR_Dictionary, isa_proxy, 0,
                   sizeof(vector<ND280SFGDHit*>) );
@@ -1733,7 +1734,7 @@ namespace ROOT {
       vector<CHit3D> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<CHit3D>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<CHit3D>", -2, "vector", 447,
+         instance("vector<CHit3D>", -2, "vector", 216,
                   typeid(vector<CHit3D>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlECHit3DgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<CHit3D>) );
@@ -1796,7 +1797,7 @@ namespace ROOT {
       vector<CHit2D> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<CHit2D>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<CHit2D>", -2, "vector", 447,
+         instance("vector<CHit2D>", -2, "vector", 216,
                   typeid(vector<CHit2D>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlECHit2DgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<CHit2D>) );
@@ -1859,7 +1860,7 @@ namespace ROOT {
       vector<CCluster3D> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<CCluster3D>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<CCluster3D>", -2, "vector", 447,
+         instance("vector<CCluster3D>", -2, "vector", 216,
                   typeid(vector<CCluster3D>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlECCluster3DgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<CCluster3D>) );
@@ -1922,7 +1923,7 @@ namespace ROOT {
       vector<CBond3D> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<CBond3D>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<CBond3D>", -2, "vector", 447,
+         instance("vector<CBond3D>", -2, "vector", 216,
                   typeid(vector<CBond3D>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlECBond3DgR_Dictionary, isa_proxy, 4,
                   sizeof(vector<CBond3D>) );
@@ -1976,8 +1977,8 @@ namespace {
 0
     };
     static const char* includePaths[] = {
-"/Applications/root_v6.12.06/include",
-"/Users/cjesus/Documents/PhD/t2k-nd280-upgrade/SFGD_Reconstruction/utils/",
+"/home/cjesus/Software/ROOT/root_v6.18.00.Linux-ubuntu18-x86_64-gcc7.4/root/include",
+"/home/cjesus/Work/Dev/t2k-nd280-upgrade/SFGD_Reconstruction/utils/",
 0
     };
     static const char* fwdDeclCode = R"DICTFWDDCLS(
@@ -1986,8 +1987,8 @@ namespace {
 #pragma clang diagnostic ignored "-Wignored-attributes"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 extern int __Cling_Autoloading_Map;
-namespace std{inline namespace __1{template <class _Tp> class __attribute__((annotate("$clingAutoload$iosfwd")))  __attribute__((annotate("$clingAutoload$string")))  allocator;
-}}
+namespace std{template <typename _Tp> class __attribute__((annotate("$clingAutoload$bits/allocator.h")))  __attribute__((annotate("$clingAutoload$string")))  allocator;
+}
 class __attribute__((annotate("$clingAutoload$../src/extraClasses/CCluster3D.hxx")))  CCluster3D;
 class __attribute__((annotate("$clingAutoload$../src/extraClasses/CBond3D.hxx")))  CBond3D;
 class __attribute__((annotate("$clingAutoload$../src/extraClasses/CHit2D.hxx")))  CHit2D;
@@ -2003,11 +2004,9 @@ class __attribute__((annotate("$clingAutoload$../../src/app/nd280UpEvent/Event.h
     static const char* payloadCode = R"DICTPAYLOAD(
 #line 1 "mydict dictionary payload"
 
-#ifndef G__VECTOR_HAS_CLASS_ITERATOR
-  #define G__VECTOR_HAS_CLASS_ITERATOR 1
-#endif
 
 #define _BACKWARD_BACKWARD_WARNING_H
+// Inline headers
 #include "../../src/app/nd280UpEvent/ND280SFGDVoxelSet.hh"
 #include "../../src/app/nd280UpEvent/ND280SFGDVoxel.hh"
 #include "../../src/app/nd280UpEvent/ND280SFGDHit.hh"
@@ -2085,7 +2084,7 @@ nullptr};
     if (!isInitialized) {
       TROOT::RegisterModule("mydict",
         headers, includePaths, payloadCode, fwdDeclCode,
-        TriggerDictionaryInitialization_mydict_Impl, {}, classesHeaders);
+        TriggerDictionaryInitialization_mydict_Impl, {}, classesHeaders, /*has no C++ module*/false);
       isInitialized = true;
     }
   }

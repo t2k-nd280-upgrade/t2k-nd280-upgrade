@@ -1147,15 +1147,15 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
       nd280Track->SaveIt(true); // useless     
       fND280UpEvent->AddTrack(nd280Track);
 
-      G4cout << "TrajTrkId = " << TrajTrkId 
-	     << ", ParID = " << ndTraj->GetParentID() 
-	     << ", pdg = " << ndTraj->GetPDGEncoding()
-	     << ", name = " << ndTraj->GetParticleName()
-	     << ", mom = " << ndTraj->GetInitialMomentum().mag()
-	//<< ", ekin = " << ndTraj->GetInitialKineticEnergy()
-	     << ", sdedep = " << ndTraj->GetSDTotalEnergyDeposit()
-	     << ", process = " << ndTraj->GetProcessName()
-	     << G4endl;
+ //      G4cout << "TrajTrkId = " << TrajTrkId 
+	//      << ", ParID = " << ndTraj->GetParentID() 
+	//      << ", pdg = " << ndTraj->GetPDGEncoding()
+	//      << ", name = " << ndTraj->GetParticleName()
+	//      << ", mom = " << ndTraj->GetInitialMomentum().mag()
+	// //<< ", ekin = " << ndTraj->GetInitialKineticEnergy()
+	//      << ", sdedep = " << ndTraj->GetSDTotalEnergyDeposit()
+	//      << ", process = " << ndTraj->GetProcessName()
+	//      << G4endl;
     }
   
     // 

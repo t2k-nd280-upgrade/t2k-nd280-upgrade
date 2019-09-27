@@ -17,11 +17,11 @@
   </IsRandomSeed>
   
   <Generator>      
-    GENIE  
+    GENIE 
   </Generator>
 
   <Path2file>
-    /nfs/neutrinos/cjesus/work/iRODS_files/GENIE/13_09_18/
+    /home/cjesus/Work/Data/GENIE_TDR/
   </Path2file>
 
   <filename>

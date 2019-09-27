@@ -40,9 +40,13 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//#define CROSSTALK_OFF
+
 const int maxTracks = 1000;
 const int maxHits = 5000;
 const int maxCont = 1000;
+
+const double fib_abs_const = 0.2;
 
 Int_t numTracks;
 Int_t all_numTracks; 
@@ -50,6 +54,7 @@ Int_t numHits;
 bool crosstalk[maxHits];             // == CT, false != CT.
 Float_t hitLocation[maxHits][3];     // position (X,Y,Z) of the GEANT4 hit.
 Int_t hitPE[maxHits][3];             // charge of the GEANT4 edep, converted to PE.
+Int_t threshold[maxHits][3];         // 0 below, 1 above threshold.
 Int_t hitEdep[maxHits];              // auxiliar list to produce crosstalk. Contains saturated edep.
 Int_t hitTime[maxHits][3];           // time of the hit, after travelling on the fiber.
 Int_t hitTraj[maxHits];              // trackID of the hit.
@@ -75,6 +80,20 @@ Int_t all_trajEdep[maxTracks];
 Int_t all_trajPrim[maxTracks];           
 Int_t all_trajParent[maxTracks];             
 
+bool aux_threshold(double x){
+    TRandom3 fRndm = TRandom3(0);
+    x = x/4;
+    double prob = (exp(x)-exp(-x))/((exp(x)+exp(-x)));
+    if(x*4==1) prob = 0.1;
+    if(x*4==2) prob = 0.35;
+    if(x*4==3) prob = 0.60;
+    if(x>=1) return true;
+
+    return fRndm.Uniform() < prob;
+    // if(x>=1) return true;
+    // return false;
+}
+
 void ResetVariables(){
     for (int i=0; i < maxHits; i++){
         crosstalk[i] = false;
@@ -83,6 +102,7 @@ void ResetVariables(){
             hitLocation[i][j] = -999;
             hitPE[i][j]       = -999;
             hitTime[i][j]     = -999;
+            threshold[i][j]   = -999;
         }
     }
 
@@ -116,7 +136,7 @@ int FiberAbs(int numPE){
     int numPE_fiber = 0;
     for (int i=0;i<numPE;i++){
         double rndunif = fRndm.Uniform();
-        if (rndunif < 0.05) numPE_fiber++;
+        if (rndunif < fib_abs_const) numPE_fiber++;
     }
     return numPE_fiber;
 }
@@ -172,10 +192,10 @@ int FindPrimary(int inputID, TND280UpEvent* evt, int loops=0){
     return -1;   
 }
 
-
 double BirksSaturation(double edep, double steplength)
 {
-  const double CBIRKS = 0.0208 * CLHEP::cm/CLHEP::MeV; // used in SciBooNE MC
+  //const double CBIRKS = 0.08 * CLHEP::cm/CLHEP::MeV; 
+  const double CBIRKS = 0.0208 * CLHEP::cm/CLHEP::MeV; 
   double dedx = edep/steplength;
   return edep/(1. + CBIRKS*dedx);
 }
@@ -216,6 +236,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
     const int nevents = atoi(argv[3]);
     const int detectorID = atoi(argv[5]);
     outfilename = argv[13];
+
+    cout << "evtfirst: " << evtfirst << ",nevents: " << nevents << endl;
 
     TFile *fileout = new TFile(outfilename.Data(),"RECREATE");
     TTree *AllEvents = new TTree("AllEvents", "The ROOT tree of events");
@@ -258,32 +280,34 @@ int SFGD_Reconstruction(int argc,char** argv) {
     cout << " z min " << Z_min << " z max " << Z_max << "  nbins " << binZ << endl;
 
     AllEvents->Branch("Event", "Event", event);
-    AllEvents->Branch( "numTracks",      &numTracks,     "numTracks/I"                     );
-    AllEvents->Branch( "numHits",        &numHits,       "numHits/I"                       );
-    AllEvents->Branch( "all_numTracks",  &all_numTracks, "all_numTracks/I"                 );
 
-    AllEvents->Branch( "crosstalk",      crosstalk,      "crosstalk[numHits]/B"            );
-    AllEvents->Branch( "hitLocation",    hitLocation,    "hitLocation[numHits][3]/F"       );
-    AllEvents->Branch( "hitPE",          hitPE,          "hitPE[numHits][3]/I"             );
-    AllEvents->Branch( "hitTime",        hitTime,        "hitTime[numHits][3]/I"           );
-    AllEvents->Branch( "hitTraj",        hitTraj,        "hitTraj[numHits]/I"              );
-    AllEvents->Branch( "hitCont",        hitCont,        "hitCont[numHits][1000]/I"     );
+    bool fillAll = false;
+    if(fillAll){
+        AllEvents->Branch( "numTracks",      &numTracks,     "numTracks/I"                     );
+        AllEvents->Branch( "numHits",        &numHits,       "numHits/I"                       );
+        AllEvents->Branch( "all_numTracks",  &all_numTracks, "all_numTracks/I"                 );
+        AllEvents->Branch( "crosstalk",      crosstalk,      "crosstalk[numHits]/B"            );
+        AllEvents->Branch( "hitLocation",    hitLocation,    "hitLocation[numHits][3]/F"       );
+        AllEvents->Branch( "hitPE",          hitPE,          "hitPE[numHits][3]/I"             );
+        AllEvents->Branch( "threshold",      threshold,      "threshold[numHits][3]/I"         );
+        AllEvents->Branch( "hitTime",        hitTime,        "hitTime[numHits][3]/I"           );
+        AllEvents->Branch( "hitTraj",        hitTraj,        "hitTraj[numHits]/I"              );
+        AllEvents->Branch( "hitCont",        hitCont,        "hitCont[numHits][1000]/I"     );
+        AllEvents->Branch( "trajID",         trajID,         "trajID[numTracks]/I"             );
+        AllEvents->Branch( "trajPDG",        trajPDG,        "trajPDG[numTracks]/I"            );
+        // AllEvents->Branch( "trajStartHit",   trajStartHit,   "trajStartHit[numTracks]/I"       );
+        // AllEvents->Branch( "trajEndHit",     trajEndHit,     "trajEndHit[numTracks]/I"         );
+        AllEvents->Branch( "trajEdep",       trajEdep,       "trajEdep[numTracks]/I"           );
+        AllEvents->Branch( "trajParent",     trajParent,     "trajParent[numTracks]/I"         );
+        AllEvents->Branch( "trajHitsNum",    trajHitsNum,    "trajHitsNum[numTracks]/I"        );
+        AllEvents->Branch( "trajHits",       trajHits,       "trajHits[numTracks][5000]/I"  );
+        AllEvents->Branch( "all_trajID",         all_trajID,         "all_trajID[1000]/I"             );
+        AllEvents->Branch( "all_trajPDG",        all_trajPDG,        "all_trajPDG[1000]/I"            );
+        // AllEvents->Branch( "all_trajStartHit",   all_trajStartHit,   "all_trajStartHit[numTracks]/I"       );
+        // AllEvents->Branch( "all_trajEndHit",     all_trajEndHit,     "all_trajEndHit[numTracks]/I"         );
+        AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[1000]/I"         );       
+    }
 
-    AllEvents->Branch( "trajID",         trajID,         "trajID[numTracks]/I"             );
-    AllEvents->Branch( "trajPDG",        trajPDG,        "trajPDG[numTracks]/I"            );
-    // AllEvents->Branch( "trajStartHit",   trajStartHit,   "trajStartHit[numTracks]/I"       );
-    // AllEvents->Branch( "trajEndHit",     trajEndHit,     "trajEndHit[numTracks]/I"         );
-    AllEvents->Branch( "trajEdep",       trajEdep,       "trajEdep[numTracks]/I"           );
-    AllEvents->Branch( "trajParent",     trajParent,     "trajParent[numTracks]/I"         );
-    AllEvents->Branch( "trajHitsNum",    trajHitsNum,    "trajHitsNum[numTracks]/I"        );
-    AllEvents->Branch( "trajHits",       trajHits,       "trajHits[numTracks][5000]/I"  );
-    
-
-    AllEvents->Branch( "all_trajID",         all_trajID,         "all_trajID[1000]/I"             );
-    AllEvents->Branch( "all_trajPDG",        all_trajPDG,        "all_trajPDG[1000]/I"            );
-    // AllEvents->Branch( "all_trajStartHit",   all_trajStartHit,   "all_trajStartHit[numTracks]/I"       );
-    // AllEvents->Branch( "all_trajEndHit",     all_trajEndHit,     "all_trajEndHit[numTracks]/I"         );
-    AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[1000]/I"         );
     
     TTree *tinput = (TTree*) finput->Get("ND280upEvents");
     
@@ -354,8 +378,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
         int index = 0;
         bool store = true;
         bool WriteText = false;
+        int PE_expect = 0;
+        int PE_found = 0;
 
-        
         cout << "************************" << endl;
         cout << " starting event " << ievt << " and has #hits " << nd280UpEvent->GetNHits() << endl;
 
@@ -376,12 +401,40 @@ int SFGD_Reconstruction(int argc,char** argv) {
             double edep = nd280UpHit->GetEnergyDeposit();
             double steplength = nd280UpHit->GetTrackLength();
             string detname = nd280UpHit->GetDetName();
-            
-            double probLatCT = 0.02*6;
 
             ApplyResponse.SetTargetID(DetType);
-            double sat_edep = BirksSaturation(nd280UpHit->GetEnergyDeposit(),steplength);
-            int numPE = sat_edep*156.42*20;
+
+            ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);//ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,sat_edep*156.42,"kSuperFGD");
+            PE_expect += (ApplyResponse.GetHitPE().x() +  ApplyResponse.GetHitPE().y() +  ApplyResponse.GetHitPE().z());
+
+#ifdef CROSSTALK_OFF
+            for(int view=0; view<3; view++){                
+                ND280SFGDHit* hit = event->AddHit();
+                hit->SetView(view);
+
+                hit->SetX(ApplyResponse.GetHitPos().x()/10);
+                hit->SetY(ApplyResponse.GetHitPos().y()/10);
+                hit->SetZ(ApplyResponse.GetHitPos().z()/10);
+
+                if(view == 0) hit->SetZ(-1);
+                if(view == 1) hit->SetY(-1);
+                if(view == 2) hit->SetX(-1);
+                if(view == 0) hit->SetCharge(ApplyResponse.GetHitPE().z());
+                if(view == 1) hit->SetCharge(ApplyResponse.GetHitPE().y());
+                if(view == 2) hit->SetCharge(ApplyResponse.GetHitPE().x());
+
+                listOfHits.push_back(hit);
+            }
+            index++;
+#else
+            double edeposit = nd280UpHit->GetEnergyDeposit();
+            ND280UpTargReadOut TargetReadOut;
+            TargetReadOut.SetTargType(DetType);
+            int nphot = TargetReadOut.ApplyScintiResponse(edeposit,steplength,1);
+            double probLatCT = 0.01*fRndm.Poisson(2.8)*6;//0.025*6;//0.037*6;
+            if(WriteText) cout << "nphot= " << nphot << endl;
+            int numPE = nphot*(1./fib_abs_const);
+            if(numPE < 0) numPE = 0;
             int numPE_CT[6] = {0};           // photons flowing to sourrounding elements
             for (int i=0;i<numPE;i++){
                 double rndunif = fRndm.Uniform();
@@ -389,25 +442,24 @@ int SFGD_Reconstruction(int argc,char** argv) {
             }
             int totCT = 0;
             for (auto p : numPE_CT) totCT += p;
-            if(WriteText) cout << "Original # of Abs PE: " << (int) (sat_edep*156.42) << endl;
-            if(WriteText) cout << "Original PE in Cube: " << (int) (sat_edep*156.42*20) << endl;
             if(WriteText) cout << "Flowed PE: " << totCT << endl;
             if(WriteText) cout << "Number of remaining PE: " << numPE-totCT << endl;
 
+            int cnt_PE_tot = 0;
             for (int m=0; m<7;m++){                
                 int numPE_fiber = 0;
                 if(m==0) numPE_fiber = FiberAbs(numPE-totCT);
                 else numPE_fiber = FiberAbs(numPE_CT[m-1]);
 
-                if(WriteText) cout << "New # of Abs PE: " << numPE_fiber << endl;
+                //cout << m <<", New # of Abs PE: " << numPE_fiber << endl;
 
-                ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,numPE_fiber,"kSuperFGD");
-
-                int PE_in_Cube = hitEdep[ihit]/0.05;  // photons in the cube
-
+                ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,numPE_fiber,detname);
+                
                 double pex = ApplyResponse.GetHitPE().x();
                 double pey = ApplyResponse.GetHitPE().y();
                 double pez = ApplyResponse.GetHitPE().z();
+ 
+                PE_found += (pex+pey+pez);
 
                 double timepex = ApplyResponse.GetHitTime().x();
                 double timepey = ApplyResponse.GetHitTime().y();
@@ -429,22 +481,31 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 hitLocation[index][0] = poshitX/10;
                 hitLocation[index][1] = poshitY/10;
                 hitLocation[index][2] = poshitZ/10;
-                hitTime[index][0]     = timepex;
+                hitTime[index][0]     = timepez;
                 hitTime[index][1]     = timepey;
-                hitTime[index][2]     = timepez;
-                hitPE[index][0]       = pex;
+                hitTime[index][2]     = timepex;
+                hitPE[index][0]       = pez;
                 hitPE[index][1]       = pey;
-                hitPE[index][2]       = pez;
-                hitEdep[index]        = sat_edep;
+                hitPE[index][2]       = pex;
+                hitEdep[index]        = edeposit;
                 hitTraj[index]        = nd280UpHit->GetPrimaryId();
 
+                threshold[index][0] = aux_threshold(hitPE[index][0]);
+                threshold[index][1] = aux_threshold(hitPE[index][1]);
+                threshold[index][2] = aux_threshold(hitPE[index][2]);
+
+                if(!threshold[index][0]) hitPE[index][0] = 0;
+                if(!threshold[index][1]) hitPE[index][1] = 0;
+                if(!threshold[index][2]) hitPE[index][2] = 0;
+
                 ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],hitLocation[index][1],hitLocation[index][2]);
-                Voxel->SetEdep(PE_in_Cube);
+                Voxel->SetEdep(edeposit);
                 vector <double> localQ;
                 localQ.push_back(timepez);
                 localQ.push_back(timepey);
                 localQ.push_back(timepex);
                 Voxel->SetLocalHitsQ(localQ);
+                Voxel->SetTrueXTalk(crosstalk[index]);
                 listOfVoxels.push_back(Voxel);
 
                 for(int view=0; view<3; view++){                
@@ -458,9 +519,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     if(view == 0) hit->SetZ(-1);
                     if(view == 1) hit->SetY(-1);
                     if(view == 2) hit->SetX(-1);
-                    if(view == 0) hit->SetCharge(hitPE[index][2]);
+                    if(view == 0) hit->SetCharge(hitPE[index][0]);
                     if(view == 1) hit->SetCharge(hitPE[index][1]);
-                    if(view == 2) hit->SetCharge(hitPE[index][0]);
+                    if(view == 2) hit->SetCharge(hitPE[index][2]);
 
                     hit->SetTrackID(hitTraj[index]);
                     hit->SetxTalkFlag(crosstalk[index]);
@@ -483,12 +544,14 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     if(index+1 != maxHits) index++;
                     if(index+1 == maxHits) store = false;
                 }
-
                 if(WriteText) cout << "hit at: " << hitLocation[index][0] << ", " << hitLocation[index][1] << ", " << hitLocation[index][2] << endl;
                 if(WriteText) cout << "PE (YZ,XZ,XY): " << pex << ", " << pey << ", " << pez << endl;
             }
+            if(WriteText) cout << "PE_expect: " << PE_expect << "PE_found: " << PE_found << endl;
             if(WriteText) cout << endl;
+#endif
         } /// END LOOP OVER 3D HITS
+
         if(WriteText) cout << "total g4hits:   " << NHits << endl;
         if(WriteText) cout << "total g4hits*7: " << NHits*7 << endl;
         if(WriteText) cout << "index:          " << index << endl;
@@ -582,14 +645,13 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 cout << "Hits without associated track: " << numHits-locSum << endl;
                 cout << " --- summary of hits --- " << endl;
                 for (int hts=0; hts<numHits; hts++){
-                    cout << "Hit " << hts << "crosstalk: " << crosstalk[hts] << ", trajID: " << hitTraj[hts] << ", XYZ: " << hitLocation[hts][0] << "," << hitLocation[hts][1] <<"," << hitLocation[hts][2] << ", PE: " << hitPE[hts][0] << "," << hitPE[hts][1] <<"," << hitPE[hts][2] << ", PE: " << hitTime[hts][0] << "," << hitTime[hts][1] <<"," << hitTime[hts][2] << endl;
+                    cout << "Hit " << hts << "crosstalk: " << crosstalk[hts] << ", trajID: " << hitTraj[hts] << ", XYZ: " << hitLocation[hts][0] << "," << hitLocation[hts][1] <<"," << hitLocation[hts][2] << ", PE: " << hitPE[hts][0] << "," << hitPE[hts][1] <<"," << hitPE[hts][2] << ", time: " << hitTime[hts][0] << "," << hitTime[hts][1] <<"," << hitTime[hts][2] << endl;
                 }
             }
         }
 
-        //event->SetVoxels(listOfVoxels);
+        event->SetVoxels(listOfVoxels);
         event->SetHits(listOfHits);
-        event->MergeHits();
         cout << "event->GetHits().size(): " << event->GetHits().size() << endl;
         if(!index) store = false;
         if(store) {cout << "Event stored as input. " << endl; AllEvents->Fill(); }

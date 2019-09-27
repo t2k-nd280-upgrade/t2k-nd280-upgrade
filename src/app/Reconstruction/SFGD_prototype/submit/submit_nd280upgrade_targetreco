@@ -44,7 +44,7 @@ foreach (@ARGV) {
 }
 
 # wheter you want to merge all files into one and delete all the other output
-$merge_output = 1;
+$merge_output = 0;
 
 $resource        = "interactive"                 unless defined $resource;
 
@@ -82,8 +82,8 @@ while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
-    $newtag = "$tag";
-    
+    $tag_mod = "${tag}_${irun}.root";
+
     if   ($detector eq 0){$newtag = "SuperFGD-$newtag";}
     elsif($detector eq 1){$newtag = "FGDlike-$newtag";}
     else{ 
@@ -107,11 +107,13 @@ while($irun < $nruns) { # loop over the jobs
     if($min_trk_dist ge 0){
 	$newtag = "$newtag-Separate$min_trk_dist";
     }
- 
-   
 
-    $arguments = "$softw_dir/bin/Reconstruction.exe $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $evt_first";
+    print "tag: $tag\n";
+    print "ntag: $tag_mod\n";
+    $arguments = "$softw_dir/bin/Reconstruction.exe sfgrrecon $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv  $tag_mod";
     $command = "$arguments";
+
+    print "$command\n";
     
     print "\n";
     print "Job $irun \n";

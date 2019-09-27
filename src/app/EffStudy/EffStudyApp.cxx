@@ -142,6 +142,7 @@ int main(int argc,char** argv)
   G4int NEvtTot = MyFirstEvent+NEvtStep;
 
   if (ND280XMLInput->GetXMLGenerTypeName() != "ParticleGun") {
+    G4cout << "text: " << ND280XMLInput->GetXMLGenerTypeName() << G4endl;
     TFile *myfile = new TFile(inputfile,"READ"); 
     if (!myfile->IsOpen()) {
       const char *msg = "NEUT file is not open!";

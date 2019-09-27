@@ -50,11 +50,13 @@ const int sideview = 0;
 
 // FGD Constants
 #ifdef ELECSIM
-  const double EdepToPhotConv_FGD = 156.42 / CLHEP::MeV;
-  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
 #if PROTO == 2
+  const double EdepToPhotConv_FGD = 156.42*0.96 / CLHEP::MeV;
+  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
   const double FGDreflection = 0.; // 0.4 - based on proto1 expectations
 #else
+  const double EdepToPhotConv_FGD = 156.42 / CLHEP::MeV;
+  const double EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD;
   const double FGDreflection = 0.4; // 0.4 - based on proto1 expectations
 #endif
   const double LongCompFrac_FGD = 0.77;
@@ -78,7 +80,11 @@ const double DecayLength_FGD = 0.0858 / CLHEP::mm;
 const double Lbar_FGD = 1864.3 * CLHEP::mm;
 
 // SuperFGD constants
-const double MPPCEff_SuperFGD = 0.35;
+#if PROTO == 2
+  const double MPPCEff_SuperFGD = 0.25;
+#else 
+  const double MPPCEff_SuperFGD = 0.35;
+#endif
 
 // SciFi constants
 const double EdepToPhotConv_SciFi_SingleClad_2mm = 23.7 / CLHEP::MeV; 
@@ -101,7 +107,6 @@ ND280UpTargReadOut::~ND280UpTargReadOut()
 TString ND280UpTargReadOut::AsStringTargType(TargetType_t targetid){  
   if(targetid == nd280upconv::kUndefined)     return "Undefined"; 
   else if(targetid == nd280upconv::kSuperFGD) return "SuperFGD";
-  else if(targetid == nd280upconv::kProto)    return "Prototype";
   else if(targetid == nd280upconv::kFGD)      return "FGD";
   else if(targetid == nd280upconv::kFGDlike)  return "FGDlike";
   else if(targetid == nd280upconv::kWAGASCI)  return "WAGASCI";
@@ -131,9 +136,7 @@ void ND280UpTargReadOut::BirksSaturation(double &edep, double steplength, double
 
 double ND280UpTargReadOut::EdepToPhot(double edep)
 {
-  if(GetTargType() == nd280upconv::kSuperFGD ||
-     GetTargType() == nd280upconv::kProto
-     ){        
+  if(GetTargType() == nd280upconv::kSuperFGD){        
     /*
     // Account for the 3 fibers in the same scintillator cube
     double collfact = CollFactor_DoubleClad;
@@ -145,6 +148,7 @@ double ND280UpTargReadOut::EdepToPhot(double edep)
     //cout << "NormShadowLight = " << NormShadowLight << endl;   
     return edep * EdepToPhotConv_FGD * NormShadowLight;
     */
+    //cout<<"EdepToPhotConv_SuperFGD = "<<EdepToPhotConv_SuperFGD<<endl;
     return edep * EdepToPhotConv_SuperFGD;     
   }
   else if(GetTargType() == nd280upconv::kFGDlike){
@@ -155,7 +159,7 @@ double ND280UpTargReadOut::EdepToPhot(double edep)
   }
   else{
     cout << "ND280UpTargReadOut::ApplyFiberResponse" << endl;
-    cout << "The selected Target type does not exist!!!" << endl;
+    cout << "The selected Target "<< GetTargType() << "type does not exist!!!" << endl;
     exit(1);
   }
   
@@ -169,8 +173,7 @@ void ND280UpTargReadOut::ApplyFiberResponse(double &nphot, double &time, double 
   ApplyFiberAttenuation(nphot,x, DetSize);
 
   // Get the time when the photons reach the MPPC
-  ComputeHitTime(time,x,nphot);
-  //ApplyFiberTime(time,x);
+  ApplyFiberTime(time,x);
   
   return;
 }
@@ -178,13 +181,12 @@ void ND280UpTargReadOut::ApplyFiberResponse(double &nphot, double &time, double 
 void ND280UpTargReadOut::ApplyFiberAttenuation(double &nphot, double x, double DetSize)
 {
   if(GetTargType() == nd280upconv::kSuperFGD ||
-     GetTargType() == nd280upconv::kFGDlike ||
-     GetTargType() == nd280upconv::kProto
+     GetTargType() == nd280upconv::kFGDlike
      ){
     nphot = GetPhotAtt_FGD(nphot,x, DetSize);
   }
   else if(GetTargType() == nd280upconv::kSciFi){    
-    //npe = GetPhotAtt_SciFi(nphot,x); // not available yet
+    //nphot = GetPhotAtt_SciFi(nphot,x); // not available yet
     nphot = GetPhotAtt_FGD(nphot,x);    
   }
   else{
@@ -198,7 +200,7 @@ void ND280UpTargReadOut::ApplyFiberAttenuation(double &nphot, double x, double D
 double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize){
   
   // Used for official FGD reconstruction: Eq. (4) in TN-103
-
+  
   double a=0.;        // long attenuation component fraction
   double d=0.;        // distance MPPC-scint outside the bar
   double LongAtt=0.;  // long attenuation length
@@ -210,114 +212,57 @@ double ND280UpTargReadOut::GetPhotAtt_FGD(double Nphot0,double x, double DetSize
   ShortAtt = ShortAtt_FGD;  
 
   double Nphot = Nphot0;
+
+  //std::cout << "original Photons: " << Nphot << endl;
+
 #ifdef ELECSIM
     if (!DetSize){
       std::cout << "ERROR: ND280UpTargReadOut::GetPhotAtt_FGD(): Detector size is not defined." << std::endl;
       exit(1);
     }
 
-    // Nphot *= 1. / 2.;
-    // Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
-
-    // x += 2. * (2 * DetSize - x);
-    // for (int i = 0; i < int(Nphot0/2. + 0.5); ++i) {
-    //   double rndunif = fRndm->Uniform();
-    //   if (rndunif < FGDreflection)
-    //     Nphot += ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
-    // }
-    d=0;
-    //cout << "fact_true: " << ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) ) << endl;
+    //Nphot *= 1. / 2.;
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+
+    x += 2. * (2 * DetSize - x);
+    for (int i = 0; i < int(Nphot0/2. + 0.5); ++i) {
+      double rndunif = fRndm->Uniform();
+      if (rndunif < FGDreflection)
+        Nphot += ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+    }
 #else
     Nphot *= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
 #endif
 
+  //std::cout << "attenuated Photons: " << Nphot << endl;
   return Nphot;
 }
 
 void ND280UpTargReadOut::ApplyFiberTime(double &time, double x)
 {
-
-  //add time in fiber
-  time += TransTimeInFiber*x/10;
+  time += TransTimeInFiber*x;
 }
 
-void ND280UpTargReadOut::ComputeHitTime(double &time, double x, double q)
+
+void ND280UpTargReadOut::ApplyMPPCResponse(G4double &npe)
 {
 
-  bool DEBUG = kFALSE;
-
-  if(DEBUG) cout << "x: " << x << endl;
-  if(DEBUG) cout << "original time: " << time << endl;
-  //add time in fiber
-  time += TransTimeInFiber*x/10;
-  if(DEBUG) cout << "time  after travel: " << time << endl;
-
-  //time walk correction
-  double A = 10.6055;
-  double B = 0.0426767;
-  double C = 4554.06;
-  double D = 538.252;
-  if(DEBUG) cout << "time walk correction: " << A*exp(-B*q) + C/(q+D) << endl;
-  time += A*exp(-B*q) + C/(q+D);
-  if(DEBUG) cout << "time  after time walk: " << time << endl;
-  
-  //smearing
-  double timeResolution = 0.9;
-  double timeSmearing = fRndm->Gaus(0, timeResolution);
-  if(DEBUG) cout << "time  smearing: " << timeSmearing << endl;
-  time+= timeSmearing;
-  if(DEBUG) cout << "smeared time:   " << time << endl;
-
-  // make the time binned:
-  // We will assume time trigger is = 0.
-  // assume 2.5ns sampling time
-
-  double triggerTime = 0.;
-  time -= triggerTime; 
-  int timeBin = int((time+1.25)/2.5);
-  time = 2.5*timeBin;
-  if(DEBUG) cout << "binned time:  " << time << endl;
-
-}
-
-int ND280UpTargReadOut::ApplyMPPCResponse(G4double nphot, int MPPC_type)
-{
   double rndunif =0.;
-  double nphot_passed = 0.;
-  int nphot_integer = (int) (nphot+0.5);
-  for (int i=0;i<nphot_integer;i++){
+  double npe_passed = 0.;
+
+  //std::cout << "pe before mppc eff: " << npe << endl;
+  
+  int npe_integer = (int) (npe+0.5);
+  
+  for (int i=0;i<npe_integer;i++){
     rndunif = fRndm->Uniform();
-    if (rndunif < MPPCEff_SuperFGD) nphot_passed++;
+    if (rndunif < MPPCEff_SuperFGD) npe_passed++;
   }
-  double pe = nphot_passed;
-
-  //account for different MPPC types (values from SFGD prototype beam test)
-
-  //type 1 MPPC mean MIP and standard deviation
-  double mip1=50.;
-  double sigma1=8.;
-
-  double gain;
-  double mip;
-  double sigma;
-  if (MPPC_type == 1){
-    mip = 50.;
-    gain = mip/mip1;
-    sigma = 8.;
-  }
-  else if (MPPC_type == 2){
-    gain = mip/mip1;
-    sigma = 9.3;
-  }
-  else if (MPPC_type == 3){
-    gain = mip/mip1;
-    sigma = 10.;
-  }
-  else{
-    cout << "MPPC type not recognised" << endl;
-    exit(1);
-  }
-  //an attempt to account for the different gain and variance of MPPC types
-  return (int)(mip+(gain*pe-mip)*pow(sigma,2)/pow(sigma1,2));
+  
+  //std::cout << "npe_passed: " << npe_passed << std::endl;
+  npe = npe_passed;
+  
+  return;
 }
+
+

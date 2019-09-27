@@ -2,11 +2,13 @@
 #define NOINTERACTIVE_OUTPUT
 #define OVERRIDE_OPTIONS
 
-#include "../utils/global_header.h"
-#include "../utils/global_tools.C"
+#include "../../utils/global_header.h"
+#include "../../utils/global_tools.C"
 #include <time.h> 
 #include <TMath.h>
 #include <TF1.h>
+
+//#define ONLY_MPPC_I
 
 void crosstalkAna() {
 
@@ -23,15 +25,10 @@ void crosstalkAna() {
 
     // NOTE: In case of using option -s || --save it is necessary to update harcoded paths.
 
-    gStyle->SetOptStat(0);
-    TString fileIn = "/Users/cjesus/Documents/Data/SFGD_BTEST_2018/25August_11_12_0pt8GeV_0pt0T.root";
-    TString fileMC [2];
-    //fileMC[0]  = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_proton.root";
-    //fileMC[1]  = "/Users/cjesus/Documents/Data/SFGD_MC/MC_750_piplus.root";
-    //fileMC[0]  = "/Users/cjesus/Documents/Data/SFGD_MC/pr_v1.root";
-    fileMC[0]  = "/Users/cjesus/Documents/Data/MC_output.root";
-    //fileMC[0]  = "/nfs/neutrinos/cjesus/work/MC_output.root";
-    
+    //gStyle->SetOptStat(0);
+    TString fileIn   = "/Users/cjesus/Documents/Data/SFGD_BTEST_2018/25August_11_12_0pt8GeV_0pt0T.root";
+    TString fileOut  = "/Users/cjesus/Documents/Data/MCvsData/ana_output";
+    TString fileMC = "/Users/cjesus/Documents/Data/MC_output.root";
     TString prefix = "/Users/cjesus/Desktop/";
 
     int maxEvents    = std::numeric_limits<int>::max();
@@ -66,6 +63,10 @@ void crosstalkAna() {
     int SP_S_CT_CNT = 0;
     int SP_S_CT_CNT2 = 0;
 
+    int ToT = 0;
+    int HG  = 0;
+    int LG  = 0;
+
     // Canvas for plots:
 
     // dEdZ:
@@ -73,6 +74,18 @@ void crosstalkAna() {
 
     // LI == Low Ionizing track
     // HI == High Ionizing track
+
+    TH1F*  h_PE_ALL_0 = new TH1F("h_PE_ALL_xy_LI","",150,0,150);
+    TH1F*  h_PE_ALL_1 = new TH1F("h_PE_ALL_xz_LI","",150,0,150);
+    TH1F*  h_PE_ALL_2 = new TH1F("h_PE_ALL_yz_LI","",150,0,150);
+    TH1F*  h_PE_ALL_3 = new TH1F("h_PE_ALL_xy_HI","",100,0,700);
+    TH1F*  h_PE_ALL_4 = new TH1F("h_PE_ALL_xz_HI","",100,0,700);
+    TH1F*  h_PE_ALL_5 = new TH1F("h_PE_ALL_yz_HI","",100,0,700);
+
+    TH1F* h_ChargeType[3];
+    h_ChargeType [0] = new TH1F("h_PE_yz_HG","", 100,0,300);
+    h_ChargeType [1] = new TH1F("h_PE_yz_LG","", 100,0,300);
+    h_ChargeType [2] = new TH1F("h_PE_yz_ToT","",100,0,300);
 
     // Bins of 1 PE
 
@@ -92,6 +105,19 @@ void crosstalkAna() {
     TH1F* h_RQ_yz [2]; 
     h_RQ_yz [0] = new TH1F("h_RQ_yz_LI","",50,0,50);
     h_RQ_yz [1] = new TH1F("h_RQ_yz_HI","",50,0,50);
+
+    TH1F*  h_PE_ch[10];
+    h_PE_ch[0] = new TH1F("h_PE_ch_0","",100,0,500);
+    h_PE_ch[1] = new TH1F("h_PE_ch_1","",100,0,500);
+    h_PE_ch[2] = new TH1F("h_PE_ch_2","",100,0,500);
+    h_PE_ch[3] = new TH1F("h_PE_ch_3","",100,0,500);
+    h_PE_ch[4] = new TH1F("h_PE_ch_4","",100,0,500);
+    h_PE_ch[5] = new TH1F("h_PE_ch_5","",100,0,500);
+    h_PE_ch[6] = new TH1F("h_PE_ch_6","",100,0,500);
+    h_PE_ch[7] = new TH1F("h_PE_ch_7","",100,0,500);
+    h_PE_ch[8] = new TH1F("h_PE_ch_8","",100,0,500);
+    h_PE_ch[9] = new TH1F("h_PE_ch_9","",100,0,500);
+
 
     // SP: Stopping protons
 
@@ -129,7 +155,7 @@ void crosstalkAna() {
             cout << "   -h || --help      print help info." << endl;
             cout << "   -i || --input     input file (*.root)." << endl;
             cout << "   -m || --MC        Allows to MC inoput." << endl;
-            cout << "   -p || --ptype     Requires an extra argument. 1: proton, 2:pion, 3:electron, 4:muon." << endl;
+            cout << "   -l || --local     Changes paths to local." << endl;
             cout << "   -j || --job       Closes the macro at the end of the execution." << endl;
             cout << "   -s || --save      Save hits of selected events." << endl;
             cout << "   -d || --display   Interactive display of selected events." << endl;
@@ -146,18 +172,17 @@ void crosstalkAna() {
                 exit(1);
             }
         }
+        else if (string( gApplication->Argv(iarg))=="-l" || string( gApplication->Argv(iarg))=="--local" ){
+            cout << "Using local paths." << endl;
+            fileIn  = "/home/cjesus/Work/Data/SFGD_prototype/DATA/25August_ALL/25AugustAll.root";
+            fileOut = "/home/cjesus/Work/Data/SFGD_prototype/ANALYSIS/ana_output";
+            fileMC  = "/home/cjesus/Work/Data/SFGD_prototype/MC/RECO/MC_output.root";
+            prefix  = "/home/cjesus/Work/Data/SFGD_prototype/ANALYSIS";
+        }
         else if (string( gApplication->Argv(iarg))=="-m" || string( gApplication->Argv(iarg))=="--MC" ){
             dataType = 0;
-            fileIn    = fileMC[0];
-        }
-        else if (string( gApplication->Argv(iarg))=="-p" || string( gApplication->Argv(iarg))=="--ptype" ){
-            iarg++;
-            cout << atoi(gApplication->Argv(iarg)) << endl;
-            fileIn = fileMC[atoi(gApplication->Argv(iarg))];
-        }
-        else if (string( gApplication->Argv(iarg))=="-c" || string( gApplication->Argv(iarg))=="--clean" ){
-            cout << "Crosstalk removal is ON. This only does somethig on MC input. All hits that are true crosstalk will be erased." << endl;
-            RM_CROSSTALK = true;
+            cout << "Using MC data." << endl;
+            fileIn   = fileMC;
         }
         else if (string( gApplication->Argv(iarg))=="-j" || string( gApplication->Argv(iarg))=="--job" ){
             jobMode = 1;
@@ -197,6 +222,11 @@ void crosstalkAna() {
     TTree* data = (TTree*) FileInput->Get("AllEvents");
     Int_t nEvents = data->GetEntries();
 
+    cout << "nEvents: " << nEvents << endl;
+
+    if(!dataType) fileOut += "_MC.root";
+    else fileOut += "_Data.root";
+
     TBranch *inputBranch;
     inputBranch = data->GetBranch("Event");
     ND280SFGDEvent* inputEvent = new ND280SFGDEvent();
@@ -222,6 +252,8 @@ void crosstalkAna() {
         std::cout << "**** Evt " << iev << " ****" << std::endl;
 
         data->GetEntry(iev);
+        //if(!dataType) 
+        inputEvent->MergeHits();
         cout << "NUMHITS:" << endl;
         cout << "numhits:" << inputEvent->GetHits().size() <<endl;
 
@@ -281,15 +313,17 @@ void crosstalkAna() {
                 sfgdHit->SetTrueXTalk(kFALSE);
                 sfgdHit->SetPDG(-999);
                 sfgdHit->SetTrackID(-999);
+                sfgdHit->SetHG_pe(hit->GetHG_pe());
+                sfgdHit->SetLG_pe(hit->GetLG_pe());
                 listOfHits.push_back(sfgdHit);
             }
             if(jumpNextEvent) {listOfHits.clear();continue;} // cout << "FIFO problem, jumping to next event." << endl; 
         }
         cout << "size: " << listOfHits.size() << endl;
         if(listOfHits.size() < 60) {listOfHits.clear();continue;}  // not interested in small tracks, we want long ones.
-        
-        int sizeOfX = 204;
-        int sizeOfY = 56;
+
+        int sizeOfX = 24;
+        int sizeOfY = 8;
         int sizeOfZ = 48;
 
         int aboveCutXZ [sizeOfX];
@@ -302,7 +336,7 @@ void crosstalkAna() {
         for (auto i = 0; i<sizeOfZ; i++) lineZ_xz[i] = 0;
         for (auto i = 0; i<sizeOfZ; i++) lineZ_yz[i] = 0;
 
-        bool debug = true;
+        bool debug = false;
 
         double maxXZ = 0;
         double maxYZ = 0;
@@ -364,7 +398,6 @@ void crosstalkAna() {
             }
         }
         if (maxLineZ_xz) dedz /= maxLineZ_xz;
-        if(!dataType) dedz /= 1.5;
 
         int maxLineZ_yz = 0;
         int temp_maxLineZ_yz = 0;
@@ -386,8 +419,17 @@ void crosstalkAna() {
             cout << endl;
         }
 
-        // if(cntXZ > 1 or cntYZ > 1) continue;
-        // if(maxLineZ_xz < 30 or maxLineZ_yz < 30) continue;
+
+        // for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+        //     ND280SFGDHit* hit = listOfHits[ihit];
+        //     if(!(hit->GetView() == 1 && hit->GetX() == 12 && hit->GetZ() < 30  && hit->GetZ() >= 20) ) continue;
+        //     int view = hit->GetView();
+        //     int qhit = hit->GetCharge();
+        //     h_PE_ch[(int) hit->GetZ()-20]->Fill(qhit);
+        // }
+
+        if(cntXZ > 1 or cntYZ > 1) continue;
+        if(maxLineZ_xz < 30 or maxLineZ_yz < 30) continue;
 
         int xPos = -1;
         for(auto s = 0; s<sizeOfX; s++) if(aboveCutXZ[s] == 2)  xPos = int(s);
@@ -408,14 +450,17 @@ void crosstalkAna() {
         TString evt_tag = "";
         int mode = -1;        // 0 is LI, 1 is HI, 2 is SP
         if(dedz < 80) {evt_tag = "LI"; selLI++; mode = 0;}
-        else if(dedz > 130) {evt_tag = "HI"; selHI++; mode = 1;}
+        else if(dedz > 80) {evt_tag = "HI"; selHI++; mode = 1;}
         else continue;
         if(mode <0) continue;
 
         bool stopping = false;
-        if(/*lineZ_xz[sizeOfZ-1] == 0 && */lineZ_xz[sizeOfZ] == 0) stopping = true;
+        if(lineZ_xz[sizeOfZ-1] == 0 && lineZ_xz[sizeOfZ-2] == 0) stopping = true;
         if( stopping && mode == 1) selSP++;
 
+        cout << "mode: " << mode << ", stopping: " << stopping << endl;
+        cout << "z-1: " <<lineZ_xz[sizeOfZ-1] << ", z:" << lineZ_xz[sizeOfZ-2] << endl;
+ 
         // Stopping and HI sample, far from stopping point
         if(mode == 1 && cntXZ == 1 && cntYZ == 1 && stopping){
             for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
@@ -427,6 +472,9 @@ void crosstalkAna() {
                 SP_F_HIT_CNT++;
                 for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
                     if(listOfHits[jhit]->GetView() != 1) continue;
+                    #ifdef ONLY_MPPC_I
+                        if (hit->GetZ() < 24) continue;
+                    #endif
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) SP_F_CT_CNT++;
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) SP_F_CT_CNT2++;
                 }
@@ -459,6 +507,11 @@ void crosstalkAna() {
                 if(hit->GetCharge() < q_Cut) continue;
                 if( maxZ_xz - hit->GetZ() != 0) continue; 
                 SP_S_HIT_CNT++;
+                // int view = hit->GetView();
+                // int qhit = hit->GetCharge();
+                // if(hit->GetView() == 0) h_PE_ALL_3->Fill(qhit);
+                // if(hit->GetView() == 1) h_PE_ALL_4->Fill(qhit);
+                // if(hit->GetView() == 2) h_PE_ALL_5->Fill(qhit);
                 for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
                     if(listOfHits[jhit]->GetView() != 1) continue;
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) SP_S_CT_CNT++;
@@ -467,7 +520,62 @@ void crosstalkAna() {
             }
         }
 
+        // LI sample
+         if(mode == 0 && cntXZ == 1 && cntYZ == 1){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                int view = hit->GetView();
+                double qhit = hit->GetCharge();
+                if(dataType){
+                    #ifdef ONLY_MPPC_I
+                        if (hit->GetZ() < 24) continue;
+                    #endif
+                    if(qhit == hit->GetLG_pe()) {LG++; h_ChargeType[0]->Fill(hit->GetLG_pe());}
+                    if(qhit == hit->GetHG_pe()) {HG++; h_ChargeType[1]->Fill(hit->GetHG_pe());}
+                    if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()) {ToT++; h_ChargeType[2]->Fill(hit->GetCharge());}
+                    if(qhit == hit->GetLG_pe()){
+                        if(qhit<20) continue;
+                        if(hit->GetView() == 0) h_PE_ALL_0->Fill(qhit);
+                        if(hit->GetView() == 1) h_PE_ALL_1->Fill(qhit);
+                        if(hit->GetView() == 2) h_PE_ALL_2->Fill(qhit);
+                    }
+                }
+                else{
+                    if(qhit<20) continue;
+                    if(hit->GetView() == 0) h_PE_ALL_0->Fill(qhit);
+                    if(hit->GetView() == 1) h_PE_ALL_1->Fill(qhit);
+                    if(hit->GetView() == 2) h_PE_ALL_2->Fill(qhit);
+                }
+            }
+        }
+
+         if(mode == 1 && cntXZ == 1 && cntYZ == 1){
+            for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
+                ND280SFGDHit* hit = listOfHits[ihit];
+                int view = hit->GetView();
+                double qhit = hit->GetCharge();
+                if(dataType){
+                    if(qhit == hit->GetLG_pe()) {LG++; h_ChargeType[0]->Fill(hit->GetLG_pe());}
+                    if(qhit == hit->GetHG_pe()) {HG++; h_ChargeType[1]->Fill(hit->GetHG_pe());}
+                    if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()) {ToT++; h_ChargeType[2]->Fill(hit->GetCharge());}
+                    if(qhit == hit->GetLG_pe()){//if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()){
+                        if(qhit<20) continue;
+                        if(hit->GetView() == 0) h_PE_ALL_3->Fill(qhit);
+                        if(hit->GetView() == 1) h_PE_ALL_4->Fill(qhit);
+                        if(hit->GetView() == 2) h_PE_ALL_5->Fill(qhit);
+                    }
+                }
+                else{
+                    if(qhit<20) continue;
+                    if(hit->GetView() == 0) h_PE_ALL_3->Fill(qhit);
+                    if(hit->GetView() == 1) h_PE_ALL_4->Fill(qhit);
+                    if(hit->GetView() == 2) h_PE_ALL_5->Fill(qhit);
+                }
+            }
+        }
+
         // Not stopping and HI
+        cout << "mode " << mode << ", cntXZ " << cntXZ << ", cntYZ " << cntYZ << ", stopping " << stopping << endl;
         if(mode == 1 && cntXZ == 1 && cntYZ == 1 && !stopping){
             for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
                 ND280SFGDHit* hit = listOfHits[ihit];
@@ -478,6 +586,9 @@ void crosstalkAna() {
                 HI_HIT_CNT++;
                 for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
                     if(listOfHits[jhit]->GetView() != 1) continue;
+                    #ifdef ONLY_MPPC_I
+                        if (hit->GetZ() < 24) continue;
+                    #endif
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) HI_CT_CNT++;
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) HI_CT_CNT2++;
                 }
@@ -485,7 +596,7 @@ void crosstalkAna() {
         }
 
         // Not stopping and LI
-        if(mode == 0 && cntXZ == 1 && cntYZ == 1 && !stopping){
+        if(mode == 0 && cntXZ == 1 && cntYZ == 1 /*&& !stopping*/){
             for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
                 ND280SFGDHit* hit = listOfHits[ihit];
                 if(hit->GetView() != 1) continue;
@@ -494,6 +605,9 @@ void crosstalkAna() {
                 LI_HIT_CNT++;
                 for(uint jhit = 0; jhit < listOfHits.size(); jhit++){
                     if(listOfHits[jhit]->GetView() != 1) continue;
+                    #ifdef ONLY_MPPC_I
+                        if (hit->GetZ() < 24) continue;
+                    #endif
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==1) LI_CT_CNT++;
                     if(hit->GetZ() == listOfHits[jhit]->GetZ() && abs(listOfHits[jhit]->GetX() -xPos) ==2) LI_CT_CNT2++;
                 }
@@ -622,6 +736,9 @@ void crosstalkAna() {
 
             for(size_t i=0; i<listOfHits.size(); i++){
                 ND280SFGDHit* hit = listOfHits[i];
+
+                //if(hit->GetCharge() != hit->GetLG_pe() && hit->GetCharge() != hit->GetHG_pe()) hit->SetCharge(10000);
+                //if(hit->GetCharge() == hit->GetHG_pe()) hit->SetCharge(10000);
 
                 if(hit->GetView() == 0){
                     hXY->Fill(hit->GetX(),hit->GetY(),hit->GetCharge());
@@ -987,18 +1104,67 @@ void crosstalkAna() {
 
     TCanvas* c5 = new TCanvas("dEdL");
     c5->cd(); 
-    h_dedz->Draw("HIS");
+    h_dedz->Draw("HIST");
     TString fname = prefix + "dEdL.pdf";
     c5->SaveAs(fname.Data());
     c5->Update();
-    c5->WaitPrimitive();
+
+    TCanvas* c6 = new TCanvas("RQ");
+    c6->Divide(2,1);
+    c6->cd(1);
+
+    h_PE_ALL_0->SetLineColor(kBlack);
+    h_PE_ALL_1->SetLineColor(kBlue);
+    h_PE_ALL_2->SetLineColor(kRed);
+    h_PE_ALL_3->SetLineColor(kBlack);
+    h_PE_ALL_4->SetLineColor(kBlue);
+    h_PE_ALL_5->SetLineColor(kRed);
+
+    h_PE_ALL_2->Draw("HIST"); 
+    h_PE_ALL_0->Draw("HIST same"); 
+    h_PE_ALL_1->Draw("HIST same"); 
+
+    c6->cd(2);
+    h_PE_ALL_4->Draw("HIST"); 
+    h_PE_ALL_3->Draw("HIST same"); 
+    h_PE_ALL_5->Draw("HIST same"); 
+
+    TString c6_name = prefix + "dEdL.pdf";
+    c6->Update();
+    c6->SaveAs(c6_name.Data());
+
+    TCanvas *c7 = new TCanvas("Q type");
+    c7->cd();
+    h_ChargeType[0]->SetLineColor(kBlack);
+    h_ChargeType[1]->SetLineColor(kBlue);
+    h_ChargeType[2]->SetLineColor(kRed);
+    h_ChargeType[0]->Draw("HIST");
+    h_ChargeType[1]->Draw("HIST same");
+    h_ChargeType[2]->Draw("HIST same");
+
 
     /// ------------END--------------
     FileInput->Close();
+    TFile *FileOutput  = new TFile(fileOut.Data(),"RECREATE");
+    FileOutput->cd();
+    h_PE_ALL_0->Write();
+    h_PE_ALL_1->Write();
+    h_PE_ALL_2->Write();
+    h_PE_ALL_3->Write();
+    h_PE_ALL_4->Write();
+    h_PE_ALL_5->Write();
+    for(auto x:h_PE_ch) x->Write();
+    FileOutput->Close();
+
+    c6->WaitPrimitive();
 
     time = ( clock() - time ) / CLOCKS_PER_SEC;
     cout << std::setprecision(8) << "Elapsed time: " << time << endl;
 
+    cout << "HG: " << HG << endl;
+    cout << "LG: " << LG << endl;
+    cout << "ToT: " << ToT << endl;
+ 
     if(!jobMode){
         cout << "This macro remains open until it is manually closed with Ctrl+C\nallowing to watch the output on the output Canvas.\nTo avoid this, use option '-j'." << endl;
         return;

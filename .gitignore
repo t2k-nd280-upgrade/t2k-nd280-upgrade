@@ -40,16 +40,15 @@ vis_cluster_*
 *.json
 *.DS_Store
 
-#personal environment
-mypath.sh
-
 #output files
 *.wrl
 *.root
 mybuild
 .vscode
 t2k_nd280-upgrade.code-workspace
-build
+build/app
+build/CMakeFiles
+*.cmake
 
 #editor files
 *.backup

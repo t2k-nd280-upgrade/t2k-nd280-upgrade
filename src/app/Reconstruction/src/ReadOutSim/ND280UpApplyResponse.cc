@@ -61,59 +61,56 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
   ND280UpTargReadOut TargetReadOut;
   TargetReadOut.SetTargType(ftargetid);
 
-  // find the light position in the local frame
+  // Get the light position in the local frame and 
+  // calculate the position of the correspding MPPC (at it's bin center) 
+  
   double lightX = lightPos.x();
   double lightY = lightPos.y();
   double lightZ = lightPos.z();
   
-  // use the light position in the local frame to find the bin centers
-  // of the hit in X, Y and Z
-  double hitX = -9999999999;
-  double hitY = -9999999999;
-  double hitZ = -9999999999;
+  double mppcX = -9999999999;
+  double mppcY = -9999999999;
+  double mppcZ = -9999999999;
   
-  if( ftargetid==nd280upconv::kSuperFGD ||
-      ftargetid==nd280upconv::kProto ){ // SuperFGD
-    //persistencyManager->GetHitPosXY(lightX,lightY,hitX,hitY);
-    //persistencyManager->GetHitPosYZ(lightY,lightZ,hitY,hitZ);
-    GetHitPosXY(lightX,lightY,hitX,hitY);
-    GetHitPosYZ(lightY,lightZ,hitY,hitZ);
+  if( ftargetid==nd280upconv::kSuperFGD ){ // SuperFGD
+    //persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
+    //persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
+    GetHitPosXY(lightX,lightY,mppcX,mppcY);
+    GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
   }
   else if( ftargetid==nd280upconv::kSciFi ||
 	   ftargetid==nd280upconv::kFGDlike ){ // SciFi_XZ or FGDlike_XZ
-    //persistencyManager->GetHitPosXY(lightX,lightY,hitX,hitY);
-    //persistencyManager->GetHitPosYZ(lightY,lightZ,hitY,hitZ);
-    GetHitPosXY(lightX,lightY,hitX,hitY);
-    GetHitPosYZ(lightY,lightZ,hitY,hitZ);
+    //persistencyManager->GetHitPosXY(lightX,lightY,mppcX,mppcY);
+    //persistencyManager->GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
+    GetHitPosXY(lightX,lightY,mppcX,mppcY);
+    GetHitPosYZ(lightY,lightZ,mppcY,mppcZ);
   }
-
+  TVector3 MPPCLocalPosition(mppcX,mppcY,mppcZ);  
+  
   double edep_q = edep;
   
-  // Calculate the # of photons that reach the MPPCs (X,Y,Z)
-    
-  double photX=0.; double distX=0.; // photons along fiber X; distance to MPPC from photons' source along X
-  double photY=0.; double distY=0.; // photons along fiber Y; distance to MPPC from photons' source along Y
-  double photZ=0.; double distZ=0.; // photons along fiber Z; distance to MPPC from photons' source along Z 
-  double peX=0.; double peY=0.; double peZ=0.;// photoelectons produced in X, Y and Z MPPCs
-  double timepeX=0.; double timepeY=0.; double timepeZ=0.;// time photoelectrons were produced in X, Y and Z MPPCs
-  // Calculate the distance from the photons' origin to the MPPCs 
-  if( ftargetid==nd280upconv::kSuperFGD ||
-      ftargetid==nd280upconv::kProto ){ // SuperFGD
+  // Calculate the # of p.e. that reach the MPPC (X,Y,Z)    
+  
+  double peX=0.; double distX=0.; double timepeX=0.;// pe along fiber X
+  double peY=0.; double distY=0.; double timepeY=0.;// pe along fiber Y
+  double peZ=0.; double distZ=0.; double timepeZ=0.;// pe along fiber Z
+  
+  if( ftargetid==nd280upconv::kSuperFGD ){ // SuperFGD
     //distX = lightX - persistencyManager->GetMPPCPosX(); 
     //distY = lightY - persistencyManager->GetMPPCPosY(); 
     //distZ = lightZ - persistencyManager->GetMPPCPosZ(); 
-    distX = lightX - GetMPPCPosX(hitZ); 
-    distY = lightY - GetMPPCPosY(hitZ); 
-    distZ = lightZ - GetMPPCPosZ(hitX); 
+    distX = lightX - GetMPPCPosX(); 
+    distY = lightY - GetMPPCPosY(); 
+    distZ = lightZ - GetMPPCPosZ(); 
   }
   else if( ftargetid==nd280upconv::kSciFi ||
 	   ftargetid==nd280upconv::kFGDlike ){ // SciFi_XZ or FGDlike_XZ    
     //distX = lightX - persistencyManager->GetMPPCPosX(); 
     //distY = lightY - persistencyManager->GetMPPCPosY(); 
     //distZ = lightZ - persistencyManager->GetMPPCPosZ();     
-    distX = lightX - GetMPPCPosX(hitZ); 
-    distY = lightY - GetMPPCPosY(hitZ); 
-    distZ = lightZ - GetMPPCPosZ(hitX);     
+    distX = lightX - GetMPPCPosX(); 
+    distY = lightY - GetMPPCPosY(); 
+    distZ = lightZ - GetMPPCPosZ();     
   }
   
   //////////////////////////////////////////////
@@ -134,31 +131,32 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     exit(1);
   }
   
-  // light attenuation (Birks' formula) and conversion of edep to photons 
-  double photons = TargetReadOut.ApplyScintiResponse(edep_q,steplength,charge); 
-  if(steplength == -1){
-    photons = edep;
+  // light attenuation (Birks' formula)
+  double pe = TargetReadOut.ApplyScintiResponse(edep_q,steplength,charge); 
+  if( steplength == -1){
+    pe = edep;
   }
-
-  if( ftargetid==nd280upconv::kSuperFGD ||
-      ftargetid==nd280upconv::kProto ){ // SuperFGD
-    photX = photons;
-    photY = photons;
-    photZ = photons;
+  
+  if( ftargetid==nd280upconv::kSuperFGD ){ // SuperFGD
+    peX = pe;
+    peY = pe;
+    peZ = pe;
     
     timepeX = prestepTime;
     timepeY = prestepTime;
     timepeZ = prestepTime;
     
     // light collection + attenuation
-    TargetReadOut.ApplyFiberResponse(photX,timepeX,distX, fDetectorXsize); // along X fiber
-    TargetReadOut.ApplyFiberResponse(photY,timepeY,distY, fDetectorYsize); // along Y fiber
-    TargetReadOut.ApplyFiberResponse(photZ,timepeZ,distZ, fDetectorZsize); // along Z fiber
+    TargetReadOut.ApplyFiberResponse(peX,timepeX,distX, fDetectorXsize); // along X fiber
+    TargetReadOut.ApplyFiberResponse(peY,timepeY,distY, fDetectorYsize); // along Y fiber
+    TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ, fDetectorZsize); // along Z fiber
     
-    // MPPC efficiency. Converts photons to PE
-    peX = TargetReadOut.ApplyMPPCResponse(photX, 1);
-    peY = TargetReadOut.ApplyMPPCResponse(photY, GetMPPCType(hitZ));
-    peZ = TargetReadOut.ApplyMPPCResponse(photZ, 1);
+    // MPPC efficiency
+    TargetReadOut.ApplyMPPCResponse(peX);
+    TargetReadOut.ApplyMPPCResponse(peY);
+    TargetReadOut.ApplyMPPCResponse(peZ);
+
+    //std::cout << "peX: " << peX << ",peY: " << peY << ",peZ: " << peZ << std::endl;
     
   }
   else if( ftargetid==nd280upconv::kSciFi ||
@@ -172,34 +170,34 @@ void ND280UpApplyResponse::CalcResponse(TVector3 lightPos,int trkid,int parid,do
     
     // Propagation only along X
     if(touch_namedet.Contains(DetNameAlongX)){ // "FiberScintHoriz"
-      peX = photons; timepeX = prestepTime;
+      peX = pe; timepeX = prestepTime;
       peY = 0.; timepeY = 0.;
       peZ = 0.; timepeZ = 0.;	
       // light collection + attenuation
-      TargetReadOut.ApplyFiberResponse(photX,timepeX,distX);	
-      // MPPC efficiency. Converts photons to PE
-      peX = TargetReadOut.ApplyMPPCResponse(photX);
+      TargetReadOut.ApplyFiberResponse(peX,timepeX,distX);	
+      // MPPC efficiency
+      TargetReadOut.ApplyMPPCResponse(peX);
     }
     // Propagation only along Z
     else if(touch_namedet.Contains(DetNameAlongZ)){ //"FiberScintVert"
       peX = 0.; timepeX = 0.;
       peY = 0.; timepeY = 0.;
-      photZ = photons; timepeZ = prestepTime;	
+      peZ = pe; timepeZ = prestepTime;	
       // light collection + attenuation
-      TargetReadOut.ApplyFiberResponse(photZ,timepeZ,distZ);	
+      TargetReadOut.ApplyFiberResponse(peZ,timepeZ,distZ);	
       // MPPC efficiency
-      peZ = TargetReadOut.ApplyMPPCResponse(photZ);
+      TargetReadOut.ApplyMPPCResponse(peZ);
     }
     else{
       cout << "ND280UpApplyResponse::ProcessHits" << endl;
       cout << "The hit is outside both direction fibers!!!" << endl;
-      exit(1);    
+      //exit(1);    
     }            
   } // if SuperFGD || SciFi ...
   
   int trackid = trkid; 
   
-  fHitPos = TVector3(hitX,hitY,hitZ); 
+  fHitPos = TVector3(MPPCLocalPosition.x(),MPPCLocalPosition.y(),MPPCLocalPosition.z());
   fHitPE = TVector3(peX,peY,peZ);
   fHitTime = TVector3(timepeX,timepeY,timepeZ);
   fHitTrkID = trackid;
@@ -235,7 +233,6 @@ void ND280UpApplyResponse::SetMPPCProj2D_YZ(TH2F *h2d){
     fDetectorZsize = fMPPCProj2D_YZ->GetYaxis()->GetBinUpEdge(fMPPCProj2D_YZ->GetYaxis()->GetLast());
 }
 
-// Takes the point light was produced at and returns the centers of the X and Y bins the point is in
 void ND280UpApplyResponse::GetHitPosXY(double lightX,double lightY, double &mppcX,double &mppcY){ 
   if(fMPPCProj2D_XY){
     int binX = fMPPCProj2D_XY->GetXaxis()->FindBin(lightX);
@@ -250,7 +247,6 @@ void ND280UpApplyResponse::GetHitPosXY(double lightX,double lightY, double &mppc
   }
 }
 								  
-// Takes the point light was produced at and returns the centers of the X and Z bins the point is in
 void ND280UpApplyResponse::GetHitPosXZ(double lightX,double lightZ, double &mppcX,double &mppcZ){
   if(fMPPCProj2D_XZ){
     int binX = fMPPCProj2D_XZ->GetXaxis()->FindBin(lightX);
@@ -265,7 +261,6 @@ void ND280UpApplyResponse::GetHitPosXZ(double lightX,double lightZ, double &mppc
   }
 }
 
-// Takes the point light was produced at and returns the centers of the Y and Z bins the point is in
 void ND280UpApplyResponse::GetHitPosYZ(double lightY,double lightZ, double &mppcY,double &mppcZ){
   if(fMPPCProj2D_YZ){
     int binY = fMPPCProj2D_YZ->GetXaxis()->FindBin(lightY);
@@ -310,27 +305,12 @@ TH2F *ND280UpApplyResponse::GetMPPCProj2D_YZ(){
 
 // Assume the MPPC read-out plane is at x,y,z<0
 // Assume at least 2 projections exist
-double ND280UpApplyResponse::GetMPPCPosX(double Zpos){
+double ND280UpApplyResponse::GetMPPCPosX(){
   if(fMPPCProj2D_XY){
-    if ( ftargetid==nd280upconv::kProto ){
-      // account for staggering of MPPCs either side of the detector
-      if ((int)floor(Zpos)%2 == 1)
-        return fMPPCProj2D_XY->GetXaxis()->GetBinLowEdge(1);
-      else
-        return fMPPCProj2D_XY->GetXaxis()->GetBinUpEdge(fMPPCProj2D_XY->GetXaxis()->GetLast());
-    }
-    else
-      return fMPPCProj2D_XY->GetXaxis()->GetBinLowEdge(1);
+    return fMPPCProj2D_XY->GetXaxis()->GetBinLowEdge(1);
   }
   else if(fMPPCProj2D_XZ){
-    if ( ftargetid==nd280upconv::kProto ){
-      if ((int)floor(Zpos)%2 == 1)
-        return fMPPCProj2D_XZ->GetXaxis()->GetBinLowEdge(1);
-      else
-        return fMPPCProj2D_XZ->GetXaxis()->GetBinUpEdge(fMPPCProj2D_XZ->GetXaxis()->GetLast());
-    }
-    else
-      return fMPPCProj2D_XZ->GetXaxis()->GetBinLowEdge(1);
+    return fMPPCProj2D_XZ->GetXaxis()->GetBinLowEdge(1);
   }
   else{
     cout << "The projection for the MPPC X position is not available!" << endl;
@@ -340,27 +320,12 @@ double ND280UpApplyResponse::GetMPPCPosX(double Zpos){
   return 0;
 }
 
-double ND280UpApplyResponse::GetMPPCPosY(double Zpos){
+double ND280UpApplyResponse::GetMPPCPosY(){
   if(fMPPCProj2D_XY){
-    if ( ftargetid==nd280upconv::kProto ){
-      // account for staggering of MPPCs either side of the detector
-      if ((int)floor(Zpos)%2 == 0)
-        return fMPPCProj2D_XY->GetYaxis()->GetBinLowEdge(1);
-      else
-        return fMPPCProj2D_XY->GetYaxis()->GetBinUpEdge(fMPPCProj2D_XY->GetYaxis()->GetLast());
-    }
-    else
-      return fMPPCProj2D_XY->GetYaxis()->GetBinLowEdge(1);
+    return fMPPCProj2D_XY->GetYaxis()->GetBinLowEdge(1);
   }
   else if(fMPPCProj2D_YZ){
-    if ( ftargetid==nd280upconv::kProto ){
-      if ((int)floor(Zpos)%2 == 0)
-        return fMPPCProj2D_YZ->GetYaxis()->GetBinLowEdge(1);
-      else
-        return fMPPCProj2D_YZ->GetYaxis()->GetBinUpEdge(fMPPCProj2D_YZ->GetYaxis()->GetLast());
-    }
-    else
-      return fMPPCProj2D_YZ->GetYaxis()->GetBinLowEdge(1);
+    return fMPPCProj2D_YZ->GetXaxis()->GetBinLowEdge(1);
   }
   else{
     cout << "The projection for the MPPC Y position is not available!" << endl;
@@ -370,27 +335,12 @@ double ND280UpApplyResponse::GetMPPCPosY(double Zpos){
   return 0;
 }
 
-double ND280UpApplyResponse::GetMPPCPosZ(double Xpos){
+double ND280UpApplyResponse::GetMPPCPosZ(){
   if(fMPPCProj2D_XZ){
-    if ( ftargetid==nd280upconv::kProto ){
-      // account for staggering of MPPCs either side of the prototype
-      if ((int)floor(Xpos)%2 == 0)
-        return fMPPCProj2D_XZ->GetZaxis()->GetBinLowEdge(1);
-      else
-        return fMPPCProj2D_XZ->GetZaxis()->GetBinUpEdge(fMPPCProj2D_XZ->GetZaxis()->GetLast());
-    }
-    else
-      return fMPPCProj2D_XZ->GetZaxis()->GetBinLowEdge(1);
+    return fMPPCProj2D_XZ->GetYaxis()->GetBinLowEdge(1);
   }
   else if(fMPPCProj2D_YZ){
-    if ( ftargetid==nd280upconv::kProto ){
-      if ((int)floor(Xpos)%2 == 0)
-        return fMPPCProj2D_YZ->GetZaxis()->GetBinLowEdge(1);
-      else
-        return fMPPCProj2D_YZ->GetZaxis()->GetBinUpEdge(fMPPCProj2D_YZ->GetZaxis()->GetLast());
-    }
-    else
-      return fMPPCProj2D_XZ->GetZaxis()->GetBinLowEdge(1);
+    return fMPPCProj2D_YZ->GetYaxis()->GetBinLowEdge(1);
   }
   else{
     cout << "The projection for the MPPC Z position is not available!" << endl;
@@ -398,24 +348,6 @@ double ND280UpApplyResponse::GetMPPCPosZ(double Xpos){
     exit(1);
   }
   return 0;
-}
-
-// return the MPPC type in the XZ plane using the Z position of the MPPC
-int ND280UpApplyResponse::GetMPPCType(double Z){
-  if (ftargetid==nd280upconv::kProto){
-    if (Z < 16.)
-      return 2;
-    else if (Z < 24.)
-      return 3;
-    else if (Z < 48.)
-      return 1;
-    else{
-      cout << "Z value outside of possible range" << endl;
-      exit(1);
-    }
-  }
-  else
-    return 1;
 }
 
 ///////////////////////////

@@ -7,7 +7,7 @@
 #include <TRandom3.h>
 
 // 0 - Full size SuperFGD 1 - 5x5x5 2 - 24x8x48
-#define PROTO 0
+#define PROTO 2
 #define ELECSIM
 #define CROSSTALK 0
 
@@ -24,13 +24,12 @@ public:
   
   double ApplyScintiResponse(double &edep,double steplength,double charge);  
   void ApplyFiberResponse(double &nphot,double &time,double x, double DetSize = 0.);
-  int ApplyMPPCResponse(double npe, int MPPC_type = 1);
+  void ApplyMPPCResponse(double &npe);
 
 private:
  
   void BirksSaturation(double &edeposit,double steplength,double charge);
   double EdepToPhot(double edep);
-  void ComputeHitTime(double &time, double x, double q);
   
   void ApplyFiberAttenuation(double &nphot,double x, double DetSize = 0.);
   void ApplyFiberTime(double &time,double x);
