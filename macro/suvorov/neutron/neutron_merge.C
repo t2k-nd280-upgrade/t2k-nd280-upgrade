@@ -15,11 +15,13 @@
 
 const float MIP_LY_AV3 = 40;
 
+const float m = 939.565413;
+
 using namespace std;
 
 void neutron_merge() {
   string file_in_str    = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v29-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root";
-  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v36.root";
+  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v40.root";
 
   TFile* f = new TFile("/t2k/users/suvorov/AnalysisResults/neutron_ekin_spectrum.root", "READ");
   TH1F* h = (TH1F*)f->Get("h1");
@@ -27,7 +29,7 @@ void neutron_merge() {
   TFile* file = new TFile(file_in_str.c_str(), "READ");
 
   const Int_t Ndist = 9;
-  float distance_cut[Ndist];
+  double distance_cut[Ndist];
   distance_cut[0] = 0.;
   distance_cut[1] = 10.;
   distance_cut[2] = 20.;
@@ -99,6 +101,21 @@ void neutron_merge() {
   TH2F* LeverArm_time_ly  = new TH2F("LAvsTime_c", "time vs Lever arm vs ", 300, 0., 300., 500, -200., 300.);
 
   TH1F* n_fibers_h        = new TH1F("n_fibers", "number of channels", 500, 0., 500.);
+
+  TH2F* time_dist         = new TH2F("TimeDist", "Time vs Distance", 200, 0., 200., 100, 0., 20.);
+  TH2F* MomSm_dist        = new TH2F("MomSmDist", "dP smear vs distance", 200, 0., 200., 100, -1., 1.);
+
+  TH1F* e_dist_slices[Ndist];
+  for (auto i = 0; i < Ndist; ++i)
+    e_dist_slices[i] = new TH1F(Form("e_dist_sl_%i", i), "", 400, 0., 800.);
+
+  TH2F* e_dist_master = new TH2F("e_dist_master", "", Ndist-1, distance_cut, 400, 0., 800.);
+
+  TH1F* beta_dist_slices[Ndist];
+  for (auto i = 0; i < Ndist; ++i)
+    beta_dist_slices[i] = new TH1F(Form("beta_dist_sl_%i", i), "", 400, 0., 1.);
+
+  TH2F* beta_dist_master = new TH2F("beta_dist_master", "", Ndist-1, distance_cut, 400, 0., 1.);
 
   // do rebinning
   Int_t rebin_Y = 5;
@@ -200,6 +217,10 @@ void neutron_merge() {
     for (Int_t entryID = 0; entryID < NEntries; ++entryID) {
       tree->GetEntry(entryID);
 
+      // event was not reconstructed as no light observed
+      if (first_hit_time == 1e+09)
+        continue;
+
       // fill histo 1 time
       if (distID == 0) {
          
@@ -210,26 +231,50 @@ void neutron_merge() {
         Float_t fht = gen->Gaus(first_hit_time, res_l);
         //Float_t fht = first_hit_time;
         LeverArm_time->Fill(dist_cubes, fht);
-        if (light_tot / 3. > 40.)
+        if (light_tot / 3. > 40.) {
           LeverArm_time_ly->Fill(dist_cubes, fht);
+          time_dist->Fill(dist_cubes, first_hit_time);
+
+          Float_t beta  = dist_cubes / (fht * 30.);
+          Float_t ekin2 = sqrt(m*m / (1 - beta*beta)) - m;
+
+          if (ekin2 == ekin2) {
+            Float_t mom_reco    = sqrt(ekin2*ekin2 + 2 * ekin2 * m);
+            Float_t mom_true    = sqrt(ekin*ekin + 2 * ekin * m);
+
+            TVector3 p_true(dir_true[0], dir_true[1], dir_true[2]);
+            p_true *= mom_true;
+            Float_t dp_true = sqrt(p_true.x()*p_true.x() + p_true.y()*p_true.y());
+
+            TVector3 p_reco(dir_reco[0], dir_reco[1], dir_reco[2]);
+            p_reco *= mom_reco;
+            Float_t dp_reco = sqrt(p_reco.x()*p_reco.x() + p_reco.y()*p_reco.y());
+
+            MomSm_dist->Fill(dist_cubes, (dp_reco - dp_true) / dp_true);
+          }
+        }
       }
   
       // selection on distance (cm)
       if (distID != 8)
-        if (dist_cubes < distance_cut[distID])// || dist_cubes > distance_cut[distID+1])
+        if (dist_cubes < distance_cut[distID] || dist_cubes > distance_cut[distID+1])
           continue;
 
-      if (distID == 8 && (dist_cubes < 50. || dist_cubes > 100.))
+      if (distID == 8 && (dist_cubes < 70. || dist_cubes > 100.))
         continue;
 
       reco_first->Fill(ekin, first_sc_reco);
       reco_first_n->Fill(ekin);
   
       eff_e_cos->Fill(costheta, ekin);
+
+      e_dist_slices[distID]->Fill(ekin);
+
+      beta_dist_slices[distID]->Fill(sqrt(ekin*ekin + 2*ekin*m) / (ekin + m));
   
       //beta = neutron_dist_true / (neutron_time * 30.);
       beta = dist_cubes / (first_hit_time * 30.);
-      ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
+      ekin2 = sqrt(m*m / (1 - beta*beta)) - m;
       energy_resol[0]->Fill(ekin, ekin2);
       energy_resol_rel[0]->Fill(ekin, ekin2/ekin - 1.);
       energy_resol_rebin[0]->Fill(ekin, ekin2);
@@ -316,7 +361,7 @@ void neutron_merge() {
 
         beta = dist_cubes / (time * 30.);
 
-        ekin2 = sqrt(939.565379*939.565379 / (1 - beta*beta)) - 939.565379;
+        ekin2 = sqrt(m*m / (1 - beta*beta)) - m;
 
         energy_resol[resID]->Fill(ekin, ekin2);
         energy_resol_rel[resID]->Fill(ekin, ekin2/ekin - 1.);
@@ -408,8 +453,8 @@ void neutron_merge() {
       graph[resID]->SetMinimum(0.);
       graph[resID]->Draw("ap");
       gPad->Update();
-      graph[resID]->Write(Form("smearing_graph_%i", resID));
-      graph_resol[resID]->Write(Form("resol_graph_%i", resID));
+      //graph[resID]->Write(Form("smearing_graph_%i", resID));
+      //graph_resol[resID]->Write(Form("resol_graph_%i", resID));
 
       graph_resol[resID]->Draw("ap");
       graph_resol[resID]->GetYaxis()->SetRangeUser(0., 0.5);
@@ -580,6 +625,37 @@ void neutron_merge() {
 
   LeverArm_time->Write();
   LeverArm_time_ly->Write();
+
+  time_dist->Write();
+
+  MomSm_dist->Write();
+
+  MomSm_dist->RebinX(4);
+  TGraph* gr = new TGraph();
+  gr->SetName("pTrms");
+  for (int i = 1; i < MomSm_dist->GetXaxis()->GetNbins(); ++i) {
+    TH1D* temp_histo = MomSm_dist->ProjectionY(Form("proj_%i", i), i, i);
+    gr->SetPoint(gr->GetN(), MomSm_dist->GetXaxis()->GetBinCenter(i), temp_histo->GetRMS());
+  }
+  gr->Write();
+
+  for (auto i = 0; i < Ndist; ++i) {
+    e_dist_slices[i]->Scale(1./e_dist_slices[i]->Integral());
+    for (auto bin = 1; bin <= e_dist_slices[i]->GetNbinsX(); ++bin) {
+      e_dist_master->SetBinContent(i+1, bin, e_dist_slices[i]->GetBinContent(bin));
+    }
+  }
+
+  e_dist_master->Write();
+
+  for (auto i = 0; i < Ndist; ++i) {
+    beta_dist_slices[i]->Scale(1./beta_dist_slices[i]->Integral());
+    for (auto bin = 1; bin <= beta_dist_slices[i]->GetNbinsX(); ++bin) {
+      beta_dist_master->SetBinContent(i+1, bin, beta_dist_slices[i]->GetBinContent(bin));
+    }
+  }
+
+  beta_dist_master->Write();
 
   file_out->Close();
   file->Close();
