@@ -34,7 +34,7 @@ foreach (@ARGV) {
 }
 
 # wheter you want to merge all files into one and delete all the other output
-$merge_output = 1;
+$merge_output = 0;
 
 $resource        = "interactive"                 unless defined $resource;
 
@@ -58,7 +58,7 @@ $detector        = 0   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2
 $debug           = 0   unless defined $debug; # flag for debugging output: 0 --> NO printout, 1 --> printout
 $debug_plot      = 0   unless defined $debug_plot; # flag for debugging plots: 0 --> NO, 1 --> YES
 
-$cut_truthfv     = 1   unless defined $cut_truthfv;
+$cut_truthfv     = 0   unless defined $cut_truthfv;
   
 ##################################
 
@@ -67,9 +67,9 @@ while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
-    $job_dir = "/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/ROOT"; 
+    $tag_mod = "${tag}_${irun}.root";
 
-    $arguments = "$softw_dir/bin/Reconstruction.exe sfgrrecon $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $tag";
+    $arguments = "$softw_dir/bin/Reconstruction.exe sfgrrecon $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv  $tag_mod";
     $command = "$arguments";
     
     print "\n";

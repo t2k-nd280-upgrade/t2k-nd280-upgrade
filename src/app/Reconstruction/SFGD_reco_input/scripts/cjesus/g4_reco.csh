@@ -1,7 +1,7 @@
 #!/bin/csh -f
 
 set j=0
-set f=1
+set f=150
 set n=1000
 set s=1
 set r=interactive
@@ -10,12 +10,12 @@ set mode="pion"
 set hostname="`hostname`"
 echo "hostname is: $hostname"
 
-set name="/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/SFGD_MC_FINAL_SIZE-0-Exp0-Nexpt1000.root"
-set outname="/nfs/neutrinos/cjesus/work/MC_output.root"
+set name="/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/PROD/PION_RECON/SFGD_MC.root"
+set outname="/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/RECO/PION_RECON/MC_output"
 
 if ($hostname == "ifae-pc") then
 	set name="/home/cjesus/Work/Data/SFGD_final/MC/PROD/PION_RECON/SFGD_MC.root"
-	set outname="/home/cjesus/Work/Data/SFGD_final/MC/RECO/MC_output"
+	set outname="/home/cjesus/Work/Data/SFGD_final/MC/RECO/PION_RECON/MC_output"
 endif
 
 if($mode == "pion") then
@@ -25,14 +25,10 @@ if($mode == "pion") then
 endif
 
 if( $1 == job ) then
-    set s=200
     set r=PIC
 endif
 
 while ($j < $s)
-    if( $1 == job) set name="/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/SFGD_MC_FINAL_SIZE-$j-Exp${j}000-Nexpt1000.root"
-    if ($j == 0 && $1 == job) set name="/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/SFGD_MC_FINAL_SIZE-$j-Exp0-Nexpt1000.root"
-    if( $1 == job) set outname="/nfs/neutrinos/cjesus/work/SFGD_MC_FINAL_SIZE/ROOT/MC_output-$j-Exp${j}000-Nexpt1000.root"
     set command = "$T2KND280UP/src/app/Reconstruction/SFGD_reco_input/submit/submit_nd280upgrade_targetreco --softw-dir $T2KND280UP --job-dir $PWD  --resource $r --nexpts $n --nruns $f --inputfile ${name} --tag ${outname}"
     echo ${command}
     ${command}

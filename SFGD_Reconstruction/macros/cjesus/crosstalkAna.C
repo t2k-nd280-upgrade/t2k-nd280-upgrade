@@ -4,6 +4,7 @@
 
 #include "../../utils/global_header.h"
 #include "../../utils/global_tools.C"
+#include "../../src/MergeHits.cc"
 #include <time.h> 
 #include <TMath.h>
 #include <TF1.h>
@@ -31,7 +32,7 @@ void crosstalkAna() {
     TString fileMC = "/Users/cjesus/Documents/Data/MC_output.root";
     TString prefix = "/Users/cjesus/Desktop/";
 
-    int maxEvents    = std::numeric_limits<int>::max();
+    int maxEvents    = 50000;//std::numeric_limits<int>::max();
     int maxSelEvents = std::numeric_limits<int>::max();
     int maxStore     = 100;
     int q_Cut        = 50;
@@ -252,10 +253,7 @@ void crosstalkAna() {
         std::cout << "**** Evt " << iev << " ****" << std::endl;
 
         data->GetEntry(iev);
-        //if(!dataType) 
-        inputEvent->MergeHits();
-        cout << "NUMHITS:" << endl;
-        cout << "numhits:" << inputEvent->GetHits().size() <<endl;
+        if(!dataType) inputEvent->MergeHits();
 
         vector <ND280SFGDHit*> listOfHits;
 
@@ -318,6 +316,7 @@ void crosstalkAna() {
                 listOfHits.push_back(sfgdHit);
             }
             if(jumpNextEvent) {listOfHits.clear();continue;} // cout << "FIFO problem, jumping to next event." << endl; 
+            //else listOfHits = MergeHits(listOfHits,0);
         }
         cout << "size: " << listOfHits.size() << endl;
         if(listOfHits.size() < 60) {listOfHits.clear();continue;}  // not interested in small tracks, we want long ones.
@@ -521,7 +520,7 @@ void crosstalkAna() {
         }
 
         // LI sample
-         if(mode == 0 && cntXZ == 1 && cntYZ == 1){
+/*         if(mode == 0 && cntXZ == 1 && cntYZ == 1){
             for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
                 ND280SFGDHit* hit = listOfHits[ihit];
                 int view = hit->GetView();
@@ -533,7 +532,7 @@ void crosstalkAna() {
                     if(qhit == hit->GetLG_pe()) {LG++; h_ChargeType[0]->Fill(hit->GetLG_pe());}
                     if(qhit == hit->GetHG_pe()) {HG++; h_ChargeType[1]->Fill(hit->GetHG_pe());}
                     if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()) {ToT++; h_ChargeType[2]->Fill(hit->GetCharge());}
-                    if(qhit == hit->GetLG_pe()){
+                    if(qhit == hit->GetHG_pe()){
                         if(qhit<20) continue;
                         if(hit->GetView() == 0) h_PE_ALL_0->Fill(qhit);
                         if(hit->GetView() == 1) h_PE_ALL_1->Fill(qhit);
@@ -547,7 +546,7 @@ void crosstalkAna() {
                     if(hit->GetView() == 2) h_PE_ALL_2->Fill(qhit);
                 }
             }
-        }
+        }*/
 
          if(mode == 1 && cntXZ == 1 && cntYZ == 1){
             for(uint ihit = 0; ihit < listOfHits.size(); ihit++){
@@ -558,7 +557,7 @@ void crosstalkAna() {
                     if(qhit == hit->GetLG_pe()) {LG++; h_ChargeType[0]->Fill(hit->GetLG_pe());}
                     if(qhit == hit->GetHG_pe()) {HG++; h_ChargeType[1]->Fill(hit->GetHG_pe());}
                     if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()) {ToT++; h_ChargeType[2]->Fill(hit->GetCharge());}
-                    if(qhit == hit->GetLG_pe()){//if(qhit != hit->GetLG_pe() && qhit != hit->GetLG_pe()){
+                    if(qhit == hit->GetLG_pe() /*&& qhit != hit->GetHG_pe()*/){///if(qhit == hit->GetLG_pe()){
                         if(qhit<20) continue;
                         if(hit->GetView() == 0) h_PE_ALL_3->Fill(qhit);
                         if(hit->GetView() == 1) h_PE_ALL_4->Fill(qhit);

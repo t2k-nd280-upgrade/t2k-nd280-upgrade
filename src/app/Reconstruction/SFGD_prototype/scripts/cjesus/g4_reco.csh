@@ -1,7 +1,7 @@
 #!/bin/csh -f
 
 set j=0
-set f=1
+set f=450
 set n=1000
 set s=1
 set r=interactive

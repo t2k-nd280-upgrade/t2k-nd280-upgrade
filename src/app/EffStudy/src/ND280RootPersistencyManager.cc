@@ -1199,7 +1199,6 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   
   fEventTree->Fill();
     
-  //G4cout << "delete fND280UpEvent;" << G4endl;
 
 
 
@@ -1210,6 +1209,7 @@ bool ND280RootPersistencyManager::Store(const G4Event* anEvent) {
   delete fND280UpEvent;
   fND280UpEvent = NULL;
 
+  //G4cout << "delete fND280UpEvent;" << G4endl;
 
 
 

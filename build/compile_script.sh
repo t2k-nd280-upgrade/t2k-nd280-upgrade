@@ -70,5 +70,5 @@ echo ""
 
 make -j6
 
-cp $T2KND280UP/build/app/Reconstruction/ReconstructionApp $T2KND280UP/bin/Reconstruction.exe
-cp $T2KND280UP/build/app/EffStudy/EffStudyApp $T2KND280UP/bin/EffStudy.exe
+#cp $T2KND280UP/build/app/Reconstruction/ReconstructionApp $T2KND280UP/bin/Reconstruction.exe
+#cp $T2KND280UP/build/app/EffStudy/EffStudyApp $T2KND280UP/bin/EffStudy.exe

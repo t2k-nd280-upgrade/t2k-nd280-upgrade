@@ -99,7 +99,7 @@ G4double ND280Trajectory::GetRange() const {
 
 void ND280Trajectory::MarkTrajectory(bool save) {
 
-  //G4cout << "ND280Trajectory::MarkTrajectory" << G4endl;
+    //G4cout << "ND280Trajectory::MarkTrajectory" << G4endl;
 
     fSaveTrajectory = true;
     
