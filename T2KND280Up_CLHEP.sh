@@ -1,10 +1,10 @@
 #!bin/sh
 
 # Specify all the environment variables here!
-export GEANT4_DIR=$COMMON_BUILD_PREFIX
-export CLHEP_DIR=$COMMON_BUILD_PREFIX
-export CMT_DIR=$COMMON_BUILD_PREFIX
-export ROOT_DIR=$COMMON_BUILD_PREFIX
+export GEANT4_DIR=/Users/aoi/SOFT/GEANT4/geant4.10.01.p03-install
+export CLHEP_DIR=/Users/aoi/SOFT/CLHEP/clhep_install
+export CMT_DIR=/Users/aoi/SOFT/CMT
+export ROOT_DIR=/usr/local/root/pro
 
 # setup ROOT
 source $ROOT_DIR/bin/thisroot.sh
@@ -45,4 +45,5 @@ export LD_LIBRARY_PATH=$CLHEP_INCLUDE_DIR:$CLHEP_LIBRARY_DIR:$LD_LIBRARY_PATH
 export T2KND280UP=$1
 export T2KND280UP_SRC=$T2KND280UP/src/app/EffStudy
 export T2KND280UP_EVT=$T2KND280UP/src/app/nd280UpEvent
-export T2KND280UP_RUN=$2
+# export T2KND280UP_RUN=$2
+export T2KND280UP_REC=$T2KND280UP/src/app/Reconstruction

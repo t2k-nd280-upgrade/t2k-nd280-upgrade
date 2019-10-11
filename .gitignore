@@ -53,3 +53,5 @@ build/CMakeFiles
 #editor files
 *.backup
 *.undodir
+
+.tags
