@@ -48,6 +48,7 @@ mybuild
 t2k_nd280-upgrade.code-workspace
 build/app
 build/CMakeFiles
+build/*
 *.cmake
 
 #editor files
