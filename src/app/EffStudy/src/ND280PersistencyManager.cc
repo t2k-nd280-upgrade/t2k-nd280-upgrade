@@ -38,8 +38,8 @@ ND280PersistencyManager::ND280PersistencyManager()
     fGammaThreshold(20*CLHEP::MeV), // default nd280mc is 50*MeV 
     fNeutronThreshold(50*CLHEP::MeV),
     fTrajectoryPointAccuracy(1*CLHEP::cm), 
-    fSaveAllTraj(false), // not to store all the traj by default
-    fSaveAllHits(false), // not to store all the hits by default
+    fSaveAllTraj(true), // not to store all the traj by default // FIXME
+    fSaveAllHits(true), // not to store all the hits by default // FIXME
     fSaveAllPrimaryTrajectories(true) //default nd280mc is false
 
 {
