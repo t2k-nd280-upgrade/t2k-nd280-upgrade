@@ -347,7 +347,7 @@ int TrackReconstruction(int argc,char** argv)
    
   //
   
-  const int NEvtDisplTot = 10; //atoi(argv[5]); // max # of evt. displays 
+  const int NEvtDisplTot = 100; //atoi(argv[5]); // max # of evt. displays 
 
   int NTOTALTRACKSALL_1stLOOP = 0;
   int NTOTALTRACKSALL_2ndLOOP = 0;
@@ -880,7 +880,7 @@ int TrackReconstruction(int argc,char** argv)
     for(unsigned int i=0;i<fRecoTrack_hitXY.size();i++){
       fRecoTrack_hitXY[i].clear();
       for(unsigned int j=0;j<fRecoTrack_hitXY[i].size();j++){
-        fRecoTrack_hitXY[i][j].clear();
+				fRecoTrack_hitXY[i][j].clear();
       }
     }
     
@@ -981,9 +981,9 @@ int TrackReconstruction(int argc,char** argv)
       double length_true_mchit = 0.;
 
       if(trkid_prev != trkid){
-        posX_prev = posX;
-        posY_prev = posY;
-        posZ_prev = posZ;	
+				posX_prev = posX;
+				posY_prev = posY;
+				posZ_prev = posZ;	
       }
 
       double deltaX = posX - posX_prev;
@@ -1017,9 +1017,12 @@ int TrackReconstruction(int argc,char** argv)
       trkid = ApplyResponse.GetHitTrkID();            
       
       if(ievt<NEvtDisplTot){
-        hPEVsTime_x[ievt]->Fill(timepex,pex);
-        hPEVsTime_y[ievt]->Fill(timepey,pey);
-        hPEVsTime_z[ievt]->Fill(timepez,pez);
+				//hMPPCHits_XY[ievt]->Fill(poshitX,poshitY,pez); // pe along Z
+				//hMPPCHits_XZ[ievt]->Fill(poshitX,poshitZ,pey); // pe along Y
+				//hMPPCHits_YZ[ievt]->Fill(poshitY,poshitZ,pex); // pe along X	
+				hPEVsTime_x[ievt]->Fill(timepex,pex);
+				hPEVsTime_y[ievt]->Fill(timepey,pey);
+				hPEVsTime_z[ievt]->Fill(timepez,pez);
       }
 
       //////////////////////////////////////////////////
@@ -1034,28 +1037,31 @@ int TrackReconstruction(int argc,char** argv)
 
       bool used=false;
       for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
-        if(trkid==fRecoTrack_ID[itrk]) used=true; 
-      }
-      // Take this track. If has not been used, then add it to the fRecoTrack_ID vector and fill its information.
+				if(trkid==fRecoTrack_ID[itrk]) used=true; 
+      }     
       if(!used){
-         fRecoTrack_ID.push_back(trkid);
-         fRecoTrack_PDG.push_back(pdg);	
-         fRecoTrack_ParentID.push_back(parentid);	
-         fRecoTrack_true_length.push_back(0.);  // initialized. Sum of hit lenght later
-         fRecoTrack_true_edep.push_back(0.);    // initialized. Sum of hit lenght later
-         fRecoTrack_MPPCHit_XY.push_back((TH2F*)h2d_xy->Clone("h2d_xy"));
-         fRecoTrack_MPPCHit_XZ.push_back((TH2F*)h2d_xz->Clone("h2d_xz"));
-         fRecoTrack_MPPCHit_YZ.push_back((TH2F*)h2d_yz->Clone("h2d_yz"));
-         fTrueTrack_MCHit_XY.push_back((TGraph*)mygraph->Clone("MCHit"));
-         fTrueTrack_MCHit_XZ.push_back((TGraph*)mygraph->Clone("MCHit"));
-         fTrueTrack_MCHit_YZ.push_back((TGraph*)mygraph->Clone("MCHit"));
-         vector<double> singleHitXY;            // get hit (x,y,pe)
-         singleHitXY.push_back(poshitX);
-         singleHitXY.push_back(poshitY);
-         singleHitXY.push_back(pez);
-         vector< vector<double> > hitsXY;       // add hit to hit list    
-         hitsXY.push_back(singleHitXY);
-         fRecoTrack_hitXY.push_back(hitsXY);    // add hit list to trk (1 for each trk)	
+				fRecoTrack_ID.push_back(trkid);
+				fRecoTrack_PDG.push_back(pdg);	
+				fRecoTrack_ParentID.push_back(parentid);	
+
+				fRecoTrack_true_length.push_back(0.); // initialized. Sum of hit lenght later
+				fRecoTrack_true_edep.push_back(0.); // initialized. Sum of hit lenght later
+
+				fRecoTrack_MPPCHit_XY.push_back((TH2F*)h2d_xy->Clone("h2d_xy"));
+				fRecoTrack_MPPCHit_XZ.push_back((TH2F*)h2d_xz->Clone("h2d_xz"));
+				fRecoTrack_MPPCHit_YZ.push_back((TH2F*)h2d_yz->Clone("h2d_yz"));
+
+				fTrueTrack_MCHit_XY.push_back((TGraph*)mygraph->Clone("MCHit"));
+				fTrueTrack_MCHit_XZ.push_back((TGraph*)mygraph->Clone("MCHit"));
+				fTrueTrack_MCHit_YZ.push_back((TGraph*)mygraph->Clone("MCHit"));
+
+				vector<double> singleHitXY; // get hit (x,y,pe)
+				singleHitXY.push_back(poshitX);
+				singleHitXY.push_back(poshitY);
+				singleHitXY.push_back(pez);
+				vector< vector<double> > hitsXY; // add hit to hit list    
+				hitsXY.push_back(singleHitXY);
+				fRecoTrack_hitXY.push_back(hitsXY); // add hit list to trk (1 for each trk)	
       }
           
       // Find vector index of the track
@@ -1063,11 +1069,11 @@ int TrackReconstruction(int argc,char** argv)
           
       // Add hits to the track vector
       if(used){ // the first hit is already added
-         vector<double> infoXY; // get info of hit (x,y,pe)
-         infoXY.push_back(poshitX);
-         infoXY.push_back(poshitY);
-         infoXY.push_back(pez);
-         fRecoTrack_hitXY[idx].push_back(infoXY);
+				vector<double> infoXY; // get info of hit (x,y,pe)
+				infoXY.push_back(poshitX);
+				infoXY.push_back(poshitY);
+				infoXY.push_back(pez);
+				fRecoTrack_hitXY[idx].push_back(infoXY);
       }
 
       fRecoTrack_true_length[idx] += length_true_mchit; // initialized to 0 at first mc hit ( if(!used) )
@@ -1093,7 +1099,7 @@ int TrackReconstruction(int argc,char** argv)
     TH2F* hits_map_XZ = (TH2F*)h2d_xz->Clone("hits_map_XZ");
     TH2F* hits_map_YZ = (TH2F*)h2d_yz->Clone("hits_map_YZ");
 
-    for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
+  	for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
       hits_map_XY->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z
       hits_map_XZ->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
       hits_map_YZ->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
@@ -1102,31 +1108,40 @@ int TrackReconstruction(int argc,char** argv)
     // END OF FILLING HITS MAP
 
     if(ievt<NEvtDisplTot){
-      hMPPCHits_XY[ievt]->Add(hits_map_XY); // pe along Z
-      hMPPCHits_XZ[ievt]->Add(hits_map_XZ); // pe along Y
-      hMPPCHits_YZ[ievt]->Add(hits_map_YZ); // pe along X
-      for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
-        AddGraph(gMCHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z
-        AddGraph(gMCHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y
-        AddGraph(gMCHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X
-      }
-    }
+  	//if(fRecoTrack_PDG[itrk] == 2112){
+  	//if(fRecoTrack_ID[itrk] == 4){
+
+  		//cout << "Track PDG = " << fRecoTrack_PDG[itrk] << endl;
+  		//    for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
+  		hMPPCHits_XY[ievt]->Add(hits_map_XY); // pe along Z
+  		hMPPCHits_XZ[ievt]->Add(hits_map_XZ); // pe along Y
+  		hMPPCHits_YZ[ievt]->Add(hits_map_YZ); // pe along X
+  		for(unsigned int itrk=0;itrk<fRecoTrack_ID.size();itrk++){
+  			AddGraph(gMCHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z
+  			AddGraph(gMCHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y
+  			AddGraph(gMCHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X
+			}
+  //}
+   	}
 
     // Draw the Canvas
     if(ievt<NEvtDisplTot){
-      cMPPCHits_XY[ievt]->cd();
-      hMPPCHits_XY[ievt]->Draw("colz");
-      gMCHits_XY[ievt]->Draw("p same");
-      TargVtx_XY->Draw();
-      cMPPCHits_YZ[ievt]->cd();
-      hMPPCHits_YZ[ievt]->Draw("colz");
-      gMCHits_YZ[ievt]->Draw("p same");
-      TargVtx_YZ->Draw();
-      cMPPCHits_XZ[ievt]->cd();
-      hMPPCHits_XZ[ievt]->Draw("colz");
-      gMCHits_XZ[ievt]->Draw("p same");
-      TargVtx_XZ->Draw();
+  		cMPPCHits_XY[ievt]->cd();
+  		hMPPCHits_XY[ievt]->Draw("colz");
+  		gMCHits_XY[ievt]->Draw("p same");
+  		TargVtx_XY->Draw();
+
+  		cMPPCHits_YZ[ievt]->cd();
+  		hMPPCHits_YZ[ievt]->Draw("colz");
+  		gMCHits_YZ[ievt]->Draw("p same");
+  		TargVtx_YZ->Draw();
+
+  		cMPPCHits_XZ[ievt]->cd();
+  		hMPPCHits_XZ[ievt]->Draw("colz");
+  		gMCHits_XZ[ievt]->Draw("p same");
+  		TargVtx_XZ->Draw();
     }
+
 
     //
     // Loop over the Reco Tracks and reconstruct them
@@ -1160,10 +1175,11 @@ int TrackReconstruction(int argc,char** argv)
       int parid = fRecoTrack_ParentID[itrk];
 
       if(DEBUG){
-        cout << endl;
-        cout << "Track id: " << trkid << ", ";
-        cout << "PDG: " << pdg << ", ";
-        cout << "ParID: " << parid << ", ";
+				cout << endl;
+				cout << "Track id: " << trkid << ", ";
+				cout << "PDG: " << pdg << ", ";
+				cout << "ParID: " << parid << ", ";
+				//cout << "First MC hit: " << truth_first_mchit[0] << ", " << truth_first_mchit[1] << ", " << truth_first_mchit[2] << endl;
       }
           
       // Initialize the object for track reconstruction
@@ -1194,36 +1210,41 @@ int TrackReconstruction(int argc,char** argv)
 
       // Cut on the Truth OutFV
       if( UseTruthFV ){   // do it only for the first track to avoid multiple filling
-        bool IsTruthOutFV = false;
-        
-        // Inputs are: for each projections give the th2f with mppc hit and the tgraph with mc hit
-        // Analogous to define the OutFV in all the detectors same as for SuperFGD real OutFV cut
-        // Define a track In FV truth also by looking the Truth Vtx position
-        if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XY[itrk],TargVtx_X,TargVtx_Y);
-        if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],TargVtx_X,TargVtx_Z);
-        if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],TargVtx_Y,TargVtx_Z);
-        
-        // Define a track In FV truth by looking the MPPC hits: starting and stopping in FV
-        if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XY[itrk],fTrueTrack_MCHit_XY[itrk]); 
-        if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],fTrueTrack_MCHit_XZ[itrk]); 
-        if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],fTrueTrack_MCHit_YZ[itrk]); 		
-        
-        if( itrk==0 ){ // Fill only once per event
-          if(IsTruthOutFV){
-            hVtxOut_XY->Fill(TargVtx_X,TargVtx_Y);
-            hVtxOut_XZ->Fill(TargVtx_X,TargVtx_Z);
-            hVtxOut_YZ->Fill(TargVtx_Y,TargVtx_Z);
-          }
-          else{
-            hVtx_XY->Fill(TargVtx_X,TargVtx_Y);
-            hVtx_XZ->Fill(TargVtx_X,TargVtx_Z);
-            hVtx_YZ->Fill(TargVtx_Y,TargVtx_Z);
-          }
-        }
-        if(IsTruthOutFV){
-          if(DEBUG) cout << "Out the Truth FV --> skip it!!!" << endl;	  
-          continue; 
-        }
+
+				bool IsTruthOutFV = false;
+				
+				// Inputs are: for each projections give the th2f with mppc hit and the tgraph with mc hit
+				// Analogous to define the OutFV in all the detectors same as for SuperFGD real OutFV cut
+
+				// Define a track In FV truth also by looking the Truth Vtx position
+				if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XY[itrk],TargVtx_X,TargVtx_Y);
+				if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],TargVtx_X,TargVtx_Z);
+				if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],TargVtx_Y,TargVtx_Z);
+				
+				// Define a track In FV truth by looking the MPPC hits: starting and stopping in FV
+				if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XY[itrk],fTrueTrack_MCHit_XY[itrk]); 
+				if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_XZ[itrk],fTrueTrack_MCHit_XZ[itrk]); 
+				if(!IsTruthOutFV) IsTruthOutFV = nd280UpRecoTrack.CalcOutFVTrue(fRecoTrack_MPPCHit_YZ[itrk],fTrueTrack_MCHit_YZ[itrk]); 		
+
+  			     	//IsTruthOutFV = false; // CHANGED!!!
+
+				if( itrk==0 ){ // Fill only once per event
+				  if(IsTruthOutFV){
+				    hVtxOut_XY->Fill(TargVtx_X,TargVtx_Y);
+				    hVtxOut_XZ->Fill(TargVtx_X,TargVtx_Z);
+				    hVtxOut_YZ->Fill(TargVtx_Y,TargVtx_Z);
+				  }
+				  else{
+				    hVtx_XY->Fill(TargVtx_X,TargVtx_Y);
+				    hVtx_XZ->Fill(TargVtx_X,TargVtx_Z);
+				    hVtx_YZ->Fill(TargVtx_Y,TargVtx_Z);
+				  }
+				}
+
+				if(IsTruthOutFV){
+				  if(DEBUG) cout << "Out the Truth FV --> skip it!!!" << endl;	  
+				  continue; 
+				}
       }
 
       nd280UpRecoTrack.SetMPPCXY(fRecoTrack_MPPCHit_XY[itrk]);
@@ -1232,15 +1253,15 @@ int TrackReconstruction(int argc,char** argv)
       nd280UpRecoTrack.SetMinPE(2.);
       
       if(DetType == nd280upconv::kFGDlike){
-        nd280UpRecoTrack.SetTrackSeparationMin(10); // (mm) min track distance is 1 bar
+				nd280UpRecoTrack.SetTrackSeparationMin(10); // (mm) min track distance is 1 bar
       }
       else if(DetType == nd280upconv::kSuperFGD){
-        nd280UpRecoTrack.SetTrackSeparationMin(10); // (mm) min track distance is 1 cube
+				nd280UpRecoTrack.SetTrackSeparationMin(10); // (mm) min track distance is 1 cube
       }      
 
       // use the default separation if the input parameter is  < 0
       if(MinSeparation>=0.){ 
-        nd280UpRecoTrack.SetTrackSeparationMin(MinSeparation); 
+				nd280UpRecoTrack.SetTrackSeparationMin(MinSeparation); 
       }
       nd280UpRecoTrack.DoTracking(DetType); // run the tracking process
       
@@ -1251,24 +1272,38 @@ int TrackReconstruction(int argc,char** argv)
 
       // FIXME loop over reco tracks      
       for(unsigned int itrkoth=0;itrkoth<fRecoTrack_ID.size();itrkoth++){
-        if(itrkoth == itrk) continue; // don't test the separation on the same track
-        
-        // Check separation between current "itrk" and other tracks "itrkoth"
-        TH2F *hEventOth_XY = (TH2F*)fRecoTrack_MPPCHit_XY[itrkoth]->Clone("hEvent_XY");
-        TH2F *hEventOth_XZ = (TH2F*)fRecoTrack_MPPCHit_XZ[itrkoth]->Clone("hEvent_XZ");
-        TH2F *hEventOth_YZ = (TH2F*)fRecoTrack_MPPCHit_YZ[itrkoth]->Clone("hEvent_YZ");
-        
-        nd280UpRecoTrack.SetMPPCXY_Other(hEventOth_XY);
-        nd280UpRecoTrack.SetMPPCXZ_Other(hEventOth_XZ);
-        nd280UpRecoTrack.SetMPPCYZ_Other(hEventOth_YZ);
-        
-        nd280UpRecoTrack.DoTrackSeparation();
-        
-        delete hEventOth_XY; hEventOth_XY = 0;
-        delete hEventOth_XZ; hEventOth_XZ = 0;
-        delete hEventOth_YZ; hEventOth_YZ = 0;
-        isseparated = nd280UpRecoTrack.IsSeparated(); 
-        if(!isseparated) break; // if separated with 
+	
+				if(itrkoth == itrk) continue; // don't test the separation on the same track
+				
+				// Check separation between current "itrk" and other tracks "itrkoth"
+				
+				TH2F *hEventOth_XY = (TH2F*)fRecoTrack_MPPCHit_XY[itrkoth]->Clone("hEvent_XY");
+				TH2F *hEventOth_XZ = (TH2F*)fRecoTrack_MPPCHit_XZ[itrkoth]->Clone("hEvent_XZ");
+				TH2F *hEventOth_YZ = (TH2F*)fRecoTrack_MPPCHit_YZ[itrkoth]->Clone("hEvent_YZ");
+				
+				nd280UpRecoTrack.SetMPPCXY_Other(hEventOth_XY);
+				nd280UpRecoTrack.SetMPPCXZ_Other(hEventOth_XZ);
+				nd280UpRecoTrack.SetMPPCYZ_Other(hEventOth_YZ);
+
+				nd280UpRecoTrack.DoTrackSeparation();
+					
+				//TCanvas *c = new TCanvas();
+				//hEventOth_XY->Draw("colz");
+				//c->Print("hEventOth_XY.pdf");
+				
+				//hEventOth_XY->Add(fRecoTrack_MPPCHit_XY[itrk]);
+				
+				//TCanvas *c2 = new TCanvas();
+				//hEventOth_XY->Draw("colz");
+				//c2->Print("hEventBoth_XY.pdf");
+				  
+				delete hEventOth_XY; hEventOth_XY = 0;
+				delete hEventOth_XZ; hEventOth_XZ = 0;
+				delete hEventOth_YZ; hEventOth_YZ = 0;
+				
+				isseparated = nd280UpRecoTrack.IsSeparated(); 
+				
+				if(!isseparated) break; // if separated with 
       }
 
       // if the reco track is reconstructed 
@@ -1291,94 +1326,109 @@ int TrackReconstruction(int argc,char** argv)
       bool IsLastPtMomZero_truth = IsLastPtMomZero(nd280UpEvent,trkid); 
 
       if(DEBUG){
-        cout << endl;
-        cout << "Track ID: " << trkid << endl;
-        cout << "Reco: " << endl;
-        cout << " - # of hits:" << endl;
-        cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
-        cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
-        cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
-        cout << " - len: " << trklen_reco 
-             << " (" << trklen_recoX << "," << trklen_recoY << "," << trklen_recoZ << ")"
-             << ", edep: " << trkedep 
-             << ", costh = " << costh_reco 
-             << endl;
-        cout << "Truth: " << endl;
-        cout << " - pdg = " << pdg 
-	           << ", mom = " << mom_true
-	           << ", costh = " << costh_true
-	           << ", phi = " << phi_true
-	           << ", trk edep = " << trkedep_true	 
-	           << ", trk length = " << trklen_true	 
-	           << ", trk length SD = " << lengthSD_true
-	           << endl;
-        if(!isreco) cout << "Is not reconstructed!!!" << endl;
-        if(isoutfv) cout << "Is outfv!!!" << endl;
-        if(!isseparated) cout << "Is not separated!!!" << endl;
-        if(!isoutfv && !IsLastPtMomZero_truth) cout << "Truth Mom last point > 0!!!" << endl; // check fake stopping tracks 	
-      }
+				cout << endl;
+				cout << "Track ID: " << trkid << endl;
+				cout << "Reco: " << endl;
+				cout << " - # of hits:" << endl;
+				cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
+				cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
+				cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
+				cout << " - len: " << trklen_reco 
+				     << " (" << trklen_recoX << "," << trklen_recoY << "," << trklen_recoZ << ")"
+				     << ", edep: " << trkedep 
+				     << ", costh = " << costh_reco 
+				     << endl;
+				cout << "Truth: " << endl;
+				cout << " - pdg = " << pdg 
+				     << ", mom = " << mom_true
+				     << ", costh = " << costh_true
+				     << ", phi = " << phi_true
+				     << ", trk edep = " << trkedep_true	 
+				     << ", trk length = " << trklen_true	 
+				     << ", trk length SD = " << lengthSD_true
+				     << endl;
+				
+				if(!isreco) cout << "Is not reconstructed!!!" << endl;
+				if(isoutfv) cout << "Is outfv!!!" << endl;
+				if(!isseparated) cout << "Is not separated!!!" << endl;
+				
+				if(!isoutfv && !IsLastPtMomZero_truth) cout << "Truth Mom last point > 0!!!" << endl; // check fake stopping tracks 	
+  		}
 
       // Check fake stopping tracks: no hits in the last layers but last pt momentum non-zero
       if(DEBUGPLOT){
-        if(pdg==13 || pdg==211 || pdg==2212 || pdg==11){
-          if(!isoutfv && isreco && !IsLastPtMomZero_truth){
-            cout << "Event: " << ievt << endl;
-            cout << "Is not stopping!!! --> Truth Mom last point > 0!!!" << endl;
-            name = TString::Format("InFV_LastPtMomNONZERO_MPPCHit_XY_Evt%d_Trk%d_pdg%d.pdf",ievt,itrk,pdg);
-            TCanvas *cXY = new TCanvas("name","name");
-            fRecoTrack_MPPCHit_XY[itrk]->Draw("colz");
-            cXY->Print(name);
-            name = TString::Format("InFV_LastPtMomNONZERO_MPPCHit_XZ_Evt%d_Trk%d_pdg%d.pdf",ievt,itrk,pdg);
-            TCanvas *cXZ = new TCanvas("name","name");
-            fRecoTrack_MPPCHit_XZ[itrk]->Draw("colz");
-            cXZ->Print(name);
-            name = TString::Format("InFV_LastPtMomNONZERO_MPPCHit_YZ_Evt%d_Trk%d_pdg%d.pdf",ievt,itrk,pdg);
-            TCanvas *cYZ = new TCanvas("name","name");
-            fRecoTrack_MPPCHit_YZ[itrk]->Draw("colz");
-            cYZ->Print(name);
-          }
-        }
+	
+				if(pdg==13 || pdg==211 || pdg==2212 || pdg==11){
+				  
+				  if(!isoutfv && isreco && !IsLastPtMomZero_truth){
+				    
+				    cout << "Event: " << ievt << endl;
+				    cout << "Is not stopping!!! --> Truth Mom last point > 0!!!" << endl;
+				    
+				    name = TString::Format("InFV_LastPtMomNONZERO_MPPCHit_XY_Evt%d_Trk%d_pdg%d.pdf",ievt,itrk,pdg);
+				    TCanvas *cXY = new TCanvas("name","name");
+				    fRecoTrack_MPPCHit_XY[itrk]->Draw("colz");
+				    cXY->Print(name);
+				    
+				    name = TString::Format("InFV_LastPtMomNONZERO_MPPCHit_XZ_Evt%d_Trk%d_pdg%d.pdf",ievt,itrk,pdg);
+				    TCanvas *cXZ = new TCanvas("name","name");
+				    fRecoTrack_MPPCHit_XZ[itrk]->Draw("colz");
+				    cXZ->Print(name);
+				    
+				    name = TString::Format("InFV_LastPtMomNONZERO_MPPCHit_YZ_Evt%d_Trk%d_pdg%d.pdf",ievt,itrk,pdg);
+				    TCanvas *cYZ = new TCanvas("name","name");
+				    fRecoTrack_MPPCHit_YZ[itrk]->Draw("colz");
+				    cYZ->Print(name);
+				  }
+				}
       }
 
       if(DEBUG){
-        if(mom_true>3000 
-          && (pdg==211)
-          && !isoutfv 
-          && (!isreco || !isseparated)){
-          // InFV but not Reco
-          cout << "Evt ID: " << EvtID << endl;
-          cout << "pdg = " << pdg << endl;
-          cout << "trkid = " << trkid << endl;
-          cout << "This track is rejected though:"<< endl;
-          cout << " mom_true = " << mom_true << endl;
-          cout << " phi_true = " << phi_true << endl;
-          cout << " costh_true = " << costh_true << endl;
-          cout << " costh_reco = " << costh_reco << endl;
-          cout << " trk edep = " << trkedep_true << endl;	 
-          cout << " trk length = " << trklen_true << endl;	 
-          cout << " trklen_reco = " << trklen_reco << endl;
-          cout << " - # of hits:" << endl;
-          cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
-          cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
-          cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
-          if(!isreco) cout << "Is not reconstructed!!!" << endl;
-          if(isoutfv) cout << "Is outfv!!!" << endl;
-          if(!isseparated) cout << "Is not separated!!!" << endl;	
-          if(DEBUGPLOT){  
-            name = TString::Format("fRecoTrack_MPPCHit_XY_Evt%d_Trk%d.pdf",ievt,itrk);
-            TCanvas *cXY = new TCanvas(name,name);
-            fRecoTrack_MPPCHit_XY[itrk]->Draw("colz");
-            cXY->Print(name);
-            name = TString::Format("fRecoTrack_MPPCHit_XZ_Evt%d_Trk%d.pdf",ievt,itrk);
-            TCanvas *cXZ = new TCanvas(name,name);
-            fRecoTrack_MPPCHit_XZ[itrk]->Draw("colz");
-            cXZ->Print(name);
-            name = TString::Format("fRecoTrack_MPPCHit_YZ_Evt%d_Trk%d.pdf",ievt,itrk);
-            TCanvas *cYZ = new TCanvas(name,name);
-            fRecoTrack_MPPCHit_YZ[itrk]->Draw("colz");
-            cYZ->Print(name);	
-          }
-        }
+	
+				if(mom_true>3000 
+				   && (pdg==211)
+				   && !isoutfv 
+				   && (!isreco || !isseparated)){
+				  
+				  // InFV but not Reco
+				  
+				  cout << "Evt ID: " << EvtID << endl;
+				  cout << "pdg = " << pdg << endl;
+				  cout << "trkid = " << trkid << endl;
+				  cout << "This track is rejected though:"<< endl;
+				  cout << " mom_true = " << mom_true << endl;
+				  cout << " phi_true = " << phi_true << endl;
+				  cout << " costh_true = " << costh_true << endl;
+				  cout << " costh_reco = " << costh_reco << endl;
+				  cout << " trk edep = " << trkedep_true << endl;	 
+				  cout << " trk length = " << trklen_true << endl;	 
+				  cout << " trklen_reco = " << trklen_reco << endl;
+				  cout << " - # of hits:" << endl;
+				  cout << "     XY: " << nd280UpRecoTrack.GetNHitsXY() << endl;
+				  cout << "     XZ: " << nd280UpRecoTrack.GetNHitsXZ() << endl;
+				  cout << "     YZ: " << nd280UpRecoTrack.GetNHitsYZ() << endl;
+				  if(!isreco) cout << "Is not reconstructed!!!" << endl;
+				  if(isoutfv) cout << "Is outfv!!!" << endl;
+				  if(!isseparated) cout << "Is not separated!!!" << endl;	
+				  
+				  //PrintTruth(nd280UpEvent,trkid);
+				  
+				  if(DEBUGPLOT){
+				    
+				    name = TString::Format("fRecoTrack_MPPCHit_XY_Evt%d_Trk%d.pdf",ievt,itrk);
+				    TCanvas *cXY = new TCanvas(name,name);
+				    fRecoTrack_MPPCHit_XY[itrk]->Draw("colz");
+				    cXY->Print(name);
+				    name = TString::Format("fRecoTrack_MPPCHit_XZ_Evt%d_Trk%d.pdf",ievt,itrk);
+				    TCanvas *cXZ = new TCanvas(name,name);
+				    fRecoTrack_MPPCHit_XZ[itrk]->Draw("colz");
+				    cXZ->Print(name);
+				    name = TString::Format("fRecoTrack_MPPCHit_YZ_Evt%d_Trk%d.pdf",ievt,itrk);
+				    TCanvas *cYZ = new TCanvas(name,name);
+				    fRecoTrack_MPPCHit_YZ[itrk]->Draw("colz");
+				    cYZ->Print(name);	
+				  }
+				}
       }
 
       //////////////////////////////////////////////////
@@ -1392,134 +1442,134 @@ int TrackReconstruction(int argc,char** argv)
       //
     
       if(isreco){
-	if(isseparated){
+				if(isseparated){
 
-	  if(isoutfv){
-	    // It's done by the TPCs
-	  }
+	  			if(isoutfv){
+	    		// It's done by the TPCs
+	  			}
 	  
-	  else{ // in FV
+	  			else{ // in FV
 
-	    if(DEBUG){
-	      if(trklen_reco > trklen_true) cout << "Length: Reco > True !!!" << endl; 
-	      if(trklen_reco < 0.5*trklen_true){ 
-		cout << "Length: Reco << True !!!" << endl; 
-		//exit(1);
-	      } 
-	    }
-	    
-	    if(pdg==13){
-	      hMuon_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
-	      hMuon_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
-	      hMuon_Stopped_Edep->Fill(trkedep); 
-	      hMuon_Stopped_Len->Fill(trklen_reco);
+	    			if(DEBUG){
+	    			  if(trklen_reco > trklen_true) cout << "Length: Reco > True !!!" << endl; 
+	    			  if(trklen_reco < 0.5*trklen_true){ 
+								cout << "Length: Reco << True !!!" << endl; 
+								//exit(1);
+	    			  } 
+	    			}
+	    			
+	    			if(pdg==13){
+	    			  hMuon_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
+	    			  hMuon_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
+	    			  hMuon_Stopped_Edep->Fill(trkedep); 
+	    			  hMuon_Stopped_Len->Fill(trklen_reco);
 
-	      gMuon_Stopped_EdepVsLen->SetPoint(gMuon_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
-	      gMuon_Stopped_EdepVsLen_Truth->SetPoint(gMuon_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); 
+	    			  gMuon_Stopped_EdepVsLen->SetPoint(gMuon_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
+	    			  gMuon_Stopped_EdepVsLen_Truth->SetPoint(gMuon_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); 
 
-	      gMuon_Stopped_MomVsdEdx->SetPoint(gMuon_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
-	      gMuon_Stopped_MomVsdEdx_Truth->SetPoint(gMuon_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH  
-	      gMuon_Stopped_LenVsdEdx->SetPoint(gMuon_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
-	      gMuon_Stopped_LenVsdEdx_Truth->SetPoint(gMuon_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
+	    			  gMuon_Stopped_MomVsdEdx->SetPoint(gMuon_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
+	    			  gMuon_Stopped_MomVsdEdx_Truth->SetPoint(gMuon_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH  
+	    			  gMuon_Stopped_LenVsdEdx->SetPoint(gMuon_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
+	    			  gMuon_Stopped_LenVsdEdx_Truth->SetPoint(gMuon_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
 
-	      int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
-	      hMuon_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
-	      hMuon_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
+	    			  int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
+	    			  hMuon_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
+	    			  hMuon_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
 
-	      index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
-	      hMuon_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
-	      hMuon_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
-	      	      
-	      hMuon_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
-	      hMuon_CosTh_RecMinTr->Fill(costh_reco-costh_true);
-	      hMuon_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
-	      hMuon_Len_RecMinTr->Fill(trklen_reco-trklen_true);
-	      hMuon_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
-	    }
-	    else if(pdg==211){
-	      hPion_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
-	      hPion_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
-	      hPion_Stopped_Edep->Fill(trkedep); 
-	      hPion_Stopped_Len->Fill(trklen_reco);
+	    			  index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
+	    			  hMuon_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
+	    			  hMuon_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
+	    			  	      
+	    			  hMuon_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
+	    			  hMuon_CosTh_RecMinTr->Fill(costh_reco-costh_true);
+	    			  hMuon_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
+	    			  hMuon_Len_RecMinTr->Fill(trklen_reco-trklen_true);
+	    			  hMuon_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
+	    			}
+	    			else if(pdg==211){
+	    			  hPion_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
+	    			  hPion_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
+	    			  hPion_Stopped_Edep->Fill(trkedep); 
+	    			  hPion_Stopped_Len->Fill(trklen_reco);
 
-	      gPion_Stopped_EdepVsLen->SetPoint(gPion_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
-	      gPion_Stopped_EdepVsLen_Truth->SetPoint(gPion_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
+	    			  gPion_Stopped_EdepVsLen->SetPoint(gPion_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
+	    			  gPion_Stopped_EdepVsLen_Truth->SetPoint(gPion_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
 
-	      gPion_Stopped_MomVsdEdx->SetPoint(gPion_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
-	      gPion_Stopped_MomVsdEdx_Truth->SetPoint(gPion_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
-	      gPion_Stopped_LenVsdEdx->SetPoint(gPion_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
-	      gPion_Stopped_LenVsdEdx_Truth->SetPoint(gPion_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
+	    			  gPion_Stopped_MomVsdEdx->SetPoint(gPion_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
+	    			  gPion_Stopped_MomVsdEdx_Truth->SetPoint(gPion_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
+	    			  gPion_Stopped_LenVsdEdx->SetPoint(gPion_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
+	    			  gPion_Stopped_LenVsdEdx_Truth->SetPoint(gPion_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
 
-	      int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
-	      hPion_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
-	      hPion_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
+	    			  int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
+	    			  hPion_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
+	    			  hPion_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
 
-	      index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
-	      hPion_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
-	      hPion_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
-	      	      
-	      hPion_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
-	      hPion_CosTh_RecMinTr->Fill(costh_reco-costh_true);
-	      hPion_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
-	      hPion_Len_RecMinTr->Fill(trklen_reco-trklen_true);
-	      hPion_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
-	    }
-	    else if(pdg==2212){
-	      hProt_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
-	      hProt_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
-	      hProt_Stopped_Edep->Fill(trkedep); 
-	      hProt_Stopped_Len->Fill(trklen_reco);
+	    			  index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
+	    			  hPion_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
+	    			  hPion_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
+	    			  	      
+	    			  hPion_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
+	    			  hPion_CosTh_RecMinTr->Fill(costh_reco-costh_true);
+	    			  hPion_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
+	    			  hPion_Len_RecMinTr->Fill(trklen_reco-trklen_true);
+	    			  hPion_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
+	    			}
+	    			else if(pdg==2212){
+	    			  hProt_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
+	    			  hProt_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
+	    			  hProt_Stopped_Edep->Fill(trkedep); 
+	    			  hProt_Stopped_Len->Fill(trklen_reco);
 
-	      gProt_Stopped_EdepVsLen->SetPoint(gProt_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
-	      gProt_Stopped_EdepVsLen_Truth->SetPoint(gProt_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
+	    			  gProt_Stopped_EdepVsLen->SetPoint(gProt_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
+	    			  gProt_Stopped_EdepVsLen_Truth->SetPoint(gProt_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
 
-	      gProt_Stopped_MomVsdEdx->SetPoint(gProt_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
-	      gProt_Stopped_MomVsdEdx_Truth->SetPoint(gProt_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
-	      gProt_Stopped_LenVsdEdx->SetPoint(gProt_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
-	      gProt_Stopped_LenVsdEdx_Truth->SetPoint(gProt_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
+	    			  gProt_Stopped_MomVsdEdx->SetPoint(gProt_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
+	    			  gProt_Stopped_MomVsdEdx_Truth->SetPoint(gProt_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
+	    			  gProt_Stopped_LenVsdEdx->SetPoint(gProt_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
+	    			  gProt_Stopped_LenVsdEdx_Truth->SetPoint(gProt_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
 
-	      int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
-	      hProt_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
-	      hProt_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
-	      
-	      index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
-	      hProt_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
-	      hProt_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
+	    			  int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
+	    			  hProt_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
+	    			  hProt_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
+	    			  
+	    			  index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
+	    			  hProt_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
+	    			  hProt_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
 
-	      hProt_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
-	      hProt_CosTh_RecMinTr->Fill(costh_reco-costh_true);
-	      hProt_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
-	      hProt_Len_RecMinTr->Fill(trklen_reco-trklen_true);
-	      hProt_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
-	    }
-	    else if(pdg==11){
-	      hElec_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
-	      hElec_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
-	      hElec_Stopped_Edep->Fill(trkedep); 
-	      hElec_Stopped_Len->Fill(trklen_reco);
+	    			  hProt_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
+	    			  hProt_CosTh_RecMinTr->Fill(costh_reco-costh_true);
+	    			  hProt_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
+	    			  hProt_Len_RecMinTr->Fill(trklen_reco-trklen_true);
+	    			  hProt_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
+	    			}
+	    			else if(pdg==11){
+	    			  hElec_Stopped_EdepOverLen->Fill(trkedep/trklen_reco); 
+	    			  hElec_Stopped_EdepOverLen_ManyBins->Fill(trkedep/trklen_reco); 
+	    			  hElec_Stopped_Edep->Fill(trkedep); 
+	    			  hElec_Stopped_Len->Fill(trklen_reco);
 
-	      gElec_Stopped_EdepVsLen->SetPoint(gElec_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
-	      gElec_Stopped_EdepVsLen_Truth->SetPoint(gElec_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
+	    			  gElec_Stopped_EdepVsLen->SetPoint(gElec_Stopped_EdepVsLen->GetN(),trklen_reco,trkedep);
+	    			  gElec_Stopped_EdepVsLen_Truth->SetPoint(gElec_Stopped_EdepVsLen_Truth->GetN(),trklen_true,trkedep_true); /// QUI
 
-	      gElec_Stopped_MomVsdEdx->SetPoint(gElec_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
-	      gElec_Stopped_MomVsdEdx_Truth->SetPoint(gElec_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
-	      gElec_Stopped_LenVsdEdx->SetPoint(gElec_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
-	      gElec_Stopped_LenVsdEdx_Truth->SetPoint(gElec_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
-	      
-	      int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
-	      hElec_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
-	      hElec_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
-	      
-	      index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
-	      hElec_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
-	      hElec_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
+	    			  gElec_Stopped_MomVsdEdx->SetPoint(gElec_Stopped_MomVsdEdx->GetN(),mom_true,trkedep/trklen_reco); // LENGTH
+	    			  gElec_Stopped_MomVsdEdx_Truth->SetPoint(gElec_Stopped_MomVsdEdx_Truth->GetN(),mom_true,trkedep_true/trklen_true); // LENGTH 
+	    			  gElec_Stopped_LenVsdEdx->SetPoint(gElec_Stopped_LenVsdEdx->GetN(),trklen_reco,trkedep/trklen_reco); // LENGTH
+	    			  gElec_Stopped_LenVsdEdx_Truth->SetPoint(gElec_Stopped_LenVsdEdx_Truth->GetN(),trklen_true,trkedep_true/trklen_true); // LENGTH 
+	    			  
+	    			  int index = hBinsMom->GetXaxis()->FindBin(mom_true) - 1;
+	    			  hElec_Stopped_EdepOverLen_Mom[index]->Fill(trkedep/trklen_reco);
+	    			  hElec_Stopped_EdepOverLen_Mom_ManyBins[index]->Fill(trkedep/trklen_reco);
+	    			  
+	    			  index = hBinsLen->GetXaxis()->FindBin(trklen_reco) - 1;
+	    			  hElec_Stopped_EdepOverLen_Len[index]->Fill(trkedep/trklen_reco);
+	    			  hElec_Stopped_EdepOverLen_Len_ManyBins[index]->Fill(trkedep/trklen_reco);
 
-	      hElec_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
-	      hElec_CosTh_RecMinTr->Fill(costh_reco-costh_true);
-	      hElec_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
-	      hElec_Len_RecMinTr->Fill(trklen_reco-trklen_true);
-	      hElec_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
-	    }
+	    			  hElec_CosTh_TrueVsReco->Fill(costh_true,costh_reco);
+	    			  hElec_CosTh_RecMinTr->Fill(costh_reco-costh_true);
+	    			  hElec_Len_TrueVsReco->Fill(trklen_true,trklen_reco);
+	    			  hElec_Len_RecMinTr->Fill(trklen_reco-trklen_true);
+	    			  hElec_Len_RecMinTr_Vs_TrLen->Fill(trklen_reco-trklen_true,trklen_true);
+	    			}
 
 
 
@@ -1576,8 +1626,8 @@ int TrackReconstruction(int argc,char** argv)
 
 
 
-	  } // if outfv
-	} // if separated
+					} // if outfv
+				} // if separated
       } // if reco
 
 
@@ -1586,39 +1636,39 @@ int TrackReconstruction(int argc,char** argv)
       // Fill the total event display (ONLY FULLY CONTAINED PARTICLES!!!)
 
       if(ievt<NEvtDisplTot){
-	//if(fRecoTrack_PDG[itrk] == 2112){
-	//if(fRecoTrack_ID[itrk] == 4){
-	
-	//cout << "Track PDG = " << fRecoTrack_PDG[itrk] << endl;
+				//if(fRecoTrack_PDG[itrk] == 2112){
+				//if(fRecoTrack_ID[itrk] == 4){
+				
+				//cout << "Track PDG = " << fRecoTrack_PDG[itrk] << endl;
 
-	hMPPCHits_XY[ievt]->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z 
-	hMPPCHits_XZ[ievt]->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
-	hMPPCHits_YZ[ievt]->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
-	
-	AddGraph(gMCHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z 
-	AddGraph(gMCHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y 
-	AddGraph(gMCHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X 
-	//}
-      }
-    
-      //cout << "gMCHits_XY[ievt]->GetN() = " << gMCHits_XY[ievt]->GetN() << endl;
+				hMPPCHits_XY[ievt]->Add(fRecoTrack_MPPCHit_XY[itrk]); // pe along Z 
+				hMPPCHits_XZ[ievt]->Add(fRecoTrack_MPPCHit_XZ[itrk]); // pe along Y
+				hMPPCHits_YZ[ievt]->Add(fRecoTrack_MPPCHit_YZ[itrk]); // pe along X
+				
+				AddGraph(gMCHits_XY[ievt],fTrueTrack_MCHit_XY[itrk]); // pe along Z 
+				AddGraph(gMCHits_XZ[ievt],fTrueTrack_MCHit_XZ[itrk]); // pe along Y 
+				AddGraph(gMCHits_YZ[ievt],fTrueTrack_MCHit_YZ[itrk]); // pe along X 
+				//}
+  		}
+  			  
+  			    //cout << "gMCHits_XY[ievt]->GetN() = " << gMCHits_XY[ievt]->GetN() << endl;
 
-      // Draw the Canvas
-      if(ievt<NEvtDisplTot){
-	cMPPCHits_XY[ievt]->cd();
-	hMPPCHits_XY[ievt]->Draw("colz");
-	gMCHits_XY[ievt]->Draw("p same");
-	TargVtx_XY->Draw();
+  			    // Draw the Canvas
+  		if(ievt<NEvtDisplTot){
+				cMPPCHits_XY[ievt]->cd();
+				hMPPCHits_XY[ievt]->Draw("colz");
+				gMCHits_XY[ievt]->Draw("p same");
+				TargVtx_XY->Draw();
 
-	cMPPCHits_YZ[ievt]->cd();
-	hMPPCHits_YZ[ievt]->Draw("colz");
-	gMCHits_YZ[ievt]->Draw("p same");
-	TargVtx_YZ->Draw();
+				cMPPCHits_YZ[ievt]->cd();
+				hMPPCHits_YZ[ievt]->Draw("colz");
+				gMCHits_YZ[ievt]->Draw("p same");
+				TargVtx_YZ->Draw();
 
-	cMPPCHits_XZ[ievt]->cd();
-	hMPPCHits_XZ[ievt]->Draw("colz");
-	gMCHits_XZ[ievt]->Draw("p same");
-	TargVtx_XZ->Draw();
+				cMPPCHits_XZ[ievt]->cd();
+				hMPPCHits_XZ[ievt]->Draw("colz");
+				gMCHits_XZ[ievt]->Draw("p same");
+				TargVtx_XZ->Draw();
       }
 
 
