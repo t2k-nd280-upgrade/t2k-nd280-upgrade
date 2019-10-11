@@ -22,6 +22,7 @@ foreach (@ARGV) {
     elsif($_ eq '--use-view-yz'      ) { $useviewYZ       = $ARGV[$iarg+1]; }
     elsif($_ eq '--min-track-dist'   ) { $min_trk_dist    = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-truth-fv'     ) { $cut_truthfv     = $ARGV[$iarg+1]; }
+    elsif($_ eq '--reco-mode'        ) { $reco_mode       = $ARGV[$iarg+1]; }
 
     # where to put the output files
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }
@@ -38,7 +39,8 @@ $merge_output = 0;
 
 $resource        = "interactive"                 unless defined $resource;
 
-$tag            = "SFGD_RECO_INPUT" unless defined $tag;
+# $tag            = "SFGD_RECO_INPUT" unless defined $tag;
+$tag            = "MC_output.root" unless defined $tag;
 
 $useviewXY      = 1 unless defined $useviewXY; # (0 or 1)
 $useviewXZ      = 1 unless defined $useviewXZ; # (0 or 1)
@@ -50,8 +52,8 @@ $min_trk_dist    = 10 unless defined $min_trk_dist; # if <0 --> use default (mm)
 $inputfile        = "/nfs/neutrinos/cjesus/work/SFGD_MC_Prototype/SFGD_MC_dev-0-Exp0-Nexpt5000.root" unless defined $inputfile;
 
 $first_expt      = 0                             unless defined $first_expt;
-$nruns           = 0                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
-$nexpts          = 5000                          unless defined $nexpts;
+$nruns           = 1                             unless defined $nruns; # TPC+Target+ECal (Store all TrackPoints)
+$nexpts          = 100                          unless defined $nexpts;
 
 $detector        = 0   unless defined $detector; # 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI
 
@@ -59,6 +61,10 @@ $debug           = 0   unless defined $debug; # flag for debugging output: 0 -->
 $debug_plot      = 0   unless defined $debug_plot; # flag for debugging plots: 0 --> NO, 1 --> YES
 
 $cut_truthfv     = 0   unless defined $cut_truthfv;
+$reco_mode       = "sfgdreco"   unless defined $reco_mode;
+# Missing option: trackrecon, lightyield, neutron, stopproton, protomc, sfgdrecon, shower
+
+$job_dir = "/Users/aoi/ND280_UPGRADE/output/RecoInput" unless defined $job_dir;; 
   
 ##################################
 
@@ -67,9 +73,8 @@ while($irun < $nruns) { # loop over the jobs
     
     $evt_first = $first_expt + $irun * $nexpts;
     
-    $tag_mod = "${tag}_${irun}.root";
 
-    $arguments = "$softw_dir/bin/Reconstruction.exe sfgrrecon $inputfile $evt_first $nexpts $job_dir/$newtag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv  $tag_mod";
+    $arguments = "$softw_dir/build/bin/ReconstructionApp $reco_mode $inputfile $evt_first $nexpts $job_dir/$tag $detector $debug $debug_plot $useviewXY $useviewXZ $useviewYZ $min_trk_dist $cut_truthfv $job_dir/$tag";
     $command = "$arguments";
     
     print "\n";
