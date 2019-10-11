@@ -107,13 +107,13 @@ int main(int argc,char** argv)
   std::string rootfilename = argv[3]; //"ND280upgrade"; 
   persistencyManager->Open(rootfilename); 
   if(persistencyManager->IsOpen()){
-    G4cout << "The output ROOT file is open" << G4endl;
+    G4cout << "[EffStudyApp] The output ROOT file is open" << G4endl;
   }
   else{
     G4Exception("ExN02DetectorConstruction",
 		"if(persistencyManager->IsOpen()",
 		FatalException,
-		"The file is not open");    
+		"[EffStudyApp] The file is not open");    
   }  
 
   //
@@ -124,11 +124,11 @@ int main(int argc,char** argv)
   
   ExN02ND280XML *ND280XMLInput = persistencyManager->GetXMLInput();
   
-  G4cout << "File name: " << ND280XMLInput->GetXMLFileName() << G4endl;
-  G4cout << "Generator: " << ND280XMLInput->GetXMLGenerTypeName() << G4endl;
-  G4cout << "Path to files: " << ND280XMLInput->GetXMLPathFiles() << G4endl;
-  G4cout << "Tree name: " << ND280XMLInput->GetXMLGenerTreeName() << G4endl;
-  G4cout << "File name: " << ND280XMLInput->GetXMLGenerFileName() << G4endl;
+  G4cout << "[EffStudyApp] File name: " << ND280XMLInput->GetXMLFileName() << G4endl;
+  G4cout << "[EffStudyApp] Generator: " << ND280XMLInput->GetXMLGenerTypeName() << G4endl;
+  G4cout << "[EffStudyApp] Path to files: " << ND280XMLInput->GetXMLPathFiles() << G4endl;
+  G4cout << "[EffStudyApp] Tree name: " << ND280XMLInput->GetXMLGenerTreeName() << G4endl;
+  G4cout << "[EffStudyApp] File name: " << ND280XMLInput->GetXMLGenerFileName() << G4endl;
   
   G4String inputfile = ND280XMLInput->GetXMLPathFiles();
   inputfile.append(ND280XMLInput->GetXMLGenerFileName());
@@ -142,7 +142,7 @@ int main(int argc,char** argv)
   G4int NEvtTot = MyFirstEvent+NEvtStep;
 
   if (ND280XMLInput->GetXMLGenerTypeName() != "ParticleGun") {
-    G4cout << "text: " << ND280XMLInput->GetXMLGenerTypeName() << G4endl;
+    G4cout << "[EffStudyApp] text: " << ND280XMLInput->GetXMLGenerTypeName() << G4endl;
     TFile *myfile = new TFile(inputfile,"READ"); 
     if (!myfile->IsOpen()) {
       const char *msg = "NEUT file is not open!";
@@ -191,8 +191,8 @@ int main(int argc,char** argv)
   persistencyManager->SetEventFirst(MyFirstEvent);
   persistencyManager->SetNEvents(NEvtStep);
 
-  G4cout << "# of events to process: " << persistencyManager->GetNEvents() << G4endl;
-  G4cout << "# of first event: " << persistencyManager->GetEventFirst() << G4endl;
+  G4cout << "[EffStudyApp] # of events to process: " << persistencyManager->GetNEvents() << G4endl;
+  G4cout << "[EffStudyApp] # of first event: " << persistencyManager->GetEventFirst() << G4endl;
 
   
   // User Initialization classes (mandatory)
@@ -303,6 +303,8 @@ int main(int argc,char** argv)
   delete runManager;
   delete verbosity;
   
+	G4cout << "[EffStudyApp] FINISH!" << G4endl;
+
   return 0;
 }
 
