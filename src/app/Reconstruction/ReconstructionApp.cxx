@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
     if (argc < 2)
     {
-        std::cout << "Missing option: trackrecon, lightyield, neutron, stopproton, protomc, sfgrrecon" << std::endl;
+        std::cout << "Missing option: trackrecon, lightyield, neutron, stopproton, protomc, sfgdrecon" << std::endl;
         return 1;
     }
 
@@ -47,11 +47,11 @@ int main(int argc, char **argv)
     case str2int("protomc"):
         PrototypeMC(argc - 1, subArgv);
         break;
-    case str2int("sfgrrecon"):
+    case str2int("sfgdrecon"):
         SFGD_Reconstruction(argc - 1, subArgv);
         break;
     default:
-        std::cerr << "Usage: ReconstructionApp <option> <arguments...>\nOption: trackrecon, lightyield, neutron, stopproton, protomc, sfgrrecon" << std::endl;
+        std::cerr << "Usage: ReconstructionApp <option> <arguments...>\nOption: trackrecon, lightyield, neutron, stopproton, protomc, sfgdrecon" << std::endl;
         return 0;
     }
 
