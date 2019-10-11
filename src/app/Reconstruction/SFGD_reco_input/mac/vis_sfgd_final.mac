@@ -8,22 +8,33 @@
 /field/setStepperType 4
 /field/setMinStep 0.1 mm
 /field/setField 0.0001 0 0 tesla
+#/field/setField 0.2 0 0 tesla
+#/field/setField 0 0 0 tesla
 /field/update
 
 /db/set/saveAllTraj 1
 /db/set/saveAllHits 1
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
-/generator/type Generator
-#/generator/type ParticleGun
+#/generator/type Generator
+/generator/type ParticleGun
         
 # Set the particle gun 
-#/gun/particle pi-
-#/gun/energy 800 MeV  # kinetic energy
-#/gun/momentum  0 0 0.75 GeV # momentum
-#/gun/direction 0 0 1 # momentum direction     
-#/gun/position  0 0 -2907 mm  # starting position
-#/gun/number   1      # number of particles
+/gun/particle e-
+#/gun/particle mu-
+/gun/energy 200 MeV  # kinetic energy
+#/gun/momentum  0 0 0.4 GeV # momentum
+
+/gun/direction 0 0 1 # momentum direction  # along z-axis (same to the beam)     
+#/gun/direction 0 1 0 # momentum direction  # along y-axis 
+
+#/gun/position  5 5 -400 mm  # starting position
+/gun/position  0 0 -2627 mm  # starting position   # upstream
+#/gun/position  0 0 -2127 mm  # starting position   # 50 cm from upstream 
+#/gun/position  0 0 -1707 mm  # starting position  # center of the detecter
+#/gun/position  0 0 -3000 mm  # starting position
+
+/gun/number   1      # number of particles
 
 #/generator/typegun BeamTest
 #/generator/typepos PrototypeGaus
