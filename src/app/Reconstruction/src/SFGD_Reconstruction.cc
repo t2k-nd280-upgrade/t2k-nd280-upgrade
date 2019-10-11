@@ -42,9 +42,9 @@
 
 //#define CROSSTALK_OFF
 
-const int maxTracks = 1000;
-const int maxHits = 5000;
-const int maxCont = 1000;
+const int maxTracks = 3000;
+const int maxHits = 50000;
+const int maxCont = 2000;
 
 const double fib_abs_const = 0.2;
 
@@ -76,9 +76,14 @@ Int_t all_trajID[maxTracks];
 Int_t all_trajPDG[maxTracks];            
 Int_t all_trajStartHit[maxTracks];       
 Int_t all_trajEndHit[maxTracks];         
-Int_t all_trajEdep[maxTracks];           
+//Int_t all_trajEdep[maxTracks];           
 Int_t all_trajPrim[maxTracks];           
-Int_t all_trajParent[maxTracks];             
+Int_t all_trajParent[maxTracks];
+// FIXME
+Double_t all_trajEdep[maxTracks];           
+Double_t InitKinEnergy[maxTracks];             
+Int_t TrackEndPoint[maxTracks];
+
 
 bool aux_threshold(double x){
     TRandom3 fRndm = TRandom3(0);
@@ -123,6 +128,9 @@ void ResetVariables(){
         all_trajEdep[i] = -999;           
         all_trajPrim[i] = -999;           
         all_trajParent[i] = -999;         
+				// FIXME
+				InitKinEnergy[i] = -999;
+				TrackEndPoint[i] = -999;
 
         for (int j=0; j < maxHits; j++){
             trajHits[i][j] = -999;
@@ -211,6 +219,40 @@ int BinomialCrossing(int pe){
     return npe_passed;
 }
 
+int VolnameToID(string volname){
+	if(volname == "/t2k/OA/Magnet/Basket/target1/SuperFGD1/RepY/RepX/RepZ/CubeScint/Extrusion/Core"){
+		return 0;
+	}else if (volname == "/t2k/OA/Magnet/Basket/target1/SuperFGD1/RepY/RepX/RepZ/CubeScint/Extrusion"){
+		return 1;
+	}else if (volname == "/t2k/OA/Magnet/Basket/target1/SuperFGD1/RepY/RepX/RepZ/CubeScint/Hole"){
+		return 1;
+	}else if (volname == "/t2k/OA/Magnet/Basket/target1/SuperFGD1/RepY/RepX/RepZ/CubeScint/Hole/FiberX"){
+		return 1;
+	}else if (volname == "/t2k/OA/Magnet/Basket/target1/SuperFGD1/RepY/RepX/RepZ/CubeScint/Hole/FiberY"){
+		return 1;
+	}else if (volname == "/t2k/OA/Magnet/Basket/target1/SuperFGD1/RepY/RepX/RepZ/CubeScint/Hole/FiberZ"){
+		return 1;
+	}else if (volname == "/t2k/OA/Magnet/Basket"){
+		return 2;
+	}else if (volname == "/t2k/OA/Magnet/LeftClam"){
+		return 2;
+	}else if (volname == "/t2k/OA/Magnet/RightClam"){
+		return 2;
+	}else if (volname == "/t2k/OA/Magnet"){
+		return 2;
+	}else if (volname == "/t2k/OA"){
+		return 2;
+	}else if (volname == "/t2k"){
+		return 2;
+	}else if (volname == "OutOfWorld"){
+		return 2;
+	}else{
+		return 3;
+	}
+}
+
+
+
 int SFGD_Reconstruction(int argc,char** argv) {
     if (argc!=14){   // batch mode
         cout << "You need to provide the following arguments:" << endl;
@@ -230,12 +272,13 @@ int SFGD_Reconstruction(int argc,char** argv) {
         exit(1);
     }
 
-    TString outfilename = "/nfs/neutrinos/cjesus/work/MC_output.root";
+    //TString outfilename = "/nfs/neutrinos/cjesus/work/MC_output.root";
+    //TString outfilename = "/Users/aoi/ND280_UPGRADE/output/RecoInput/MC_output.root";
     string rootfilename = argv[1];
     const int evtfirst = atoi(argv[2]);
     const int nevents = atoi(argv[3]);
     const int detectorID = atoi(argv[5]);
-    outfilename = argv[13];
+    TString outfilename = argv[13];
 
     cout << "evtfirst: " << evtfirst << ",nevents: " << nevents << endl;
 
@@ -309,6 +352,34 @@ int SFGD_Reconstruction(int argc,char** argv) {
     }
 
     
+
+    AllEvents->Branch( "all_trajID",         all_trajID,         "all_trajID[all_numTracks]/I"             );
+    AllEvents->Branch( "all_trajPDG",        all_trajPDG,        "all_trajPDG[all_numTracks]/I"            );
+    // AllEvents->Branch( "all_trajStartHit",   all_trajStartHit,   "all_trajStartHit[numTracks]/I"       );
+    // AllEvents->Branch( "all_trajEndHit",     all_trajEndHit,     "all_trajEndHit[numTracks]/I"         );
+    AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[all_numTracks]/I"         );
+  
+		// FIXME
+		//Double_t EdepositX[192];
+		//Double_t EdepositY[56];
+		Double_t EdepositZ[184];
+		Double_t Edepo_total;
+		Double_t Eout;
+		Int_t orig_evt;
+		//AllEvents->Branch( "EdepositX",     EdepositX,      "EdepositX[192]/D"          );
+		//AllEvents->Branch( "EdepositY",     EdepositY,      "EdepositY[56]/D"           );
+		AllEvents->Branch( "EdepositZ",     EdepositZ,      "EdepositZ[184]/D"          );
+		AllEvents->Branch( "Edepo_total",   &Edepo_total,   "Edepo_total/D"             );
+		AllEvents->Branch( "Eout",          &Eout,          "Eout/D"                    );
+		AllEvents->Branch( "TrackEndPoint", TrackEndPoint, "TrackEndPoint[all_numTracks]/I"           );
+		AllEvents->Branch( "OrigEveNum",    &orig_evt,      "orig_evt/I"                );
+		AllEvents->Branch( "InitKinEnergy", InitKinEnergy,  "InitKinEnergy[all_numTracks]/D" );
+    AllEvents->Branch( "all_trajEdep",  all_trajEdep,   "all_trajEdep[all_numTracks]/D"  );
+		// FIXME
+		TH2F* EnergyDeposit2D_XY[100];
+		TH2F* EnergyDeposit2D_XZ[100];
+		TH2F* EnergyDeposit2D_YZ[100];
+
     TTree *tinput = (TTree*) finput->Get("ND280upEvents");
     
     //
@@ -373,6 +444,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
     vector <ND280SFGDTrack*> listOfTracks;
     ///////////  Loop over events //////////////////////
     for(int ievt=evtfirst;ievt<=EntryLast;ievt++){
+    //for(int ievt=evtfirst;ievt<evtfirst+1;ievt++){
         tinput->GetEntry(ievt);
         ResetVariables();
         int index = 0;
@@ -380,6 +452,26 @@ int SFGD_Reconstruction(int argc,char** argv) {
         bool WriteText = false;
         int PE_expect = 0;
         int PE_found = 0;
+
+				// FIXME
+				orig_evt = ievt;
+				//for(unsigned i_xpos=0; i_xpos<192; i_xpos++){
+				//	EdepositX[i_xpos] = 0;
+				//}
+				//for(unsigned i_ypos=0; i_ypos<56; i_ypos++){
+				//	EdepositY[i_ypos] = 0;
+				//}
+				for(unsigned i_zpos=0; i_zpos<184; i_zpos++){
+					EdepositZ[i_zpos] = 0;
+				}
+				Edepo_total = 0;
+				TString name;
+      	name = TString::Format("EnergyDeposit2D_XY_%d",ievt);
+      	EnergyDeposit2D_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
+      	name = TString::Format("EnergyDeposit2D_XZ_%d",ievt);
+      	EnergyDeposit2D_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
+      	name = TString::Format("EnergyDeposit2D_YZ_%d",ievt);
+      	EnergyDeposit2D_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
 
         cout << "************************" << endl;
         cout << " starting event " << ievt << " and has #hits " << nd280UpEvent->GetNHits() << endl;
@@ -401,10 +493,34 @@ int SFGD_Reconstruction(int argc,char** argv) {
             double edep = nd280UpHit->GetEnergyDeposit();
             double steplength = nd280UpHit->GetTrackLength();
             string detname = nd280UpHit->GetDetName();
+						
+						// FIXME
+						//for(int i_xpos=-96; i_xpos<96; i_xpos++){
+						//	if((double)i_xpos*10 <= posX && posX < (double)i_xpos*10+10){
+						//		EdepositX[i_xpos+96] += edep;
+						//	}
+						//}
+						//for(int i_ypos=-28; i_ypos<28; i_ypos++){
+						//	if((double)i_ypos*10 <= posY && posY < (double)i_ypos*10+10){
+						//		EdepositY[i_ypos+28] += edep;
+						//	}
+						//}
+						for(int i_zpos=-92; i_zpos<92; i_zpos++){
+							if((double)i_zpos*10 <= posZ && posZ < (double)i_zpos*10+10){
+								EdepositZ[i_zpos+92] += edep;
+							}
+						}
+						Edepo_total += edep;
+					
+						// FIXME
+						EnergyDeposit2D_XY[ievt]->Fill(posX,posY,edep/100.0);
+						EnergyDeposit2D_XZ[ievt]->Fill(posX,posZ,edep/100.0);
+						EnergyDeposit2D_YZ[ievt]->Fill(posY,posZ,edep/100.0);
 
             ApplyResponse.SetTargetID(DetType);
 
-            ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);//ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,sat_edep*156.42,"kSuperFGD");
+            ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);
+						//ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,sat_edep*156.42,"kSuperFGD");
             PE_expect += (ApplyResponse.GetHitPE().x() +  ApplyResponse.GetHitPE().y() +  ApplyResponse.GetHitPE().z());
 
 #ifdef CROSSTALK_OFF
@@ -601,6 +717,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         // fill all trajectories information:
         all_numTracks = nd280UpEvent->GetNTracks();
+				Eout = 0.;
         for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
             TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
             if (trjID >= maxTracks){
@@ -610,7 +727,41 @@ int SFGD_Reconstruction(int argc,char** argv) {
             all_trajPDG[trjID]    = track->GetPDG();
             all_trajID[trjID]     = track->GetTrackID();
             all_trajParent[trjID] = track->GetParentID();
+            all_trajEdep[trjID]   = track->GetSDTotalEnergyDeposit();
+						// FIXME
+						InitKinEnergy[trjID]  = track->GetInitKinEnergy();
+						//cout << endl;
+						//cout << "trjID: " << trjID;
+						//cout << " start.   TrackID is: " << all_trajID[trjID];
+						//cout << ",    PDG is: " << all_trajPDG[trjID];
+						//cout << ",    Initial kinetic energy is: " << InitKinEnergy[trjID];
+						//cout << ",    SD total energy deposit is: " << all_trajEdep[trjID];
+						//cout << ",    Track points: " << track->GetNPoints() << endl;;
+ 						
+						// FIXME
+						int NPoints = track->GetNPoints();
+						for(int ipt=0;ipt<NPoints;ipt++){    
+  					  TND280UpTrackPoint *nd280UpTrackPoint = track->GetPoint(ipt);    
+  					  //double MomX = nd280UpTrackPoint->GetMomentum().X();
+  					  //double MomY = nd280UpTrackPoint->GetMomentum().Y();
+  					  //double MomZ = nd280UpTrackPoint->GetMomentum().Z();     
+  					  double MomMod = nd280UpTrackPoint->GetMomentum().Mag();      
+  					  //double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
+  					  //double phi2=atan2(MomVec[2],MomVec[1]);
+  					  string volname = nd280UpTrackPoint->GetLogVolName();
+							double track_point_edep = nd280UpTrackPoint->GetEdep();
+							//cout << "    Track point # = " << ipt << " : MomMod = " << MomMod << " , volname = " << volname << " , Edep = " << track_point_edep << endl;
+							//nd280UpTrackPoint->PrintTrackPoint();
+							if(ipt==1){
+								TrackEndPoint[trjID] = VolnameToID(volname);
+								if(VolnameToID(volname) == 2){
+									Eout += MomMod;
+								}
+							}
+						}
+						//track->PrintTrack();
         }
+				cout << "    ---> Energy out is : " << Eout << endl;
 
         std::vector<int> listOfParentID;
         for(UInt_t i=0; i<listOfTrackID.size(); i++){
@@ -661,11 +812,17 @@ int SFGD_Reconstruction(int argc,char** argv) {
         listOfTracks.clear();
     } /// END LOOP OVER EVENTS LOOP
 
+
     fileout->cd();
     AllEvents->Write();
     h2d_xy->Write();
     h2d_xz->Write();
     h2d_yz->Write();
+		for(unsigned ievt=0;ievt<100;ievt++){
+			EnergyDeposit2D_XY[ievt]->Write();
+			EnergyDeposit2D_XZ[ievt]->Write();
+			EnergyDeposit2D_YZ[ievt]->Write();
+		}
     fileout->Close();
 
     return 1;
