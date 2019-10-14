@@ -50,20 +50,20 @@ void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, 
         ND280SFGDHit* hit = fHits[i];
 
         if(hit->GetView() == 0){
-            hXY->Fill(hit->GetX(),hit->GetY(),hit->GetCharge());
-            if(hit->GetCharge()>Qmax1) Qmax1 = hit->GetCharge();
+            hXY->Fill(hit->GetX(),hit->GetY(),hit->GetPE());
+            if(hit->GetPE()>Qmax1) Qmax1 = hit->GetPE();
             if(hit->GetY()>maxY) maxY = hit->GetY();
             if(hit->GetY()<minY) minY = hit->GetY();
         }
         if(hit->GetView() == 1){
-            hXZ->Fill(hit->GetX(),hit->GetZ(),hit->GetCharge());
-            if(hit->GetCharge()>Qmax2) Qmax2 = hit->GetCharge();
+            hXZ->Fill(hit->GetX(),hit->GetZ(),hit->GetPE());
+            if(hit->GetPE()>Qmax2) Qmax2 = hit->GetPE();
             if(hit->GetX()>maxX) maxX = hit->GetX();
             if(hit->GetX()<minX) minX = hit->GetX();
         }
         if(hit->GetView() == 2){
-            hYZ->Fill(hit->GetY(),hit->GetZ(),hit->GetCharge());
-            if(hit->GetCharge()>Qmax3) Qmax3 = hit->GetCharge();
+            hYZ->Fill(hit->GetY(),hit->GetZ(),hit->GetPE());
+            if(hit->GetPE()>Qmax3) Qmax3 = hit->GetPE();
             if(hit->GetZ()>maxZ) maxZ = hit->GetZ();
             if(hit->GetZ()<minZ) minZ = hit->GetZ();
         }
@@ -151,7 +151,7 @@ void ND280SFGDVoxelSet::DrawVoxels(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE
 
     for(UInt_t i=0; i<x.size(); i++){
         //fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetTrackID());
-        if(!color) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetEdep());
+        if(!color) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetTrueEdep());
         else       fData->Fill(x[i], y[i], z[i], color);
 
         if(x[i]>maxX) maxX = x[i];

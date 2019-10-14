@@ -2,7 +2,7 @@
 
 set j=0
 set f=1
-set n=1000
+set n=20
 set s=1
 set r=interactive
 set mode="pion"
@@ -21,6 +21,7 @@ endif
 if($mode == "pion") then
 	if ($hostname == "ifae-pc") then
         rm /home/cjesus/Work/Data/SFGD_final/MC/RECO/PION_RECON/*MC_output*
+        rm /home/cjesus/Work/Data/SFGD_final/MC/RECO/PION_RECON/Reconstructed_SFGD_MC.root
 	endif
 endif
 
@@ -38,6 +39,7 @@ end
 if ($hostname == "ifae-pc") then
     cd /home/cjesus/Work/Data/SFGD_final/MC/RECO/PION_RECON
     hadd Reconstructed_SFGD_MC.root *MC_output*
+    cp Reconstructed_SFGD_MC.root /home/cjesus/Work/Dev/SFGD/sfgd_framework/analysis/data
     cd -
 endif
 

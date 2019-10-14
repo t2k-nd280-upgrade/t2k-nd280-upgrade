@@ -12,12 +12,12 @@ private:
   Int_t         fX;               //X coordinate of hit
   Int_t         fY;               //Y coordinate of hit
   Int_t         fZ;               //Z coordinate of hit
-  Double_t      fCharge;          //Charge_pe of hit
+  Double_t      fPE;              //Charge_pe of hit
   Double_t      fHG_pe;           //HG_pe of hit
   Double_t      fLG_pe;           //LG_pe of hit
   Double_t      fToT_pe;          //ToT_pe of hit
-  Double_t      fHitAmpl;         //Amplitude of hit in ADC
-  Double_t      fHitLGAmpl;       //LG Amplitude of hit in ADC
+  Double_t      fHG_ADC;          //Amplitude of hit in ADC
+  Double_t      fLG_ADC;          //LG Amplitude of hit in ADC
   Double_t      fRE;              //hit lead time
   Double_t      fFE;              //hit trail time
   Double_t      fToT;             //ToT of hit
@@ -71,12 +71,12 @@ public:
   void SetX(Int_t p_X) {fX = p_X;}
   void SetY(Int_t p_Y) {fY = p_Y;}
   void SetZ(Int_t p_Z) {fZ = p_Z;}
-  void SetCharge(Double_t p_Charge) {fCharge = p_Charge;}
+  void SetPE(Double_t p_PE) {fPE = p_PE;}
   void SetHG_pe(Double_t p_HG) {fHG_pe = p_HG;}
   void SetLG_pe(Double_t p_LG) {fLG_pe = p_LG;}
   void SetToT_pe(Double_t p_ToT) {fToT_pe = p_ToT;}
-  void SetHitAmpl(Double_t p_HitAmpl) {fHitAmpl = p_HitAmpl;}
-  void SetHitLGAmpl(Double_t p_HitLGAmpl) {fHitLGAmpl = p_HitLGAmpl;}
+  void SetHG_ADC(Double_t p_HG_ADC) {fHG_ADC = p_HG_ADC;}
+  void SetLG_ADC(Double_t p_LG_ADC) {fLG_ADC = p_LG_ADC;}
   void SetRE(Double_t p_RE) {fRE = p_RE;}
   void SetFE(Double_t p_FE) {fFE = p_FE;}
   void SetToT(Double_t p_ToT) {fToT = p_ToT;}
@@ -116,12 +116,12 @@ public:
   Int_t GetX() {return fX;}
   Int_t GetY() {return fY;}
   Int_t GetZ() {return fZ;}
-  Double_t GetCharge() {return fCharge;}
+  Double_t GetPE() {return fPE;}
   Double_t GetHG_pe() {return fHG_pe;}
   Double_t GetLG_pe() {return fLG_pe;}
   Double_t GetToT_pe() {return fToT_pe;}
-  Double_t GetHitAmpl() {return fHitAmpl;}
-  Double_t GetHitLGAmpl() {return fHitLGAmpl;}
+  Double_t GetHG_ADC() {return fHG_ADC;}
+  Double_t GetLG_ADC() {return fLG_ADC;}
   Double_t GetRE() {return fRE;}
   Double_t GetFE() {return fFE;}
   Double_t GetToT() {return fToT;}

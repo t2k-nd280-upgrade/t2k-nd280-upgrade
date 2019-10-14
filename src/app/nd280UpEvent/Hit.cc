@@ -7,12 +7,12 @@ void Hit::SetAll(Hit* in){
   fX                = in->GetX();
   fY                = in->GetY();
   fZ                = in->GetZ();
-  fCharge           = in->GetCharge();
+  fPE               = in->GetPE();
   fHG_pe            = in->GetHG_pe();
   fLG_pe            = in->GetLG_pe();
   fToT_pe           = in->GetToT_pe();
-  fHitAmpl          = in->GetHitAmpl();
-  fHitLGAmpl        = in->GetHitLGAmpl();
+  fHG_ADC           = in->GetHG_ADC();
+  fLG_ADC           = in->GetLG_ADC();
   fRE               = in->GetRE();
   fFE               = in->GetFE();
   fToT              = in->GetToT();

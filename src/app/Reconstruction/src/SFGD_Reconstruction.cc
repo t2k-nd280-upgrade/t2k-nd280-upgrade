@@ -424,9 +424,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(view == 0) hit->SetZ(-1);
                 if(view == 1) hit->SetY(-1);
                 if(view == 2) hit->SetX(-1);
-                if(view == 0) hit->SetCharge(ApplyResponse.GetHitPE().z());
-                if(view == 1) hit->SetCharge(ApplyResponse.GetHitPE().y());
-                if(view == 2) hit->SetCharge(ApplyResponse.GetHitPE().x());
+                if(view == 0) hit->SetPE(ApplyResponse.GetHitPE().z());
+                if(view == 1) hit->SetPE(ApplyResponse.GetHitPE().y());
+                if(view == 2) hit->SetPE(ApplyResponse.GetHitPE().x());
 
                 listOfHits.push_back(hit);
             }
@@ -506,15 +506,12 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(!threshold[index][2]) hitPE[index][2] = 0;
 
                 ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],hitLocation[index][1],hitLocation[index][2]);
-                Voxel->SetEdep(numPE_fiber);
-                vector <double> localQ;
-                localQ.push_back(timepez);
-                localQ.push_back(timepey);
-                localQ.push_back(timepex);
-                Voxel->SetLocalHitsQ(localQ);
-                Voxel->SetTrueXTalk(crosstalk[index]);
-                Voxel->SetTrackID(hitTraj[index]);
-                listOfVoxels.push_back(Voxel);
+                Voxel->SetTrueEdep(edeposit);
+                Voxel->SetTruePE(numPE_fiber);
+                Voxel->AddTrueTrackID(nd280UpHit->GetPrimaryId());
+                if (crosstalk[index]) Voxel->SetTrueType(1);
+                else  Voxel->SetTrueType(0);
+                if(Voxel->GetTruePE()>0) listOfVoxels.push_back(Voxel);
 
                 std::vector<ND280SFGDHit*> voxHits;        
                 for(int view=0; view<3; view++){        
@@ -528,12 +525,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     if(view == 0) hit->SetZ(-1);
                     if(view == 1) hit->SetY(-1);
                     if(view == 2) hit->SetX(-1);
-                    if(view == 0) hit->SetCharge(hitPE[index][0]);
-                    if(view == 1) hit->SetCharge(hitPE[index][1]);
-                    if(view == 2) hit->SetCharge(hitPE[index][2]);
+                    if(view == 0) hit->SetPE(hitPE[index][0]);
+                    if(view == 1) hit->SetPE(hitPE[index][1]);
+                    if(view == 2) hit->SetPE(hitPE[index][2]);
 
-                    hit->SetTrackID(hitTraj[index]);
-                    hit->SetxTalkFlag(crosstalk[index]);
                     listOfHits.push_back(hit);
                     voxHits.push_back(hit);
                 }
@@ -635,7 +630,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             sfgdtrack->SetRange(track->GetRange());
             sfgdtrack->SetMomentum(track->GetInitMom().Mag());
 
-            //cout << sfgdtrack->GetTrackID() << "," <<  sfgdtrack->GetParentID() << "," <<  sfgdtrack->GetPDG() << "," <<  sfgdtrack->GetMomentum() << "," <<  sfgdtrack->GetRange() << "," <<  sfgdtrack->GetCosTheta() << endl;
+            //if (sfgdtrack->GetParentID() == -1) cout << "TrackInfo: [Id,ParentId,PDG,Mom,Range,CosTheta] " << sfgdtrack->GetTrackID() << "," <<  sfgdtrack->GetParentID() << "," <<  sfgdtrack->GetPDG() << "," <<  sfgdtrack->GetMomentum() << "," <<  sfgdtrack->GetRange() << "," <<  sfgdtrack->GetCosTheta() << endl;
 
             all_trajPDG[trjID]    = track->GetPDG();
             all_trajID[trjID]     = track->GetTrackID();
@@ -663,12 +658,11 @@ int SFGD_Reconstruction(int argc,char** argv) {
         }
 
         for(uint vxl=0; vxl<listOfVoxels.size(); ++vxl){
-            //if (listOfVoxels[vxl]->GetTrackID() == -999) continue;
-            //cout << "trkID: " << listOfVoxels[vxl]->GetTrackID() << endl;
-            listOfVoxels[vxl]->SetParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrackID())->second);
-            listOfVoxels[vxl]->SetPDG(trackToPDG.find(listOfVoxels[vxl]->GetTrackID())->second);
-            if(WriteText) cout << "voxel: "<< vxl << "\tXYZ: " << listOfVoxels[vxl]->GetX() << "\t,"  << listOfVoxels[vxl]->GetY() << "\t," << listOfVoxels[vxl]->GetZ() << "\t, trueEDEP -[TOT,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetEdep()*0.25 <<  "\t," << listOfVoxels[vxl]->GetHits()[0]->GetCharge() << "\t," << listOfVoxels[vxl]->GetHits()[1]->GetCharge() << "\t," << listOfVoxels[vxl]->GetHits()[2]->GetCharge()
-                 << "\t, Track ID-prntID-PDG: " <<  listOfVoxels[vxl]->GetTrackID() << "\t," << listOfVoxels[vxl]->GetParentID() << "\t," << listOfVoxels[vxl]->GetPDG() << endl;
+            listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
+            listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
+            if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { if(WriteText) cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl; store=false;}
+            if(WriteText) cout << "voxel: "<< vxl << "\t, Type: " << listOfVoxels[vxl]->GetTrueType() << "\tXYZ: " << listOfVoxels[vxl]->GetX() << ","  << listOfVoxels[vxl]->GetY() << "," << listOfVoxels[vxl]->GetZ() << ",\ttrueDeposits -[Edep,FiberPE,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetTrueEdep()*0.25 << ",\t" << listOfVoxels[vxl]->GetTruePE()*0.25 <<  ",\t" << listOfVoxels[vxl]->GetHits()[0]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[1]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[2]->GetPE()
+                 << ",\tTrackInfo [ID,prntID,PDG]: " <<  listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl;
         }
 
         numHits = index;
@@ -726,12 +720,14 @@ int SFGD_Reconstruction(int argc,char** argv) {
         listOfTracks.clear();
     } /// END LOOP OVER EVENTS LOOP
 
+    cout << "Writing events. " << endl;
     fileout->cd();
     AllEvents->Write();
     h2d_xy->Write();
     h2d_xz->Write();
     h2d_yz->Write();
     fileout->Close();
+    cout << "End of program. " << endl;
 
     return 1;
 }

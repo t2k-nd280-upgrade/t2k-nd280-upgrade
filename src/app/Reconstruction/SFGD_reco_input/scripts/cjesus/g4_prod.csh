@@ -1,8 +1,8 @@
 #!/bin/csh -f
 
 set j=0
-set f=10
-set n=10
+set f=1
+set n=1000
 set s=1
 set mode="pion"
 set remove="yes"
@@ -14,7 +14,6 @@ set hostname="`hostname`"
 echo "hostname is: $hostname"
 
 if ($hostname == "ifae-pc" && $remove == "yes") then
-	echo "here!"
 	if ($mode == "pion") then
 		rm /home/cjesus/Work/Data/SFGD_final/MC/PROD/PION_RECON/*SFGD_MC*
 	else
