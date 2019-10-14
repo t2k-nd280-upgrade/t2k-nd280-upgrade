@@ -11,8 +11,12 @@
 class ND280SFGDTrack: public ND280SFGDVoxelSet{
 
 private:
-    Int_t     fPDG;          // PDG from GEANT4
-    Int_t     fTrackID;      // trackID from GEANT4
+    int      fPDG;          // 
+    int      fTrackID;      // 
+    int      fParentID;     // 
+    double   fRange;        // 
+    double   fCosTheta;     // Initial CosTheta
+    double   fMom;          // Initial Momentum
 public:
 
     //constructors
@@ -28,15 +32,24 @@ public:
 
     //-----Setters------
 
-    void SetPDG         (Int_t     p_PDG)     { fPDG = p_PDG; }
-    void SetTrackID     (Int_t     p_ID )     { fTrackID = p_ID; }
+    void SetPDG         (int     p_PDG)     { fPDG      = p_PDG; }
+    void SetTrackID     (int     p_ID )     { fTrackID  = p_ID;  }
+    void SetParentID    (int     p_prt)     { fParentID = p_prt; }
+    void SetCosTheta    (double  p_cos)     { fCosTheta = p_cos; }
+    void SetRange       (double  p_rng)     { fRange    = p_rng; }
+    void SetMomentum    (double  p_mom)     { fMom      = p_mom; }
 
     //------------------
 
     //-----Getters------
 
-    Int_t     GetPDG()      { return fPDG;     }
-    Int_t     GetTrackID()  { return fTrackID; }
+    int     GetPDG()      { return fPDG;      }
+    int     GetTrackID()  { return fTrackID;  }
+    int     GetParentID() { return fParentID; }
+    double  GetCosTheta() { return fCosTheta; }
+    double  GetRange()    { return fRange;    }
+    double  GetMomentum() { return fMom;      }
+
 
     //------------------
 

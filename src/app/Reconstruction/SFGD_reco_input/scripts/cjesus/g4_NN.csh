@@ -16,7 +16,7 @@ set evtLast = 0
 
 @ evtLast = ${step} - 1
 
-while (${evtFirst} < 59000)
+while (${evtFirst} < 1000)
 
     echo "evtFirst: ${evtFirst}, evtLast: ${evtLast}."
     

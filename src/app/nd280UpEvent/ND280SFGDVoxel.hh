@@ -48,21 +48,14 @@ public:
 
     void SetHits       (std::vector <ND280SFGDHit*> p_Hits) { fHits = p_Hits; }
     void SetLocalHitsQ (std::vector <Double_t> p_VoxelHits) { fLocalHitsQ = p_VoxelHits; }
-
-
     void SetPDG       (Int_t     p_PDG)     { fPDG       = p_PDG;     }
     void SetTrackID   (Int_t     p_TrackID) { fTrackID   = p_TrackID; }
     void SetParentID  (Int_t     p_ParentID){ fParentID  = p_ParentID; }
     void SetEdep      (Double_t  p_Edep)    { fEdep      = p_Edep;    }
-    // void SetPos       (XYZVector p_Pos)     { fPos       = p_Pos;     }
     void SetTrueXTalk (Bool_t p_Xtalk)      { fTrueXTalk = p_Xtalk;   }
-    // void SetX         (Double_t  p_N)       { fPos.SetX(p_N); }
-    // void SetY         (Double_t  p_N)       { fPos.SetY(p_N); }
-    // void SetZ         (Double_t  p_N)       { fPos.SetZ(p_N); }
     void SetX         (Double_t  p_PosX)       { fPosX = p_PosX; }
     void SetY         (Double_t  p_PosY)       { fPosY = p_PosY; }
     void SetZ         (Double_t  p_PosZ)       { fPosZ = p_PosZ; }
-    // void SetXYZ       (Double_t p_X, Double_t p_Y, Double_t p_Z) {fPos.SetX(p_X); fPos.SetY(p_Y); fPos.SetZ(p_Z);}
     void SetXYZ (Double_t p_X, Double_t p_Y, Double_t p_Z)  {this->SetX(p_X); this->SetY(p_Y); this->SetZ(p_Z);}
     void AddContributor(Int_t p_Cont) {fContributorsID.push_back(p_Cont);}
     //------------------
@@ -76,11 +69,7 @@ public:
     Int_t     GetPDG()       { return fPDG;       }
     Int_t     GetTrackID()   { return fTrackID;   }
     Int_t     GetParentID()  { return fParentID;  }
-    // XYZVector GetPos()       { return fPos;       }
     Bool_t    GetTrueXTalk() { return fTrueXTalk; }
-    // Double_t  GetX()         { return fPos.X();   }
-    // Double_t  GetY()         { return fPos.Y();   }
-    // Double_t  GetZ()         { return fPos.Z();   }
     Double_t  GetX()         { return fPosX;   }
     Double_t  GetY()         { return fPosY;   }
     Double_t  GetZ()         { return fPosZ;   }

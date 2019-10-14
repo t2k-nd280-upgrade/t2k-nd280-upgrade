@@ -38,6 +38,8 @@
 
 #include "SFGD_Reconstruction.hh"
 
+#include <map>
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 //#define CROSSTALK_OFF
@@ -381,6 +383,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
         int PE_expect = 0;
         int PE_found = 0;
 
+        std::map<int,int> trackToParentID;
+        std::map<int,int> trackToPDG;
+
         cout << "************************" << endl;
         cout << " starting event " << ievt << " and has #hits " << nd280UpEvent->GetNHits() << endl;
 
@@ -490,6 +495,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 hitEdep[index]        = edeposit;
                 hitTraj[index]        = nd280UpHit->GetPrimaryId();
 
+                //cout << "PrimaryID: " << nd280UpHit->GetPrimaryId() << endl;
+
                 threshold[index][0] = aux_threshold(hitPE[index][0]);
                 threshold[index][1] = aux_threshold(hitPE[index][1]);
                 threshold[index][2] = aux_threshold(hitPE[index][2]);
@@ -499,16 +506,18 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(!threshold[index][2]) hitPE[index][2] = 0;
 
                 ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],hitLocation[index][1],hitLocation[index][2]);
-                Voxel->SetEdep(edeposit);
+                Voxel->SetEdep(numPE_fiber);
                 vector <double> localQ;
                 localQ.push_back(timepez);
                 localQ.push_back(timepey);
                 localQ.push_back(timepex);
                 Voxel->SetLocalHitsQ(localQ);
                 Voxel->SetTrueXTalk(crosstalk[index]);
+                Voxel->SetTrackID(hitTraj[index]);
                 listOfVoxels.push_back(Voxel);
 
-                for(int view=0; view<3; view++){                
+                std::vector<ND280SFGDHit*> voxHits;        
+                for(int view=0; view<3; view++){        
                     ND280SFGDHit* hit = event->AddHit();
                     hit->SetView(view);
 
@@ -526,7 +535,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     hit->SetTrackID(hitTraj[index]);
                     hit->SetxTalkFlag(crosstalk[index]);
                     listOfHits.push_back(hit);
+                    voxHits.push_back(hit);
                 }
+                Voxel->SetHits(voxHits);
+                voxHits.clear();
 
                 int counter = 0;
                 for (auto contrib : nd280UpHit->fContributors){
@@ -585,6 +597,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 trajPDG[i] = track->GetPDG();
                 trajID[i] = track->GetTrackID();
                 trajPrim[i] = track->GetParentID();
+                trackToPDG[track->GetTrackID()] = track->GetPDG();
+                // cout << "PDG: " <<  track->GetPDG()
+                //      << ", ID: " <<    track->GetTrackID() 
+                //      << ", prntID: " << track->GetParentID() << endl;
             }            
             for(int j = 0; j < maxHits; j++){
                 if(listOfTrackID[i] == hitTraj[j]){
@@ -607,9 +623,24 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 store = false;
                 break;
             }
+            // cout << "trk is: " << track->GetTrackID() << " || GetInitMom " << track->GetInitMom().Mag()
+            //      << " || trueCosTheta: " << track->GetInitCosTheta()
+            //      << " || Range: " << track->GetRange() 
+            //      << endl;
+            ND280SFGDTrack* sfgdtrack = new ND280SFGDTrack();
+            sfgdtrack->SetPDG(track->GetPDG());
+            sfgdtrack->SetTrackID(track->GetTrackID());
+            sfgdtrack->SetParentID(track->GetParentID());
+            sfgdtrack->SetCosTheta(track->GetInitCosTheta());
+            sfgdtrack->SetRange(track->GetRange());
+            sfgdtrack->SetMomentum(track->GetInitMom().Mag());
+
+            //cout << sfgdtrack->GetTrackID() << "," <<  sfgdtrack->GetParentID() << "," <<  sfgdtrack->GetPDG() << "," <<  sfgdtrack->GetMomentum() << "," <<  sfgdtrack->GetRange() << "," <<  sfgdtrack->GetCosTheta() << endl;
+
             all_trajPDG[trjID]    = track->GetPDG();
             all_trajID[trjID]     = track->GetTrackID();
             all_trajParent[trjID] = track->GetParentID();
+            listOfTracks.push_back(sfgdtrack);
         }
 
         std::vector<int> listOfParentID;
@@ -623,12 +654,45 @@ int SFGD_Reconstruction(int argc,char** argv) {
             if( trajPrim[i] == 0 ) trajParent[i] = -1;
             else{
                 trajParent[i] = FindParent(trajID[i],listOfParentID,nd280UpEvent);
+                trackToParentID[trajID[i]] = trajParent[i]; 
                 trajPrim[i] = 1; 
             }
             if (trajParent[i] == -999) store = false;    // deactivate to store all...
+            //cout << "ID: " << trajID[i] << ", parent: " << trajParent[i] << endl;
+            trackToParentID[trajID[i]] = trajParent[i]; 
+        }
+
+        for(uint vxl=0; vxl<listOfVoxels.size(); ++vxl){
+            //if (listOfVoxels[vxl]->GetTrackID() == -999) continue;
+            //cout << "trkID: " << listOfVoxels[vxl]->GetTrackID() << endl;
+            listOfVoxels[vxl]->SetParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrackID())->second);
+            listOfVoxels[vxl]->SetPDG(trackToPDG.find(listOfVoxels[vxl]->GetTrackID())->second);
+            if(WriteText) cout << "voxel: "<< vxl << "\tXYZ: " << listOfVoxels[vxl]->GetX() << "\t,"  << listOfVoxels[vxl]->GetY() << "\t," << listOfVoxels[vxl]->GetZ() << "\t, trueEDEP -[TOT,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetEdep()*0.25 <<  "\t," << listOfVoxels[vxl]->GetHits()[0]->GetCharge() << "\t," << listOfVoxels[vxl]->GetHits()[1]->GetCharge() << "\t," << listOfVoxels[vxl]->GetHits()[2]->GetCharge()
+                 << "\t, Track ID-prntID-PDG: " <<  listOfVoxels[vxl]->GetTrackID() << "\t," << listOfVoxels[vxl]->GetParentID() << "\t," << listOfVoxels[vxl]->GetPDG() << endl;
         }
 
         numHits = index;
+
+        // if(NHits){ // TODO: store this information in output && comment couts; + avoid entering into ApplyResponse if outside SFGD!
+        //     int nVertices = nd280UpEvent->GetNVertices();
+        //     cout << " *** Vertices: " << nVertices << endl;
+        //     TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
+        //     TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
+        //     TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y(),vrtx->GetPosition().z()+1707 );
+        //     cout << "Original Vtx Position: " << vrtx->GetPosition().x() << "," << vrtx->GetPosition().y() << "," << vrtx->GetPosition().z()<< endl;
+        //     cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << endl;
+        //     cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX() << "," << ApplyResponse.GetMPPCPosY() << "," << ApplyResponse.GetMPPCPosZ()<< endl;
+        //     ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
+        //     cout << "Vertex Cube Position: " << ApplyResponse.GetHitPos().x()/10 << "," << ApplyResponse.GetHitPos().y()/10 << "," << ApplyResponse.GetHitPos().z()/10 << endl;
+        // }
+
+        if(true){
+         for (std::map<int,int>::iterator it=trackToParentID.begin(); it!=trackToParentID.end(); ++it)
+            std::cout << "trackToParentID: " <<it->first << " => " << it->second << '\n';
+
+         for (std::map<int,int>::iterator it=trackToPDG.begin(); it!=trackToPDG.end(); ++it)
+            std::cout << "trackPDG: " <<it->first << " => " << it->second << '\n';
+        }
 
         if(store){
                 cout << " --- Event summary --- " << endl;
@@ -652,6 +716,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         event->SetVoxels(listOfVoxels);
         event->SetHits(listOfHits);
+        event->SetTracks(listOfTracks);
         cout << "event->GetHits().size(): " << event->GetHits().size() << endl;
         if(!index) store = false;
         if(store) {cout << "Event stored as input. " << endl; AllEvents->Fill(); }

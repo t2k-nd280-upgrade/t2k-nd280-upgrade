@@ -12,6 +12,8 @@
 #include <iostream>
 #include <fstream>
 
+#define NN;
+
 
 struct inputNode{
     double x          = -999;
@@ -23,7 +25,11 @@ struct inputNode{
     double mxy        = -999;
     double mxz        = -999;
     double myz        = -999;
-    int trueID        = -999;
+    double trueQ      = -999;
+    int    trueID     = -999;
+    std::vector <int> PDGs;
+    std::vector <int> trkIDs;
+    std::vector <int> prtIDs;
 };
 
 void Add1DHist(TH1F* h [3], TString name, int nbin, int min, int max){
@@ -48,7 +54,7 @@ void inputNN() {
 
     cout << endl << "Staring the execution." << endl;
 
-    Int_t maxEvents   = 10;
+    Int_t maxEvents   = 100000;
     Int_t maxSelEvents= 100000;
     Int_t selEvents   = 0;
 
@@ -141,8 +147,11 @@ void inputNN() {
         rawEvent = inputEvent;
         vector <ND280SFGDHit*> inputHits = inputEvent->GetHits();
         vector <ND280SFGDVoxel*> trueVoxels = inputEvent->GetVoxels();
+        vector <ND280SFGDTrack*> trueTracks = inputEvent->GetTracks();
         vector <ND280SFGDVoxel*> recoVoxels = HitsToVoxels(inputHits,0);
         
+        cout << "size of RECO Voxels: " << recoVoxels.size() << endl;
+        cout << "size of TRUE Voxels: " << trueVoxels.size() << endl << endl;
         for(auto i:recoVoxels){
             i->SetPDG(2);
             for(auto j:trueVoxels){
@@ -156,13 +165,19 @@ void inputNN() {
                 if( j->GetTrueXTalk()) continue;
                 if (i->GetX() == j->GetX() && i->GetY() == j->GetY() && i->GetZ() == j->GetZ()) i->SetPDG(0);
             }
-        }
-        
+        }       
         for(auto i:recoVoxels){
             i->GetHits()[0]->SetMultiplicity(i->GetHits()[0]->GetMultiplicity()+1);
             i->GetHits()[1]->SetMultiplicity(i->GetHits()[1]->GetMultiplicity()+1);
             i->GetHits()[2]->SetMultiplicity(i->GetHits()[2]->GetMultiplicity()+1);
         }
+
+        std::vector <int> primaryNtracks;
+        for(auto trk:trueTracks){
+            cout << "trkID: " << trk->GetTrackID() << ", prtID: " << trk->GetParentID() << endl;
+            if ( !trk->GetParentID() ) primaryNtracks.push_back(trk->GetTrackID()); 
+        }
+        cout << "N original tracks: " << primaryNtracks.size() << endl;
         
         for(auto i:recoVoxels){
             inputNode newNode;
@@ -177,25 +192,92 @@ void inputNN() {
             newNode.myz    =  i->GetHits()[2]->GetMultiplicity();
             newNode.myz    =  i->GetHits()[2]->GetMultiplicity();
             newNode.trueID =  i->GetPDG();  // true id stored in pdg...!
+
+            int totQ = 0;
+            int pdg = 0;
+            int trkid = 0;
+            int prtid = 0;
+            std::vector <int> pdgs;
+            std::vector <int> ids;
+            std::vector <int> prts;
+            for (auto j:trueVoxels)
+                if ( i->GetX()==j->GetX() && i->GetY()==j->GetY() && i->GetZ()==j->GetZ()){
+                    totQ += j->GetEdep()*0.25; // This is not the Edep but 'numPE_fiber', in SFGD_Reconstruction. It is not multiplied by the random %25 efficiency.
+                    if(pdg && pdg != j->GetPDG()){
+                        //cout << "ILLDEFINED: " << pdg << "," << j->GetPDG() << endl;
+                        pdgs.push_back(j->GetPDG());
+                        ids.push_back(j->GetTrackID());
+                        prts.push_back(j->GetParentID());
+                    }
+                    pdg = j->GetPDG();
+                    trkid = j->GetTrackID();
+                    prtid = j->GetParentID();
+                    if (!pdgs.size()){                        
+                        pdgs.push_back(pdg);
+                        ids.push_back(trkid);
+                        prts.push_back(prtid);
+                    }
+                }
+
+            newNode.PDGs   = pdgs;
+            newNode.trkIDs = ids;
+            newNode.prtIDs = prts;
+            newNode.trueQ  =  totQ;
             iNodes.push_back(newNode);
+            // if(newNode.trkIDs.size() == primaryNtracks.size()){
+            //     int cnt = 0;
+            //     for (int x=0; x<newNode.trkIDs.size();++x)
+            //         for (auto n:primaryNtracks)
+            //             if(newNode.trkIDs[x] == n) cnt++;
+            //     if (cnt == primaryNtracks.size()){
+            //         //cout << "VERTEX: (X,Y,Z): " << newNode.x << "," << newNode.y << "," << newNode.z << endl;  
+            //         for (int x=0; x<newNode.trkIDs.size();++x)
+            //             for (auto n:primaryNtracks)
+            //                 //if(newNode.trkIDs[x] == n) cout << newNode.trkIDs[x] << "==" << n << endl;
+            //     } 
+            // } 
         }
         
+        
+        bool Write = false;
         for(auto i:iNodes){
-            bool Write = false;
             if(Write){
-                cout << iev                                                 // event ID to group hits in same event on the txt.
+                cout << iev  << " " << 0                                    // event ID to group hits in same event on the txt.
                 << " " << i.x << " " << i.y << " " << i.z                   // position to draw events.
                 << " " << i.qxy << " " << i.qxz << " " << i.qyz             // #pe on the 3 2D views.         
                 << " " << i.mxy << " " << i.mxz << " " << i.myz             // hits multiplicity in each fiber.
-                << " " << i.trueID
-                << "\n";                    
+                << " " << i.trueQ << " " << i.PDGs.size();
+                for(uint s=0; s<i.PDGs.size();s++){
+                    cout << " " << i.trkIDs[s]
+                         << " " << i.prtIDs[s]
+                         << " " << i.PDGs[s];
+                }
+                cout << " " << i.trueID << "\n";                    
             }
-            myfile << iev                                                         
-            << " " << i.x << " " << i.y << " " << i.z      
-            << " " << i.qxy << " " << i.qxz << " " << i.qyz
-            << " " << i.mxy << " " << i.mxz << " " << i.myz
-            << " " << i.trueID
-            << "\n";
+            myfile << iev  << " " << 0                                    // event ID to group hits in same event on the txt.
+                   << " " << i.x << " " << i.y << " " << i.z                   // position to draw events.
+                   << " " << i.qxy << " " << i.qxz << " " << i.qyz             // #pe on the 3 2D views.         
+                   << " " << i.mxy << " " << i.mxz << " " << i.myz             // hits multiplicity in each fiber.
+                   << " " << i.trueQ << " " << i.PDGs.size();
+                   for(uint s=0; s<i.PDGs.size();s++){
+                        myfile << " " << i.trkIDs[s]
+                               << " " << i.prtIDs[s]
+                               << " " << i.PDGs[s];
+                    }
+                    myfile << " " << i.trueID << "\n";   
+        }
+        
+        for(auto trk:trueTracks){
+            if(Write){
+                cout << iev  << " " << 1                                                   // event ID to group hits in same event on the txt.
+                     << " " << trk->GetTrackID() << " " << trk->GetParentID() << " " << trk->GetPDG()
+                     << " " << trk->GetMomentum() << " " << trk->GetRange() << " " << trk->GetCosTheta()
+                     << "\n";  
+            }
+            myfile << iev  << " " << 1                                                   // event ID to group hits in same event on the txt.
+                     << " " << trk->GetTrackID() << " " << trk->GetParentID() << " " << trk->GetPDG()
+                     << " " << trk->GetMomentum() << " " << trk->GetRange() << " " << trk->GetCosTheta()
+                     << "\n";  
         }
         selEvents++;
         if(selEvents%100==0) cout << "Stored events: " << selEvents << endl;
