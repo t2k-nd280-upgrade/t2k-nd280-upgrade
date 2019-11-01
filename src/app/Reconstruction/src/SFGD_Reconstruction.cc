@@ -144,7 +144,7 @@ int FiberAbs(int numPE){
 }
 
 int FindParent(int inputID, std::vector<int> listOfParentID, TND280UpEvent* evt){
-    int outputID;
+    int outputID = 0;
     for (Int_t trjID = 0; trjID < evt->GetNTracks(); trjID++) {
         TND280UpTrack* track = evt->GetTrack(trjID);
         if (track->GetTrackID() == inputID){
@@ -392,6 +392,14 @@ int SFGD_Reconstruction(int argc,char** argv) {
         int NHits = nd280UpEvent->GetNHits();
         numHits = NHits;
 
+        int edep_without_clear_contributor = 0;
+
+        std::vector <int> listOfTrueTrackID;
+        for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
+            TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
+            listOfTrueTrackID.push_back(track->GetTrackID());
+        }
+
         for(int ihit=0;ihit<NHits;ihit++){ // get last entry
             TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
 
@@ -450,11 +458,34 @@ int SFGD_Reconstruction(int argc,char** argv) {
             if(WriteText) cout << "Flowed PE: " << totCT << endl;
             if(WriteText) cout << "Number of remaining PE: " << numPE-totCT << endl;
 
-            int cnt_PE_tot = 0;
+            int trkID = - 999;
             for (int m=0; m<7;m++){                
                 int numPE_fiber = 0;
                 if(m==0) numPE_fiber = FiberAbs(numPE-totCT);
                 else numPE_fiber = FiberAbs(numPE_CT[m-1]);
+
+                if(m==0){
+                    bool done = false;
+                    std::vector<int>::reverse_iterator it = nd280UpHit->fContributors.rbegin();
+                    for (; it!= nd280UpHit->fContributors.rend(); ++it){
+                        for (auto trueTrackID:listOfTrueTrackID){
+                            if ((*it) == trueTrackID) {trkID =(*it); done = true; break;}                 
+                        }
+                    if(done) break;
+                    }
+                }
+
+                if(m==0){
+                    if (trkID < 0) {trkID = nd280UpHit->GetPrimaryId(); edep_without_clear_contributor++;}
+                    //cout << "trkID: " << trkID << endl;
+                    // cout << "nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << endl;
+                    // cout << "trkID: " << trkID << endl;
+                    // cout << "fContributors: " << nd280UpHit->fContributors.size() << endl;
+                    //for (auto c:nd280UpHit->fContributors) cout << c << ",";
+                    //cout << endl << endl;
+                }
+
+                 if(trkID <0) { cout << "NOT STORING THE EVENT! negative TRK ID!: " << trkID <<","<< m << endl; store = false;}
 
                 //cout << m <<", New # of Abs PE: " << numPE_fiber << endl;
 
@@ -493,9 +524,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 hitPE[index][1]       = pey;
                 hitPE[index][2]       = pex;
                 hitEdep[index]        = edeposit;
-                hitTraj[index]        = nd280UpHit->GetPrimaryId();
-
-                //cout << "PrimaryID: " << nd280UpHit->GetPrimaryId() << endl;
+                hitTraj[index]        = trkID;//nd280UpHit->fContributors.back();//nd280UpHit->GetPrimaryId();
 
                 threshold[index][0] = aux_threshold(hitPE[index][0]);
                 threshold[index][1] = aux_threshold(hitPE[index][1]);
@@ -508,7 +537,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],hitLocation[index][1],hitLocation[index][2]);
                 Voxel->SetTrueEdep(edeposit);
                 Voxel->SetTruePE(numPE_fiber);
-                Voxel->AddTrueTrackID(nd280UpHit->GetPrimaryId());
+                Voxel->AddTrueTrackID(trkID);
                 if (crosstalk[index]) Voxel->SetTrueType(1);
                 else  Voxel->SetTrueType(0);
                 if(Voxel->GetTruePE()>0) listOfVoxels.push_back(Voxel);
@@ -593,9 +622,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 trajID[i] = track->GetTrackID();
                 trajPrim[i] = track->GetParentID();
                 trackToPDG[track->GetTrackID()] = track->GetPDG();
-                // cout << "PDG: " <<  track->GetPDG()
-                //      << ", ID: " <<    track->GetTrackID() 
-                //      << ", prntID: " << track->GetParentID() << endl;
+                cout << "PDG: " <<  track->GetPDG()
+                     << ", ID: " <<    track->GetTrackID() 
+                     << ", prntID: " << track->GetParentID() << endl;
             }            
             for(int j = 0; j < maxHits; j++){
                 if(listOfTrackID[i] == hitTraj[j]){
@@ -622,6 +651,11 @@ int SFGD_Reconstruction(int argc,char** argv) {
             //      << " || trueCosTheta: " << track->GetInitCosTheta()
             //      << " || Range: " << track->GetRange() 
             //      << endl;
+
+            bool found = false;
+            for(auto trk_ID:listOfTrackID) if (trk_ID == track->GetTrackID()) found = true;
+            if(!found) continue;
+
             ND280SFGDTrack* sfgdtrack = new ND280SFGDTrack();
             sfgdtrack->SetPDG(track->GetPDG());
             sfgdtrack->SetTrackID(track->GetTrackID());
@@ -664,6 +698,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             if(WriteText) cout << "voxel: "<< vxl << "\t, Type: " << listOfVoxels[vxl]->GetTrueType() << "\tXYZ: " << listOfVoxels[vxl]->GetX() << ","  << listOfVoxels[vxl]->GetY() << "," << listOfVoxels[vxl]->GetZ() << ",\ttrueDeposits -[Edep,FiberPE,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetTrueEdep()*0.25 << ",\t" << listOfVoxels[vxl]->GetTruePE()*0.25 <<  ",\t" << listOfVoxels[vxl]->GetHits()[0]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[1]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[2]->GetPE()
                  << ",\tTrackInfo [ID,prntID,PDG]: " <<  listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl;
         }
+        cout << "Voxels voxels w/o clear track ID: " << edep_without_clear_contributor << endl;
 
         numHits = index;
 
@@ -710,7 +745,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         event->SetVoxels(listOfVoxels);
         event->SetHits(listOfHits);
-        event->SetTracks(listOfTracks);
+        event->SetTrueTracks(listOfTracks);
         cout << "event->GetHits().size(): " << event->GetHits().size() << endl;
         if(!index) store = false;
         if(store) {cout << "Event stored as input. " << endl; AllEvents->Fill(); }

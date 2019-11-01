@@ -17,13 +17,22 @@ private:
     double   fRange;        // 
     double   fCosTheta;     // Initial CosTheta
     double   fMom;          // Initial Momentum
+    std::vector <double>  fFitPar; // best fit parameters.
+    bool     fIsReco;       // true if reconstructed.
+    ND280SFGDTrack* fTrueTrack;
+    ND280SFGDTrack* fSegment;
+    double   fPrecision;     // voxels with correct trkID / (total of voxels in the reco track)
+    double   fRecall;        // voxels with correct trkID / (total of voxels in the true track)
+
 public:
 
     //constructors
     ND280SFGDTrack(){
+        this->Init();
     };
 
     ND280SFGDTrack(std::vector <ND280SFGDVoxel*> listOfVoxels){
+        this->Init();
         this->SetVoxels(listOfVoxels);        
     };
 
@@ -32,24 +41,57 @@ public:
 
     //-----Setters------
 
-    void SetPDG         (int     p_PDG)     { fPDG      = p_PDG; }
-    void SetTrackID     (int     p_ID )     { fTrackID  = p_ID;  }
-    void SetParentID    (int     p_prt)     { fParentID = p_prt; }
-    void SetCosTheta    (double  p_cos)     { fCosTheta = p_cos; }
-    void SetRange       (double  p_rng)     { fRange    = p_rng; }
-    void SetMomentum    (double  p_mom)     { fMom      = p_mom; }
+    void SetPDG         (int     p_PDG)                   { fPDG       = p_PDG; }
+    void SetTrackID     (int     p_ID )                   { fTrackID   = p_ID;  }
+    void SetParentID    (int     p_prt)                   { fParentID  = p_prt; }
+    void SetCosTheta    (double  p_cos)                   { fCosTheta  = p_cos; }
+    void SetRange       (double  p_rng)                   { fRange     = p_rng; }
+    void SetMomentum    (double  p_mom)                   { fMom       = p_mom; }
+    void SetFitParams   (std::vector <double>  p_fit)     { fFitPar    = p_fit; }
+    void SetTrueTrack   (ND280SFGDTrack* p_true)          { fTrueTrack = p_true;}
+    void SetNextSegment (ND280SFGDTrack* p_seg)           { fSegment   = p_seg; }
+    void SetPrecision   (double  p_pre)                   { fPrecision = p_pre; }
+    void SetRecall      (double  p_rec)                   { fRecall    = p_rec; }
+    void SetIsReco      (bool    p_IsR)                   { fIsReco    = p_IsR; }
 
     //------------------
 
     //-----Getters------
 
-    int     GetPDG()      { return fPDG;      }
-    int     GetTrackID()  { return fTrackID;  }
-    int     GetParentID() { return fParentID; }
-    double  GetCosTheta() { return fCosTheta; }
-    double  GetRange()    { return fRange;    }
-    double  GetMomentum() { return fMom;      }
+    int     GetPDG()                     { return fPDG;       }
+    int     GetTrackID()                 { return fTrackID;   }
+    int     GetParentID()                { return fParentID;  }
+    double  GetCosTheta()                { return fCosTheta;  }
+    double  GetRange()                   { return fRange;     }
+    double  GetMomentum()                { return fMom;       }
+    std::vector <double>  GetFitParams() { return fFitPar;    }
+    ND280SFGDTrack* GetNextSegment()     { return fSegment;   }
+    ND280SFGDTrack* GetTrueTrack()       { return fTrueTrack; }
+    double GetRecall()                   { return fRecall;    }
+    double GetPrecision()                { return fPrecision; }
+    bool   IsReco()                      { return fIsReco;    }
+    
+    double GetF1Score(){
+        double f1score = 0; 
+        if (fRecall && fPrecision) f1score = 2.*fRecall*fPrecision/(fRecall+fPrecision);
+        return f1score;
+    }
 
+    void Init(Option_t* /*option*/="")
+    {
+        fPDG       = -999;          
+        fTrackID   = -999;      
+        fParentID  = -999;     
+        fRange     = -999;        
+        fCosTheta  = -999;     
+        fMom       = -999;          
+        fFitPar.clear();
+        fIsReco    = false;
+        fTrueTrack = nullptr;
+        fSegment   = nullptr;
+        fPrecision = 0;  
+        fRecall    = 0;      
+    }
 
     //------------------
 

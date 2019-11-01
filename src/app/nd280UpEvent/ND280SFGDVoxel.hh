@@ -27,12 +27,22 @@ private:
     Double_t  fPosX;
     Double_t  fPosY;
     Double_t  fPosZ;
-    Double_t  fTime;         // yet not clear how to fill this variable.
+    Double_t  fTrueTime;     // yet not clear how to fill this variable.
+    Double_t  fRecoTime;     // yet not clear how to fill this variable.
     Double_t  fTrueEdep;     // yet not clear how to fill this variable.
     Double_t  fRecoEdep;     // yet not clear how to fill this variable.
+    Int_t     fClustID;      // ID of the cluster.
+
+    Double_t  fTime;         // Erase it soon. --> move to True/Reco
 
     std::vector <Int_t> fHitIDs;       //MPPCHits IDs
     std::vector <ND280SFGDHit*> fHits; //MPPCHits pointers
+    std::vector <ND280SFGDVoxel*> fNeighbors;
+
+    int fDistance;
+
+    bool fIsVisited;
+    bool fIsEndPoint;
 
 public:
     //constructors
@@ -67,13 +77,23 @@ public:
     void SetRecoEdep      (Double_t  p_reco_Edep)               { fRecoEdep =  p_reco_Edep; }
     void SetTruePE        (Double_t  p_true_PE)                 { fTruePE   =  p_true_PE;   }
     void SetRecoPE        (Double_t  p_reco_PE)                 { fRecoPE   =  p_reco_PE;   }
-    void SetTrueType      (Double_t  p_true_Type)               { fTrueType =  p_true_Type; }
+    void SetTrueType      (Int_t     p_true_Type)               { fTrueType =  p_true_Type; }
     void SetRecoType      (Double_t  p_reco_Type)               { fRecoType =  p_reco_Type; }
+    void SetTrueTime      (Double_t  p_true_Time)               { fTrueTime =  p_true_Time;  }
+    void SetRecoTime      (Double_t  p_reco_Time)               { fRecoTime =  p_reco_Time;  }
+    void SetClusterID     (Double_t  p_cID)                     { fClustID  =  p_cID;        }
     void SetX             (Double_t  p_PosX)                    { fPosX  = p_PosX; }
     void SetY             (Double_t  p_PosY)                    { fPosY  = p_PosY; }
     void SetZ             (Double_t  p_PosZ)                    { fPosZ  = p_PosZ; }
     void SetTime          (Double_t  p_Time)                    { fTime  = p_Time; }
     void SetXYZ           (Double_t  p_PosX, Double_t p_PosY, Double_t p_PosZ)  {this->SetX(p_PosX); this->SetY(p_PosY); this->SetZ(p_PosZ);}
+    
+
+    void AddNeighbor      (ND280SFGDVoxel* p_neighbor) {fNeighbors.push_back(p_neighbor);}
+    void SetNeighbors     (std::vector <ND280SFGDVoxel*> p_neighbors) {fNeighbors = p_neighbors;}
+    void SetIsEndPoint    (bool p_fIsEndPoint) { fIsEndPoint = p_fIsEndPoint;}
+    void SetIsVisited     (bool p_fIsVisited)  { fIsVisited  = p_fIsVisited;}
+    void SetDistance      (int  p_distance) { fDistance = p_distance; }
     //------------------
 
     //-----Getters------
@@ -83,13 +103,16 @@ public:
     Double_t  GetY()                        { return fPosY;          }
     Double_t  GetZ()                        { return fPosZ;          }
     Double_t  GetTime()                     { return fTime;          }
+    Double_t  GetTrueTime()                 { return fTrueTime;      }
+    Double_t  GetRecoTime()                 { return fRecoTime;      }
+    Int_t     GetClusterID()                { return fClustID;       }
     std::vector<Int_t> GetTruePDGs()        { return fTruePDGs;      } 
     std::vector<Int_t> GetTrueTrackIDs()    { return fTrueTrackIDs;  } 
     std::vector<Int_t> GetTrueParentIDs()   { return fTrueParentIDs; } 
     std::vector<Int_t> GetRecoPDGs()        { return fRecoPDGs;      } 
     std::vector<Int_t> GetRecoTrackIDs()    { return fRecoTrackIDs;  } 
     std::vector<Int_t> GetRecoParentIDs()   { return fRecoParentIDs; } 
-    Double_t GetTrueType()                  { return fTrueType;      } 
+    Int_t    GetTrueType()                  { return fTrueType;      } 
     Double_t GetRecoType()                  { return fRecoType;      } 
     Double_t GetTruePE()                    { return fTruePE;        } 
     Double_t GetRecoPE()                    { return fRecoPE;        } 
@@ -97,9 +120,30 @@ public:
     Double_t GetRecoEdep()                  { return fRecoEdep;      }
     std::vector <ND280SFGDHit*>   GetHits() { return fHits;          }
     std::vector <Int_t> GetHitIDs()         { return fHitIDs;        }
-    ND280SFGDHit*   GetHit(Int_t p_index)   { if((int) fHits.size() <= p_index) {printf("GetHit Error! Accessing empty value!\n"); exit(1);}   return fHits[p_index]; } 
-    Int_t   GetHitID(Int_t p_index)           { if((int) fHitIDs.size() <= p_index) {printf("GetHit Error! Accessing empty value!\n"); exit(1);}   return fHitIDs[p_index]; } 
+    ND280SFGDHit*   GetHit(Int_t p_index)   { if((int) fHits.size()   <= p_index) {printf("GetHit Error! Accessing empty value!\n"); exit(1);}   return fHits[p_index]; } 
+    Int_t   GetHitID(Int_t p_index)         { if((int) fHitIDs.size() <= p_index) {printf("GetHit Error! Accessing empty value!\n"); exit(1);}   return fHitIDs[p_index]; } 
+    
+    std::vector <ND280SFGDVoxel*> GetNeighbors() {return fNeighbors;}
+    bool IsEndPoint() {return fIsEndPoint;}
+    bool IsVisited()  {return fIsVisited;}
+    int GetDistance() {return fDistance;}
     //------------------
+
+    void ClearRecoTrackIDs () {fRecoTrackIDs.clear();}
+
+    double DistToMPPC(int view){
+        double distance = 0;
+        if      (view == 2) distance =  this->GetX()*10;       // X is distance to plane YZ 
+        else if (view == 1) distance =  this->GetY()*10;       // Y is distance to plane XZ
+        else if (view == 0) distance =  this->GetZ()*10;       // Z is distance to plane XY
+        if (distance<0)     {std::cerr << "Distance can not be negative! case: " << view << "distance: " << distance << std::endl; exit(1);}
+        return distance;
+    }
+
+    double DistToVoxel(ND280SFGDVoxel* vxl){
+        double distance = sqrt(pow(this->GetX()-vxl->GetX(),2) + pow(this->GetY()-vxl->GetY(),2) + pow(this->GetZ()-vxl->GetZ(),2));
+        return distance;
+    }
 
     bool operator==(ND280SFGDVoxel* rhs)
     { 
@@ -118,14 +162,21 @@ public:
         fRecoParentIDs.clear();
         fHitIDs.clear();
         fHits.clear();
-        fID       = -999;
-        fTrueType = -999;
-        fRecoType = -999;
-        fTruePE   = -999;
-        fRecoPE   = -999;
-        fTrueEdep = -999;
-        fRecoEdep = -999;
-        fTime     = -999;
+        fNeighbors.clear();
+        fID         = -999;
+        fTrueType   = -999;
+        fRecoType   = -999;
+        fTruePE     = -999;
+        fRecoPE     = -999;
+        fTrueEdep   = -999;
+        fRecoEdep   = -999;
+        fTrueTime   = -999;
+        fRecoTime   = -999;
+        fClustID    = -999;
+        fTime       = -999;
+        fIsEndPoint = false;
+        fIsVisited  = false;
+        fDistance   = 0;
     }
 
     ClassDef(ND280SFGDVoxel,1);

@@ -10,7 +10,7 @@
 /field/setField 0.0001 0 0 tesla
 /field/update
 
-/db/set/saveAllTraj 1
+#/db/set/saveAllTraj 1
 /db/set/saveAllHits 1
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"

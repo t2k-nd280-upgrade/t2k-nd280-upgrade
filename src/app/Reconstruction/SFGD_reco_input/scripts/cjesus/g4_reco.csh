@@ -2,7 +2,7 @@
 
 set j=0
 set f=1
-set n=20
+set n=1000
 set s=1
 set r=interactive
 set mode="pion"
