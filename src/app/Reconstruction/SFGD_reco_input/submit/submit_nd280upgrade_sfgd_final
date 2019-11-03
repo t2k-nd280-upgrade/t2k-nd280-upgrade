@@ -43,25 +43,16 @@ foreach (@ARGV) {
     $iarg++;
 }
 
-$exe_clust_dir = "build/bin" unless defined $exe_clust_dir; # path starting from $softw_dir
-$exe_loc_dir = "build/bin" unless defined $exe_loc_dir; # path starting from $softw_dir
-
-$resource        = "interactive"               unless defined $resource;
-
-$tag             = "SFGD_MC_FINAL_SIZE"    unless defined $tag;
-
-$config_file     = "config/sfgd_final.xml" unless defined $config_file; # reference: no ecal, cluster
- 
-$vis_file        = "mac/vis_sfgd_final.mac"           unless defined $vis_file;
-
-$nruns           = 10                          unless defined $nruns;      # number of jobs (reference nue e22 pot) 
-
-$nexpts          = 3000                        unless defined $nexpts;     # number of events per job (with ToF RHC-numubar) 
-
-$first_expt      = 0                           unless defined $first_expt; # first event
-
-$queue           = "short"                unless defined $queue;
-
+$exe_clust_dir   = "build/bin"                         unless defined $exe_clust_dir; # path starting from $softw_dir
+$exe_loc_dir     = "build/bin"                         unless defined $exe_loc_dir; # path starting from $softw_dir
+$resource        = "interactive"                       unless defined $resource;
+$tag             = "SFGD_MC_FINAL_SIZE"                unless defined $tag;
+$config_file     = "config/sfgd_final.xml"             unless defined $config_file; # reference: no ecal, cluster
+$vis_file        = "mac/vis_sfgd_final.mac"            unless defined $vis_file;
+$nruns           = 10                                  unless defined $nruns;      # number of jobs (reference nue e22 pot) 
+$nexpts          = 3000                                unless defined $nexpts;     # number of events per job (with ToF RHC-numubar) 
+$first_expt      = 0                                   unless defined $first_expt; # first event
+$queue           = "short"                             unless defined $queue;
 $job_dir = "/Users/aoi/ND280_UPGRADE/output/RecoInput" unless defined $job_dir;
 
 $irun = 0;
