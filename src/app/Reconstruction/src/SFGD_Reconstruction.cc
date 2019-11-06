@@ -663,6 +663,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             sfgdtrack->SetCosTheta(track->GetInitCosTheta());
             sfgdtrack->SetRange(track->GetRange());
             sfgdtrack->SetMomentum(track->GetInitMom().Mag());
+            sfgdtrack->fMomVec = track->GetInitMom();
 
             //if (sfgdtrack->GetParentID() == -1) cout << "TrackInfo: [Id,ParentId,PDG,Mom,Range,CosTheta] " << sfgdtrack->GetTrackID() << "," <<  sfgdtrack->GetParentID() << "," <<  sfgdtrack->GetPDG() << "," <<  sfgdtrack->GetMomentum() << "," <<  sfgdtrack->GetRange() << "," <<  sfgdtrack->GetCosTheta() << endl;
 

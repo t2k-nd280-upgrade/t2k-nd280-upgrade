@@ -108,11 +108,19 @@ public:
     void DrawGraphDistance  (bool wait=true, TString canvName = "cc");  
     void DrawTrueType       (bool wait=true, TString canvName = "cc");    
 
-    double GetMaxEuclDist(){
+    double GetMaxEuclDist(int type=-1){
         double dist = 0;
+        if (type == -1){
         for (int i=0; i<(int) fVoxels.size();++i)
-            for (int j=i+1; j<(int) fVoxels.size();++j)
-                if(fVoxels[i]->DistToVoxel(fVoxels[j])>dist) dist = fVoxels[i]->DistToVoxel(fVoxels[j]);
+            for (int j=i+1; j<(int) fVoxels.size();++j){
+                if(fVoxels[i]->DistToVoxel(fVoxels[j])>dist) dist = fVoxels[i]->DistToVoxel(fVoxels[j]);}
+        }
+        else{
+            for (int i=0; i<(int) fVoxels.size();++i)
+                for (int j=i+1; j<(int) fVoxels.size();++j){
+                    if (fVoxels[i]->GetTrueType() == type and fVoxels[j]->GetTrueType() == type) if(fVoxels[i]->DistToVoxel(fVoxels[j])>dist) dist = fVoxels[i]->DistToVoxel(fVoxels[j]);
+            }       
+        }
         return dist;
     }        
 
