@@ -27,7 +27,7 @@ Double_t Event::FindMaxCharge()
   Double_t En = 0;
   for (Int_t ihit=0; ihit<fNHits ; ihit++){
     Hit *hit = (Hit*)fHits->At(ihit);
-    if (hit->GetCharge() > En && hit->GetView() != 0) En = hit->GetCharge();
+    if (hit->GetPE() > En && hit->GetView() != 0) En = hit->GetPE();
   }
   return En;
 }

@@ -38,6 +38,8 @@
 
 #include "SFGD_Reconstruction.hh"
 
+#include <map>
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 //#define CROSSTALK_OFF
@@ -150,7 +152,7 @@ int FiberAbs(int numPE){
 }
 
 int FindParent(int inputID, std::vector<int> listOfParentID, TND280UpEvent* evt){
-    int outputID;
+    int outputID = 0;
     for (Int_t trjID = 0; trjID < evt->GetNTracks(); trjID++) {
         TND280UpTrack* track = evt->GetTrack(trjID);
         if (track->GetTrackID() == inputID){
@@ -454,33 +456,44 @@ int SFGD_Reconstruction(int argc,char** argv) {
         int PE_expect = 0;
         int PE_found = 0;
 
-        // FIXME
-        orig_evt = ievt;
-        //for(unsigned i_xpos=0; i_xpos<192; i_xpos++){
-        //	EdepositX[i_xpos] = 0;
-        //}
-        //for(unsigned i_ypos=0; i_ypos<56; i_ypos++){
-        //	EdepositY[i_ypos] = 0;
-        //}
-        for(unsigned i_zpos=0; i_zpos<184; i_zpos++){
-        	EdepositZ[i_zpos] = 0;
-        }
-        Edepo_total = 0;
-        TString name;
-        name = TString::Format("EnergyDeposit2D_XY_%d",ievt);
-        EnergyDeposit2D_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
-        name = TString::Format("EnergyDeposit2D_XZ_%d",ievt);
-        EnergyDeposit2D_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
-        name = TString::Format("EnergyDeposit2D_YZ_%d",ievt);
-        EnergyDeposit2D_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
-        name = TString::Format("EdepForInitElectron_%d",ievt);
-        EdepForInitElectron[ievt] = (TH2F*)h2d_yz->Clone(name);
+/*        // FIXME
+ *        orig_evt = ievt;
+ *        //for(unsigned i_xpos=0; i_xpos<192; i_xpos++){
+ *        //	EdepositX[i_xpos] = 0;
+ *        //}
+ *        //for(unsigned i_ypos=0; i_ypos<56; i_ypos++){
+ *        //	EdepositY[i_ypos] = 0;
+ *        //}
+ *        for(unsigned i_zpos=0; i_zpos<184; i_zpos++){
+ *        	EdepositZ[i_zpos] = 0;
+ *        }
+ *        Edepo_total = 0;
+ *        TString name;
+ *        name = TString::Format("EnergyDeposit2D_XY_%d",ievt);
+ *        EnergyDeposit2D_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
+ *        name = TString::Format("EnergyDeposit2D_XZ_%d",ievt);
+ *        EnergyDeposit2D_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
+ *        name = TString::Format("EnergyDeposit2D_YZ_%d",ievt);
+ *        EnergyDeposit2D_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
+ *        name = TString::Format("EdepForInitElectron_%d",ievt);
+ *        EdepForInitElectron[ievt] = (TH2F*)h2d_yz->Clone(name);
+ */
+        std::map<int,int> trackToParentID;
+        std::map<int,int> trackToPDG;
 
         cout << "************************" << endl;
         cout << " starting event " << ievt << " and has #hits " << nd280UpEvent->GetNHits() << endl;
 
         int NHits = nd280UpEvent->GetNHits();
         numHits = NHits;
+
+        int edep_without_clear_contributor = 0;
+
+        std::vector <int> listOfTrueTrackID;
+        for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
+            TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
+            listOfTrueTrackID.push_back(track->GetTrackID());
+        }
 
         for(int ihit=0;ihit<NHits;ihit++){ // get last entry
             TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
@@ -538,9 +551,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(view == 0) hit->SetZ(-1);
                 if(view == 1) hit->SetY(-1);
                 if(view == 2) hit->SetX(-1);
-                if(view == 0) hit->SetCharge(ApplyResponse.GetHitPE().z());
-                if(view == 1) hit->SetCharge(ApplyResponse.GetHitPE().y());
-                if(view == 2) hit->SetCharge(ApplyResponse.GetHitPE().x());
+                if(view == 0) hit->SetPE(ApplyResponse.GetHitPE().z());
+                if(view == 1) hit->SetPE(ApplyResponse.GetHitPE().y());
+                if(view == 2) hit->SetPE(ApplyResponse.GetHitPE().x());
 
                 listOfHits.push_back(hit);
             }
@@ -564,11 +577,34 @@ int SFGD_Reconstruction(int argc,char** argv) {
             if(WriteText) cout << "Flowed PE: " << totCT << endl;
             if(WriteText) cout << "Number of remaining PE: " << numPE-totCT << endl;
 
-            int cnt_PE_tot = 0;
+            int trkID = - 999;
             for (int m=0; m<7;m++){                
                 int numPE_fiber = 0;
                 if(m==0) numPE_fiber = FiberAbs(numPE-totCT);
                 else numPE_fiber = FiberAbs(numPE_CT[m-1]);
+
+                if(m==0){
+                    bool done = false;
+                    std::vector<int>::reverse_iterator it = nd280UpHit->fContributors.rbegin();
+                    for (; it!= nd280UpHit->fContributors.rend(); ++it){
+                        for (auto trueTrackID:listOfTrueTrackID){
+                            if ((*it) == trueTrackID) {trkID =(*it); done = true; break;}                 
+                        }
+                    if(done) break;
+                    }
+                }
+
+                if(m==0){
+                    if (trkID < 0) {trkID = nd280UpHit->GetPrimaryId(); edep_without_clear_contributor++;}
+                    //cout << "trkID: " << trkID << endl;
+                    // cout << "nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << endl;
+                    // cout << "trkID: " << trkID << endl;
+                    // cout << "fContributors: " << nd280UpHit->fContributors.size() << endl;
+                    //for (auto c:nd280UpHit->fContributors) cout << c << ",";
+                    //cout << endl << endl;
+                }
+
+                 if(trkID <0) { cout << "NOT STORING THE EVENT! negative TRK ID!: " << trkID <<","<< m << endl; store = false;}
 
                 //cout << m <<", New # of Abs PE: " << numPE_fiber << endl;
 
@@ -607,7 +643,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 hitPE[index][1]       = pey;
                 hitPE[index][2]       = pex;
                 hitEdep[index]        = edeposit;
-                hitTraj[index]        = nd280UpHit->GetPrimaryId();
+                hitTraj[index]        = trkID;//nd280UpHit->fContributors.back();//nd280UpHit->GetPrimaryId();
 
                 threshold[index][0] = aux_threshold(hitPE[index][0]);
                 threshold[index][1] = aux_threshold(hitPE[index][1]);
@@ -618,16 +654,15 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(!threshold[index][2]) hitPE[index][2] = 0;
 
                 ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],hitLocation[index][1],hitLocation[index][2]);
-                Voxel->SetEdep(edeposit);
-                vector <double> localQ;
-                localQ.push_back(timepez);
-                localQ.push_back(timepey);
-                localQ.push_back(timepex);
-                Voxel->SetLocalHitsQ(localQ);
-                Voxel->SetTrueXTalk(crosstalk[index]);
-                listOfVoxels.push_back(Voxel);
+                Voxel->SetTrueEdep(edeposit);
+                Voxel->SetTruePE(numPE_fiber);
+                Voxel->AddTrueTrackID(trkID);
+                if (crosstalk[index]) Voxel->SetTrueType(1);
+                else  Voxel->SetTrueType(0);
+                if(Voxel->GetTruePE()>0) listOfVoxels.push_back(Voxel);
 
-                for(int view=0; view<3; view++){                
+                std::vector<ND280SFGDHit*> voxHits;        
+                for(int view=0; view<3; view++){        
                     ND280SFGDHit* hit = event->AddHit();
                     hit->SetView(view);
 
@@ -638,14 +673,15 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     if(view == 0) hit->SetZ(-1);
                     if(view == 1) hit->SetY(-1);
                     if(view == 2) hit->SetX(-1);
-                    if(view == 0) hit->SetCharge(hitPE[index][0]);
-                    if(view == 1) hit->SetCharge(hitPE[index][1]);
-                    if(view == 2) hit->SetCharge(hitPE[index][2]);
+                    if(view == 0) hit->SetPE(hitPE[index][0]);
+                    if(view == 1) hit->SetPE(hitPE[index][1]);
+                    if(view == 2) hit->SetPE(hitPE[index][2]);
 
-                    hit->SetTrackID(hitTraj[index]);
-                    hit->SetxTalkFlag(crosstalk[index]);
                     listOfHits.push_back(hit);
+                    voxHits.push_back(hit);
                 }
+                Voxel->SetHits(voxHits);
+                voxHits.clear();
 
                 int counter = 0;
                 for (auto contrib : nd280UpHit->fContributors){
@@ -704,6 +740,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 trajPDG[i] = track->GetPDG();
                 trajID[i] = track->GetTrackID();
                 trajPrim[i] = track->GetParentID();
+                trackToPDG[track->GetTrackID()] = track->GetPDG();
+                cout << "PDG: " <<  track->GetPDG()
+                     << ", ID: " <<    track->GetTrackID() 
+                     << ", prntID: " << track->GetParentID() << endl;
             }            
             for(int j = 0; j < maxHits; j++){
                 if(listOfTrackID[i] == hitTraj[j]){
@@ -727,49 +767,71 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 store = false;
                 break;
             }
+            // cout << "trk is: " << track->GetTrackID() << " || GetInitMom " << track->GetInitMom().Mag()
+            //      << " || trueCosTheta: " << track->GetInitCosTheta()
+            //      << " || Range: " << track->GetRange() 
+            //      << endl;
+
+            bool found = false;
+            for(auto trk_ID:listOfTrackID) if (trk_ID == track->GetTrackID()) found = true;
+            if(!found) continue;
+
+            ND280SFGDTrack* sfgdtrack = new ND280SFGDTrack();
+            sfgdtrack->SetPDG(track->GetPDG());
+            sfgdtrack->SetTrackID(track->GetTrackID());
+            sfgdtrack->SetParentID(track->GetParentID());
+            sfgdtrack->SetCosTheta(track->GetInitCosTheta());
+            sfgdtrack->SetRange(track->GetRange());
+            sfgdtrack->SetMomentum(track->GetInitMom().Mag());
+            sfgdtrack->fMomVec = track->GetInitMom();
+
+            //if (sfgdtrack->GetParentID() == -1) cout << "TrackInfo: [Id,ParentId,PDG,Mom,Range,CosTheta] " << sfgdtrack->GetTrackID() << "," <<  sfgdtrack->GetParentID() << "," <<  sfgdtrack->GetPDG() << "," <<  sfgdtrack->GetMomentum() << "," <<  sfgdtrack->GetRange() << "," <<  sfgdtrack->GetCosTheta() << endl;
+
             all_trajPDG[trjID]    = track->GetPDG();
             all_trajID[trjID]     = track->GetTrackID();
             all_trajParent[trjID] = track->GetParentID();
-            all_trajEdep[trjID]   = track->GetSDTotalEnergyDeposit();
-            // FIXME
-            InitKinEnergy[trjID]  = track->GetInitKinEnergy();
-            //cout << endl;
-            //cout << "trjID: " << trjID;
-            //cout << " start.   TrackID is: " << all_trajID[trjID];
-            //cout << ",    PDG is: " << all_trajPDG[trjID];
-            //cout << ",    Initial kinetic energy is: " << InitKinEnergy[trjID];
-            //cout << ",    SD total energy deposit is: " << all_trajEdep[trjID];
-            //cout << ",    Track points: " << track->GetNPoints() << endl;;
-            
-            // FIXME
-            int NPoints = track->GetNPoints();
-            for(int ipt=0;ipt<NPoints;ipt++){    
-              TND280UpTrackPoint *trackPoint = track->GetPoint(ipt);    
-              //double MomX = trackPoint->GetMomentum().X();
-              //double MomY = trackPoint->GetMomentum().Y();
-              //double MomZ = trackPoint->GetMomentum().Z();     
-              double PosX = (trackPoint->GetPrePosition().X() + trackPoint->GetPostPosition().X())/2;
-              double PosY = (trackPoint->GetPrePosition().Y() + trackPoint->GetPostPosition().Y())/2;
-              double PosZ = (trackPoint->GetPrePosition().Z() + trackPoint->GetPostPosition().Z())/2 +1707.0;
-              double MomMod = trackPoint->GetMomentum().Mag();
-              //double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
-              //double phi2=atan2(MomVec[2],MomVec[1]);
-              string volname = trackPoint->GetLogVolName();
-              int volID = VolnameToID(volname);
-              double track_point_edep = trackPoint->GetEdep();
-              //trackPoint->PrintTrackPoint();
-              if(trjID == 0 && volID == 0){
-                cout << "Track point # = " << ipt << " : Position = (" << PosX << ", " << PosY << ", " << PosZ  << ") , Edep = " << track_point_edep << endl;
-                EdepForInitElectron[ievt]->Fill(PosY,PosZ,track_point_edep);
-              }
-              if(ipt == NPoints-1){
-                TrackEndPoint[trjID] = volID;
-                if(volID == 2){
-                  Eout += MomMod;
-                }
-              }
-            }
-            //track->PrintTrack();
+/*            all_trajEdep[trjID]   = track->GetSDTotalEnergyDeposit();
+ *            // FIXME
+ *            InitKinEnergy[trjID]  = track->GetInitKinEnergy();
+ *            //cout << endl;
+ *            //cout << "trjID: " << trjID;
+ *            //cout << " start.   TrackID is: " << all_trajID[trjID];
+ *            //cout << ",    PDG is: " << all_trajPDG[trjID];
+ *            //cout << ",    Initial kinetic energy is: " << InitKinEnergy[trjID];
+ *            //cout << ",    SD total energy deposit is: " << all_trajEdep[trjID];
+ *            //cout << ",    Track points: " << track->GetNPoints() << endl;;
+ *            
+ *            // FIXME
+ *            int NPoints = track->GetNPoints();
+ *            for(int ipt=0;ipt<NPoints;ipt++){    
+ *              TND280UpTrackPoint *trackPoint = track->GetPoint(ipt);    
+ *              //double MomX = trackPoint->GetMomentum().X();
+ *              //double MomY = trackPoint->GetMomentum().Y();
+ *              //double MomZ = trackPoint->GetMomentum().Z();     
+ *              double PosX = (trackPoint->GetPrePosition().X() + trackPoint->GetPostPosition().X())/2;
+ *              double PosY = (trackPoint->GetPrePosition().Y() + trackPoint->GetPostPosition().Y())/2;
+ *              double PosZ = (trackPoint->GetPrePosition().Z() + trackPoint->GetPostPosition().Z())/2 +1707.0;
+ *              double MomMod = trackPoint->GetMomentum().Mag();
+ *              //double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
+ *              //double phi2=atan2(MomVec[2],MomVec[1]);
+ *              string volname = trackPoint->GetLogVolName();
+ *              int volID = VolnameToID(volname);
+ *              double track_point_edep = trackPoint->GetEdep();
+ *              //trackPoint->PrintTrackPoint();
+ *              if(trjID == 0 && volID == 0){
+ *                cout << "Track point # = " << ipt << " : Position = (" << PosX << ", " << PosY << ", " << PosZ  << ") , Edep = " << track_point_edep << endl;
+ *                EdepForInitElectron[ievt]->Fill(PosY,PosZ,track_point_edep);
+ *              }
+ *              if(ipt == NPoints-1){
+ *                TrackEndPoint[trjID] = volID;
+ *                if(volID == 2){
+ *                  Eout += MomMod;
+ *                }
+ *              }
+ *            }
+ *            //track->PrintTrack();
+ */
+            listOfTracks.push_back(sfgdtrack);
         }
         cout << "    ---> Energy out is : " << Eout << endl;
 
@@ -784,12 +846,45 @@ int SFGD_Reconstruction(int argc,char** argv) {
             if( trajPrim[i] == 0 ) trajParent[i] = -1;
             else{
                 trajParent[i] = FindParent(trajID[i],listOfParentID,nd280UpEvent);
+                trackToParentID[trajID[i]] = trajParent[i]; 
                 trajPrim[i] = 1; 
             }
             if (trajParent[i] == -999) store = false;    // deactivate to store all...
+            //cout << "ID: " << trajID[i] << ", parent: " << trajParent[i] << endl;
+            trackToParentID[trajID[i]] = trajParent[i]; 
         }
 
+        for(uint vxl=0; vxl<listOfVoxels.size(); ++vxl){
+            listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
+            listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
+            if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { if(WriteText) cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl; store=false;}
+            if(WriteText) cout << "voxel: "<< vxl << "\t, Type: " << listOfVoxels[vxl]->GetTrueType() << "\tXYZ: " << listOfVoxels[vxl]->GetX() << ","  << listOfVoxels[vxl]->GetY() << "," << listOfVoxels[vxl]->GetZ() << ",\ttrueDeposits -[Edep,FiberPE,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetTrueEdep()*0.25 << ",\t" << listOfVoxels[vxl]->GetTruePE()*0.25 <<  ",\t" << listOfVoxels[vxl]->GetHits()[0]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[1]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[2]->GetPE()
+                 << ",\tTrackInfo [ID,prntID,PDG]: " <<  listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl;
+        }
+        cout << "Voxels voxels w/o clear track ID: " << edep_without_clear_contributor << endl;
+
         numHits = index;
+
+        // if(NHits){ // TODO: store this information in output && comment couts; + avoid entering into ApplyResponse if outside SFGD!
+        //     int nVertices = nd280UpEvent->GetNVertices();
+        //     cout << " *** Vertices: " << nVertices << endl;
+        //     TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
+        //     TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
+        //     TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y(),vrtx->GetPosition().z()+1707 );
+        //     cout << "Original Vtx Position: " << vrtx->GetPosition().x() << "," << vrtx->GetPosition().y() << "," << vrtx->GetPosition().z()<< endl;
+        //     cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << endl;
+        //     cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX() << "," << ApplyResponse.GetMPPCPosY() << "," << ApplyResponse.GetMPPCPosZ()<< endl;
+        //     ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
+        //     cout << "Vertex Cube Position: " << ApplyResponse.GetHitPos().x()/10 << "," << ApplyResponse.GetHitPos().y()/10 << "," << ApplyResponse.GetHitPos().z()/10 << endl;
+        // }
+
+        if(true){
+         for (std::map<int,int>::iterator it=trackToParentID.begin(); it!=trackToParentID.end(); ++it)
+            std::cout << "trackToParentID: " <<it->first << " => " << it->second << '\n';
+
+         for (std::map<int,int>::iterator it=trackToPDG.begin(); it!=trackToPDG.end(); ++it)
+            std::cout << "trackPDG: " <<it->first << " => " << it->second << '\n';
+        }
 
         if(store){
                 cout << " --- Event summary --- " << endl;
@@ -813,6 +908,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         event->SetVoxels(listOfVoxels);
         event->SetHits(listOfHits);
+        event->SetTrueTracks(listOfTracks);
         cout << "event->GetHits().size(): " << event->GetHits().size() << endl;
         if(!index) store = false;
         if(store) {cout << "Event stored as input. " << endl; AllEvents->Fill(); }
@@ -822,7 +918,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
         listOfTracks.clear();
     } /// END LOOP OVER EVENTS LOOP
 
-
+    cout << "Writing events. " << endl;
     fileout->cd();
     AllEvents->Write();
     h2d_xy->Write();
@@ -835,6 +931,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
       EdepForInitElectron[ievt]->Write();
     }
     fileout->Close();
+    cout << "End of program. " << endl;
 
     return 1;
 }

@@ -9,7 +9,7 @@
 #include <TH2.h>
 
 //******************************************************************************
-void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, TString canvName = "cc"){
+void ND280SFGDVoxelSet::DrawSet(bool wait = false, TString canvName = "cc", int color = 0, int opt = 0){
 //******************************************************************************
 
     this->Init();
@@ -27,9 +27,9 @@ void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, 
         if(gROOT->FindObject(hYZname.Data())) delete gROOT->FindObject(hYZname.Data());
     }
 
-    TH2F *hXY = new TH2F(hXYname.Data(),hXYname.Data(), 220, -110., 110, 220, -110., 110);      
-    TH2F *hXZ = new TH2F(hXZname.Data(),hXZname.Data(), 220, -110., 110, 220, -110., 110);
-    TH2F *hYZ = new TH2F(hYZname.Data(),hYZname.Data(), 220, -110., 110, 220, -110., 110);
+    TH2F *hXY = new TH2F(hXYname.Data(),hXYname.Data(), 220, -0., 220, 220, 0., 220);      
+    TH2F *hXZ = new TH2F(hXZname.Data(),hXZname.Data(), 220, -0., 220, 220, 0., 220);
+    TH2F *hYZ = new TH2F(hYZname.Data(),hYZname.Data(), 220, -0., 220, 220, 0., 220);
 
     Double_t Qmax1 = 0;
     Double_t Qmax2 = 0;
@@ -50,20 +50,20 @@ void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, 
         ND280SFGDHit* hit = fHits[i];
 
         if(hit->GetView() == 0){
-            hXY->Fill(hit->GetX(),hit->GetY(),hit->GetCharge());
-            if(hit->GetCharge()>Qmax1) Qmax1 = hit->GetCharge();
+            hXY->Fill(hit->GetX(),hit->GetY(),hit->GetPE());
+            if(hit->GetPE()>Qmax1) Qmax1 = hit->GetPE();
             if(hit->GetY()>maxY) maxY = hit->GetY();
             if(hit->GetY()<minY) minY = hit->GetY();
         }
         if(hit->GetView() == 1){
-            hXZ->Fill(hit->GetX(),hit->GetZ(),hit->GetCharge());
-            if(hit->GetCharge()>Qmax2) Qmax2 = hit->GetCharge();
+            hXZ->Fill(hit->GetX(),hit->GetZ(),hit->GetPE());
+            if(hit->GetPE()>Qmax2) Qmax2 = hit->GetPE();
             if(hit->GetX()>maxX) maxX = hit->GetX();
             if(hit->GetX()<minX) minX = hit->GetX();
         }
         if(hit->GetView() == 2){
-            hYZ->Fill(hit->GetY(),hit->GetZ(),hit->GetCharge());
-            if(hit->GetCharge()>Qmax3) Qmax3 = hit->GetCharge();
+            hYZ->Fill(hit->GetY(),hit->GetZ(),hit->GetPE());
+            if(hit->GetPE()>Qmax3) Qmax3 = hit->GetPE();
             if(hit->GetZ()>maxZ) maxZ = hit->GetZ();
             if(hit->GetZ()<minZ) minZ = hit->GetZ();
         }
@@ -74,40 +74,44 @@ void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, 
     }
 
     TCanvas *cc = new TCanvas(canvName.Data(),canvName.Data(),0, 0, 600,600);
-    cc->Divide(2,2);
 
-    hXY->GetZaxis()->SetRangeUser(0.1,1.05*Qmax1);
-    hXZ->GetZaxis()->SetRangeUser(0.1,1.05*Qmax2);
-    hYZ->GetZaxis()->SetRangeUser(0.1,1.05*Qmax3);
+    if(opt!=1){
+        cc->Divide(2,2);
 
-    // hXY->GetZaxis()->SetRangeUser(0.1,25);
-    // hXZ->GetZaxis()->SetRangeUser(0.1,25);
-    // hYZ->GetZaxis()->SetRangeUser(0.1,25);
+        hXY->GetZaxis()->SetRangeUser(0.1,1.05*Qmax1);
+        hXZ->GetZaxis()->SetRangeUser(0.1,1.05*Qmax2);
+        hYZ->GetZaxis()->SetRangeUser(0.1,1.05*Qmax3);
 
-    cc->cd(1);
-    hXY->Draw("COLZ");
-    hXY->GetXaxis()->SetRangeUser(minX-tolerance,maxX+tolerance);
-    hXY->GetYaxis()->SetRangeUser(minY-tolerance,maxY+tolerance);
-    cc->cd(2);
-    hXZ->Draw("COLZ");
-    hXZ->GetXaxis()->SetRangeUser(minX-tolerance,maxX+tolerance);
-    hXZ->GetYaxis()->SetRangeUser(minZ-tolerance,maxZ+tolerance);
-    cc->cd(3);
-    hYZ->Draw("COLZ");
-    hYZ->GetXaxis()->SetRangeUser(minY-tolerance,maxY+tolerance);
-    hYZ->GetYaxis()->SetRangeUser(minZ-tolerance,maxZ+tolerance);
+        cc->cd(1);
+        hXY->Draw("COLZ");
+        hXY->GetXaxis()->SetRangeUser(minX-tolerance,maxX+tolerance);
+        hXY->GetYaxis()->SetRangeUser(minY-tolerance,maxY+tolerance);
+        cc->cd(2);
+        hXZ->Draw("COLZ");
+        hXZ->GetXaxis()->SetRangeUser(minX-tolerance,maxX+tolerance);
+        hXZ->GetYaxis()->SetRangeUser(minZ-tolerance,maxZ+tolerance);
+        cc->cd(3);
+        hYZ->Draw("COLZ");
+        hYZ->GetXaxis()->SetRangeUser(minY-tolerance,maxY+tolerance);
+        hYZ->GetYaxis()->SetRangeUser(minZ-tolerance,maxZ+tolerance);
+    }
 
-    if(p_Wait && !p_All){            
+    // draw only the 2D hits
+    if(wait && !opt){            
         cc->Update();
         cc->WaitPrimitive();
     }
-
-    if(p_All){
+    // draw only the voxels
+    else if(opt==1){
+        cc->Divide(1);
+        cc->cd(1);
+        this->Draw3D(wait,color);
+    }
+    else if(opt==2){
         cc->cd(4);
         cc->Update();
-        this->DrawVoxels(kTRUE,kTRUE,0,0);
+        this->Draw3D(wait,color);
     }
-
 
     if(!std::strncmp(canvName.Data(),"cc",3)){
         delete hXY;
@@ -115,24 +119,11 @@ void ND280SFGDVoxelSet::DrawHits(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, 
         delete hYZ;
         delete cc;
     }
-
-
 }
 
-
 //********************************************************************
-void ND280SFGDVoxelSet::DrawVoxels(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE, Int_t color=0, Int_t mode = 0){
+void ND280SFGDVoxelSet::Draw3D(bool wait = false, int color = 0){
 //********************************************************************
-
-    if(!mode || mode == 3) {this->Init(); fData = (TNtuple*) gROOT->FindObject("fData"); fData->Reset();}
-    if(mode){
-        fData = (TNtuple*) gROOT->FindObject("fData");
-        std::cout << "Entries in fData: " << fData->GetEntries() << std::endl;
-        if(!fData) {
-            std::cout << "fData not found!!!" << std::endl;
-            return;
-        }
-    }
 
     if(!fVoxels.size()) return;
 
@@ -149,10 +140,48 @@ void ND280SFGDVoxelSet::DrawVoxels(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE
 
     Int_t tolerance = 10;
 
+    std::map<int,int> ID_to_color;
+    
+
+    std::vector<int> listOfTrackID;
+    for (auto v:this->GetVoxels())
+        for(auto t:v->GetTrueTrackIDs())
+            listOfTrackID.push_back(t);
+
+    if(listOfTrackID.size()){
+        std::sort   (listOfTrackID.begin(), listOfTrackID.end());
+        listOfTrackID.erase(std::unique (listOfTrackID.begin(), listOfTrackID.end()), listOfTrackID.end()); 
+    }
+
+    int color_cnt = 0;
+    if(color == 4){
+        for(auto t:listOfTrackID)
+            ID_to_color[t] = color_cnt++;
+
+        // for(auto t:listOfTrackID)
+        //     std::cout << "trackID-color: " << t << "," << ID_to_color.find(t)->second << std::endl;
+
+
+        // for(auto v:this->GetVoxels()){
+        //     if(v->GetTrueTrackIDs().size()){
+        //         std::cout << "id-color: ";
+        //         for(auto d:v->GetTrueTrackIDs())
+        //             std::cout << d << "-" << ID_to_color.find(d)->second << " || ";
+        //         std::cout << std::endl;
+        //     }
+        // }
+    }
+
+
     for(UInt_t i=0; i<x.size(); i++){
-        //fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetTrackID());
-        if(!color) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetEdep());
-        else       fData->Fill(x[i], y[i], z[i], color);
+        if(!color) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetRecoPE());
+        else if(color ==1) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetClusterID()); 
+        else if(color ==2) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetRecoTrackIDs()[0]); 
+        else if(color ==3) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetTruePE());
+        else if(color ==4) {if(this->GetVoxels()[i]->GetTrueTrackIDs().size()) fData->Fill(x[i], y[i], z[i], ID_to_color.find(this->GetVoxels()[i]->GetTrueTrackIDs()[0])->second); } 
+        else if(color ==5) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetTrueType()); 
+        else if(color ==6) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetDistance()); 
+        else fData->Fill(x[i], y[i], z[i], color);
 
         if(x[i]>maxX) maxX = x[i];
         if(x[i]<minX) minX = x[i];
@@ -161,52 +190,54 @@ void ND280SFGDVoxelSet::DrawVoxels(Bool_t p_Wait = kFALSE, Bool_t p_All = kFALSE
         if(z[i]>maxZ) maxZ = z[i];
         if(z[i]<minZ) minZ = z[i];
     }
-
-    if(mode == 1 || mode == 3) {return;}
-
-    if(color){
-        minX = -100;
-        minY = -100;
-        minZ = -100;
-        maxX =  100;
-        maxY =  100;
-        maxZ =  100;
-    }
-
-    if(p_All){    
-        fData->Draw("x:y:z:color","","box2");
-        TH3F *htemp = (TH3F*)gPad->GetPrimitive("htemp");
-        htemp->GetZaxis()->SetLimits(minX-tolerance,maxX+tolerance);
-        htemp->GetYaxis()->SetLimits(minY-tolerance,maxY+tolerance);
-        htemp->GetXaxis()->SetLimits(minZ-tolerance,maxZ+tolerance);
-        htemp->SetTitle("");
-        if(p_Wait){            
-            gPad->Update();
-            gPad->WaitPrimitive();
-        }
-    }
-    else{
-        TCanvas *canv = new TCanvas("canv", "canv", 800, 600, 800, 600);
-        fData->Draw("x:y:z:color","","box2");
-        TH3F *htemp = (TH3F*)gPad->GetPrimitive("htemp");
-        htemp->GetZaxis()->SetLimits(minX-tolerance,maxX+tolerance);
-        htemp->GetYaxis()->SetLimits(minY-tolerance,maxY+tolerance);
-        htemp->GetXaxis()->SetLimits(minZ-tolerance,maxZ+tolerance);
-        htemp->SetTitle("");
-        if(p_Wait){            
-            gPad->Update();
-            gPad->WaitPrimitive();
-        }
-        if(p_Wait){            
-            gPad->Update();
-            gPad->WaitPrimitive();
-        }
-        delete canv;
+  
+    fData->Draw("x:y:z:color","","box2");
+    TH3F *htemp = (TH3F*)gPad->GetPrimitive("htemp");
+    htemp->GetZaxis()->SetLimits(minX-tolerance,maxX+tolerance);
+    htemp->GetYaxis()->SetLimits(minY-tolerance,maxY+tolerance);
+    htemp->GetXaxis()->SetLimits(minZ-tolerance,maxZ+tolerance);
+    htemp->SetTitle("");
+    if(wait){            
+        gPad->Update();
+        gPad->WaitPrimitive();
     }
 }
 
+
 //********************************************************************
-void ND280SFGDVoxelSet::DrawHitsAndVoxels(){
+void ND280SFGDVoxelSet::DrawHits           (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,0); }
+void ND280SFGDVoxelSet::DrawVoxels         (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,1); }
+void ND280SFGDVoxelSet::DrawHitsAndVoxels  (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,2); }
+void ND280SFGDVoxelSet::DrawVoxelsRecoPE   (bool wait, TString canvName)              { this->DrawSet(wait,canvName,0,1);     }
+void ND280SFGDVoxelSet::DrawClusters       (bool wait, TString canvName)              { this->DrawSet(wait,canvName,1,1);     }
+void ND280SFGDVoxelSet::DrawRecoTracks     (bool wait, TString canvName)              { this->DrawSet(wait,canvName,2,1);     }
+void ND280SFGDVoxelSet::DrawVoxelsTruePE   (bool wait, TString canvName)              { this->DrawSet(wait,canvName,3,1);     }
+void ND280SFGDVoxelSet::DrawTrueTracks     (bool wait, TString canvName)              { this->DrawSet(wait,canvName,4,1);     }
+void ND280SFGDVoxelSet::DrawTrueType       (bool wait, TString canvName)              { this->DrawSet(wait,canvName,5,1);     }
+void ND280SFGDVoxelSet::DrawGraphDistance  (bool wait, TString canvName)              { this->DrawSet(wait,canvName,6,1);     }
 //********************************************************************
-    DrawHits(kFALSE,kTRUE);
+
+
+
+//********************************************************************
+void ND280SFGDVoxelSet::DumpToCSVfile(std::ofstream &outCSVfile, int opt){
+//********************************************************************
+
+    if(!(outCSVfile)) {std::cerr << "No filename specified!" << std::endl; exit(1);}
+    
+    for (auto n:this->GetVoxels()){
+        if(opt ==1){
+            std::cout << n->GetID() << ", " 
+                      << n->GetX() << ", " << n->GetY() << ", " << n->GetZ() << ", "
+                      << n->GetHits()[0]->GetPE() << ", " << n->GetHits()[1]->GetPE() << ", " << n->GetHits()[2]->GetPE() << ", "
+                      << n->GetHits()[0]->GetMultiplicity() << ", " << n->GetHits()[1]->GetMultiplicity() << ", " << n->GetHits()[2]->GetMultiplicity() << ", "
+                      << n->GetTrueType() << "\n";
+        }
+        outCSVfile    << n->GetID() << ", " 
+                      << n->GetX() << ", " << n->GetY() << ", " << n->GetZ() << ", "
+                      << n->GetHits()[0]->GetPE() << ", " << n->GetHits()[1]->GetPE() << ", " << n->GetHits()[2]->GetPE() << ", "
+                      << n->GetHits()[0]->GetMultiplicity() << ", " << n->GetHits()[1]->GetMultiplicity() << ", " << n->GetHits()[2]->GetMultiplicity() << ", "
+                      << n->GetTrueType() << "\n";
+    }
+
 }

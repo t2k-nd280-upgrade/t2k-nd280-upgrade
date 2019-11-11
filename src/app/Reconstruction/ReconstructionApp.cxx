@@ -2,7 +2,6 @@
 #include "LightYield.hh"
 #include "NeutronAnalysis.hh"
 #include "StoppingProton.hh"
-#include "PrototypeMC.hh"
 #include "SFGD_Reconstruction.hh"
 
 #include <iostream>
@@ -44,10 +43,7 @@ int main(int argc, char **argv)
     case str2int("stopproton"):
         StoppingProton(argc - 1, subArgv);
         break;
-    case str2int("protomc"):
-        PrototypeMC(argc - 1, subArgv);
-        break;
-    case str2int("sfgdrecon"):
+    case str2int("sfgrrecon"):
         SFGD_Reconstruction(argc - 1, subArgv);
         break;
     default:

@@ -11,15 +11,22 @@
 #include <TString.h>
 #include <cstring>
 
-using namespace ROOT::Math;
+// apparently, including this libraries in global_header is not enough,
+// so they needd to explicitely be add here to build succesfully the method DumpToCSVfile.
+#include <fstream>
+#include <iostream>
 
 class ND280SFGDVoxelSet : public TObject
 {
 
 protected:
-    std::vector<ND280SFGDVoxel *> fVoxels; // All the voxels in this voxel set.
-    std::vector<ND280SFGDHit *> fHits;     // All the 2D hits associated to this voxel set.
+
+    std::vector <ND280SFGDVoxel*> fVoxels; // All the voxels in this voxel set.
+    std::vector <ND280SFGDHit*> fHits;     // All the 2D hits associated to this voxel set.
     TNtuple *fData;
+
+    void DrawSet(bool wait, TString canvName, int color, int opt);
+    void Draw3D (bool wait, int color);
 
 public:
     ND280SFGDVoxelSet()
@@ -34,8 +41,9 @@ public:
 
     //-----Setters------
 
-    void SetVoxels(std::vector<ND280SFGDVoxel *> p_fVoxels) { fVoxels = p_fVoxels; }
-    void SetHits(std::vector<ND280SFGDHit *> p_fHits) { fHits = p_fHits; }
+    void SetVoxels(std::vector<ND280SFGDVoxel*> p_fVoxels) { fVoxels = p_fVoxels; }
+    void SetHits(std::vector<ND280SFGDHit*> p_fHits) { fHits = p_fHits; }
+    void AddVoxel(ND280SFGDVoxel* p_vxl) {fVoxels.push_back(p_vxl);}
 
     //------------------
 
@@ -79,6 +87,8 @@ public:
 
     //------------------
 
+    void DumpToCSVfile(std::ofstream &outCSVfile, int opt=0);
+
     void Init()
     {
         gStyle->SetCanvasColor(0);
@@ -87,10 +97,32 @@ public:
         fData = new TNtuple("fData", "fData", "x:y:z:color");
     }
 
+    void DrawHits           (bool wait=true, TString canvName = "cc", int color=0);
+    void DrawVoxels         (bool wait=true, TString canvName = "cc", int color=0);
+    void DrawHitsAndVoxels  (bool wait=true, TString canvName = "cc", int color=0);
+    void DrawVoxelsTruePE   (bool wait=true, TString canvName = "cc");
+    void DrawVoxelsRecoPE   (bool wait=true, TString canvName = "cc");            
+    void DrawClusters       (bool wait=true, TString canvName = "cc");           
+    void DrawTrueTracks     (bool wait=true, TString canvName = "cc");            
+    void DrawRecoTracks     (bool wait=true, TString canvName = "cc");
+    void DrawGraphDistance  (bool wait=true, TString canvName = "cc");  
+    void DrawTrueType       (bool wait=true, TString canvName = "cc");    
 
-    void DrawHits(Bool_t p_Wait, Bool_t p_All, TString canvName); // p_Wait = kTRUE to update canvas and Wait for click, p_All used to define DrawEvent().
-    void DrawVoxels(Bool_t p_Wait, Bool_t p_All, Int_t color, Int_t mode);                 // p_Wait = kTRUE to update canvas and Wait for click
-    void DrawHitsAndVoxels();                                     // Draws both hits and voxels for the event.
+    double GetMaxEuclDist(int type=-1){
+        double dist = 0;
+        if (type == -1){
+        for (int i=0; i<(int) fVoxels.size();++i)
+            for (int j=i+1; j<(int) fVoxels.size();++j){
+                if(fVoxels[i]->DistToVoxel(fVoxels[j])>dist) dist = fVoxels[i]->DistToVoxel(fVoxels[j]);}
+        }
+        else{
+            for (int i=0; i<(int) fVoxels.size();++i)
+                for (int j=i+1; j<(int) fVoxels.size();++j){
+                    if (fVoxels[i]->GetTrueType() == type and fVoxels[j]->GetTrueType() == type) if(fVoxels[i]->DistToVoxel(fVoxels[j])>dist) dist = fVoxels[i]->DistToVoxel(fVoxels[j]);
+            }       
+        }
+        return dist;
+    }        
 
     void Reset(Option_t * /*option*/ = "")
     {
