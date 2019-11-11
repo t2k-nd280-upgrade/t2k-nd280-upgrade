@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     case str2int("stopproton"):
         StoppingProton(argc - 1, subArgv);
         break;
-    case str2int("sfgrrecon"):
+    case str2int("sfgdrecon"):
         SFGD_Reconstruction(argc - 1, subArgv);
         break;
     default:

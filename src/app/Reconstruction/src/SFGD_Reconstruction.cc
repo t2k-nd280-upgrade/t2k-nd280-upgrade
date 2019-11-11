@@ -456,28 +456,28 @@ int SFGD_Reconstruction(int argc,char** argv) {
         int PE_expect = 0;
         int PE_found = 0;
 
-/*        // FIXME
- *        orig_evt = ievt;
- *        //for(unsigned i_xpos=0; i_xpos<192; i_xpos++){
- *        //	EdepositX[i_xpos] = 0;
- *        //}
- *        //for(unsigned i_ypos=0; i_ypos<56; i_ypos++){
- *        //	EdepositY[i_ypos] = 0;
- *        //}
- *        for(unsigned i_zpos=0; i_zpos<184; i_zpos++){
- *        	EdepositZ[i_zpos] = 0;
- *        }
- *        Edepo_total = 0;
- *        TString name;
- *        name = TString::Format("EnergyDeposit2D_XY_%d",ievt);
- *        EnergyDeposit2D_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
- *        name = TString::Format("EnergyDeposit2D_XZ_%d",ievt);
- *        EnergyDeposit2D_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
- *        name = TString::Format("EnergyDeposit2D_YZ_%d",ievt);
- *        EnergyDeposit2D_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
- *        name = TString::Format("EdepForInitElectron_%d",ievt);
- *        EdepForInitElectron[ievt] = (TH2F*)h2d_yz->Clone(name);
- */
+        // FIXME
+        orig_evt = ievt;
+        //for(unsigned i_xpos=0; i_xpos<192; i_xpos++){
+        //	EdepositX[i_xpos] = 0;
+        //}
+        //for(unsigned i_ypos=0; i_ypos<56; i_ypos++){
+        //	EdepositY[i_ypos] = 0;
+        //}
+        for(unsigned i_zpos=0; i_zpos<184; i_zpos++){
+        	EdepositZ[i_zpos] = 0;
+        }
+        Edepo_total = 0;
+        TString name;
+        name = TString::Format("EnergyDeposit2D_XY_%d",ievt);
+        EnergyDeposit2D_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
+        name = TString::Format("EnergyDeposit2D_XZ_%d",ievt);
+        EnergyDeposit2D_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
+        name = TString::Format("EnergyDeposit2D_YZ_%d",ievt);
+        EnergyDeposit2D_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
+        name = TString::Format("EdepForInitElectron_%d",ievt);
+        EdepForInitElectron[ievt] = (TH2F*)h2d_yz->Clone(name);
+
         std::map<int,int> trackToParentID;
         std::map<int,int> trackToPDG;
 
@@ -790,47 +790,47 @@ int SFGD_Reconstruction(int argc,char** argv) {
             all_trajPDG[trjID]    = track->GetPDG();
             all_trajID[trjID]     = track->GetTrackID();
             all_trajParent[trjID] = track->GetParentID();
-/*            all_trajEdep[trjID]   = track->GetSDTotalEnergyDeposit();
- *            // FIXME
- *            InitKinEnergy[trjID]  = track->GetInitKinEnergy();
- *            //cout << endl;
- *            //cout << "trjID: " << trjID;
- *            //cout << " start.   TrackID is: " << all_trajID[trjID];
- *            //cout << ",    PDG is: " << all_trajPDG[trjID];
- *            //cout << ",    Initial kinetic energy is: " << InitKinEnergy[trjID];
- *            //cout << ",    SD total energy deposit is: " << all_trajEdep[trjID];
- *            //cout << ",    Track points: " << track->GetNPoints() << endl;;
- *            
- *            // FIXME
- *            int NPoints = track->GetNPoints();
- *            for(int ipt=0;ipt<NPoints;ipt++){    
- *              TND280UpTrackPoint *trackPoint = track->GetPoint(ipt);    
- *              //double MomX = trackPoint->GetMomentum().X();
- *              //double MomY = trackPoint->GetMomentum().Y();
- *              //double MomZ = trackPoint->GetMomentum().Z();     
- *              double PosX = (trackPoint->GetPrePosition().X() + trackPoint->GetPostPosition().X())/2;
- *              double PosY = (trackPoint->GetPrePosition().Y() + trackPoint->GetPostPosition().Y())/2;
- *              double PosZ = (trackPoint->GetPrePosition().Z() + trackPoint->GetPostPosition().Z())/2 +1707.0;
- *              double MomMod = trackPoint->GetMomentum().Mag();
- *              //double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
- *              //double phi2=atan2(MomVec[2],MomVec[1]);
- *              string volname = trackPoint->GetLogVolName();
- *              int volID = VolnameToID(volname);
- *              double track_point_edep = trackPoint->GetEdep();
- *              //trackPoint->PrintTrackPoint();
- *              if(trjID == 0 && volID == 0){
- *                cout << "Track point # = " << ipt << " : Position = (" << PosX << ", " << PosY << ", " << PosZ  << ") , Edep = " << track_point_edep << endl;
- *                EdepForInitElectron[ievt]->Fill(PosY,PosZ,track_point_edep);
- *              }
- *              if(ipt == NPoints-1){
- *                TrackEndPoint[trjID] = volID;
- *                if(volID == 2){
- *                  Eout += MomMod;
- *                }
- *              }
- *            }
- *            //track->PrintTrack();
- */
+            all_trajEdep[trjID]   = track->GetSDTotalEnergyDeposit();
+            // FIXME
+            InitKinEnergy[trjID]  = track->GetInitKinEnergy();
+            //cout << endl;
+            //cout << "trjID: " << trjID;
+            //cout << " start.   TrackID is: " << all_trajID[trjID];
+            //cout << ",    PDG is: " << all_trajPDG[trjID];
+            //cout << ",    Initial kinetic energy is: " << InitKinEnergy[trjID];
+            //cout << ",    SD total energy deposit is: " << all_trajEdep[trjID];
+            //cout << ",    Track points: " << track->GetNPoints() << endl;;
+            
+            // FIXME
+            int NPoints = track->GetNPoints();
+            for(int ipt=0;ipt<NPoints;ipt++){    
+              TND280UpTrackPoint *trackPoint = track->GetPoint(ipt);    
+              //double MomX = trackPoint->GetMomentum().X();
+              //double MomY = trackPoint->GetMomentum().Y();
+              //double MomZ = trackPoint->GetMomentum().Z();     
+              double PosX = (trackPoint->GetPrePosition().X() + trackPoint->GetPostPosition().X())/2;
+              double PosY = (trackPoint->GetPrePosition().Y() + trackPoint->GetPostPosition().Y())/2;
+              double PosZ = (trackPoint->GetPrePosition().Z() + trackPoint->GetPostPosition().Z())/2 +1707.0;
+              double MomMod = trackPoint->GetMomentum().Mag();
+              //double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
+              //double phi2=atan2(MomVec[2],MomVec[1]);
+              string volname = trackPoint->GetLogVolName();
+              int volID = VolnameToID(volname);
+              double track_point_edep = trackPoint->GetEdep();
+              //trackPoint->PrintTrackPoint();
+              if(trjID == 0 && volID == 0){
+                cout << "Track point # = " << ipt << " : Position = (" << PosX << ", " << PosY << ", " << PosZ  << ") , Edep = " << track_point_edep << endl;
+                EdepForInitElectron[ievt]->Fill(PosY,PosZ,track_point_edep);
+              }
+              if(ipt == NPoints-1){
+                TrackEndPoint[trjID] = volID;
+                if(volID == 2){
+                  Eout += MomMod;
+                }
+              }
+            }
+            //track->PrintTrack();
+
             listOfTracks.push_back(sfgdtrack);
         }
         cout << "    ---> Energy out is : " << Eout << endl;
