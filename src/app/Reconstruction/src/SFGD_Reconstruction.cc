@@ -441,6 +441,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             index++;
 #else
             double edeposit = nd280UpHit->GetEnergyDeposit();
+            double trueTime = (nd280UpHit->GetStartT() + nd280UpHit->GetStopT())/2.;
             ND280UpTargReadOut TargetReadOut;
             TargetReadOut.SetTargType(DetType);
             int nphot = TargetReadOut.ApplyScintiResponse(edeposit,steplength,1);
@@ -535,12 +536,15 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 if(!threshold[index][2]) hitPE[index][2] = 0;
 
                 ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],hitLocation[index][1],hitLocation[index][2]);
+                Voxel->SetTrueTime(trueTime);
                 Voxel->SetTrueEdep(edeposit);
                 Voxel->SetTruePE(numPE_fiber);
                 Voxel->AddTrueTrackID(trkID);
                 if (crosstalk[index]) Voxel->SetTrueType(1);
                 else  Voxel->SetTrueType(0);
                 if(Voxel->GetTruePE()>0) listOfVoxels.push_back(Voxel);
+
+                if(m!=0) Voxel->SetTrueEdep(0);
 
                 std::vector<ND280SFGDHit*> voxHits;        
                 for(int view=0; view<3; view++){        

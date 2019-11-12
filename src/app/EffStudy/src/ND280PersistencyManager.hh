@@ -110,8 +110,16 @@ public:
     return fSaveAllTraj;
   }
 
+  virtual bool GetSaveRecon(void) const {
+    return fSaveRecon;
+  }
+
   virtual void SetSaveAllTraj(bool val) {
     fSaveAllTraj = val;
+  }
+
+  virtual bool SetSaveRecon(bool val) {
+    fSaveRecon = val;
   }
 
   virtual bool GetSaveAllHits(void) const {
@@ -213,6 +221,9 @@ private:
 
   /// Flag to store hits from all the trajs onstead of storing only from prim ones
   bool fSaveAllHits;
+
+  /// Flag to store all trajectories with special cuts for reconstruction.
+  bool fSaveRecon;
   
   /// Flag to determine if all primary trajectories are saved, or only those
   /// that ultimately create energy in a sensitive detector.  The primary
