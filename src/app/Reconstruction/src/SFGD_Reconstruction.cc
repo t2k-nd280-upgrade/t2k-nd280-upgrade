@@ -44,9 +44,9 @@
 
 //#define CROSSTALK_OFF
 
-const int maxTracks = 10;
+const int maxTracks = 100;
 const int maxHits = 50000;
-const int maxCont = 10;
+const int maxCont = 100;
 
 const double fib_abs_const = 0.2;
 
@@ -645,7 +645,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 cout << "STORED || PDG: " <<  track->GetPDG()
                      << ", ID: " <<    track->GetTrackID() 
                      << ", prntID: " << track->GetParentID() << endl;
-            }            
+            }        
             for(int j = 0; j < maxHits; j++){
                 if(listOfTrackID[i] == hitTraj[j]){
                     trajHitsNum[i]++;
@@ -658,6 +658,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             }
             trajEdep[i] = sumEdepPE;
         }
+
 
         // fill all trajectories information:
         all_numTracks = nd280UpEvent->GetNTracks();
@@ -708,7 +709,6 @@ int SFGD_Reconstruction(int argc,char** argv) {
             //cout << "ID: " << trajID[i] << ", parent: " << trajParent[i] << endl;
             trackToParentID[trajID[i]] = trajParent[i]; 
         }
-
         for(uint vxl=0; vxl<listOfVoxels.size(); ++vxl){
             listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
             listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
