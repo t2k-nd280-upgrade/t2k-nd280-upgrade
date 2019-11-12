@@ -310,8 +310,6 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
 
   if (GetSaveRecon()) {
     if (particleName == "gamma") return;
-
-  //G4cout << "processName: " << processName << G4endl;
   // gamma conversion
   if (particleName == "e+" || particleName == "e-"){
     if (processName == "conv"){

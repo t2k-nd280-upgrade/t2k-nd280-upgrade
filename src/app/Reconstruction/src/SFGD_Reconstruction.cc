@@ -44,9 +44,9 @@
 
 //#define CROSSTALK_OFF
 
-const int maxTracks = 1000;
-const int maxHits = 5000;
-const int maxCont = 1000;
+const int maxTracks = 10;
+const int maxHits = 50000;
+const int maxCont = 10;
 
 const double fib_abs_const = 0.2;
 
@@ -60,6 +60,7 @@ Int_t threshold[maxHits][3];         // 0 below, 1 above threshold.
 Int_t hitEdep[maxHits];              // auxiliar list to produce crosstalk. Contains saturated edep.
 Int_t hitTime[maxHits][3];           // time of the hit, after travelling on the fiber.
 Int_t hitTraj[maxHits];              // trackID of the hit.
+Int_t primID[maxHits];              // trackID of the hit.
 Int_t hitCont[maxHits][maxCont];     // trackID of contributors to the hit.
 
 //from PrimID:
@@ -100,6 +101,7 @@ void ResetVariables(){
     for (int i=0; i < maxHits; i++){
         crosstalk[i] = false;
         hitTraj[i] = -999;
+        primID[i]  = -999;
         for (int j=0; j < 3; j++){            
             hitLocation[i][j] = -999;
             hitPE[i][j]       = -999;
@@ -144,7 +146,7 @@ int FiberAbs(int numPE){
 }
 
 int FindParent(int inputID, std::vector<int> listOfParentID, TND280UpEvent* evt){
-    int outputID = 0;
+    int outputID = -999;
     for (Int_t trjID = 0; trjID < evt->GetNTracks(); trjID++) {
         TND280UpTrack* track = evt->GetTrack(trjID);
         if (track->GetTrackID() == inputID){
@@ -158,7 +160,7 @@ int FindParent(int inputID, std::vector<int> listOfParentID, TND280UpEvent* evt)
     for (auto i : listOfParentID)
         if (outputID == i) done = true;
 
-    if(outputID == 0) return -999;//return inputID;
+    if(outputID == -999) return -999;//return inputID;
     if(done) return outputID;
     else return FindParent(outputID,listOfParentID,evt);
  
@@ -294,6 +296,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
         AllEvents->Branch( "threshold",      threshold,      "threshold[numHits][3]/I"         );
         AllEvents->Branch( "hitTime",        hitTime,        "hitTime[numHits][3]/I"           );
         AllEvents->Branch( "hitTraj",        hitTraj,        "hitTraj[numHits]/I"              );
+        AllEvents->Branch( "primID",         primID,         "primID[numHits]/I"              );
         AllEvents->Branch( "hitCont",        hitCont,        "hitCont[numHits][1000]/I"     );
         AllEvents->Branch( "trajID",         trajID,         "trajID[numTracks]/I"             );
         AllEvents->Branch( "trajPDG",        trajPDG,        "trajPDG[numTracks]/I"            );
@@ -389,15 +392,26 @@ int SFGD_Reconstruction(int argc,char** argv) {
         cout << "************************" << endl;
         cout << " starting event " << ievt << " and has #hits " << nd280UpEvent->GetNHits() << endl;
 
+        if(nd280UpEvent->GetNHits()*7+1 > maxHits){
+            cout << "ERROR: the maxHits value must be enlarged to at least: " << nd280UpEvent->GetNHits()*7+2 << endl;
+            exit(0);
+        }
+
         int NHits = nd280UpEvent->GetNHits();
         numHits = NHits;
 
         int edep_without_clear_contributor = 0;
 
+
+        std::vector<int> listOfParentID;
         std::vector <int> listOfTrueTrackID;
         for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
             TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
             listOfTrueTrackID.push_back(track->GetTrackID());
+            listOfParentID.push_back(track->GetTrackID());
+            cout << "ALL || PDG: " <<  track->GetPDG()
+                     << ", ID: " <<    track->GetTrackID() 
+                     << ", prntID: " << track->GetParentID() << endl;
         }
 
         for(int ihit=0;ihit<NHits;ihit++){ // get last entry
@@ -478,7 +492,6 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
                 if(m==0){
                     if (trkID < 0) {trkID = nd280UpHit->GetPrimaryId(); edep_without_clear_contributor++;}
-                    //cout << "trkID: " << trkID << endl;
                     // cout << "nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << endl;
                     // cout << "trkID: " << trkID << endl;
                     // cout << "fContributors: " << nd280UpHit->fContributors.size() << endl;
@@ -525,7 +538,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 hitPE[index][1]       = pey;
                 hitPE[index][2]       = pex;
                 hitEdep[index]        = edeposit;
-                hitTraj[index]        = trkID;//nd280UpHit->fContributors.back();//nd280UpHit->GetPrimaryId();
+                hitTraj[index]        = trkID;
+                primID[index]         = nd280UpHit->GetPrimaryId();
 
                 threshold[index][0] = aux_threshold(hitPE[index][0]);
                 threshold[index][1] = aux_threshold(hitPE[index][1]);
@@ -568,15 +582,15 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 Voxel->SetHits(voxHits);
                 voxHits.clear();
 
-                int counter = 0;
-                for (auto contrib : nd280UpHit->fContributors){
-                    if(counter >= maxCont){
-                        store = false;
-                        break;
-                    }
-                    hitCont[index][counter] = contrib;
-                    counter++;
-                }
+                // int counter = 0;
+                // for (auto contrib : nd280UpHit->fContributors){
+                //     if(counter >= maxCont){
+                //         store = false;
+                //         break;
+                //     }
+                //     hitCont[index][counter] = contrib;
+                //     counter++;
+                // }
 
                 if(hitLocation[index][0] > X_min and hitLocation[index][0] < X_max
                    and hitLocation[index][1] > Y_min and hitLocation[index][1] < Y_max
@@ -595,6 +609,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
         if(WriteText) cout << "total g4hits:   " << NHits << endl;
         if(WriteText) cout << "total g4hits*7: " << NHits*7 << endl;
         if(WriteText) cout << "index:          " << index << endl;
+
+        cout << "# stored hits: " << index << endl;
 
 
         std::vector <int> listOfTrackID;
@@ -626,7 +642,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 trajID[i] = track->GetTrackID();
                 trajPrim[i] = track->GetParentID();
                 trackToPDG[track->GetTrackID()] = track->GetPDG();
-                cout << "PDG: " <<  track->GetPDG()
+                cout << "STORED || PDG: " <<  track->GetPDG()
                      << ", ID: " <<    track->GetTrackID() 
                      << ", prntID: " << track->GetParentID() << endl;
             }            
@@ -677,21 +693,18 @@ int SFGD_Reconstruction(int argc,char** argv) {
             listOfTracks.push_back(sfgdtrack);
         }
 
-        std::vector<int> listOfParentID;
-        for(UInt_t i=0; i<listOfTrackID.size(); i++){
-            listOfParentID.push_back(trajID[i]);
-        }
-
         if (WriteText) for (auto lprntID : listOfParentID) cout << "parentID: " << lprntID << endl;
 
         for(UInt_t i=0; i<listOfTrackID.size(); i++){
+            //if(trajID[i] == -999) cout << "999-listOfTrackID[i]: " << listOfTrackID[i] << endl;
             if( trajPrim[i] == 0 ) trajParent[i] = -1;
             else{
                 trajParent[i] = FindParent(trajID[i],listOfParentID,nd280UpEvent);
                 trackToParentID[trajID[i]] = trajParent[i]; 
                 trajPrim[i] = 1; 
             }
-            if (trajParent[i] == -999) store = false;    // deactivate to store all...
+            if (trajParent[i] == -999) trajParent[i] = primID[i];
+            if (trajParent[i] == -999) {cout << "\n\n\n ERRRROR in parent ID!!! \n\n\n";store = false;}    // deactivate to store all...
             //cout << "ID: " << trajID[i] << ", parent: " << trajParent[i] << endl;
             trackToParentID[trajID[i]] = trajParent[i]; 
         }
@@ -699,7 +712,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
         for(uint vxl=0; vxl<listOfVoxels.size(); ++vxl){
             listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
             listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
-            if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { if(WriteText) cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl; store=false;}
+            //if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { if(WriteText) cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl; store=false;}
             if(WriteText) cout << "voxel: "<< vxl << "\t, Type: " << listOfVoxels[vxl]->GetTrueType() << "\tXYZ: " << listOfVoxels[vxl]->GetX() << ","  << listOfVoxels[vxl]->GetY() << "," << listOfVoxels[vxl]->GetZ() << ",\ttrueDeposits -[Edep,FiberPE,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetTrueEdep()*0.25 << ",\t" << listOfVoxels[vxl]->GetTruePE()*0.25 <<  ",\t" << listOfVoxels[vxl]->GetHits()[0]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[1]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[2]->GetPE()
                  << ",\tTrackInfo [ID,prntID,PDG]: " <<  listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl;
         }
@@ -754,6 +767,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
         cout << "event->GetHits().size(): " << event->GetHits().size() << endl;
         if(!index) store = false;
         if(store) {cout << "Event stored as input. " << endl; AllEvents->Fill(); }
+        else{ cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nEVENT IS NOT STORED\n\n";}
         event->ResetEvent();
         listOfHits.clear();
         listOfVoxels.clear();

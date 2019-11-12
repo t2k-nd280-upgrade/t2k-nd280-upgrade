@@ -59,7 +59,16 @@ int ND280TrajectoryMap::FindPrimaryId(int trackId) {
       //ND280Log("Infinite Loop in ND280TrajectoryMap::FindPrimaryId(): "
       //<< "Track Id: " << trackId);
     }
-    
+
+    G4VTrajectory* t = Get(currentId);
+    if (t){
+        ND280Trajectory * nd280Traj = dynamic_cast<ND280Trajectory*>(t);
+        if(nd280Traj){
+            nd280Traj->MarkTrajectory(true);
+        }
+    }
+    else {G4cout << "*** ND280TrajectoryMap::FindPrimaryId ! ERROR. || currentId" << currentId << G4endl;}
+
     return currentId;
 }
 
