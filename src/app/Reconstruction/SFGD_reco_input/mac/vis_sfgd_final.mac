@@ -14,8 +14,8 @@
 /db/set/saveAllHits 1
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
-#/generator/type Generator
-/generator/type ParticleGun
+/generator/type Generator
+#/generator/type ParticleGun
         
 # Set the particle gun 
 /gun/particle pi+

@@ -237,10 +237,10 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
 
   // Don't save low momentum charged particles (My cuts)
   if (!GetSaveRecon()){
-    if (particleName == "gamma") return;
     if (particleName == "neutron") return;
-    if (particleName == "proton" && initialMomentum<200*CLHEP::MeV) return;
   }
+  if (particleName == "gamma") return;
+  if (particleName == "proton" && initialMomentum<200*CLHEP::MeV) return;
   //
   
   // Save any decay product
@@ -309,12 +309,11 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
 
 
   if (GetSaveRecon()) {
-    if (particleName == "gamma") return;
   // gamma conversion
   if (particleName == "e+" || particleName == "e-"){
     if (processName == "conv"){
       if(initialMomentum > 100*CLHEP::MeV){
-        ndTraj->MarkTrajectory(true); 
+        ndTraj->MarkTrajectory(false); 
       return;
       }
     }
