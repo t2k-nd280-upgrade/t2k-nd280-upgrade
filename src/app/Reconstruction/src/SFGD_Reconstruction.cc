@@ -157,11 +157,11 @@ int FindParent(int inputID, std::vector<int> listOfParentID, TND280UpEvent* evt)
         TND280UpTrack* track = evt->GetTrack(trjID);
         if (track->GetTrackID() == inputID){
             outputID = track->GetParentID();
-            // cout << "parentID: " << track->GetParentID() << endl;
-            // cout << "track ID: " << track->GetTrackID() << endl;
+            // std::cout << "parentID: " << track->GetParentID() << std::endl;
+            // std::cout << "track ID: " << track->GetTrackID() << std::endl;
         }
     }
-    //cout << endl;
+    //std::cout << std::endl;
     bool done = false;
     for (auto i : listOfParentID)
         if (outputID == i) done = true;
@@ -170,20 +170,20 @@ int FindParent(int inputID, std::vector<int> listOfParentID, TND280UpEvent* evt)
     if(done) return outputID;
     else return FindParent(outputID,listOfParentID,evt);
  
-    cout << "exit!!!! " << endl;
+    std::cout << "exit!!!! " << std::endl;
     exit(1);
     return -1;   
 }
 
 int FindPrimary(int inputID, TND280UpEvent* evt, int loops=0){
     int outputID;
-    cout << endl;
+    std::cout << std::endl;
     for (Int_t trjID = 0; trjID < evt->GetNTracks(); trjID++) {
         TND280UpTrack* track = evt->GetTrack(trjID);
         if (track->GetTrackID() == inputID){
             outputID = track->GetParentID();
-            cout << "parentID: " << track->GetParentID() << endl;
-            cout << "track ID: " << track->GetTrackID() << endl;
+            std::cout << "parentID: " << track->GetParentID() << std::endl;
+            std::cout << "track ID: " << track->GetTrackID() << std::endl;
         }
     }
 
@@ -197,7 +197,7 @@ int FindPrimary(int inputID, TND280UpEvent* evt, int loops=0){
         }
     }
 
-    cout << "exit!!!! " << endl;
+    std::cout << "exit!!!! " << std::endl;
     exit(1);
     return -1;   
 }
@@ -254,23 +254,23 @@ int VolnameToID(string volname){
 }
 
 
-
+/********** ...........oooooooooooOOOOOOOOOOO0000000000   SFGD_Reconstruction   0000000000OOOOOOOOOOOooooooooooo..........  **********/
 int SFGD_Reconstruction(int argc,char** argv) {
     if (argc!=14){   // batch mode
-        cout << "You need to provide the following arguments:" << endl;
-        cout << " 1) input ROOT file name (from GEANT4 simulation) " << endl;
-        cout << " 2) first event number to run" << endl;
-        cout << " 3) total number of events to run" << endl;
-        cout << " 4) the tag for the output file name" << endl;
-        cout << " 5) detector ID: 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI" << endl;
-        cout << " 6) set debug option" << endl;
-        cout << " 7) set debug plot option" << endl;
-        cout << " 8) use view XY (0 or 1)" << endl;
-        cout << " 9) use view XZ (0 or 1)" << endl;
-        cout << " 10) use view YZ (0 or 1)" << endl;
-        cout << " 11) Minimum track distance (if <=0 use default)" << endl;
-        cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << endl;
-        cout << " 13) Output file name. In iteractive run it can be first event, but for parallel need separate param" << endl;
+        std::cout << "You need to provide the following arguments:" << std::endl;
+        std::cout << " 1) input ROOT file name (from GEANT4 simulation) " << std::endl;
+        std::cout << " 2) first event number to run" << std::endl;
+        std::cout << " 3) total number of events to run" << std::endl;
+        std::cout << " 4) the tag for the output file name" << std::endl;
+        std::cout << " 5) detector ID: 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI" << std::endl;
+        std::cout << " 6) set debug option" << std::endl;
+        std::cout << " 7) set debug plot option" << std::endl;
+        std::cout << " 8) use view XY (0 or 1)" << std::endl;
+        std::cout << " 9) use view XZ (0 or 1)" << std::endl;
+        std::cout << " 10) use view YZ (0 or 1)" << std::endl;
+        std::cout << " 11) Minimum track distance (if <=0 use default)" << std::endl;
+        std::cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << std::endl;
+        std::cout << " 13) Output file name. In iteractive run it can be first event, but for parallel need separate param" << std::endl;
         exit(1);
     }
 
@@ -282,7 +282,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
     const int detectorID = atoi(argv[5]);
     TString outfilename = argv[13];
 
-    cout << "evtfirst: " << evtfirst << ",nevents: " << nevents << endl;
+    std::cout << "evtfirst: " << evtfirst << ",nevents: " << nevents << std::endl;
 
     TFile *fileout = new TFile(outfilename.Data(),"RECREATE");
     TTree *AllEvents = new TTree("AllEvents", "The ROOT tree of events");
@@ -302,7 +302,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
     
     // Take inputs
     TFile *finput = new TFile(rootfilename.c_str(),"READ");
-    cout << "Reading the input ROOT file: " << rootfilename << endl;
+    std::cout << "Reading the input ROOT file: " << rootfilename << std::endl;
 
     TH2F* h2d_xy; TH2F* h2d_xz; TH2F* h2d_yz;
     h2d_xy = (TH2F*)finput->Get("OutMPPCProj2D_XY");
@@ -320,9 +320,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
     Float_t Z_min = h2d_xz->GetYaxis()->GetBinLowEdge(0);
     Float_t Z_max = h2d_xz->GetYaxis()->GetBinUpEdge(binZ);
     
-    cout << " x min " << X_min << " x max " << X_max << "  nbins " << binX << endl;
-    cout << " y min " << Y_min << " y max " << Y_max << "  nbins " << binY << endl;
-    cout << " z min " << Z_min << " z max " << Z_max << "  nbins " << binZ << endl;
+    std::cout << " x min " << X_min << " x max " << X_max << "  nbins " << binX << std::endl;
+    std::cout << " y min " << Y_min << " y max " << Y_max << "  nbins " << binY << std::endl;
+    std::cout << " z min " << Z_min << " z max " << Z_max << "  nbins " << binZ << std::endl;
 
     AllEvents->Branch("Event", "Event", event);
 
@@ -362,14 +362,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
     AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[all_numTracks]/I"         );
   
     // FIXME
-    //Double_t EdepositX[192];
-    //Double_t EdepositY[56];
     Double_t EdepositZ[184];
     Double_t Edepo_total;
     Double_t Eout;
     Int_t orig_evt;
-    //AllEvents->Branch( "EdepositX",     EdepositX,      "EdepositX[192]/D"          );
-    //AllEvents->Branch( "EdepositY",     EdepositY,      "EdepositY[56]/D"           );
     AllEvents->Branch( "EdepositZ",     EdepositZ,      "EdepositZ[184]/D"          );
     AllEvents->Branch( "Edepo_total",   &Edepo_total,   "Edepo_total/D"             );
     AllEvents->Branch( "Eout",          &Eout,          "Eout/D"                    );
@@ -378,10 +374,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
     AllEvents->Branch( "InitKinEnergy", InitKinEnergy,  "InitKinEnergy[all_numTracks]/D" );
     AllEvents->Branch( "all_trajEdep",  all_trajEdep,   "all_trajEdep[all_numTracks]/D"  );
     // FIXME
-    TH2F* EnergyDeposit2D_XY[100];
-    TH2F* EnergyDeposit2D_XZ[100];
-    TH2F* EnergyDeposit2D_YZ[100];
-    TH2F* EdepForInitElectron[100];
+    TH2F*  EnergyDeposit2D_XY[nevents];
+    TH2F*  EnergyDeposit2D_XZ[nevents];
+    TH2F*  EnergyDeposit2D_YZ[nevents];
+    //TH2F* EdepForInitElectron[nevents];
 
     TTree *tinput = (TTree*) finput->Get("ND280upEvents");
     
@@ -401,34 +397,34 @@ int SFGD_Reconstruction(int argc,char** argv) {
     int NTreeEntries = tinput->GetEntries();
     int evtlasttree = NTreeEntries-1;
     
-    cout << endl;
-    cout << "# of entries in the Tree: " << NTreeEntries << endl;
-    cout << "last tree event ID: " << evtlasttree << endl;
-    cout << "first event ID: " << evtfirst << endl;
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "# of entries in the Tree: " << NTreeEntries << std::endl;
+    std::cout << "last tree event ID: " << evtlasttree << std::endl;
+    std::cout << "first event ID: " << evtfirst << std::endl;
+    std::cout << std::endl;
     
     if(evtfirst > evtlasttree){
-        cout << endl;
-        cout << "first selection evt ID > first evt ID of tree:" << endl;
-        cout << " - # of tree events = " << NTreeEntries << endl;
-        cout << " - last tree event = " << evtlasttree << endl;
-        cout << " - first event = " << evtfirst << endl;
-        cout << "Exit!!!" << endl;
-        cout << endl;
+        std::cout << std::endl;
+        std::cout << "first selection evt ID > first evt ID of tree:" << std::endl;
+        std::cout << " - # of tree events = " << NTreeEntries << std::endl;
+        std::cout << " - last tree event = " << evtlasttree << std::endl;
+        std::cout << " - first event = " << evtfirst << std::endl;
+        std::cout << "Exit!!!" << std::endl;
+        std::cout << std::endl;
         exit(1);
     }
     else if(NTreeEntries < (evtfirst+nevents)){
         
         Nentries = NTreeEntries - evtfirst;
         
-        cout << endl;
-        cout << "WARNING:" << endl;
-        cout << "first evt ID + # of events > tot # of tree events:" << endl;
-        cout << " - # of tree events = " << NTreeEntries << endl;
-        cout << " - # of events to run = " << nevents << endl;
-        cout << " - first event = " << evtfirst << endl;
-        cout << "Set # of events to run to " << Nentries;
-        cout << endl;
+        std::cout << std::endl;
+        std::cout << "WARNING:" << std::endl;
+        std::cout << "first evt ID + # of events > tot # of tree events:" << std::endl;
+        std::cout << " - # of tree events = " << NTreeEntries << std::endl;
+        std::cout << " - # of events to run = " << nevents << std::endl;
+        std::cout << " - first event = " << evtfirst << std::endl;
+        std::cout << "Set # of events to run to " << Nentries;
+        std::cout << std::endl;
     }
     else{
         Nentries = nevents;
@@ -436,18 +432,21 @@ int SFGD_Reconstruction(int argc,char** argv) {
     
     int EntryLast = evtfirst+Nentries-1;
     
-    cout << endl;
-    cout << "First event = " << evtfirst << endl;
-    cout << "Last event =  " << EntryLast << endl;
-    cout << "# of events = " << Nentries << endl;
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "First event = " << evtfirst << std::endl;
+    std::cout << "Last event =  " << EntryLast << std::endl;
+    std::cout << "# of events = " << Nentries << std::endl;
+    std::cout << std::endl;
 
     vector <ND280SFGDHit*> listOfHits;
     vector <ND280SFGDVoxel*> listOfVoxels;
     vector <ND280SFGDTrack*> listOfTracks;
-    ///////////  Loop over events //////////////////////
+    /****************************************************************************************
+     *                                                                                      *
+     *                                     Loop over events                                 *
+     *                                                                                      *
+     ****************************************************************************************/
     for(int ievt=evtfirst;ievt<=EntryLast;ievt++){
-    //for(int ievt=evtfirst;ievt<evtfirst+1;ievt++){
         tinput->GetEntry(ievt);
         ResetVariables();
         int index = 0;
@@ -458,12 +457,6 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         // FIXME
         orig_evt = ievt;
-        //for(unsigned i_xpos=0; i_xpos<192; i_xpos++){
-        //	EdepositX[i_xpos] = 0;
-        //}
-        //for(unsigned i_ypos=0; i_ypos<56; i_ypos++){
-        //	EdepositY[i_ypos] = 0;
-        //}
         for(unsigned i_zpos=0; i_zpos<184; i_zpos++){
         	EdepositZ[i_zpos] = 0;
         }
@@ -475,14 +468,14 @@ int SFGD_Reconstruction(int argc,char** argv) {
         EnergyDeposit2D_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
         name = TString::Format("EnergyDeposit2D_YZ_%d",ievt);
         EnergyDeposit2D_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
-        name = TString::Format("EdepForInitElectron_%d",ievt);
-        EdepForInitElectron[ievt] = (TH2F*)h2d_yz->Clone(name);
+        //name = TString::Format("EdepForInitElectron_%d",ievt);
+        //EdepForInitElectron[ievt] = (TH2F*)h2d_yz->Clone(name);
 
         std::map<int,int> trackToParentID;
         std::map<int,int> trackToPDG;
 
-        cout << "************************" << endl;
-        cout << " starting event " << ievt << " and has #hits " << nd280UpEvent->GetNHits() << endl;
+        std::cout << "************************" << std::endl;
+        std::cout << " starting event " << ievt << " and has #hits " << nd280UpEvent->GetNHits() << std::endl;
 
         int NHits = nd280UpEvent->GetNHits();
         numHits = NHits;
@@ -495,6 +488,11 @@ int SFGD_Reconstruction(int argc,char** argv) {
             listOfTrueTrackID.push_back(track->GetTrackID());
         }
 
+        /****************************************************************************************
+         *                                                                                      *
+         *                                    Loop over 3D hits                                 *
+         *                                                                                      *
+         ****************************************************************************************/
         for(int ihit=0;ihit<NHits;ihit++){ // get last entry
             TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
 
@@ -511,16 +509,6 @@ int SFGD_Reconstruction(int argc,char** argv) {
             string detname = nd280UpHit->GetDetName();
 						
             // FIXME
-            //for(int i_xpos=-96; i_xpos<96; i_xpos++){
-            //	if((double)i_xpos*10 <= posX && posX < (double)i_xpos*10+10){
-            //		EdepositX[i_xpos+96] += edep;
-            //	}
-            //}
-            //for(int i_ypos=-28; i_ypos<28; i_ypos++){
-            //	if((double)i_ypos*10 <= posY && posY < (double)i_ypos*10+10){
-            //		EdepositY[i_ypos+28] += edep;
-            //	}
-            //}
             for(int i_zpos=-92; i_zpos<92; i_zpos++){
             	if((double)i_zpos*10 <= posZ && posZ < (double)i_zpos*10+10){
             		EdepositZ[i_zpos+92] += edep;
@@ -529,14 +517,14 @@ int SFGD_Reconstruction(int argc,char** argv) {
             Edepo_total += edep;
             
             // FIXME
-            EnergyDeposit2D_XY[ievt]->Fill(posX,posY,edep/100.0);
-            EnergyDeposit2D_XZ[ievt]->Fill(posX,posZ,edep/100.0);
-            EnergyDeposit2D_YZ[ievt]->Fill(posY,posZ,edep/100.0);
+            EnergyDeposit2D_XY[ievt]->Fill(posX,posY,edep/(double)nevents);
+            EnergyDeposit2D_XZ[ievt]->Fill(posX,posZ,edep/(double)nevents);
+            EnergyDeposit2D_YZ[ievt]->Fill(posY,posZ,edep/(double)nevents);
             
             ApplyResponse.SetTargetID(DetType);
             
             ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);
-						//ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,sat_edep*156.42,"kSuperFGD");
+            //ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,sat_edep*156.42,"kSuperFGD");
             PE_expect += (ApplyResponse.GetHitPE().x() +  ApplyResponse.GetHitPE().y() +  ApplyResponse.GetHitPE().z());
 
 #ifdef CROSSTALK_OFF
@@ -564,7 +552,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             TargetReadOut.SetTargType(DetType);
             int nphot = TargetReadOut.ApplyScintiResponse(edeposit,steplength,1);
             double probLatCT = 0.01*fRndm.Poisson(2.8)*6;//0.025*6;//0.037*6;
-            if(WriteText) cout << "nphot= " << nphot << endl;
+            if(WriteText) std::cout << "nphot= " << nphot << std::endl;
             int numPE = nphot*(1./fib_abs_const);
             if(numPE < 0) numPE = 0;
             int numPE_CT[6] = {0};           // photons flowing to sourrounding elements
@@ -574,8 +562,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
             }
             int totCT = 0;
             for (auto p : numPE_CT) totCT += p;
-            if(WriteText) cout << "Flowed PE: " << totCT << endl;
-            if(WriteText) cout << "Number of remaining PE: " << numPE-totCT << endl;
+            if(WriteText) std::cout << "Flowed PE: " << totCT << std::endl;
+            if(WriteText) std::cout << "Number of remaining PE: " << numPE-totCT << std::endl;
 
             int trkID = - 999;
             for (int m=0; m<7;m++){                
@@ -596,17 +584,17 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
                 if(m==0){
                     if (trkID < 0) {trkID = nd280UpHit->GetPrimaryId(); edep_without_clear_contributor++;}
-                    //cout << "trkID: " << trkID << endl;
-                    // cout << "nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << endl;
-                    // cout << "trkID: " << trkID << endl;
-                    // cout << "fContributors: " << nd280UpHit->fContributors.size() << endl;
-                    //for (auto c:nd280UpHit->fContributors) cout << c << ",";
-                    //cout << endl << endl;
+                    //std::cout << "trkID: " << trkID << std::endl;
+                    // std::cout << "nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << std::endl;
+                    // std::cout << "trkID: " << trkID << std::endl;
+                    // std::cout << "fContributors: " << nd280UpHit->fContributors.size() << std::endl;
+                    //for (auto c:nd280UpHit->fContributors) std::cout << c << ",";
+                    //std::cout << std::endl << std::endl;
                 }
 
-                 if(trkID <0) { cout << "NOT STORING THE EVENT! negative TRK ID!: " << trkID <<","<< m << endl; store = false;}
+                 if(trkID <0) { std::cout << "NOT STORING THE EVENT! negative TRK ID!: " << trkID <<","<< m << std::endl; store = false;}
 
-                //cout << m <<", New # of Abs PE: " << numPE_fiber << endl;
+                //std::cout << m <<", New # of Abs PE: " << numPE_fiber << std::endl;
 
                 ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,numPE_fiber,detname);
                 
@@ -699,36 +687,37 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     if(index+1 != maxHits) index++;
                     if(index+1 == maxHits) store = false;
                 }
-                if(WriteText) cout << "hit at: " << hitLocation[index][0] << ", " << hitLocation[index][1] << ", " << hitLocation[index][2] << endl;
-                if(WriteText) cout << "PE (YZ,XZ,XY): " << pex << ", " << pey << ", " << pez << endl;
+                if(WriteText) std::cout << "hit at: " << hitLocation[index][0] << ", " << hitLocation[index][1] << ", " << hitLocation[index][2] << std::endl;
+                if(WriteText) std::cout << "PE (YZ,XZ,XY): " << pex << ", " << pey << ", " << pez << std::endl;
             }
-            if(WriteText) cout << "PE_expect: " << PE_expect << "PE_found: " << PE_found << endl;
-            if(WriteText) cout << endl;
+            if(WriteText) std::cout << "PE_expect: " << PE_expect << "PE_found: " << PE_found << std::endl;
+            if(WriteText) std::cout << std::endl;
 #endif
         } /// END LOOP OVER 3D HITS
 
-        if(WriteText) cout << "total g4hits:   " << NHits << endl;
-        if(WriteText) cout << "total g4hits*7: " << NHits*7 << endl;
-        if(WriteText) cout << "index:          " << index << endl;
-
-
+        if(WriteText) std::cout << "total g4hits:   " << NHits << std::endl;
+        if(WriteText) std::cout << "total g4hits*7: " << NHits*7 << std::endl;
+        if(WriteText) std::cout << "index:          " << index << std::endl;
+        
+        // listOfTrackID contains trkID of each hit
         std::vector <int> listOfTrackID;
-
         for(UInt_t i=0; i<maxHits; i++){
             if(hitTraj[i] == -999) break;
             listOfTrackID.push_back(hitTraj[i]);
         }
-
+        
         //keep only unique track IDs:
         if(listOfTrackID.size()){
             std::sort   (listOfTrackID.begin(), listOfTrackID.end());
-            for(size_t itrkID = 0; itrkID < listOfTrackID.size(); itrkID++){
-            }
             listOfTrackID.erase(std::unique (listOfTrackID.begin(), listOfTrackID.end()), listOfTrackID.end()); 
         }
-
+        
+        /****************************************************************************************
+         *                                                                                      *
+         *                                    Loop over tracks                                  *
+         *                                                                                      *
+         ****************************************************************************************/
         numTracks = listOfTrackID.size();
-
         int sumEdepPE = 0;
         int hitIndx = 0;
         for(uint i=0; i<listOfTrackID.size(); i++){
@@ -741,9 +730,11 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 trajID[i] = track->GetTrackID();
                 trajPrim[i] = track->GetParentID();
                 trackToPDG[track->GetTrackID()] = track->GetPDG();
-                cout << "PDG: " <<  track->GetPDG()
-                     << ", ID: " <<    track->GetTrackID() 
-                     << ", prntID: " << track->GetParentID() << endl;
+                if(WriteText){
+                    std::cout << "PDG: " <<  track->GetPDG()
+                              << ", ID: " <<    track->GetTrackID() 
+                              << ", prntID: " << track->GetParentID() << std::endl;
+                }
             }            
             for(int j = 0; j < maxHits; j++){
                 if(listOfTrackID[i] == hitTraj[j]){
@@ -760,17 +751,19 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         // fill all trajectories information:
         all_numTracks = nd280UpEvent->GetNTracks();
-				Eout = 0.;
+        Eout = 0.;
         for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
             TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
             if (trjID >= maxTracks){
                 store = false;
                 break;
             }
-            // cout << "trk is: " << track->GetTrackID() << " || GetInitMom " << track->GetInitMom().Mag()
-            //      << " || trueCosTheta: " << track->GetInitCosTheta()
-            //      << " || Range: " << track->GetRange() 
-            //      << endl;
+            if(WriteText){
+                std::cout << "trk is: " << track->GetTrackID() << " || GetInitMom " << track->GetInitMom().Mag()
+                          << " || trueCosTheta: " << track->GetInitCosTheta()
+                          << " || Range: " << track->GetRange() 
+                          << std::endl;
+            }
 
             bool found = false;
             for(auto trk_ID:listOfTrackID) if (trk_ID == track->GetTrackID()) found = true;
@@ -785,62 +778,41 @@ int SFGD_Reconstruction(int argc,char** argv) {
             sfgdtrack->SetMomentum(track->GetInitMom().Mag());
             sfgdtrack->fMomVec = track->GetInitMom();
 
-            //if (sfgdtrack->GetParentID() == -1) cout << "TrackInfo: [Id,ParentId,PDG,Mom,Range,CosTheta] " << sfgdtrack->GetTrackID() << "," <<  sfgdtrack->GetParentID() << "," <<  sfgdtrack->GetPDG() << "," <<  sfgdtrack->GetMomentum() << "," <<  sfgdtrack->GetRange() << "," <<  sfgdtrack->GetCosTheta() << endl;
-
             all_trajPDG[trjID]    = track->GetPDG();
             all_trajID[trjID]     = track->GetTrackID();
             all_trajParent[trjID] = track->GetParentID();
             all_trajEdep[trjID]   = track->GetSDTotalEnergyDeposit();
             // FIXME
             InitKinEnergy[trjID]  = track->GetInitKinEnergy();
-            //cout << endl;
-            //cout << "trjID: " << trjID;
-            //cout << " start.   TrackID is: " << all_trajID[trjID];
-            //cout << ",    PDG is: " << all_trajPDG[trjID];
-            //cout << ",    Initial kinetic energy is: " << InitKinEnergy[trjID];
-            //cout << ",    SD total energy deposit is: " << all_trajEdep[trjID];
-            //cout << ",    Track points: " << track->GetNPoints() << endl;;
             
             // FIXME
             int NPoints = track->GetNPoints();
             for(int ipt=0;ipt<NPoints;ipt++){    
-              TND280UpTrackPoint *trackPoint = track->GetPoint(ipt);    
-              //double MomX = trackPoint->GetMomentum().X();
-              //double MomY = trackPoint->GetMomentum().Y();
-              //double MomZ = trackPoint->GetMomentum().Z();     
-              double PosX = (trackPoint->GetPrePosition().X() + trackPoint->GetPostPosition().X())/2;
-              double PosY = (trackPoint->GetPrePosition().Y() + trackPoint->GetPostPosition().Y())/2;
-              double PosZ = (trackPoint->GetPrePosition().Z() + trackPoint->GetPostPosition().Z())/2 +1707.0;
-              double MomMod = trackPoint->GetMomentum().Mag();
-              //double MomVec[] = {MomX/MomMod,MomY/MomMod,MomZ/MomMod};
-              //double phi2=atan2(MomVec[2],MomVec[1]);
-              string volname = trackPoint->GetLogVolName();
-              int volID = VolnameToID(volname);
-              double track_point_edep = trackPoint->GetEdep();
-              //trackPoint->PrintTrackPoint();
-              if(trjID == 0 && volID == 0){
-                cout << "Track point # = " << ipt << " : Position = (" << PosX << ", " << PosY << ", " << PosZ  << ") , Edep = " << track_point_edep << endl;
-                EdepForInitElectron[ievt]->Fill(PosY,PosZ,track_point_edep);
-              }
-              if(ipt == NPoints-1){
-                TrackEndPoint[trjID] = volID;
-                if(volID == 2){
-                  Eout += MomMod;
+                TND280UpTrackPoint *trackPoint = track->GetPoint(ipt);    
+                double PosX = (trackPoint->GetPrePosition().X() + trackPoint->GetPostPosition().X())/2;
+                double PosY = (trackPoint->GetPrePosition().Y() + trackPoint->GetPostPosition().Y())/2;
+                double PosZ = (trackPoint->GetPrePosition().Z() + trackPoint->GetPostPosition().Z())/2 +1707.0;
+                double MomMod = trackPoint->GetMomentum().Mag();
+                string volname = trackPoint->GetLogVolName();
+                int volID = VolnameToID(volname);
+                double track_point_edep = trackPoint->GetEdep();
+                if(ipt == NPoints-1){
+                    TrackEndPoint[trjID] = volID;
+                    if(WriteText) std::cout << "trjID = " << trjID << ",    volname = " << volname << std::endl;
+                    if(volID == 2){
+                        Eout += MomMod;
+                    }
                 }
-              }
             }
-            //track->PrintTrack();
-
             listOfTracks.push_back(sfgdtrack);
         }
-        cout << "    ---> Energy out is : " << Eout << endl;
 
         std::vector<int> listOfParentID;
         for(UInt_t i=0; i<listOfTrackID.size(); i++){
             listOfParentID.push_back(trajID[i]);
         }
 
-        if (WriteText) for (auto lprntID : listOfParentID) cout << "parentID: " << lprntID << endl;
+        if (WriteText) for (auto lprntID : listOfParentID) std::cout << "parentID: " << lprntID << std::endl;
 
         for(UInt_t i=0; i<listOfTrackID.size(); i++){
             if( trajPrim[i] == 0 ) trajParent[i] = -1;
@@ -850,35 +822,45 @@ int SFGD_Reconstruction(int argc,char** argv) {
                 trajPrim[i] = 1; 
             }
             if (trajParent[i] == -999) store = false;    // deactivate to store all...
-            //cout << "ID: " << trajID[i] << ", parent: " << trajParent[i] << endl;
+            //std::cout << "ID: " << trajID[i] << ", parent: " << trajParent[i] << std::endl;
             trackToParentID[trajID[i]] = trajParent[i]; 
         }
 
         for(uint vxl=0; vxl<listOfVoxels.size(); ++vxl){
             listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
             listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
-            if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { if(WriteText) cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl; store=false;}
-            if(WriteText) cout << "voxel: "<< vxl << "\t, Type: " << listOfVoxels[vxl]->GetTrueType() << "\tXYZ: " << listOfVoxels[vxl]->GetX() << ","  << listOfVoxels[vxl]->GetY() << "," << listOfVoxels[vxl]->GetZ() << ",\ttrueDeposits -[Edep,FiberPE,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetTrueEdep()*0.25 << ",\t" << listOfVoxels[vxl]->GetTruePE()*0.25 <<  ",\t" << listOfVoxels[vxl]->GetHits()[0]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[1]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[2]->GetPE()
-                 << ",\tTrackInfo [ID,prntID,PDG]: " <<  listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl;
+            if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { 
+                if(WriteText) { 
+                    std::cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] 
+                        << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << std::endl; store=false;}}
+            if(WriteText) {
+                std::cout << "voxel: "<< vxl << "\t, Type: " << listOfVoxels[vxl]->GetTrueType() 
+                     << "\tXYZ: " << listOfVoxels[vxl]->GetX() << ","  << listOfVoxels[vxl]->GetY() << "," << listOfVoxels[vxl]->GetZ() 
+                     << ",\ttrueDeposits -[Edep,FiberPE,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetTrueEdep()*0.25 
+                     << ",\t" << listOfVoxels[vxl]->GetTruePE()*0.25 <<  ",\t" << listOfVoxels[vxl]->GetHits()[0]->GetPE() 
+                     << ",\t" << listOfVoxels[vxl]->GetHits()[1]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[2]->GetPE()
+                     << ",\tTrackInfo [ID,prntID,PDG]: " <<  listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTrueParentIDs()[0] 
+                     << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << std::endl;
+            }
         }
-        cout << "Voxels voxels w/o clear track ID: " << edep_without_clear_contributor << endl;
+        std::cout << "Voxels voxels w/o clear track ID: " << edep_without_clear_contributor << std::endl;
 
         numHits = index;
 
-        // if(NHits){ // TODO: store this information in output && comment couts; + avoid entering into ApplyResponse if outside SFGD!
+        // if(NHits){ // TODO: store this information in output && comment std::couts; + avoid entering into ApplyResponse if outside SFGD!
         //     int nVertices = nd280UpEvent->GetNVertices();
-        //     cout << " *** Vertices: " << nVertices << endl;
+        //     std::cout << " *** Vertices: " << nVertices << std::endl;
         //     TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
         //     TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
         //     TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y(),vrtx->GetPosition().z()+1707 );
-        //     cout << "Original Vtx Position: " << vrtx->GetPosition().x() << "," << vrtx->GetPosition().y() << "," << vrtx->GetPosition().z()<< endl;
-        //     cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << endl;
-        //     cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX() << "," << ApplyResponse.GetMPPCPosY() << "," << ApplyResponse.GetMPPCPosZ()<< endl;
+        //     std::cout << "Original Vtx Position: " << vrtx->GetPosition().x() << "," << vrtx->GetPosition().y() << "," << vrtx->GetPosition().z()<< std::endl;
+        //     std::cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << std::endl;
+        //     std::cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX() << "," << ApplyResponse.GetMPPCPosY() << "," << ApplyResponse.GetMPPCPosZ()<< std::endl;
         //     ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
-        //     cout << "Vertex Cube Position: " << ApplyResponse.GetHitPos().x()/10 << "," << ApplyResponse.GetHitPos().y()/10 << "," << ApplyResponse.GetHitPos().z()/10 << endl;
+        //     std::cout << "Vertex Cube Position: " << ApplyResponse.GetHitPos().x()/10 << "," << ApplyResponse.GetHitPos().y()/10 << "," << ApplyResponse.GetHitPos().z()/10 << std::endl;
         // }
 
-        if(true){
+        if(WriteText){
          for (std::map<int,int>::iterator it=trackToParentID.begin(); it!=trackToParentID.end(); ++it)
             std::cout << "trackToParentID: " <<it->first << " => " << it->second << '\n';
 
@@ -886,22 +868,32 @@ int SFGD_Reconstruction(int argc,char** argv) {
             std::cout << "trackPDG: " <<it->first << " => " << it->second << '\n';
         }
 
+        /****************************************************************************************
+         *                                                                                      *
+         *                                      Storing events                                  *
+         *                                                                                      *
+         ****************************************************************************************/
         if(store){
-                cout << " --- Event summary --- " << endl;
-                cout << "The event has: " << index << "hits." << endl;
-                cout << "The event has: " << numTracks << "tracks." << endl << endl;
-                cout << " --- summary of tracks --- " << endl;
+                std::cout << " --- Event summary --- " << std::endl;
+                std::cout << "The event has: " << index << "hits." << std::endl;
+                std::cout << "The event has: " << numTracks << "tracks." << std::endl << std::endl;
+            if(WriteText){
+                std::cout << " --- summary of tracks --- " << std::endl;
                 int locSum = 0;
                 for (int trks=0; trks<numTracks; trks++){
                     locSum += trajHitsNum[trks];
-                    cout << "Track " << trks << ", id: " << trajID[trks] << ", #hits: " << trajHitsNum[trks] << ", totPE: " << trajEdep[trks] << ", Prim: " << trajPrim[trks] << ", Parent: " << trajParent[trks] << ", PDG: " << trajPDG[trks] << endl;
+                    std::cout << "Track " << trks << ", id: " << trajID[trks] << ", #hits: " << trajHitsNum[trks] 
+                         << ", totPE: " << trajEdep[trks] << ", Prim: " << trajPrim[trks] 
+                         << ", Parent: " << trajParent[trks] << ", PDG: " << trajPDG[trks] << std::endl;
                 }
-            if(WriteText){
-                cout << "Hits assocaited to tracks: " << locSum << endl;
-                cout << "Hits without associated track: " << numHits-locSum << endl;
-                cout << " --- summary of hits --- " << endl;
+                std::cout << "Hits assocaited to tracks: " << locSum << std::endl;
+                std::cout << "Hits without associated track: " << numHits-locSum << std::endl;
+                std::cout << " --- summary of hits --- " << std::endl;
                 for (int hts=0; hts<numHits; hts++){
-                    cout << "Hit " << hts << "crosstalk: " << crosstalk[hts] << ", trajID: " << hitTraj[hts] << ", XYZ: " << hitLocation[hts][0] << "," << hitLocation[hts][1] <<"," << hitLocation[hts][2] << ", PE: " << hitPE[hts][0] << "," << hitPE[hts][1] <<"," << hitPE[hts][2] << ", time: " << hitTime[hts][0] << "," << hitTime[hts][1] <<"," << hitTime[hts][2] << endl;
+                    std::cout << "Hit " << hts << "crosstalk: " << crosstalk[hts] << ", trajID: " << hitTraj[hts] 
+                         << ", XYZ: " << hitLocation[hts][0] << "," << hitLocation[hts][1] <<"," << hitLocation[hts][2] 
+                         << ", PE: " << hitPE[hts][0] << "," << hitPE[hts][1] <<"," << hitPE[hts][2] 
+                         << ", time: " << hitTime[hts][0] << "," << hitTime[hts][1] <<"," << hitTime[hts][2] << std::endl;
                 }
             }
         }
@@ -909,29 +901,29 @@ int SFGD_Reconstruction(int argc,char** argv) {
         event->SetVoxels(listOfVoxels);
         event->SetHits(listOfHits);
         event->SetTrueTracks(listOfTracks);
-        cout << "event->GetHits().size(): " << event->GetHits().size() << endl;
+        std::cout << "event->GetHits().size(): " << event->GetHits().size() << std::endl;
         if(!index) store = false;
-        if(store) {cout << "Event stored as input. " << endl; AllEvents->Fill(); }
+        if(store) {std::cout << "Event stored as input. " << std::endl; AllEvents->Fill(); }
+        if(store){
+            fileout->cd();
+            EnergyDeposit2D_XY[ievt]->Write();
+            EnergyDeposit2D_XZ[ievt]->Write();
+            EnergyDeposit2D_YZ[ievt]->Write();
+        }
         event->ResetEvent();
         listOfHits.clear();
         listOfVoxels.clear();
         listOfTracks.clear();
     } /// END LOOP OVER EVENTS LOOP
 
-    cout << "Writing events. " << endl;
+    std::cout << "Writing events. " << std::endl;
     fileout->cd();
     AllEvents->Write();
     h2d_xy->Write();
     h2d_xz->Write();
     h2d_yz->Write();
-    for(unsigned ievt=0;ievt<100;ievt++){
-      EnergyDeposit2D_XY[ievt]->Write();
-      EnergyDeposit2D_XZ[ievt]->Write();
-      EnergyDeposit2D_YZ[ievt]->Write();
-      EdepForInitElectron[ievt]->Write();
-    }
     fileout->Close();
-    cout << "End of program. " << endl;
+    std::cout << "End of program. " << std::endl;
 
     return 1;
 }
