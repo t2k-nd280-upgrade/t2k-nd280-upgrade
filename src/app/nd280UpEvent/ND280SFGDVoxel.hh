@@ -39,10 +39,14 @@ private:
     std::vector <ND280SFGDHit*> fHits; //MPPCHits pointers
     std::vector <ND280SFGDVoxel*> fNeighbors;
 
-    int fDistance;
+    double fDistance;
 
     bool fIsVisited;
     bool fIsEndPoint;
+
+    bool fIsKink;
+    bool fIsBranching;
+    bool fIsVertex;
 
 public:
     //constructors
@@ -87,13 +91,16 @@ public:
     void SetZ             (Double_t  p_PosZ)                    { fPosZ  = p_PosZ; }
     void SetTime          (Double_t  p_Time)                    { fTime  = p_Time; }
     void SetXYZ           (Double_t  p_PosX, Double_t p_PosY, Double_t p_PosZ)  {this->SetX(p_PosX); this->SetY(p_PosY); this->SetZ(p_PosZ);}
+    void SetIsKink        (bool      p_kink)                    { fIsKink      = p_kink; }
+    void SetIsBranching   (bool      p_bran)                    { fIsBranching = p_bran; }
+    void SetIsVertex      (bool      p_vrtx)                    { fIsVertex    = p_vrtx; }
     
 
     void AddNeighbor      (ND280SFGDVoxel* p_neighbor) {fNeighbors.push_back(p_neighbor);}
     void SetNeighbors     (std::vector <ND280SFGDVoxel*> p_neighbors) {fNeighbors = p_neighbors;}
     void SetIsEndPoint    (bool p_fIsEndPoint) { fIsEndPoint = p_fIsEndPoint;}
     void SetIsVisited     (bool p_fIsVisited)  { fIsVisited  = p_fIsVisited;}
-    void SetDistance      (int  p_distance) { fDistance = p_distance; }
+    void SetDistance      (double  p_distance) { fDistance = p_distance; }
     //------------------
 
     //-----Getters------
@@ -122,11 +129,14 @@ public:
     std::vector <Int_t> GetHitIDs()         { return fHitIDs;        }
     ND280SFGDHit*   GetHit(Int_t p_index)   { if((int) fHits.size()   <= p_index) {printf("GetHit Error! Accessing empty value!\n"); exit(1);}   return fHits[p_index]; } 
     Int_t   GetHitID(Int_t p_index)         { if((int) fHitIDs.size() <= p_index) {printf("GetHit Error! Accessing empty value!\n"); exit(1);}   return fHitIDs[p_index]; } 
+    bool IsBranching() { return fIsBranching;  }
+    bool IsKink()      { return fIsKink;       }
+    bool IsVertex()    { return fIsVertex;     }
     
     std::vector <ND280SFGDVoxel*> GetNeighbors() {return fNeighbors;}
     bool IsEndPoint() {return fIsEndPoint;}
     bool IsVisited()  {return fIsVisited;}
-    int GetDistance() {return fDistance;}
+    double GetDistance() {return fDistance;}
     //------------------
 
     void ClearRecoTrackIDs () {fRecoTrackIDs.clear();}
@@ -177,6 +187,9 @@ public:
         fIsEndPoint = false;
         fIsVisited  = false;
         fDistance   = 0;
+        fIsVertex    = false;
+        fIsBranching = false;
+        fIsKink      = false;
     }
 
     ClassDef(ND280SFGDVoxel,1);
