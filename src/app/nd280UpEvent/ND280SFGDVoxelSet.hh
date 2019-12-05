@@ -87,8 +87,6 @@ public:
 
     //------------------
 
-    void DumpToCSVfile(std::ofstream &outCSVfile, int opt=0);
-
     void Init()
     {
         gStyle->SetCanvasColor(0);
@@ -97,16 +95,20 @@ public:
         fData = new TNtuple("fData", "fData", "x:y:z:color");
     }
 
-    void DrawHits           (bool wait=true, TString canvName = "cc", int color=0);
-    void DrawVoxels         (bool wait=true, TString canvName = "cc", int color=0);
-    void DrawHitsAndVoxels  (bool wait=true, TString canvName = "cc", int color=0);
-    void DrawVoxelsTruePE   (bool wait=true, TString canvName = "cc");
-    void DrawVoxelsRecoPE   (bool wait=true, TString canvName = "cc");            
-    void DrawClusters       (bool wait=true, TString canvName = "cc");           
-    void DrawTrueTracks     (bool wait=true, TString canvName = "cc");            
-    void DrawRecoTracks     (bool wait=true, TString canvName = "cc");
-    void DrawGraphDistance  (bool wait=true, TString canvName = "cc");  
-    void DrawTrueType       (bool wait=true, TString canvName = "cc");    
+    void DrawHits            (bool wait=true, TString canvName = "cc", int color=0);
+    void DrawVoxels          (bool wait=true, TString canvName = "cc", int color=0);
+    void DrawHitsAndVoxels   (bool wait=true, TString canvName = "cc", int color=0);
+    void DrawVoxelsTruePE    (bool wait=true, TString canvName = "cc");
+    void DrawVoxelsRecoPE    (bool wait=true, TString canvName = "cc");            
+    void DrawClusters        (bool wait=true, TString canvName = "cc");           
+    void DrawTrueTracks      (bool wait=true, TString canvName = "cc");            
+    void DrawRecoTracks      (bool wait=true, TString canvName = "cc");
+    void DrawGraphDistance   (bool wait=true, TString canvName = "cc");  
+    void DrawTrueType        (bool wait=true, TString canvName = "cc");    
+    void DrawTimeSeparation  (bool wait=true, TString canvName = "cc"); 
+    void DrawBranchings      (bool wait=true, TString canvName = "cc"); 
+    void DrawKinks           (bool wait=true, TString canvName = "cc");  
+    void DrawBreakingPoints  (bool wait=true, TString canvName = "cc"); 
 
     double GetMaxEuclDist(int type=-1){
         double dist = 0;

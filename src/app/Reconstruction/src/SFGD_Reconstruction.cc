@@ -43,6 +43,8 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 //#define CROSSTALK_OFF
+//#define FV_CUT
+//#define FORCE_NUMU
 
 const int maxTracks = 100;
 const int maxHits = 50000;
@@ -405,6 +407,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         std::vector<int> listOfParentID;
         std::vector <int> listOfTrueTrackID;
+
+        bool mu_found = false;
         for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
             TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
             listOfTrueTrackID.push_back(track->GetTrackID());
@@ -412,7 +416,11 @@ int SFGD_Reconstruction(int argc,char** argv) {
             cout << "ALL || PDG: " <<  track->GetPDG()
                      << ", ID: " <<    track->GetTrackID() 
                      << ", prntID: " << track->GetParentID() << endl;
+            if(track->GetPDG() == 13 && !track->GetParentID()) mu_found = true;
         }
+        #ifdef FORCE_NUMU
+            if(!mu_found) store = false;
+        #endif
 
         for(int ihit=0;ihit<NHits;ihit++){ // get last entry
             TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
@@ -720,20 +728,44 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         numHits = index;
 
-        // if(NHits){ // TODO: store this information in output && comment couts; + avoid entering into ApplyResponse if outside SFGD!
-        //     int nVertices = nd280UpEvent->GetNVertices();
-        //     cout << " *** Vertices: " << nVertices << endl;
-        //     TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
-        //     TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
-        //     TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y(),vrtx->GetPosition().z()+1707 );
-        //     cout << "Original Vtx Position: " << vrtx->GetPosition().x() << "," << vrtx->GetPosition().y() << "," << vrtx->GetPosition().z()<< endl;
-        //     cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << endl;
-        //     cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX() << "," << ApplyResponse.GetMPPCPosY() << "," << ApplyResponse.GetMPPCPosZ()<< endl;
-        //     ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
-        //     cout << "Vertex Cube Position: " << ApplyResponse.GetHitPos().x()/10 << "," << ApplyResponse.GetHitPos().y()/10 << "," << ApplyResponse.GetHitPos().z()/10 << endl;
-        // }
+        if(NHits){ // TODO: store this information in output && comment couts; + avoid entering into ApplyResponse if outside SFGD!
+            int nVertices = nd280UpEvent->GetNVertices();
+            cout << " *** Vertices: " << nVertices << endl;
+            TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
+            // vrtx->PrintVertex();
+            TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
+            TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y(),vrtx->GetPosition().z()+1707 );
+            cout << "ReacMode: " << vrtx->GetReacModeString() << endl;
+            for(int itrk=0;itrk<vrtx->GetNInTracks();itrk++){
+                if(vrtx->GetInTrack(itrk)->GetPDG() == 14){
+                    event->SetNuMom(vrtx->GetInTrack(itrk)->GetInitMom().Mag());
+                    cout << "neutrino momentum: " << vrtx->GetInTrack(itrk)->GetInitMom().Mag() << endl;
+                }
+            }
+            //cout << "Original Vtx Position: " << vrtx->GetPosition().x() << "," << vrtx->GetPosition().y() << "," << vrtx->GetPosition().z()<< endl;
+            cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << endl;
+            
+                double tol = 20;
+                bool outFV = true;
+                if(vPos.z() > ApplyResponse.GetMPPCPosZ()+tol && vPos.z() < -ApplyResponse.GetMPPCPosZ()-tol) if(vPos.y() > ApplyResponse.GetMPPCPosY()+tol && vPos.y() < -ApplyResponse.GetMPPCPosY()-tol) if(vPos.x() > ApplyResponse.GetMPPCPosX()+tol && vPos.x() < -ApplyResponse.GetMPPCPosX()-tol) outFV = false;
+                if(!outFV) cout << "\n\n inside FV!!!" << endl;
+                else {cout << "\n\n out FV!!!!" << endl;}
+                cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX()/10 << "," << ApplyResponse.GetMPPCPosY()/10 << "," << ApplyResponse.GetMPPCPosZ()/10<< endl;
+                if(!outFV){
+                    ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
+                    cout << "Vertex Cube Position: " << ApplyResponse.GetHitPos().x()/10-ApplyResponse.GetMPPCPosX()/10 << "," << ApplyResponse.GetHitPos().y()/10-ApplyResponse.GetMPPCPosY()/10 << "," << ApplyResponse.GetHitPos().z()/10-ApplyResponse.GetMPPCPosZ()/10 << endl;
+                    ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(ApplyResponse.GetHitPos().x()/10,ApplyResponse.GetHitPos().y()/10,ApplyResponse.GetHitPos().z()/10);
+                    event->SetTrueVertex(vertexVoxel);
+                }
+            #ifdef FV_CUT
+                if(outFV) store = false;
+            #else
+                ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(-999,-999,-999);
+                event->SetTrueVertex(vertexVoxel);
+            #endif
+        }
 
-        if(true){
+        if(false){
          for (std::map<int,int>::iterator it=trackToParentID.begin(); it!=trackToParentID.end(); ++it)
             std::cout << "trackToParentID: " <<it->first << " => " << it->second << '\n';
 
@@ -741,7 +773,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             std::cout << "trackPDG: " <<it->first << " => " << it->second << '\n';
         }
 
-        if(store){
+        if(store && index){
                 cout << " --- Event summary --- " << endl;
                 cout << "The event has: " << index << "hits." << endl;
                 cout << "The event has: " << numTracks << "tracks." << endl << endl;
@@ -751,6 +783,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     locSum += trajHitsNum[trks];
                     cout << "Track " << trks << ", id: " << trajID[trks] << ", #hits: " << trajHitsNum[trks] << ", totPE: " << trajEdep[trks] << ", Prim: " << trajPrim[trks] << ", Parent: " << trajParent[trks] << ", PDG: " << trajPDG[trks] << endl;
                 }
+                cout << "nuIniMom: " << event->GetNuMom() << endl;
+                cout << "vertex   position: " << event->GetTrueVertex()->GetX() << "," << event->GetTrueVertex()->GetY() << "," << event->GetTrueVertex()->GetZ() << endl;
             if(WriteText){
                 cout << "Hits assocaited to tracks: " << locSum << endl;
                 cout << "Hits without associated track: " << numHits-locSum << endl;
@@ -766,8 +800,8 @@ int SFGD_Reconstruction(int argc,char** argv) {
         event->SetTrueTracks(listOfTracks);
         cout << "event->GetHits().size(): " << event->GetHits().size() << endl;
         if(!index) store = false;
-        if(store) {cout << "Event stored as input. " << endl; AllEvents->Fill(); }
-        else{ cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nEVENT IS NOT STORED\n\n";}
+        if(store) {cout << "\n\n ----------------> EVENT IS STORED AS OUTPUT\n\n"; AllEvents->Fill(); }
+        else{ cout << "\n\nEVENT IS NOT STORED\n\n";}
         event->ResetEvent();
         listOfHits.clear();
         listOfVoxels.clear();

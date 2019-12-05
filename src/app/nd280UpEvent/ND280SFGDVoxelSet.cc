@@ -181,6 +181,14 @@ void ND280SFGDVoxelSet::Draw3D(bool wait = false, int color = 0){
         else if(color ==4) {if(this->GetVoxels()[i]->GetTrueTrackIDs().size()) fData->Fill(x[i], y[i], z[i], ID_to_color.find(this->GetVoxels()[i]->GetTrueTrackIDs()[0])->second); } 
         else if(color ==5) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetTrueType()); 
         else if(color ==6) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetDistance()); 
+        else if(color ==7) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->GetTime()); 
+        else if(color ==8) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->IsBranching()); 
+        else if(color ==9) fData->Fill(x[i], y[i], z[i], this->GetVoxels()[i]->IsKink()); 
+        else if(color ==10){
+            if(this->GetVoxels()[i]->IsBranching())   fData->Fill(x[i], y[i], z[i], 2);
+            else if(this->GetVoxels()[i]->IsKink())   fData->Fill(x[i], y[i], z[i], 1);
+            else fData->Fill(x[i], y[i], z[i], 0);
+        }
         else fData->Fill(x[i], y[i], z[i], color);
 
         if(x[i]>maxX) maxX = x[i];
@@ -205,39 +213,20 @@ void ND280SFGDVoxelSet::Draw3D(bool wait = false, int color = 0){
 
 
 //********************************************************************
-void ND280SFGDVoxelSet::DrawHits           (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,0); }
-void ND280SFGDVoxelSet::DrawVoxels         (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,1); }
-void ND280SFGDVoxelSet::DrawHitsAndVoxels  (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,2); }
-void ND280SFGDVoxelSet::DrawVoxelsRecoPE   (bool wait, TString canvName)              { this->DrawSet(wait,canvName,0,1);     }
-void ND280SFGDVoxelSet::DrawClusters       (bool wait, TString canvName)              { this->DrawSet(wait,canvName,1,1);     }
-void ND280SFGDVoxelSet::DrawRecoTracks     (bool wait, TString canvName)              { this->DrawSet(wait,canvName,2,1);     }
-void ND280SFGDVoxelSet::DrawVoxelsTruePE   (bool wait, TString canvName)              { this->DrawSet(wait,canvName,3,1);     }
-void ND280SFGDVoxelSet::DrawTrueTracks     (bool wait, TString canvName)              { this->DrawSet(wait,canvName,4,1);     }
-void ND280SFGDVoxelSet::DrawTrueType       (bool wait, TString canvName)              { this->DrawSet(wait,canvName,5,1);     }
-void ND280SFGDVoxelSet::DrawGraphDistance  (bool wait, TString canvName)              { this->DrawSet(wait,canvName,6,1);     }
+void ND280SFGDVoxelSet::DrawHits            (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,0); }
+void ND280SFGDVoxelSet::DrawVoxels          (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,1); }
+void ND280SFGDVoxelSet::DrawHitsAndVoxels   (bool wait, TString canvName, int color)   { this->DrawSet(wait,canvName,color,2); }
+void ND280SFGDVoxelSet::DrawVoxelsRecoPE    (bool wait, TString canvName)              { this->DrawSet(wait,canvName,0,1);     }
+void ND280SFGDVoxelSet::DrawClusters        (bool wait, TString canvName)              { this->DrawSet(wait,canvName,1,1);     }
+void ND280SFGDVoxelSet::DrawRecoTracks      (bool wait, TString canvName)              { this->DrawSet(wait,canvName,2,1);     }
+void ND280SFGDVoxelSet::DrawVoxelsTruePE    (bool wait, TString canvName)              { this->DrawSet(wait,canvName,3,1);     }
+void ND280SFGDVoxelSet::DrawTrueTracks      (bool wait, TString canvName)              { this->DrawSet(wait,canvName,4,1);     }
+void ND280SFGDVoxelSet::DrawTrueType        (bool wait, TString canvName)              { this->DrawSet(wait,canvName,5,1);     }
+void ND280SFGDVoxelSet::DrawGraphDistance   (bool wait, TString canvName)              { this->DrawSet(wait,canvName,6,1);     }
+void ND280SFGDVoxelSet::DrawTimeSeparation  (bool wait, TString canvName)              { this->DrawSet(wait,canvName,7,1);     }
+void ND280SFGDVoxelSet::DrawBranchings      (bool wait, TString canvName)              { this->DrawSet(wait,canvName,8,1);     }
+void ND280SFGDVoxelSet::DrawKinks           (bool wait, TString canvName)              { this->DrawSet(wait,canvName,9,1);     }
+void ND280SFGDVoxelSet::DrawBreakingPoints  (bool wait, TString canvName)              { this->DrawSet(wait,canvName,10,1);     }
 //********************************************************************
 
 
-
-//********************************************************************
-void ND280SFGDVoxelSet::DumpToCSVfile(std::ofstream &outCSVfile, int opt){
-//********************************************************************
-
-    if(!(outCSVfile)) {std::cerr << "No filename specified!" << std::endl; exit(1);}
-    
-    for (auto n:this->GetVoxels()){
-        if(opt ==1){
-            std::cout << n->GetID() << ", " 
-                      << n->GetX() << ", " << n->GetY() << ", " << n->GetZ() << ", "
-                      << n->GetHits()[0]->GetPE() << ", " << n->GetHits()[1]->GetPE() << ", " << n->GetHits()[2]->GetPE() << ", "
-                      << n->GetHits()[0]->GetMultiplicity() << ", " << n->GetHits()[1]->GetMultiplicity() << ", " << n->GetHits()[2]->GetMultiplicity() << ", "
-                      << n->GetTrueType() << "\n";
-        }
-        outCSVfile    << n->GetID() << ", " 
-                      << n->GetX() << ", " << n->GetY() << ", " << n->GetZ() << ", "
-                      << n->GetHits()[0]->GetPE() << ", " << n->GetHits()[1]->GetPE() << ", " << n->GetHits()[2]->GetPE() << ", "
-                      << n->GetHits()[0]->GetMultiplicity() << ", " << n->GetHits()[1]->GetMultiplicity() << ", " << n->GetHits()[2]->GetMultiplicity() << ", "
-                      << n->GetTrueType() << "\n";
-    }
-
-}
