@@ -264,7 +264,6 @@ bool ExN02TrackerHit::SameHit(G4Step* theStep) {
 int ExN02TrackerHit::FindPrimaryId(G4Track *theTrack) {
 
   //G4cout << "ExN02TrackerHit::FindPrimaryId" << G4endl;
-  
     return ND280TrajectoryMap::FindPrimaryId(theTrack->GetTrackID());
 }
 

@@ -236,8 +236,10 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   if (particleName == "nu_tau") return;
 
   // Don't save low momentum charged particles (My cuts)
+  if (!GetSaveRecon()){
+    if (particleName == "neutron") return;
+  }
   if (particleName == "gamma") return;
-  if (particleName == "neutron") return;
   if (particleName == "proton" && initialMomentum<200*CLHEP::MeV) return;
   //
   
@@ -305,6 +307,65 @@ void ND280PersistencyManager::MarkTrajectory(ND280Trajectory* ndTraj,const G4Eve
   // http://geant4.web.cern.ch/geant4/support/proc_mod_catalog/processes/
   //
 
+
+  if (GetSaveRecon()) {
+  // gamma conversion
+  if (particleName == "e+" || particleName == "e-"){
+    if (processName == "conv"){
+      if(initialMomentum > 100*CLHEP::MeV){
+        ndTraj->MarkTrajectory(false); 
+      return;
+      }
+    }
+  }
+
+  // electron multiple scattering
+  if ( (particleName == "e-" || particleName == "e+") &&
+       processName == "msc"){ 
+    ndTraj->MarkTrajectory(false);
+  }
+
+  // muon multiple scattering
+  if ( (particleName == "mu-" || particleName == "mu+") &&
+       processName == "msc"){ // multiple scattering
+    ndTraj->MarkTrajectory(true);
+  }
+    
+  // pion inelastic 
+  if (processName == "pi+Inelastic"){
+    if (particleName == "pi+"){
+      ndTraj->MarkTrajectory(true);
+      return;
+    }
+  }
+  if (processName == "pi-Inelastic"){
+    if (particleName == "pi-"){
+      ndTraj->MarkTrajectory(true);
+      return;
+    }
+  }
+
+  // proton inelastic 
+  if (processName == "protonInelastic"){
+    if (particleName == "proton"){
+      ndTraj->MarkTrajectory(true);
+      return;
+    }
+  }  
+
+  // hadronic elastic processes
+  if (processName == "hadElastic"){
+    if ( particleName == "proton" ||
+   particleName == "pi-"    ||
+   particleName == "pi+"
+   ){
+      ndTraj->MarkTrajectory(false);
+      return;    
+    }
+  }
+  
+    return;
+  }  
 
 
 

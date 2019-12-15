@@ -10,7 +10,7 @@
 /field/setField 0.2 0 0 tesla
 /field/update
 
-/db/set/saveAllTraj 1
+/db/set/saveRecon 1
 /db/set/saveAllHits 1
 
 # Set the particle generator: "Generator" (NEUT or GENIE is not specified here) or "ParticleGun"
@@ -18,10 +18,12 @@
 /generator/type ParticleGun
         
 # Set the particle gun 
-/gun/particle e-
-#/gun/particle mu-
-/gun/energy 200 MeV  # kinetic energy
-#/gun/momentum  0 0 0.4 GeV # momentum
+/gun/particle pi-
+#/gun/energy 100 MeV  # kinetic energy
+/gun/momentum  0 0 0.1 GeV # momentum
+#/gun/direction 0 0 1 # momentum direction     
+/gun/position  0 0 -2907 mm  # starting position
+/gun/number   1      # number of particles
 
 /gun/direction 0 0 1 # momentum direction  # along z-axis (same to the beam)     
 #/gun/direction 0 1 0 # momentum direction  # along y-axis 
@@ -36,6 +38,8 @@
 
 #/generator/typegun BeamTest
 #/generator/typepos PrototypeGaus
+
+/generator/typemom WidePion
 
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:

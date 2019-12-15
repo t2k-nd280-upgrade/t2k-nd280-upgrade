@@ -109,8 +109,8 @@ void ND280Trajectory::MarkTrajectory(bool save) {
     if (!g4Traj) return;
     ND280Trajectory* traj = dynamic_cast<ND280Trajectory*>(g4Traj);
     if (!traj) return;
-    // Protect against infinite loops.
     if (this == traj) return;
+    // Protect against infinite loops.
     traj->MarkTrajectory(save);
 }
 

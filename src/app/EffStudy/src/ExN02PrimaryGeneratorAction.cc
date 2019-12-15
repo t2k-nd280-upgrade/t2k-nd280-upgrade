@@ -151,6 +151,17 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4double aMomAmp = fParticleGun->GetParticleMomentum();
     G4double aEAmp = fParticleGun->GetParticleEnergy();  
     
+
+    if (fTypeMomentum=="WidePion")
+      {
+        G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+        aMomAmp = 50+(G4UniformRand()*(450.) );
+        fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+        cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
+        aEAmp = fParticleGun->GetParticleEnergy();
+
+      }
+
     if (fTypeMomentum=="Wide")
       {
         G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;

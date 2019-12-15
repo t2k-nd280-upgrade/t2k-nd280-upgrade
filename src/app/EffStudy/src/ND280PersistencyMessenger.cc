@@ -101,6 +101,13 @@ ND280PersistencyMessenger::ND280PersistencyMessenger(
         "  True: Save all trajectories.\n"
         "  False: Save prim. traj (see saveAllPrimTraj)");
 
+    fSaveReconCMD 
+        = new G4UIcmdWithABool("/db/set/saveRecon", this);
+    fSaveReconCMD->SetGuidance(
+        "Control to save trajectories with some specific cuts to study reconstruction.\n"
+        "  True: Save trajectories satisfying some cuts.\n"
+        "  False: Save prim. traj (see saveAllPrimTraj)");
+
     fSaveAllHitsCMD 
         = new G4UIcmdWithABool("/db/set/saveAllHits", this);
     fSaveAllHitsCMD->SetGuidance(
@@ -200,6 +207,10 @@ void ND280PersistencyMessenger::SetNewValue(G4UIcommand* command,
         fPersistencyManager->SetSaveAllTraj(
             fSaveAllTrajCMD->GetNewBoolValue(newValue));
     }
+    else if (command == fSaveReconCMD) {
+        fPersistencyManager->SetSaveRecon(
+            fSaveReconCMD->GetNewBoolValue(newValue));
+    }
     else if (command == fSaveAllHitsCMD) {
         fPersistencyManager->SetSaveAllHits(
             fSaveAllHitsCMD->GetNewBoolValue(newValue));
@@ -241,6 +252,10 @@ G4String ND280PersistencyMessenger::GetCurrentValue(G4UIcommand * command) {
     }
     else if (command==fSaveAllTrajCMD) {
         currentValue = fSaveAllTrajCMD->ConvertToString(
+            fPersistencyManager->GetSaveAllTraj());
+    }
+    else if (command==fSaveReconCMD) {
+        currentValue = fSaveReconCMD->ConvertToString(
             fPersistencyManager->GetSaveAllTraj());
     }
     else if (command==fSaveAllHitsCMD) {

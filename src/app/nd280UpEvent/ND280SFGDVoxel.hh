@@ -33,6 +33,7 @@ private:
     Double_t  fRecoEdep;     // yet not clear how to fill this variable.
     Int_t     fClustID;      // ID of the cluster.
 
+
     Double_t  fTime;         // Erase it soon. --> move to True/Reco
 
     std::vector <Int_t> fHitIDs;       //MPPCHits IDs
@@ -146,7 +147,10 @@ public:
         if      (view == 2) distance =  this->GetX()*10;       // X is distance to plane YZ 
         else if (view == 1) distance =  this->GetY()*10;       // Y is distance to plane XZ
         else if (view == 0) distance =  this->GetZ()*10;       // Z is distance to plane XY
-        if (distance<0)     {std::cerr << "Distance can not be negative! case: " << view << "distance: " << distance << std::endl; exit(1);}
+        if (distance<0)     {
+            std::cerr << "Distance can not be negative! case: " << view << " distance: " << distance << std::endl; 
+            exit(1);
+        }
         return distance;
     }
 
