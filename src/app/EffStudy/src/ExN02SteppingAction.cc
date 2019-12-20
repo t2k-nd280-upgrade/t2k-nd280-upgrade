@@ -122,6 +122,10 @@ void ExN02SteppingAction::UserSteppingAction(const G4Step* step)
   G4int Nproton = 0;
   G4int Nalpha  = 0;
 
+  fEventAction->FH(16, energy_pre);
+  fEventAction->FH(17, energy_pre, energy_pre - energy_post);
+  fEventAction->FH2(1, energy_pre, energy_pre - energy_post);
+
   if (process_name_post == "hadElastic" && tN2ndariesTot == 1) {
     if ((*fSecondary)[0]->GetDefinition()->GetParticleName() == "proton") {
       fEventAction->FH(1, energy_pre);

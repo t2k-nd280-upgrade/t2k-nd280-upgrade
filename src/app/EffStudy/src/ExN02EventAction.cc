@@ -98,8 +98,18 @@ void ExN02EventAction::BeginOfEventAction(const G4Event*)
 void ExN02EventAction::FH(G4int i, G4double e) {
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   analysisManager->FillH1(i, e);
-  if (i < 4)
-    analysisManager->FillH1(16, e);
+  /*if (i < 4)
+    analysisManager->FillH1(16, e);*/
+}
+
+void ExN02EventAction::FH(G4int i, G4double e, G4double w) {
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+  analysisManager->FillH1(i, e, w);
+}
+
+void ExN02EventAction::FH2(G4int i, G4double a, G4double b) {
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+  analysisManager->FillH2(i, a, b);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

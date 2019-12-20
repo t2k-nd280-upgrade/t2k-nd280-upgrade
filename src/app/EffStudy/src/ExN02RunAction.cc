@@ -96,6 +96,10 @@ ExN02RunAction::ExN02RunAction(ExN02EventAction *eventAction)
   analysisManager->CreateH1("NpNa", "NpNa", 140, 0., 700.); // 15
 
   analysisManager->CreateH1("XsecNorm", "XsecNorm", 140, 0., 700.); // 16
+
+  analysisManager->CreateH1("Elost", "Elost", 140, 0., 700.); // 17
+
+  analysisManager->CreateH2("Elost_vs_Ekin", "Elost_vs_Ekin", 140, 0., 700., 700, 0., 700.); // 1
 #endif
 }
 

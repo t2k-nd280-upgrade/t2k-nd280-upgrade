@@ -20,8 +20,8 @@ const float m = 939.565413;
 using namespace std;
 
 void neutron_merge() {
-  string file_in_str    = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v29-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root";
-  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v40.root";
+  string file_in_str    = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/reco/SuperFGD-neutron_v24-UseXY-UseXZ-UseYZ-Separate10_na_1000000.root";
+  string file_out_str   = "/t2k/users/suvorov/AnalysisResults/ndUP/SuperFGD/neutron/plot/plot_neutron_v42.root";
 
   TFile* f = new TFile("/t2k/users/suvorov/AnalysisResults/neutron_ekin_spectrum.root", "READ");
   TH1F* h = (TH1F*)f->Get("h1");
@@ -52,6 +52,9 @@ void neutron_merge() {
   Int_t first_sc_reco;
   Int_t n_fibers;
 
+  Double_t hit_pos[3];
+  Double_t vertex_pos[3];
+
   tree->SetBranchAddress("KinEnergy_true",     &ekin);
   tree->SetBranchAddress("CosTheta_true",      &costheta);
   tree->SetBranchAddress("Light_fst",          &light_fst);
@@ -69,6 +72,9 @@ void neutron_merge() {
   // true distance (no smearing with cube size)
   tree->SetBranchAddress("Distance_hit_true",  &dist);
   tree->SetBranchAddress("First_sc_reco",      &first_sc_reco);
+
+  tree->SetBranchAddress("Hit_pos",            hit_pos);
+  tree->SetBranchAddress("Vertex_pos",         vertex_pos);
   
   // true neutron points
   tree->SetBranchAddress("Neutron_time",       &neutron_time);
@@ -80,6 +86,10 @@ void neutron_merge() {
 
 	TH2F* init_e_cos  = (TH2F*)file->Get("ini_ET");
 	TH2F* eff_e_cos   = (TH2F*)file->Get("eff_ET");
+  TH2F* eff_e_cos_noLA   = (TH2F*)file->Get("eff_ET")->Clone("eff_e_cos_noLA");
+  eff_e_cos_noLA->Reset();
+  TH2F* eff_e_cos_noLA_nLY = (TH2F*)eff_e_cos_noLA->Clone("eff_e_cos_noLA_noLY");
+  TH2F* eff_e_cos_noLA_1m = (TH2F*)eff_e_cos_noLA->Clone("eff_e_cos_noLA_1m");
   TH2F* hits_time   = (TH2F*)file->Get("hits_time");
 	TH2F* pe_e_cos    = (TH2F*)file->Get("pe_ET");
 	TH2F* hits_energy = (TH2F*)file->Get("hitsE");
@@ -111,6 +121,8 @@ void neutron_merge() {
 
   TH2F* e_dist_master = new TH2F("e_dist_master", "", Ndist-1, distance_cut, 400, 0., 800.);
 
+  TH2F* e_dist_fwd    = new TH2F("e_dist_fwd", "", Ndist-1, distance_cut, 400, 0., 800.);
+
   TH1F* beta_dist_slices[Ndist];
   for (auto i = 0; i < Ndist; ++i)
     beta_dist_slices[i] = new TH1F(Form("beta_dist_sl_%i", i), "", 400, 0., 1.);
@@ -119,7 +131,10 @@ void neutron_merge() {
 
   // do rebinning
   Int_t rebin_Y = 5;
+  TH2F* init_e_cos_or = (TH2F*)init_e_cos->Clone("ini_ET_or");
   init_e_cos->RebinY(rebin_Y);
+  //eff_e_cos_noLA_nLY->RebinY(rebin_Y);
+  //eff_e_cos_noLA->RebinY(rebin_Y);
   pe_e_cos->RebinY(rebin_Y);
   eff_e_cos->RebinY(rebin_Y);
   mom_forward->Rebin(rebin_Y);
@@ -216,6 +231,11 @@ void neutron_merge() {
     Int_t NEntries = tree->GetEntries();
     for (Int_t entryID = 0; entryID < NEntries; ++entryID) {
       tree->GetEntry(entryID);
+      if (costheta >= 1)
+        costheta = 0.99999;
+
+      if (costheta <= -1)
+        costheta = -0.99999;
 
       // event was not reconstructed as no light observed
       if (first_hit_time == 1e+09)
@@ -229,9 +249,18 @@ void neutron_merge() {
         Float_t res_l      = 0.95;
         res_l      *= sqrt(1. / n_fibers);
         Float_t fht = gen->Gaus(first_hit_time, res_l);
+        
         //Float_t fht = first_hit_time;
         LeverArm_time->Fill(dist_cubes, fht);
-        if (light_tot / 3. > 40.) {
+        eff_e_cos_noLA_nLY->Fill(costheta, ekin);
+        if (light_tot> 40.) {
+
+          eff_e_cos_noLA->Fill(costheta, ekin);
+          if (dist_cubes <= 100.)
+            eff_e_cos_noLA_1m->Fill(costheta, ekin);
+          if (costheta > 0.8)
+            e_dist_fwd->Fill(dist_cubes, ekin);
+
           LeverArm_time_ly->Fill(dist_cubes, fht);
           time_dist->Fill(dist_cubes, first_hit_time);
 
@@ -266,7 +295,8 @@ void neutron_merge() {
       reco_first->Fill(ekin, first_sc_reco);
       reco_first_n->Fill(ekin);
   
-      eff_e_cos->Fill(costheta, ekin);
+      if (light_tot > 40.)
+        eff_e_cos->Fill(costheta, ekin);
 
       e_dist_slices[distID]->Fill(ekin);
 
@@ -306,13 +336,14 @@ void neutron_merge() {
       angle_energy->Fill(ekin, dir_reco[2]);
 
       Int_t cos_bin = cos_h->FindBin(costheta);
-      if (cos_bin > 0 && cos_bin < cos_h->GetXaxis()->GetNbins())
+      if (cos_bin > 0 && cos_bin < cos_h->GetXaxis()->GetNbins()) {
         energy_resol_cos[0][cos_bin-1]->Fill(ekin, ekin2);
+      }
 
       for (Int_t resID = 1; resID < time_size; ++resID ) {
 
         // selection on light
-        if (light_tot / 3. < 40.)
+        if (light_tot < 40.)
           continue;
   
         if (resID > 2 ) {
@@ -604,13 +635,34 @@ void neutron_merge() {
   c1->Write("last");
 
   init_e_cos->Write();
-  eff_e_cos->Write();
-  hits_time->Write();
+  
+  for (Int_t i = 1; i <= eff_e_cos_noLA->GetXaxis()->GetNbins(); ++i) {
+    for (Int_t j = 1; j <= eff_e_cos_noLA->GetYaxis()->GetNbins(); ++j) {
+      Float_t pre = eff_e_cos_noLA->GetBinContent(i, j);
+      Float_t scale = init_e_cos_or->GetBinContent(i+1, j);
+      if (scale)
+        eff_e_cos_noLA->SetBinContent(i, j, pre / scale);
+      pre = eff_e_cos_noLA_nLY->GetBinContent(i, j);
+      scale = init_e_cos_or->GetBinContent(i+1, j);
+      if (scale)
+        eff_e_cos_noLA_nLY->SetBinContent(i, j, pre / scale);
+      pre = eff_e_cos_noLA_1m->GetBinContent(i, j);
+      scale = init_e_cos_or->GetBinContent(i+1, j);
+      if (scale)
+        eff_e_cos_noLA_1m->SetBinContent(i, j, pre / scale);
+    }
+  }
+  eff_e_cos_noLA->Write();
+  eff_e_cos_noLA_nLY->Write();
+  eff_e_cos_noLA_1m->Write();
+  if (hits_time)
+    hits_time->Write();
   pe_e_cos->Write();
   pe_e->Write();
   hits_energy->Write();
   hits_number->Write();
   e_dist->Write();
+  e_dist_fwd->Write();
   beta_ekin->Write();
 
   hits_cl_XY->Write();

@@ -129,7 +129,7 @@ ExN02PhysicsList::ExN02PhysicsList() :
   AddPhysicsList("emstandard_opt3");
   
   // Set the default hadronic physics.
-  AddPhysicsList("QGSP_BERT");
+  AddPhysicsList("QGSP_BERT_HP");
 } 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -342,6 +342,10 @@ void ExN02PhysicsList::AddPhysicsList(const G4String& name)
   else if (name == "QGSP_BERT") {
     SetBuilderList1();
     fHadronPhys.push_back( new G4HadronPhysicsQGSP_BERT());
+  } 
+  else if (name == "QGSP_BERT_HP") {
+    SetBuilderList1();
+    fHadronPhys.push_back( new G4HadronPhysicsQGSP_BERT_HP());
   } 
   else {  
     G4cout << "PhysicsList::AddPhysicsList: <" << name << ">"

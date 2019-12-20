@@ -72,9 +72,9 @@ while($irun < $nruns) { # loop over the jobs
 		$arguments = "$softw_dir/$exe_loc_dir/EffStudyApp $softw_dir/src/app/EffStudy/$vis_file $softw_dir/src/app/EffStudy/$config_file $job_dir/$tag-Exp$evt_first-Nexpt$nexpts $evt_first $nexpts";
      
     $command = "$arguments";
-    # $command .= "; mv EffStudy_0.root EffStudy_";
-    # $file_name = $irun + 1;
-    # $command .= "$file_name.root";
+    $command .= "; mv EffStudy_0.root EffStudy_";
+    $file_name = $irun + 1;
+    $command .= "$file_name.root";
     
     print "\n";
     print "Job $irun \n";

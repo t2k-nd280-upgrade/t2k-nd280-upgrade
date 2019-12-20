@@ -42,7 +42,7 @@
 #include <vector>
 #include <TVector3.h>
 
-// #define NEUTRON_FILE
+#define NEUTRON_FILE
 
 //#include "TND280UpEvent.hh"
 
@@ -59,6 +59,8 @@ public:
   virtual void BeginOfEventAction(const G4Event*);
   virtual void EndOfEventAction(const G4Event*);
   void FH(G4int i , G4double e);
+  void FH(G4int i , G4double e, G4double w);
+  void FH2(G4int i , G4double a, G4double b);
 
 private:
 

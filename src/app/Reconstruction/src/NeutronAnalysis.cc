@@ -454,6 +454,11 @@ int NeutronAnalysis(int argc,char** argv) {
 
     ekin      = track_n->GetInitKinEnergy();
     costheta  = track_n->GetInitCosTheta();
+    if (costheta >= 1)
+      costheta = 0.99999;
+    if (costheta <= 1)
+      costheta = -0.99999;
+
     TVector3 mom_vec = track_n->GetInitMom();
     mom_vec = mom_vec.Unit();
     dir_true[0]  = mom_vec.X();
