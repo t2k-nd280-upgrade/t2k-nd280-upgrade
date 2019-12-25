@@ -627,6 +627,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             sfgdtrack->SetRange(track->GetRange());
             sfgdtrack->SetMomentum(track->GetInitMom().Mag());
             sfgdtrack->fMomVec = track->GetInitMom();
+            sfgdtrack->SetProcessName(track->GetProcessName());
 
             all_trajPDG[trjID]    = track->GetPDG();
             all_trajID[trjID]     = track->GetTrackID();

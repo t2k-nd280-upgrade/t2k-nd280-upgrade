@@ -24,6 +24,7 @@ private:
     ND280SFGDTrack* fSegment;
     double    fPrecision;    // voxels with correct trkID / (total of voxels in the reco track)
     double    fRecall;       // voxels with correct trkID / (total of voxels in the true track)
+    std::string fProcessName;  // Added by A.Eguchi 25/12/2019 : pocess of at the begining of the track
 
 public:
 
@@ -58,6 +59,7 @@ public:
     void SetPrecision   (double    p_pre)                   { fPrecision = p_pre; }
     void SetRecall      (double    p_rec)                   { fRecall    = p_rec; }
     void SetIsReco      (bool      p_IsR)                   { fIsReco    = p_IsR; }
+    void SetProcessName (std::string name)                  { fProcessName = name;}
 
     //------------------
 
@@ -76,6 +78,7 @@ public:
     double GetPrecision()                { return fPrecision; }
     bool   IsReco()                      { return fIsReco;    }
     XYZVector GetMomVec()                { return fMomVec;    }
+    std::string GetProcessName()         { return fProcessName;}
     
     double GetF1Score(){
         double f1score = 0; 
