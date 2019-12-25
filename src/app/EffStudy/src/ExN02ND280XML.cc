@@ -554,15 +554,8 @@ void ExN02ND280XML::SetInputs(){
   fInvisP0DECal = false;
   fInvisP0D = false;
 
-
-
-
   
-  G4cout << G4endl;
-  G4cout << "Reading inputs from XML file: " 
-	 << GetXMLFileName() 
-	 << G4endl;
-  G4cout << G4endl;
+  G4cout << "[ExN02ND280XML] Reading inputs from XML file: " << GetXMLFileName() << G4endl;
   
   string line;
   ifstream myfile (fXMLFile);

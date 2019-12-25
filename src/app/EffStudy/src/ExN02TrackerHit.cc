@@ -201,12 +201,12 @@ void ExN02TrackerHit::Print()
 {
   G4cout.precision(4);
   G4cout << " detID:" << fDetID
-	 << " detName: " << fNameDet
-	 << " Edep:" << fEdep
-	 << " Charge:" << fCharge
+	     << " detName: " << fNameDet
+	     << " Edep:" << fEdep
+	     << " Charge:" << fCharge
          << " Particle:" << fParticle
-	 << " Trk:" << fTrackID
-	 << " Parent:" << fParentID
+	     << " Trk:" << fTrackID
+	     << " Parent:" << fParentID
          << " pos:{" << fPosition[0] << ", "
          << fPosition[1] << ", " << fPosition[2]
          << "}" << G4endl;

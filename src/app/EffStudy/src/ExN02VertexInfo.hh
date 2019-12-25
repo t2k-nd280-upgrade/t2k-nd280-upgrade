@@ -18,7 +18,7 @@
 class ExN02VertexInfo : public G4VUserPrimaryVertexInformation {
 public:
     explicit ExN02VertexInfo();
-    virtual ~ExN02VertexInfo();
+              virtual ~ExN02VertexInfo();
 
     /// Set the generator name.  This is set in ExN02PrimaryGenerator after
     /// the vertex is generated so it should not be set when the vertex is

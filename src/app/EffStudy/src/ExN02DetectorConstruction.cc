@@ -222,7 +222,7 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
     G4double HalfWorldHeight = 0.5 * GetWorldFullHeight();
 
     G4GeometryManager::GetInstance()->SetWorldMaximumExtent(fWorldLength);
-    G4cout << "Computed tolerance = "
+    G4cout << "[ExN02DetectorConstruction] Computed tolerance = "
            << G4GeometryTolerance::GetInstance()->GetSurfaceTolerance() / CLHEP::mm
            << " mm" << G4endl;
 
@@ -241,12 +241,12 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
     );
     //fCheckOverlaps); // checking overlaps
 
-    G4cout << "World is "
+    G4cout << "[ExN02DetectorConstruction] World is "
            << fWorldWidth / CLHEP::mm << " (width) x "
            << fWorldHeight / CLHEP::mm << " (height) x "
            << fWorldLength / CLHEP::mm << " (length) mm^3"
            << " of " << WorldMater->GetName() << G4endl;
-    G4cout << " mass=" << logicWorld->GetMass() / CLHEP::kg << " kg";
+    G4cout << "[ExN02DetectorConstruction] mass=" << logicWorld->GetMass() / CLHEP::kg << " kg";
     G4cout << " name: " << logicWorld->GetName() << G4endl;
     G4cout << G4endl;
 
@@ -2521,7 +2521,7 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
     //
 
     G4cout << G4endl;
-    G4cout << "The G4LogicalVolumes (and embedded G4PhysicalVolumes) in the SDRegion are:" << G4endl;
+    G4cout << "[ExN02DetectorConstruction] The G4LogicalVolumes (and embedded G4PhysicalVolumes) in the SDRegion are:" << G4endl;
     G4cout << G4endl;
     int NSDRootVolumes = SDRegion->GetNumberOfRootVolumes();
     std::vector<G4LogicalVolume *>::iterator it_logicalVolumeInRegion =
@@ -2559,7 +2559,7 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
 
     //--------- Visualization attributes -------------------------------
 
-    G4cout << "Visualization attributes" << G4endl;
+    G4cout << "[ExN02DetectorConstruction] Visualization attributes" << G4endl;
 
     //logicWorld  ->SetVisAttributes(BoxVisAtt);
     logicWorld->SetVisAttributes(G4VisAttributes::Invisible);
@@ -2600,7 +2600,8 @@ G4VPhysicalVolume *ExN02DetectorConstruction::Construct()
 
     // Store the geometry in the ROOT file
 
-    G4cout << "Store the geometry in the ROOT file" << G4endl;
+    G4cout << "[ExN02DetectorConstruction] Store the geometry in the ROOT file" << G4endl;
+    G4cout << G4endl;
 
     if (ND280XMLInput->GetXMLStoreGeometry())
     {
@@ -5149,7 +5150,33 @@ void ExN02DetectorConstruction::BuildTPCCages(G4LogicalVolume *logVolume)
         G4cout << "FrBaCon             (2) mass=" << log_frbaCon->GetMass() / CLHEP::kg << " kg" << G4endl;
         G4cout << "ToBoCon             (2) mass=" << log_toboCon->GetMass() / CLHEP::kg << " kg" << G4endl;
 
-        G4cout << "Total TPC cage mass : " << 2 * log_sideG10Plate->GetMass() / CLHEP::kg + 4 * log_verticalG10Frame->GetMass() / CLHEP::kg + 4 * log_horizontalG10Frame->GetMass() / CLHEP::kg + 2 * log_verticalG10Plate->GetMass() / CLHEP::kg + 4 * log_sideAlPlate->GetMass() / CLHEP::kg + 4 * log_post->GetMass() / CLHEP::kg + 2 * log_sideAlRoPlate->GetMass() / CLHEP::kg + 4 * log_frbaAlRoPlate->GetMass() / CLHEP::kg + 4 * log_toboAlRoPlate->GetMass() / CLHEP::kg + 4 * log_frbaG10RoPlate->GetMass() / CLHEP::kg + 4 * log_toboG10RoPlate->GetMass() / CLHEP::kg + 4 * log_frbaPiece1->GetMass() / CLHEP::kg + 4 * log_frbaPiece2->GetMass() / CLHEP::kg + 4 * log_frbaPiece3->GetMass() / CLHEP::kg + 2 * log_boPiece1->GetMass() / CLHEP::kg + 2 * log_boPiece2->GetMass() / CLHEP::kg + 2 * log_boPiece3->GetMass() / CLHEP::kg + 2 * log_boPiece4->GetMass() / CLHEP::kg + 2 * log_boPiece5->GetMass() / CLHEP::kg + 2 * log_toPiece1->GetMass() / CLHEP::kg + 2 * log_toPiece2->GetMass() / CLHEP::kg + 2 * log_toPiece3->GetMass() / CLHEP::kg + 2 * log_frbaCon2->GetMass() / CLHEP::kg + 2 * log_toboCon2->GetMass() / CLHEP::kg + 2 * log_frbaCon->GetMass() / CLHEP::kg + 2 * log_toboCon->GetMass() / CLHEP::kg
+        G4cout << "Total TPC cage mass : " 
+               << 2 * log_sideG10Plate->GetMass() / CLHEP::kg 
+                  + 4 * log_verticalG10Frame->GetMass() / CLHEP::kg 
+                  + 4 * log_horizontalG10Frame->GetMass() / CLHEP::kg 
+                  + 2 * log_verticalG10Plate->GetMass() / CLHEP::kg 
+                  + 4 * log_sideAlPlate->GetMass() / CLHEP::kg 
+                  + 4 * log_post->GetMass() / CLHEP::kg 
+                  + 2 * log_sideAlRoPlate->GetMass() / CLHEP::kg 
+                  + 4 * log_frbaAlRoPlate->GetMass() / CLHEP::kg 
+                  + 4 * log_toboAlRoPlate->GetMass() / CLHEP::kg 
+                  + 4 * log_frbaG10RoPlate->GetMass() / CLHEP::kg 
+                  + 4 * log_toboG10RoPlate->GetMass() / CLHEP::kg 
+                  + 4 * log_frbaPiece1->GetMass() / CLHEP::kg 
+                  + 4 * log_frbaPiece2->GetMass() / CLHEP::kg 
+                  + 4 * log_frbaPiece3->GetMass() / CLHEP::kg 
+                  + 2 * log_boPiece1->GetMass() / CLHEP::kg 
+                  + 2 * log_boPiece2->GetMass() / CLHEP::kg 
+                  + 2 * log_boPiece3->GetMass() / CLHEP::kg 
+                  + 2 * log_boPiece4->GetMass() / CLHEP::kg 
+                  + 2 * log_boPiece5->GetMass() / CLHEP::kg 
+                  + 2 * log_toPiece1->GetMass() / CLHEP::kg 
+                  + 2 * log_toPiece2->GetMass() / CLHEP::kg 
+                  + 2 * log_toPiece3->GetMass() / CLHEP::kg 
+                  + 2 * log_frbaCon2->GetMass() / CLHEP::kg 
+                  + 2 * log_toboCon2->GetMass() / CLHEP::kg 
+                  + 2 * log_frbaCon->GetMass() / CLHEP::kg 
+                  + 2 * log_toboCon->GetMass() / CLHEP::kg
                << " kg" << G4endl;
     }
 }

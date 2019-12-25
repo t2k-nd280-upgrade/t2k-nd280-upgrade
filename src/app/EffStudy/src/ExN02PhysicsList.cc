@@ -239,7 +239,7 @@ void ExN02PhysicsList::RemoveFromEMPhysicsList(const G4String& name) {
     G4ExceptionDescription msg;
     msg << "PhysicsList::RemoveFromEMPhysicsList "<< name << "not found";  
     G4Exception("ExN02PhysicsList::RemoveFromEMPhysicsList",
-		"MyCode0002",FatalException, msg);
+		        "MyCode0002",FatalException, msg);
   }
 }
 
@@ -261,7 +261,7 @@ void ExN02PhysicsList::RemoveFromHadronPhysicsList(const G4String& name) {
     G4ExceptionDescription msg;
     msg << "PhysicsList::RemoveFromHadronPhysicsList "<< name << "not found";  
     G4Exception("ExN02PhysicsList::RemoveFromHadronPhysicsList",
-		"MyCode0002",FatalException, msg);
+		        "MyCode0002",FatalException, msg);
   }
 }
 
@@ -270,7 +270,7 @@ void ExN02PhysicsList::RemoveFromHadronPhysicsList(const G4String& name) {
 void ExN02PhysicsList::AddPhysicsList(const G4String& name)
 {
   if (verboseLevel>1) {
-    G4cout << "PhysicsList::AddPhysicsList: <" << name << ">" << G4endl;
+    G4cout << "[ExN02PhysicsList] AddPhysicsList: <" << name << ">" << G4endl;
   }
 
   if (name == fEmName) return;
@@ -344,13 +344,13 @@ void ExN02PhysicsList::AddPhysicsList(const G4String& name)
     fHadronPhys.push_back( new G4HadronPhysicsQGSP_BERT());
   } 
   else {  
-    G4cout << "PhysicsList::AddPhysicsList: <" << name << ">"
+    G4cout << "[ExN02PhysicsList] AddPhysicsList: <" << name << ">"
            << " is not defined"
            << G4endl;
     G4ExceptionDescription msg;
     msg << "The physics list " << name << " is not available" << G4endl;
     G4Exception("ExN02PhysicsList::AddPhysicsList()",
-		"MyCode0002",FatalException, msg);
+		        "MyCode0002",FatalException, msg);
   }
 }
 
@@ -424,9 +424,9 @@ void ExN02PhysicsList::SetBuilderList1(G4bool flagHP)
 
 void ExN02PhysicsList::SetCuts() {
 
-  G4cout << " ExN02PhysicsList::SetCuts " 
-  	 << G4BestUnit(defaultCutValue,"Length")
-  	 << G4endl;
+  G4cout << "[ExN02PhysicsList] SetCuts " 
+  	     << G4BestUnit(defaultCutValue,"Length")
+  	     << G4endl;
   
   // set cut values for gamma at first and for e- second and next for e+,
   // because some processes for e+/e- need cut values for gamma
@@ -543,7 +543,7 @@ void ExN02PhysicsList::AddPAIModel()
 #endif
 
 void ExN02PhysicsList::AddStepMax(){
-  G4cout << " ExN02PhysicsList::AddStepMax:: Add Step Limiters" << G4endl;
+  G4cout << "[ExN02PhysicsList] AddStepMax:: Add Step Limiters" << G4endl;
   
   //
   // From example TestEm7 (modified)

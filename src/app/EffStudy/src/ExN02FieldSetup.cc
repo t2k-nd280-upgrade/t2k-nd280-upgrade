@@ -80,7 +80,7 @@ ExN02FieldSetup::ExN02FieldSetup(G4ThreeVector fieldVector)
    fMinStep(0.),
    fFieldMessenger(0)
 {
-  G4cout << " ExN02FieldSetup: magnetic field set to Uniform( "
+  G4cout << "[ExN02FieldSetup] Magnetic field set to Uniform( "
          << fieldVector / CLHEP::tesla << " ) T" << G4endl;
   InitialiseAll();
 }
@@ -97,7 +97,7 @@ ExN02FieldSetup::ExN02FieldSetup()
    fMinStep(0.),
    fFieldMessenger(0)
 {
-  G4cout << " ExN02FieldSetup: magnetic field set to Uniform( 0.0, 0, 0 ) "
+  G4cout << "[ExN02FieldSetup] Magnetic field set to Uniform( 0.0, 0, 0 ) "
          << G4endl;
   InitialiseAll();
 }
@@ -135,7 +135,7 @@ void ExN02FieldSetup::CreateStepperAndChordFinder()
   // Update field
 
   SetStepper();
-  G4cout<<"The minimal step is equal to "<<fMinStep/CLHEP::mm<<" mm"<<G4endl;
+  G4cout<<"[ExN02FieldSetup] The minimal step is equal to "<<fMinStep/CLHEP::mm<<" mm"<<G4endl;
   
   fFieldManager->SetDetectorField(fMagneticField );
 
@@ -149,7 +149,7 @@ void ExN02FieldSetup::CreateStepperAndChordFinder()
   position[0] = position[1] = position[2] = position[3] = 0.0;
   this->GetGlobalFieldManager()->GetDetectorField()->GetFieldValue( position, fieldValue);
   G4ThreeVector fieldVec(fieldValue[0], fieldValue[1], fieldValue[2]);
-  G4cout << "Magnetic field vector is "
+  G4cout << "[ExN02FieldSetup] Magnetic field vector is "
 	 << fieldVec / CLHEP::tesla << " T " << G4endl;
 }
 
@@ -165,43 +165,43 @@ void ExN02FieldSetup::SetStepper()
   {
     case 0:
       fStepper = new G4ExplicitEuler( fEquation );
-      G4cout<<"G4ExplicitEuler is calledS"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4ExplicitEuler is calledS"<<G4endl;
       break;
     case 1:
       fStepper = new G4ImplicitEuler( fEquation );
-      G4cout<<"G4ImplicitEuler is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4ImplicitEuler is called"<<G4endl;
       break;
     case 2:
       fStepper = new G4SimpleRunge( fEquation );
-      G4cout<<"G4SimpleRunge is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4SimpleRunge is called"<<G4endl;
       break;
     case 3:
       fStepper = new G4SimpleHeum( fEquation );
-      G4cout<<"G4SimpleHeum is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4SimpleHeum is called"<<G4endl;
       break;
     case 4:
       fStepper = new G4ClassicalRK4( fEquation );
-      G4cout<<"G4ClassicalRK4 (default) is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4ClassicalRK4 (default) is called"<<G4endl;
       break;
     case 5:
       fStepper = new G4HelixExplicitEuler( fEquation );
-      G4cout<<"G4HelixExplicitEuler is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4HelixExplicitEuler is called"<<G4endl;
       break;
     case 6:
       fStepper = new G4HelixImplicitEuler( fEquation );
-      G4cout<<"G4HelixImplicitEuler is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4HelixImplicitEuler is called"<<G4endl;
       break;
     case 7:
       fStepper = new G4HelixSimpleRunge( fEquation );
-      G4cout<<"G4HelixSimpleRunge is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4HelixSimpleRunge is called"<<G4endl;
       break;
     case 8:
       fStepper = new G4CashKarpRKF45( fEquation );
-      G4cout<<"G4CashKarpRKF45 is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4CashKarpRKF45 is called"<<G4endl;
       break;
     case 9:
       fStepper = new G4RKG3_Stepper( fEquation );
-      G4cout<<"G4RKG3_Stepper is called"<<G4endl;
+      G4cout<<"[ExN02FieldSetup] G4RKG3_Stepper is called"<<G4endl;
       break;
     default: fStepper = 0;
   }
@@ -214,7 +214,7 @@ void ExN02FieldSetup::SetFieldValue(G4double fieldStrength)
   // Set the value of the Global Field to fieldValue along X
 
 #ifdef G4VERBOSE
-  G4cout << "Setting Field strength to "
+  G4cout << "[ExN02FieldSetup] Setting Field strength to "
          << fieldStrength / CLHEP::tesla  << " Tesla."; // << G4endl;
 #endif
 
@@ -228,11 +228,11 @@ void ExN02FieldSetup::SetFieldValue(G4double fieldStrength)
     fMagneticField->GetFieldValue( position, fieldValue);
     G4ThreeVector fieldVec(fieldValue[0], fieldValue[1], fieldValue[2]);
     // G4cout << " fMagneticField is now " << fMagneticField
-    G4cout << " Magnetic field vector is "
+    G4cout << "[ExN02FieldSetup] Magnetic field vector is "
            << fieldVec / CLHEP::tesla << " T " << G4endl;
   } else {
     if ( fMagneticField == 0 )
-      G4cout << " Magnetic field pointer is null." << G4endl;
+      G4cout << "[ExN02FieldSetup] Magnetic field pointer is null." << G4endl;
     else
       G4Exception("ExN02FieldSetup::SetFieldValue(G4double)",
                   "IncorrectForZeroField",
@@ -248,7 +248,7 @@ void ExN02FieldSetup::SetFieldValue(G4ThreeVector fieldVector)
 {
   // Set the value of the Global Field
 
-  G4cout << " ExN02FieldSetup: magnetic field set to Uniform( "
+  G4cout << "[ExN02FieldSetup] Magnetic field set to Uniform( "
          << fieldVector / CLHEP::tesla << " ) T" << G4endl;
 
   if (fMagneticField) delete fMagneticField;

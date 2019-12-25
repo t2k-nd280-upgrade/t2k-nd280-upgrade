@@ -110,7 +110,7 @@ ExN02RunAction::~ExN02RunAction()
 
 void ExN02RunAction::BeginOfRunAction(const G4Run* aRun)
 {
-  G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
+  G4cout << "[ExN02RunAction] ### Run " << aRun->GetRunID() << " start." << G4endl;
 
   // Create ROOT the persistency manager.                                                                                                                                                            
   ND280RootPersistencyManager* persistencyManager
@@ -178,7 +178,7 @@ void ExN02RunAction::SetSeed() {
 
 void ExN02RunAction::SetSeed(long seed) {
   if (seed<0) seed = -seed;
-  G4cout << "### Random seed number set to: "<< seed << G4endl;
+  G4cout << "[ExN02RunAction] ### Random seed number set to: "<< seed << G4endl;
   CLHEP::HepRandom::setTheSeed(seed);
 }
 

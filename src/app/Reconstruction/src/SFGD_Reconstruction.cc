@@ -46,9 +46,9 @@
 //#define FV_CUT
 //#define FORCE_NUMU
 
-const int maxTracks = 100;
-const int maxHits = 50000;
-const int maxCont = 100;
+const int maxTracks = 10000;
+const int maxHits   = 50000;
+const int maxCont   = 100;
 
 const double fib_abs_const = 0.2;
 
@@ -81,13 +81,741 @@ Int_t all_trajID[maxTracks];
 Int_t all_trajPDG[maxTracks];            
 Int_t all_trajStartHit[maxTracks];       
 Int_t all_trajEndHit[maxTracks];         
-//Int_t all_trajEdep[maxTracks];           
 Int_t all_trajPrim[maxTracks];           
 Int_t all_trajParent[maxTracks];
-// FIXME
-Double_t all_trajEdep[maxTracks];           
-Double_t InitKinEnergy[maxTracks];             
-Int_t TrackEndPoint[maxTracks];
+
+/* Pre-definition of each function */
+bool aux_threshold(double x);
+void ResetVariables();
+int FiberAbs(int numPE);  
+int FindParent(int inputID, std::vector<int> listOfParentID, TND280UpEvent* evt);
+int FindPrimary(int inputID, TND280UpEvent* evt, int loops);
+double BirksSaturation(double edep, double steplength);
+int BinomialCrossing(int pe);
+int VolnameToID(string volname);
+
+
+/* ......ooooooOOOOOO0000000000   SFGD_Reconstruction   0000000000OOOOOOoooooo..... */
+int SFGD_Reconstruction(int argc,char** argv) {
+    
+    std::cout << "[SFGD_Reconstruction] === Reconstruction starts ===" << std::endl;
+    
+    if (argc!=14){   // batch mode
+        std::cout << "You need to provide the following arguments:" << std::endl;
+        std::cout << " 1) input ROOT file name (from GEANT4 simulation) " << std::endl;
+        std::cout << " 2) first event number to run" << std::endl;
+        std::cout << " 3) total number of events to run" << std::endl;
+        std::cout << " 4) the tag for the output file name" << std::endl;
+        std::cout << " 5) detector ID: 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI" << std::endl;
+        std::cout << " 6) set debug option" << std::endl;
+        std::cout << " 7) set debug plot option" << std::endl;
+        std::cout << " 8) use view XY (0 or 1)" << std::endl;
+        std::cout << " 9) use view XZ (0 or 1)" << std::endl;
+        std::cout << " 10) use view YZ (0 or 1)" << std::endl;
+        std::cout << " 11) Minimum track distance (if <=0 use default)" << std::endl;
+        std::cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << std::endl;
+        std::cout << " 13) Output file name. In iteractive run it can be first event,"
+                  << " but for parallel need separate param" << std::endl;
+        exit(1);
+    }
+
+    /********************************************************************************/
+    /*                        Take arguments and sanity check                       */
+    /********************************************************************************/
+    string rootfilename  = argv[1];
+    const int evtfirst   = atoi(argv[2]);
+    const int nevents    = atoi(argv[3]);
+    const int detectorID = atoi(argv[5]);
+    TString outfilename  = argv[13];
+
+
+    nd280upconv::TargetType_t DetType = nd280upconv::kUndefined;
+    if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
+    else   {std::cerr << "[SFGD_Reconstruction] Detector must be SFGD!!" << std::endl; exit(1);}
+    
+
+    /********************************************************************************/
+    /*                                Read input file                               */
+    /********************************************************************************/
+
+    std::cout << "[SFGD_Reconstruction] Reading the input ROOT file: " << rootfilename << std::endl;
+    TFile *finput = new TFile(rootfilename.c_str(),"READ");
+    TTree* tinput = (TTree*) finput->Get("ND280upEvents");
+    TH2F* h2d_xy  =  (TH2F*) finput->Get("OutMPPCProj2D_XY");
+    TH2F* h2d_xz  =  (TH2F*) finput->Get("OutMPPCProj2D_XZ");
+    TH2F* h2d_yz  =  (TH2F*) finput->Get("OutMPPCProj2D_YZ");
+
+    Int_t binX = h2d_xy->GetXaxis()->GetNbins();
+    Int_t binY = h2d_xy->GetYaxis()->GetNbins();
+    Int_t binZ = h2d_xz->GetYaxis()->GetNbins();
+    
+    Float_t X_min = h2d_xy->GetXaxis()->GetBinLowEdge(0);
+    Float_t X_max = h2d_xy->GetXaxis()->GetBinUpEdge(binX);
+    Float_t Y_min = h2d_xy->GetYaxis()->GetBinLowEdge(0);
+    Float_t Y_max = h2d_xy->GetYaxis()->GetBinUpEdge(binY);
+    Float_t Z_min = h2d_xz->GetYaxis()->GetBinLowEdge(0);
+    Float_t Z_max = h2d_xz->GetYaxis()->GetBinUpEdge(binZ);
+    
+    std::cout << "[SFGD_Reconstruction] (x_min, x_max, nbins) = (" 
+              << X_min << ", " << X_max << ", " << binX << ")" << std::endl;
+    std::cout << "[SFGD_Reconstruction] (y_min, y_max, nbins) = (" 
+              << Y_min << ", " << Y_max << ", " << binY << ")" << std::endl;
+    std::cout << "[SFGD_Reconstruction] (z_min, z_max, nbins) = (" 
+              << Z_min << ", " << Z_max << ", " << binZ << ")" << std::endl;
+
+    /* Declare the input true event object */
+    TND280UpEvent *nd280UpEvent = new TND280UpEvent();
+    tinput->SetBranchAddress("Event",&nd280UpEvent);
+
+
+    /********************************************************************************/
+    /*                         Create output file and TTree                         */
+    /********************************************************************************/
+    TFile *fileout        = new TFile(outfilename.Data(),"RECREATE");
+    TTree *AllEvents      = new TTree("AllEvents", "The ROOT tree of events");
+    ND280SFGDEvent* event = new ND280SFGDEvent();
+
+    AllEvents->Branch("Event", "Event", event);
+
+    bool fillAll = false;
+    if(fillAll){
+        AllEvents->Branch( "numTracks",      &numTracks,     "numTracks/I"                     );
+        AllEvents->Branch( "numHits",        &numHits,       "numHits/I"                       );
+        AllEvents->Branch( "crosstalk",      crosstalk,      "crosstalk[numHits]/B"            );
+        AllEvents->Branch( "hitLocation",    hitLocation,    "hitLocation[numHits][3]/F"       );
+        AllEvents->Branch( "hitPE",          hitPE,          "hitPE[numHits][3]/I"             );
+        AllEvents->Branch( "threshold",      threshold,      "threshold[numHits][3]/I"         );
+        AllEvents->Branch( "hitTime",        hitTime,        "hitTime[numHits][3]/I"           );
+        AllEvents->Branch( "hitTraj",        hitTraj,        "hitTraj[numHits]/I"              );
+        AllEvents->Branch( "primID",         primID,         "primID[numHits]/I"               );
+        AllEvents->Branch( "hitCont",        hitCont,        "hitCont[numHits][1000]/I"        );
+        AllEvents->Branch( "trajID",         trajID,         "trajID[numTracks]/I"             );
+        AllEvents->Branch( "trajPDG",        trajPDG,        "trajPDG[numTracks]/I"            );
+        // AllEvents->Branch( "trajStartHit",   trajStartHit,   "trajStartHit[numTracks]/I"       );
+        // AllEvents->Branch( "trajEndHit",     trajEndHit,     "trajEndHit[numTracks]/I"         );
+        AllEvents->Branch( "trajEdep",       trajEdep,       "trajEdep[numTracks]/I"           );
+        AllEvents->Branch( "trajParent",     trajParent,     "trajParent[numTracks]/I"         );
+        AllEvents->Branch( "trajHitsNum",    trajHitsNum,    "trajHitsNum[numTracks]/I"        );
+        AllEvents->Branch( "trajHits",       trajHits,       "trajHits[numTracks][5000]/I"     );
+    }
+    
+    AllEvents->Branch( "all_numTracks",      &all_numTracks,     "all_numTracks/I"                   );
+    AllEvents->Branch( "all_trajID",         all_trajID,         "all_trajID[all_numTracks]/I"       );
+    AllEvents->Branch( "all_trajPDG",        all_trajPDG,        "all_trajPDG[all_numTracks]/I"      );
+    // AllEvents->Branch( "all_trajStartHit",   all_trajStartHit,   "all_trajStartHit[numTracks]/I" );
+    // AllEvents->Branch( "all_trajEndHit",     all_trajEndHit,     "all_trajEndHit[numTracks]/I"   );
+    AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[all_numTracks]/I"   );
+  
+    // FIXME
+    Double_t Edepo_total;
+    Double_t Eout;
+    AllEvents->Branch( "Edepo_total",   &Edepo_total,   "Edepo_total/D"             );
+    AllEvents->Branch( "Eout",          &Eout,          "Eout/D"                    );
+    // FIXME
+    //TH2F*  EnergyDeposit2D_XY[nevents];
+    //TH2F*  EnergyDeposit2D_XZ[nevents];
+    //TH2F*  EnergyDeposit2D_YZ[nevents];
+
+    
+    
+    /********************************************************************************/
+    /*                               Define valiables                               */
+    /********************************************************************************/
+    ND280UpApplyResponse ApplyResponse;
+    ApplyResponse.SetMPPCProj2D_XY(h2d_xy);
+    ApplyResponse.SetMPPCProj2D_XZ(h2d_xz);
+    ApplyResponse.SetMPPCProj2D_YZ(h2d_yz);
+    
+    vector <ND280SFGDHit*> listOfHits;
+    vector <ND280SFGDVoxel*> listOfVoxels;
+    vector <ND280SFGDTrack*> listOfTracks;
+
+
+    /********************************************************************************/
+    /*                       Check event number and entries                         */
+    /********************************************************************************/
+
+    int Nentries = -999;
+    int NTreeEntries = tinput->GetEntries();
+    int evtlasttree  = NTreeEntries-1;
+    
+    std::cout << std::endl;
+    std::cout << "[SFGD_Reconstruction] Entries in the TTree   : " << NTreeEntries << std::endl;
+    std::cout << "[SFGD_Reconstruction] Last event ID in TTree : " << evtlasttree  << std::endl;
+    std::cout << "[SFGD_Reconstruction] Input first event      : " << evtfirst     << std::endl;
+    std::cout << "[SFGD_Reconstruction] Input # of events      : " << nevents      << std::endl;
+    std::cout << std::endl;
+    
+    if(evtfirst > evtlasttree){
+        std::cout << std::endl;
+        std::cout << "first selection evt ID > first evt ID of tree:" << std::endl;
+        std::cout << " - # of tree events = " << NTreeEntries << std::endl;
+        std::cout << " - last tree event = " << evtlasttree << std::endl;
+        std::cout << " - first event = " << evtfirst << std::endl;
+        std::cout << "Exit!!!" << std::endl;
+        std::cout << std::endl;
+        exit(1);
+    }
+    else if(NTreeEntries < (evtfirst+nevents)){
+        Nentries = NTreeEntries - evtfirst;
+        std::cout << std::endl;
+        std::cout << "!!! WARNING !!!" << std::endl;
+        std::cout << "first event ID + # of events > total # of tree events:" << std::endl;
+        std::cout << " - # of tree events   = " << NTreeEntries << std::endl;
+        std::cout << " - # of events to run = " << nevents      << std::endl;
+        std::cout << " - first event        = " << evtfirst     << std::endl;
+        std::cout << "Set # of events to run to " << Nentries   << std::endl;
+    }
+    else{
+        Nentries = nevents;
+    }
+    
+    int EntryLast = evtfirst+Nentries-1;
+    
+    std::cout << std::endl;
+    std::cout << "[SFGD_Reconstruction] First event = " << evtfirst  << std::endl;
+    std::cout << "[SFGD_Reconstruction]  Last event = " << EntryLast << std::endl;
+    std::cout << "[SFGD_Reconstruction] # of events = " << Nentries  << std::endl;
+    std::cout << std::endl;
+
+    /********************************************************************************/
+    /*                                                                              */
+    /*                                Loop over events                              */
+    /*                                                                              */
+    /********************************************************************************/
+    for(int ievt=evtfirst;ievt<=EntryLast;ievt++){
+        tinput->GetEntry(ievt);
+        ResetVariables();
+        bool store     = true;
+        bool WriteText = false;
+        int  index     = 0; // count the number of stored hits
+        int  PE_expect = 0;
+        int  PE_found  = 0;
+        int  NHits     = nd280UpEvent->GetNHits();
+        int  NTracks   = nd280UpEvent->GetNTracks();
+        // FIXME
+        Edepo_total = 0;
+        //TString name;
+        //name = TString::Format("EnergyDeposit2D_XY_%d",ievt);
+        //EnergyDeposit2D_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
+        //name = TString::Format("EnergyDeposit2D_XZ_%d",ievt);
+        //EnergyDeposit2D_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
+        //name = TString::Format("EnergyDeposit2D_YZ_%d",ievt);
+        //EnergyDeposit2D_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
+
+        std::map<int,int> trackToParentID;
+        std::map<int,int> trackToPDG;
+
+        std::cout << "**************************************************" << std::endl;
+        std::cout << " Starting event : " << ievt << " (# of hits : " << NHits << ")" << std::endl;
+
+        if(nd280UpEvent->GetNHits()*7+1 > maxHits){
+            std::cout  << "ERROR: the maxHits value must be enlarged to at least: " 
+                       << NHits*7+2 << std::endl;
+            exit(0);
+        }
+        numHits = NHits;
+
+        int edep_without_clear_contributor = 0;
+
+        std::vector<int> listOfParentID;
+        std::vector<int> listOfTrueTrackID;
+
+        bool mu_found = false;
+        if(WriteText) std::cout << "TRUE track Information " << std::endl;
+        for (Int_t trjID = 0; trjID < NTracks; trjID++) {
+            TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
+            listOfTrueTrackID.push_back(track->GetTrackID());
+            listOfParentID.push_back(track->GetTrackID());
+            if(WriteText) {cout << "\tALL || PDG: " << track->GetPDG()
+                                << ",\tID: "           << track->GetTrackID() 
+                                << ",\tprntID: "       << track->GetParentID() << std::endl;}
+            if(track->GetPDG() == 13 && !track->GetParentID()) mu_found = true;
+        }
+        #ifdef FORCE_NUMU
+            if(!mu_found) store = false;
+        #endif
+
+        /********************************************************************************/
+        /*                                Loop over 3D hits                             */
+        /********************************************************************************/
+        for(int ihit=0;ihit<NHits;ihit++){ // get last entry
+            TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
+
+            TRandom3 fRndm = TRandom3(0);
+            double charge = 1.;
+            double time = (nd280UpHit->GetStartT() + nd280UpHit->GetStopT())/2.; // middle step time
+            double posX = (nd280UpHit->GetStartX() + nd280UpHit->GetStopX())/2.; // middle step X
+            double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y
+            double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
+            TVector3 lightPos(posX,posY,posZ);
+            
+            double edep       = nd280UpHit->GetEnergyDeposit();
+            double steplength = nd280UpHit->GetTrackLength();
+            string detname    = nd280UpHit->GetDetName();
+						
+            // FIXME
+            Edepo_total += edep;
+            //EnergyDeposit2D_XY[ievt]->Fill(posX,posY,edep/(double)nevents);
+            //EnergyDeposit2D_XZ[ievt]->Fill(posX,posZ,edep/(double)nevents);
+            //EnergyDeposit2D_YZ[ievt]->Fill(posY,posZ,edep/(double)nevents);
+            
+
+            /********************************************************************************/
+            /*                            Apply detector response                           */
+            /********************************************************************************/
+            ApplyResponse.SetTargetID(DetType);
+            ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);
+            PE_expect += (ApplyResponse.GetHitPE().x() + ApplyResponse.GetHitPE().y() + ApplyResponse.GetHitPE().z());
+            
+#ifdef CROSSTALK_OFF
+            for(int view=0; view<3; view++){                
+                ND280SFGDHit* hit = event->AddHit();
+                hit->SetView(view);
+                hit->SetX(ApplyResponse.GetHitPos().x()/10);
+                hit->SetY(ApplyResponse.GetHitPos().y()/10);
+                hit->SetZ(ApplyResponse.GetHitPos().z()/10);
+                if(view == 0) hit->SetZ(-1);
+                if(view == 1) hit->SetY(-1);
+                if(view == 2) hit->SetX(-1);
+                if(view == 0) hit->SetPE(ApplyResponse.GetHitPE().z());
+                if(view == 1) hit->SetPE(ApplyResponse.GetHitPE().y());
+                if(view == 2) hit->SetPE(ApplyResponse.GetHitPE().x());
+                listOfHits.push_back(hit);
+            }
+            index++;
+#else
+            double edeposit = nd280UpHit->GetEnergyDeposit();
+            double trueTime = (nd280UpHit->GetStartT() + nd280UpHit->GetStopT())/2.;
+            ND280UpTargReadOut TargetReadOut;
+            TargetReadOut.SetTargType(DetType);
+            int nphot = TargetReadOut.ApplyScintiResponse(edeposit,steplength,1);
+            double probLatCT = 0.01*fRndm.Poisson(2.8)*6;//0.025*6;//0.037*6;
+            if(WriteText) std::cout << "nphot= " << nphot << std::endl;
+            int numPE = nphot*(1./fib_abs_const);
+            if(numPE < 0) numPE = 0;
+            int numPE_CT[6] = {0};           // photons flowing to sourrounding elements
+            for (int i=0;i<numPE;i++){
+                double rndunif = fRndm.Uniform();
+                if (rndunif < probLatCT) numPE_CT[(int) (fRndm.Uniform()*6)]++;
+            }
+            int totCT = 0;
+            for (auto p : numPE_CT) totCT += p;
+            if(WriteText) std::cout << "Flowed PE: " << totCT << std::endl;
+            if(WriteText) std::cout << "Number of remaining PE: " << numPE-totCT << std::endl;
+
+            int trkID = - 999;
+            for (int m=0; m<7;m++){                
+                int numPE_fiber = 0;
+                if(m==0) numPE_fiber = FiberAbs(numPE-totCT);
+                else numPE_fiber = FiberAbs(numPE_CT[m-1]);
+
+                if(m==0){
+                    bool done = false;
+                    std::vector<int>::reverse_iterator it = nd280UpHit->fContributors.rbegin();
+                    for (; it!= nd280UpHit->fContributors.rend(); ++it){
+                        for (auto trueTrackID:listOfTrueTrackID){
+                            if ((*it) == trueTrackID) {trkID =(*it); done = true; break;}                 
+                        }
+                    if(done) break;
+                    }
+                }
+
+                if(m==0){
+                    if (trkID < 0) {trkID = nd280UpHit->GetPrimaryId(); edep_without_clear_contributor++;}
+                    //std::cout << "nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << std::endl;
+                    //std::cout << "trkID: " << trkID << std::endl;
+                    //std::cout << "fContributors: " << nd280UpHit->fContributors.size() << std::endl;
+                    //for (auto c:nd280UpHit->fContributors) std::cout << c << ",";
+                    //cout << std::endl << std::endl;
+                }
+
+                 if(trkID <0) { std::cout << "NOT STORING THE EVENT! negative TRK ID!: " 
+                                          << trkID <<","<< m << std::endl; store = false;}
+
+                //std::cout << m <<", New # of Abs PE: " << numPE_fiber << std::endl;
+
+                ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,numPE_fiber,detname);
+                
+                double pex = ApplyResponse.GetHitPE().x();
+                double pey = ApplyResponse.GetHitPE().y();
+                double pez = ApplyResponse.GetHitPE().z();
+ 
+                PE_found += (pex+pey+pez);
+
+                double timepex = ApplyResponse.GetHitTime().x();
+                double timepey = ApplyResponse.GetHitTime().y();
+                double timepez = ApplyResponse.GetHitTime().z();
+                
+                double poshitX = ApplyResponse.GetHitPos().x();
+                double poshitY = ApplyResponse.GetHitPos().y();
+                double poshitZ = ApplyResponse.GetHitPos().z();
+
+                if(m==1) poshitX += 10;
+                if(m==2) poshitX -= 10;
+                if(m==3) poshitY += 10;
+                if(m==4) poshitY -= 10;
+                if(m==5) poshitZ += 10;
+                if(m==6) poshitZ -= 10;
+                
+                if (m==0) crosstalk[index] = false;
+                else      crosstalk[index] = true;
+                hitLocation[index][0] = poshitX/10;
+                hitLocation[index][1] = poshitY/10;
+                hitLocation[index][2] = poshitZ/10;
+                hitTime[index][0]     = timepez;
+                hitTime[index][1]     = timepey;
+                hitTime[index][2]     = timepex;
+                hitPE[index][0]       = pez;
+                hitPE[index][1]       = pey;
+                hitPE[index][2]       = pex;
+                hitEdep[index]        = edeposit;
+                hitTraj[index]        = trkID;
+                primID[index]         = nd280UpHit->GetPrimaryId();
+
+                threshold[index][0] = aux_threshold(hitPE[index][0]);
+                threshold[index][1] = aux_threshold(hitPE[index][1]);
+                threshold[index][2] = aux_threshold(hitPE[index][2]);
+
+                if(!threshold[index][0]) hitPE[index][0] = 0;
+                if(!threshold[index][1]) hitPE[index][1] = 0;
+                if(!threshold[index][2]) hitPE[index][2] = 0;
+
+                ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],
+                                                           hitLocation[index][1],
+                                                           hitLocation[index][2]);
+                Voxel->SetTrueTime(trueTime);
+                Voxel->SetTrueEdep(edeposit);
+                Voxel->SetTruePE(numPE_fiber);
+                Voxel->AddTrueTrackID(trkID);
+                if (crosstalk[index]) Voxel->SetTrueType(1);
+                else  Voxel->SetTrueType(0);
+                if(Voxel->GetTruePE()>0) listOfVoxels.push_back(Voxel);
+
+                if(m!=0) Voxel->SetTrueEdep(0);
+
+                std::vector<ND280SFGDHit*> voxHits;        
+                for(int view=0; view<3; view++){        
+                    ND280SFGDHit* hit = event->AddHit();
+                    hit->SetView(view);
+
+                    hit->SetX(hitLocation[index][0]);
+                    hit->SetY(hitLocation[index][1]);
+                    hit->SetZ(hitLocation[index][2]);
+
+                    if(view == 0) hit->SetZ(-1);
+                    if(view == 1) hit->SetY(-1);
+                    if(view == 2) hit->SetX(-1);
+                    if(view == 0) hit->SetPE(hitPE[index][0]);
+                    if(view == 1) hit->SetPE(hitPE[index][1]);
+                    if(view == 2) hit->SetPE(hitPE[index][2]);
+
+                    listOfHits.push_back(hit);
+                    voxHits.push_back(hit);
+                }
+                Voxel->SetHits(voxHits);
+                voxHits.clear();
+
+                // int counter = 0;
+                // for (auto contrib : nd280UpHit->fContributors){
+                //     if(counter >= maxCont){
+                //         store = false;
+                //         break;
+                //     }
+                //     hitCont[index][counter] = contrib;
+                //     counter++;
+                // }
+
+                if(hitLocation[index][0] > X_min and hitLocation[index][0] < X_max
+                   and hitLocation[index][1] > Y_min and hitLocation[index][1] < Y_max
+                   and hitLocation[index][2] > Z_min and hitLocation[index][2] < Z_max){
+                    if(index+1 != maxHits) index++;
+                    if(index+1 == maxHits) store = false;
+                }
+                if(WriteText){ std::cout << "hit at: " << hitLocation[index][0] 
+                                         << ", " << hitLocation[index][1] 
+                                         << ", " << hitLocation[index][2] << std::endl;}
+                if(WriteText) std::cout << "PE (YZ,XZ,XY): " << pex << ", " << pey << ", " << pez << std::endl;
+            }
+            if(WriteText) std::cout << "PE_expect: " << PE_expect << "PE_found: " << PE_found << std::endl;
+            if(WriteText) std::cout << std::endl;
+#endif
+        } /// END LOOP OVER 3D HITS
+
+        if(WriteText) std::cout << "total g4hits   : " << NHits   << std::endl;
+        if(WriteText) std::cout << "total g4hits*7 : " << NHits*7 << std::endl;
+        if(WriteText) std::cout << "index          : " << index   << std::endl;
+        std::cout << "# of stored hits: " << index << std::endl;
+
+        std::vector <int> listOfTrackID;
+        for(UInt_t i=0; i<maxHits; i++){
+            if(hitTraj[i] == -999) break;
+            listOfTrackID.push_back(hitTraj[i]);
+        }
+        
+        /* keep only unique track IDs */
+        if(listOfTrackID.size()){
+            std::sort   (listOfTrackID.begin(), listOfTrackID.end());
+            listOfTrackID.erase(std::unique (listOfTrackID.begin(), listOfTrackID.end()), listOfTrackID.end()); 
+        }
+        
+        /********************************************************************************/
+        /*                           Loop over tracks to store                          */
+        /********************************************************************************/
+        numTracks = listOfTrackID.size();
+        int sumEdepPE = 0;
+        int hitIndx   = 0;
+        if(WriteText)  std::cout << "Stored track Information " << std::endl;
+        for(int i=0; i<numTracks; i++){
+            hitIndx = 0;
+            sumEdepPE = 0;
+            for (Int_t trjID = 0; trjID < NTracks; trjID++) {
+                TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
+                if (track->GetTrackID() != listOfTrackID[i]) continue;
+                trajPDG[i]  = track->GetPDG();
+                trajID[i]   = track->GetTrackID();
+                trajPrim[i] = track->GetParentID();
+                trackToPDG[track->GetTrackID()] = track->GetPDG();
+                if(WriteText) {std::cout << "    STORED || PDG: " << track->GetPDG()
+                                         << ", ID: "              << track->GetTrackID() 
+                                         << ", prntID: "          << track->GetParentID() 
+                                         << std::endl;}
+            }
+            for(UInt_t j = 0; j < maxHits; j++){
+                if(hitTraj[j] == -999) break;
+                if(listOfTrackID[i] == hitTraj[j]){
+                    trajHitsNum[i]++;
+                    trajHits[i][hitIndx] = j;
+                    hitIndx++;
+                    sumEdepPE += hitPE[j][0];
+                    sumEdepPE += hitPE[j][1];
+                    sumEdepPE += hitPE[j][2];
+                }
+            }
+            trajEdep[i] = sumEdepPE;
+        }
+
+
+        /********************************************************************************/
+        /*                        Fill all trajectory information                       */
+        /********************************************************************************/
+        all_numTracks = NTracks;
+        Eout = 0.;
+        for (Int_t trjID = 0; trjID < NTracks; trjID++) {
+            TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
+            if (trjID >= maxTracks){
+                store = false;
+                break;
+            }
+            if(WriteText){
+                std::cout << "Track ID : "        << track->GetTrackID() 
+                          << " || GetInitMom "    << track->GetInitMom().Mag()
+                          << " || trueCosTheta: " << track->GetInitCosTheta()
+                          << " || Range: "        << track->GetRange() 
+                          << std::endl;
+            }
+
+            bool found = false;
+            for(auto trk_ID:listOfTrackID) if (trk_ID == track->GetTrackID()) found = true;
+            if(!found) continue;
+
+            ND280SFGDTrack* sfgdtrack = new ND280SFGDTrack();
+            sfgdtrack->SetPDG(track->GetPDG());
+            sfgdtrack->SetTrackID(track->GetTrackID());
+            sfgdtrack->SetParentID(track->GetParentID());
+            sfgdtrack->SetCosTheta(track->GetInitCosTheta());
+            sfgdtrack->SetRange(track->GetRange());
+            sfgdtrack->SetMomentum(track->GetInitMom().Mag());
+            sfgdtrack->fMomVec = track->GetInitMom();
+
+            all_trajPDG[trjID]    = track->GetPDG();
+            all_trajID[trjID]     = track->GetTrackID();
+            all_trajParent[trjID] = track->GetParentID();
+            
+            // FIXME
+            int NPoints = track->GetNPoints();
+            for(int ipt=0;ipt<NPoints;ipt++){    
+                TND280UpTrackPoint *trackPoint = track->GetPoint(ipt);    
+                double MomMod  = trackPoint->GetMomentum().Mag();
+                string volname = trackPoint->GetLogVolName();
+                int    volID   = VolnameToID(volname);
+                if(ipt == NPoints-1){
+                    if(WriteText) std::cout << "trjID : " << trjID << "\tvolname = " << volname << std::endl;
+                    if(volID == 2){
+                        Eout += MomMod;
+                    }
+                }
+            }
+            listOfTracks.push_back(sfgdtrack);
+        } // end loop for all trajectory
+
+        if (WriteText) for (auto lprntID : listOfParentID) std::cout << "parentID: " << lprntID << std::endl;
+
+        for(Int_t i=0; i<numTracks; i++){
+            if(WriteText) if(trajID[i] == -999) std::cout << "999-listOfTrackID[i]: " << listOfTrackID[i] << std::endl;
+            if(trajPrim[i] == 0) trajParent[i] = -1;
+            else{
+                trajParent[i] = FindParent(trajID[i],listOfParentID,nd280UpEvent);
+                trackToParentID[trajID[i]] = trajParent[i]; 
+                trajPrim[i] = 1; 
+            }
+            if(trajParent[i] == -999) trajParent[i] = primID[i];
+            if(trajParent[i] == -999) {cout << "\n\n\n ERRRROR in parent ID!!! \n\n\n";store = false;}    // deactivate to store all...
+            if(WriteText) cout << "ID: " << trajID[i] << ", parent: " << trajParent[i] << std::endl;
+            trackToParentID[trajID[i]] = trajParent[i]; 
+        }
+        for(uint vxl=0; vxl<listOfVoxels.size(); ++vxl){
+            listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
+            listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
+            //if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { 
+            //    if(WriteText) std::cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " 
+            //                            << listOfVoxels[vxl]->GetTrueParentIDs()[0] 
+            //                            << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] 
+            //                            << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << std::endl; store=false;}
+            if(WriteText) {
+                std::cout << "Voxel: "   << vxl 
+                          << ",\tType: " << listOfVoxels[vxl]->GetTrueType() 
+                          << ",\tXYZ: " 
+                          << listOfVoxels[vxl]->GetX() << ","  
+                          << listOfVoxels[vxl]->GetY() << "," 
+                          << listOfVoxels[vxl]->GetZ() 
+                          << ",\ttrueDeposits -[Edep,FiberPE,xy,xz,yz]: " 
+                          << listOfVoxels[vxl]->GetTrueEdep()*0.25    << ",\t" 
+                          << listOfVoxels[vxl]->GetTruePE()*0.25      <<  ",\t" 
+                          << listOfVoxels[vxl]->GetHits()[0]->GetPE() << ",\t" 
+                          << listOfVoxels[vxl]->GetHits()[1]->GetPE() << ",\t" 
+                          << listOfVoxels[vxl]->GetHits()[2]->GetPE()
+                          << ",\tTrackInfo [ID,prntID,PDG]: " 
+                          <<  listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," 
+                          << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," 
+                          << listOfVoxels[vxl]->GetTruePDGs()[0]      << std::endl;}
+        }
+        std::cout << "Voxels w/o clear track ID: " << edep_without_clear_contributor << std::endl;
+
+        numHits = index;
+
+        if(NHits){ 
+            // TODO: store this information in output && comment couts; 
+            //       + avoid entering into ApplyResponse if outside SFGD!
+            int nVertices = nd280UpEvent->GetNVertices();
+            cout << " *** Vertices: " << nVertices << std::endl;
+            TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
+            // vrtx->PrintVertex();
+            TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
+            TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y(),vrtx->GetPosition().z()+1707 );
+            cout << "ReacMode: " << vrtx->GetReacModeString() << std::endl;
+            for(int itrk=0;itrk<vrtx->GetNInTracks();itrk++){
+                if(vrtx->GetInTrack(itrk)->GetPDG() == 14){
+                    event->SetNuMom(vrtx->GetInTrack(itrk)->GetInitMom().Mag());
+                    std::cout << "neutrino momentum: " << vrtx->GetInTrack(itrk)->GetInitMom().Mag() << std::endl;
+                }
+            }
+            if(WriteText) {
+                std::cout << "Original Vtx Position: " << vrtx->GetPosition().x() 
+                          << "," << vrtx->GetPosition().y() 
+                          << "," << vrtx->GetPosition().z()<< std::endl;
+            }
+            std::cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << std::endl;
+            
+                double tol = 20;
+                bool outFV = true;
+                if(vPos.z() > ApplyResponse.GetMPPCPosZ()+tol && vPos.z() < -ApplyResponse.GetMPPCPosZ()-tol && 
+                   vPos.y() > ApplyResponse.GetMPPCPosY()+tol && vPos.y() < -ApplyResponse.GetMPPCPosY()-tol &&
+                   vPos.x() > ApplyResponse.GetMPPCPosX()+tol && vPos.x() < -ApplyResponse.GetMPPCPosX()-tol){
+                    outFV = false;}
+                if(!outFV) std::cout << "\n\n inside FV!!!" << std::endl;
+                else {     std::cout << "\n\n out FV!!!!"   << std::endl;}
+                std::cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX()/10 << "," 
+                          << ApplyResponse.GetMPPCPosY()/10 << "," << ApplyResponse.GetMPPCPosZ()/10 << std::endl;
+                if(!outFV){
+                    ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
+                    std::cout << "Vertex Cube Position: " 
+                              << ApplyResponse.GetHitPos().x()/10-ApplyResponse.GetMPPCPosX()/10 << "," 
+                              << ApplyResponse.GetHitPos().y()/10-ApplyResponse.GetMPPCPosY()/10 << "," 
+                              << ApplyResponse.GetHitPos().z()/10-ApplyResponse.GetMPPCPosZ()/10 << std::endl;
+                    ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(ApplyResponse.GetHitPos().x()/10,
+                                                                     ApplyResponse.GetHitPos().y()/10,
+                                                                     ApplyResponse.GetHitPos().z()/10);
+                    event->SetTrueVertex(vertexVoxel);
+                }
+            #ifdef FV_CUT
+                if(outFV) store = false;
+            #else
+                ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(-999,-999,-999);
+                event->SetTrueVertex(vertexVoxel);
+            #endif
+        }
+
+        if(false){
+            for (std::map<int,int>::iterator it=trackToParentID.begin(); it!=trackToParentID.end(); ++it)
+               std::cout << "trackToParentID: " <<it->first << " => " << it->second << '\n';
+
+            for (std::map<int,int>::iterator it=trackToPDG.begin(); it!=trackToPDG.end(); ++it)
+               std::cout << "trackPDG: " <<it->first << " => " << it->second << '\n';
+        }
+
+        if(store && index){
+            std::cout << " --- Event summary --- " << std::endl;
+            std::cout << "The event has: " << index << " hits." << std::endl;
+            std::cout << "The event has: " << numTracks << " tracks." << std::endl << std::endl;
+            int locSum = 0;
+            if(WriteText){
+                std::cout << " --- summary of tracks --- " << std::endl;
+                for (int trks=0; trks<numTracks; trks++){
+                    locSum += trajHitsNum[trks];
+                    std::cout << "Track " << trks << ", id: " << trajID[trks] << ", #hits: " << trajHitsNum[trks] 
+                              << ", totPE: " << trajEdep[trks] << ", Prim: " << trajPrim[trks] 
+                              << ", Parent: " << trajParent[trks] << ", PDG: " << trajPDG[trks] << std::endl;
+                }
+            }
+            std::cout << "nuIniMom: " << event->GetNuMom() << std::endl;
+            std::cout << "vertex   position: " << event->GetTrueVertex()->GetX() 
+                      << "," << event->GetTrueVertex()->GetY() 
+                      << "," << event->GetTrueVertex()->GetZ() << std::endl;
+            if(WriteText){
+                std::cout << "Hits assocaited to tracks: " << locSum << std::endl;
+                std::cout << "Hits without associated track: " << numHits-locSum << std::endl;
+                std::cout << " --- summary of hits --- " << std::endl;
+                for (int hts=0; hts<numHits; hts++){
+                    std::cout << "Hit " << hts << "crosstalk: " << crosstalk[hts] << ", trajID: " << hitTraj[hts] 
+                         << ", XYZ: " << hitLocation[hts][0] << "," << hitLocation[hts][1] <<"," << hitLocation[hts][2] 
+                         << ", PE: " << hitPE[hts][0] << "," << hitPE[hts][1] <<"," << hitPE[hts][2] 
+                         << ", time: " << hitTime[hts][0] << "," << hitTime[hts][1] <<"," << hitTime[hts][2] << std::endl;
+                }
+            }
+        }
+
+        event->SetVoxels(listOfVoxels);
+        event->SetHits(listOfHits);
+        event->SetTrueTracks(listOfTracks);
+        std::cout << "event->GetHits().size(): " << event->GetHits().size() << std::endl;
+        if(!index) store = false;
+        // FIXME
+        //if(store){
+        //    fileout->cd();
+        //    EnergyDeposit2D_XY[ievt]->Write();
+        //    EnergyDeposit2D_XZ[ievt]->Write();
+        //    EnergyDeposit2D_YZ[ievt]->Write();
+        //}
+        if(store) {cout << "\n\n ----------------> EVENT IS STORED AS OUTPUT\n\n"; AllEvents->Fill(); }
+        else{ std::cout << "\n\nEVENT IS NOT STORED\n\n";}
+        event->ResetEvent();
+        listOfHits.clear();
+        listOfVoxels.clear();
+        listOfTracks.clear();
+    } /// END LOOP OVER EVENTS LOOP
+
+    std::cout << "Writing events. " << std::endl;
+    fileout->cd();
+    AllEvents->Write();
+    h2d_xy->Write();
+    h2d_xz->Write();
+    h2d_yz->Write();
+    fileout->Close();
+    std::cout << "End of program. " << std::endl;
+
+    return 1;
+}
 
 
 bool aux_threshold(double x){
@@ -131,12 +859,8 @@ void ResetVariables(){
         all_trajPDG[i] = -999;            
         all_trajStartHit[i] = -999;       
         all_trajEndHit[i] = -999;         
-        all_trajEdep[i] = -999;           
         all_trajPrim[i] = -999;           
         all_trajParent[i] = -999;         
-        // FIXME
-        InitKinEnergy[i] = -999;
-        TrackEndPoint[i] = -999;
 
         for (int j=0; j < maxHits; j++){
             trajHits[i][j] = -999;
@@ -255,704 +979,4 @@ int VolnameToID(string volname){
   }else{
   	return 3;
   }
-}
-
-
-/********** ...........oooooooooooOOOOOOOOOOO0000000000   SFGD_Reconstruction   0000000000OOOOOOOOOOOooooooooooo..........  **********/
-int SFGD_Reconstruction(int argc,char** argv) {
-    if (argc!=14){   // batch mode
-        std::cout << "You need to provide the following arguments:" << std::endl;
-        std::cout << " 1) input ROOT file name (from GEANT4 simulation) " << std::endl;
-        std::cout << " 2) first event number to run" << std::endl;
-        std::cout << " 3) total number of events to run" << std::endl;
-        std::cout << " 4) the tag for the output file name" << std::endl;
-        std::cout << " 5) detector ID: 0-->SuperFGD, 1-->FGD-like, 2-->WAGASCI" << std::endl;
-        std::cout << " 6) set debug option" << std::endl;
-        std::cout << " 7) set debug plot option" << std::endl;
-        std::cout << " 8) use view XY (0 or 1)" << std::endl;
-        std::cout << " 9) use view XZ (0 or 1)" << std::endl;
-        std::cout << " 10) use view YZ (0 or 1)" << std::endl;
-        std::cout << " 11) Minimum track distance (if <=0 use default)" << std::endl;
-        std::cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << std::endl;
-        std::cout << " 13) Output file name. In iteractive run it can be first event, but for parallel need separate param" << std::endl;
-        exit(1);
-    }
-
-    //TString outfilename = "/nfs/neutrinos/cjesus/work/MC_output.root";
-    //TString outfilename = "/Users/aoi/ND280_UPGRADE/output/RecoInput/MC_output.root";
-    string rootfilename = argv[1];
-    const int evtfirst = atoi(argv[2]);
-    const int nevents = atoi(argv[3]);
-    const int detectorID = atoi(argv[5]);
-    TString outfilename = argv[13];
-
-    std::cout << "evtfirst: " << evtfirst << ",nevents: " << nevents << std::endl;
-
-    TFile *fileout = new TFile(outfilename.Data(),"RECREATE");
-    TTree *AllEvents = new TTree("AllEvents", "The ROOT tree of events");
-    ND280SFGDEvent* event = new ND280SFGDEvent();
-
-    int Nentries = -999;
-
-    nd280upconv::TargetType_t DetType = nd280upconv::kUndefined;
-    if     (detectorID == 0) DetType = nd280upconv::kSuperFGD;
-    else   {std::cerr << "Detector must be SFGD!!" << std::endl; exit(1);}
-
-    /////////////////////////////
-    //                         //
-    // Apply detector response //
-    //                         //
-    /////////////////////////////
-    
-    // Take inputs
-    TFile *finput = new TFile(rootfilename.c_str(),"READ");
-    std::cout << "Reading the input ROOT file: " << rootfilename << std::endl;
-
-    TH2F* h2d_xy; TH2F* h2d_xz; TH2F* h2d_yz;
-    h2d_xy = (TH2F*)finput->Get("OutMPPCProj2D_XY");
-    h2d_xz = (TH2F*)finput->Get("OutMPPCProj2D_XZ");
-    h2d_yz = (TH2F*)finput->Get("OutMPPCProj2D_YZ");
-
-    Int_t binX = h2d_xy->GetXaxis()->GetNbins();
-    Int_t binY = h2d_xy->GetYaxis()->GetNbins();
-    Int_t binZ = h2d_xz->GetYaxis()->GetNbins();
-    
-    Float_t X_min = h2d_xy->GetXaxis()->GetBinLowEdge(0);
-    Float_t X_max = h2d_xy->GetXaxis()->GetBinUpEdge(binX);
-    Float_t Y_min = h2d_xy->GetYaxis()->GetBinLowEdge(0);
-    Float_t Y_max = h2d_xy->GetYaxis()->GetBinUpEdge(binY);
-    Float_t Z_min = h2d_xz->GetYaxis()->GetBinLowEdge(0);
-    Float_t Z_max = h2d_xz->GetYaxis()->GetBinUpEdge(binZ);
-    
-    std::cout << " x min " << X_min << " x max " << X_max << "  nbins " << binX << std::endl;
-    std::cout << " y min " << Y_min << " y max " << Y_max << "  nbins " << binY << std::endl;
-    std::cout << " z min " << Z_min << " z max " << Z_max << "  nbins " << binZ << std::endl;
-
-    AllEvents->Branch("Event", "Event", event);
-
-    bool fillAll = false;
-    if(fillAll){
-        AllEvents->Branch( "numTracks",      &numTracks,     "numTracks/I"                     );
-        AllEvents->Branch( "numHits",        &numHits,       "numHits/I"                       );
-        AllEvents->Branch( "all_numTracks",  &all_numTracks, "all_numTracks/I"                 );
-        AllEvents->Branch( "crosstalk",      crosstalk,      "crosstalk[numHits]/B"            );
-        AllEvents->Branch( "hitLocation",    hitLocation,    "hitLocation[numHits][3]/F"       );
-        AllEvents->Branch( "hitPE",          hitPE,          "hitPE[numHits][3]/I"             );
-        AllEvents->Branch( "threshold",      threshold,      "threshold[numHits][3]/I"         );
-        AllEvents->Branch( "hitTime",        hitTime,        "hitTime[numHits][3]/I"           );
-        AllEvents->Branch( "hitTraj",        hitTraj,        "hitTraj[numHits]/I"              );
-        AllEvents->Branch( "primID",         primID,         "primID[numHits]/I"              );
-        AllEvents->Branch( "hitCont",        hitCont,        "hitCont[numHits][1000]/I"     );
-        AllEvents->Branch( "trajID",         trajID,         "trajID[numTracks]/I"             );
-        AllEvents->Branch( "trajPDG",        trajPDG,        "trajPDG[numTracks]/I"            );
-        // AllEvents->Branch( "trajStartHit",   trajStartHit,   "trajStartHit[numTracks]/I"       );
-        // AllEvents->Branch( "trajEndHit",     trajEndHit,     "trajEndHit[numTracks]/I"         );
-        AllEvents->Branch( "trajEdep",       trajEdep,       "trajEdep[numTracks]/I"           );
-        AllEvents->Branch( "trajParent",     trajParent,     "trajParent[numTracks]/I"         );
-        AllEvents->Branch( "trajHitsNum",    trajHitsNum,    "trajHitsNum[numTracks]/I"        );
-        AllEvents->Branch( "trajHits",       trajHits,       "trajHits[numTracks][5000]/I"  );
-        AllEvents->Branch( "all_trajID",         all_trajID,         "all_trajID[1000]/I"             );
-        AllEvents->Branch( "all_trajPDG",        all_trajPDG,        "all_trajPDG[1000]/I"            );
-        // AllEvents->Branch( "all_trajStartHit",   all_trajStartHit,   "all_trajStartHit[numTracks]/I"       );
-        // AllEvents->Branch( "all_trajEndHit",     all_trajEndHit,     "all_trajEndHit[numTracks]/I"         );
-        AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[1000]/I"         );       
-    }
-
-    
-
-    AllEvents->Branch( "all_trajID",         all_trajID,         "all_trajID[all_numTracks]/I"             );
-    AllEvents->Branch( "all_trajPDG",        all_trajPDG,        "all_trajPDG[all_numTracks]/I"            );
-    // AllEvents->Branch( "all_trajStartHit",   all_trajStartHit,   "all_trajStartHit[numTracks]/I"       );
-    // AllEvents->Branch( "all_trajEndHit",     all_trajEndHit,     "all_trajEndHit[numTracks]/I"         );
-    AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[all_numTracks]/I"         );
-  
-    // FIXME
-    Double_t EdepositZ[184];
-    Double_t Edepo_total;
-    Double_t Eout;
-    Int_t orig_evt;
-    AllEvents->Branch( "EdepositZ",     EdepositZ,      "EdepositZ[184]/D"          );
-    AllEvents->Branch( "Edepo_total",   &Edepo_total,   "Edepo_total/D"             );
-    AllEvents->Branch( "Eout",          &Eout,          "Eout/D"                    );
-    AllEvents->Branch( "TrackEndPoint", TrackEndPoint, "TrackEndPoint[all_numTracks]/I"           );
-    AllEvents->Branch( "OrigEveNum",    &orig_evt,      "orig_evt/I"                );
-    AllEvents->Branch( "InitKinEnergy", InitKinEnergy,  "InitKinEnergy[all_numTracks]/D" );
-    AllEvents->Branch( "all_trajEdep",  all_trajEdep,   "all_trajEdep[all_numTracks]/D"  );
-    // FIXME
-    TH2F*  EnergyDeposit2D_XY[nevents];
-    TH2F*  EnergyDeposit2D_XZ[nevents];
-    TH2F*  EnergyDeposit2D_YZ[nevents];
-    //TH2F* EdepForInitElectron[nevents];
-
-    TTree *tinput = (TTree*) finput->Get("ND280upEvents");
-    
-    //
-    // Take the MPPC 2D histogram
-    //
-    
-    ND280UpApplyResponse ApplyResponse;
-    ApplyResponse.SetMPPCProj2D_XY(h2d_xy);
-    ApplyResponse.SetMPPCProj2D_XZ(h2d_xz);
-    ApplyResponse.SetMPPCProj2D_YZ(h2d_yz);
-    
-    // Declare the input true event object
-    TND280UpEvent *nd280UpEvent = new TND280UpEvent();
-    tinput->SetBranchAddress("Event",&nd280UpEvent);
-    
-    int NTreeEntries = tinput->GetEntries();
-    int evtlasttree = NTreeEntries-1;
-    
-    std::cout << std::endl;
-    std::cout << "# of entries in the Tree: " << NTreeEntries << std::endl;
-    std::cout << "last tree event ID: " << evtlasttree << std::endl;
-    std::cout << "first event ID: " << evtfirst << std::endl;
-    std::cout << std::endl;
-    
-    if(evtfirst > evtlasttree){
-        std::cout << std::endl;
-        std::cout << "first selection evt ID > first evt ID of tree:" << std::endl;
-        std::cout << " - # of tree events = " << NTreeEntries << std::endl;
-        std::cout << " - last tree event = " << evtlasttree << std::endl;
-        std::cout << " - first event = " << evtfirst << std::endl;
-        std::cout << "Exit!!!" << std::endl;
-        std::cout << std::endl;
-        exit(1);
-    }
-    else if(NTreeEntries < (evtfirst+nevents)){
-        
-        Nentries = NTreeEntries - evtfirst;
-        
-        std::cout << std::endl;
-        std::cout << "WARNING:" << std::endl;
-        std::cout << "first evt ID + # of events > tot # of tree events:" << std::endl;
-        std::cout << " - # of tree events = " << NTreeEntries << std::endl;
-        std::cout << " - # of events to run = " << nevents << std::endl;
-        std::cout << " - first event = " << evtfirst << std::endl;
-        std::cout << "Set # of events to run to " << Nentries;
-        std::cout << std::endl;
-    }
-    else{
-        Nentries = nevents;
-    }
-    
-    int EntryLast = evtfirst+Nentries-1;
-    
-    std::cout << std::endl;
-    std::cout << "First event = " << evtfirst << std::endl;
-    std::cout << "Last event =  " << EntryLast << std::endl;
-    std::cout << "# of events = " << Nentries << std::endl;
-    std::cout << std::endl;
-
-    vector <ND280SFGDHit*> listOfHits;
-    vector <ND280SFGDVoxel*> listOfVoxels;
-    vector <ND280SFGDTrack*> listOfTracks;
-    /****************************************************************************************
-     *                                                                                      *
-     *                                     Loop over events                                 *
-     *                                                                                      *
-     ****************************************************************************************/
-    for(int ievt=evtfirst;ievt<=EntryLast;ievt++){
-        tinput->GetEntry(ievt);
-        ResetVariables();
-        int index = 0;
-        bool store = true;
-        bool WriteText = false;
-        int PE_expect = 0;
-        int PE_found = 0;
-
-        // FIXME
-        orig_evt = ievt;
-        for(unsigned i_zpos=0; i_zpos<184; i_zpos++){
-        	EdepositZ[i_zpos] = 0;
-        }
-        Edepo_total = 0;
-        TString name;
-        name = TString::Format("EnergyDeposit2D_XY_%d",ievt);
-        EnergyDeposit2D_XY[ievt] = (TH2F*)h2d_xy->Clone(name);
-        name = TString::Format("EnergyDeposit2D_XZ_%d",ievt);
-        EnergyDeposit2D_XZ[ievt] = (TH2F*)h2d_xz->Clone(name);
-        name = TString::Format("EnergyDeposit2D_YZ_%d",ievt);
-        EnergyDeposit2D_YZ[ievt] = (TH2F*)h2d_yz->Clone(name);
-        //name = TString::Format("EdepForInitElectron_%d",ievt);
-        //EdepForInitElectron[ievt] = (TH2F*)h2d_yz->Clone(name);
-
-        std::map<int,int> trackToParentID;
-        std::map<int,int> trackToPDG;
-
-        std::cout << "************************" << std::endl;
-        std::cout << " starting event " << ievt << " and has #hits " << nd280UpEvent->GetNHits() << std::endl;
-
-        if(nd280UpEvent->GetNHits()*7+1 > maxHits){
-            cout << "ERROR: the maxHits value must be enlarged to at least: " << nd280UpEvent->GetNHits()*7+2 << endl;
-            exit(0);
-        }
-
-        int NHits = nd280UpEvent->GetNHits();
-        numHits = NHits;
-
-        int edep_without_clear_contributor = 0;
-
-
-        std::vector<int> listOfParentID;
-        std::vector <int> listOfTrueTrackID;
-
-        bool mu_found = false;
-        for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
-            TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
-            listOfTrueTrackID.push_back(track->GetTrackID());
-            listOfParentID.push_back(track->GetTrackID());
-            cout << "ALL || PDG: " <<  track->GetPDG()
-                     << ", ID: " <<    track->GetTrackID() 
-                     << ", prntID: " << track->GetParentID() << endl;
-            if(track->GetPDG() == 13 && !track->GetParentID()) mu_found = true;
-        }
-        #ifdef FORCE_NUMU
-            if(!mu_found) store = false;
-        #endif
-
-        /****************************************************************************************
-         *                                                                                      *
-         *                                    Loop over 3D hits                                 *
-         *                                                                                      *
-         ****************************************************************************************/
-        for(int ihit=0;ihit<NHits;ihit++){ // get last entry
-            TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
-
-            TRandom3 fRndm = TRandom3(0);
-            double charge = 1.;
-            double time = (nd280UpHit->GetStartT() + nd280UpHit->GetStopT())/2.; // middle step time
-            double posX = (nd280UpHit->GetStartX() + nd280UpHit->GetStopX())/2.; // middle step X
-            double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y
-            double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
-            TVector3 lightPos(posX,posY,posZ);
-            
-            double edep = nd280UpHit->GetEnergyDeposit();
-            double steplength = nd280UpHit->GetTrackLength();
-            string detname = nd280UpHit->GetDetName();
-						
-            // FIXME
-            for(int i_zpos=-92; i_zpos<92; i_zpos++){
-            	if((double)i_zpos*10 <= posZ && posZ < (double)i_zpos*10+10){
-            		EdepositZ[i_zpos+92] += edep;
-            	}
-            }
-            Edepo_total += edep;
-            
-            // FIXME
-            EnergyDeposit2D_XY[ievt]->Fill(posX,posY,edep/(double)nevents);
-            EnergyDeposit2D_XZ[ievt]->Fill(posX,posZ,edep/(double)nevents);
-            EnergyDeposit2D_YZ[ievt]->Fill(posY,posZ,edep/(double)nevents);
-            
-            ApplyResponse.SetTargetID(DetType);
-            
-            ApplyResponse.CalcResponse(lightPos,1,0,charge,time,steplength,edep,detname);
-            //ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,sat_edep*156.42,"kSuperFGD");
-            PE_expect += (ApplyResponse.GetHitPE().x() +  ApplyResponse.GetHitPE().y() +  ApplyResponse.GetHitPE().z());
-
-#ifdef CROSSTALK_OFF
-            for(int view=0; view<3; view++){                
-                ND280SFGDHit* hit = event->AddHit();
-                hit->SetView(view);
-
-                hit->SetX(ApplyResponse.GetHitPos().x()/10);
-                hit->SetY(ApplyResponse.GetHitPos().y()/10);
-                hit->SetZ(ApplyResponse.GetHitPos().z()/10);
-
-                if(view == 0) hit->SetZ(-1);
-                if(view == 1) hit->SetY(-1);
-                if(view == 2) hit->SetX(-1);
-                if(view == 0) hit->SetPE(ApplyResponse.GetHitPE().z());
-                if(view == 1) hit->SetPE(ApplyResponse.GetHitPE().y());
-                if(view == 2) hit->SetPE(ApplyResponse.GetHitPE().x());
-
-                listOfHits.push_back(hit);
-            }
-            index++;
-#else
-            double edeposit = nd280UpHit->GetEnergyDeposit();
-            double trueTime = (nd280UpHit->GetStartT() + nd280UpHit->GetStopT())/2.;
-            ND280UpTargReadOut TargetReadOut;
-            TargetReadOut.SetTargType(DetType);
-            int nphot = TargetReadOut.ApplyScintiResponse(edeposit,steplength,1);
-            double probLatCT = 0.01*fRndm.Poisson(2.8)*6;//0.025*6;//0.037*6;
-            if(WriteText) std::cout << "nphot= " << nphot << std::endl;
-            int numPE = nphot*(1./fib_abs_const);
-            if(numPE < 0) numPE = 0;
-            int numPE_CT[6] = {0};           // photons flowing to sourrounding elements
-            for (int i=0;i<numPE;i++){
-                double rndunif = fRndm.Uniform();
-                if (rndunif < probLatCT) numPE_CT[(int) (fRndm.Uniform()*6)]++;
-            }
-            int totCT = 0;
-            for (auto p : numPE_CT) totCT += p;
-            if(WriteText) std::cout << "Flowed PE: " << totCT << std::endl;
-            if(WriteText) std::cout << "Number of remaining PE: " << numPE-totCT << std::endl;
-
-            int trkID = - 999;
-            for (int m=0; m<7;m++){                
-                int numPE_fiber = 0;
-                if(m==0) numPE_fiber = FiberAbs(numPE-totCT);
-                else numPE_fiber = FiberAbs(numPE_CT[m-1]);
-
-                if(m==0){
-                    bool done = false;
-                    std::vector<int>::reverse_iterator it = nd280UpHit->fContributors.rbegin();
-                    for (; it!= nd280UpHit->fContributors.rend(); ++it){
-                        for (auto trueTrackID:listOfTrueTrackID){
-                            if ((*it) == trueTrackID) {trkID =(*it); done = true; break;}                 
-                        }
-                    if(done) break;
-                    }
-                }
-
-                if(m==0){
-                    if (trkID < 0) {trkID = nd280UpHit->GetPrimaryId(); edep_without_clear_contributor++;}
-                    // cout << "nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << endl;
-                    // cout << "trkID: " << trkID << endl;
-                    // cout << "fContributors: " << nd280UpHit->fContributors.size() << endl;
-                    //for (auto c:nd280UpHit->fContributors) cout << c << ",";
-                    //cout << endl << endl;
-                }
-
-                 if(trkID <0) { std::cout << "NOT STORING THE EVENT! negative TRK ID!: " << trkID <<","<< m << std::endl; store = false;}
-
-                //std::cout << m <<", New # of Abs PE: " << numPE_fiber << std::endl;
-
-                ApplyResponse.CalcResponse(lightPos,1,0,1 ,0 /*time*/,-1 /*steplength*/,numPE_fiber,detname);
-                
-                double pex = ApplyResponse.GetHitPE().x();
-                double pey = ApplyResponse.GetHitPE().y();
-                double pez = ApplyResponse.GetHitPE().z();
- 
-                PE_found += (pex+pey+pez);
-
-                double timepex = ApplyResponse.GetHitTime().x();
-                double timepey = ApplyResponse.GetHitTime().y();
-                double timepez = ApplyResponse.GetHitTime().z();
-                
-                double poshitX = ApplyResponse.GetHitPos().x();
-                double poshitY = ApplyResponse.GetHitPos().y();
-                double poshitZ = ApplyResponse.GetHitPos().z();
-
-                if(m==1) poshitX += 10;
-                if(m==2) poshitX -= 10;
-                if(m==3) poshitY += 10;
-                if(m==4) poshitY -= 10;
-                if(m==5) poshitZ += 10;
-                if(m==6) poshitZ -= 10;
-                
-                if (m==0) crosstalk[index] = false;
-                else      crosstalk[index] = true;
-                hitLocation[index][0] = poshitX/10;
-                hitLocation[index][1] = poshitY/10;
-                hitLocation[index][2] = poshitZ/10;
-                hitTime[index][0]     = timepez;
-                hitTime[index][1]     = timepey;
-                hitTime[index][2]     = timepex;
-                hitPE[index][0]       = pez;
-                hitPE[index][1]       = pey;
-                hitPE[index][2]       = pex;
-                hitEdep[index]        = edeposit;
-                hitTraj[index]        = trkID;
-                primID[index]         = nd280UpHit->GetPrimaryId();
-
-                threshold[index][0] = aux_threshold(hitPE[index][0]);
-                threshold[index][1] = aux_threshold(hitPE[index][1]);
-                threshold[index][2] = aux_threshold(hitPE[index][2]);
-
-                if(!threshold[index][0]) hitPE[index][0] = 0;
-                if(!threshold[index][1]) hitPE[index][1] = 0;
-                if(!threshold[index][2]) hitPE[index][2] = 0;
-
-                ND280SFGDVoxel* Voxel = new ND280SFGDVoxel(hitLocation[index][0],hitLocation[index][1],hitLocation[index][2]);
-                Voxel->SetTrueTime(trueTime);
-                Voxel->SetTrueEdep(edeposit);
-                Voxel->SetTruePE(numPE_fiber);
-                Voxel->AddTrueTrackID(trkID);
-                if (crosstalk[index]) Voxel->SetTrueType(1);
-                else  Voxel->SetTrueType(0);
-                if(Voxel->GetTruePE()>0) listOfVoxels.push_back(Voxel);
-
-                if(m!=0) Voxel->SetTrueEdep(0);
-
-                std::vector<ND280SFGDHit*> voxHits;        
-                for(int view=0; view<3; view++){        
-                    ND280SFGDHit* hit = event->AddHit();
-                    hit->SetView(view);
-
-                    hit->SetX(hitLocation[index][0]);
-                    hit->SetY(hitLocation[index][1]);
-                    hit->SetZ(hitLocation[index][2]);
-
-                    if(view == 0) hit->SetZ(-1);
-                    if(view == 1) hit->SetY(-1);
-                    if(view == 2) hit->SetX(-1);
-                    if(view == 0) hit->SetPE(hitPE[index][0]);
-                    if(view == 1) hit->SetPE(hitPE[index][1]);
-                    if(view == 2) hit->SetPE(hitPE[index][2]);
-
-                    listOfHits.push_back(hit);
-                    voxHits.push_back(hit);
-                }
-                Voxel->SetHits(voxHits);
-                voxHits.clear();
-
-                // int counter = 0;
-                // for (auto contrib : nd280UpHit->fContributors){
-                //     if(counter >= maxCont){
-                //         store = false;
-                //         break;
-                //     }
-                //     hitCont[index][counter] = contrib;
-                //     counter++;
-                // }
-
-                if(hitLocation[index][0] > X_min and hitLocation[index][0] < X_max
-                   and hitLocation[index][1] > Y_min and hitLocation[index][1] < Y_max
-                   and hitLocation[index][2] > Z_min and hitLocation[index][2] < Z_max){
-                    if(index+1 != maxHits) index++;
-                    if(index+1 == maxHits) store = false;
-                }
-                if(WriteText) std::cout << "hit at: " << hitLocation[index][0] << ", " << hitLocation[index][1] << ", " << hitLocation[index][2] << std::endl;
-                if(WriteText) std::cout << "PE (YZ,XZ,XY): " << pex << ", " << pey << ", " << pez << std::endl;
-            }
-            if(WriteText) std::cout << "PE_expect: " << PE_expect << "PE_found: " << PE_found << std::endl;
-            if(WriteText) std::cout << std::endl;
-#endif
-        } /// END LOOP OVER 3D HITS
-
-        if(WriteText) cout << "total g4hits:   " << NHits << endl;
-        if(WriteText) cout << "total g4hits*7: " << NHits*7 << endl;
-        if(WriteText) cout << "index:          " << index << endl;
-
-        cout << "# stored hits: " << index << endl;
-
-
-        std::vector <int> listOfTrackID;
-        for(UInt_t i=0; i<maxHits; i++){
-            if(hitTraj[i] == -999) break;
-            listOfTrackID.push_back(hitTraj[i]);
-        }
-        
-        //keep only unique track IDs:
-        if(listOfTrackID.size()){
-            std::sort   (listOfTrackID.begin(), listOfTrackID.end());
-            listOfTrackID.erase(std::unique (listOfTrackID.begin(), listOfTrackID.end()), listOfTrackID.end()); 
-        }
-        
-        /****************************************************************************************
-         *                                                                                      *
-         *                                    Loop over tracks                                  *
-         *                                                                                      *
-         ****************************************************************************************/
-        numTracks = listOfTrackID.size();
-        int sumEdepPE = 0;
-        int hitIndx = 0;
-        for(uint i=0; i<listOfTrackID.size(); i++){
-            hitIndx = 0;
-            sumEdepPE = 0;
-            for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
-                TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
-                if (track->GetTrackID() != listOfTrackID[i]) continue;
-                trajPDG[i] = track->GetPDG();
-                trajID[i] = track->GetTrackID();
-                trajPrim[i] = track->GetParentID();
-                trackToPDG[track->GetTrackID()] = track->GetPDG();
-                cout << "STORED || PDG: " <<  track->GetPDG()
-                     << ", ID: " <<    track->GetTrackID() 
-                     << ", prntID: " << track->GetParentID() << endl;
-            }        
-            for(int j = 0; j < maxHits; j++){
-                if(listOfTrackID[i] == hitTraj[j]){
-                    trajHitsNum[i]++;
-                    trajHits[i][hitIndx] = j;
-                    hitIndx++;
-                    sumEdepPE += hitPE[j][0];
-                    sumEdepPE += hitPE[j][1];
-                    sumEdepPE += hitPE[j][2];
-                }
-            }
-            trajEdep[i] = sumEdepPE;
-        }
-
-
-        // fill all trajectories information:
-        all_numTracks = nd280UpEvent->GetNTracks();
-        Eout = 0.;
-        for (Int_t trjID = 0; trjID < nd280UpEvent->GetNTracks(); trjID++) {
-            TND280UpTrack* track = nd280UpEvent->GetTrack(trjID);
-            if (trjID >= maxTracks){
-                store = false;
-                break;
-            }
-            if(WriteText){
-                std::cout << "trk is: " << track->GetTrackID() << " || GetInitMom " << track->GetInitMom().Mag()
-                          << " || trueCosTheta: " << track->GetInitCosTheta()
-                          << " || Range: " << track->GetRange() 
-                          << std::endl;
-            }
-
-            bool found = false;
-            for(auto trk_ID:listOfTrackID) if (trk_ID == track->GetTrackID()) found = true;
-            if(!found) continue;
-
-            ND280SFGDTrack* sfgdtrack = new ND280SFGDTrack();
-            sfgdtrack->SetPDG(track->GetPDG());
-            sfgdtrack->SetTrackID(track->GetTrackID());
-            sfgdtrack->SetParentID(track->GetParentID());
-            sfgdtrack->SetCosTheta(track->GetInitCosTheta());
-            sfgdtrack->SetRange(track->GetRange());
-            sfgdtrack->SetMomentum(track->GetInitMom().Mag());
-            sfgdtrack->fMomVec = track->GetInitMom();
-
-            all_trajPDG[trjID]    = track->GetPDG();
-            all_trajID[trjID]     = track->GetTrackID();
-            all_trajParent[trjID] = track->GetParentID();
-            all_trajEdep[trjID]   = track->GetSDTotalEnergyDeposit();
-            // FIXME
-            InitKinEnergy[trjID]  = track->GetInitKinEnergy();
-            
-            // FIXME
-            int NPoints = track->GetNPoints();
-            for(int ipt=0;ipt<NPoints;ipt++){    
-                TND280UpTrackPoint *trackPoint = track->GetPoint(ipt);    
-                double PosX = (trackPoint->GetPrePosition().X() + trackPoint->GetPostPosition().X())/2;
-                double PosY = (trackPoint->GetPrePosition().Y() + trackPoint->GetPostPosition().Y())/2;
-                double PosZ = (trackPoint->GetPrePosition().Z() + trackPoint->GetPostPosition().Z())/2 +1707.0;
-                double MomMod = trackPoint->GetMomentum().Mag();
-                string volname = trackPoint->GetLogVolName();
-                int volID = VolnameToID(volname);
-                double track_point_edep = trackPoint->GetEdep();
-                if(ipt == NPoints-1){
-                    TrackEndPoint[trjID] = volID;
-                    if(WriteText) std::cout << "trjID = " << trjID << ",    volname = " << volname << std::endl;
-                    if(volID == 2){
-                        Eout += MomMod;
-                    }
-                }
-            }
-            listOfTracks.push_back(sfgdtrack);
-        }
-
-        if (WriteText) for (auto lprntID : listOfParentID) cout << "parentID: " << lprntID << endl;
-
-        for(UInt_t i=0; i<listOfTrackID.size(); i++){
-            //if(trajID[i] == -999) cout << "999-listOfTrackID[i]: " << listOfTrackID[i] << endl;
-            if( trajPrim[i] == 0 ) trajParent[i] = -1;
-            else{
-                trajParent[i] = FindParent(trajID[i],listOfParentID,nd280UpEvent);
-                trackToParentID[trajID[i]] = trajParent[i]; 
-                trajPrim[i] = 1; 
-            }
-            if (trajParent[i] == -999) trajParent[i] = primID[i];
-            if (trajParent[i] == -999) {cout << "\n\n\n ERRRROR in parent ID!!! \n\n\n";store = false;}    // deactivate to store all...
-            //cout << "ID: " << trajID[i] << ", parent: " << trajParent[i] << endl;
-            trackToParentID[trajID[i]] = trajParent[i]; 
-        }
-        for(uint vxl=0; vxl<listOfVoxels.size(); ++vxl){
-            listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
-            listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
-            //if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { if(WriteText) cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl; store=false;}
-            if(WriteText) cout << "voxel: "<< vxl << "\t, Type: " << listOfVoxels[vxl]->GetTrueType() << "\tXYZ: " << listOfVoxels[vxl]->GetX() << ","  << listOfVoxels[vxl]->GetY() << "," << listOfVoxels[vxl]->GetZ() << ",\ttrueDeposits -[Edep,FiberPE,xy,xz,yz]: " <<  listOfVoxels[vxl]->GetTrueEdep()*0.25 << ",\t" << listOfVoxels[vxl]->GetTruePE()*0.25 <<  ",\t" << listOfVoxels[vxl]->GetHits()[0]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[1]->GetPE() << ",\t" << listOfVoxels[vxl]->GetHits()[2]->GetPE()
-                 << ",\tTrackInfo [ID,prntID,PDG]: " <<  listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl;
-        }
-        std::cout << "Voxels voxels w/o clear track ID: " << edep_without_clear_contributor << std::endl;
-
-        numHits = index;
-
-        if(NHits){ // TODO: store this information in output && comment couts; + avoid entering into ApplyResponse if outside SFGD!
-            int nVertices = nd280UpEvent->GetNVertices();
-            cout << " *** Vertices: " << nVertices << endl;
-            TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
-            // vrtx->PrintVertex();
-            TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
-            TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y(),vrtx->GetPosition().z()+1707 );
-            cout << "ReacMode: " << vrtx->GetReacModeString() << endl;
-            for(int itrk=0;itrk<vrtx->GetNInTracks();itrk++){
-                if(vrtx->GetInTrack(itrk)->GetPDG() == 14){
-                    event->SetNuMom(vrtx->GetInTrack(itrk)->GetInitMom().Mag());
-                    cout << "neutrino momentum: " << vrtx->GetInTrack(itrk)->GetInitMom().Mag() << endl;
-                }
-            }
-            //cout << "Original Vtx Position: " << vrtx->GetPosition().x() << "," << vrtx->GetPosition().y() << "," << vrtx->GetPosition().z()<< endl;
-            cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << endl;
-            
-                double tol = 20;
-                bool outFV = true;
-                if(vPos.z() > ApplyResponse.GetMPPCPosZ()+tol && vPos.z() < -ApplyResponse.GetMPPCPosZ()-tol) if(vPos.y() > ApplyResponse.GetMPPCPosY()+tol && vPos.y() < -ApplyResponse.GetMPPCPosY()-tol) if(vPos.x() > ApplyResponse.GetMPPCPosX()+tol && vPos.x() < -ApplyResponse.GetMPPCPosX()-tol) outFV = false;
-                if(!outFV) cout << "\n\n inside FV!!!" << endl;
-                else {cout << "\n\n out FV!!!!" << endl;}
-                cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX()/10 << "," << ApplyResponse.GetMPPCPosY()/10 << "," << ApplyResponse.GetMPPCPosZ()/10<< endl;
-                if(!outFV){
-                    ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
-                    cout << "Vertex Cube Position: " << ApplyResponse.GetHitPos().x()/10-ApplyResponse.GetMPPCPosX()/10 << "," << ApplyResponse.GetHitPos().y()/10-ApplyResponse.GetMPPCPosY()/10 << "," << ApplyResponse.GetHitPos().z()/10-ApplyResponse.GetMPPCPosZ()/10 << endl;
-                    ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(ApplyResponse.GetHitPos().x()/10,ApplyResponse.GetHitPos().y()/10,ApplyResponse.GetHitPos().z()/10);
-                    event->SetTrueVertex(vertexVoxel);
-                }
-            #ifdef FV_CUT
-                if(outFV) store = false;
-            #else
-                ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(-999,-999,-999);
-                event->SetTrueVertex(vertexVoxel);
-            #endif
-        }
-
-        if(false){
-         for (std::map<int,int>::iterator it=trackToParentID.begin(); it!=trackToParentID.end(); ++it)
-            std::cout << "trackToParentID: " <<it->first << " => " << it->second << '\n';
-
-         for (std::map<int,int>::iterator it=trackToPDG.begin(); it!=trackToPDG.end(); ++it)
-            std::cout << "trackPDG: " <<it->first << " => " << it->second << '\n';
-        }
-
-        if(store && index){
-                cout << " --- Event summary --- " << endl;
-                cout << "The event has: " << index << "hits." << endl;
-                cout << "The event has: " << numTracks << "tracks." << endl << endl;
-                cout << " --- summary of tracks --- " << endl;
-                int locSum = 0;
-                for (int trks=0; trks<numTracks; trks++){
-                    locSum += trajHitsNum[trks];
-                    std::cout << "Track " << trks << ", id: " << trajID[trks] << ", #hits: " << trajHitsNum[trks] 
-                         << ", totPE: " << trajEdep[trks] << ", Prim: " << trajPrim[trks] 
-                         << ", Parent: " << trajParent[trks] << ", PDG: " << trajPDG[trks] << std::endl;
-                }
-                cout << "nuIniMom: " << event->GetNuMom() << endl;
-                cout << "vertex   position: " << event->GetTrueVertex()->GetX() << "," << event->GetTrueVertex()->GetY() << "," << event->GetTrueVertex()->GetZ() << endl;
-            if(WriteText){
-                cout << "Hits assocaited to tracks: " << locSum << endl;
-                cout << "Hits without associated track: " << numHits-locSum << endl;
-                cout << " --- summary of hits --- " << endl;
-                for (int hts=0; hts<numHits; hts++){
-                    std::cout << "Hit " << hts << "crosstalk: " << crosstalk[hts] << ", trajID: " << hitTraj[hts] 
-                         << ", XYZ: " << hitLocation[hts][0] << "," << hitLocation[hts][1] <<"," << hitLocation[hts][2] 
-                         << ", PE: " << hitPE[hts][0] << "," << hitPE[hts][1] <<"," << hitPE[hts][2] 
-                         << ", time: " << hitTime[hts][0] << "," << hitTime[hts][1] <<"," << hitTime[hts][2] << std::endl;
-                }
-            }
-        }
-
-        event->SetVoxels(listOfVoxels);
-        event->SetHits(listOfHits);
-        event->SetTrueTracks(listOfTracks);
-        std::cout << "event->GetHits().size(): " << event->GetHits().size() << std::endl;
-        if(!index) store = false;
-        if(store) {cout << "\n\n ----------------> EVENT IS STORED AS OUTPUT\n\n"; AllEvents->Fill(); }
-        else{ cout << "\n\nEVENT IS NOT STORED\n\n";}
-        event->ResetEvent();
-        listOfHits.clear();
-        listOfVoxels.clear();
-        listOfTracks.clear();
-    } /// END LOOP OVER EVENTS LOOP
-
-    std::cout << "Writing events. " << std::endl;
-    fileout->cd();
-    AllEvents->Write();
-    h2d_xy->Write();
-    h2d_xz->Write();
-    h2d_yz->Write();
-    fileout->Close();
-    std::cout << "End of program. " << std::endl;
-
-    return 1;
 }
