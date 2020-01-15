@@ -46,9 +46,13 @@
 //#define FV_CUT
 //#define FORCE_NUMU
 
-const int maxTracks = 10000;
-const int maxHits   = 50000;
-const int maxCont   = 100;
+int CC_NUMU = 0;
+int NC_NUMU = 0;
+int IN_SFGD = 0;
+
+const int maxTracks = 100;
+const int maxHits = 50000;
+const int maxCont = 100;
 
 const double fib_abs_const = 0.2;
 
@@ -84,6 +88,8 @@ Int_t all_trajEndHit[maxTracks];
 Int_t all_trajPrim[maxTracks];           
 Int_t all_trajParent[maxTracks];
 
+TCanvas* c_shift = new TCanvas("shift");
+TH1F*    h_shift = new TH1F("shift","shift",100,-10,30);
 /* Pre-definition of each function */
 bool aux_threshold(double x);
 void ResetVariables();
@@ -703,48 +709,81 @@ int SFGD_Reconstruction(int argc,char** argv) {
             TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
             // vrtx->PrintVertex();
             TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
-            TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y(),vrtx->GetPosition().z()+1707 );
-            cout << "ReacMode: " << vrtx->GetReacModeString() << std::endl;
+            TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y()/*+16.2*/,vrtx->GetPosition().z()+1707 );
+            cout << "ReacMode: " << vrtx->GetReacModeString() << endl;
             for(int itrk=0;itrk<vrtx->GetNInTracks();itrk++){
                 if(vrtx->GetInTrack(itrk)->GetPDG() == 14){
                     event->SetNuMom(vrtx->GetInTrack(itrk)->GetInitMom().Mag());
                     std::cout << "neutrino momentum: " << vrtx->GetInTrack(itrk)->GetInitMom().Mag() << std::endl;
                 }
             }
-            if(WriteText) {
-                std::cout << "Original Vtx Position: " << vrtx->GetPosition().x() 
-                          << "," << vrtx->GetPosition().y() 
-                          << "," << vrtx->GetPosition().z()<< std::endl;
+            //cout << "Original Vtx Position: " << vrtx->GetPosition().x() << "," << vrtx->GetPosition().y() << "," << vrtx->GetPosition().z()<< endl;
+            cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << endl;
+            double minDist = 1000;
+            double minX    = 1000;
+            double minY    = 1000;
+            double minZ    = 1000;
+            double minXY    = 1000;
+            double minXZ    = 1000;
+            double minYZ    = 1000;
+            double mx = -1;
+            double my = -1;
+            double mz = -1;
+            double XXX=-999;
+            double YYY=-999;
+            double ZZZ=-999;
+            for(int ihit=0;ihit<NHits;ihit++){ // get last entry
+                TND280UpHit *nd280UpHit = nd280UpEvent->GetHit(ihit);
+                double posX = (nd280UpHit->GetStartX() + nd280UpHit->GetStopX())/2.; // middle step X
+                double posY = (nd280UpHit->GetStartY() + nd280UpHit->GetStopY())/2.; // middle step Y
+                double posZ = (nd280UpHit->GetStartZ() + nd280UpHit->GetStopZ())/2.; // middle step Z
+                double dist = sqrt(pow(vPos.x()-posX,2)+pow(vPos.y()-posY,2)+pow(vPos.z()-posZ,2));
+                double distX = abs(vPos.x()-posX);
+                double distY = abs(vPos.y()-posY);
+                double distZ = abs(vPos.z()-posZ);
+                double distXY = sqrt(pow(vPos.x()-posX,2)+pow(vPos.y()-posY,2));
+                double distXZ = sqrt(pow(vPos.x()-posX,2)+pow(vPos.z()-posZ,2));
+                double distYZ = sqrt(pow(vPos.y()-posY,2)+pow(vPos.z()-posZ,2));
+                if(dist<minDist) {minDist = dist; mx = posX; my = posY; mz=posZ;}
+                if(distX<minX) minX = distX;
+                if(distY<minY) minY = distY;
+                if(distZ<minZ) minZ = distZ;
+                if(distXY<minXY) {minXY = distXY; XXX=posX;}
+                if(distYZ<minXZ) {minXZ = distXZ; YYY=posY;}
+                if(distYZ<minYZ) {minYZ = distYZ; ZZZ=posZ;}
             }
-            std::cout << "Vertex Position: " << vPos.x() << "," << vPos.y() << "," << vPos.z() << std::endl;
+            cout <<"minDist: " << minDist << endl;
+            cout <<"min [XYZ]       : "<< mx<<","<<my<<","<<mz<<endl;
+            cout <<"min [XY-XZ-YZ]  : "<< minXY<<","<<minXZ<<","<<minYZ<<endl;
+            cout <<"XYZ-shift       : "<< XXX-vPos.x() << ","<< YYY-vPos.y() << ","<< ZZZ-vPos.z() << endl;
+            cout <<"mindif [XYZ]    : " <<minX<<","<<minY<<","<<minZ << endl;
+            h_shift->Fill(YYY-vPos.y());
             
-                double tol = 20;
-                bool outFV = true;
-                if(vPos.z() > ApplyResponse.GetMPPCPosZ()+tol && vPos.z() < -ApplyResponse.GetMPPCPosZ()-tol && 
-                   vPos.y() > ApplyResponse.GetMPPCPosY()+tol && vPos.y() < -ApplyResponse.GetMPPCPosY()-tol &&
-                   vPos.x() > ApplyResponse.GetMPPCPosX()+tol && vPos.x() < -ApplyResponse.GetMPPCPosX()-tol){
-                    outFV = false;}
-                if(!outFV) std::cout << "\n\n inside FV!!!" << std::endl;
-                else {     std::cout << "\n\n out FV!!!!"   << std::endl;}
-                std::cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX()/10 << "," 
-                          << ApplyResponse.GetMPPCPosY()/10 << "," << ApplyResponse.GetMPPCPosZ()/10 << std::endl;
-                if(!outFV){
-                    ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
-                    std::cout << "Vertex Cube Position: " 
-                              << ApplyResponse.GetHitPos().x()/10-ApplyResponse.GetMPPCPosX()/10 << "," 
-                              << ApplyResponse.GetHitPos().y()/10-ApplyResponse.GetMPPCPosY()/10 << "," 
-                              << ApplyResponse.GetHitPos().z()/10-ApplyResponse.GetMPPCPosZ()/10 << std::endl;
-                    ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(ApplyResponse.GetHitPos().x()/10,
-                                                                     ApplyResponse.GetHitPos().y()/10,
-                                                                     ApplyResponse.GetHitPos().z()/10);
-                    event->SetTrueVertex(vertexVoxel);
-                }
-            #ifdef FV_CUT
-                if(outFV) store = false;
-            #else
+            double tol = 10;
+            bool outFV = true;
+            if(vPos.z() > ApplyResponse.GetMPPCPosZ()+tol && vPos.z() < -ApplyResponse.GetMPPCPosZ()-tol) if(vPos.y() > ApplyResponse.GetMPPCPosY()+tol && vPos.y() < -ApplyResponse.GetMPPCPosY()-tol) if(vPos.x() > ApplyResponse.GetMPPCPosX()+tol && vPos.x() < -ApplyResponse.GetMPPCPosX()-tol) outFV = false;
+            //if(vPos.z() > ApplyResponse.GetMPPCPosZ() && vPos.z() < -ApplyResponse.GetMPPCPosZ()) if(vPos.y() > ApplyResponse.GetMPPCPosY()+tol && vPos.y() < -ApplyResponse.GetMPPCPosY()-tol) if(vPos.x() > ApplyResponse.GetMPPCPosX()+tol && vPos.x() < -ApplyResponse.GetMPPCPosX()-tol) outFV = false;
+            if(!outFV) cout << "\n\n inside FV!!!" << endl;
+            else {cout << "\n\n out FV!!!!" << endl;}
+            cout << "MPPC limits Position: " << ApplyResponse.GetMPPCPosX()/10 << "," << ApplyResponse.GetMPPCPosY()/10 << "," << ApplyResponse.GetMPPCPosZ()/10<< endl;
+            if(!outFV){
+                ApplyResponse.CalcResponse(vPos,1,0,1,0,0,0,hitSFGD->GetDetName());
+                cout << "Vertex Cube Position: " << ApplyResponse.GetHitPos().x()/10-ApplyResponse.GetMPPCPosX()/10 << "," << ApplyResponse.GetHitPos().y()/10-ApplyResponse.GetMPPCPosY()/10 << "," << ApplyResponse.GetHitPos().z()/10-ApplyResponse.GetMPPCPosZ()/10 << endl;
+                ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(ApplyResponse.GetHitPos().x()/10,ApplyResponse.GetHitPos().y()/10,ApplyResponse.GetHitPos().z()/10);
+                event->SetTrueVertex(vertexVoxel);
+            }
+            if(outFV){
                 ND280SFGDVoxel* vertexVoxel = new ND280SFGDVoxel(-999,-999,-999);
                 event->SetTrueVertex(vertexVoxel);
+            }
+            #ifdef FV_CUT
+                store = false;
             #endif
+            if (!outFV){
+                IN_SFGD++;
+                if(mu_found) CC_NUMU++;
+                else NC_NUMU++;
+            }
         }
 
         if(false){
@@ -806,7 +845,18 @@ int SFGD_Reconstruction(int argc,char** argv) {
         listOfTracks.clear();
     } /// END LOOP OVER EVENTS LOOP
 
-    std::cout << "Writing events. " << std::endl;
+    cout << endl << endl;
+    cout << "Total Events: " << Nentries << endl;
+    cout << "In SFGD FV:   " << IN_SFGD << endl;
+    cout << "CC-NC:        " << CC_NUMU << "," << NC_NUMU << endl;
+
+    c_shift->cd();
+    h_shift->Draw("HIST");
+    h_shift->Fit("gaus");
+    c_shift->Update();
+    c_shift->SaveAs("~/Desktop/shift.pdf");
+
+    cout << "Writing events. " << endl;
     fileout->cd();
     AllEvents->Write();
     h2d_xy->Write();
