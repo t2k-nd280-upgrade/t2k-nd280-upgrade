@@ -10,8 +10,7 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4SubtractionSolid.hh"
-
-#include <MyND280BeamConstructor.hh>
+#include "MyND280BeamConstructor.hh"
 
 //
 // Cesar Jesus 19/3/18
@@ -67,6 +66,8 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
 
     G4LogicalVolume *logVolume    = NULL;
     G4LogicalVolume *driftVolume  = NULL;
+    G4LogicalVolume *logHalf0  = NULL;
+    G4LogicalVolume *logHalf1  = NULL;
 
     fHATPCWidth = GetHATPCWidth();
     fHATPCHeight = GetHATPCHeight();
@@ -88,27 +89,27 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     ///////////////
 
     if (FCName == "FC")
-    {
-        BuildFCGeometry(logVolume, FCthickness);
-    }
+      {
+	BuildFCGeometry(logVolume, FCthickness);
+      }
     else if (FCName == "Nexus")
-    {
+      {
         BuildNexusGeometry(logVolume, FCthickness);
-    }
+      }
     else if (FCName == "GFiber")
-    {
-        BuildGFiberGeometry(logVolume, FCthickness);
-    }
+      {
+	BuildGFiberGeometry(logVolume, FCthickness);
+      }
     else if (FCName == "Solid")
-    {
+      {
         BuildSolidGeometry(logVolume, FCthickness);
-    }
+      }
 
     ///////////////
     ///////////////
     ///////////////
 
-    BuildDriftVolume(logVolume, driftVolume, FCthickness);
+    BuildDriftVolume(logVolume, driftVolume,logHalf0,logHalf1, FCthickness);
     BuildMicromegasVolume();
 
     // add 12 Micromegas Modules to readout-plane
@@ -224,17 +225,11 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     double layer5thickness = 2.0 * CLHEP::mm;  // Kevlar
     double layer6thickness = 0.15 * CLHEP::mm; //Katpon
     double layer7thickness = 0.1 * CLHEP::mm;  // Copper
+    
+    G4cout << "\n------------------------------------------------------------" << "\n\n The Field Cage Wall is made of: \n ";
+    G4cout << layer1thickness << "mm of " << FindMaterial("G4_KAPTON")->GetName() << " with a Radiation Length of " << (100 * layer1thickness) / FindMaterial("G4_KAPTON")->GetRadlen() << "% \n" << " + ";
+    G4cout << layer2thickness << "mm of " << FindMaterial("Copper")->GetName() << " with a Radiation Length of " << (100 * layer2thickness) / FindMaterial("Copper")->GetRadlen() << "% \n" << " + ";
 
-    std::setprecision(2);
-
-    G4cout << "\n------------------------------------------------------------"
-           << "\n\n The Field Cage Wall is made of: \n ";
-    G4cout << layer1thickness << "mm of " << FindMaterial("G4_KAPTON")->GetName() << " with a Radiation Length of " << (100 * layer1thickness) / FindMaterial("G4_KAPTON")->GetRadlen() << "%"
-                                                                                                                                                                                           "\n"
-           << " + ";
-    G4cout << layer2thickness << "mm of " << FindMaterial("Copper")->GetName() << " with a Radiation Length of " << (100 * layer2thickness) / FindMaterial("Copper")->GetRadlen() << "%"
-                                                                                                                                                                                     "\n"
-           << " + ";
     G4cout << layer3thickness << "mm of " << FindMaterial("G4_KEVLAR")->GetName() << " with a Radiation Length of " << (100 * layer3thickness) / FindMaterial("G4_KEVLAR")->GetRadlen() << "%"
                                                                                                                                                                                            "\n"
            << " + ";
@@ -260,6 +255,7 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
                                                                                           "\n";
     G4cout << " Nomex Honeycomb radiation Length of " << FindMaterial("NOMEX")->GetRadlen() << " cm"
                                                                                                "\n";
+    
 
     // if(extragap3Material->GetName() != "Galactic"){
     //   G4cout << extragap3Thickness/mm << "mm of " << extragap3Material->GetName() << " with a Radiation Length of " << (100*extragap3Thickness/mm)/extragap3Material->GetRadlen () << "%" "\n"
@@ -285,10 +281,11 @@ G4LogicalVolume *ND280HATPCConstructor::GetPiece(void)
     // if(extragap10Material->GetName() != "Galactic"){
     //   G4cout << extragap10Thickness/mm << "mm of " << extragap10Material->GetName() << " with a Radiation Length of " << (100*extragap10Thickness/mm)/extragap10Material->GetRadlen () << "%" << "\n";}
     G4cout << "\n------------------------------------------------------------\n";
+   
 
     BuildHATPCCentralCathode(driftVolume, FCthickness);
-    // BuildHATPCCages(logGasGap);
-
+    BuildHATPCCages(logGasGap);
+   
     return logVolume;
 }
 
@@ -398,7 +395,7 @@ void ND280HATPCConstructor::BuildHATPCCentralCathode(G4LogicalVolume *driftVolum
     return;
 }
 
-void ND280HATPCConstructor::BuildFCGeometry(G4LogicalVolume *logVolume, double &FCthickness)
+void ND280HATPCConstructor::BuildFCGeometry(G4LogicalVolume *&logVolume, double &FCthickness)
 {
     double thickness;
     // double fBoxXsize, fBoxYsize, fBoxZsize;
@@ -1363,11 +1360,10 @@ void ND280HATPCConstructor::BuildGFiberGeometry(G4LogicalVolume *logVolume, doub
     return;
 }
 
-void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *driftVolume, double &FCthickness)
+void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *&driftVolume, G4LogicalVolume *&logHalf0, G4LogicalVolume *&logHalf1, double &FCthickness)
 {
 
     //Drift Volume
-
     G4VSolid *solidDrift = new G4Box("InnerBox", (fBoxXsize - 2 * FCthickness) / 2., (fBoxYsize - 2 * FCthickness) / 2., (fBoxZsize - 2 * FCthickness) / 2.);
 
     driftVolume = new G4LogicalVolume(solidDrift,
@@ -1395,18 +1391,18 @@ void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4Logic
 
     G4VSolid *innerHalf = new G4Box("InnerHalf", (fBoxZsize - 2 * FCthickness) / 2., (fBoxYsize - 2 * FCthickness) / 2, width / 2.);
 
-    G4LogicalVolume *logHalf0 = new G4LogicalVolume(innerHalf,
-                                                    FindMaterial("GasMixtureTPC"),
-                                                    GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half0");
-    G4LogicalVolume *logHalf1 = new G4LogicalVolume(innerHalf,
-                                                    FindMaterial("GasMixtureTPC"),
-                                                    GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half1");
+    logHalf0 = new G4LogicalVolume(innerHalf,
+				   FindMaterial("GasMixtureTPC"),
+				   GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half0");
+    logHalf1 = new G4LogicalVolume(innerHalf,
+				   FindMaterial("GasMixtureTPC"),
+				   GetHATPCParentName() + "/FC/" + GetHATPCName() + "/Drift" + "/Half1");
     logHalf0->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
     logHalf1->SetVisAttributes(G4Colour(1.0, 0.0, 0.0));
 
     //logHalf0->SetUserLimits(new G4UserLimits(GetHATPCSteppingLimit()));
     //logHalf1->SetUserLimits(new G4UserLimits(GetHATPCSteppingLimit()));
-
+    /*
     double delta = width / 2. + GetHATPCCathodeThickness() / 2.;
 
     G4RotationMatrix rm;
@@ -1427,7 +1423,7 @@ void ND280HATPCConstructor::BuildDriftVolume(G4LogicalVolume *logVolume, G4Logic
                       driftVolume,
                       false,
                       1);
-
+    */
     return;
 }
 

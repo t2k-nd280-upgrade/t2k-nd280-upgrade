@@ -148,7 +148,7 @@ private:
     //bool DebugHATPCMass;
 
     /// Method to build the FC geometry
-    void BuildFCGeometry(G4LogicalVolume *logVolume, double &FCthickness);
+    void BuildFCGeometry(G4LogicalVolume *&logVolume, double &FCthickness);
     /// Method to build the Nexus geometry (depreciated)
     void BuildNexusGeometry(G4LogicalVolume *logVolume, double &FCthickness);
     /// Method to build the GFiber geometry (depreciated)
@@ -156,7 +156,7 @@ private:
     /// Method to build the Solid geometry (depreciated)
     void BuildSolidGeometry(G4LogicalVolume *logVolume, double &FCthickness);
     /// Method to build the drift volume
-    void BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *driftVolume, double &FCthickness);
+  void BuildDriftVolume(G4LogicalVolume *logVolume, G4LogicalVolume *&driftVolume, G4LogicalVolume *&logHalf0, G4LogicalVolume *&logHalf1, double &FCthickness);
     /// Method to build the Micromegas volumes
     void BuildMicromegasVolume();
 
