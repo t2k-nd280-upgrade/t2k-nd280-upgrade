@@ -5,7 +5,7 @@ echo "hostname is: $hostname"
 
 original_pwd="`pwd`"
 
-if [ $hostname == "ifae-pc" ]; then
+if [ $hostname == "MacBook.local" ]; then
   source $T2KND280UP/build/compile_script.sh -n -d
   cd $original_pwd
 else

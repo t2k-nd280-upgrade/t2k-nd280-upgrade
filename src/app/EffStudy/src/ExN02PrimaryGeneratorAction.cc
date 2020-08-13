@@ -294,6 +294,67 @@ void ExN02PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     fParticleGun->SetParticleDefinition(particleDefinition);
     }
 
+    if(fTypeGun=="LANL"){
+      G4double particlerandom = 2*G4UniformRand();
+      G4String particlename;
+      if (particlerandom<1) {particlename = "neutron";      aEAmp = 10 + (G4UniformRand()*(190.));}
+      else                  {particlename = "gamma";        aEAmp = 10 + (G4UniformRand()*(190.));}
+      G4ThreeVector dir(0,0,1);
+      fParticleGun->SetParticleMomentumDirection(dir);
+      fParticleGun->SetParticleEnergy(aEAmp);
+      G4ParticleDefinition* particleDefinition 
+      = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
+      fParticleGun->SetParticleDefinition(particleDefinition);
+    }
+
+    if(fTypeGun=="NN_pgun_DataSet"){
+
+    aEAmp = fParticleGun->GetParticleEnergy();
+    //Particle Type
+    G4double particlerandom = 5*G4UniformRand();
+    G4String particlename;
+    //Initial Direction
+    G4ThreeVector aDir = fParticleGun->GetParticleMomentumDirection();
+    G4double phi = G4UniformRand()*360*CLHEP::deg; //flat in [0,2pi]
+    G4double cosTheta = -1+2*G4UniformRand();
+    G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
+    G4ThreeVector dir(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);
+    //Initial Momentum
+    G4cout << "Momentum before update = " << aMomAmp << " MeV/c" << endl;
+    if(particlerandom < 1)                       {particlename = "mu-";      aMomAmp = 100 + (G4UniformRand()*(1000.));}
+    if(particlerandom >=1 && particlerandom <2)  {particlename = "pi-";      aMomAmp = 10  + (G4UniformRand()*(1000.));}
+    if(particlerandom >=2 && particlerandom <3)  {particlename = "pi+";      aMomAmp = 10  + (G4UniformRand()*(1000.));}
+    if(particlerandom >=3 && particlerandom <=4) {particlename = "proton";   aMomAmp = 10  + (G4UniformRand()*(1000.));}
+    if(particlerandom >=4 && particlerandom <=5) {particlename = "e-";       aMomAmp = 10  + (G4UniformRand()*(1000.));}
+
+    // to add this change the range of 'particlerandom' variable.
+    // if(particlerandom >=5 && particlerandom <=6) particlename = "pi0";      aMomAmp = 10  + (G4UniformRand()*(1000.));
+    // if(particlerandom >=6 && particlerandom <=7) particlename = "neutron";  aMomAmp = 10  + (G4UniformRand()*(1000.));
+
+    bool straight_muons = false;
+    if(straight_muons){
+        particlename = "mu-";      aMomAmp = 800;
+        G4double cosTheta = -0.1+0.2*G4UniformRand();
+        G4double sinTheta = std::sqrt(1.-cosTheta*cosTheta);
+        G4double cosPhi   = -0.1+0.2*G4UniformRand();
+        G4double sinPhi   = std::sqrt(1.-cosPhi*cosPhi);
+        dir.setY(0);
+        dir.setX(sinTheta*sinPhi);
+        dir.setZ(sinTheta*cosPhi);
+    }
+
+    fParticleGun->SetParticleMomentumDirection(dir);
+    fParticleGun->SetParticleMomentum(aMomAmp*CLHEP::MeV);
+    cout << "Momentum after update = " << aMomAmp << " MeV/c" << endl;
+    G4cout << "Direction of the gun: " 
+           << dir[0] << ", " << -dir[1] << ", " << dir[2] 
+     << G4endl;
+
+    G4ParticleDefinition* particleDefinition 
+    = G4ParticleTable::GetParticleTable()->FindParticle(particlename);
+    fParticleGun->SetParticleDefinition(particleDefinition);
+    }
+
     if(fTypeGun=="BeamTest"){
       fParticleGun->SetParticleMomentum(750*CLHEP::MeV);
       G4ThreeVector dir(0,0,1);

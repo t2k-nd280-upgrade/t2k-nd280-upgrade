@@ -57,7 +57,7 @@ echo ""
 
 if ((($reco_only==0)))
 then
-	cmake ../src
+	/Applications/CMake.app/Contents/bin/cmake ../src
 else
 	echo "Only reconstruction software will be constructed."
 	cmake -DRECO_ONLY=ON ../src
